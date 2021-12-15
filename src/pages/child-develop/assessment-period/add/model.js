@@ -1,9 +1,12 @@
-// import * as services from './services';
+import * as services from './services';
 
 export default {
   namespace: 'childDevelopAssessmentPeriodAdd',
   state: {
     details: {},
+    schoolYear: [],
+    branches: [],
+    dataClass: [],
     error: {
       isError: false,
       data: {},
@@ -26,48 +29,102 @@ export default {
       ...state,
       details: payload,
     }),
+    SET_SCHOOL_YEAR: (state, { payload }) => ({
+      ...state,
+      schoolYear: payload.parsePayload,
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
+    }),
+    SET_CLASS: (state, { payload }) => ({
+      ...state,
+      dataClass: payload.items,
+    }),
   },
   effects: {
-  //   *GET_DETAILS({ payload }, saga) {
-  //     try {
-  //       const response = yield saga.call(services.details, payload);
-  //       if (response) {
-  //         yield saga.put({
-  //           type: 'SET_DETAILS',
-  //           payload: response.parsePayload,
-  //         });
-  //       }
-  //     } catch (error) {
-  //       yield saga.put({
-  //         type: 'SET_ERROR',
-  //         payload: error.data,
-  //       });
-  //     }
-  //   },
-  //   *ADD({ payload, callback }, saga) {
-  //     try {
-  //       yield saga.call(services.add, payload);
-  //       callback(payload);
-  //     } catch (error) {
-  //       callback(null, error);
-  //     }
-  //   },
-  //   *UPDATE({ payload, callback }, saga) {
-  //     try {
-  //       yield saga.call(services.update, payload);
-  //       callback(payload);
-  //     } catch (error) {
-  //       callback(null, error);
-  //     }
-  //   },
-  //   *REMOVE({ payload, callback }, saga) {
-  //     try {
-  //       yield saga.call(services.remove, payload.id);
-  //       callback(payload);
-  //     } catch (error) {
-  //       callback(null, error);
-  //     }
-  //   },
+    *GET_DETAILS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.details, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DETAILS',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.add, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.update, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_SCHOOL_YEAR({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSchooolYear, payload);
+        yield saga.put({
+          type: 'SET_SCHOOL_YEAR',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CLASS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getClass, payload);
+        yield saga.put({
+          type: 'SET_CLASS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

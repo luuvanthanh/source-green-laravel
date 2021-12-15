@@ -2,27 +2,19 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, DatePicker } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import { isEmpty, head } from 'lodash';
-import Loading from '@/components/CommonComponent/Loading';
+import { isEmpty, omit, last, head } from 'lodash';
+
 import Button from '@/components/CommonComponent/Button';
 import Heading from '@/components/CommonComponent/Heading';
 import Pane from '@/components/CommonComponent/Pane';
+import moment from 'moment';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 import stylesModule from '../styles.module.scss';
 
-const branches = [
-  {
-    id: 1,
-    name: 'Nguyễn Văn Nam',
-  },
-  {
-    id: 2,
-    name: 'Nguyễn Văn',
-  },
-];
+
 
 let isMounted = true;
 /**
@@ -44,7 +36,9 @@ const mapStateToProps = ({ menu, loading, childDevelopAssessmentPeriodAdd }) => 
   menuData: menu.menuLeftChildDevelop,
   details: childDevelopAssessmentPeriodAdd.details,
   error: childDevelopAssessmentPeriodAdd.error,
-  paramaterValues: childDevelopAssessmentPeriodAdd.paramaterValues,
+  schoolYear: childDevelopAssessmentPeriodAdd.schoolYear,
+  branches: childDevelopAssessmentPeriodAdd.branches,
+  dataClass: childDevelopAssessmentPeriodAdd.dataClass,
 });
 
 @connect(mapStateToProps)
@@ -76,7 +70,25 @@ class Index extends PureComponent {
     });
   };
 
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'childDevelopAssessmentPeriodAdd/GET_SCHOOL_YEAR',
+      payload: {},
+    });
+    dispatch({
+      type: 'childDevelopAssessmentPeriodAdd/GET_BRANCHES',
+      payload: {},
+    });
+    dispatch({
+      type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
+      payload: {},
+    });
+  };
+
+
   componentDidMount() {
+    this.loadCategories();
     const {
       dispatch,
       match: { params },
@@ -88,7 +100,7 @@ class Index extends PureComponent {
       });
     }
     dispatch({
-      type: 'crmSaleParentsLead/GET_DATA',
+      type: 'childDevelopAssessmentPeriodAdd/GET_DATA',
       payload: {},
     });
   }
@@ -101,6 +113,13 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && params.id) {
       this.formRef.current.setFieldsValue({
         ...details,
+        // branchId: details.branch.map((i) => i.id),
+        classesId: details.classes.map((i) => i.id),
+        selectDate: details?.startDate &&
+          details?.endDate && [
+            moment(details?.startDate),
+            moment(details?.endDate),
+          ],
       });
     }
   }
@@ -129,6 +148,13 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const payload = {
+      ...omit(values, 'selectDate'),
+      startDate:
+        head(values.selectDate) &&
+        Helper.getDate(head(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
+      endDate:
+        last(values.selectDate) &&
+        Helper.getDate(last(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
       ...values,
       id: params.id,
     };
@@ -157,17 +183,20 @@ class Index extends PureComponent {
 
   render() {
     const {
-      error,
+
       menuData,
+      dataClass,
+      schoolYear,
+      branches,
       loading: { effects },
       match: { params },
     } = this.props;
     const loadingSubmit = effects['childDevelopAssessmentPeriodAdd/ADD'] || effects['childDevelopAssessmentPeriodAdd/UPDATE'];
-    const loading = effects['childDevelopAssessmentPeriodAdd/GET_DETAILS'];
+
     return (
       <>
         <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuData} />
-        <Pane className="col-lg-6 offset-lg-3">
+        <Pane className="col-lg-8 offset-lg-2">
           <Form
             className={styles['layout-form']}
             layout="vertical"
@@ -175,105 +204,104 @@ class Index extends PureComponent {
             ref={this.formRef}
             onFinish={this.onFinish}
           >
-            <Loading loading={loading} isError={error.isError} params={{ error }}>
-              <div className={styles['content-form']}>
-                <Pane className="pl20 pr20 mt20">
-                  <Pane className="card">
-                    <Pane className="p20">
-                      <Heading type="form-title" className="mb20">
-                        Thông tin thêm mới
-                      </Heading>
-                      <Pane className="row mt20">
-                        <Pane className="col-lg-6">
-                          <FormItem label="Mã kì đánh giá" name="code" type={variables.INPUT} placeholder={" "} disabled />
-                        </Pane>
-                        <Pane className="col-lg-12">
-                          <FormItem label="Tên kì đánh giá" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
-                        </Pane>
-                        <Pane className="col-lg-6">
-                          <FormItem
-                            options={['id', 'name']}
-                            name=""
-                            placeholder="Chọn"
-                            type={variables.SELECT}
-                            label="Năn học"
-                            rules={[variables.RULES.EMPTY_INPUT]}
-                          />
-                        </Pane>
-                        <Pane className="col-lg-6">
-                          <div className={styles['form-item']}>
-                            <label htmlFor="userId" className={stylesModule['wrapper-lable']}>Thời gian đánh giá</label>
-                            <Form.Item name="selectDate" style={{ marginBottom: 0 }}>
-                              <DatePicker.RangePicker
-                                format={[variables.DATE_FORMAT.DATE, variables.DATE_FORMAT.DATE]}
-                              />
-                            </Form.Item>
-                          </div>
-                        </Pane>
-                        <Pane className="col-lg-12">
-                          <FormItem
-                            name="facility"
-                            data={branches}
-                            mode="tags"
-                            type={variables.SELECT_TAGS}
-                            rules={[variables.RULES.EMPTY]}
-                            label="Cơ sở áp dụng"
-                          />
-                        </Pane>
-                        <Pane className="col-lg-12">
-                          <FormItem
-                            name="ddd"
-                            data={branches}
-                            mode="tags"
-                            type={variables.SELECT_TAGS}
-                            rules={[variables.RULES.EMPTY]}
-                            label="Lớp áp dụng"
-                          />
-                        </Pane>
-                        <Pane className="col-lg-6">
-                          <FormItem
-                            valuePropName="checked"
-                            label="Áp dụng"
-                            name="use"
-                            type={variables.SWITCH}
-                          />
-                        </Pane>
+
+            <div className={styles['content-form']}>
+              <Pane className="pl20 pr20 mt20">
+                <Pane className="card">
+                  <Pane className="p20">
+                    <Heading type="form-title" className="mb20">
+                      Thông tin thêm mới
+                    </Heading>
+                    <Pane className="row mt20">
+                      <Pane className="col-lg-6">
+                        <FormItem label="Mã kì đánh giá" name="code" type={variables.INPUT} placeholder={" "} disabled />
+                      </Pane>
+                      <Pane className="col-lg-12">
+                        <FormItem label="Tên kì đánh giá" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          name="schoolYearId"
+                          data={schoolYear.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
+                          placeholder="Chọn"
+                          type={variables.SELECT}
+                          label="Năn học"
+                          rules={[variables.RULES.EMPTY_INPUT]}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <div className={styles['form-item']}>
+                          <label htmlFor="userId" className={stylesModule['wrapper-lable']}>Thời gian đánh giá</label>
+                          <Form.Item name="selectDate" style={{ marginBottom: 0 }}>
+                            <DatePicker.RangePicker
+                              format={[variables.DATE_FORMAT.DATE, variables.DATE_FORMAT.DATE]}
+                            />
+                          </Form.Item>
+                        </div>
+                      </Pane>
+                      <Pane className="col-lg-12">
+                        <FormItem
+                          name="branchId"
+                          data={branches}
+                          // mode="tags"
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                          label="Cơ sở áp dụng"
+                        />
+                      </Pane>
+                      <Pane className="col-lg-12">
+                        <FormItem
+                          name="classesId"
+                          data={dataClass}
+                          type={variables.SELECT_MUTILPLE}
+                          rules={[variables.RULES.EMPTY]}
+                          label="Lớp áp dụng"
+                        />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          valuePropName="checked"
+                          label="Áp dụng"
+                          name="use"
+                          type={variables.SWITCH}
+                        />
                       </Pane>
                     </Pane>
-                    <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                      {params.id ? (
-                        <p
-                          className="btn-delete"
-                          role="presentation"
-                          loading={loadingSubmit}
-                          onClick={() => this.cancel(params.id)}
-                        >
-                          Xóa
-                        </p>
-                      ) : (
-                        <p
-                          className="btn-delete"
-                          role="presentation"
-                          loading={loadingSubmit}
-                          onClick={() => history.goBack()}
-                        >
-                          Hủy
-                        </p>
-                      )}
-                      <Button
-                        className="ml-auto px25"
-                        color="success"
-                        htmlType="submit"
-                        size="large"
+                  </Pane>
+                  <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+                    {params.id ? (
+                      <p
+                        className="btn-delete"
+                        role="presentation"
                         loading={loadingSubmit}
+                        onClick={() => this.cancel(params.id)}
                       >
-                        Lưu
-                      </Button>
-                    </Pane>
+                        Xóa
+                      </p>
+                    ) : (
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+                        loading={loadingSubmit}
+                        onClick={() => history.goBack()}
+                      >
+                        Hủy
+                      </p>
+                    )}
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      htmlType="submit"
+                      size="large"
+                      loading={loadingSubmit}
+                    >
+                      Lưu
+                    </Button>
                   </Pane>
                 </Pane>
-              </div>
-            </Loading>
+              </Pane>
+            </div>
+
           </Form>
         </Pane>
       </>
@@ -286,8 +314,10 @@ Index.propTypes = {
   menuData: PropTypes.arrayOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
+  schoolYear: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  dataClass: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -295,8 +325,10 @@ Index.defaultProps = {
   menuData: [],
   loading: {},
   dispatch: {},
-  error: {},
   details: {},
+  schoolYear: [],
+  branches: [],
+  dataClass: [],
 };
 
 export default Index;

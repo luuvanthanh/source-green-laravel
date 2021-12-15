@@ -192,8 +192,8 @@ class Index extends PureComponent {
       {
         title: 'STT ',
         key: 'index',
-        width: 150,
-        className: 'min-width-150',
+        width: 100,
+        className: 'min-width-100',
         fixed: 'left',
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
@@ -217,21 +217,22 @@ class Index extends PureComponent {
         key: 'date',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.date}</Text>,
+        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
       },
       {
         title: 'Thời gian đánh giá',
         key: 'time',
         width: 250,
         className: 'min-width-250',
-        render: (record) => <Text size="normal">{record.time}</Text>,
+        render: (record) => record?.schoolYear
+          ? `${Helper.getDate(record?.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record?.endDate, variables.DATE_FORMAT.DATE_VI)}` : ''
       },
       {
         title: 'Sử dụng',
         dataIndex: 'use',
         width: 150,
         className: 'min-width-150',
-        render: (use) => (
+        render: (use,record) => (
           <div
             role="presentation"
             onClick={(e) => {
@@ -240,6 +241,21 @@ class Index extends PureComponent {
           >
             <Switch
               defaultChecked={use}
+              onChange={() => {
+                const payload = {
+                  id: record?.id,
+                  use: !use,
+                };
+                this.props.dispatch({
+                  type: 'childDevelopAssessmentPeriodAdd/UPDATE',
+                  payload,
+                  callback: (response) => {
+                    if (response) {
+                      this.onLoad();
+                    }
+                  },
+                });
+              }}
             />
           </div>
         ),
@@ -272,7 +288,6 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
     } = this.props;
-
     const { search } = this.state;
     const loading = effects['childDevelopAssessmentPeriod/GET_DATA'];
     return (

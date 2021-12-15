@@ -351,7 +351,7 @@ class Index extends PureComponent {
                   <FormItem
                     data={[{ name: 'Chọn tất cả loại áp dụng' }, ...variablesModules.APPLY,]}
                     name="aplly"
-                    onChange={(event) => this.onChangeSelect(event, 'age')}
+                    onChange={(event) => this.onChangeSelect(event, 'apply')}
                     type={variables.SELECT}
                     allowClear={false}
                     placeholder="Chọn kỹ năng"
