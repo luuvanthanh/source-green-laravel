@@ -12,14 +12,14 @@ class AssessmentPeriod extends UuidModel
     protected $table = 'AssessmentPeriods';
 
     protected $fillable = [
-        'Code', 'Name', 'SchoolYearId', 'StartDate', 'EndDate', 'BranchId', 'Use'
+        'Code', 'Name', 'SchoolYearId', 'StartDate', 'EndDate', 'Use'
     ];
 
     const CODE = 'KN';
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class, 'BranchId');
+        return $this->belongsToMany(Branch::class, 'AssessmentPeriodBranchs', 'AssessmentPeriodId', 'BranchId');
     }
 
     public function classes()

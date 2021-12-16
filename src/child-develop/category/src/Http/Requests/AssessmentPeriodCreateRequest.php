@@ -28,7 +28,7 @@ class AssessmentPeriodCreateRequest extends FormRequest
             'schoolYearId' => 'required',
             'startDate' => 'required|date_format:Y-m-d',
             'endDate' => 'required|date_format:Y-m-d',
-            'branchId' => 'required|exists:Branches,Id',
+            'branchId' => 'required',
             'classesId' => 'required'
         ];
     }
