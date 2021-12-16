@@ -1852,6 +1852,30 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TKB],
           },
+          {
+            path: '/thoi-khoa-bieu/cau-hinh-thoi-gian',
+            component: './timetable/time-config',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong',
+            component: './timetable/group-activities',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/tao-moi',
+            component: './timetable/group-activities/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/:id/chi-tiet',
+            component: './timetable/group-activities/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
         ],
       },
       // MEDICAL

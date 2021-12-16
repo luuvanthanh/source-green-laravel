@@ -778,9 +778,7 @@ export async function getLeftMenuMedical() {
     {
       title: 'Danh mục học sinh bị sự cố',
       key: 'student-problem',
-      url: [
-        '/y-te/danh-muc-hoc-sinh-bi-su-co',
-      ],
+      url: ['/y-te/danh-muc-hoc-sinh-bi-su-co'],
       icon: 'icon icon-list',
       permission: [permissions.YTE],
       pro: true,
@@ -788,9 +786,7 @@ export async function getLeftMenuMedical() {
     {
       title: 'Báo cáo tình hình sự cố của học sinh',
       key: 'incident-situation',
-      url: [
-        '/y-te/bao-cao-tinh-hinh-su-co-cua-hoc-sinh',
-      ],
+      url: ['/y-te/bao-cao-tinh-hinh-su-co-cua-hoc-sinh'],
       icon: 'icon icon-list',
       permission: [permissions.YTE],
       pro: true,
@@ -827,6 +823,34 @@ export async function getLeftMenuTimeTable() {
       icon: 'icon icon-clock',
       permission: [permissions.TKB],
       pro: true,
+    },
+    {
+      title: 'Cấu hình thời gian',
+      key: 'timetableConfig',
+      url: ['/thoi-khoa-bieu/cau-hinh-thoi-gian'],
+      icon: 'icon icon-setting',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
+      title: 'Danh mục',
+      key: 'timetableList',
+      icon: 'icon icon-list',
+      permission: [permissions.TKB],
+      pro: true,
+      children: [
+        {
+          title: 'Nhóm hoạt động',
+          key: 'groupActivities',
+          url: [
+            '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong',
+            '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/tao-moi',
+            '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/:id/chi-tiet',
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+      ],
     },
   ];
 }
