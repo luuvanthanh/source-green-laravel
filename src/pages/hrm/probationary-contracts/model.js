@@ -1,8 +1,5 @@
 import * as categories from '@/services/categories';
-import { Helper } from '@/utils';
-import moment from 'moment';
 import * as services from './services';
-import { variables } from './variables';
 
 export default {
   namespace: 'probationaryContracts',
@@ -20,7 +17,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload,
+      data: payload.parsePayload,
       pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
@@ -79,26 +76,13 @@ export default {
       }
     },
     *GET_DATA({ payload }, saga) {
-      const flag = payload?.statusId;
       try {
         const response = yield saga.call(services.get, payload);
         if (response) {
-          if (flag) {
-            yield saga.put({
-              type: 'SET_DATA',
-              payload: response.parsePayload.filter(
-                (item) =>
-                  variables[flag] ===
-                  Helper.getStatusContracts(moment(item?.contractFrom), moment(item?.contractTo))
-                    .props?.children,
-              ),
-            });
-          } else {
-            yield saga.put({
-              type: 'SET_DATA',
-              payload: response.parsePayload,
-            });
-          }
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
         }
       } catch (error) {
         yield saga.put({
