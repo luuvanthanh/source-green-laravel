@@ -1,8 +1,9 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Form, Input } from 'antd';
-import { connect, withRouter } from 'umi';
+import { connect, withRouter, history } from 'umi';
 import PropTypes from 'prop-types';
-import { useSelector } from 'dva';
+import { useSelector, useDispatch } from 'dva';
+import { head, isEmpty, get } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -27,44 +28,119 @@ const mapStateToProps = ({ loading, medicalListTroubleAdd }) => ({
   townWards: medicalListTroubleAdd.townWards,
 });
 const General = memo(
-  ({ match: { params } }) => {
+  ({ match: { params }, loading: { effects }, details }) => {
     const formRef = useRef();
+    const dispatch = useDispatch();
     const [remove, setRemove] = useState([]);
-    const [data, setData] = useState([
-      {
-        id: uuidv4(),
-      },
-    ]);
-    const [{ menuLeftMedical }] = useSelector(({ menu }) => [menu]);
+    const [{ menuLeftMedical }] = useSelector(({ menu, }) => [menu,]);
     const mounted = useRef(false);
-
+    const loadingSubmit = effects['medicalListTroubleAdd/ADD'] || effects['medicalListTroubleAdd/UPDATE'];
     useEffect(() => {
       mounted.current = true;
       return mounted.current;
     }, []);
+    const [data, setData] = useState([{
+      id: uuidv4(),
+      position: undefined,
+      symptomName: undefined,
+    }]);
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'medicalListTroubleAdd/GET_DETAILS',
+          payload: params,
+          callback: (response) => {
+            if (response) {
+              setData(
+                response?.symptoms.map((item, index) => ({
+                  ...item,
+                  index,
+                })),
+              );
+            }
+          },
+        });
+      }
+    }, [params.id]);
 
+    useEffect(() => {
+      if (params.id) {
+        formRef.current.setFieldsValue({
+          ...details,
+          ...head(details.positionLevel),
+        });
+      }
+    }, [details]);
+
+    const onFinish = (values) => {
+      const items = data.map((item) => ({
+        position: item.position,
+        symptomName: item.symptomName,
+      }));
+      dispatch({
+        type: params.id ? 'medicalListTroubleAdd/UPDATE' : 'medicalListTroubleAdd/ADD',
+        payload: params.id ? { ...details, name: values?.name, symptoms: items } : { name: values?.name, symptoms: items },
+        callback: (response, error) => {
+          if (response) {
+            if (response) {
+              history.goBack();
+            }
+          }
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    };
+
+    const onChangePosition = (e, record) => {
+      setData((prev) =>
+        prev.map((item) => (
+          item.index === record.index ? { ...item, position: e.target.value } : { ...item }
+        ),
+        ));
+    };
+
+    const onChangeSymptomName = (e, record) => {
+      setData((prev) =>
+        prev.map((item) => (
+          item.index === record.index ? { ...item, symptomName: e.target.value } : { ...item }
+        ),
+        ));
+    };
     const columns = [
       {
         title: 'Vị trí vết thương',
-        key: 'name',
+        key: 'position',
         lassName: 'min-width-100',
-        render: (value) => (
+        render: (value, record) => (
           <Input.TextArea
-            value={value.name}
+            value={record.position}
             autoSize={{ minRows: 1, maxRows: 1 }}
             placeholder="Nhập"
+            onChange={(e) => onChangePosition(e, record)}
           />
         ),
       },
       {
         title: 'Tên triệu chứng',
-        key: 'name',
+        key: 'symptomName',
         lassName: 'min-width-100',
-        render: (value) => (
+        render: (value, record) => (
           <Input.TextArea
-            value={value.name}
+            value={record.symptomName}
             autoSize={{ minRows: 1, maxRows: 1 }}
             placeholder="Nhập"
+            onChange={(e) => onChangeSymptomName(e, record)}
           />
         ),
       },
@@ -73,21 +149,21 @@ const General = memo(
         className: 'min-width-100',
         width: 100,
         fixed: 'right',
-        render: (record) => (
+        render: (record) =>
           <div className={styles['list-button']}>
             <Button
               onClick={() => {
-                setData(data.filter((val) => (val.key || val.id || val.test) !== (record.key || record.id || record.test)));
-                setRemove([...remove, record.id]);
+                setData(data.filter((val) => (val.index) !== (record.index)));
+                setRemove([...remove, record.index]);
               }}
               type="button"
               color="danger" icon="remove"
             />
-
           </div>
-        ),
+
       },
     ];
+
     return (
       <>
         <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftMedical} />
@@ -96,6 +172,7 @@ const General = memo(
             layout="vertical"
             ref={formRef}
             initialValues={{}}
+            onFinish={onFinish}
           >
             <Pane>
               <Pane className="card">
@@ -129,8 +206,8 @@ const General = memo(
                                 setData([
                                   ...data,
                                   {
-                                    key: '',
-                                    test: uuidv4(),
+                                    dataId: uuidv4(),
+                                    index: data.length,
                                   },
                                 ])
                               }
@@ -146,31 +223,20 @@ const General = memo(
                     </Pane>
                   </Pane>
                   <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
-                    {params.id ? (
-                      <p
-                        className="btn-delete"
-                        role="presentation"
-                      // loading={loadingSubmit}
-                      // onClick={() => this.cancel(params.id)}
-                      >
-                        Xóa
-                      </p>
-                    ) : (
-                      <p
-                        className="btn-delete"
-                        role="presentation"
-                      // loading={loadingSubmit}
-                      // onClick={() => history.goBack()}
-                      >
-                        Hủy
-                      </p>
-                    )}
+                    <p
+                      className="btn-delete"
+                      role="presentation"
+                      loading={loadingSubmit}
+                      onClick={() => history.goBack()}
+                    >
+                      Hủy
+                    </p>
                     <Button
                       className="ml-auto px25"
                       color="success"
                       htmlType="submit"
                       size="large"
-                    // loading={loadingSubmit}
+                      loading={loadingSubmit}
                     >
                       Lưu
                     </Button>
@@ -187,10 +253,14 @@ const General = memo(
 
 General.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
   match: {},
+  loading: {},
+  details: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

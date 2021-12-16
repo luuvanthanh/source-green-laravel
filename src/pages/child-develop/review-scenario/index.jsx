@@ -239,7 +239,7 @@ class Index extends PureComponent {
         title: 'Độ tuổi',
         key: 'age',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.age}</Text>,
+        render: (record) => <Text size="normal">{record.age} Tháng</Text>,
       },
       {
         title: 'Áp dụng',

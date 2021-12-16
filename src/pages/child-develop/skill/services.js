@@ -20,7 +20,11 @@ export function updateOrderIndex(data = {}) {
 export function remove(id) {
   return request(`/v1/category-skills/${id}`, {
     method: 'DELETE',
-    parse: true,
+    params: {
+      id,
+      orderBy: 'NumericalSkill',
+    },
+    parse: true
   });
 }
 
