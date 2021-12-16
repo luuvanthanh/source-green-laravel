@@ -4,14 +4,15 @@ import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
+import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import FormItem from '@/components/CommonComponent/FormItem';
-import PropTypes from 'prop-types';
 import { variables, Helper } from '@/utils';
-import HelperModules from './utils/Helper';
+import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -28,11 +29,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicalStudentProblem, loading }) => ({
+const mapStateToProps = ({ medicalStudentProblem, loading, user }) => ({
+  loading,
   data: medicalStudentProblem.data,
   error: medicalStudentProblem.error,
+  classes: medicalStudentProblem.classes,
+  branches: medicalStudentProblem.branches,
   pagination: medicalStudentProblem.pagination,
-  loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -41,13 +45,17 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
-        key: query?.key,
+        KeyWord: query?.KeyWord,
+        branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        date: query.date ? moment(query.date) : moment(),
       },
     };
     setIsMounted(true);
@@ -55,6 +63,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -93,10 +102,31 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
+          date: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
     );
+  };
+
+  /**
+   * Function load branches
+   */
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    const { search } = this.state;
+    if (search.branchId) {
+      dispatch({
+        type: 'medicalStudentProblem/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    dispatch({
+      type: 'medicalStudentProblem/GET_BRACHES',
+      payload: {},
+    });
   };
 
   /**
@@ -128,6 +158,31 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    const { dispatch } = this.props;
+    this.debouncedSearch(e, type);
+    dispatch({
+      type: 'medicalStudentProblem/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
+  };
+
+  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -151,34 +206,15 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) =>
-    Helper.paginationLavarel({
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
       pagination,
+      query,
       callback: (response) => {
         this.changePagination(response);
-      },
-    });
-
-  /**
- * Function remove items
- * @param {uid} id id of items
- */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const self = this;
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'medicalStudentProblem/REMOVE',
-          payload: {
-            id,
-          },
-          callback: (response) => {
-            if (response) {
-              self.onLoad();
-            }
-          },
-        });
       },
     });
   };
@@ -193,16 +229,20 @@ class Index extends PureComponent {
         key: 'time',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record.time}</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+          </Text>
+        ),
       },
       {
         title: 'Học sinh',
-        key: 'name',
+        key: 'student.fullName',
         width: 200,
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record.file_image)}
-            fullName={record.name}
+            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+            fullName={record?.student?.fullName}
           />
         ),
       },
@@ -211,35 +251,35 @@ class Index extends PureComponent {
         key: 'basis',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.basis}</Text>,
+        render: (record) => <Text size="normal">{record?.student?.class?.branch}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.class}</Text>,
+        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
       },
       {
         title: 'Sự cố',
-        key: 'Trouble',
+        key: 'medicalProblem.name',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Trouble}</Text>,
+        render: (record) => <Text size="normal">{record?.medicalProblem?.name}</Text>,
       },
       {
         title: 'Vị trí vết thương',
-        key: 'Wound_location',
+        key: 'injuryPosition',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Wound_location}</Text>,
+        render: (record) => <Text size="normal">{record?.injuryPosition}</Text>,
       },
       {
         title: 'Triệu chứng',
-        key: 'Trouble',
+        key: 'symptom',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Trouble}</Text>,
+        render: (record) => <Text size="normal">{record?.symptom}</Text>,
       },
       {
         title: 'Hình ảnh',
@@ -247,57 +287,65 @@ class Index extends PureComponent {
         width: 100,
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record.file_image)}
+            fileImage={Helper.getPathAvatarJson(record?.fileImage)}
           />
         ),
       },
       {
         title: 'Trạng thái',
-        key: 'status',
+        key: 'handleStatus',
         className: 'min-width-150',
         width: 150,
-        render: (record) => HelperModules.tagStatus(record.status),
+        render: (record) => HelperModules.tagStatus(record?.handleStatus),
       },
       {
         title: 'Cách xử lý',
-        key: 'Trouble',
+        key: 'handleWay',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Trouble}</Text>,
+        render: (record) => <Text size="normal">{record?.handleWay}</Text>,
       },
       {
         title: 'Người xử lý',
-        key: 'Trouble',
+        key: 'handler',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Trouble}</Text>,
+        render: (record) => <Text size="normal">{record?.handler}</Text>,
       },
     ];
     return columns;
   };
 
+  handleCancel = () => this.setStateData({ visible: false });
+
   render() {
     const {
-      error,
       data,
-      match: { params },
+      error,
+      classes,
+      branches,
       pagination,
+      defaultBranch,
+      match: { params },
       loading: { effects },
     } = this.props;
-
-    const { search } = this.state;
+    const { search, defaultBranchs } = this.state;
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
       <>
         <Helmet title="Danh mục học sinh bị sự cố" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+          {/* FORM SEARCH */}
+          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh mục học sinh bị sự cố</Text>
           </div>
-          <div className={styles['block-table']}>
+          <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
+                branchId: search.branchId || null,
+                classId: search.classId || null,
+                date: search.date && moment(search.date),
               }}
               layout="vertical"
               ref={this.formRef}
@@ -305,48 +353,60 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
+                    name="KeyWord"
+                    onChange={(event) => this.onChange(event, 'KeyWord')}
+                    placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-2">
+                {!defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                <div className="col-lg-3">
                   <FormItem
-                    // data={[{  name: 'Tất cả cơ sở' }]}
-                    name="district"
-                    type={variables.SELECT}
-                    onChange={(event) => this.onChange(event, 'key')}
-                    allowClear={false}
-                    placeholder="Chọn cơ sở"
-                  />
-                </div>
-                <div className="col-lg-2">
-                  <FormItem
-                    // data={[{ name: 'Tất cả lớp học' }]}
-                    name="district"
-                    onChange={(event) => this.onChange(event, 'key')}
+                    data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn lớp học"
                   />
                 </div>
               </div>
             </Form>
             <Table
-              bordered={false}
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
-              pagination={this.pagination(pagination)}
               error={error}
               isError={error.isError}
+              childrenColumnName="noColumn"
+              bordered
+              pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
                 type: 'table',
               }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
+              rowKey={(record) => record.id || record?.class?.id}
+              scroll={{ x: '100%' }}
             />
           </div>
         </div>
@@ -362,7 +422,10 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -372,7 +435,10 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  branches: [],
   error: {},
+  classes: [],
+  defaultBranch: {},
 };
 
 export default Index;

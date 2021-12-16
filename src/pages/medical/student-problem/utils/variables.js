@@ -1,15 +1,10 @@
 export const variables = {
   STATUS: {
-    NO_VERIFYE: 'NO_VERIFYE',
-    APPLY: 'APPLY',
-    NOT_APPLY: 'NOT_APPLY',
-    VALID: 'VALID',
-    EXPIRE: 'EXPIRE',
+    DOES_NOT_SOLVE: 'DOES_NOT_SOLVE',
+    SOLVE: 'SOLVE',
   },
   STATUS_NAME: {
-    APPLY: 'Đã xử lý',
-    NOT_APPLY: 'Chưa xử lý',
+    DOES_NOT_SOLVE: 'Chưa xử lý',
+    SOLVE: 'Đã xử lý',
   },
 };
-
-export default variables;
