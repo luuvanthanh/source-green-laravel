@@ -57,7 +57,6 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         date: query.date ? moment(query.date) : moment(),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -150,23 +149,6 @@ class Index extends PureComponent {
   }, 300);
 
   /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearchStatus = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 200);
-
-  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -198,54 +180,6 @@ class Index extends PureComponent {
         branch: e,
       },
     });
-  };
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
-  };
-
-  /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelectStatus = (e, type) => {
-    this.debouncedSearchStatus(e, type);
-  };
-
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearchDateRank = debounce((from, to) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          from,
-          to,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 200);
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChangeDateRank = (e) => {
-    this.debouncedSearchDateRank(
-      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
-      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
-    );
   };
 
   /**
@@ -382,41 +316,7 @@ class Index extends PureComponent {
     return columns;
   };
 
-  headerMedical = () => {
-    const columns = [
-      {
-        title: 'SÁNG',
-        key: 'medicineTimeType',
-        render: (record) => <Text size="normal">{record?.medicineTimeType?.description}</Text>,
-      },
-      {
-        key: 'note',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => record.note,
-      },
-    ];
-    return columns;
-  };
-
   handleCancel = () => this.setStateData({ visible: false });
-
-  onReceived = () => {
-    const { objects } = this.state;
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'medicalStudentProblem/RECEIVED',
-      payload: {
-        id: objects.id,
-      },
-      callback: (response) => {
-        if (response) {
-          this.handleCancel();
-          this.onLoad();
-        }
-      },
-    });
-  };
 
   render() {
     const {
