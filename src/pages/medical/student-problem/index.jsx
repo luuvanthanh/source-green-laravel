@@ -193,7 +193,11 @@ class Index extends PureComponent {
         key: 'time',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record.time}</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+          </Text>
+        ),
       },
       {
         title: 'Học sinh',
@@ -202,7 +206,7 @@ class Index extends PureComponent {
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.file_image)}
-            fullName={record.name}
+            fullName={record?.medicalProblem?.name}
           />
         ),
       },
@@ -284,7 +288,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
     } = this.props;
-
+    console.log(data)
     const { search } = this.state;
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
