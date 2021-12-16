@@ -51,6 +51,7 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         branchId: query?.branchId,
         positionId: query?.positionId,
+        status: query?.status,
         typeOfContractId: query?.typeOfContractId,
         employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -396,6 +397,7 @@ class Index extends PureComponent {
                 typeOfContractId: search.typeOfContractId || null,
                 branchId: search.branchId || null,
                 positionId: search.positionId || null,
+                status: search.status || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -435,6 +437,15 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeSelect(event, 'employeeId')}
                     type={variables.SELECT_MUTILPLE}
                     placeholder="Chọn tất cả"
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả trạng thái' }, ...variables.STATUS_CONTRACT]}
+                    name="status"
+                    onChange={(event) => this.onChangeSelect(event, 'status')}
+                    type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
               </div>
