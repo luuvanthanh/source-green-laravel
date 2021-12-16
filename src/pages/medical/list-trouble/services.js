@@ -1,7 +1,7 @@
-import request from '@/utils/requestLavarel';
+import request from '@/utils/request';
 
 export function get(params = {}) {
-  return request('/v1/status-parent-leads', {
+  return request('/medical-problems', {
     method: 'GET',
     params: {
       ...params
@@ -10,7 +10,7 @@ export function get(params = {}) {
 }
 
 export function remove(id = {}) {
-  return request(`/v1/status-parent-leads/${id}`, {
+  return request(`/medical-problems/${id}`, {
     method: 'DELETE',
     parse: true,
   });
