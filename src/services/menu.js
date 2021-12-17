@@ -1861,7 +1861,14 @@ export async function getLeftMenuCRM() {
             {
               title: 'Kịch bản chào mừng',
               key: 'welcome-script',
-              url: ['/crm/chat/quan-ly-kich-ban-chatbot'],
+              url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-chao-mung',],
+              permission: [permissions.CRM],
+              pro: true,
+            },
+            {
+              title: 'Thiết lập từ khóa',
+              key: 'keyword-script',
+              url: ['/crm/chat/quan-ly-kich-ban-chatbot/thiet-lap-tu-khoa',],
               permission: [permissions.CRM],
               pro: true,
             },
