@@ -2569,8 +2569,14 @@ export default [
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/chat/quan-ly-kich-ban-chatbot',
+            path: '/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-chao-mung',
             component: './crm/messages/chatbot/welcome-script',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/chat/quan-ly-kich-ban-chatbot/thiet-lap-tu-khoa',
+            component: './crm/messages/chatbot/keyword-script',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
