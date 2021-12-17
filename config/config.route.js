@@ -2581,6 +2581,12 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-mac-dinh',
+            component: './crm/messages/chatbot/default-scenario',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/tiep-thi/quan-ly-chuong-trinh',
             component: './crm/marketing-manage',
             wrappers: ['@/wrappers/auth'],
