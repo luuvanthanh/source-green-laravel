@@ -238,8 +238,8 @@ class Index extends PureComponent {
         render: (record) => (
           <>
             {record?.parentInfo?.map((item, index) => (
-              <Text size="normal"  key={index}>
-                {get(item, 'full_name')}
+              <Text size="normal" key={index}>
+                {item.sex === "MALE" ? item.full_name : ""}
               </Text>
             ))}
           </>
@@ -249,7 +249,15 @@ class Index extends PureComponent {
         title: 'Họ tên mẹ',
         key: 'facility',
         width: 200,
-        render: (record) => record?.name_mon,
+        render: (record) => (
+          <>
+            {record?.parentInfo?.map((item, index) => (
+              <Text size="normal" key={index}>
+                {item.sex === "FEMALE" ? item.full_name : ""}
+              </Text>
+            ))}
+          </>
+        ),
       },
       {
         title: 'Tình trạng',

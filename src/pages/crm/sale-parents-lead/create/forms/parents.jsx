@@ -43,6 +43,7 @@ const General = memo(
       effects[`crmSaleLeadAdd/UPDATE`] ||
       effects[`crmSaleLeadAdd/UPDATE_STATUS`];
     const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
+
     useEffect(() => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_CITIES',
@@ -56,24 +57,32 @@ const General = memo(
         type: 'crmSaleLeadAdd/GET_BRANCHES',
         payload: {},
       });
-      dispatch({
-        type: 'crmSaleLeadAdd/GET_DISTRICTS',
-        payload: {}
-      });
     }, []);
 
-    useEffect(() => {
+  useEffect(() => {
       if (params.id) {
         dispatch({
-          type: 'crmSaleLeadAdd/GET_DISTRICTS',
-          payload: details
-        });
-        dispatch({
-          type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
-          payload: details
+          type: 'crmSaleLeadAdd/GET_DETAILS',
+          payload: params,
         });
       }
     }, [params.id]);
+
+
+    // useEffect(() => {
+    //   if (params.id) {
+    //     dispatch({
+    //       type: 'crmSaleLeadAdd/GET_DISTRICTS',
+    //       payload: details.city_id,
+    //     });
+    //   }
+    //   if (params.id) {
+    //     dispatch({
+    //       type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
+    //       payload: details
+    //     });
+    //   }
+    // }, [params.id]);
 
     const onChangeCity = (city_id) => {
       dispatch({
@@ -142,12 +151,7 @@ const General = memo(
         formRef.current.setFieldsValue({
           ...details,
           ...head(details.positionLevel),
-          startDate:
-            head(details.positionLevel)?.startDate &&
-            moment(head(details.positionLevel)?.startDate),
           birth_date: details.birth_date && moment(details.birth_date),
-          dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
-          dateOff: details.dateOff && moment(details.dateOff),
         });
         if (Helper.isJSON(details?.file_image)) {
           mountedSet(setFiles, JSON.parse(details?.file_image));

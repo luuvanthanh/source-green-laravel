@@ -63,7 +63,7 @@ export function getCities() {
   return request(`/v1/citys`, {
     method: 'GET',
     params: {
-      orderBy: 'name',
+      orderBy: 'numerical_city',
     },
   });
 }
