@@ -147,6 +147,10 @@ export const variables = {
     PATCH: 'Sửa thời khóa biểu',
     DELETE: 'Xóa thời khóa biểu',
   },
+  RADIO_CHILDREN: [
+    {value: "all", label: "Tất cả"},
+    {value: "option", label: "Tùy chọn"}
+  ]
 };
 
 export default variables;

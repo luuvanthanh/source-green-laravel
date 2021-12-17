@@ -319,7 +319,7 @@ const renderChildren = (
     />
   ),
   checkbox: (
-    <Checkbox.Group onChange={onChange}>
+    <Checkbox.Group onChange={onChange} disabled={disabled}>
       {data.map((item, index) => (
         <Checkbox key={item.value || index} value={item.value}>
           {item.label}
