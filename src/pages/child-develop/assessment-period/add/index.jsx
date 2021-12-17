@@ -113,7 +113,7 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && params.id) {
       this.formRef.current.setFieldsValue({
         ...details,
-        // branchId: details.branch.map((i) => i.id),
+         branchId: details.branch.map((i) => i.id),
         classesId: details.classes.map((i) => i.id),
         selectDate: details?.startDate &&
           details?.endDate && [
@@ -243,8 +243,7 @@ class Index extends PureComponent {
                         <FormItem
                           name="branchId"
                           data={branches}
-                          // mode="tags"
-                          type={variables.SELECT}
+                          type={variables.SELECT_MUTILPLE}
                           rules={[variables.RULES.EMPTY]}
                           label="Cơ sở áp dụng"
                         />
