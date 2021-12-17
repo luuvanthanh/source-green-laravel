@@ -1951,8 +1951,8 @@ export async function getLeftMenuCRM() {
       children: [
         {
           title: 'Cảnh báo',
-          key: '',
-          url: [],
+          key: 'alert',
+          url: ['/crm/cau-hinh/canh-bao'],
           permission: [permissions.CRM],
           pro: true,
         },

@@ -2682,6 +2682,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+          {
+            path: '/crm/cau-hinh/canh-bao',
+            component: './crm/alert',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
         ],
       },
       //WEBFORM
