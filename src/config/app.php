@@ -194,6 +194,7 @@ return [
         GGPHP\NumberOfTourist\Providers\NumberOfTouristServiceProvider::class,
         GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
         GGPHP\WordExporter\Providers\WordExporterServiceProvider::class,
+        GGPHP\Report\Providers\ReportServiceProvider::class,
     ],
 
     /*

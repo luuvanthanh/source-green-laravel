@@ -294,7 +294,6 @@ class EventController extends Controller
         return $result;
     }
 
-
     /**
      * Remove the specified resource from storage.
      *
@@ -310,5 +309,14 @@ class EventController extends Controller
         }
 
         return $result;
+    }
+
+    public function addObject($id)
+    {
+        $event = $this->eventRepository->update([
+            'is_add_object' => true
+        ], $id);
+
+        return $this->success($event, trans('lang::messages.common.modifySuccess'));
     }
 }

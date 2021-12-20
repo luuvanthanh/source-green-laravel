@@ -47,7 +47,7 @@ class Event extends UuidModel implements HasMedia
     protected $fillable = [
         'event_type_id', 'tourist_destination_id', 'camera_id', 'warning_level', 'status', 'is_follow',
         'time', 'tour_guide_id', 'classify', 'status_detail', 'is_read', 'track_id', 'percent_similarity',
-        'event_handle_muti_id'
+        'event_handle_muti_id', 'is_add_object'
     ];
 
     public function registerMediaCollections(): void
