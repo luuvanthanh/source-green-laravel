@@ -1,6 +1,6 @@
 import { memo, useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Collapse, InputNumber, Radio, Upload } from 'antd';
+import { Form, Collapse, InputNumber, Radio, Upload, Modal } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import { variables } from '@/utils';
 import Heading from '@/components/CommonComponent/Heading';
@@ -25,6 +25,7 @@ const { Panel } = Collapse;
 const Index = memo(() => {
     const [form] = Form.useForm();
     // const dispatch = useDispatch();
+    const [modal, setModal] = useState(false);
     // const params = useParams();
     const mounted = useRef(false);
     // const { error } = useSelector(({ menu, loading, crmChatbotWelcomeScript }) => ({
@@ -66,6 +67,19 @@ const Index = memo(() => {
         [switchType],
     );
 
+    //MODAL
+    const showModal = () => {
+        setModal(true);
+    };
+
+    const handleOk = () => {
+        setModal(false);
+    };
+
+    const handleCancel = () => {
+        setModal(false);
+    };
+
     return (
         <div className={stylesModule['wraper-container']}>
             <Helmet title="Kịch bản chào mừng" />
@@ -106,6 +120,53 @@ const Index = memo(() => {
                                             </Pane>
                                         </Pane>
                                     </div>
+                                </Pane>
+                                <Pane className="col-lg-12">
+                                    <Button
+                                        color="success"
+                                        className="mb20"
+                                        onClick={() => showModal()}
+                                    >
+                                       Xem trước
+                                    </Button>
+                                    <Modal
+                                        title='Xem trước'
+                                        className={stylesModule['modal-container']}
+                                        visible={modal}
+                                        onOk={handleOk}
+                                        onCancel={handleCancel}
+                                        width={416}
+                                        centered
+                                        footer=''
+                                    >
+                                        <Pane className={stylesModule['wraper-modal']}>
+                                                <Pane className={stylesModule['modal-header']}>
+                                                    <Pane className='d-flex'>
+                                                        <img className={stylesModule.img} src="/images/webForm.png" alt="bmi" />
+                                                        <h3 className={stylesModule.title}>Clover Montessori</h3>
+                                                    </Pane>
+                                                    <Pane className='d-flex'>
+                                                        <img className={stylesModule.threeDots} src="/images/threeDots.svg" alt="bmi" />
+                                                        <img className={stylesModule.brick} src="/images/brick.svg" alt="bmi" />
+                                                    </Pane>
+                                                </Pane>
+                                                <Pane className={stylesModule['modal-content']}>
+                                                    <p className={stylesModule.content}>Xin chào Quý phụ huynh, Cảm ơn Quý phụ huynh đã quan tâm tới trường học
+                                                        Clover Montessori của chúng tôi. Nếu Quý phụ huynh có câu hỏi thắc mắc cần hỗ trợ,
+                                                        vui lòng liên hệ theo số hotline: 0919 292 088 hoặc tổng đài: 1800 6663.
+                                                        Cần hỗ trợ trực tuyến vui lòng chọn thông tin bên dưới: </p>
+                                                    <Pane className={stylesModule['modal-footer']}>
+                                                        <Pane className={stylesModule.logo}>
+                                                            <img className={stylesModule.img} src="/images/webForm.png" alt="bmi" />
+                                                        </Pane>
+                                                        <Pane className={stylesModule.main}>
+                                                            <Pane className={stylesModule.btn}>Chương trình dạy</Pane>
+                                                            <Pane className={stylesModule.btn}>Chương trình dạy</Pane>
+                                                        </Pane>
+                                                    </Pane>
+                                                 </Pane>
+                                        </Pane>
+                                    </Modal>
                                 </Pane>
                                 <Pane className="col-lg-12">
                                     <Heading type="form-block-title" className="mb15 pt20 border-top">

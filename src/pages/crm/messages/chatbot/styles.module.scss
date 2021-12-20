@@ -191,3 +191,116 @@
   line-height: 20px;
   color: #35373a;
 }
+.modal-container {
+  :global(.ant-modal-content) {
+    border-radius: 6px !important;
+  }
+  :global(.ant-modal-header) {
+    border-radius: 6px 6px 0px 0px !important;
+  }
+  :global(.ant-modal-body) {
+    background-color: #f2f4f8;
+    border-radius: 0px 0px 6px 6px !important;
+  }
+  display: flex;
+  width: 100%;
+  .wraper-modal {
+    width: 368px;
+    border-radius: 16px;
+    background-color: #ffffff;
+    .modal-header {
+      display: flex;
+      width: 100%;
+      height: 60px;
+      border-radius: 16px 16px 0px 0px;
+      justify-content: space-between;
+      align-items: center;
+      line-height: 60px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+      .img {
+        width: 46px;
+        margin-left: 20px;
+        height: 25px;
+      }
+      .title {
+        font-family: $base__font-family;
+        font-style: normal;
+        font-weight: 600;
+        margin-left: 15px;
+        font-size: 14px;
+        line-height: 20px;
+        color: #000000;
+      }
+      .threeDots {
+        width: 32px;
+        height: 32px;
+      }
+      .brick {
+        margin-left: 5px;
+        margin-right: 15px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  .modal-content {
+    padding: 20px 30px 20px 10px;
+    .content {
+      width: 288px;
+      height: auto;
+      margin-left: 40px;
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: normal;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 22px;
+      color: #3e4247;
+      background: #eeeeee;
+      border-radius: 20px 20px 20px 6px;
+      padding: 10px 20px;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      .logo {
+        display: flex;
+        height: auto;
+        align-items: flex-end;
+        margin-bottom: 10px;
+        .img {
+          width: 25px;
+          height: 20px;
+          display: flex;
+          justify-content: end;
+        }
+      }
+      .main {
+        margin-top: 10px;
+        background-color: #f4f4f4;
+        border-radius: 6px 20px 20px 20px;
+        width: 288px;
+        height: auto;
+        padding: 15px 20px 10px 20px;
+        .btn {
+          font-family: $base__font-family;
+          width: 100%;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #cfcfcf;
+          border-radius: 6px;
+          font-style: normal;
+          font-weight: 600;
+          font-size: 14px;
+          line-height: 20px;
+          color: #000000;
+          text-align: center;
+          margin-bottom: 5px;
+        }
+      }
+    }
+  }
+}
