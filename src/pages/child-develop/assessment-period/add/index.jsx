@@ -14,8 +14,6 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 import stylesModule from '../styles.module.scss';
 
-
-
 let isMounted = true;
 /**
  * Set isMounted
@@ -113,7 +111,7 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && params.id) {
       this.formRef.current.setFieldsValue({
         ...details,
-        // branchId: details.branch.map((i) => i.id),
+        branchId: details.branch.map((i) => i.id),
         classesId: details.classes.map((i) => i.id),
         selectDate: details?.startDate &&
           details?.endDate && [
@@ -231,8 +229,8 @@ class Index extends PureComponent {
                       </Pane>
                       <Pane className="col-lg-6">
                         <div className={styles['form-item']}>
-                          <label htmlFor="userId" className={stylesModule['wrapper-lable']}>Thời gian đánh giá</label>
-                          <Form.Item name="selectDate" style={{ marginBottom: 0 }}>
+                          <label htmlFor="userId" className={stylesModule['wrapper-lable']} >Thời gian đánh giá</label>
+                          <Form.Item name="selectDate" style={{ marginBottom: 0 }} rules={[variables.RULES.EMPTY]}>
                             <DatePicker.RangePicker
                               format={[variables.DATE_FORMAT.DATE, variables.DATE_FORMAT.DATE]}
                             />
@@ -243,8 +241,7 @@ class Index extends PureComponent {
                         <FormItem
                           name="branchId"
                           data={branches}
-                          // mode="tags"
-                          type={variables.SELECT}
+                          type={variables.SELECT_MUTILPLE}
                           rules={[variables.RULES.EMPTY]}
                           label="Cơ sở áp dụng"
                         />

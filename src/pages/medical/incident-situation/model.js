@@ -1,89 +1,101 @@
-export default {
-  namespace: 'medicalIncidentSituation',
-  state: {
-    data: [
-      {
-        date: 'Lake View',
-        id: 1,
-        items: [
-          {
-            id: '1',
-            full_name: 'Nguyễn Văn A',
-            basis: 'Lake View',
-            class: 'Preschool 1',
-            file_image: '',
-            Trouble: 'Lake View',
-            Wound_location: 'Tay',
-            Symptom: 'Sưng đỏ',
-            status: 'APPLY',
-          },
-          {
-            id: '2',
-            full_name: 'Nguyễn Văn A',
-            basis: 'Lake View',
-            class: 'Preschool 1',
-            file_image: '',
-            Trouble: 'Lake View',
-            Wound_location: 'Tay',
-            Symptom: 'Sưng đỏ',
-            status: 'APPLY',
-          },
-          {
-            id: '3',
-            full_name: 'Nguyễn Văn A',
-            basis: 'Lake View',
-            class: 'Preschool 1',
-            file_image: '',
-            Trouble: 'Lake View',
-            Wound_location: 'Tay',
-            Symptom: 'Sưng đỏ',
-            status: 'APPLY',
-          },
-        ],
+import * as categories from '@/services/categories';
+  import * as services from './services';
+  
+  export default {
+    namespace: 'medicalIncidentSituation',
+    state: {
+      data: [],
+      pagination: {
+        total: 0,
       },
-      {
-        date: 'Cơ sở 2',
-        id: 2,
-        items: [
-          {
-            id: '2',
-            full_name: 'Nguyễn Văn A',
-            basis: 'Lake View',
-            class: 'Preschool 1',
-            file_image: '',
-            Trouble: 'Lake View',
-            Wound_location: 'Tay',
-            Symptom: 'Sưng đỏ',
-            status: 'APPLY',
-          },
-        ],
+      error: {
+        isError: false,
+        data: {},
       },
-    ],
-    error: {
-      isError: false,
-      data: {},
+      branches: [],
+      classes: [],
     },
-    pagination: {
-      total: 0,
+    reducers: {
+      INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+      SET_DATA: (state, { payload }) => ({
+        ...state,
+        data: payload.parsePayload,
+        pagination: payload.pagination,
+      }),
+      SET_ERROR: (state, { payload }) => ({
+        ...state,
+        error: {
+          isError: true,
+          data: {
+            ...payload,
+          },
+        },
+      }),
+      SET_BRACHES: (state, { payload }) => ({
+        ...state,
+        branches: payload.parsePayload,
+      }),
+      SET_CLASSES: (state, { payload }) => ({
+        ...state,
+        classes: payload.items,
+      }),
     },
-  },
-  reducers: {
-    INIT_STATE: (state) => ({ ...state }),
-  },
-  effects: {
-    // *GET_DATA({ payload }, saga) {
-    //   try {
-    //     const response = yield saga.call(services.get, payload);
-    //     yield saga.put({
-    //       type: 'SET_DATA',
-    //       payload: response.payload,
-    //     });
-    //   } catch (error) {
-    //     yield saga.put({
-    //       type: 'SET_ERROR',
-    //       payload: error.data,
-    //     });
-    //   }
-    // },
-  },
-};
+    effects: {
+      *GET_DATA({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.get, payload);
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: {
+              parsePayload: response,
+              pagination: {
+                total: response.totalCount,
+              },
+            },
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_BRACHES({ payload }, saga) {
+        try {
+          const response = yield saga.call(categories.getBranches, payload);
+          yield saga.put({
+            type: 'SET_BRACHES',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_CLASSES({ payload }, saga) {
+        try {
+          const response = yield saga.call(categories.getClasses, payload);
+          yield saga.put({
+            type: 'SET_CLASSES',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *RECEIVED({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.received, payload);
+          callback(payload);
+        } catch (error) {
+          callback(null, error);
+        }
+      },
+    },
+    subscriptions: {},
+  };
