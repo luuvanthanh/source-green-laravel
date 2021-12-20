@@ -276,7 +276,6 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         $events = $this->getEvent($attributes, false);
 
         $params = [];
-
         foreach ($events as $key => $event) {
             $params['[number]'][] = ++$key;
             $params['[event_type]'][] = !is_null($event->eventType) ?  $event->eventType->name : null;
@@ -322,40 +321,40 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
     public function getConstWarningLevel($value)
     {
-        $value = null;
+        $result = null;
         switch ($value) {
             case Event::WARNING_LEVEL['LOW']:
-                $value = "Thấp";
+                $result = "Thấp";
                 break;
             case Event::WARNING_LEVEL['MEDIUM']:
-                $value = "Trung bình";
+                $result = "Trung bình";
                 break;
             case Event::WARNING_LEVEL['HIGH']:
-                $value = "Cao";
+                $result = "Cao";
                 break;
             case Event::WARNING_LEVEL['EMERGENCY']:
-                $value = "Khẩn cấp";
+                $result = "Khẩn cấp";
                 break;
         }
 
-        return $value;
+        return $result;
     }
 
     public function getConstStatus($value)
     {
-        $value = null;
+        $result = null;
         switch ($value) {
             case Event::STATUS['PENDING']:
-                $value = "Chưa xử lý";
+                $result = "Chưa xử lý";
                 break;
             case Event::STATUS['DOING']:
-                $value = "Đang xử lý";
+                $result = "Đang xử lý";
                 break;
             case Event::STATUS['DONE']:
-                $value = "Đã xử lý";
+                $result = "Đã xử lý";
                 break;
         }
 
-        return $value;
+        return $result;
     }
 }

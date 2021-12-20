@@ -193,16 +193,16 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
 
     public function getSEX($value)
     {
-        $value = null;
+        $result = null;
         switch ($value) {
             case TourGuide::SEX['MALE']:
-                $value = "Nam";
+                $result = "Nam";
                 break;
             case TourGuide::SEX['FEMALE']:
-                $value = "Nữ";
+                $result = "Nữ";
                 break;
         }
 
-        return $value;
+        return $result;
     }
 }
