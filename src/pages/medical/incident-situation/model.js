@@ -47,7 +47,7 @@ import * as categories from '@/services/categories';
           yield saga.put({
             type: 'SET_DATA',
             payload: {
-              parsePayload: response.items,
+              parsePayload: response,
               pagination: {
                 total: response.totalCount,
               },
