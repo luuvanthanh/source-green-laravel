@@ -300,14 +300,14 @@ class Index extends PureComponent {
       },
       {
         title: 'Cách xử lý',
-        width: 140,
-        className: 'min-width-140',
+        width: 150,
+        className: 'min-width-150',
         render: (record) => <Text size="normal">{record?.handleWay}</Text>,
       },
       {
         title: 'Người xử lý',
-        width: 140,
-        className: 'min-width-140',
+        width: 150,
+        className: 'min-width-150',
         render: (record) => <Text size="normal">{record?.handler?.name}</Text>,
       },
     ];
