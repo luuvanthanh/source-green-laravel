@@ -13,6 +13,7 @@ use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
+use Webpatser\Uuid\Uuid;
 
 /**
  * Class EventRepositoryEloquent.
@@ -109,6 +110,10 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
         if (!empty($attributes['date'])) {
             $this->model = $this->model->whereDate('time', $attributes['date']);
+        }
+
+        if (!empty($attributes['event_handle_muti_id'])) {
+            $this->model = $this->model->where('event_handle_muti_id', $attributes['event_handle_muti_id']);
         }
 
         if (!$parse) {
@@ -213,32 +218,46 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
     {
         $event = $this->model()::findOrFail($id);
 
-        $attributes['is_follow'] = false;
-        if ($attributes['status_detail'] == $this->model()::STATUS_DETAIL['HANDLE_FOLLOW']) {
-            $attributes['is_follow'] = true;
-        }
+        \DB::beginTransaction();
+        try {
+            $attributes['is_follow'] = false;
+            if ($attributes['status_detail'] == $this->model()::STATUS_DETAIL['HANDLE_FOLLOW']) {
+                $attributes['is_follow'] = true;
+            }
 
-        $event->update([
-            "status" => $attributes['status'],
-            "status_detail" => $attributes['status_detail'],
-            "is_follow" => $attributes['is_follow']
-        ]);
+            $idHandle = Uuid::generate(4)->string;
 
-        $attributes['event_id'] = $id;
-        EventHandle::create($attributes);
-
-        foreach ($attributes['related_events'] as $relatedEventId) {
-            $relatedEvent = $this->model()::findOrFail($relatedEventId);
-
-            $relatedEvent->update([
+            $event->update([
                 "status" => $attributes['status'],
                 "status_detail" => $attributes['status_detail'],
-                "is_follow" => $attributes['is_follow']
+                "is_follow" => $attributes['is_follow'],
+                "event_handle_muti_id" => $idHandle
             ]);
 
-            $attributes['event_id'] = $relatedEventId;
+            $attributes['event_id'] = $id;
             EventHandle::create($attributes);
+
+            foreach ($attributes['related_events'] as $relatedEventId) {
+                $relatedEvent = $this->model()::findOrFail($relatedEventId);
+
+                $relatedEvent->update([
+                    "status" => $attributes['status'],
+                    "status_detail" => $attributes['status_detail'],
+                    "is_follow" => $attributes['is_follow'],
+                    "event_handle_muti_id" => $idHandle
+                ]);
+
+                $attributes['event_id'] = $relatedEventId;
+                EventHandle::create($attributes);
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \Log::error($th);
+            \DB::rollback();
         }
+
+
 
         return parent::find($id);
     }
