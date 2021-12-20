@@ -41,6 +41,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('export-excel-events', 'EventController@exportExcel');
 
             \Route::get('event-export-word/{id}', 'EventController@exportWord');
+
+            \Route::post('event-add-object/{id}', 'EventController@addObject');
         });
     }
 

@@ -67,7 +67,8 @@
             "GGPHP\\VideoWall\\": "packages/video-wall/src/",
             "GGPHP\\NumberOfTourist\\": "packages/number-of-tourist/src/",
             "GGPHP\\ExcelExporter\\": "packages/excel-exporter/src/",
-            "GGPHP\\WordExporter\\": "packages/word-exporter/src/"
+            "GGPHP\\WordExporter\\": "packages/word-exporter/src/",
+            "GGPHP\\Report\\": "packages/report/src/"
         },
         "classmap": [
             "database/seeds",
