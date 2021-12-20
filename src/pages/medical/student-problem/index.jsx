@@ -12,7 +12,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import HelperModules from '../utils/Helper';
+import HelperModules from './utils/Helper';
 
 let isMounted = true;
 /**
@@ -251,7 +251,7 @@ class Index extends PureComponent {
         key: 'basis',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.student?.class?.branch}</Text>,
+        render: (record) => <Text size="normal">{record?.student?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',
@@ -300,17 +300,15 @@ class Index extends PureComponent {
       },
       {
         title: 'Cách xử lý',
-        key: 'handleWay',
-        width: 150,
-        className: 'min-width-150',
+        width: 140,
+        className: 'min-width-140',
         render: (record) => <Text size="normal">{record?.handleWay}</Text>,
       },
       {
         title: 'Người xử lý',
-        key: 'handler',
-        width: 150,
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.handler}</Text>,
+        width: 140,
+        className: 'min-width-140',
+        render: (record) => <Text size="normal">{record?.handler?.name}</Text>,
       },
     ];
     return columns;
