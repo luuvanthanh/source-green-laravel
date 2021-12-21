@@ -2,6 +2,7 @@
 
 namespace GGPHP\WorkHour\Http\Requests;
 
+use Carbon\Carbon;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WorkHour\Models\WorkHour;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,7 +26,6 @@ class CreatWorkHourRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
             'employeeId' => 'required|exists:Employees,Id',
             'date' => 'required|after_or_equal:today',
@@ -41,8 +41,9 @@ class CreatWorkHourRequest extends FormRequest
                         if ($valueItem['out'] <= $valueItem['in']) {
                             return $fail('Thời gian kết thúc phải lớn hơn thời gian bắt đầu.');
                         }
+                        $check = Carbon::parse($date)->format('l');
 
-                        if (!empty($shifts)) {
+                        if (!empty($shifts) && $check !== 'Saturday' || $check !== 'Sunday') {
                             foreach ($shifts as $shift) {
                                 foreach ($shift as $item) {
 
