@@ -14,8 +14,14 @@ class Conversation extends UuidModel
         'SEEN' => 1
     ];
 
+    const STATUS_SEND_MESSAGE = [
+        'SEND' => 0,
+        'RECEIVED' => 1,
+        'READ' => 2
+    ];
+
     protected $fillable = [
-        'conversation_id_facebook', 'page_id', 'user_facebook_info_id', 'avatar', 'snippet', 'time', 'noti_inbox'
+        'conversation_id_facebook', 'page_id', 'user_facebook_info_id', 'avatar', 'snippet', 'time', 'noti_inbox', 'status_send_message'
     ];
 
     public function page()

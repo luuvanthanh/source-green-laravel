@@ -172,7 +172,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
             }
         }
 
-        return parent::all();
+        return parent::parserResult($conversation);
     }
 
     public function seenConversation($attributes)

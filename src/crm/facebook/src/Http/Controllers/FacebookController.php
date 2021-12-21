@@ -98,6 +98,15 @@ class FacebookController extends Controller
                         ];
                         $this->messageRepository->checkCutomerConversationMessage($attributes);
                     }
+                    if (!empty($messaging)) {
+                        $attributes = [
+                            'from' => $messaging['sender']['id'],
+                            'to' => $messaging['recipient']['id'],
+
+                        ];
+                        $statusSendMessage = $messaging;
+                        $this->messageRepository->statusSendMessage($attributes, $statusSendMessage);
+                    }
                 }
                 if (isset($entry['changes'])) {
                     $changes = $entry['changes'][0];
