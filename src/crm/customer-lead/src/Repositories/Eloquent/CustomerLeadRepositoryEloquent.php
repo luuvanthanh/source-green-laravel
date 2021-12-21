@@ -16,6 +16,7 @@ use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialTag;
 use GGPHP\Crm\CustomerPotential\Models\PotentialStudentInfo;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Class CustomerLeadRepositoryEloquent.
@@ -213,6 +214,11 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
     public function moveToCustomerPotential(array $attributes)
     {
         $customerLead = CustomerLead::where('id', $attributes['id'])->first();
+
+        if (!is_null($customerLead)) {
+            $this->updateStatusEmail($customerLead->id);
+        }
+
         $data = [
             'code' => $customerLead->code,
             'full_name' => $customerLead->full_name,
@@ -290,5 +296,24 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         }
 
         return parent::parserResult($customerLead);
+    }
+
+    public function updateStatusEmail($id)
+    {
+        $url_email = env('EMAIL_URL') . '/api/v1/subscribers/';
+        $bearerToken = env('TOKEN_EMAIL');
+        $response = Http::withToken("$bearerToken")->get("$url_email");
+        $email = $response->json();
+
+        foreach ($email['data'] as $value) {
+
+            if ($value['customer_lead_id'] == $id) {
+                $url = $url_email . $value['id'];
+
+                $response = Http::withToken("$bearerToken")->put("$url", ['customer_group' => '1']);
+            }
+        }
+
+        return true;
     }
 }
