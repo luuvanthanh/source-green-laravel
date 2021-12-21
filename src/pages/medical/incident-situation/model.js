@@ -88,14 +88,6 @@ import * as categories from '@/services/categories';
           });
         }
       },
-      *RECEIVED({ payload, callback }, saga) {
-        try {
-          yield saga.call(services.received, payload);
-          callback(payload);
-        } catch (error) {
-          callback(null, error);
-        }
-      },
     },
     subscriptions: {},
   };

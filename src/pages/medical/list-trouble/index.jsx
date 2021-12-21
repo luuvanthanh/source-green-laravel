@@ -30,6 +30,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ medicalListTrouble, loading }) => ({
   data: medicalListTrouble.data,
   error: medicalListTrouble.error,
+  pagination: medicalListTrouble.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -43,7 +44,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
+        KeyWord: query?.KeyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -149,13 +150,18 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) =>
-    Helper.paginationLavarel({
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
       pagination,
+      query,
       callback: (response) => {
         this.changePagination(response);
       },
     });
+  };
 
   /**
  * Function remove items
@@ -238,7 +244,6 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
     } = this.props;
-
     const { search } = this.state;
     const loading = effects['medicalListTrouble/GET_DATA'];
     return (
@@ -262,8 +267,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
+                    name="KeyWord"
+                    onChange={(event) => this.onChange(event, 'KeyWord')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />
