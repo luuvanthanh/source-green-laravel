@@ -1672,6 +1672,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.PB],
           },
+          {
+            path: '/phan-bo/dang-ky-hoc-ngoai-gio',
+            component: './allocation/register-school',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
+          {
+            path: '/phan-bo/dang-ky-hoc-ngoai-gio/:id/them-moi',
+            component: './allocation/register-school/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
+          {
+            path: '/phan-bo/dang-ky-hoc-ngoai-gio/:id/chi-tiet',
+            component: './allocation/register-school/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
         ],
       },
       // ALLOCATION
