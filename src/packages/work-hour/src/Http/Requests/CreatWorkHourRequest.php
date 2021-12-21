@@ -43,7 +43,7 @@ class CreatWorkHourRequest extends FormRequest
                         }
                         $check = Carbon::parse($date)->format('l');
 
-                        if (!empty($shifts) && $check !== 'Saturday' || $check !== 'Sunday') {
+                        if (!empty($shifts) && $check !== 'Saturday' && $check !== 'Sunday') {
                             foreach ($shifts as $shift) {
                                 foreach ($shift as $item) {
 
