@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
+use Carbon\Carbon;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\Category\Transformers\CategoryRelationshipTransformer;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
@@ -41,6 +42,10 @@ class StudentInfoTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+        $birthday = Carbon::parse($model->birth_date);
+        $today = Carbon::parse($now);
+        $numberOfMonth = $birthday->diffInMonths($today);
         $sex = null;
 
         foreach (StudentInfo::SEX as $key => $value) {
@@ -54,6 +59,7 @@ class StudentInfoTransformer extends BaseTransformer
 
         return [
             'sex' => $sex,
+            'age_month' => $numberOfMonth
         ];
     }
 
