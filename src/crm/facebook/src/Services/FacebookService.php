@@ -547,4 +547,32 @@ class FacebookService
 
         return json_decode($graphNode)->data;
     }
+
+    public static function getAvatarUser($attributes)
+    {
+        $fb = getFacebookSdk();
+        try {
+            $userId = $attributes['user_id'];
+            $response = $fb->get(
+                "/$userId/picture?height=320&width=320",
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+        $graphNode = $response->getHeaders();
+        return $graphNode['location'];
+    }
 }
