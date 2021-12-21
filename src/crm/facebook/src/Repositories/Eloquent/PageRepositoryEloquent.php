@@ -54,8 +54,41 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
         return PagePresenter::class;
     }
 
+    public function getPage()
+    {
+        if (!empty($attributes['limit'])) {
+            $page = $this->paginate($attributes['limit']);
+        } else {
+            $page = $this->get();
+        }
+
+        return $page;
+    }
+
     public function pageSendMessage($attributes)
     {
+        $paths = null;
+        if (!empty($attributes['urls'])) {
+            $paths = json_decode($attributes['urls']);
+        }
+        if (!empty($paths)) {
+            foreach ($paths as $path) {
+                $urls[] = env('IMAGE_URL') . $path;
+            }
+            $type = 'file';
+            foreach ($urls as $url) {
+                if (pathinfo($url, PATHINFO_EXTENSION) == "jpg" || pathinfo($url, PATHINFO_EXTENSION) == "png" || pathinfo($url, PATHINFO_EXTENSION) == "jpeg") {
+                    $type = 'image';
+                    break;
+                } elseif (pathinfo($url, PATHINFO_EXTENSION) == "mp4") {
+                    $type = 'video';
+                    break;
+                }
+            }
+            $attributes['urls'] = $urls;
+            $attributes['type'] = $type;
+        }
+
         $message = FacebookService::pageConversationSendMessage($attributes);
 
         return $message;

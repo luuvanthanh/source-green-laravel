@@ -22,6 +22,12 @@ class PageController extends Controller
         $this->pageRepository = $pageRepository;
     }
 
+    public function index(Request $request)
+    {
+        $page = $this->pageRepository->getPage($request->all());
+        return $this->success($page, trans('lang::messages.common.getListSuccess'));
+    }
+
     public function pageSendMessage(Request $request)
     {
         try {

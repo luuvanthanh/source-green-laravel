@@ -22,9 +22,9 @@ class MessageController extends Controller
         $this->messageRepository = $messageRepository;
     }
 
-    public function listMessage(Request $request)
+    public function index(Request $request)
     {
-        $conversation = $this->messageRepository->listMessage($request->all());
+        $conversation = $this->messageRepository->getMessage($request->all());
         return $this->success($conversation, trans('lang::messages.common.getListSuccess'));
     }
 }

@@ -76,11 +76,24 @@ class FacebookController extends Controller
                         $messageId = $messaging['message']['mid'];
                     }
 
+                    $attachment = null;
+                    if (isset($messaging['message']) && isset($messaging['message']['attachments'])) {
+                        $attachment = $messaging['message']['attachments'];
+                    }
+
                     if (isset($messaging['message']) && !is_null($text) && !is_null($messageId)) {
                         $attributes = [
                             'from' => $messaging['sender']['id'],
                             'to' => $messaging['recipient']['id'],
                             'content' => $text,
+                            'message_id_facebook' => $messageId
+                        ];
+                        $this->messageRepository->checkCutomerConversationMessage($attributes);
+                    } elseif (isset($messaging['message']) && !is_null($attachment) && !is_null($messageId)) {
+                        $attributes = [
+                            'from' => $messaging['sender']['id'],
+                            'to' => $messaging['recipient']['id'],
+                            'content' => $attachment[0]['payload']['url'],
                             'message_id_facebook' => $messageId
                         ];
                         $this->messageRepository->checkCutomerConversationMessage($attributes);
@@ -99,7 +112,7 @@ class FacebookController extends Controller
                     $this->articleRepository->postFacebookInfo($changes);
                 }
 
-                
+
                 break;
         }
 
