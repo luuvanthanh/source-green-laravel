@@ -135,9 +135,11 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $event = $this->model()::where('track_id', $attributes['track_id'])->first();
             if (!is_null($event) && !empty($attributes['video_path'])) {
                 $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
+
+                return parent::find($event->id);
             }
 
-            return parent::find($event->id);
+            return [];
         }
 
         $camera = Camera::find($attributes['camera_id']);
@@ -170,10 +172,10 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
         }
 
-        if (!empty($attributes['related_images'])) {
-            $event->clearMediaCollection('related_images');
-            $event->addMediaToEntity($event, $attributes['related_images'], 'related_images');
-        }
+        // if (!empty($attributes['related_images'])) {
+        //     $event->clearMediaCollection('related_images');
+        //     $event->addMediaToEntity($event, $attributes['related_images'], 'related_images');
+        // }
 
         return parent::find($event->id);
     }
