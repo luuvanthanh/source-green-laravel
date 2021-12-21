@@ -162,7 +162,6 @@ const General = memo(
                     name="full_name"
                     label="Họ và tên"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -170,7 +169,6 @@ const General = memo(
                     name="birth_date"
                     label="Ngày sinh"
                     type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
                     disabledDate={(current) => current > moment()}
                   />
                 </Pane>
@@ -182,7 +180,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Giới tính"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -190,7 +187,7 @@ const General = memo(
                     name="email"
                     label="Email"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
+                    rules={[variables.RULES.EMAIL]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -198,7 +195,7 @@ const General = memo(
                     name="phone"
                     label="Số điện thoại"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
+                    rules={[variables.RULES.PHONE]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -214,7 +211,6 @@ const General = memo(
                     name="address"
                     label="Địa chỉ"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -225,7 +221,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Thuộc tỉnh thành"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                     onChange={onChangeCity}
                   />
                 </Pane>
@@ -237,7 +232,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Thuộc quận huyện"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -284,7 +278,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Nguồn tiềm kiếm"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
               </Pane>

@@ -7,6 +7,7 @@ export default {
     city: [],
     district: [],
     tags: [],
+    branch: [],
     lead: [],
     searchSource: [],
     employees: [],
@@ -57,6 +58,10 @@ export default {
     SET_SEARCH: (state, { payload }) => ({
       ...state,
       searchSource: payload.parsePayload,
+    }),
+    SET_BRANCH: (state, { payload }) => ({
+      ...state,
+      branch: payload.parsePayload,
     }),
   },
   effects: {
@@ -160,6 +165,20 @@ export default {
         const response = yield saga.call(services.getSearch, payload);
         yield saga.put({
           type: 'SET_SEARCH',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCH({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBranch, payload);
+        yield saga.put({
+          type: 'SET_BRANCH',
           payload: response,
         });
       } catch (error) {

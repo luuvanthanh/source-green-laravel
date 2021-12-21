@@ -90,3 +90,12 @@ export function getSearch(params) {
     },
   });
 }
+
+export function getBranch() {
+  return request(`/v1/branches`, {
+    method: 'GET',
+    params: {
+      orderBy: 'name',
+    },
+  });
+}

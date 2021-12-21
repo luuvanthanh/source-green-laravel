@@ -82,7 +82,19 @@ const General = memo(
           payload: details
         });
       }
-    }, [params.id]);
+      if (details.town_ward_id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
+          payload: details
+        });
+      }
+      if (details.district_id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DISTRICTS',
+          payload: details,
+        });
+      }
+    }, [details.id]);
 
     const onChangeCity = (city_id) => {
       dispatch({
@@ -215,6 +227,7 @@ const General = memo(
                     name="email"
                     label="Email"
                     type={variables.INPUT}
+                    rules={[variables.RULES.EMAIL]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
