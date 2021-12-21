@@ -30,6 +30,9 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::get('report-general', 'ReportController@generalReport');
+            \Route::get('report-number-event-behavior', 'ReportController@numberEventReportBehavior');
+            \Route::get('report-number-event-object', 'ReportController@numberEventReportObject');
+            \Route::get('report-frequency-of-appearance', 'ReportController@frequencyOfAppearanceReport');
         });
     }
 }

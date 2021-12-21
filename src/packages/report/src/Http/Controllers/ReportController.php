@@ -25,4 +25,43 @@ class ReportController extends Controller
 
         return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function numberEventReportBehavior(Request $request)
+    {
+        $report = ReportService::numberEventReportBehavior($request->all());
+
+        return $this->success(['data' => array_values($report)], trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function numberEventReportObject(Request $request)
+    {
+        $report = ReportService::numberEventReportObject($request->all());
+
+        return $this->success(['data' => array_values($report)], trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function frequencyOfAppearanceReport(Request $request)
+    {
+        $report = ReportService::frequencyOfAppearanceReport($request->all());
+
+        return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
+    }
 }
