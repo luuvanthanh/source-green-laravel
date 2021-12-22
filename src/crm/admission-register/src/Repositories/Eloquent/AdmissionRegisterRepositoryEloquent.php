@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
 use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
+use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
 use GGPHP\Crm\AdmissionRegister\Presenters\AdmissionRegisterPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\AdmissionRegisterRepository;
 use GGPHP\Crm\AdmissionRegister\Services\ParentInfoService;
@@ -97,6 +98,16 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         $customerLead = CustomerLead::where('id', $attributes['customer_lead_id'])->first();
         ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
 
+        if (!empty($attributes['parent_info'])) {
+            $data = [
+                'full_name' => $attributes['parent_info']['name'],
+                'email' => $attributes['parent_info']['email'],
+                'phone' => $attributes['parent_info']['phone'],
+                'admission_register_id' => $admissionRegister->id
+            ];
+
+            ParentInfo::create($data);
+        }
         return $this->parserResult($admissionRegister);
     }
 }
