@@ -17,7 +17,9 @@ export default {
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.items,
-      pagination: payload.pagination,
+      pagination: {
+        total: payload.totalCount,
+      },
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,

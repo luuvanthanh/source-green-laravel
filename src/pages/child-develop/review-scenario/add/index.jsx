@@ -4,7 +4,7 @@ import { Form, Collapse } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
 import { useSelector, useDispatch } from 'dva';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 import { useParams, history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
 import classnames from 'classnames';
@@ -82,6 +82,25 @@ const Index = memo(() => {
           }
         },
       });
+    });
+  };
+
+  const onRemove = (id) => {
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'childDevelopReviewScenarioAdd/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              history.goBack();
+      
+            }
+          },
+        });
+      },
     });
   };
 
@@ -335,7 +354,7 @@ const Index = memo(() => {
                             add();
                           }}
                         >
-                          Thêm thông tin
+                          Thêm tiêu chí
                         </Button>
                       </Pane>
                     </>
@@ -344,6 +363,25 @@ const Index = memo(() => {
               </Pane>
             </Pane>
             <Pane className="d-flex justify-content-between align-items-center mb20">
+              {params.id ? (
+                <p
+                  className="btn-delete"
+                  role="presentation"
+
+                  onClick={() => onRemove(params.id)}
+                >
+                  Xóa
+                </p>
+              ) : (
+                <p
+                  className="btn-delete"
+                  role="presentation"
+
+                  onClick={() => history.goBack()}
+                >
+                  Hủy
+                </p>
+              )}
               <Button
                 className="ml-auto px25"
                 color="success"
