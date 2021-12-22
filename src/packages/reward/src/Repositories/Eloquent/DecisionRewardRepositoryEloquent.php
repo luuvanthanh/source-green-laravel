@@ -344,6 +344,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
             'money' => $detail->Money ? number_format($detail->Money) : '........',
             'moneyWord' => $detail->Money ? $this->translateToWords($detail->Money) : '........',
             'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'type' => $decisionReward->Type
         ];
 
         return $this->wordExporterServices->exportWord('decision_reward', $params);
