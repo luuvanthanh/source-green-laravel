@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 
 use GGPHP\Crm\Facebook\Events\FacebookMessageReceive;
+use GGPHP\Crm\Facebook\Events\FacebookStatusSendMessage;
 use GGPHP\Crm\Facebook\Events\FacebookSynchronizeConversation;
 use GGPHP\Crm\Facebook\Models\Conversation;
 use GGPHP\Crm\Facebook\Models\Message;
@@ -124,6 +125,12 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
         $message = Message::create($dataMessage);
 
+        \Log::info("khach hang cu");
+        broadcast(new FacebookMessageReceive([
+            'from' => $message->from,
+            'to' => $message->to,
+            'content' => $message->content,
+        ]));
         $created_at = $message->created_at;
         $dataConversation = [
             'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
@@ -131,12 +138,6 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         ];
 
         $conversation->update($dataConversation);
-        \Log::info("khach hang cu");
-        broadcast(new FacebookMessageReceive([
-            'from' => $message->from,
-            'to' => $message->to,
-            'content' => $message->content,
-        ]));
     }
 
     public function storeConversationMessageNew($attributes)
@@ -182,7 +183,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
         \Log::info("khach hang moi");
         broadcast(new FacebookSynchronizeConversation([
-            'synchronizeConversation' => 'SynchronizeConversation'
+            'synchronize_conversation' => 'synchronizeConversation'
         ]));
 
         broadcast(new FacebookMessageReceive([
@@ -197,5 +198,43 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         $conversation = Conversation::find($conversation_id);
         $conversation->update(['noti_inbox' => Conversation::NOTI_INBOX['SEEN']]);
         return;
+    }
+
+    public function statusSendMessage($attributes, $statusSendMessage)
+    {
+        \Log::info($attributes);
+        $page = Page::where('page_id_facebook', $attributes['from'])->first();
+        \Log::info($page);
+        if (!is_null($page)) {
+            $pageId = $page->id;
+            $userFacebookInfo = UserFacebookInfo::where('user_id', $attributes['to'])->first();
+            $userFacebookInfoId = $userFacebookInfo->id;
+        } else {
+            $userFacebookInfo = UserFacebookInfo::where('user_id', $attributes['from'])->first();
+            $userFacebookInfoId = $userFacebookInfo->id;
+            $page = Page::where('page_id_facebook', $attributes['to'])->first();
+            $pageId = $page->id;
+        }
+        $conversation = Conversation::where('page_id', $pageId)->where('user_facebook_info_id', $userFacebookInfoId)->first();
+
+        if (isset($statusSendMessage['delivery'])) {
+            broadcast(new FacebookStatusSendMessage([
+                'status_send_message' => 'received',
+                'conversation_id' => $conversation->id
+            ]));
+            $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['RECEIVED']]);
+        } elseif (isset($statusSendMessage['read'])) {
+            broadcast(new FacebookStatusSendMessage([
+                'status_send_message' => 'read',
+                'conversation_id' => $conversation->id
+            ]));
+            $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['READ']]);
+        } else {
+            broadcast(new FacebookStatusSendMessage([
+                'status_send_message' => 'send',
+                'conversation_id' => $conversation->id
+            ]));
+            $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['SEND']]);
+        }
     }
 }
