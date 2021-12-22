@@ -348,14 +348,14 @@ class Index extends PureComponent {
         title: 'Tháng tuổi',
         key: 'age',
         width: 100,
-        render: (record) => (
-          <>
-            {record?.studentInfo?.map((item, index) => (
-              <Text size="normal" key={index}>
-                {item.month_age}
-              </Text>
-            ))}
-          </>
+        render: (value, record) => (
+          <div className='d-flex' >
+            {record.studentInfo.map((item, index) =>
+              <div size="normal" key={index} className='d-flex'>
+                {item.age_month}{index + 1 === record.studentInfo.length ? "" : ",  "}
+              </div>
+            )}
+          </div>
         ),
       },
       {
