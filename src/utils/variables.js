@@ -101,6 +101,7 @@ export const variables = {
     MONTH_NAME: '[Tháng] MM',
     MONTH_YEAR: 'MM/YYYY',
     YEAR_MONTH_DAY: 'YYYY/MM/DD',
+    ONLY_DATE: 'D'
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
