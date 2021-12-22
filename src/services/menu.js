@@ -709,6 +709,18 @@ export async function getLeftMenuAllocation() {
       permission: [permissions.PB],
       pro: true,
     },
+    {
+      title: 'Đăng ký học ngoài giờ',
+      key: 'register-school',
+      url: [
+        '/phan-bo/dang-ky-hoc-ngoai-gio',
+        '/phan-bo/dang-ky-hoc-ngoai-gio/:id/them-moi',
+        '/phan-bo/dang-ky-hoc-ngoai-gio/:id/chi-tiet',
+    ],
+      icon: 'icon icon-clock',
+      permission: [permissions.PB],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuMedical() {
