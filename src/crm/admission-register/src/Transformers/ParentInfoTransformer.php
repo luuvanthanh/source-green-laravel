@@ -46,9 +46,10 @@ class ParentInfoTransformer extends BaseTransformer
         $sex = null;
 
         foreach (ParentInfo::SEX as $key => $value) {
-
-            if ($value == $model->sex) {
-                $sex = $key;
+            if (!is_null($model->sex)) {
+                if ($value == $model->sex) {
+                    $sex = $key;
+                }
             }
         }
 
