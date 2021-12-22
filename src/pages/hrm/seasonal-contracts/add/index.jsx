@@ -35,7 +35,7 @@ function Index() {
 
   const [parameterValues, setParameterValues] = useState([]);
   const [show, setShow] = useState(false);
-  const [textError, setTextError] = useState();
+  const [isValid, setIsValid] = useState(false);
 
   const loadCategories = () => {
     dispatch({
@@ -79,7 +79,7 @@ function Index() {
       });
       const {month, date} = details;
       if(month * 30 + date > 365){
-        setTextError("error");
+        setIsValid(true);
       }
       setparameterValues(
         details.parameterValues.map((item) => ({
@@ -102,6 +102,7 @@ function Index() {
     }
 
     if ((month || 0) * 30 + (date || 0) > 365) {
+      setIsValid(false);
       formRef.setFields([
         {
           name: 'month',
@@ -123,7 +124,7 @@ function Index() {
           errors: [],
         },
       ]);
-      setTextError('');
+      setIsValid(true);
     }
   };
 
@@ -204,7 +205,7 @@ function Index() {
       })),
       nameProject: values.project ? values.nameProject : null,
     };
-    if (isEmpty(textError)) {
+    if (isValid) {
       dispatch({
         type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
         payload,
