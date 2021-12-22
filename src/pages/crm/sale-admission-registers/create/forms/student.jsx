@@ -148,7 +148,7 @@ const General = memo(
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  value={get(details, 'studentInfo.month_age')}
+                  value={get(details, 'studentInfo.age_month')}
                   label="Tuổi (tháng)"
                   type={variables.INPUT}
                   disabled

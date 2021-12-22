@@ -166,3 +166,9 @@ export function getSearch(params) {
     },
   });
 }
+
+export function getRelationships() {
+  return request(`/v1/category-relationships`, {
+    method: 'GET',
+  });
+}

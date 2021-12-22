@@ -23,6 +23,7 @@ export default {
     student: [],
     lead: [],
     parentLead: [],
+    relationships: [],
     admission: [
       {
         full_name: " Cong Thanh",
@@ -95,6 +96,10 @@ export default {
     SET_SEARCH: (state, { payload }) => ({
       ...state,
       search: payload.parsePayload,
+    }),
+    SET_RELATIONSHIPS: (state, { payload }) => ({
+      ...state,
+      relationships: payload.parsePayload,
     }),
   },
   effects: {
@@ -238,6 +243,20 @@ export default {
         const response = yield saga.call(services.getSearch, payload);
         yield saga.put({
           type: 'SET_SEARCH',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_RELATIONSHIPS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRelationships, payload);
+        yield saga.put({
+          type: 'SET_RELATIONSHIPS',
           payload: response,
         });
       } catch (error) {

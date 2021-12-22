@@ -162,14 +162,17 @@ const General = memo(
                                   label="Ngày sinh"
                                   fieldKey={[field.fieldKey, 'birth_date']}
                                   type={variables.DATE_PICKER}
+                                  disabled
                                 />
                               </Pane>
                               <Pane className="col-lg-6">
                                 <FormItem
-                                  name={[field.name, 'month_age']}
-                                  label="Tuổi (tháng)"
-                                  fieldKey={[field.fieldKey, 'month_age']}
+                                  name={[field.name, 'age_month']}
+                                  label="Tuổi hiện tại (tháng)"
+                                  placeholder="Tháng"
+                                  fieldKey={[field.fieldKey, 'age_month']}
                                   type={variables.INPUT}
+                                  disabled
                                 />
                               </Pane>
                             </Pane>
@@ -178,9 +181,6 @@ const General = memo(
                       </>
                     )}
                   </Form.List>
-                </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem name="month_age" label="Tuổi hiện tại (tháng)" type={variables.INPUT} />
                 </Pane>
                 <Pane className="col-lg-4">
                   <FormItem
@@ -208,7 +208,10 @@ const General = memo(
                 </Pane>
               </Pane>
             </Pane>
-            <Pane className="d-flex pr-0" style={{ marginLeft: 'auto', padding: 20 }}>
+            <Pane className="pt20 d-flex justify-content-between align-items-center ">
+            <p className="btn-delete" role="presentation" onClick={() => history.push('/crm/sale/dang-ky-nhap-hoc')}>
+                Hủy
+              </p>
               <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
                 Lưu
               </Button>
@@ -230,7 +233,7 @@ General.propTypes = {
 
 General.defaultProps = {
   match: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   customerLead: [],
