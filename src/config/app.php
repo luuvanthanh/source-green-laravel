@@ -222,7 +222,8 @@ return [
         GGPHP\Zalo\Providers\ZaloServiceProvider::class,
         GGPHP\WorkOnline\Providers\WorkOnlineServiceProvider::class,
         GGPHP\ChildDevelop\Category\Providers\CategoryServiceProvider::class,
-        GGPHP\ChildDevelop\ChildEvaluate\Providers\ChildEvaluateServiceProvider::class
+        GGPHP\ChildDevelop\ChildEvaluate\Providers\ChildEvaluateServiceProvider::class,
+        Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
     ],
 
     /*
