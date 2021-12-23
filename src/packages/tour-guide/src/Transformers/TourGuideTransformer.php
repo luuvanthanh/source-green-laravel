@@ -36,8 +36,8 @@ class TourGuideTransformer extends BaseTransformer
 
         if (!is_null($media)) {
             $avatar = [
-                "path" => $media->getPath(),
-                "name" => $media->name,
+                'path' => $media->getPath(),
+                'name' => $media->name,
             ];
         }
 
@@ -60,10 +60,11 @@ class TourGuideTransformer extends BaseTransformer
         }
 
         return [
-            "avatar" => $avatar,
-            "type" => $type,
-            "sex" => $sex,
-            "event_count" => $model->event_count
+            'avatar' => $avatar,
+            'avatar_url' => !is_null($avatar) ? $avatar['path'] : $avatar,
+            'type' => $type,
+            'sex' => $sex,
+            'event_count' => $model->event_count
         ];
     }
 
