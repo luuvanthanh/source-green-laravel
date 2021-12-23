@@ -50,6 +50,10 @@ class Event extends UuidModel implements HasMedia
         'event_handle_muti_id', 'is_add_object'
     ];
 
+    protected $dateTimeFields = [
+        'datetime'  =>  'time',
+    ];
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('image')->singleFile();

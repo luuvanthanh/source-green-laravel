@@ -96,6 +96,39 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             });
         }
 
+        if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
+
+            if (!empty($attributes['report_type'])) {
+                switch ($attributes['report_type']) {
+                    case 'MONTH':
+                        $attributes['start_time'] = Carbon::parse($attributes['start_time'])->startOfMonth();
+                        $attributes['end_time'] = Carbon::parse($attributes['end_time'])->endOfMonth();
+                        break;
+                    case 'YEAR':
+                        $attributes['start_time'] = Carbon::parse($attributes['start_time'])->startOfYear();
+                        $attributes['end_time'] = Carbon::parse($attributes['end_time'])->endOfYear();
+                        break;
+                    default:
+                        $attributes['start_time'] = Carbon::parse($attributes['start_time']);
+                        $attributes['end_time'] = Carbon::parse($attributes['end_time']);
+                        break;
+                }
+            }
+
+            $this->model = $this->model->whereHas('event', function ($query) use ($attributes) {
+                $query->whereDate('time', '>=', $attributes['start_time'])->whereDate('time', '<=', $attributes['end_time']);
+            })->with(['event' => function ($query) use ($attributes) {
+                $query->whereDate('time', '>=', $attributes['start_time'])->whereDate('time', '<=', $attributes['end_time']);
+            }]);
+        }
+
+        if (!empty($attributes['count_event']) && $attributes['count_event'] == 'true') {
+            $this->model = $this->model->withCount('event');
+            if (!empty($attributes['number_count_event']) && !empty($attributes['condition_count_event'])) {
+                $this->model = $this->model->has('event', $attributes['condition_count_event'], $attributes['number_count_event']);
+            }
+        }
+
         if (!$parse) {
             return $this->model->get();
         }

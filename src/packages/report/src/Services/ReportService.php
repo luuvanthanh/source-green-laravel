@@ -25,7 +25,7 @@ class ReportService
 
                 //event behavior
                 $attributes['event_code'] = "RAC,BHR";
-                $eventBehavior = self::reportNumberEventBehavior($attributes, $periodDate, 'Y-m-d');
+                $eventBehavior = self::reportNumberEventBehaviorByTouristDestination($attributes, $periodDate, 'Y-m-d');
 
                 //event object
                 $attributes['event_code'] = "HDVHP,HDVBHP";
@@ -43,7 +43,7 @@ class ReportService
 
                 //event behavior
                 $attributes['event_code'] = "RAC,BHR";
-                $eventBehavior = self::reportNumberEventBehavior($attributes, $periodDate, 'Y-m-d');
+                $eventBehavior = self::reportNumberEventBehaviorByTouristDestination($attributes, $periodDate, 'Y-m-d');
 
                 //event object
                 $attributes['event_code'] = "HDVHP,HDVBHP";
@@ -232,6 +232,82 @@ class ReportService
                 "event_code" => $item->code,
                 "total" => $total,
                 "data_by_time" => $dataByTime
+            ];
+        }
+
+
+        return $data;
+    }
+
+    public static function reportNumberEventBehaviorByTouristDestination($attributes, $periodDate, $formatTime = 'Y-m-d')
+    {
+        $data = [];
+
+        $eventTypes = EventType::query();
+
+        if (!empty($attributes['event_code'])) {
+            $eventTypes->whereIn('code', explode(",", $attributes['event_code']));
+        }
+
+        $eventTypes = $eventTypes->get();
+
+        foreach ($eventTypes as $key => $item) {
+            $touristDestination =  TouristDestination::query();
+
+            if (!empty($attributes['tourist_destination_id'])) {
+                $touristDestination->whereIn('id', explode(",", $attributes['tourist_destination_id']));
+            }
+
+            $total = 0;
+            $touristDestinations = $touristDestination->get();
+
+            $dataBytouristDestination = [];
+
+            foreach ($touristDestinations as $key => $value) {
+                $events = 0;
+
+                switch ($attributes['report_type']) {
+                    case 'DATE':
+                        $events = Event::where('tourist_destination_id', $value->id)
+                            ->where('event_type_id', $item->id)
+                            ->where('time', '>=', $attributes['start_time'])
+                            ->where('time', '<=', $attributes['end_time'])->count();
+                        break;
+                    case 'MONTH':
+                        $startTime = Carbon::parse($attributes['start_time'])->startOfMonth();
+                        $endTime = Carbon::parse($attributes['end_time'])->endOfMonth();
+
+                        $events = Event::where('tourist_destination_id', $value->id)
+                            ->where('event_type_id', $item->id)
+                            ->where('time', '>=', $startTime)
+                            ->where('time', '<=', $endTime)->count();
+                        break;
+                    case 'YEAR':
+                        $startTime = Carbon::parse($attributes['start_time'])->startOfYear();
+                        $endTime = Carbon::parse($attributes['end_time'])->endOfYear();
+                        $events = Event::where('tourist_destination_id', $value->id)
+                            ->where('event_type_id', $item->id)
+                            ->where('time', '>=', $startTime)
+                            ->where('time', '<=', $endTime)->count();
+                        break;
+                }
+
+                if ($events == 0) {
+                    continue;
+                }
+
+                $total += $events;
+                $dataBytouristDestination[] = [
+                    'name' => $value->name,
+                    'number' => $events
+                ];
+            }
+
+            $data[] = [
+                "event_name" => $item->name,
+                "event_code" => $item->code,
+                "total" => $total,
+                "data_by_tourist_destination" => $dataBytouristDestination
             ];
         }
 

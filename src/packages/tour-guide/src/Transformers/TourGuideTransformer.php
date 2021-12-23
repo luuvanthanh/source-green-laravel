@@ -62,7 +62,8 @@ class TourGuideTransformer extends BaseTransformer
         return [
             "avatar" => $avatar,
             "type" => $type,
-            "sex" => $sex
+            "sex" => $sex,
+            "event_count" => $model->event_count
         ];
     }
 

@@ -73,8 +73,8 @@ trait CastDatetimeFormatTrait
         ];
 
         return $this->usesTimestamps()
-        ? array_unique(array_merge($this->dateTimeFields, $defaults))
-        : $this->dateTimeFields;
+            ? array_unique(array_merge($this->dateTimeFields, $defaults))
+            : $this->dateTimeFields;
     }
 
     /**
