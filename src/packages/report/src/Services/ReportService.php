@@ -192,7 +192,7 @@ class ReportService
                         case 'MONTH':
                             $events = Event::where('tourist_destination_id', $value->id)
                                 ->where('event_type_id', $item->id)
-                                - whereMonth('time', $date->format('m'))
+                                ->whereMonth('time', $date->format('m'))
                                 ->whereYear('time', $date->format('Y'))->count();
                             break;
                         case 'YEAR':
@@ -280,7 +280,7 @@ class ReportService
                             $events = TourGuide::whereHas('event', function ($query) use ($value, $item, $date) {
                                 $query->where('tourist_destination_id', $value->id)
                                     ->where('event_type_id', $item->id)
-                                    - whereMonth('time', $date->format('m'))
+                                    ->whereMonth('time', $date->format('m'))
                                     ->whereYear('time', $date->format('Y'));
                             })->count();
 
