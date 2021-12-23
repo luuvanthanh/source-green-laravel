@@ -115,6 +115,11 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
             });
         }
 
+        if (!empty($attributes['conversation_id'])) {
+            $conversationId = explode(',', $attributes['conversation_id']);
+            $this->model = $this->model->whereIn('id', $conversationId);
+        }
+
         if (!empty($attributes['limit'])) {
             $conversation = $this->paginate($attributes['limit']);
         } else {
