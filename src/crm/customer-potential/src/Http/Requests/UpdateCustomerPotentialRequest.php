@@ -23,12 +23,6 @@ class UpdateCustomerPotentialRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'full_name' => 'string',
-            'birth_date' => 'date_format:Y-m-d',
-            'email' => 'email',
-            'city_id' => 'exists:citys,id',
-            'district_id' => 'exists:districts,id'
-        ];
+        return [];
     }
 }

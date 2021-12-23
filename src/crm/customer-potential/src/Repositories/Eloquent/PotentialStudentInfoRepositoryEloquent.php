@@ -69,7 +69,6 @@ class PotentialStudentInfoRepositoryEloquent extends BaseRepository implements P
     {
         if (!empty($attributes['createRows'])) {
             foreach ($attributes['createRows'] as $value) {
-                $value['relationship'] = PotentialStudentInfo::RELATIONSHIP[$value['relationship']];
                 $value['sex'] = PotentialStudentInfo::SEX[$value['sex']];
                 PotentialStudentInfo::create($value);
             }
@@ -78,7 +77,6 @@ class PotentialStudentInfoRepositoryEloquent extends BaseRepository implements P
         if (!empty($attributes['updateRows'])) {
             foreach ($attributes['updateRows'] as $value) {
                 $updateStudentInfo = PotentialStudentInfo::find($value['id']);
-                $value['relationship'] = PotentialStudentInfo::RELATIONSHIP[$value['relationship']];
                 $value['sex'] = PotentialStudentInfo::SEX[$value['sex']];
                 $updateStudentInfo->update($value);
             }

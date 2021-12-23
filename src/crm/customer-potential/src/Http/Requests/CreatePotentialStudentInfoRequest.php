@@ -30,12 +30,11 @@ class CreatePotentialStudentInfoRequest extends FormRequest
             'createRows.*.full_name' => 'required|string',
             'createRows.*.birth_date' => 'date_format:Y-m-d',
             'createRows.*.sex' => 'string',
-            'createRows.*.month_age' => 'numeric',
+            'createRows.*.category_relationship_id' => 'required|exists:category_relationships,id',
             'createRows.*.customer_potential_id' => 'required|exists:customer_potentials,id',
             'updateRows.*.full_name' => 'string',
             'updateRows.*.birth_date' => 'date_format:Y-m-d',
             'updateRows.*.sex' => 'string',
-            'updateRows.*.month_age' => 'numeric',
             'updateRows.*.customer_potential_id' => 'exists:customer_potentials,id',
 
         ];

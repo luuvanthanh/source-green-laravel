@@ -12,11 +12,6 @@ class StudentInfo extends UuidModel
 
     protected $table = 'student_infos';
 
-    const RELATIONSHIP = [
-        'MOTHER' => 0,
-        'FATHER' => 1,
-    ];
-
     const SEX = [
         'FEMALE' => 0,
         'MALE' => 1,
@@ -24,8 +19,8 @@ class StudentInfo extends UuidModel
     ];
 
     protected $fillable = [
-        'full_name', 'birth_date', 'sex', 'month_age',
-        'customer_lead_id', 'file_image', 'relationship', 'category_relationship_id'
+        'full_name', 'birth_date', 'sex',
+        'customer_lead_id', 'file_image', 'category_relationship_id'
     ];
 
     public function customerLead()
