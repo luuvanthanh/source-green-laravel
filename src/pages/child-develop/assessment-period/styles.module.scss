@@ -3,5 +3,17 @@
 .wrapper-lable {
   height: 22px;
   margin-bottom: 8px;
-  font-size: 12px;
+  font-size: 14px !important;
+  font-weight: 500;
+  color: #36383A;
+  position: relative;
+  &::after {
+    color: $danger;
+    content: "*";
+    font-size: 13px;
+    line-height: 1;
+    position: absolute;
+    right: -10px;
+    top: 2px;
+  }
 }

@@ -206,3 +206,9 @@
   text-transform: uppercase;
   color: #35373a;
 }
+
+.wrapper-tag {
+  :global(.ant-tag ){
+    margin: 5px !important;
+  }
+}

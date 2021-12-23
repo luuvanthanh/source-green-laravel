@@ -318,7 +318,6 @@ class Index extends PureComponent {
         title: 'STT ',
         key: 'index',
         width: 80,
-        fixed: 'left',
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
@@ -342,21 +341,21 @@ class Index extends PureComponent {
       {
         title: 'Quận',
         key: 'district',
-        width: 150,
+        width: 100,
         render: (record) => <Text size="normal">{get(record, 'district.name')}</Text>,
       },
       {
         title: 'Tháng tuổi',
         key: 'age',
-        width: 150,
-        render: (record) => (
-          <>
-            {record?.studentInfo?.map((item, index) => (
-              <Text size="normal" key={index}>
-                {item.month_age}
-              </Text>
-            ))}
-          </>
+        width: 100,
+        render: (value, record) => (
+          <div className='d-flex' >
+            {record.studentInfo.map((item, index) =>
+              <div size="normal" key={index} className='d-flex'>
+                {item.age_month}{index + 1 === record.studentInfo.length ? "" : ",  "}
+              </div>
+            )}
+          </div>
         ),
       },
       {
@@ -379,7 +378,7 @@ class Index extends PureComponent {
       {
         title: 'Nhân viên chăm sóc',
         key: 'staff',
-        width: 250,
+        width: 200,
         render: (record) => <Text size="normal">{get(record, 'employee.full_name')}</Text>,
       },
       {

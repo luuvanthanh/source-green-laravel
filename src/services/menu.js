@@ -709,6 +709,18 @@ export async function getLeftMenuAllocation() {
       permission: [permissions.PB],
       pro: true,
     },
+    {
+      title: 'Đăng ký học ngoài giờ',
+      key: 'register-school',
+      url: [
+        '/phan-bo/dang-ky-hoc-ngoai-gio',
+        '/phan-bo/dang-ky-hoc-ngoai-gio/:id/them-moi',
+        '/phan-bo/dang-ky-hoc-ngoai-gio/:id/chi-tiet',
+    ],
+      icon: 'icon icon-clock',
+      permission: [permissions.PB],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuMedical() {
@@ -1869,7 +1881,21 @@ export async function getLeftMenuCRM() {
             {
               title: 'Kịch bản chào mừng',
               key: 'welcome-script',
-              url: ['/crm/chat/quan-ly-kich-ban-chatbot'],
+              url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-chao-mung',],
+              permission: [permissions.CRM],
+              pro: true,
+            },
+            {
+              title: 'Thiết lập từ khóa',
+              key: 'keyword-script',
+              url: ['/crm/chat/quan-ly-kich-ban-chatbot/thiet-lap-tu-khoa',],
+              permission: [permissions.CRM],
+              pro: true,
+            },
+            {
+              title: 'Kịch bản mặc định',
+              key: 'default-scenario',
+              url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-mac-dinh'],
               permission: [permissions.CRM],
               pro: true,
             },
@@ -1952,8 +1978,8 @@ export async function getLeftMenuCRM() {
       children: [
         {
           title: 'Cảnh báo',
-          key: '',
-          url: [],
+          key: 'alert',
+          url: ['/crm/cau-hinh/canh-bao'],
           permission: [permissions.CRM],
           pro: true,
         },

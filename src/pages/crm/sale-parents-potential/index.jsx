@@ -12,6 +12,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
+import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -33,12 +34,12 @@ const mapStateToProps = ({ crmSaleParentsPotential, loading }) => ({
   error: crmSaleParentsPotential.error,
   pagination: crmSaleParentsPotential.pagination,
   branches: crmSaleParentsPotential.branches,
-  city: crmSaleParentsPotential.city,
   district: crmSaleParentsPotential.district,
   tags: crmSaleParentsPotential.tags,
   lead: crmSaleParentsPotential.lead,
   employees: crmSaleParentsPotential.employees,
   searchSource: crmSaleParentsPotential.searchSource,
+  branch: crmSaleParentsPotential.branch,
   loading,
 });
 @connect(mapStateToProps)
@@ -211,6 +212,10 @@ class Index extends PureComponent {
       type: 'crmSaleParentsPotential/GET_SEARCH',
       payload: {},
     });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_BRANCH',
+      payload: {},
+    });
   };
 
   /**
@@ -225,7 +230,6 @@ class Index extends PureComponent {
         title: 'STT ',
         key: 'index',
         width: 80,
-        fixed: 'left',
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
@@ -268,14 +272,14 @@ class Index extends PureComponent {
         title: 'Tháng tuổi',
         key: 'age',
         width: 100,
-        render: (record) => (
-          <>
-            {record?.potentialStudentInfo?.map((item, index) => (
-              <Text size="normal" key={index}>
-                {item.month_age}
-              </Text>
-            ))}
-          </>
+        render: (value, record) => (
+          <div className='d-flex' >
+            {record.potentialStudentInfo.map((item, index) =>
+              <div size="normal" key={index} className='d-flex'>
+                {item.age_month}{index + 1 === record.potentialStudentInfo.length ? "" : ",  "}
+              </div>
+            )}
+          </div>
         ),
       },
       {
@@ -287,7 +291,7 @@ class Index extends PureComponent {
             {' '}
             {record?.customerPotentialStatusCare
               ?.map((item, index) => (
-                <Text size="normal" key={index}>
+                <Text size="normal" key={index} >
                   {get(item, 'statusParentPotential.name')}
                 </Text>
               ))
@@ -302,9 +306,11 @@ class Index extends PureComponent {
         render: (record) => (
           <>
             {record?.customerPotentialTag?.map((item, index) => (
-              <Tag size="normal" color="#27a600" key={index}>
+              <div className={stylesModule['wrapper-tag']}>
+              <Tag size="normal" color="#27a600" key={index}  style={{ backgroundColor: `${item?.tag?.color_code}` }}>
                 {get(item, 'tag.name')}
               </Tag>
+              </div>
             ))}
           </>
         ),
@@ -342,7 +348,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      city,
       district,
       tags,
       lead,
@@ -350,6 +355,7 @@ class Index extends PureComponent {
       searchSource,
       match: { params },
       pagination,
+      branch,
       loading: { effects },
     } = this.props;
     const { search, dataSource } = this.state;
@@ -370,7 +376,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-              <div className="col-lg-3">
+              <div className="col-lg-6">
                       <FormItem
                         name="key"
                         onChange={(event) => this.onChange(event, 'key')}
@@ -380,17 +386,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={city}
-                        name="city"
-                        onChange={(event) => this.onChangeSelect(event, 'city_id')}
-                        type={variables.SELECT}
-                        allowClear={false}
-                        placeholder="Chọn Tỉnh thành"
-                      />
-                    </div>
-                    <div className="col-lg-3">
-                      <FormItem
-                        data={district}
+                        data={[{ name: 'Chọn tất cả Quận huyện' }, ...district,]}
                         name="district"
                         onChange={(event) => this.onChangeSelect(event, 'district_id')}
                         type={variables.SELECT}
@@ -400,17 +396,18 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        name="c"
-                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        data={[{ name: 'Chọn tất cả Cơ sở' }, ...branch,]}
+                        name="branch"
+                        onChange={(event) => this.onChangeSelect(event, 'branch_id')}
                         type={variables.SELECT}
                         allowClear={false}
                         placeholder="Chọn cơ sở"
                       />
                     </div>
                     <div className="col-lg-3">
-                    <FormItem
+                      <FormItem
+                        data={[{ name: 'Chọn tất cả Nguồn' }, ...searchSource,]}
                         name="search"
-                        data={searchSource}
                         onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -419,7 +416,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={lead}
+                        data={[{ name: 'Chọn tất cả Tình trạng lead' }, ...lead,]}
                         name="lead"
                         onChange={(event) => this.onChangeSelect(event, 'lead_id')}
                         type={variables.SELECT}
@@ -430,20 +427,23 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         name="full_name"
-                        options={['id', 'full_name']}
-                        data={employees}
+                        data={[
+                          { id: 'null', full_name: 'Chưa có nhân viên chăm sóc' },
+                          ...employees,
+                        ]}
                         onChange={(event) => this.onChangeSelect(event, 'employee_id')}
                         type={variables.SELECT}
+                        options={['id', 'full_name']}
                         allowClear={false}
-                        placeholder="Chọn nhân viên"
+                        placeholder="Chọn nhân viên chăm sóc"
                       />
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={tags}
+                        data={[{ name: 'Chọn tất cả tags' }, ...tags,]}
                         name="tags"
-                        onChange={(event) => this.onChangeSelect(event, 'tag_id')}
                         type={variables.SELECT}
+                        onChange={(event) => this.onChangeSelect(event, 'tag_id')}
                         allowClear={false}
                         placeholder="Chọn tags"
                       />
@@ -476,7 +476,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  city: PropTypes.arrayOf(PropTypes.any),
+  branch: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
   tags: PropTypes.arrayOf(PropTypes.any),
   lead: PropTypes.arrayOf(PropTypes.any),
@@ -490,7 +490,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  city: [],
+  branch: [],
   district: [],
   tags: [],
   lead: [],

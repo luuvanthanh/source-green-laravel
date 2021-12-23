@@ -693,7 +693,7 @@ export default class Helpers {
       .format(variables.DATE_FORMAT.TIME_FULL)}`;
 
   static getPathAvatarJson = (fileImage) => {
-    const allowTypes = ['jpeg', 'jpg', 'png'];
+    const allowTypes = ['jpeg', 'jpg', 'png','JPG','HEIC','JPEG','PNG'];
     if (this.isJSON(fileImage)) {
       const files = JSON.parse(fileImage);
       if (!isEmpty(files) && isArray(files)) {

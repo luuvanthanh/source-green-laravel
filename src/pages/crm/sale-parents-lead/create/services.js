@@ -170,9 +170,13 @@ export function getStatusLead(params = {}) {
   });
 }
 
-export function getTags() {
+export function getTags(params) {
   return request(`/v1/tags`, {
     method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
   });
 }
 
