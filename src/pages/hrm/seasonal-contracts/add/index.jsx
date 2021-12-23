@@ -35,6 +35,7 @@ function Index() {
 
   const [parameterValues, setParameterValues] = useState([]);
   const [show, setShow] = useState(false);
+  const [isValid, setIsValid] = useState(false);
 
   const loadCategories = () => {
     dispatch({
@@ -67,13 +68,19 @@ function Index() {
 
   useEffect(() => {
     if (!!details && !isEmpty(details) && get(params, 'id')) {
-      if (details?.project) setShow(true);
+      if (details?.project) {
+        setShow(true);
+      }
       formRef.setFieldsValue({
         ...details,
         contractDate: details.contractDate && moment(details.contractDate),
         contractFrom: details.contractFrom && moment(details.contractFrom),
         contractTo: details.contractTo && moment(details.contractTo),
       });
+      const {month, date} = details;
+      if(month * 30 + date > 365){
+        setIsValid(true);
+      }
       setparameterValues(
         details.parameterValues.map((item) => ({
           ...item,
@@ -86,13 +93,38 @@ function Index() {
 
   const formUpdate = (value, values) => {
     const { month, date, contractFrom } = values;
-
     if (moment.isMoment(contractFrom)) {
       formRef?.setFieldsValue({
         contractTo: moment(contractFrom)
           .add(month || 0, 'months')
           .add(date || 0, 'day'),
       });
+    }
+
+    if ((month || 0) * 30 + (date || 0) > 365) {
+      setIsValid(false);
+      formRef.setFields([
+        {
+          name: 'month',
+          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
+        },
+        {
+          name: 'date',
+          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
+        },
+      ]);
+    } else {
+      formRef.setFields([
+        {
+          name: 'month',
+          errors: [],
+        },
+        {
+          name: 'date',
+          errors: [],
+        },
+      ]);
+      setIsValid(true);
     }
   };
 
@@ -173,27 +205,40 @@ function Index() {
       })),
       nameProject: values.project ? values.nameProject : null,
     };
-    dispatch({
-      type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
-      payload,
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              formRef.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
+    if (isValid) {
+      dispatch({
+        type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
+        payload,
+        callback: (response, error) => {
+          if (response) {
+            history.goBack();
           }
-        }
-      },
-    });
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                formRef.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    } else {
+      formRef.setFields([
+        {
+          name: 'month',
+          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
+        },
+        {
+          name: 'date',
+          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
+        },
+      ]);
+    }
   };
 
   const onRemove = (record) => {
