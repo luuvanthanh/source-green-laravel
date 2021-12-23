@@ -4,6 +4,9 @@ namespace GGPHP\Users\Models;
 
 use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
+use GGPHP\Category\Models\Degree;
+use GGPHP\Category\Models\TrainingMajor;
+use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
@@ -317,5 +320,20 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function workOnline()
     {
         return $this->hasMany(WorkOnline::class, 'EmployeeId');
+    }
+
+    public function degree()
+    {
+        return $this->belongsTo(Degree::class, 'DegreeId');
+    }
+
+    public function trainingMajor()
+    {
+        return $this->belongsTo(TrainingMajor::class, 'TrainingMajorId');
+    }
+
+    public function trainingSchool()
+    {
+        return $this->belongsTo(TrainingSchool::class, 'TrainingSchoolId');
     }
 }
