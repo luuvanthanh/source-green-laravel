@@ -196,6 +196,8 @@ return [
         GGPHP\WordExporter\Providers\WordExporterServiceProvider::class,
         GGPHP\Report\Providers\ReportServiceProvider::class,
         GGPHP\SurveyForm\Providers\SurveyFormServiceProvider::class,
+        GGPHP\Tourist\Providers\TouristServiceProvider::class,
+        Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
     ],
 
     /*

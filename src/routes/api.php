@@ -65,5 +65,6 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\ActivityLog\RouteRegistrar::routes();
         \GGPHP\Report\RouteRegistrar::routes();
         \GGPHP\SurveyForm\RouteRegistrar::routes();
+        \GGPHP\Tourist\RouteRegistrar::routes();
     });
 });
