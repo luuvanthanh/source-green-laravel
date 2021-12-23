@@ -37,4 +37,11 @@ class EmployeeFacebookController extends Controller
 
         return $this->success($userFacebookInfoTag, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function destroyAllEmployeeFacebook()
+    {
+        $this->employeeFacebookRepository->destroyAllEmployeeFacebook();
+
+        return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
 }

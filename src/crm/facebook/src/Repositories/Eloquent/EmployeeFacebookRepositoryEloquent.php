@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 
 use GGPHP\Crm\Facebook\Models\EmployeeFacebook;
+use GGPHP\Crm\Facebook\Models\Page;
 use GGPHP\Crm\Facebook\Presenters\EmployeeFacebookPresenter;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -50,6 +51,10 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
 
     public function getEmployeeFacebook($attributes)
     {
+        if (!empty($attributes['page_id'])) {
+            $this->model = $this->model->where('page_id', $attributes['page_id']);
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereLike('employee_fb_name', $attributes['key']);
         }
@@ -66,11 +71,12 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
     public function create(array $attributes)
     {
         $pageRole = FacebookService::pageRole($attributes);
-
+        $page = Page::where('page_id_facebook', $attributes['page_id'])->first();
         foreach ($pageRole as $key => $value) {
             $data = [
                 'employee_fb_name' => $value->name,
-                'employee_fb_id' => $value->id
+                'employee_fb_id' => $value->id,
+                'page_id' => $page->id
             ];
 
             $employeeFacebook = EmployeeFacebook::where('employee_fb_id', $value->id)->first();
@@ -83,5 +89,11 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
         }
 
         return parent::all();
+    }
+
+    public function destroyAllEmployeeFacebook()
+    {
+        $employeeFacebook = EmployeeFacebook::query()->delete();
+        return;
     }
 }

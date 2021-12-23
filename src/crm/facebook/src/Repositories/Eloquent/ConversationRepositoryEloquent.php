@@ -132,7 +132,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
     public function synchronizeConversation($attributes)
     {
         $conversations = FacebookService::pageConversation($attributes);
-
+        
         foreach ($conversations as $conversation) {
             $conversationId = $conversation->id;
             foreach ($conversation->senders as $value) {

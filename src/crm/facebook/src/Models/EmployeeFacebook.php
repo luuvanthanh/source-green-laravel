@@ -10,7 +10,7 @@ class EmployeeFacebook extends UuidModel
     protected $table = 'employee_facebooks';
 
     protected $fillable = [
-        'employee_fb_name', 'employee_fb_id',
+        'employee_fb_name', 'employee_fb_id', 'page_id'
     ];
 
     public function userFacebookInfo()
