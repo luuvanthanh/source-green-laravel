@@ -366,7 +366,8 @@ form .ant-cascader-picker:only-child {
 }
 
 .input-noborder {
-  .ant-input, .ant-picker {
+  .ant-input,
+  .ant-picker {
     border: unset;
     padding: 4px 0;
     pointer-events: none;

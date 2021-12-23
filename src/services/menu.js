@@ -804,6 +804,14 @@ export async function getLeftMenuTimeTable() {
       pro: true,
     },
     {
+      title: 'Thời khóa biểu tự động',
+      key: 'timetableAuto',
+      url: ['/thoi-khoa-bieu/tu-dong'],
+      icon: 'icon icon-calendar1',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
       title: 'Thời khóa biểu làm việc / sự kiện',
       key: 'schedule',
       url: [

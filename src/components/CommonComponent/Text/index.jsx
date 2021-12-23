@@ -182,6 +182,33 @@ export default function View({ children, size, color, extra, extraColor, classNa
       </p>
     );
   }
+  if (size === 'small') {
+    if (url) {
+      return (
+        <p
+          className={classnames(styles[`text-${size}`], styles[`${color}`], className)}
+          style={style}
+        >
+          <Link className={styles.link} to={url}>
+            {children}
+            {extra && (
+              <p className={classnames(styles.extra, styles[`${extraColor}`], className)}>
+                {extra}
+              </p>
+            )}
+          </Link>
+        </p>
+      );
+    }
+    return (
+      <p className={classnames(styles[`text-${size}`], styles[`${color}`], className)}>
+        {children}
+        {extra && (
+          <p className={classnames(styles.extra, styles[`${extraColor}`], className)}>{extra}</p>
+        )}
+      </p>
+    );
+  }
   return (
     <h1>
       {children}
