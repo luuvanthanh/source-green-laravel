@@ -43,7 +43,7 @@ export function getShifts() {
   return request('/v1/shift-students', {
     method: 'GET',
     params: {
-      search: `status:${variablesModules.STATUS_SHIFT.ON}`,
+      status: 'ON',
       searchJoin: 'and',
     },
   });
