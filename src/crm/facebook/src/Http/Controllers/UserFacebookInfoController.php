@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Facebook\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\Facebook\Http\Requests\AddLeadRequest;
 use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use GGPHP\Crm\Facebook\Repositories\Contracts\UserFacebookInfoRepository;
@@ -34,6 +35,11 @@ class UserFacebookInfoController extends Controller
         $attributes = $request->all();
         if (!empty($attributes['sex'])) {
             $attributes['sex'] = UserFacebookInfo::SEX[$attributes['sex']];
+        }
+        if (!empty($attributes['student_info'])) {
+            foreach ($attributes['student_info'] as $key => $value) {
+                $attributes['student_info'][$key]['sex'] = StudentInfo::SEX[$value['sex']];
+            }
         }
         $userFacebookInfo = $this->userFacebookInfoRepository->addLead($attributes);
         return $this->success($userFacebookInfo, trans('lang::messages.common.createSuccess'));
