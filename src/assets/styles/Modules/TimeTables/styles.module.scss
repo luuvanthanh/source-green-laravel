@@ -1,0 +1,65 @@
+@import '@/assets/styles/mixins.scss';
+
+.ant-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 5px;
+}
+
+.time-table {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+
+  .col-lg-3,
+  .col-lg-2 {
+    padding: 0;
+
+    .header-row {
+      padding: 5px 10px;
+      text-align: center;
+      margin: 0px;
+      background-color: rgb(238, 240, 244);
+    }
+
+    .data-row {
+      padding: 5px 10px;
+      text-align: center;
+      margin: 0px;
+    }
+
+    .no-data-row {
+      min-height: 32px !important;
+      box-sizing: unset;
+    }
+
+    &:not(:first-child) .data-row {
+      cursor: pointer;
+    }
+
+    &:first-child {
+      .header-row {
+        border: 1px solid $border;
+      }
+
+      .cell {
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+        border-left: 1px solid $border;
+      }
+    }
+
+    &:not(:first-child) {
+      .header-row {
+        border-top: 1px solid $border;
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+      }
+
+      .cell {
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+      }
+    }
+  }
+}

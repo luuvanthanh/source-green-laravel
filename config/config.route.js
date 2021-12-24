@@ -1841,6 +1841,12 @@ export default [
             authority: [permissions.TKB],
           },
           {
+            path: '/thoi-khoa-bieu/tu-dong',
+            component: './timetable/schedules-auto/test',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
             path: '/thoi-khoa-bieu/lam-viec',
             component: './timetable/schedules',
             wrappers: ['@/wrappers/auth'],
