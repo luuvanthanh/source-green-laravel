@@ -12,8 +12,12 @@ export default {
       isError: false,
       data: {},
     },
-    user: {},
+    user: {
+      accessToken:"EAAM8onYIpqUBAHcZBRRyZASNqw8ho7hUr5pO1CkA4RfqUG7yQFIkrGFCwOwopWapqJIQUYeCcKisVDNPrUrUI5renj2h3A3ZAppYSMOUhJBW1mMK08FQ4KwqlSZB48Kq5jWzZCCJVksFaggeairEGbZBpjBZA0rMTup2ekrc71XlAZDZD",
+      userID: "2973416992874415"
+    },
     pages: [],
+    users : [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -29,6 +33,7 @@ export default {
     SET_PAGES: (state, { payload }) => ({
       ...state,
       pages: payload.data,
+
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -43,6 +48,10 @@ export default {
       ...state,
       tags: payload.parsePayload,
     }),
+    SET_CONVERSATIONS: (state, { payload }) => ({
+      ...state,
+      users: payload.parsePayload,
+    }),
   },
   effects: {
     *GET_USER({ payload }, { put }) {
@@ -54,7 +63,7 @@ export default {
       } catch (error) {
         yield put({
           type: 'SET_ERROR',
-        });
+        }); 
       }
     },
     *GET_PAGES({ payload, callback }, saga) {
@@ -76,6 +85,22 @@ export default {
     *GET_CONVERSATIONS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getConversations, payload);
+        yield saga.put({
+          type: 'SET_CONVERSATIONS',
+          payload: response,
+        });
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CONVERSATIONSCALL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getConversationsCall, payload);
         callback(response);
       } catch (error) {
         callback(null, error);
@@ -115,12 +140,13 @@ export default {
     },
     *ADD_CONVERSATIONS({ payload, callback }, saga) {
       try {
-        yield saga.call(services.addConversations, payload);
+         yield saga.call(services.addConversations, payload);
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
       }
     },
+
     *ADD_EMPLOYEE({ payload, callback }, saga) {
       try {
         yield saga.call(services.addEmployee, payload);
@@ -133,7 +159,7 @@ export default {
       try {
         const response = yield saga.call(services.getPagesDb, payload);
         yield saga.put({
-          type: 'SET_PAGES',
+          type: 'SET_PAGESDB',
           payload: response,
         });
         callback(response);

@@ -1,6 +1,6 @@
 import { memo, useEffect, useState, useRef } from 'react';
-import { Menu, Dropdown, Input, Skeleton, Tag, Select } from 'antd';
-import { DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { Menu, Dropdown, Input, Skeleton, Tag, Select, Image, Upload, Spin } from 'antd';
+import { DownOutlined, SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useDispatch, useSelector } from 'dva';
@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { variables, Helper } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import MultipleImageUpload from './UploadAvatar';
 import styles from './styles.module.scss';
 
 const { Option } = Select;
@@ -17,18 +18,27 @@ const Index = memo(() => {
   const scrollbars = useRef();
 
   const dispatch = useDispatch();
-  const [{ user, pages, tags }, loading] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
+  const [{ user, pages, tags, users }, loading] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
     crmFBDevV1,
     effects,
   ]);
+  const [files, setFiles] = useState([]);
+  const [file, setFile] = useState([]);
   const [isAction, setIsAction] = useState(false);
-  const [pageCurrent, setPageCurrent] = useState({});
-  const [page, setPage] = useState({});
+  const [pageCurrent, setPageCurrent] = useState([]);
+  const [page, setPage] = useState([]);
+  const [pageID, setPageID] = useState([]);
   const [conversationCurrent, setConversationCurrent] = useState({});
-  const [users, setUsers] = useState([]);
+  const [, setUsers] = useState([]);
   const [messagers, setMessagers] = useState([]);
   const [message, setMessage] = useState(null);
+  const [messageFile, setMessageFile] = useState(null);
+  const [messageFinalFile, setMessageFinalFile] = useState(null);
   const [loadingMessage, setLoadingMessage] = useState(false);
+
+  const mounted = useRef(false);
+  const mountedSet = (setFunction, value) =>
+    !!mounted?.current && setFunction && setFunction(value);
 
   const responseFacebook = (response) => {
     console.log('response', response);
@@ -50,29 +60,26 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            const firstPage = head(response.data);
-            setPageCurrent(firstPage);
+            // const firstPage = head(response.data);
+            setPageCurrent(response.data);
           }
         },
       });
     }
   }, [user.userID]);
+
+  // console.log("pageCurrent", pageCurrent.length > 0)
+
   useEffect(() => {
-    if (pageCurrent?.id) {
+    if (pageCurrent.length > 0) {
       dispatch({
         type: 'crmFBDevV1/ADD_CONVERSATIONS',
-        payload: {
-          page_access_token: user?.accessToken,
-          page_id: pageCurrent?.id,
-        },
+        payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
         callback: () => { }
       });
       dispatch({
         type: 'crmFBDevV1/ADD_EMPLOYEE',
-        payload: {
-          page_access_token: user?.accessToken,
-          page_id: pageCurrent?.id,
-        },
+        payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
         callback: () => { }
       });
       dispatch({
@@ -80,19 +87,20 @@ const Index = memo(() => {
         payload: {},
         callback: (response) => {
           if (response) {
-            const page = head(response.data);
-            setPage(page);
+            setPage(response.data);
+            setPageID([response.data[0]]);
           }
         },
       });
     }
-  }, [pageCurrent.id]);
-
+  }, [pageCurrent.length]);
+  console.log("setPageID", pageID);
+  console.log("pageCurrent", pageCurrent);
   useEffect(() => {
-    if (page.id) {
+    if (page.length > 0) {
       dispatch({
         type: 'crmFBDevV1/GET_CONVERSATIONS',
-        payload: {},
+        payload: { page_id_facebook: pageCurrent[0]?.id },
         callback: (response) => {
           if (response) {
             const firstUser = head(
@@ -114,7 +122,7 @@ const Index = memo(() => {
         payload: {},
       });
     }
-  }, [page.id]);
+  }, [page]);
 
   useEffect(() => {
     if (conversationCurrent?.id) {
@@ -128,8 +136,8 @@ const Index = memo(() => {
           setLoadingMessage(false);
           if (response) {
             setMessagers(response.data);
+            scrollbars.current.scrollToBottom();
             setTimeout(() => {
-              scrollbars.current.scrollToBottom();
             }, 300);
           }
         },
@@ -148,8 +156,24 @@ const Index = memo(() => {
     });
 
     if (conversationCurrent?.id) {
-      socket.on('facebook.message.receive', (event) => {
+      socket.on('facebook.message.receive', (event, data) => {
+        console.log("data", data);
         if (event) {
+          dispatch({
+            type: 'crmFBDevV1/GET_CONVERSATIONSCALL',
+            payload: {},
+            callback: (response) => {
+              if (response) {
+                if ((users.findIndex(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to)) !== - 1) {
+                  users.splice(users.findIndex(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to), 1);
+                  users.unshift(response?.parsePayload?.find(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to));
+                }
+                // if ((users.findIndex(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to)) === - 1) {
+                //   users.unshift(response?.parsePayload?.find(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to));
+                // }
+              }
+            },
+          });
           dispatch({
             type: 'crmFBDevV1/GET_MESSAGES',
             payload: {
@@ -158,34 +182,42 @@ const Index = memo(() => {
             callback: (response) => {
               if (response) {
                 setMessagers(response.data);
+                setMessageFinalFile();
                 setTimeout(() => {
                   scrollbars.current.scrollToBottom();
                 }, 300);
               }
-              dispatch({
-                type: 'crmFBDevV1/GET_CONVERSATIONSID',
-                payload: { conversation_id: conversationCurrent.id },
-                callback: (response) => {
-                  if (response) {
-                    const firstUser = head(
-                      response?.parsePayload?.map((item) => ({
-                        ...item,
-                      })),
-                    );
-                    setConversationCurrent(firstUser);
-                    users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
-                  }
-                },
-              });
+              // dispatch({
+              //   type: 'crmFBDevV1/GET_CONVERSATIONSID',
+              //   payload: { conversation_id: conversationCurrent?.id, },
+              //   callback: (response) => {
+              //     if (response) {
+              //       const firstUser = head(
+              //         response?.parsePayload?.map((item) => ({
+              //           ...item,
+              //         })),
+              //       );
+              //       setConversationCurrent(firstUser);
+
+              //       users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+              //       // users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+              //     }
+              //   },
+              // });
             },
           });
+
         }
-        //   socket.on('facebook.message.receive', (event, data) => {
-        // });
       });
     }
     return () => socket.close();
   }, [conversationCurrent?.id, user?.userID]);
+
+  console.log("users", users)
+  const uploadFiles = (files) => {
+    mountedSet(setFiles, (prev) => [...prev, files]);
+  };
+  // console.log("files", files)
 
   const onChangeConversation = (id) => {
     setConversationCurrent(users.find((item) => item.id === id));
@@ -196,6 +228,7 @@ const Index = memo(() => {
       {
         id: uuidv4(),
         attributes: { content: e?.target?.value },
+        ulr: messageFile,
         from: pageCurrent,
         created_time: moment(),
       },
@@ -203,14 +236,17 @@ const Index = memo(() => {
     setTimeout(() => {
       scrollbars.current.scrollToBottom();
     }, 300);
-    setMessage(undefined);
+    setMessage(null);
+    setFiles([]);
+    setMessageFinalFile(messageFile);
     dispatch({
       type: 'crmFBDevV1/SEND_MESSAGES',
       payload: {
-        page_access_token: pageCurrent?.access_token,
+        page_access_token: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.access_token,
         recipient_id: conversationCurrent?.userFacebookInfo?.user_id,
-        page_id: page?.attributes?.page_id_facebook,
+        page_id: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.id,
         message: e?.target?.value,
+        urls: JSON.stringify(file),
       },
       callback: () => {
       },
@@ -250,6 +286,324 @@ const Index = memo(() => {
       },
     });
   };
+
+  const onUploadFile = (filex) => {
+    dispatch({
+      type: 'upload/UPLOAD',
+      payload: filex,
+      callback: (response) => {
+        if (response) {
+          setFile([...file, response?.results[0]?.fileInfo?.url]);
+          setMessageFile([...file, response?.results[0]?.fileInfo?.url]);
+        }
+      },
+    });
+  };
+
+  const props = {
+    beforeUpload: () => null,
+    customRequest({ file }) {
+      onUploadFile(file);
+    },
+    showUploadList: true,
+  };
+
+   const onStatus = (attributes, ulr) => {
+    const check = attributes?.content.substring(attributes?.content.indexOf("?"), (attributes?.content.indexOf("?") - 4));
+    const a = ulr?.map(i => i?.substring(i.length, i.length - 4));
+     const b = (messageFile?.map(i => `https://erp-clover-file.demo.greenglobal.com.vn${i}`));
+    const arrFile = a?.join();
+    const checkfile = (arrFile?.indexOf(".npg, jpeg") !== -1);
+    console.log("dd", checkfile);
+    //  const audio = new Audio('/images/facebook/soundMesenger.mp3');
+    //  const  as   =  audio.play();
+
+    if (check === '.jpg' || check === '.png' || check === 'jpeg' || check === '.bmp' || check === '.dib' || check === 'heic' || check === 'heif'
+      || check === '.iff' || check === 'jfef' || check === '.jp2' || check === 'jpe' || check === 'jpeg' || check === '.psd' || check === '.tif'
+      || check === 'HEIF' || check === '.IFF' || check === 'JFIF' || check === '.JP2' || check === '.JPE' || check === 'JPEG' || check === 'JPG'
+      || check === '.PNG' || check === '.PSD' || check === '.TIF' || check === 'jpe' || check === 'TIFF' || check === 'WBMP' || check === 'WEBP' || check === 'HIEC') {
+      return (
+        <>
+          {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
+            <div className={styles['messager-item']}>
+              <div className={styles['messager-sendImg']}>
+                <Image
+                  width={200}
+                  height={200}
+                  src={attributes?.content}
+                  className={styles['messager-img']}
+                />
+              </div>
+              <div className={styles['messager-send']}>
+                <p className={styles.time}>
+                  {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+                </p>
+              </div>
+            </div>
+
+          )}
+          {attributes?.from === conversationCurrent?.user_facebook_info_id && (
+            <div className={styles['messager-recieve']}>
+              <Image
+                width={200}
+                height={200}
+                src={attributes?.content}
+              />
+              <p className={styles.time}>
+                {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+              </p>
+            </div>
+          )}
+
+        </>
+
+      );
+
+    } 
+    if (arrFile?.indexOf(".png")) {
+      return (
+        <>
+          {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
+            b?.map((item, index) => (
+              <div className={styles['messager-item']} key={index}>
+                <div className={styles['messager-sendImg']}>
+                  <div className={styles['messager-loading']}>
+                    <div className={styles['messager-loader']} />
+                  </div>
+                  <Image
+                    width={200}
+                    height={200}
+                    src={item}
+                    className={styles['messager-img']}
+                  />
+                </div>
+              </div>
+            ))
+          )}
+        </>
+
+      );
+
+    }
+    if (check === '.mp4') {
+
+      return (
+        <>
+          {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
+<div className={styles['messager-item']}>
+              <div className={styles['messager-video']}>
+                <video controls height={200} width={300} className={styles.video} >
+                  <source src={attributes?.content} />
+                </video>
+              </div>
+              <div className={styles['messager-send']}>
+                <p className={styles.time}>
+                  {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+                </p>
+              </div>
+            </div>
+          )}
+          {attributes?.from === conversationCurrent?.user_facebook_info_id && (
+            <div className={styles['messager-recieve']}>
+              <video controls height={200} width={300} className={styles.video}>
+                <source src={attributes?.content} />
+              </video>
+              <p className={styles.time}>
+                {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+              </p>
+
+            </div>
+          )}
+        </>
+      );
+    }
+    // if (arrFile?.indexOf(".mp4")) {
+
+    //   return (
+    //     <>
+    //       {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
+    //         <div className={styles['messager-item']}>
+    //           <div className={styles['messager-video']}>
+    //             <video controls height={200} width={300} className={styles.video} >
+    //               <source src={attributes?.content} />
+    //             </video>
+    //           </div>
+    //           <div className={styles['messager-send']}>
+    //             <p className={styles.time}>
+    //               <Spin />
+    //             </p>
+    //           </div>
+    //         </div>
+    //       )}
+    //     </>
+    //   );
+    // } 
+    if (check) {
+      return (
+        <>
+          {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
+            <>
+              <div className={styles['messager-item']}>
+                <div className={styles['messager-send']}>
+                  <div className={styles['messager-file']}>
+                    <a href={attributes?.content} download={files} className='icon-download' style={{ color: "white" }} />
+                    <div className='d-flex'>
+                      <p className='pr10'>Một file đính kèm</p>
+                      <img src="/images/facebook/messagesFile.png" alt="facebook" className={styles.icon} />
+                    </div>
+                  </div>
+                  <p className={styles.time}>
+                    {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+          {attributes?.from === conversationCurrent?.user_facebook_info_id && (
+            <div className={styles['messager-recieve']}>
+              <div className={styles['messager-file']}>
+                <div className='d-flex'>
+                  <img src="/images/facebook/messagesFile.png" alt="facebook" className={styles.icon} />
+<p className='pl10'>Một file đính kèm</p>
+                </div>
+                <a href={attributes?.content} download={files} className='icon-download' />
+              </div>
+              <p className={styles.time}>
+                {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+              </p>
+            </div>
+          )}
+        </>
+      );
+    }
+    // if (b?.length > 0) {
+    //   return (
+    //     <>
+    //       {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
+    //         b.map((item, index) => (
+    //           <>
+    //             <div className={styles['messager-item']} key={index}>
+    //               <div className={styles['messager-send']}>
+    //                 <div className={styles['messager-file']}>
+    //                   <a href={attributes?.content} download={files} className='icon-download' style={{ color: "white" }} />
+    //                   <div className='d-flex'>
+    //                     <p className='pr10'>Một file đính kèm</p>
+    //                     <img src="/images/facebook/messagesFile.png" alt="facebook" className={styles.icon} />
+    //                   </div>
+    //                 </div>
+    //                 <p className={styles.time}>
+    //                   <Spin />
+    //                 </p>
+    //               </div>
+    //             </div>
+    //           </>
+    //         ))
+    //       )}
+    //       {attributes?.from === conversationCurrent?.user_facebook_info_id && (
+    //         <div className={styles['messager-recieve']}>
+    //           <div className={styles['messager-file']}>
+    //             <div className='d-flex'>
+    //               <img src="/images/facebook/messagesFile.png" alt="facebook" className={styles.icon} />
+    //               <p className='pl10'>Một file đính kèm</p>
+    //             </div>
+    //             <a href={attributes?.content} download={files} className='icon-download' />
+    //           </div>
+    //           <p className={styles.time}>
+    //             {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+    //           </p>
+    //         </div>
+    //       )}
+    //     </>
+    //   );
+    // }
+
+    return (
+      <>
+        {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
+          <div className={styles['messager-item']}>
+            <div className={styles['messager-send']}>
+              <div className={styles['messager-content']}>{attributes?.content}</div>
+              <p className={styles.time}>
+                {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+              </p>
+            </div>
+          </div>
+        )}
+        {attributes?.from === conversationCurrent?.user_facebook_info_id && (
+          <div className={styles['messager-recieve']}>
+            {/* <audio controls loop autoplay>
+              <source src="/images/facebook/soundMesenger.mp3" type="audio/mpeg"  controls loop autoplay/>
+            </audio> */}
+            <div className={styles['messager-content']}>{attributes?.content}</div>
+            <p className={styles.time}>
+              {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
+            </p>
+          </div>
+        )}
+      </>
+);
+  };
+
+  const onSnippet = (attributes) => {
+    const check = attributes?.substring(attributes?.indexOf("?"), (attributes?.indexOf("?") - 4));
+    if (check === '.jpg' || check === '.png') {
+      return (
+        <>
+          <p className={styles.norm}>Đã gửi một ảnh</p>
+        </>
+      );
+
+    }
+    if (check === '.mp4') {
+      return (
+        <>
+          <p className={styles.norm}>Đã gửi một video</p>
+        </>
+      );
+    } if (check) {
+      return (
+        <>
+          <p className={styles.norm}>Đã gửi một file</p>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <p className={styles.norm}>{attributes}</p>
+      </>
+    );
+  };
+  //console.log("page", page)
+  const preventDefault = (e, page) => {
+    // console.log("preventDefault", e)
+    dispatch({
+      type: 'crmFBDevV1/GET_CONVERSATIONS',
+      payload: { page_id_facebook: e },
+      callback: (response) => {
+        if (response) {
+          const firstUser = head(
+            response?.parsePayload?.map((item) => ({
+              ...item,
+            })),
+          );
+          setConversationCurrent(firstUser);
+          setPageID(page?.filter(i => i?.attributes?.page_id_facebook === e));
+          setUsers(
+            response?.parsePayload?.map((item) => ({
+              ...item,
+            })),
+          );
+        }
+      },
+    });
+    dispatch({
+      type: 'crmFBDevV1/GET_TAGS',
+      payload: {},
+    });
+  };
+
+  //console.log("page?.map[0]?.id",page[0]?.attributes?.name)
   return (
     <div className={styles.wrapper}>
       <div className={styles['heading-container']}>
@@ -280,11 +634,11 @@ const Index = memo(() => {
         <div className={styles['sidebar-container']}>
           <div className={styles['sidebar-header']}>
             <img src="/images/facebook/logoFacebook.svg" alt="facebook" className={styles.icon} />
-            <Dropdown overlay={menu} trigger={['click']}>
-              <p className={styles.norm}>
-                {pageCurrent?.name} <DownOutlined />
-              </p>
-            </Dropdown>
+            <Select value={pageID[0]?.attributes?.name} style={{ width: 120 }} bordered={false} onChange={(e) => preventDefault(e, page)}>
+              {page?.map((i, index) =>
+                <Option value={i?.attributes?.page_id_facebook} key={index} className={styles.norm}> {i?.attributes?.name}</Option>
+              )}
+            </Select>
           </div>
           <div className={styles['sidebar-actions']}>
             {!isAction && (
@@ -375,7 +729,7 @@ const Index = memo(() => {
                     </>
                   ))}
                 {(!loading['crmFBDevV1/GET_PAGES'] || !loading['crmFBDevV1/GET_CONVERSATIONS']) &&
-                  users?.map(({ id, can_reply, userFacebookInfo, snippet, time }) => (
+                  users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox }) => (
                     <div
                       className={classnames(styles['user-item'], {
                         [styles['user-item-active']]:
@@ -396,13 +750,27 @@ const Index = memo(() => {
                             className={styles.img}
                           />
                         </div>
-                        <div className={styles['user-info']}>
-                          <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                          <p className={styles.norm}>{snippet}</p>
-                        </div>
-                        <p className={styles.time}>
-                          {time}
-                        </p>
+                        {noti_inbox === "SEEN" ?
+                          <>
+                            <div className={styles['user-info']}>
+                              <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                              <div>{onSnippet(snippet, userFacebookInfo?.user_name)}</div>
+                            </div>
+                            <p className={styles.time}>
+                              {time}
+                            </p>
+                          </>
+                          :
+                          <>
+                            <div className={styles['user-info-notseen']}>
+                              <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                              <div>{onSnippet(snippet, userFacebookInfo?.user_name)}</div>
+                              <p className={styles.time}>
+                                {time}
+                              </p>
+                            </div>
+                          </>
+                        }
                       </div>
                       {userFacebookInfo?.userFacebookInfoTag.map((i, index) =>
                         <div className='mt5' key={index}>
@@ -432,7 +800,7 @@ const Index = memo(() => {
               autoHideTimeout={1000}
               autoHideDuration={100}
               autoHeight
-              autoHeightMax="calc(100vh - 410px)"
+              autoHeightMax="calc(100vh - 320px)"
               renderTrackHorizontal={(props) => (
                 <div {...props} className="track-horizontal" style={{ display: 'none' }} />
               )}
@@ -504,26 +872,9 @@ const Index = memo(() => {
                       messagers.filter((item) => item.attributes),
                       'created_at',
                       'asc',
-                    )?.map(({ id, attributes }) => (
+                    )?.map(({ id, attributes, ulr }) => (
                       <div className={styles['messager-item']} key={id}>
-                        {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
-                          <div className={styles['messager-item']}>
-                            <div className={styles['messager-send']}>
-                              <div className={styles['messager-content']}>{attributes?.content}</div>
-                              <p className={styles.time}>
-                                {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                        {attributes?.from === conversationCurrent?.user_facebook_info_id && (
-                          <div className={styles['messager-recieve']}>
-                            <div className={styles['messager-content']}>{attributes?.content}</div>
-                            <p className={styles.time}>
-                              {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
-                            </p>
-                          </div>
-                        )}
+                        <div>{onStatus(attributes, ulr)}</div>
                       </div>
                     ))}
                   </div>
@@ -531,21 +882,46 @@ const Index = memo(() => {
               </div>
             </Scrollbars>
           </div>
-          <div className={styles['chat-container']}>
-            <Input.TextArea
-              autoSize={{ minRows: 4, maxRows: 4 }}
-              placeholder="Nhập tin nhắn"
-              onPressEnter={onPressEnter}
-              className={styles.input}
-              value={message}
-              onChange={(e) => setMessage(e?.target?.value)}
+          <div className={styles['messages-container']}>
+            <Upload {...props}>
+              <div className={styles['chat-icon']}>
+                <span className="icon-attachment" />
+              </div>
+            </Upload>
+            <MultipleImageUpload
+              files={files}
+              callback={(files) => uploadFiles(files)}
+              removeFiles={(files) => mountedSet(setFiles, files)}
             />
-            <div className={styles['group-icon']}>
-              <span className="icon-attachment" />
-              <span className="icon-smile" />
-              <span className="icon-image" />
+            <div className='d-flex'>
+              <div className={styles['chat-container']}>
+                <Input.TextArea
+                  autoSize={{ minRows: 1, maxRows: 1 }}
+                  width={80}
+                  placeholder="Nhập tin nhắn"
+                  onPressEnter={onPressEnter}
+                  className={styles.input}
+                  value={message}
+                  onChange={(e) => setMessage(e?.target?.value)}
+                />
+                <div className={styles['group-icon']}>
+                  {/* <span className="icon-attachment" /> */}
+
+                  <pane className="icon-smile" />
+                </div>
+
+                {/* <MultipleImageUpload
+                      //  files={files}
+                      //   callback={(files) => uploadFiles(files)}
+                      // removeFiles={(files) => mountedSet(setFiles, files)}
+        setMessage> */}
+
+              </div>
+
+
             </div>
           </div>
+
         </div>
         {!loadingMessage && (
           <div className={styles['info-container']}>
