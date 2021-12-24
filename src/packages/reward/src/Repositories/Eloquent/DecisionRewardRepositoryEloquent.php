@@ -327,13 +327,15 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         $decisionReward = DecisionReward::findOrFail($id);
         $now = Carbon::now();
 
-        if ($decisionReward->Type == 'Khen Thưởng') {
+        if ($decisionReward->Type == 'REWARD') {
+            $type = 'Khen thưởng';
             $text1 = 'được thưởng';
             $text2 = 'được chi';
             $text3 = 'khen thưởng';
         }
 
-        if ($decisionReward->Type == 'Kỷ luật') {
+        if ($decisionReward->Type == 'DISCIPLINE') {
+            $type = 'Kỷ luật';
             $text1 = 'bị phạt';
             $text2 = 'bị trừ';
             $text3 = 'kỷ luật';
@@ -352,7 +354,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
             'money' => $detail->Money ? number_format($detail->Money) : '........',
             'moneyWord' => $detail->Money ? $this->translateToWords($detail->Money) : '........',
             'fullName' => $employee->FullName ? $employee->FullName : '........',
-            'type' => $decisionReward->Type,
+            'type' => $type,
             'text1' => $text1,
             'text2' => $text2,
             'text3' => $text3
