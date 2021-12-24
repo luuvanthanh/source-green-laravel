@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerPotential\Transformers;
 
 use Carbon\Carbon;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\CategoryRelationshipTransformer;
 use GGPHP\Crm\CustomerPotential\Models\PotentialStudentInfo;
 
 /**
@@ -30,7 +31,7 @@ class PotentialStudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['customerPotential'];
+    protected $availableIncludes = ['customerPotential','categoryRelationship'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -46,15 +47,6 @@ class PotentialStudentInfoTransformer extends BaseTransformer
         $birthday = Carbon::parse($model->birth_date);
         $today = Carbon::parse($now);
         $numberOfMonth = $birthday->diffInMonths($today);
-        $relationship = null;
-
-        foreach (PotentialStudentInfo::RELATIONSHIP as $key => $value) {
-
-            if ($value == $model->relationship) {
-                $relationship = $key;
-            }
-        }
-
         $sex = null;
 
         foreach (PotentialStudentInfo::SEX as $key => $value) {
@@ -65,7 +57,6 @@ class PotentialStudentInfoTransformer extends BaseTransformer
         }
 
         return [
-            'relationship' => $relationship,
             'sex' => $sex,
             'age_month' => $numberOfMonth
         ];
@@ -78,5 +69,14 @@ class PotentialStudentInfoTransformer extends BaseTransformer
         }
 
         return $this->item($potentialStudentInfo->customerPotential, new CustomerPotentialTransformer, 'CustomerPotential');
+    }
+
+    public function includeCategoryRelationship(PotentialStudentInfo $potentialStudentInfo)
+    {
+        if (empty($potentialStudentInfo->CategoryRelationship)) {
+            return;
+        }
+
+        return $this->item($potentialStudentInfo->CategoryRelationship, new CategoryRelationshipTransformer, 'CategoryRelationship');
     }
 }
