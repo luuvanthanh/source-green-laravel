@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use GGPHP\Crm\Facebook\Presenters\UserFacebookInfoPresenter;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -75,11 +76,11 @@ class UserFacebookInfoRepositoryEloquent extends BaseRepository implements UserF
             $customerLead_code = CustomerLead::max('code');
 
             if (is_null($customerLead_code)) {
-                $code = CustomerLead::CODE . $now . "01";
+                $code = CustomerLead::CODE . $now . '01';
             } else {
 
                 if (substr($customerLead_code, 2, 8)  != $now) {
-                    $code = CustomerLead::CODE . $now . "01";
+                    $code = CustomerLead::CODE . $now . '01';
                 } else {
                     $stt = substr($customerLead_code, 2) + 1;
                     $code = CustomerLead::CODE . $stt;
@@ -97,9 +98,11 @@ class UserFacebookInfoRepositoryEloquent extends BaseRepository implements UserF
                 'address' => $userFacebookInfo->user_address,
                 'search_source_id' => $searchSource->id
             ];
-
             $customerLead = CustomerLead::create($dataLead);
-
+            foreach ($attributes['student_info'] as $key => $value) {
+                $value['customer_lead_id'] = $customerLead->id;
+                StudentInfo::create($value);
+            }
             $dataUserFacebookInfo = [
                 'customer_lead_id' => $customerLead->id,
                 'status' => UserFacebookInfo::STATUS['LEAD']
@@ -122,7 +125,7 @@ class UserFacebookInfoRepositoryEloquent extends BaseRepository implements UserF
         if (!is_null($userFacebookInfo)) {
             $userFacebookInfo->update(['employee_facebook_id' => $attributes['employee_facebook_id']]);
         }
-        return;
+        return $userFacebookInfo;
     }
 
     public function deleteSpecifyConversation($attributes)
@@ -131,6 +134,6 @@ class UserFacebookInfoRepositoryEloquent extends BaseRepository implements UserF
         if (!is_null($userFacebookInfo)) {
             $userFacebookInfo->update(['employee_facebook_id' => null]);
         }
-        return;
+        return $userFacebookInfo;
     }
 }
