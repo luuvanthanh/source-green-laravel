@@ -191,6 +191,7 @@ return [
         GGPHP\Crm\WebForm\Providers\WebFormCustomerServiceProvider::class,
         GGPHP\Crm\Icon\Providers\IconServiceProvider::class,
         GGPHP\Crm\Config\Providers\ConfigServiceProvider::class,
+        Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
     ],
 
     /*

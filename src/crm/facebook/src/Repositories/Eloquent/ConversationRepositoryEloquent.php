@@ -115,6 +115,11 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
             });
         }
 
+        if (!empty($attributes['conversation_id'])) {
+            $conversationId = explode(',', $attributes['conversation_id']);
+            $this->model = $this->model->whereIn('id', $conversationId);
+        }
+
         if (!empty($attributes['limit'])) {
             $conversation = $this->paginate($attributes['limit']);
         } else {
@@ -127,7 +132,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
     public function synchronizeConversation($attributes)
     {
         $conversations = FacebookService::pageConversation($attributes);
-
+        
         foreach ($conversations as $conversation) {
             $conversationId = $conversation->id;
             foreach ($conversation->senders as $value) {
@@ -172,7 +177,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
             }
         }
 
-        return parent::all();
+        return parent::parserResult($conversation);
     }
 
     public function seenConversation($attributes)

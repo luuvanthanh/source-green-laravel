@@ -47,8 +47,17 @@ class ConversationTransformer extends BaseTransformer
                 $noti_inbox = $key;
             }
         }
+
+        $status_send_message = null;
+
+        foreach (Conversation::STATUS_SEND_MESSAGE as $key => $value) {
+            if ($value == $model->status_send_message) {
+                $status_send_message = $key;
+            }
+        }
         return [
-            'noti_inbox' => $noti_inbox
+            'noti_inbox' => $noti_inbox,
+            'status_send_message' => $status_send_message
         ];
     }
 
