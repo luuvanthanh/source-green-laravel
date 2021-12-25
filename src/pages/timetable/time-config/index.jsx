@@ -10,14 +10,14 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import ability from '@/utils/ability';
-import { useHistory, useLocation, useRouteMatch } from 'umi';
+import { useHistory, useLocation, useParams } from 'umi';
 import { useDispatch, useSelector } from 'dva';
 
 const Index = memo(() => {
-  const [formRef] = Form.useForm();
+  const [form] = Form.useForm();
   const { pathname, query } = useLocation();
   const dispatch = useDispatch();
-  const { params } = useRouteMatch();
+  const { params } = useParams();
   const history = useHistory();
 
   const [
@@ -172,9 +172,7 @@ const Index = memo(() => {
       },
     ];
 
-    return !ability.can('HSDT', 'HSDT')
-      ? columns.filter((item) => item.key !== 'actions')
-      : columns;
+    return !ability.can('TKB', 'TKB') ? columns.filter((item) => item.key !== 'actions') : columns;
   };
 
   return (
@@ -199,7 +197,7 @@ const Index = memo(() => {
               ...search,
             }}
             layout="vertical"
-            form={formRef}
+            form={form}
           >
             <div className="row">
               <div className="col-lg-3">

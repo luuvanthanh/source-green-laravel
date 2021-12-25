@@ -3,7 +3,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
-import { variables } from '@/utils';
+import { Helper, variables } from '@/utils';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import React, { memo, useEffect } from 'react';
@@ -15,7 +15,7 @@ import { get, head, isEmpty, last } from 'lodash';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 const Index = memo(() => {
-  const [formRef] = Form.useForm();
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
   const { params } = useRouteMatch();
   const history = useHistory();
@@ -39,20 +39,21 @@ const Index = memo(() => {
         },
       });
     }
-  }, []);
+  }, [params.id]);
 
   useEffect(() => {
     if (!isEmpty(details) && get(params, 'id')) {
-      formRef.setFieldsValue({
-        year: [
-          moment(details.fromYear, variables.DATE_FORMAT.YEAR),
-          moment(details.toYear, variables.DATE_FORMAT.YEAR),
-        ],
-        fromTime: moment(details.fromTime, variables.DATE_FORMAT.HOUR),
-        toTime: moment(details.toTime, variables.DATE_FORMAT.HOUR),
-        periodDuration: details.periodDuration,
-        fromDate: moment(details.fromDate),
-        toDate: moment(details.toDate),
+      form.setFieldsValue({
+        year: details.fromYear &&
+          details.toYear && [
+            moment(details.fromYear, variables.DATE_FORMAT.YEAR),
+            moment(details.toYear, variables.DATE_FORMAT.YEAR),
+          ],
+        fromTime: details.fromTime && moment(details.fromTime, variables.DATE_FORMAT.HOUR),
+        toTime: details.toTime && moment(details.toTime, variables.DATE_FORMAT.HOUR),
+        periodDuration: details.periodDuration && details.periodDuration,
+        fromDate: details.fromDate && moment(details.fromDate),
+        toDate: details.toDate && moment(details.toDate),
       });
     }
   }, [details]);
@@ -62,8 +63,8 @@ const Index = memo(() => {
       id: params.id,
       fromYear: head(values.year).year(),
       toYear: last(values.year).year(),
-      fromTime: moment(values.fromTime).format('HH:mm'),
-      toTime: moment(values.toTime).format('HH:mm'),
+      fromTime: Helper.getDate(values.fromTime, variables.DATE_FORMAT.HOUR),
+      toTime: Helper.getDate(values.toTime, variables.DATE_FORMAT.HOUR),
       periodDuration: values.periodDuration,
       fromDate: moment(values.fromDate),
       toDate: moment(values.toDate),
@@ -85,23 +86,18 @@ const Index = memo(() => {
       <Helmet title="Cấu hình thời gian" />
       <Breadcrumbs last={params.id ? 'Chỉnh sửa' : 'Thêm mới'} menu={menuLeftTimeTable} />
       <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-        <Form
-          className={styles['layout-form']}
-          layout="vertical"
-          form={formRef}
-          onFinish={onFinish}
-        >
+        <Form className={styles['layout-form']} layout="vertical" form={form} onFinish={onFinish}>
           <div className="row">
             <div className="col-lg-8 offset-lg-2">
               <div className={styles['content-form']}>
                 <Loading
-                  loading={
-                    loading['timeTablesConfigAdd/GET_CATEGORIES'] ||
-                    loading['timeTablesConfigAdd/GET_DETAILS'] ||
-                    loading['timeTablesConfigAdd/GET_TYPE_CONTRACTS']
-                  }
+                  loading={loading['timeTablesConfigAdd/GET_DETAILS']}
                   isError={error.isError}
-                  params={{ error, type: 'container', goBack: '/quan-ly-nhan-su/hop-dong-thoi-vu' }}
+                  params={{
+                    error,
+                    type: 'container',
+                    goBack: '/thoi-khoa-bieu/cau-hinh-thoi-gian',
+                  }}
                 >
                   <div className={classnames(styles['content-children'], 'mt0')}>
                     <Text color="dark" size="large-medium">
