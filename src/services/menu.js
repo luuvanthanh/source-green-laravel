@@ -716,7 +716,7 @@ export async function getLeftMenuAllocation() {
         '/phan-bo/dang-ky-hoc-ngoai-gio',
         '/phan-bo/dang-ky-hoc-ngoai-gio/:id/them-moi',
         '/phan-bo/dang-ky-hoc-ngoai-gio/:id/chi-tiet',
-    ],
+      ],
       icon: 'icon icon-clock',
       permission: [permissions.PB],
       pro: true,
@@ -847,7 +847,11 @@ export async function getLeftMenuTimeTable() {
     {
       title: 'Cấu hình thời gian',
       key: 'timetableConfig',
-      url: ['/thoi-khoa-bieu/cau-hinh-thoi-gian'],
+      url: [
+        '/thoi-khoa-bieu/cau-hinh-thoi-gian',
+        '/thoi-khoa-bieu/cau-hinh-thoi-gian/tao-moi',
+        '/thoi-khoa-bieu/cau-hinh-thoi-gian/:id/chi-tiet',
+      ],
       icon: 'icon icon-setting',
       permission: [permissions.TKB],
       pro: true,
@@ -1881,14 +1885,14 @@ export async function getLeftMenuCRM() {
             {
               title: 'Kịch bản chào mừng',
               key: 'welcome-script',
-              url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-chao-mung',],
+              url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-chao-mung'],
               permission: [permissions.CRM],
               pro: true,
             },
             {
               title: 'Thiết lập từ khóa',
               key: 'keyword-script',
-              url: ['/crm/chat/quan-ly-kich-ban-chatbot/thiet-lap-tu-khoa',],
+              url: ['/crm/chat/quan-ly-kich-ban-chatbot/thiet-lap-tu-khoa'],
               permission: [permissions.CRM],
               pro: true,
             },
