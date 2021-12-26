@@ -77,9 +77,21 @@ function Index() {
         contractFrom: details.contractFrom && moment(details.contractFrom),
         contractTo: details.contractTo && moment(details.contractTo),
       });
-      const {month, date} = details;
-      if(month * 30 + date > 365){
-        setIsValid(true);
+      
+      if (details.contractFrom && details.contractTo) {
+        if(moment(details.contractTo).diff(moment(details.contractFrom), 'days') > 366) {
+          setIsValid(true);
+          formRef.setFields([
+            {
+              name: 'month',
+              errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
+            },
+            {
+              name: 'date',
+              errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
+            },
+          ]);
+        }
       }
       setparameterValues(
         details.parameterValues.map((item) => ({
@@ -99,32 +111,35 @@ function Index() {
           .add(month || 0, 'months')
           .add(date || 0, 'day'),
       });
-    }
-
-    if ((month || 0) * 30 + (date || 0) > 365) {
-      setIsValid(false);
-      formRef.setFields([
-        {
-          name: 'month',
-          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-        },
-        {
-          name: 'date',
-          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-        },
-      ]);
-    } else {
-      formRef.setFields([
-        {
-          name: 'month',
-          errors: [],
-        },
-        {
-          name: 'date',
-          errors: [],
-        },
-      ]);
-      setIsValid(true);
+      const yearPoint = moment(contractFrom).add(12, 'months');
+      const timeContract = moment(contractFrom)
+        .add(month || 0, 'months')
+        .add(date || 0, 'days');
+      if (timeContract.isAfter(yearPoint)) {
+        setIsValid(false);
+        formRef.setFields([
+          {
+            name: 'month',
+            errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
+          },
+          {
+            name: 'date',
+            errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
+          },
+        ]);
+      } else {
+        setIsValid(true);
+        formRef.setFields([
+          {
+            name: 'month',
+            errors: '',
+          },
+          {
+            name: 'date',
+            errors: '',
+          },
+        ]);
+      }
     }
   };
 
@@ -205,7 +220,8 @@ function Index() {
       })),
       nameProject: values.project ? values.nameProject : null,
     };
-    if (isValid) {
+
+    if (!isValid) {
       dispatch({
         type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
         payload,
