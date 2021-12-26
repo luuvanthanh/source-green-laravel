@@ -1883,6 +1883,18 @@ export default [
             authority: [permissions.TKB],
           },
           {
+            path: '/thoi-khoa-bieu/cau-hinh-thoi-gian/tao-moi',
+            component: './timetable/time-config/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/cau-hinh-thoi-gian/:id/chi-tiet',
+            component: './timetable/time-config/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
             path: '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong',
             component: './timetable/group-activities',
             wrappers: ['@/wrappers/auth'],
