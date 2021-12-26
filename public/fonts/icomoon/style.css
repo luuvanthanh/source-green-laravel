@@ -567,7 +567,7 @@
 }
 .icon-quotes-left:before {
   content: "\e977";
-} 
+}
 .icon-quotes-right:before {
   content: "\e978";
 }
@@ -876,9 +876,6 @@
 }
 .icon-arrow-left2:before {
   content: "\ea40";
-}
-.icon-arrow-left:before {
-  content: "\ea38";
 }
 .icon-circle-up:before {
   content: "\ea41";

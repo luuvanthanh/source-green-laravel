@@ -1439,3 +1439,12 @@
 .hiddenCol {
   display: none;
 }
+
+.colorIcon {
+  color: #BFBFBF;
+}
+.btnStyle {
+  &:hover {
+    background: $border-success;
+  }
+}
