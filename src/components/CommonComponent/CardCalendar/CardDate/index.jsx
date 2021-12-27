@@ -9,7 +9,7 @@ const CardDate = ({ times, content, onClick }) => !isEmpty(times) ? (
     <div className="d-flex align-items-center justify-content-left">
       <div className="d-flex flex-row pl-2">
         <span>{Helper.getDate(times.timeStart, variables.DATE_FORMAT.HOUR)}</span>
-        <span className='pl-1 pr-1'>-</span>
+        <span className='px-10'>-</span>
         <span>{Helper.getDate(times.timeEnd, variables.DATE_FORMAT.HOUR)}</span>
       </div>
     </div>

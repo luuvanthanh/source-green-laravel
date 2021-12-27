@@ -48,13 +48,7 @@ const Index = memo(() => {
     classId: null,
   });
 
-  const [showColumn, setShowColumn] = useState({
-    'col-td-1': true,
-    'col-td-2': true,
-    'col-td-3': true,
-    'col-td-4': true,
-    'col-td-5': true,
-  });
+  const [showColumn, setShowColumn] = useState(true);
 
   const onLoad = () => {
     dispatch({
@@ -142,8 +136,8 @@ const Index = memo(() => {
     });
   };
 
-  const Collapse = (position) => {
-    setShowColumn((prev) => ({ ...prev, [`col-td-${position}`]: !prev[`col-td-${position}`] }));
+  const Collapse = () => {
+    setShowColumn(!showColumn);
   };
 
   const renderCalendar = (type, data) => {
@@ -290,7 +284,7 @@ const Index = memo(() => {
     }
   };
 
-  const header = (type, arrDate = [], position = 0) => {
+  const header = (type, arrDate = []) => {
     switch (type) {
       case 'dayGridMonth':
         return [
@@ -509,13 +503,13 @@ const Index = memo(() => {
               title: (
                 <Button
                   icon={
-                    showColumn[`col-td-${position}`] ? (
+                    showColumn ? (
                       <DoubleRightOutlined />
                     ) : (
                       <DoubleLeftOutlined />
                     )
                   }
-                  onClick={() => Collapse(position)}
+                  onClick={() => Collapse()}
                 />
               ),
               key: 'acction',
@@ -525,7 +519,7 @@ const Index = memo(() => {
               render: () => {},
             },
           ];
-          if (!showColumn[`col-td-${position}`]) {
+          if (!showColumn) {
             return arrHeader.filter((item, idx) => idx !== 6 && idx !== 7 && item);
           }
           return arrHeader;
@@ -575,19 +569,15 @@ const Index = memo(() => {
   const tableWeek = () => {
     if (search.type === 'timeGridWeek') {
       const startWeek = moment(search.fromDate).startOf('week').subtract(1, 'day');
-      const arrTable = [];
-      let i = 0;
+      const arrDate = [];
       while (startWeek.isBefore(search.toDate)) {
-        i += 1;
-        const arrDate = Array(7)
-          .fill(0)
-          .map(() => startWeek.add(1, 'day').clone());
-
-        arrTable.push(
-          <div className="mb-5" key={i}>
+        arrDate.push(startWeek.add(1, 'day').clone());
+      }
+      return (
+        <div className="mb-5">
             <Table
               bordered
-              columns={header(search.type, arrDate, showColumn[`col-td-${i}`], i)}
+              columns={header(search.type, arrDate)}
               dataSource={renderCalendar(search.type, data)}
               pagination={false}
               params={{
@@ -597,12 +587,10 @@ const Index = memo(() => {
               rowKey={() => Math.floor(Math.random() * 1000000)}
               scroll={{ x: '100%' }}
             />
-          </div>,
-        );
-      }
-      return arrTable;
+          </div>
+      );
     }
-    return [];
+    return <></>;
   };
 
   const titleDateTable = (type) => {
@@ -798,7 +786,7 @@ const Index = memo(() => {
                   Hôm nay
                 </ButtonCustom>
               </div>
-              <div className="d-flex align-items-center">
+              <div className={classnames("d-flex align-items-end", styles['title-time-table'])}>
                 <Text color="dark" size="large-medium">
                   {titleDateTable(search.type)}
                 </Text>
@@ -822,8 +810,8 @@ const Index = memo(() => {
                   color={search.type === 'timeGridWeek' ? 'green' : 'white'}
                   onClick={() => {
                     debouncedSearchDate(
-                      moment().startOf('month'),
-                      moment().endOf('month'),
+                      moment().startOf('weeks'),
+                      moment().endOf('weeks'),
                       'timeGridWeek',
                     );
                   }}
@@ -858,7 +846,7 @@ const Index = memo(() => {
                 </ButtonCustom>
               </div>
             </div>
-            <>{search.type === 'timeGridWeek' && tableWeek().map((item) => item)}</>
+            <>{search.type === 'timeGridWeek' && tableWeek()}</>
             <>
               {search.type === 'dayGridMonth' && (
                 <Table

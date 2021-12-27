@@ -13,7 +13,7 @@ const CardMonth = ({ date, month, data, onClick }) => {
   const [show, setShow] = useState(false);
   return (
     <div
-      className={classNames('w-100 d-flex flex-column justify-content-between', styles.cardMonth)}
+      className={classNames('w-100 d-flex flex-column justify-content-between', styles['card-month'])}
     >
       {Helper.getDate(date, variables.DATE_FORMAT.MONTH) ===
       Helper.getDate(month, variables.DATE_FORMAT.MONTH) ? (
