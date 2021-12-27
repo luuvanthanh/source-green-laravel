@@ -54,8 +54,13 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
         return PagePresenter::class;
     }
 
-    public function getPage()
+    public function getPage($attributes)
     {
+        if (!empty($attributes['page_id_facebook'])) {
+            $pageIdFacebook = explode(',', $attributes['page_id_facebook']);
+            $this->model = $this->model->whereIn('page_id_facebook', $pageIdFacebook);
+        }
+
         if (!empty($attributes['limit'])) {
             $page = $this->paginate($attributes['limit']);
         } else {
@@ -77,10 +82,10 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
             }
             $type = 'file';
             foreach ($urls as $url) {
-                if (pathinfo($url, PATHINFO_EXTENSION) == "jpg" || pathinfo($url, PATHINFO_EXTENSION) == "png" || pathinfo($url, PATHINFO_EXTENSION) == "jpeg") {
+                if (pathinfo($url, PATHINFO_EXTENSION) == 'jpg' || pathinfo($url, PATHINFO_EXTENSION) == 'png' || pathinfo($url, PATHINFO_EXTENSION) == 'jpeg') {
                     $type = 'image';
                     break;
-                } elseif (pathinfo($url, PATHINFO_EXTENSION) == "mp4") {
+                } elseif (pathinfo($url, PATHINFO_EXTENSION) == 'mp4') {
                     $type = 'video';
                     break;
                 }
