@@ -1,4 +1,3 @@
-import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -37,30 +36,8 @@ export default {
       ...state,
       details: payload,
     }),
-    SET_CATEGORIES: (state, { payload }) => ({
-      ...state,
-      categories: {
-        users: payload.users.parsePayload,
-      },
-    }),
   },
   effects: {
-    *GET_CATEGORIES({ _ }, saga) {
-      try {
-        const response = yield saga.all({
-          users: saga.call(categories.getUsers),
-        });
-        yield saga.put({
-          type: 'SET_CATEGORIES',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
@@ -80,12 +57,10 @@ export default {
     *GET_DETAILS({ payload }, saga) {
       try {
         const response = yield saga.call(services.details, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response.parsePayload,
-          });
-        }
+        yield saga.put({
+          type: 'SET_DETAILS',
+          payload: response,
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

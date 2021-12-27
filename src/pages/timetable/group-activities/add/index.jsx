@@ -1,42 +1,27 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'umi';
-import { Form, Table, Input, Checkbox } from 'antd';
+import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty, last, head } from 'lodash';
-import moment from 'moment';
+import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
-import { EditableCell, EditableRow } from '@/components/CommonComponent/Table/EditableCell';
 import { useDispatch, useSelector } from 'dva';
-import { v4 as uuidv4 } from 'uuid';
 
 const Index = memo(() => {
   const [formRef] = Form.useForm();
   const dispatch = useDispatch();
   const { params } = useRouteMatch();
   const history = useHistory();
-  const [data, setData] = useState([
-    {
-      id: uuidv4(),
-    },
-  ]);
 
   const [
     { error, details },
     { menuLeftTimeTable },
   ] = useSelector(({ timetableGroupActivitiesAdd, menu }) => [timetableGroupActivitiesAdd, menu]);
-
-  const loadCategories = () => {
-    dispatch({
-      type: 'timetableGroupActivitiesAdd/GET_CATEGORIES',
-      payload: {},
-    });
-  };
 
   useEffect(() => {
     if (params.id) {
@@ -47,13 +32,17 @@ const Index = memo(() => {
         },
       });
     }
-    loadCategories();
-  }, []);
+  }, [params.id]);
 
   useEffect(() => {
     if (!isEmpty(details) && get(params, 'id')) {
       formRef.setFieldsValue({
-        ...details,
+        name: details?.name,
+        timetableActivityDetails: details?.timetableActivityDetails.map((item) => ({
+          id: item?.id,
+          name: item?.name,
+          isTeachJoining: item?.isTeachJoining,
+        })),
       });
     }
   }, [details]);
@@ -64,115 +53,19 @@ const Index = memo(() => {
       payload: {
         id: params.id,
         ...values,
-        data: values.data.map((item) => ({
-          ...item,
-          birthday: moment(item.birthday).format(variables.DATE_FORMAT.DATE_AFTER),
-          dedectionTimeFrom:
-            head(item.date) && moment(head(item.date)).format(variables.DATE_FORMAT.DATE_AFTER),
-          dedectionTimeTo:
-            last(item.date) && moment(last(item.date)).format(variables.DATE_FORMAT.DATE_AFTER),
+        timetableActivityDetails: values.timetableActivityDetails.map((item) => ({
+          id: item?.id ? item?.id : null,
+          name: item?.name && item?.name,
+          isTeachJoining: item?.isTeachJoining ? item?.isTeachJoining : false,
         })),
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           history.goBack();
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              formRef.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
-          }
         }
       },
     });
   };
-
-  const onAddLevels = () => {
-    const objects = {
-      id: uuidv4(),
-    };
-    setData((prevState) => [...prevState, objects]);
-
-    const itemsRow = document.querySelectorAll(
-      `.ant-table-tbody tr[data-row-key='${objects.id}'] .editable-cell-value-wrap`,
-    );
-    if (!isEmpty(itemsRow)) {
-      itemsRow[0].click();
-    }
-  };
-
-  const handleSaves = (record) => {
-    setData((prevState) => prevState.map((item) => (item.id === record.id ? record : item)));
-  };
-
-  const onRemove = (record) => {
-    setData((prevState) => prevState.filter((item) => item.id !== record.id));
-  };
-
-  const headers = () => {
-    const columns = [
-      {
-        title: 'name',
-        render: (value, record, index) => `Hoạt động ${index + 1}`,
-      },
-      {
-        title: 'content',
-        dataIndex: 'content',
-        editable: true,
-        type: variables.INPUT,
-        render: (value) => <Input value={value} placeholder="Nhập" />,
-      },
-      {
-        title: 'check',
-        dataIndex: 'check',
-        render: (record) => (
-          <Checkbox className="d-flex" checkbox={record}>
-            <p style={{ width: 'max-content' }}>Có giáo viên phụ trách</p>
-          </Checkbox>
-        ),
-      },
-      {
-        title: 'action',
-        align: 'center',
-        render: (record) => (
-          <div className="groups-input">
-            <span
-              className="icon icon-remove"
-              role="presentation"
-              onClick={() => onRemove(record)}
-            />
-          </div>
-        ),
-      },
-    ];
-
-    return columns;
-  };
-
-  const columnsTables = headers().map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        type: col.type,
-        title: col.title,
-        dataIndex: col.dataIndex,
-        dataSelect: col.dataSelect,
-        editable: col.editable,
-        handleSave: handleSaves,
-      }),
-    };
-  });
 
   return (
     <>
@@ -201,12 +94,19 @@ const Index = memo(() => {
                     Thông tin thêm mới
                   </Text>
                   <div className="row mt-3">
-                    <div className="col-lg-12">
+                    <div className="col-lg-7">
                       <FormItem
                         label="Tên nhóm hoạt động"
-                        name="subject_id"
+                        name="name"
                         rules={[variables.RULES.EMPTY]}
                         type={variables.INPUT}
+                      />
+                    </div>
+                    <div className="col-lg-5">
+                      <FormItem
+                        className="checkbox-row checkbox-small mt30"
+                        label="Chỉ áp dụng cho 1 lớp"
+                        type={variables.CHECKBOX_SINGLE}
                       />
                     </div>
                   </div>
@@ -218,27 +118,50 @@ const Index = memo(() => {
                   </Text>
                   <div className="row mt-3">
                     <div className="col-lg-12">
-                      <Table
-                        className="table-edit"
-                        showHeader={false}
-                        pagination={false}
-                        bordered
-                        components={{
-                          body: {
-                            row: EditableRow,
-                            cell: EditableCell,
-                          },
-                        }}
-                        rowKey={(record) => record.id}
-                        dataSource={data}
-                        columns={columnsTables}
-                        scroll={{ x: '100%' }}
-                        footer={() => (
-                          <Button color="success" icon="plus" onClick={onAddLevels}>
-                            Thêm
-                          </Button>
+                      <Form.List name="timetableActivityDetails">
+                        {(fields, { add, remove }) => (
+                          <>
+                            {fields.map((field, index) => (
+                              <div key={index} className="row align-item-center mt10">
+                                <div className="col-2">
+                                  <Text size="small" className="mt5">
+                                    Hoạt động {index + 1}
+                                  </Text>
+                                </div>
+                                <div className="col-5">
+                                  <FormItem
+                                    name={[field.name, 'name']}
+                                    rules={[variables.RULES.EMPTY]}
+                                    type={variables.INPUT}
+                                  />
+                                </div>
+                                <div className="col-4">
+                                  <FormItem
+                                    className="checkbox-row checkbox-small"
+                                    label="Có giáo viên phụ trách"
+                                    name={[field.name, 'isTeachJoining']}
+                                    type={variables.CHECKBOX_FORM}
+                                    valuePropName="checked"
+                                  />
+                                </div>
+                                <div className="col-1">
+                                  <div className="groups-input mt5">
+                                    <span
+                                      className="icon icon-remove"
+                                      role="presentation"
+                                      onClick={() => remove(field.name)}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+
+                            <Button color="success" icon="plus" onClick={() => add()}>
+                              Thêm
+                            </Button>
+                          </>
                         )}
-                      />
+                      </Form.List>
                     </div>
                   </div>
                 </div>
