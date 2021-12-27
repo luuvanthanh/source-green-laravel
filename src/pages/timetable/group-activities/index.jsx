@@ -26,7 +26,6 @@ const Index = () => {
 
   const [search, setSearch] = useState({
     type: query?.type,
-    fullName: query?.fullName,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
@@ -83,7 +82,7 @@ const Index = () => {
    * @param {object} pagination value of pagination items
    */
   const pagination = (pagination) =>
-    Helper.paginationLavarel({
+    Helper.paginationNet({
       pagination,
       callback: (response) => {
         changePagination(response);
@@ -123,24 +122,24 @@ const Index = () => {
       },
       {
         title: 'Mã nhóm',
-        key: 'groupCode',
+        key: 'code',
         className: 'min-width-180',
         width: 180,
-        render: (record) => record?.groupCode,
+        render: (record) => record?.code,
       },
       {
         title: 'Tên nhóm',
-        key: 'nameCode',
+        key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record?.nameCode,
+        render: (record) => record?.name,
       },
       {
         title: 'Số hoạt động',
-        key: 'activitiesTotal',
+        key: 'totalDetails',
         className: 'min-width-150',
         width: 130,
-        render: (record) => record?.activitiesTotal,
+        render: (record) => record?.totalDetails,
       },
       {
         key: 'action',
