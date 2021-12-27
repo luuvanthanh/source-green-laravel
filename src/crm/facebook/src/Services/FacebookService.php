@@ -21,7 +21,7 @@ class FacebookService
             $userId = $attributes['user_id'];
 
             $response = $fb->get(
-                "/$userId/accounts?fields=id,name,access_token", // id user
+                '/' . $userId . '/accounts?fields=id,name,access_token', // id user
                 $attributes['user_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -56,7 +56,7 @@ class FacebookService
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->get(
-                "/$pageId?fields=id,access_token",
+                '/' . $pageId . '?fields=id,access_token',
                 $attributes['user_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -91,7 +91,7 @@ class FacebookService
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->get(
-                "/$pageId/conversations?fields=id,unread_count,senders{profile_pic},can_reply,snippet,updated_time,wallpaper",
+                '/' . $pageId . '/conversations?fields=id,unread_count,senders{profile_pic},can_reply,snippet,updated_time,wallpaper',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -127,7 +127,7 @@ class FacebookService
             $userId = $attributes['user_id'];
 
             $response = $fb->get(
-                "/$userId?fields=profile_pic",
+                '/' . $userId . '?fields=profile_pic',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -163,7 +163,7 @@ class FacebookService
             $conversationId = $attributes['conversation_id'];
             //Nội dung cuộc trò chuyện
             $response = $fb->get(
-                "/$conversationId/messages?fields=id,message,from,to,created_time&limit=10",
+                '/' . $conversationId . '/messages?fields=id,message,from,to,created_time&limit=10',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -196,33 +196,35 @@ class FacebookService
         $fb = getFacebookSdk();
 
         try {
-            $response = $fb->post(
-                '/me/messages',
-                [
-                    "recipient" => [
-                        "id" => $attributes['recipient_id'], // id người nhận
+            if (!empty($attributes['message'])) {
+                $response = $fb->post(
+                    '/me/messages',
+                    [
+                        'recipient' => [
+                            'id' => $attributes['recipient_id'], // id người nhận
+                        ],
+                        'message' => [
+                            'text' => $attributes['message'],
+                        ],
                     ],
-                    "message" => [
-                        "text" => $attributes['message'],
-                    ],
-                ],
-                $attributes['page_access_token']
-            );
+                    $attributes['page_access_token']
+                );
+            }
             if (!empty($attributes['urls'])) {
                 $type = $attributes['type'];
                 foreach ($attributes['urls'] as $key => $url) {
                     $response = $fb->post(
                         '/me/messages',
                         [
-                            "recipient" => [
-                                "id" => $attributes['recipient_id'], // id người nhận
+                            'recipient' => [
+                                'id' => $attributes['recipient_id'], // id người nhận
                             ],
-                            "message" => [
-                                "attachment" => [
-                                    "type" => $type,
-                                    "payload" => [
-                                        "is_reusable" => true,
-                                        "url" => $url
+                            'message' => [
+                                'attachment' => [
+                                    'type' => $type,
+                                    'payload' => [
+                                        'is_reusable' => true,
+                                        'url' => $url
                                     ]
                                 ]
                             ]
@@ -259,26 +261,26 @@ class FacebookService
     //     $photoIdArray = array();
     //     foreach ($urls as $url) {
     //         $params = array(
-    //             "message" => [
-    //                 "attachment" => [
-    //                     "type" => "image",
-    //                     "payload" => [
-    //                         "is_reusable" => true,
-    //                         "url" => $url
+    //             'message' => [
+    //                 'attachment' => [
+    //                     'type' => 'image',
+    //                     'payload' => [
+    //                         'is_reusable' => true,
+    //                         'url' => $url
     //                     ]
     //                 ]
     //             ]
     //         );
     //         try {
     //             $postResponse = $fb->post(
-    //                 "me/message_attachments",
+    //                 'me/message_attachments',
     //                 $params,
     //                 $attributes['page_access_token']
     //             );
     //             $photoId = $postResponse->getDecodedBody();
 
-    //             if (!empty($photoId["attachment_id"])) {
-    //                 $photoIdArray[] = $photoId["attachment_id"];
+    //             if (!empty($photoId['attachment_id'])) {
+    //                 $photoIdArray[] = $photoId['attachment_id'];
     //             }
     //         } catch (FacebookResponseException $e) {
     //             $status = 500;
@@ -301,9 +303,9 @@ class FacebookService
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->post(
-                "$pageId/feed",
+                $pageId . '/feed',
                 [
-                    "message" => $attributes['message'],
+                    'message' => $attributes['message'],
                     // 'link' => 'https://developers.facebook.com',
                 ],
                 $attributes['page_access_token']
@@ -335,18 +337,18 @@ class FacebookService
         $photoIdArray = array();
         foreach ($urls as $url) {
             $params = array(
-                "url" => $url,
-                "published" => false
+                'url' => $url,
+                'published' => false
             );
             try {
                 $postResponse = $fb->post(
-                    "$pageId/photos",
+                    $pageId . '/photos',
                     $params,
                     $attributes['page_access_token']
                 );
                 $photoId = $postResponse->getDecodedBody();
-                if (!empty($photoId["id"])) {
-                    $photoIdArray[] = $photoId["id"];
+                if (!empty($photoId['id'])) {
+                    $photoIdArray[] = $photoId['id'];
                 }
             } catch (FacebookResponseException $e) {
                 $status = 500;
@@ -368,14 +370,14 @@ class FacebookService
         $fb = getFacebookSdk();
 
         $photoIdArray = self::postMultipleImage($attributes, $urls);
-        $postParam["message"] = $attributes['message'];
+        $postParam['message'] = $attributes['message'];
         foreach ($photoIdArray as $key => $photoId) {
             $postParam['attached_media'][$key] = '{"media_fbid":"' . $photoId . '"}';
         }
 
         try {
             $response = $fb->post(
-                "$pageId/feed",
+                $pageId . '/feed',
                 $postParam,
                 $attributes['page_access_token']
             );
@@ -408,11 +410,11 @@ class FacebookService
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->post(
-                "$pageId/videos",
+                $pageId . '/videos',
                 [
-                    "title" => $attributes['title'],
-                    "description" => $attributes['description'],
-                    "url" => $url,
+                    'title' => $attributes['title'],
+                    'description' => $attributes['description'],
+                    'url' => $url,
                 ],
                 $attributes['page_access_token']
             );
@@ -445,7 +447,7 @@ class FacebookService
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->get(
-                "$pageId/feed?fields=admin_creator,full_picture,icon,permalink_url",
+                $pageId . '/feed?fields=admin_creator,full_picture,icon,permalink_url',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -524,7 +526,7 @@ class FacebookService
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->get(
-                "/$pageId/roles",
+                '/' . $pageId . '/roles',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -554,7 +556,7 @@ class FacebookService
         try {
             $userId = $attributes['user_id'];
             $response = $fb->get(
-                "/$userId/picture?height=320&width=320",
+                '/' . $userId . '/picture?height=320&width=320',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
