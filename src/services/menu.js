@@ -837,6 +837,18 @@ export async function getLeftMenuTimeTable() {
       pro: true,
     },
     {
+      title: "Thời khóa biểu trẻ",
+      key: 'timetableChildren',
+      url: [
+        '/thoi-khoa-bieu/thoi-khoa-bieu-tre',
+        '/thoi-khoa-bieu/thoi-khoa-bieu-tre/tao-moi',
+        '/thoi-khoa-bieu/thoi-khoa-bieu-tre/:id/chi-tiet',
+      ],
+      icon: 'icon icon-calendar1',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
       title: 'Lịch sử',
       key: 'timetableHistory',
       url: ['/thoi-khoa-bieu/lich-su'],
