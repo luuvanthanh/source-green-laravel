@@ -73,10 +73,13 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
         $pageRole = FacebookService::pageRole($attributes);
         $page = Page::where('page_id_facebook', $attributes['page_id'])->first();
         foreach ($pageRole as $key => $value) {
+            $attributes['user_id'] = $value->id;
+            $avatar = FacebookService::getAvatarUser($attributes);
             $data = [
                 'employee_fb_name' => $value->name,
                 'employee_fb_id' => $value->id,
-                'page_id' => $page->id
+                'page_id' => $page->id,
+                'avatar' => $avatar
             ];
 
             $employeeFacebook = EmployeeFacebook::where('employee_fb_id', $value->id)->first();
@@ -84,7 +87,8 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
             if (is_null($employeeFacebook)) {
                 $employeeFacebook = EmployeeFacebook::create($data);
             } else {
-                $employeeFacebook->update(['employee_fb_name' => $value->name]);
+                $employeeFacebook->update(['employee_fb_name' => $data['employee_fb_name']]);
+                $employeeFacebook->update(['avatar' => $data['avatar']]);
             }
         }
 
@@ -94,6 +98,6 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
     public function destroyAllEmployeeFacebook()
     {
         $employeeFacebook = EmployeeFacebook::query()->delete();
-        return;
+        return $employeeFacebook;
     }
 }
