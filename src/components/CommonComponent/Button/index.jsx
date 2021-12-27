@@ -49,6 +49,8 @@ const ICON_BUTTON = {
   'phone-plus': <span className="icon-phone-plus" />,
   'email-plus': <span className="icon-email-plus" />,
   next: <span className="icon-next" />,
+  'arrow-right2': <span className="icon-arrow-right2" />,
+  'arrow-left': <span className="icon-arrow-left" />,
 };
 export default function ButtonCustom({
   children,

@@ -54,9 +54,9 @@ const Index = memo(() => {
         id: params.id,
         ...values,
         timetableActivityDetails: values.timetableActivityDetails.map((item) => ({
-          id: item?.id ? item?.id : null,
+          id: item?.id || null,
           name: item?.name && item?.name,
-          isTeachJoining: item?.isTeachJoining ? item?.isTeachJoining : false,
+          isTeachJoining: !!item?.isTeachJoining,
         })),
       },
       callback: (response) => {

@@ -8,7 +8,7 @@ export function add(data = {}) {
 }
 
 export function update(data = {}) {
-  return request(`/timetable-activities?id=${data.id}`, {
+  return request(`/timetable-activities/${data.id}`, {
     method: 'PUT',
     data,
   });
