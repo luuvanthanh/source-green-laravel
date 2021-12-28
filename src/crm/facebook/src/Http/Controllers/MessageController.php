@@ -24,7 +24,14 @@ class MessageController extends Controller
 
     public function index(Request $request)
     {
-        $conversation = $this->messageRepository->getMessage($request->all());
-        return $this->success($conversation, trans('lang::messages.common.getListSuccess'));
+        $messages = $this->messageRepository->getMessage($request->all());
+        return $this->success($messages, trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function refreshLinkFile(Request $request)
+    {
+        $messages = $this->messageRepository->refreshLinkFile($request->all());
+
+        return $this->success([], trans('Làm mới link file thành công'));
     }
 }

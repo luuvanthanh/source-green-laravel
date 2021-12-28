@@ -57,6 +57,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::post('pages/specify-conversations', 'UserFacebookInfoController@specifyConversation');
                 \Route::post('pages/delete-specify-conversations', 'UserFacebookInfoController@deleteSpecifyConversation');
                 \Route::post('pages/delete-all-employee-facebook', 'EmployeeFacebookController@destroyAllEmployeeFacebook');
+                \Route::post('pages/refresh-link-files', 'MessageController@refreshLinkFile');
             });
         });
     }

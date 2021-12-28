@@ -577,4 +577,34 @@ class FacebookService
         $graphNode = $response->getHeaders();
         return $graphNode['location'];
     }
+
+    public static function getAttachmentMessage($attributes)
+    {
+        $fb = getFacebookSdk();
+        try {
+            $messageIdFacebook = $attributes['message_id_facebook'];
+            $response = $fb->get(
+                '/' . $messageIdFacebook . '/attachments',
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            dd($e);
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode)->data;
+    }
 }
