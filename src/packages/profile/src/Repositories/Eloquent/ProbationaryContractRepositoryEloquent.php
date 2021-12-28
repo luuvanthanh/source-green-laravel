@@ -88,7 +88,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                     break;
                 case 'GAN_HET_HAN':
                     $now = Carbon::now();
-                    $addMonth = Carbon::now()->addMonth();
+                    $addMonth = Carbon::now()->addWeeks();
 
                     $this->model = $this->model->where('ContractTo', '>=', $now->format('Y-m-d'))->where('ContractTo', '<=', $addMonth->format('Y-m-d'));
                     break;
