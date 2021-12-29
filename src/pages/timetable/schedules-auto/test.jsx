@@ -1,3 +1,4 @@
+import React, { useEffect, useState, memo } from 'react';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -8,11 +9,9 @@ import classnames from 'classnames';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'dva';
 import { isEmpty } from 'lodash';
-import moment from 'moment';
-import React, { useEffect, useState, memo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
-import { columnsFromBackend, itemsFromBackend, timeStamp } from './initial';
+import { timeStamp } from './initial';
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
 
 const getListStyle = (isDraggingOver) => ({
@@ -27,31 +26,30 @@ const Index = memo(() => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [keyColumn, setKeyColumn] = useState(null);
   const [columnInfo, setColumnInfo] = useState({});
-  const [columns, setColumns] = useState(columnsFromBackend);
 
   const [
-    { classes, branches },
+    { data, classes, branches, years, activities },
     { defaultBranch },
-  ] = useSelector(({ loading: { effects }, timeTables, user }) => [timeTables, effects, user]);
+  ] = useSelector(({ loading: { effects }, timeTablesAuto }) => [timeTablesAuto, effects]);
+
+  const dataYears = years.map((item) => ({
+    id: item.id,
+    name: `${item.fromYear} - ${item.toYear}`,
+  }));
 
   const dispatch = useDispatch();
-  const { query, pathname } = useLocation();
+  const { pathname } = useLocation();
   const history = useHistory();
 
   const [defaultBranchs] = useState(defaultBranch?.id ? [defaultBranch] : []);
   const [search, setSearch] = useState({
-    fromDate: query?.fromDate
-      ? moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER)
-      : moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-    toDate: query?.toDate
-      ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
-      : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    IsGroupByDayOfWeek: false,
   });
 
   const loadCategories = () => {
     if (search.branchId) {
       dispatch({
-        type: 'timeTables/GET_CLASSES',
+        type: 'timeTablesAuto/GET_CLASSES',
         payload: {
           branch: search.branchId,
         },
@@ -59,10 +57,21 @@ const Index = memo(() => {
     }
     if (!defaultBranch?.id) {
       dispatch({
-        type: 'timeTables/GET_BRANCHES',
+        type: 'timeTablesAuto/GET_BRANCHES',
         payload: {},
       });
     }
+  };
+
+  const loadYears = () => {
+    dispatch({
+      type: 'timeTablesAuto/GET_YEARS',
+      payload: {},
+    });
+    dispatch({
+      type: 'timeTablesAuto/GET_ACTIVITIES',
+      payload: {},
+    });
   };
 
   const onLoad = () => {
@@ -76,8 +85,6 @@ const Index = memo(() => {
       pathname,
       query: Helper.convertParamSearch({
         ...search,
-        fromDate: moment(search.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        toDate: moment(search.toDate).format(variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
   };
@@ -85,62 +92,106 @@ const Index = memo(() => {
   useEffect(() => {
     onLoad();
     loadCategories();
+    loadYears();
   }, [search]);
 
-  const onConfigChange = (value) => {
+  const onConfigChange = (values) => {
     setSearch((prev) => ({
-      ...prev.search,
-      branchId: value.branchId,
-      page: variables.PAGINATION.PAGE,
-      limit: variables.PAGINATION.PAGE_SIZE,
+      ...prev,
+      branchId: values.branchId,
+      timetableSettingId: values.timetableSettingId,
     }));
 
     dispatch({
-      type: 'timeTables/GET_CLASSES',
-      payload: {
-        branch: value.branchId,
-      },
+      type: 'timeTablesAuto/GET_DATA',
+      payload: { ...search },
     });
   };
+
+  const taskArr = activities.map((item) => `${item.name}`);
+  const activyColumns = { 'columns-1': { tasks: taskArr } };
+  const arr = classes.map((classItem) => {
+    const a = timeStamp.map((timeItem) => {
+      const checkTime = data.timetableDetailGroupByTimes.find(
+        (i) => i.startTime === timeItem.startTime,
+      );
+
+      let fullInfo = null;
+      if (checkTime) {
+        const checkAllInfo = checkTime.timetableDetailGroupByClasses.map((allInfo) => {
+          const c = allInfo.timetableDetailActivities.map((col) => ({
+            branchId: search?.branchId,
+            timetableSettingId: search?.timetableSettingId,
+            classId: col?.classId === classItem.classId && col?.classId,
+            tasks: [col?.timetableActivityDetail.name],
+            timetableDetailByClassAndActivy: {
+              startTime: timeItem?.startTime,
+              endTime: timeItem?.endTime,
+            },
+          }));
+          return c;
+        });
+        fullInfo = checkAllInfo;
+      } else {
+        fullInfo = {
+          branchId: search?.branchId,
+          timetableSettingId: search?.timetableSettingId,
+          classId: classItem?.id,
+          tasks: [],
+          timetableDetailByClassAndActivy: {
+            startTime: timeItem?.startTime,
+            endTime: timeItem?.endTime,
+          },
+        };
+      }
+      return fullInfo;
+    });
+    return a;
+  });
+  const newColumns = Object.assign(
+    {},
+    ...arr.flat(1).map((item, index) => ({ [`columns-${index + 2}`]: item })),
+  );
+  const newColumnsFromBackend = { ...activyColumns, ...newColumns };
+
+  const newItemsFromBackend = Object.assign(
+    {},
+    ...activities.map((item) => ({ [`${item?.name}`]: item })),
+  );
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
     const { source, destination } = result;
 
     if (source.droppableId !== destination.droppableId) {
-      const sourceColumn = columns[source.droppableId];
-      const destColumn = columns[destination.droppableId];
+      const sourceColumn = newColumnsFromBackend[source.droppableId];
+      const destColumn = newColumnsFromBackend[destination.droppableId];
       const sourceItems = [...sourceColumn.tasks];
       const destItems = [...destColumn.tasks];
       const [removed] = sourceItems.splice(source.index, 1);
       destItems.splice(destination.index, 0, removed);
 
-      setColumns({
-        ...columns,
-        [destination.droppableId]: {
-          ...destColumn,
-          tasks: destItems,
+      const payload = {
+        branchId: destColumn.branchId,
+        timetableSettingId: destColumn.timetableSettingId,
+        timetableDetailByClassAndActivy: {
+          startTime: destColumn.timetableDetailByClassAndActivy.startTime,
+          endTime: destColumn.timetableDetailByClassAndActivy.endTime,
+          classId: destColumn.classId,
+          timetableActivityDetailId: newItemsFromBackend[result.draggableId].id,
         },
+      };
+      dispatch({
+        type: 'timeTablesAuto/ADD_DRAG',
+        payload,
       });
     }
-  };
-
-  const onDeleteDrag = (value) => {
-    const dataColumn = columns[value];
-
-    setColumns({
-      ...columns,
-      [value]: {
-        ...dataColumn,
-        tasks: [],
-      },
-    });
   };
 
   const showModal = (value) => {
     setIsModalVisible(true);
     setKeyColumn(value);
-    setColumnInfo(columns[value]);
+    setColumnInfo(newColumnsFromBackend[value]);
   };
 
   useEffect(() => {
@@ -153,7 +204,6 @@ const Index = memo(() => {
   }, [keyColumn]);
 
   const handleOk = () => {
-    onDeleteDrag(keyColumn);
     setIsModalVisible(false);
   };
 
@@ -224,18 +274,19 @@ const Index = memo(() => {
         <div className={classnames(styles.search, 'pt20')}>
           <Form layout="vertical" form={formRef} onFinish={onConfigChange}>
             <div className="row">
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <FormItem
                   className="ant-form-item-row"
+                  data={dataYears}
                   label="NĂM HỌC"
-                  name="year"
-                  type={variables.RANGE_PICKER}
-                  picker="year"
+                  name="timetableSettingId"
+                  type={variables.SELECT}
+                  rules={[variables.RULES.EMPTY]}
                 />
               </div>
 
               {!defaultBranch?.id && (
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     className="ant-form-item-row"
                     data={branches}
@@ -247,7 +298,7 @@ const Index = memo(() => {
                 </div>
               )}
               {defaultBranch?.id && (
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     className="ant-form-item-row"
                     data={defaultBranchs}
@@ -267,128 +318,127 @@ const Index = memo(() => {
           </Form>
         </div>
         {/* FORM DRAG */}
-        <Form layout="vertical" form={dragRef} onFinish={onFinish}>
-          <div className={classnames('schedules-custom', 'mt20', 'row')}>
-            <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
-              <div className="col-lg-2">
-                {Object.entries(columns)
-                  .slice(0, 1)
-                  .map(([key, value], index) => {
-                    const tasks = value.tasks.map((taskId) => itemsFromBackend[taskId]);
+        {!isEmpty(classes) && (
+          <Form layout="vertical" form={dragRef} onFinish={onFinish}>
+            <div className={classnames('schedules-custom', 'mt20', 'row')}>
+              <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
+                <div className="col-lg-2">
+                  {Object.entries(newColumnsFromBackend)
+                    .slice(0, 1)
+                    .map(([key, value], index) => {
+                      const tasks = value.tasks.map((taskId) => newItemsFromBackend[taskId]);
 
-                    return (
-                      <Droppable key={index} droppableId={key}>
-                        {(provided) => (
-                          <div {...provided.droppableProps} ref={provided.innerRef}>
-                            <div className={classnames(styles['block-table'])}>
-                              <FormItem
-                                className="ant-form-item-row"
-                                name="type"
-                                type={variables.INPUT}
-                              />
-                              {tasks.map((task, index) => (
-                                <Draggable key={task.id} draggableId={task.id} index={index}>
-                                  {(provided) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                    >
+                      return (
+                        <Droppable key={index} droppableId={key}>
+                          {(provided) => (
+                            <div {...provided.droppableProps} ref={provided.innerRef}>
+                              <div className={classnames(styles['block-table'])}>
+                                <FormItem
+                                  className="ant-form-item-row"
+                                  name="type"
+                                  type={variables.INPUT}
+                                />
+                                {tasks.map((task, index) => (
+                                  <Draggable key={task.id} draggableId={task.name} index={index}>
+                                    {(provided) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Paragraph
+                                          className="py5 px10"
+                                          style={{
+                                            backgroundColor: task.color,
+                                          }}
+                                        >
+                                          {task.name}
+                                        </Paragraph>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                              </div>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      );
+                    })}
+                </div>
+
+                <div className="col-lg-10">
+                  <div className={classnames(styles['block-table'])}>
+                    <div className="row time-table">
+                      <div className={classes.length > 3 ? 'col-lg-2' : 'col-lg-3'}>
+                        <Paragraph className="header-row">Thời gian</Paragraph>
+                        {timeStamp.map((item) => (
+                          <Paragraph className="data-row cell" key={item.id}>
+                            {`${item.startTime} - ${item.endTime}`}
+                          </Paragraph>
+                        ))}
+                      </div>
+
+                      {classes.map((classItem, index) => (
+                        <div className="col-lg-3" key={index}>
+                          <Paragraph className="header-row">{classItem.name}</Paragraph>
+                          {Object.entries(newColumnsFromBackend)
+                            .slice(1)
+                            .filter((column) => column[1].classId === classItem.id)
+                            .map(([key, value], index) => {
+                              const tasks = value.tasks.map(
+                                (taskId) => newItemsFromBackend[taskId],
+                              );
+                              let cell = null;
+
+                              if (isEmpty(value.tasks)) {
+                                cell = (
+                                  <Droppable key={index} droppableId={key} direction="horizontal">
+                                    {(provided, snapshot) => (
+                                      <div
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        style={getListStyle(snapshot.isDraggingOver)}
+                                        className="no-data-row cell"
+                                      >
+                                        {tasks.map((task, index) => (
+                                          <Paragraph key={index}>{task.name}</Paragraph>
+                                        ))}
+                                        {provided.placeholder}
+                                      </div>
+                                    )}
+                                  </Droppable>
+                                );
+                              } else {
+                                cell = (
+                                  <div key={index} className="cell">
+                                    {tasks.map((task, index) => (
                                       <Paragraph
-                                        className="py5 px10"
+                                        key={index}
                                         style={{
                                           backgroundColor: task.color,
                                         }}
+                                        className="data-row"
+                                        onClick={() => showModal(key)}
                                       >
-                                        {task.content}
+                                        {task.name}
                                       </Paragraph>
-                                    </div>
-                                  )}
-                                </Draggable>
-                              ))}
-                            </div>
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    );
-                  })}
-              </div>
+                                    ))}
+                                  </div>
+                                );
+                              }
 
-              <div className="col-lg-10">
-                <div className={classnames(styles['block-table'])}>
-                  <div className="row time-table">
-                    <div className={classes.length > 3 ? 'col-lg-2' : 'col-lg-3'}>
-                      <Paragraph className="header-row">Thời gian</Paragraph>
-                      {timeStamp.map((item) => (
-                        <Paragraph className="data-row cell" key={item.id}>
-                          {item.content}
-                        </Paragraph>
+                              return cell;
+                            })}
+                        </div>
                       ))}
                     </div>
-
-                    {classes.map((classItem, index) => (
-                      <div className="col-lg-3" key={index}>
-                        <Paragraph className="header-row">{classItem.name}</Paragraph>
-                        {Object.entries(columns)
-                          .slice(1)
-                          .filter((column) => column[1].classId === classItem.id)
-                          .map(([key, value], index) => {
-                            const tasks = value.tasks.map((taskId) => itemsFromBackend[taskId]);
-                            let cell = null;
-
-                            if (isEmpty(value.tasks)) {
-                              cell = (
-                                <Droppable key={index} droppableId={key} direction="horizontal">
-                                  {(provided, snapshot) => (
-                                    <div
-                                      {...provided.droppableProps}
-                                      ref={provided.innerRef}
-                                      style={getListStyle(snapshot.isDraggingOver)}
-                                      className="no-data-row cell"
-                                    >
-                                      {tasks.map((task, index) => (
-                                        <Paragraph key={index}>{task.content}</Paragraph>
-                                      ))}
-                                      {provided.placeholder}
-                                    </div>
-                                  )}
-                                </Droppable>
-                              );
-                            } else {
-                              cell = (
-                                <div key={index} className="cell">
-                                  {tasks.map((task, index) => (
-                                    <Paragraph
-                                      key={index}
-                                      style={{
-                                        backgroundColor: task.color,
-                                      }}
-                                      className="data-row"
-                                      onClick={() => showModal(key)}
-                                    >
-                                      {task.content}
-                                    </Paragraph>
-                                  ))}
-                                </div>
-                              );
-                            }
-
-                            return cell;
-                          })}
-                      </div>
-                    ))}
                   </div>
                 </div>
-              </div>
-            </DragDropContext>
-            <div className="col-lg-12 d-flex justify-content-end">
-              <Button color="success" permission="TKB" className="my20" htmlType="submit">
-                Lưu
-              </Button>
+              </DragDropContext>
             </div>
-          </div>
-        </Form>
+          </Form>
+        )}
       </div>
     </>
   );

@@ -7,12 +7,15 @@ export default {
     data: [],
     branches: [],
     classes: [],
+    years: [],
+    activities: [],
+    search: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
+      data: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -30,6 +33,14 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload.items,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years: payload.items,
+    }),
+    SET_ACTIVITIES: (state, { payload }) => ({
+      ...state,
+      activities: payload,
     }),
   },
   effects: {
@@ -61,20 +72,54 @@ export default {
         });
       }
     },
-    *GET_DATA({ payload }, saga) {
+    *GET_YEARS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
+        const response = yield saga.call(services.getYears, payload);
         yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-          },
+          type: 'SET_YEARS',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_ACTIVITIES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getActivities, payload);
+        yield saga.put({
+          type: 'SET_ACTIVITIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_DRAG({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.getAddDrag, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
       }
     },
     *REMOVE({ payload, callback }, saga) {
