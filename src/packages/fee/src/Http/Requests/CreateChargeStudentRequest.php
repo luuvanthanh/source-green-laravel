@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Http\Requests;
 
+use GGPHP\Fee\Models\ChargeStudent;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateChargeStudentRequest extends FormRequest
@@ -24,7 +25,16 @@ class CreateChargeStudentRequest extends FormRequest
     public function rules()
     {
         return [
+            'schoolYearId' => 'required',
+            'nameStudent' => [
+                function ($attribute, $value, $fail) {
+                    $chargeStudent = ChargeStudent::where('Id', request()->chargeStudentId)->where('SchoolYearId', request()->schoolYearId)->first();
 
+                    if (!is_null($chargeStudent)) {
+                        return $fail('Học sinh chỉ có thể tạo được một lần cho một năm học.');
+                    }
+                },
+            ],
         ];
     }
 }
