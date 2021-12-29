@@ -100,18 +100,12 @@ export default {
         });
       }
     },
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: response,
-        });
+        callback(response);
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
+        callback(null, error);
       }
     },
     *ADD_DRAG({ payload, callback }, saga) {
@@ -122,14 +116,14 @@ export default {
         callback(null, error);
       }
     },
-    *REMOVE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.remove, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
+    // *REMOVE({ payload, callback }, saga) {
+    //   try {
+    //     yield saga.call(services.remove, payload);
+    //     callback(payload);
+    //   } catch (error) {
+    //     callback(null, error?.data?.error);
+    //   }
+    // },
   },
   subscriptions: {},
 };

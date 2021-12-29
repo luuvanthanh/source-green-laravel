@@ -3,27 +3,21 @@ import request from '@/utils/request';
 export function get(params = {}) {
   return request('/timetables/detail-by-conditions', {
     method: 'GET',
-    params: {
-      params,
-    },
+    params,
   });
 }
 
 export function getYears(params = {}) {
   return request('/timetable-settings', {
     method: 'GET',
-    params: {
-      params,
-    },
+    params,
   });
 }
 
 export function getActivities(params = {}) {
   return request('/timetable-activities/details', {
     method: 'GET',
-    params: {
-      params,
-    },
+    params,
   });
 }
 
@@ -33,5 +27,3 @@ export function getAddDrag(data = {}) {
     data,
   });
 }
-
-export default get;

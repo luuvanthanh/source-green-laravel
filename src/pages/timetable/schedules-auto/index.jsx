@@ -1,650 +1,474 @@
-import React, { PureComponent } from 'react';
-import { connect, history } from 'umi';
-import { Form, Modal } from 'antd';
-import classnames from 'classnames';
-import { isEmpty, debounce, get } from 'lodash';
-import { Helmet } from 'react-helmet';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import styles from '@/assets/styles/Common/common.scss';
-import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import allLocales from '@fullcalendar/core/locales-all';
 import FormItem from '@/components/CommonComponent/FormItem';
-import moment from 'moment';
-import { variables, Helper } from '@/utils';
-import PropTypes from 'prop-types';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
-import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
-import listPlugin from '@fullcalendar/list';
-import rrulePlugin from '@fullcalendar/rrule';
-import variablesModules from '../utils/variables';
+import Text from '@/components/CommonComponent/Text';
+import { Helper, variables } from '@/utils';
+import { Form, Typography, Modal } from 'antd';
+import classnames from 'classnames';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useDispatch, useSelector } from 'dva';
+import { isEmpty, groupBy } from 'lodash';
+import { Helmet } from 'react-helmet';
+import { useHistory, useLocation } from 'umi';
+import { timeStamp } from './initial';
+import '@/assets/styles/Modules/TimeTables/styles.module.scss';
 
-let isMounted = true;
-/**
- * Set isMounted
- * @param {boolean} value
- * @returns {boolean} value of isMounted
- */
-const setIsMounted = (value = true) => {
-  isMounted = value;
-  return isMounted;
-};
-/**
- * Get isMounted
- * @returns {boolean} value of isMounted
- */
-const getIsMounted = () => isMounted;
-const mapStateToProps = ({ timeTables, loading, user }) => ({
-  loading,
-  data: timeTables.data,
-  branches: timeTables.branches,
-  classes: timeTables.classes,
-  pagination: timeTables.pagination,
-  defaultBranch: user.defaultBranch,
+const getListStyle = (isDraggingOver) => ({
+  backgroundColor: isDraggingOver ? 'rgba(123, 237, 159, 0.3)' : '',
 });
-@connect(mapStateToProps)
-class Index extends PureComponent {
-  formRef = React.createRef();
 
-  calendarComponentRef = React.createRef();
+const { Paragraph } = Typography;
+const Index = memo(() => {
+  const [formRef] = Form.useForm();
+  const [dragRef] = Form.useForm();
+  const [propertyForm] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [columnInfo, setColumnInfo] = useState({});
 
-  constructor(props) {
-    super(props);
-    const {
-      defaultBranch,
-      location: { query },
-    } = props;
-    this.state = {
-      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
-      search: {
-        fromDate: query?.fromDate
-          ? moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER)
-          : moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-        toDate: query?.toDate
-          ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
-          : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-        type: query.type || 'dayGridMonth',
-        branchId: query.branchId || defaultBranch?.id,
-        classId: query.classId,
-      },
-      details: {},
-      visible: false,
-    };
-    setIsMounted(true);
-  }
+  const [items, setItems] = useState([]);
 
-  componentDidMount() {
-    const { current } = this.calendarComponentRef;
-    const { search } = this.state;
-    if (current) {
-      const calendarApi = current.getApi();
-      calendarApi.gotoDate(moment(search.toDate).format(variables.DATE_FORMAT.DATE_AFTER));
+  const [
+    loading,
+    { classes, branches, years, activities },
+  ] = useSelector(({ loading: { effects }, timeTablesAuto }) => [effects, timeTablesAuto]);
+
+  const dataYears = years.map((item) => ({
+    id: item.id,
+    name: `${item.fromYear} - ${item.toYear}`,
+  }));
+
+  const dispatch = useDispatch();
+  const { pathname, query } = useLocation();
+  const history = useHistory();
+
+  const [search, setSearch] = useState({
+    isGroupByDayOfWeek: false,
+    branchId: query.branchId,
+    timetableSettingId: query.timetableSettingId,
+  });
+
+  const loadCategories = () => {
+    dispatch({
+      type: 'timeTablesAuto/GET_BRANCHES',
+      payload: {},
+    });
+    if (search.branchId) {
+      dispatch({
+        type: 'timeTablesAuto/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
     }
-    this.onLoad();
-    this.loadCategories();
-  }
-
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
-
-  /**
-   * Set state properties
-   * @param {object} data the data input
-   * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
-   * @memberof setStateData
-   */
-  setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
   };
 
-  /**
-   * Function load data
-   */
-  onLoad = () => {
-    const { search } = this.state;
-    const {
-      location: { pathname },
-    } = this.props;
-    this.props.dispatch({
-      type: 'timeTables/GET_DATA',
+  const loadYears = () => {
+    dispatch({
+      type: 'timeTablesAuto/GET_YEARS',
+      payload: {},
+    });
+    dispatch({
+      type: 'timeTablesAuto/GET_ACTIVITIES',
+      payload: {},
+    });
+  };
+
+  const onLoad = () => {
+    dispatch({
+      type: 'timeTablesAuto/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          const { timetableDetailGroupByTimes } = response;
+          const arr = classes.map((classItem) =>
+            timeStamp.map((timeItem) => {
+              const timetableDetail = timetableDetailGroupByTimes?.find(
+                (item) =>
+                  item.startTime === timeItem.startTime && item.endTime === timeItem.endTime,
+              );
+              const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
+                (item) => item?.class?.id === classItem?.id,
+              );
+              return {
+                branchId: search?.branchId,
+                timetableSettingId: search?.timetableSettingId,
+                classId: classItem?.id,
+                tasks: timetableDetailClass?.timetableDetailActivities || [],
+                timetableDetailByClassAndActivy: {
+                  startTime: timeItem?.startTime,
+                  endTime: timeItem?.endTime,
+                },
+              };
+            }),
+          );
+          setItems(arr);
+        }
       },
     });
     history.push({
       pathname,
       query: Helper.convertParamSearch({
         ...search,
-        fromDate: moment(search.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        toDate: moment(search.toDate).format(variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
   };
 
-  loadCategories = () => {
-    const { search } = this.state;
-    const { defaultBranch } = this.props;
-    if (search.branchId) {
-      this.props.dispatch({
-        type: 'timeTables/GET_CLASSES',
+  useEffect(() => {
+    loadCategories();
+    loadYears();
+  }, []);
+
+  useEffect(() => {
+    if (search.branchId && search.timetableSettingId && !isEmpty(classes)) {
+      onLoad();
+    }
+  }, [search, classes]);
+
+  const onChangeBranch = (branch) => {
+    if (branch) {
+      dispatch({
+        type: 'timeTablesAuto/GET_CLASSES',
         payload: {
-          branch: search.branchId,
+          branch,
         },
       });
     }
-    if (!defaultBranch?.id) {
-      this.props.dispatch({
-        type: 'timeTables/GET_BRANCHES',
-        payload: {},
-      });
-    }
   };
 
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
+  const onConfigChange = (values) => {
+    setSearch((prev) => ({
+      ...prev,
+      branchId: values.branchId,
+      timetableSettingId: values.timetableSettingId,
+    }));
+  };
+
+  const formatColumns = useMemo(() => {
+    const taskArr = activities.map((item) => item.name);
+    const activyColumns = { 'columns-1': { tasks: taskArr } };
+    const newColumns = Object.assign(
+      {},
+      ...items.flat(1).map((item, index) => ({ [`columns-${index + 2}`]: item })),
     );
-  }, 500);
+    return { ...activyColumns, ...newColumns };
+  }, [items]);
 
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearchDate = debounce((fromDate = moment(), toDate = moment(), type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          type,
-          fromDate: moment(fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
-          toDate: moment(toDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        },
-      }),
-      () => this.onLoad(),
+  const formatNewItems = useMemo(() => {
+    const newItemsFromBackend = Object.assign(
+      {},
+      ...activities.map((item) => ({ [item?.name]: item })),
     );
-  }, 500);
+    return newItemsFromBackend;
+  }, [activities]);
 
-  /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelect = (e, type) => {
-    this.debouncedSearch(e, type);
-  };
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    const { source, destination } = result;
 
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
-  };
+    if (source.droppableId !== destination.droppableId) {
+      const sourceColumn = formatColumns[source.droppableId];
+      const destColumn = formatColumns[destination.droppableId];
 
-  /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelectBranch = (e, type) => {
-    this.debouncedSearch(e, type);
-    this.props.dispatch({
-      type: 'timeTables/GET_CLASSES',
-      payload: {
-        branch: e,
-      },
-    });
-  };
+      const sourceItems = [...sourceColumn.tasks];
 
-  convertData = (items) => {
-    if (!isEmpty(items)) {
-      let array = [];
-      items.forEach((item) => {
-        item.timetableDetails.forEach((itemTime) => {
-          const durations = moment(itemTime.toTime)
-            .add(1, 'seconds')
-            .diff(moment(itemTime.fromTime), 'seconds');
-          array = [
-            ...array,
-            {
-              ...itemTime,
-              parentId: item.id,
-              title: itemTime.content,
-              rrule: {
-                freq: 'weekly',
-                interval: 1,
-                byweekday: item.timetableWeeks.map(
-                  (itemTimeTableWeek) => variablesModules.DAY_OF_WEEK[itemTimeTableWeek.dayOfWeek],
-                ),
-                dtstart: Helper.joinDateTime(item.fromDate, itemTime.fromTime),
-                until: Helper.joinDateTime(item.toDate, itemTime.toTime),
+      const [removed] = sourceItems.splice(source.index, 1);
+
+      const timetableActivityDetail = activities.find((item) => item.name === removed);
+
+      const columnsAfter = {
+        ...formatColumns,
+        [destination.droppableId]: {
+          ...formatColumns[destination.droppableId],
+          tasks: [
+            ...(formatColumns[destination.droppableId].tasks || []),
+            { timetableActivityDetail },
+          ],
+        },
+      };
+
+      const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
+
+      const groups = groupBy(
+        arr.filter((item) => item.classId),
+        'classId',
+      );
+      setItems(Object.keys(groups).map((key) => groups[key]));
+      const payload = {
+        branchId: destColumn.branchId,
+        timetableSettingId: destColumn.timetableSettingId,
+        timetableDetailByClassAndActivy: {
+          startTime: destColumn.timetableDetailByClassAndActivy.startTime,
+          endTime: destColumn.timetableDetailByClassAndActivy.endTime,
+          classId: destColumn.classId,
+          timetableActivityDetailId: timetableActivityDetail.id,
+        },
+      };
+      dispatch({
+        type: 'timeTablesAuto/ADD_DRAG',
+        payload,
+        callback: (response, error) => {
+          if (error) {
+            const columnsAfter = {
+              ...formatColumns,
+              [destination.droppableId]: {
+                ...formatColumns[destination.droppableId],
               },
-              duration: moment.utc(durations * 1000).format(variables.DATE_FORMAT.TIME_FULL),
-            },
-          ];
-        });
+            };
+            const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
+            const groups = groupBy(
+              arr.filter((item) => item.classId),
+              'classId',
+            );
+            setItems(Object.keys(groups).map((key) => groups[key]));
+          }
+        },
       });
-      return array;
     }
-    return [];
   };
 
-  cancelModal = () => {
-    this.setStateData({ visible: false, details: {} });
+  const showModal = (value) => {
+    setIsModalVisible(true);
+    setColumnInfo(formatColumns[value]);
   };
 
-  handleEventClick = (values) => {
-    const details = {
-      ...get(values, 'event._def.extendedProps'),
-      ...get(values, 'event._def'),
-      startDate: values?.event?.startStr || '',
-      endDate: values?.event?.endStr || '',
-    };
-    this.setStateData({ visible: true, details });
+  const handleOk = () => {
+    setIsModalVisible(false);
   };
 
-  redirectDetails = (pathname, key) => {
-    const { details } = this.state;
-    if (!details?.parentId) {
-      return;
-    }
-    history.push(`${pathname}/${details?.parentId}/${key}`);
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
-  remove = () => {
-    const { details } = this.state;
-    if (!details?.parentId) {
-      return;
-    }
-    Helper.confirmAction({
-      callback: () => {
-        this.props.dispatch({
-          type: 'timeTables/REMOVE',
-          payload: {
-            id: details?.parentId,
-          },
-          callback: (response) => {
-            if (response) {
-              this.onLoad();
-              this.setStateData({ details: {}, visible: false });
-            }
-          },
-        });
-      },
-    });
-  };
+  const onFinish = () => {};
 
-  render() {
-    const {
-      data,
-      branches,
-      classes,
-      location: { pathname },
-      defaultBranch,
-    } = this.props;
-    const { search, details, visible, defaultBranchs } = this.state;
-    return (
-      <>
-        <Helmet title="Thời khóa biểu" />
-        <Modal
-          title={details?.title}
-          visible={visible}
-          width={500}
-          centered
-          onCancel={this.cancelModal}
-          footer={[
-            <div className="d-flex justify-content-end" key="action">
-              <Button
-                key="remove"
-                color="danger"
-                icon="remove"
-                ghost
-                className="mr10"
-                onClick={this.remove}
-              >
-                Xóa
-              </Button>
-              <Button
-                key="edit"
-                color="success"
-                icon="edit"
-                ghost
-                onClick={() => this.redirectDetails(pathname, 'chi-tiet')}
-              >
-                Chỉnh sửa
-              </Button>
-            </div>,
-          ]}
-        >
+  return (
+    <>
+      <Helmet title="Thời khóa biểu" />
+      <Modal
+        title="Chi tiết"
+        centered
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[
+          <a key="back" role="presentation" onClick={handleCancel}>
+            Hủy
+          </a>,
+          <Button key="submit" color="success" type="primary" onClick={handleOk}>
+            Lưu
+          </Button>,
+        ]}
+      >
+        <Form form={propertyForm} initialValues={{ ...columnInfo }}>
           <div className="row">
-            <div className="col-lg-6 mb15">
-              <div className="ant-col ant-form-item-label">
-                <span>Tiêu đề</span>
-              </div>
-              <p className="mb0 font-weight-bold">{details?.content || ''}</p>
+            <div className="col-lg-4">
+              <FormItem
+                className="flex-column"
+                label="Thời gian"
+                name="time"
+                type={variables.INPUT}
+                disabled
+              />
             </div>
-            <div className="col-lg-6 mb15">
-              <div className="ant-col ant-form-item-label">
-                <span>Thời gian diễn ra</span>
-              </div>
-              <p className="mb0 font-weight-bold">
-                {Helper.getDate(details.startDate, variables.DATE_FORMAT.DATE_TIME)} -{' '}
-                {Helper.getDate(details.endDate, variables.DATE_FORMAT.HOUR)}
-              </p>
-            </div>
-          </div>
-        </Modal>
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Thời khóa biểu</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="TKB"
-            >
-              Thêm mới
-            </Button>
-          </div>
-          {/* FORM SEARCH */}
-          <div className={classnames(styles.search, 'pt20')}>
-            <Form
-              initialValues={{
-                ...search,
-                branchId: search.branchId || null,
-                classId: search.classId || null,
-              }}
-              layout="vertical"
-              ref={this.formRef}
-            >
-              <div className="row">
-                {!defaultBranch?.id && (
-                  <div className="col-lg-4">
-                    <FormItem
-                      className="ant-form-item-row"
-                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                      label="CƠ SỞ"
-                      name="branchId"
-                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
-                      type={variables.SELECT}
-                      allowClear={false}
-                    />
-                  </div>
-                )}
-                {defaultBranch?.id && (
-                  <div className="col-lg-4">
-                    <FormItem
-                      className="ant-form-item-row"
-                      data={defaultBranchs}
-                      label="CƠ SỞ"
-                      name="branchId"
-                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
-                      type={variables.SELECT}
-                      allowClear={false}
-                    />
-                  </div>
-                )}
 
-                <div className="col-lg-4">
-                  <FormItem
-                    className="ant-form-item-row"
-                    data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
-                    label="LỚP"
-                    name="classId"
-                    onChange={(event) => this.onChangeSelect(event, 'classId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
-              </div>
-            </Form>
+            <div className="col-lg-4">
+              <FormItem
+                className="flex-column"
+                label="Cơ sở"
+                name="branchName"
+                type={variables.INPUT}
+                disabled
+              />
+            </div>
+
+            <div className="col-lg-12">
+              <FormItem
+                className="flex-column"
+                data={classes}
+                label="Lớp áp dụng"
+                name="classId"
+                type={variables.SELECT_MUTILPLE}
+                allowClear
+              />
+            </div>
           </div>
-          {/* FORM SEARCH */}
-          <div className={classnames(styles['block-table'], 'schedules-custom', 'mt20')}>
-            <FullCalendar
-              schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-              plugins={[
-                resourceTimeGridPlugin,
-                dayGridPlugin,
-                timeGridPlugin,
-                interactionPlugin,
-                listPlugin,
-                rrulePlugin,
-              ]}
-              initialView={search.type}
-              headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay',
-              }}
-              customButtons={{
-                next: {
-                  click: () => {
-                    const { search } = this.state;
-                    const { current } = this.calendarComponentRef;
-                    if (current) {
-                      const calendarApi = current.getApi();
-                      if (search.type === 'dayGridMonth') {
-                        this.debouncedSearchDate(
-                          moment(search.fromDate).add(1, 'months'),
-                          moment(search.toDate).add(1, 'months'),
-                          'dayGridMonth',
-                        );
-                        calendarApi.gotoDate(
-                          moment(search.toDate)
-                            .add(1, 'months')
-                            .format(variables.DATE_FORMAT.DATE_AFTER),
-                        );
-                      }
-                      if (search.type === 'timeGridWeek') {
-                        this.debouncedSearchDate(
-                          moment(search.fromDate).add(1, 'weeks'),
-                          moment(search.toDate).add(1, 'weeks'),
-                          'timeGridWeek',
-                        );
-                        calendarApi.gotoDate(
-                          moment(search.toDate)
-                            .add(1, 'weeks')
-                            .format(variables.DATE_FORMAT.DATE_AFTER),
-                        );
-                      }
-                      if (search.type === 'timeGridDay' || search.type === 'listDay') {
-                        this.debouncedSearchDate(
-                          moment(search.fromDate).add(1, 'days'),
-                          moment(search.toDate).add(1, 'days'),
-                          'timeGridDay',
-                        );
-                        calendarApi.gotoDate(
-                          moment(search.toDate)
-                            .add(1, 'days')
-                            .format(variables.DATE_FORMAT.DATE_AFTER),
-                        );
-                      }
-                    }
-                  },
-                },
-                prev: {
-                  click: () => {
-                    const { search } = this.state;
-                    const { current } = this.calendarComponentRef;
-                    if (current) {
-                      const calendarApi = current.getApi();
-                      if (search.type === 'dayGridMonth') {
-                        this.debouncedSearchDate(
-                          moment(search.fromDate).subtract(1, 'months'),
-                          moment(search.toDate).subtract(1, 'months'),
-                          'dayGridMonth',
-                        );
-                        calendarApi.gotoDate(
-                          moment(search.fromDate)
-                            .subtract(1, 'months')
-                            .format(variables.DATE_FORMAT.DATE_AFTER),
-                        );
-                      }
-                      if (search.type === 'timeGridWeek') {
-                        this.debouncedSearchDate(
-                          moment(search.fromDate).subtract(1, 'weeks'),
-                          moment(search.toDate).subtract(1, 'weeks'),
-                          'timeGridWeek',
-                        );
-                        calendarApi.gotoDate(
-                          moment(search.fromDate)
-                            .subtract(1, 'weeks')
-                            .format(variables.DATE_FORMAT.DATE_AFTER),
-                        );
-                      }
-                      if (search.type === 'timeGridDay' || search.type === 'listDay') {
-                        this.debouncedSearchDate(
-                          moment(search.fromDate).subtract(1, 'days'),
-                          moment(search.toDate).subtract(1, 'days'),
-                          'timeGridDay',
-                        );
-                        calendarApi.gotoDate(
-                          moment(search.toDate)
-                            .subtract(1, 'days')
-                            .format(variables.DATE_FORMAT.DATE_AFTER),
-                        );
-                      }
-                    }
-                  },
-                },
-                dayGridMonth: {
-                  text: 'Tháng',
-                  click: () => {
-                    if (this.calendarComponentRef.current) {
-                      const calendarApi = this.calendarComponentRef.current.getApi();
-                      calendarApi.changeView('dayGridMonth');
-                      this.debouncedSearchDate(
-                        moment().startOf('month'),
-                        moment().endOf('month'),
-                        'dayGridMonth',
-                      );
-                    }
-                  },
-                },
-                timeGridWeek: {
-                  text: 'Tuần',
-                  click: () => {
-                    if (this.calendarComponentRef.current) {
-                      const calendarApi = this.calendarComponentRef.current.getApi();
-                      calendarApi.changeView('timeGridWeek');
-                      this.debouncedSearchDate(
-                        moment().startOf('weeks'),
-                        moment().endOf('weeks'),
-                        'timeGridWeek',
-                      );
-                      calendarApi.gotoDate(
-                        moment().endOf('weeks').format(variables.DATE_FORMAT.DATE_AFTER),
-                      );
-                    }
-                  },
-                },
-                timeGridDay: {
-                  text: 'Ngày',
-                  click: () => {
-                    if (this.calendarComponentRef.current) {
-                      const calendarApi = this.calendarComponentRef.current.getApi();
-                      calendarApi.changeView('timeGridDay');
-                      this.debouncedSearchDate(
-                        moment().startOf('days'),
-                        moment().endOf('days'),
-                        'timeGridDay',
-                      );
-                      calendarApi.gotoDate(
-                        moment().startOf('days').format(variables.DATE_FORMAT.DATE_AFTER),
-                      );
-                    }
-                  },
-                },
-                listDay: {
-                  text: 'Lịch biểu',
-                  click: () => {
-                    if (this.calendarComponentRef.current) {
-                      const calendarApi = this.calendarComponentRef.current.getApi();
-                      calendarApi.changeView('listDay');
-                      this.debouncedSearchDate(
-                        moment().startOf('days'),
-                        moment().endOf('days'),
-                        'timeGridDay',
-                      );
-                      calendarApi.gotoDate(
-                        moment().startOf('days').format(variables.DATE_FORMAT.DATE_AFTER),
-                      );
-                    }
-                  },
-                },
-              }}
-              views={{
-                dayGrid: {
-                  dayMaxEventRows: 3,
-                },
-                month: {
-                  dayMaxEventRows: 3,
-                },
-                agendaFourDay: {
-                  type: 'agenda',
-                  duration: { days: 4 },
-                  buttonText: '4 day',
-                },
-              }}
-              locale="vi"
-              slotMinTime="04:00"
-              slotMaxTime="20:00"
-              editable
-              fixedWeekCount={false}
-              showNonCurrentDates
-              locales={allLocales}
-              allDaySlot={false}
-              height={650}
-              eventClick={this.handleEventClick}
-              events={this.convertData(data)}
-              ref={this.calendarComponentRef}
-            />
-          </div>
+        </Form>
+      </Modal>
+      <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+        <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+          <Text color="dark">Thời khóa biểu</Text>
         </div>
-      </>
-    );
-  }
-}
+        {/* FORM SEARCH */}
+        <div className={classnames(styles.search, 'pt20')}>
+          <Form
+            layout="vertical"
+            form={formRef}
+            initialValues={{ ...search }}
+            onFinish={onConfigChange}
+          >
+            <div className="row">
+              <div className="col-lg-4">
+                <FormItem
+                  className="ant-form-item-row"
+                  data={dataYears}
+                  label="NĂM HỌC"
+                  name="timetableSettingId"
+                  type={variables.SELECT}
+                />
+              </div>
 
-Index.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
-  branches: PropTypes.arrayOf(PropTypes.any),
-  classes: PropTypes.arrayOf(PropTypes.any),
-  defaultBranch: PropTypes.objectOf(PropTypes.any),
-};
+              <div className="col-lg-4">
+                <FormItem
+                  className="ant-form-item-row"
+                  data={branches}
+                  label="CƠ SỞ"
+                  name="branchId"
+                  type={variables.SELECT}
+                  allowClear={false}
+                  onChange={onChangeBranch}
+                />
+              </div>
+              <div className="col-lg-4">
+                <Button
+                  color="success"
+                  permission="TKB"
+                  htmlType="submit"
+                  loading={loading['timeTablesAuto/GET_DATA']}
+                >
+                  Cấu hình
+                </Button>
+              </div>
+            </div>
+          </Form>
+        </div>
+        {/* FORM DRAG */}
+        {!isEmpty(classes) && !isEmpty(items) && (
+          <Form layout="vertical" form={dragRef} onFinish={onFinish}>
+            <div className={classnames('schedules-custom', 'mt20', 'row')}>
+              <DragDropContext onDragEnd={onDragEnd}>
+                <div className="col-lg-2">
+                  {Object.entries(formatColumns)
+                    .slice(0, 1)
+                    .map(([key, value], index) => {
+                      const tasks = value.tasks.map((taskId) => formatNewItems[taskId]);
 
-Index.defaultProps = {
-  data: [],
-  dispatch: {},
-  location: {},
-  branches: [],
-  classes: [],
-  defaultBranch: {},
-};
+                      return (
+                        <Droppable key={index} droppableId={key}>
+                          {(provided) => (
+                            <div {...provided.droppableProps} ref={provided.innerRef}>
+                              <div className={classnames(styles['block-table'])}>
+                                <FormItem
+                                  className="ant-form-item-row"
+                                  name="type"
+                                  type={variables.INPUT}
+                                />
+                                {tasks.map((task, index) => (
+                                  <Draggable key={task.id} draggableId={task.name} index={index}>
+                                    {(provided) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Paragraph
+                                          className="py5 px10"
+                                          style={{
+                                            backgroundColor: task.color,
+                                          }}
+                                        >
+                                          {task.name}
+                                        </Paragraph>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                              </div>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      );
+                    })}
+                </div>
+
+                <div className="col-lg-10">
+                  <div className={classnames(styles['block-table'])}>
+                    <div className="row time-table">
+                      <div className={classes.length > 3 ? 'col-lg-2' : 'col-lg-3'}>
+                        <Paragraph className="header-row">Thời gian</Paragraph>
+                        {timeStamp.map((item) => (
+                          <Paragraph className="data-row cell" key={item.id}>
+                            {`${item.startTime} - ${item.endTime}`}
+                          </Paragraph>
+                        ))}
+                      </div>
+
+                      {classes.map((classItem, index) => (
+                        <div className="col-lg-3" key={index}>
+                          <Paragraph className="header-row">{classItem.name}</Paragraph>
+                          {Object.entries(formatColumns)
+                            .slice(1)
+                            .filter((column) => column[1].classId === classItem.id)
+                            .map(([key, value], index) => {
+                              const tasks = value.tasks.map(
+                                (task) => formatNewItems[task?.timetableActivityDetail?.name],
+                              );
+                              let cell = null;
+
+                              if (isEmpty(value.tasks)) {
+                                cell = (
+                                  <Droppable key={index} droppableId={key} direction="horizontal">
+                                    {(provided, snapshot) => (
+                                      <div
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        style={getListStyle(snapshot.isDraggingOver)}
+                                        className="no-data-row cell"
+                                      >
+                                        {tasks.map((task, index) => (
+                                          <Paragraph key={index}>{task?.name}</Paragraph>
+                                        ))}
+                                        {provided.placeholder}
+                                      </div>
+                                    )}
+                                  </Droppable>
+                                );
+                              } else {
+                                cell = (
+                                  <div key={index} className="cell">
+                                    {tasks.map((task, index) => (
+                                      <Paragraph
+                                        key={index}
+                                        style={{
+                                          backgroundColor: task?.timetableActivityDetail?.color,
+                                        }}
+                                        className="data-row"
+                                        onClick={() => showModal(key)}
+                                      >
+                                        {task?.name}
+                                      </Paragraph>
+                                    ))}
+                                  </div>
+                                );
+                              }
+
+                              return cell;
+                            })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </DragDropContext>
+            </div>
+          </Form>
+        )}
+      </div>
+    </>
+  );
+});
 
 export default Index;
