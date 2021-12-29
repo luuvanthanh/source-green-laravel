@@ -21,7 +21,7 @@ class Conversation extends UuidModel
     ];
 
     protected $fillable = [
-        'conversation_id_facebook', 'page_id', 'user_facebook_info_id', 'avatar', 'snippet', 'time', 'noti_inbox', 'status_send_message'
+        'conversation_id_facebook', 'page_id', 'user_facebook_info_id', 'avatar', 'snippet', 'time', 'noti_inbox', 'status_send_message', 'from', 'to', 'show_conversation'
     ];
 
     public function page()
