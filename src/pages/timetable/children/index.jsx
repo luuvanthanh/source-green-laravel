@@ -30,30 +30,36 @@ const Index = memo(() => {
   const calendarComponentRef = useRef();
   const { pathname } = useLocation();
   const [
-    { branches, classes, data },
+    { branches, classes, objectData },
     { defaultBranch },
-  ] = useSelector(({ timeTablesChildren, user }) => [timeTablesChildren, user]);
+    { effects },
+  ] = useSelector(({ timeTablesChildren, user, loading }) => [timeTablesChildren, user, loading]);
   const dispatch = useDispatch();
-
+  const { data } = objectData;
   const [state, setState] = useState({
     defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
     details: {},
     visible: false,
   });
   const [search, setSearch] = useState({
-    fromDate: moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-    toDate: moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    fromDate: moment().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
+    toDate: moment().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
     type: 'dayGridMonth',
     branchId: defaultBranch?.id,
     classId: null,
   });
 
-  const [showColumn, setShowColumn] = useState(true);
+  const [showColumn, setShowColumn] = useState(false);
 
   const onLoad = () => {
     dispatch({
-      type: 'timeTablesChildren/GET_FAKE_DATA',
-      payload: {},
+      type: 'timeTablesChildren/GET_DATA',
+      payload: {
+        classId: search.classId || null,
+        branchId: search.branchId || null,
+        isGroupByDayOfWeek: true,
+        searchDate: moment().format('YYYY-MM-DD'),
+      },
     });
   };
 
@@ -101,177 +107,292 @@ const Index = memo(() => {
     }));
   };
 
-  const redirectDetails = (pathname, key) => {
-    const { details } = state;
-    if (!details?.parentId) {
-      return;
-    }
-    history.push(`${pathname}/${details?.parentId}/${key}`);
-  };
-
-  const remove = () => {
-    const { details } = state;
-    if (!details?.parentId) {
-      return;
-    }
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'timeTablesChildren/REMOVE',
-          payload: {
-            id: details?.parentId,
-          },
-          callback: (response) => {
-            if (response) {
-              onLoad();
-              setState((prev) => ({
-                ...prev,
-                details: {},
-                visible: false,
-              }));
-            }
-          },
-        });
-      },
-    });
-  };
-
   const Collapse = () => {
     setShowColumn(!showColumn);
   };
 
+  const handleClick = (value, type) => {
+    switch (type) {
+      case 'dayGridMonth':
+        setState((prev) => ({
+          ...prev,
+          visible: true,
+          details: {
+            content: value?.class?.name,
+            start: value?.startTime,
+            end: value?.endTime,
+          },
+        }));
+        break;
+      case 'timeGridWeek':
+        setState((prev) => ({
+          ...prev,
+          visible: true,
+          details: {
+            content: value?.class?.name,
+            start: value?.start,
+            end: value?.end,
+          },
+        }));
+        break;
+      case 'timeGridDay':
+        setState((prev) => ({
+          ...prev,
+          visible: true,
+          details: {
+            content: value?.timetableActivityDetail?.name,
+            start: value?.start,
+            end: value?.end,
+          },
+        }));
+        break;
+      default:
+        break;
+    }
+  };
+
   const renderCalendar = (type, data) => {
-    const dayName = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     switch (type) {
       case 'dayGridMonth': {
         const calendar = [];
-        const startDay = moment(search.fromDate).startOf('week');
-        const endDay = moment(search.toDate).endOf('week');
-
-        const day = startDay.subtract(1, 'day');
-        while (day.isBefore(endDay, 'day')) {
-          let i = 0;
-          const objectTime = Object.create({});
-          while (i < 7) {
-            if (i <= 4) {
-              objectTime[dayName[i]] = {
-                date: day.add(1, 'day').clone(),
-                month: search.fromDate,
-                data,
-              };
-              objectTime.id = `${Math.floor(Math.random() * 100000 * i)}`;
-            } else {
-              objectTime[dayName[i]] = {
-                date: day.add(1, 'day').clone(),
-                month: search.fromDate,
-                data: [],
-              };
-              objectTime.id = `${Math.floor(Math.random() * 100000 * i)}`;
-            }
-
-            i += 1;
+        const objectDay = {
+          Monday: {
+            date: null,
+            month: '',
+            data: [],
+          },
+          Tuesday: {
+            date: null,
+            month: '',
+            data: [],
+          },
+          Wednesday: {
+            date: null,
+            month: '',
+            data: [],
+          },
+          Thursday: {
+            date: null,
+            month: '',
+            data: [],
+          },
+          Friday: {
+            date: null,
+            month: '',
+            data: [],
+          },
+          Saturday: {
+            date: null,
+            month: '',
+            data: [],
+          },
+          Sunday: {
+            date: null,
+            month: '',
+            data: [],
+          },
+        };
+        data?.forEach((item, idx) => {
+          let groupClass;
+          if (!search.branchId) {
+            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+          } else if (search.branchId && !search.classId) {
+            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+          } else {
+            groupClass = reduce(item.timetableDetailGroupByClasses, (obj, itemDetail) => {
+              if(itemDetail.class.id === search.classId) {
+                return {...obj, ...itemDetail};
+              }
+              return {};
+            }, {});
           }
-          calendar.push(objectTime);
-        }
+          if (!isEmpty(groupClass)) {
+            if (groupClass.timetableDetailActivities) {
+              groupClass.timetableDetailActivities[0].dayOfWeeks.forEach((itemDay) => {
+                objectDay[itemDay].data = objectDay[itemDay].data.concat({
+                  startTime: item.startTime,
+                  endTime: item.endTime,
+                  class: groupClass.timetableDetailActivities,
+                });
+              });
+            }
+            if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
+              groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
+                objectDay[itemDay.dayOfWeek].data = objectDay[itemDay.dayOfWeek].data.concat({
+                  startTime: item.startTime,
+                  endTime: item.endTime,
+                  class: itemDay.timetableActivityDetail,
+                });
+              });
+            }
+          }
+          if (idx === data.length - 1) {
+            const startDay = moment(search.fromDate).startOf('week');
+            const endDay = moment(search.toDate).endOf('week');
+
+            const day = moment(startDay).subtract(1, 'day');
+            while (day.isBefore(endDay, 'day')) {
+              let i = 0;
+              while (i < 7) {
+                const d = day.add(1, 'day').clone();
+                objectDay[dayName[i]] = {
+                  date: moment(d),
+                  month: search.fromDate,
+                  data: objectDay[dayName[i]].data,
+                };
+                i += 1;
+              }
+              calendar.push(objectDay);
+            }
+          }
+        });
+
         return calendar || [];
       }
       case 'timeGridWeek': {
-        const calendar = [];
-        const startDate = moment(search.fromDate).startOf('month').startOf('week');
-        const startTime = moment(startDate).add(7, 'hours').add(30, 'minutes');
-        const totalTime = reduce(data, (total, item) => total + item.timeLearn, 0);
-        const endTime = moment(startTime).add(totalTime, 'minutes');
-        const generateData = reduce(
-          data,
-          (arr, item) => {
-            if (item.timeLearn <= 30) {
-              arr.push(item);
-            } else {
-              const numberLoops = item.timeLearn / 30;
-              let idx = 0;
-              while (idx < Math.ceil(numberLoops)) {
-                if (idx === 0) {
-                  arr.push({
-                    ...item,
-                    timeLearn:
-                      Math.ceil(numberLoops) !== Math.floor(numberLoops)
-                        ? item.timeLearn - Math.floor(numberLoops) * 30
-                        : 30,
-                  });
-                } else {
-                  arr.push({ ...item, timeLearn: 30 });
-                }
-                idx += 1;
-              }
-            }
-            return arr;
-          },
-          [],
-        );
-
-        let j = 1;
-        while (startTime.isBefore(endTime, 'minutes')) {
-          const obj = Object.create({});
-          let i = 0;
-          if (j === 1) {
-            while (i < 8) {
-              if (i < 1) {
-                obj.time = '';
-              } else {
-                obj[dayName[i - 1]] = '';
-              }
-              i += 1;
-            }
+        const dataWeek = [];
+        data?.forEach((item, idx) => {
+          let groupClass;
+          if (!search.branchId) {
+            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+          } else if (search.branchId && !search.classId) {
+            groupClass = { ...item.timetableDetailGroupByClasses[0] };
           } else {
-            while (i < 8) {
-              if (i === 0) {
-                obj.timeStart = startTime
-                  .add(generateData[j - 3] ? generateData[j - 3].timeLearn : 0, 'minutes')
-                  .clone();
-              } else if (i > 0 && i < 6) {
-                obj[dayName[i - 1]] = generateData[j - 2];
-              } else {
-                obj[dayName[i - 1]] = '';
+            groupClass = reduce(item.timetableDetailGroupByClasses, (obj, itemDetail) => {
+              if(itemDetail.class.id === search.classId) {
+                return {...obj, ...itemDetail};
               }
-              i += 1;
+              return {};
+            }, {});
+          }
+
+          if (!isEmpty(groupClass)) {
+            if (idx === 0) {
+              const objectEmpty = {};
+              objectEmpty.time = '';
+              dayName.forEach((item) => {
+                objectEmpty[item] = '';
+              });
+              dataWeek.push(objectEmpty);
+            }
+            const objectData = Object.create({});
+            objectData.timeStart = item.startTime;
+            if (groupClass.timetableDetailActivities) {
+              groupClass.timetableDetailActivities[0].dayOfWeeks.forEach((itemDay) => {
+                objectData[itemDay] = {
+                  class: groupClass.timetableDetailActivities,
+                  start: item.startTime,
+                  end: item.endTime,
+                };
+              });
+              dayName.forEach((itemDay) => {
+                if (!objectData[itemDay]) {
+                  objectData[itemDay] = {};
+                }
+              });
+
+              dataWeek.push(objectData);
+            }
+            if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
+              groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
+                objectData[itemDay.dayOfWeek] = {
+                  class: itemDay.timetableActivityDetail,
+                  start: item.startTime,
+                  end: item.endTime,
+                };
+              });
+              dayName.forEach((itemDay) => {
+                if (!objectData[itemDay]) {
+                  objectData[itemDay] = {};
+                }
+              });
+              dataWeek.push(objectData);
             }
           }
-          obj.id = `${Math.floor(Math.random() * 100000 * i)}`;
-          calendar.push(obj);
-          j += 1;
-        }
-        return calendar;
+        });
+        return dataWeek;
       }
       case 'timeGridDay': {
-        const timeStart = moment(search.fromDate).add(7, 'hours').add(30, 'minutes');
-        const arrTimeTable = reduce(
-          data,
-          (arr, item) => {
-            const obj = Object.create({});
-            obj.times = {
-              timeStart: timeStart.add(0, 'minutes').clone(),
-              timeEnd: timeStart.add(item.timeLearn, 'minutes').clone(),
-            };
-            obj.content = { ...item };
-            obj.id = `${Math.floor(Math.random() * 100000)}`;
-            arr.push(obj);
-            return arr;
-          },
-          [],
-        );
-        return arrTimeTable;
+        const dataGridDay = data?.map((item) => {
+          const objectDay = {};
+          objectDay.times = {
+            timeStart: item.startTime,
+            timeEnd: item.endTime,
+          };
+
+          let groupClass;
+          if (!search.branchId) {
+            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+          } else if (search.branchId && !search.classId) {
+            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+          } else {
+            groupClass = reduce(item.timetableDetailGroupByClasses, (obj, itemDetail) => {
+              if(itemDetail.class.id === search.classId) {
+                return {...obj, ...itemDetail};
+              }
+              return {};
+            }, {});
+          }
+          if (!isEmpty(groupClass)) {
+            if (groupClass.timetableDetailActivities) {
+              const { timetableDetailActivities } = groupClass;
+              objectDay.content = {
+                ...timetableDetailActivities[0],
+                start: item.startTime,
+                end: item.endTime,
+              };
+            }
+            if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
+              const { timetableDetailActivityGroupByDayOfWeeks } = groupClass;
+              objectDay.content = {
+                ...timetableDetailActivityGroupByDayOfWeeks[0],
+                start: item.startTime,
+                end: item.endTime,
+              };
+            }
+          }
+          return objectDay;
+        });
+        return dataGridDay;
       }
       case 'listDay': {
-        const timeStart = moment(search.fromDate).add(7, 'hours').add(30, 'minutes');
         const arrTimeTable = reduce(
           data,
           (arr, item) => {
-            arr.push({
-              timeStart: timeStart.add(0, 'minutes').clone(),
-              timeEnd: timeStart.add(item.timeLearn, 'minutes').clone(),
-              id: `${Math.floor(Math.random() * 100000)}`,
-              ...item,
-            });
+            let groupClass;
+            if (!search.branchId) {
+              groupClass = { ...item.timetableDetailGroupByClasses[0] };
+            } else if (search.branchId && !search.classId) {
+              groupClass = { ...item.timetableDetailGroupByClasses[0] };
+            } else {
+              groupClass = reduce(item.timetableDetailGroupByClasses, (obj, itemDetail) => {
+                if(itemDetail.class.id === search.classId) {
+                  return {...obj, ...itemDetail};
+                }
+                return {};
+              }, {});
+            }
+            if (!isEmpty(groupClass)) {
+              if (groupClass.timetableDetailActivities) {
+                const { timetableDetailActivities } = groupClass;
+                arr.push({
+                  timeStart: item.startTime,
+                  timeEnd: item.endTime,
+                  id: `${Math.floor(Math.random() * 100000)}`,
+                  content: { ...timetableDetailActivities[0] },
+                });
+              }
+              if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
+                const { timetableDetailActivityGroupByDayOfWeeks } = groupClass;
+                arr.push({
+                  timeStart: item.startTime,
+                  timeEnd: item.endTime,
+                  id: `${Math.floor(Math.random() * 100000)}`,
+                  content: { ...timetableDetailActivityGroupByDayOfWeeks[0] },
+                });
+              }
+            }
             return arr;
           },
           [],
@@ -290,78 +411,83 @@ const Index = memo(() => {
         return [
           {
             title: 'Thứ hai',
-            key: 'monday',
-            dataIndex: 'monday',
+            key: 'Monday',
+            dataIndex: 'Monday',
             className: 'min-width-100',
             render: (value) => (
               <CardMonth
                 date={value.date}
                 month={value.month}
                 data={value.data}
-                onClick={() => {}}
+                day={value.day}
+                handleClick={handleClick}
               />
             ),
           },
           {
             title: 'Thứ ba',
-            key: 'tuesday',
-            dataIndex: 'tuesday',
+            key: 'Tuesday',
+            dataIndex: 'Tuesday',
             className: 'min-width-100',
             render: (value) => (
               <CardMonth
                 date={value.date}
+                day={value.day}
                 month={value.month}
                 data={value.data}
-                onClick={() => {}}
+                handleClick={handleClick}
               />
             ),
           },
           {
             title: 'Thứ tư',
-            key: 'wednesday',
-            dataIndex: 'wednesday',
+            key: 'Wednesday',
+            dataIndex: 'Wednesday',
             className: 'min-width-100',
             render: (value) => (
               <CardMonth
                 date={value.date}
+                day={value.day}
                 month={value.month}
                 data={value.data}
-                onClick={() => {}}
+                handleClick={handleClick}
               />
             ),
           },
           {
             title: 'Thứ năm',
-            key: 'thursday',
-            dataIndex: 'thursday',
+            key: 'Thursday',
+            dataIndex: 'Thursday',
             className: 'min-width-100',
             render: (value) => (
               <CardMonth
                 date={value.date}
+                day={value.day}
                 month={value.month}
                 data={value.data}
-                onClick={() => {}}
+                handleClick={handleClick}
               />
             ),
           },
           {
             title: 'Thứ sáu',
-            key: 'friday',
-            dataIndex: 'friday',
+            key: 'Friday',
+            dataIndex: 'Friday',
             className: 'min-width-100',
             render: (value) => (
               <CardMonth
                 date={value.date}
+                day={value.day}
                 month={value.month}
                 data={value.data}
-                onClick={() => {}}
+                handleClick={handleClick}
               />
             ),
           },
           {
             title: 'Thứ bảy',
-            key: 'saturday',
-            dataIndex: 'saturday',
+            key: 'Saturday',
+            dataIndex: 'Saturday',
             className: 'min-width-100',
             render: (value) => {
               if (
@@ -379,8 +505,8 @@ const Index = memo(() => {
           },
           {
             title: 'Chủ nhật',
-            key: 'sunday',
-            dataIndex: 'sunday',
+            key: 'Sunday',
+            dataIndex: 'Sunday',
             className: 'min-width-100',
             render: (value) => {
               if (
@@ -406,7 +532,12 @@ const Index = memo(() => {
               dataIndex: 'timeStart',
               width: 50,
               className: classnames(styles['td-time'], 'min-width-50'),
-              render: (value) => (value ? <CardTime value={value} /> : ''),
+              render: (value) =>
+                value ? (
+                  <CardTime value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
+                ) : (
+                  ''
+                ),
             },
             {
               title: (
@@ -415,11 +546,13 @@ const Index = memo(() => {
                   date={moment(arrDate[0]).format(variables.DATE_FORMAT.DATE_MONTH)}
                 />
               ),
-              key: 'monday',
-              dataIndex: 'monday',
+              key: 'Monday',
+              dataIndex: 'Monday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => <CardLesson value={value} />,
+              render: (value) => (
+                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
+              ),
             },
             {
               title: (
@@ -428,11 +561,13 @@ const Index = memo(() => {
                   date={moment(arrDate[1]).format(variables.DATE_FORMAT.DATE_MONTH)}
                 />
               ),
-              key: 'tuesday',
-              dataIndex: 'tuesday',
+              key: 'Tuesday',
+              dataIndex: 'Tuesday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => <CardLesson value={value} />,
+              render: (value) => (
+                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
+              ),
             },
             {
               title: (
@@ -441,11 +576,13 @@ const Index = memo(() => {
                   date={moment(arrDate[2]).format(variables.DATE_FORMAT.DATE_MONTH)}
                 />
               ),
-              key: 'wednesday',
-              dataIndex: 'wednesday',
+              key: 'Wednesday',
+              dataIndex: 'Wednesday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => <CardLesson value={value} />,
+              render: (value) => (
+                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
+              ),
             },
             {
               title: (
@@ -454,11 +591,13 @@ const Index = memo(() => {
                   date={moment(arrDate[3]).format(variables.DATE_FORMAT.DATE_MONTH)}
                 />
               ),
-              key: 'thursday',
-              dataIndex: 'thursday',
+              key: 'Thursday',
+              dataIndex: 'Thursday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => <CardLesson value={value} />,
+              render: (value) => (
+                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
+              ),
             },
             {
               title: (
@@ -467,11 +606,13 @@ const Index = memo(() => {
                   date={moment(arrDate[4]).format(variables.DATE_FORMAT.DATE_MONTH)}
                 />
               ),
-              key: 'friday',
-              dataIndex: 'friday',
+              key: 'Friday',
+              dataIndex: 'Friday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => <CardLesson value={value} />,
+              render: (value) => (
+                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
+              ),
             },
             {
               title: (
@@ -480,8 +621,8 @@ const Index = memo(() => {
                   date={moment(arrDate[5]).format(variables.DATE_FORMAT.DATE_MONTH)}
                 />
               ),
-              key: 'saturday',
-              dataIndex: 'saturday',
+              key: 'Saturday',
+              dataIndex: 'Saturday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
               render: () => {},
@@ -493,8 +634,8 @@ const Index = memo(() => {
                   date={moment(arrDate[6]).format(variables.DATE_FORMAT.DATE_MONTH)}
                 />
               ),
-              key: 'sunday',
-              dataIndex: 'sunday',
+              key: 'Sunday',
+              dataIndex: 'Sunday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
               render: () => {},
@@ -502,13 +643,7 @@ const Index = memo(() => {
             {
               title: (
                 <Button
-                  icon={
-                    showColumn ? (
-                      <DoubleRightOutlined />
-                    ) : (
-                      <DoubleLeftOutlined />
-                    )
-                  }
+                  icon={showColumn ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
                   onClick={() => Collapse()}
                 />
               ),
@@ -540,7 +675,9 @@ const Index = memo(() => {
             key: 'content',
             dataIndex: 'content',
             className: 'min-width-100',
-            render: (value) => <CardDate content={value} onClick={() => {}} />,
+            render: (value) => (
+              <CardDate content={value} onClick={() => handleClick(value, 'timeGridDay')} />
+            ),
           },
         ];
       default:
@@ -575,19 +712,20 @@ const Index = memo(() => {
       }
       return (
         <div className="mb-5">
-            <Table
-              bordered
-              columns={header(search.type, arrDate)}
-              dataSource={renderCalendar(search.type, data)}
-              pagination={false}
-              params={{
-                header: header(search.type),
-                type: 'table',
-              }}
-              rowKey={() => Math.floor(Math.random() * 1000000)}
-              scroll={{ x: '100%' }}
-            />
-          </div>
+          <Table
+            bordered
+            columns={header(search.type, arrDate)}
+            dataSource={renderCalendar(search.type, data)}
+            loading={effects['timeTablesChildren/GET_DATA']}
+            pagination={false}
+            params={{
+              header: header(search.type),
+              type: 'table',
+            }}
+            rowKey={() => Math.floor(Math.random() * 1000000)}
+            scroll={{ x: '100%' }}
+          />
+        </div>
       );
     }
     return <></>;
@@ -601,302 +739,299 @@ const Index = memo(() => {
   };
 
   return (
-    !isEmpty(data) && (
-      <>
-        <Helmet title="Thời khóa biểu trẻ" />
-        <Modal
-          title={state.details?.title}
-          visible={state.visible}
-          width={500}
-          centered
-          onCancel={cancelModal}
-          footer={[
-            <div className="d-flex justify-content-end" key="action">
-              <ButtonCustom
-                key="remove"
-                color="danger"
-                icon="remove"
-                ghost
-                className="mr10"
-                onClick={remove}
-              >
-                Xóa
-              </ButtonCustom>
-              <ButtonCustom
-                key="edit"
-                color="success"
-                icon="edit"
-                ghost
-                onClick={() => redirectDetails(pathname, 'chi-tiet')}
-              >
-                Chỉnh sửa
-              </ButtonCustom>
-            </div>,
-          ]}
-        >
-          <div className="row">
-            <div className="col-lg-6 mb15">
-              <div className="ant-col ant-form-item-label">
-                <span>Tiêu đề</span>
-              </div>
-              <p className="mb0 font-weight-bold">{state.details?.content || ''}</p>
-            </div>
-            <div className="col-lg-6 mb15">
-              <div className="ant-col ant-form-item-label">
-                <span>Thời gian diễn ra</span>
-              </div>
-              <p className="mb0 font-weight-bold">
-                {Helper.getDate(state.details.startDate, variables.DATE_FORMAT.DATE_TIME)} -{' '}
-                {Helper.getDate(state.details.endDate, variables.DATE_FORMAT.HOUR)}
-              </p>
-            </div>
-          </div>
-        </Modal>
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Thời khóa biểu trẻ</Text>
+    // !isEmpty(fake_data) && (
+    <>
+      <Helmet title="Thời khóa biểu trẻ" />
+      <Modal
+        title={state.details?.title}
+        visible={state.visible}
+        width={500}
+        centered
+        onCancel={cancelModal}
+        footer={[
+          <div className="d-flex justify-content-end" key="action">
             <ButtonCustom
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="TKB"
+              key="remove"
+              color="danger"
+              icon="remove"
+              ghost
+              className="mr10"
+              // onClick={remove}
             >
-              Thêm mới
+              Xóa
             </ButtonCustom>
-          </div>
-          {/* FORM SEARCH */}
-          <div className={classnames(styles.search, 'pt20')}>
-            <Form
-              initialValues={{
-                ...search,
-                branchId: search.branchId || null,
-                classId: search.classId || null,
-              }}
-              layout="vertical"
-              onFinish={onFinish}
-              ref={formRef}
+            <ButtonCustom
+              key="edit"
+              color="success"
+              icon="edit"
+              ghost
+              // onClick={() => redirectDetails(pathname, 'chi-tiet')}
             >
-              <div className="row">
-                {!defaultBranch?.id && (
-                  <div className="col-lg-4">
-                    <FormItem
-                      className="ant-form-item-row"
-                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                      label="CƠ SỞ"
-                      name="branchId"
-                      onChange={(event) => onChangeSelectBranch(event)}
-                      type={variables.SELECT}
-                      allowClear={false}
-                    />
-                  </div>
-                )}
-                {defaultBranch?.id && (
-                  <div className="col-lg-4">
-                    <FormItem
-                      className="ant-form-item-row"
-                      data={state.defaultBranchs}
-                      label="CƠ SỞ"
-                      name="branchId"
-                      onChange={(event) => onChangeSelectBranch(event)}
-                      type={variables.SELECT}
-                      allowClear={false}
-                    />
-                  </div>
-                )}
-
+              Chỉnh sửa
+            </ButtonCustom>
+          </div>,
+        ]}
+      >
+        <div className="row">
+          <div className="col-lg-6 mb15">
+            <div className="ant-col ant-form-item-label">
+              <span>Tiêu đề</span>
+            </div>
+            <p className="mb0 font-weight-bold">{state.details?.content || ''}</p>
+          </div>
+          <div className="col-lg-6 mb15">
+            <div className="ant-col ant-form-item-label">
+              <span>Thời gian diễn ra</span>
+            </div>
+            <p className="mb0 font-weight-bold">
+              {state.details.start} - {state.details.end}
+            </p>
+          </div>
+        </div>
+      </Modal>
+      <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+        <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+          <Text color="dark">Thời khóa biểu trẻ</Text>
+          <ButtonCustom
+            color="success"
+            icon="plus"
+            onClick={() => history.push(`${pathname}/tao-moi`)}
+            permission="TKB"
+          >
+            Thêm mới
+          </ButtonCustom>
+        </div>
+        {/* FORM SEARCH */}
+        <div className={classnames(styles.search, 'pt20')}>
+          <Form
+            initialValues={{
+              ...search,
+              branchId: search.branchId || null,
+              classId: search.classId || null,
+            }}
+            layout="vertical"
+            onFinish={onFinish}
+            ref={formRef}
+          >
+            <div className="row">
+              {!defaultBranch?.id && (
                 <div className="col-lg-4">
                   <FormItem
                     className="ant-form-item-row"
-                    data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
-                    label="LỚP"
-                    name="classId"
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                    label="CƠ SỞ"
+                    name="branchId"
+                    onChange={(event) => onChangeSelectBranch(event)}
                     type={variables.SELECT}
                     allowClear={false}
                   />
                 </div>
+              )}
+              {defaultBranch?.id && (
                 <div className="col-lg-4">
-                  <ButtonCustom color="success" icon="search" htmlType="submit">
-                    Tìm kiếm
-                  </ButtonCustom>
-                </div>
-              </div>
-            </Form>
-          </div>
-          {/* FORM SEARCH */}
-          <div className={classnames(styles['block-table'], 'schedules-custom', 'mt20')}>
-            <div className="d-flex align-items-center justify-content-between mb-4">
-              <div className="d-flex align-items-center justify-content-between">
-                <div className="d-flex flex-row">
-                  <Button
-                    icon={<LeftOutlined className={styles.colorIcon} />}
-                    onClick={() => {
-                      if (search.type === 'dayGridMonth') {
-                        debouncedSearchDate(
-                          moment(search.fromDate).subtract(1, 'months'),
-                          moment(search.toDate).subtract(1, 'months'),
-                          'dayGridMonth',
-                        );
-                      }
-                      if (search.type === 'timeGridWeek') {
-                        debouncedSearchDate(
-                          moment(search.fromDate).subtract(1, 'months'),
-                          moment(search.toDate).subtract(1, 'months'),
-                          'timeGridWeek',
-                        );
-                      }
-                      if (search.type === 'timeGridDay' || search.type === 'listDay') {
-                        debouncedSearchDate(
-                          moment(search.fromDate).subtract(1, 'days'),
-                          moment(search.toDate).subtract(1, 'days'),
-                          'timeGridDay',
-                        );
-                      }
-                    }}
-                    className={styles.btnStyle}
-                  />
-                  <Button
-                    icon={<RightOutlined className={styles.colorIcon} />}
-                    onClick={() => {
-                      if (search.type === 'dayGridMonth') {
-                        debouncedSearchDate(
-                          moment(search.fromDate).add(1, 'months'),
-                          moment(search.toDate).add(1, 'months'),
-                          'dayGridMonth',
-                        );
-                      }
-                      if (search.type === 'timeGridWeek') {
-                        debouncedSearchDate(
-                          moment(search.fromDate).add(1, 'months'),
-                          moment(search.toDate).add(1, 'months'),
-                          'timeGridWeek',
-                        );
-                      }
-                      if (search.type === 'timeGridDay' || search.type === 'listDay') {
-                        debouncedSearchDate(
-                          moment(search.fromDate).add(1, 'days'),
-                          moment(search.toDate).add(1, 'days'),
-                          'timeGridDay',
-                        );
-                      }
-                    }}
-                    className={styles.btnStyle}
+                  <FormItem
+                    className="ant-form-item-row"
+                    data={state.defaultBranchs}
+                    label="CƠ SỞ"
+                    name="branchId"
+                    onChange={(event) => onChangeSelectBranch(event)}
+                    type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
-                <ButtonCustom permission="TKB" color="white" className="ml-2">
-                  Hôm nay
-                </ButtonCustom>
+              )}
+
+              <div className="col-lg-4">
+                <FormItem
+                  className="ant-form-item-row"
+                  data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
+                  label="LỚP"
+                  name="classId"
+                  type={variables.SELECT}
+                  allowClear={false}
+                />
               </div>
-              <div className={classnames("d-flex align-items-end", styles['title-time-table'])}>
-                <Text color="dark" size="large-medium">
-                  {titleDateTable(search.type)}
-                </Text>
-              </div>
-              <div className="d-flex flex-row">
-                <ButtonCustom
-                  permission="TKB"
-                  color={search.type === 'dayGridMonth' ? 'green' : 'white'}
-                  onClick={() => {
-                    debouncedSearchDate(
-                      moment().startOf('month'),
-                      moment().endOf('month'),
-                      'dayGridMonth',
-                    );
-                  }}
-                >
-                  Tháng
-                </ButtonCustom>
-                <ButtonCustom
-                  permission="TKB"
-                  color={search.type === 'timeGridWeek' ? 'green' : 'white'}
-                  onClick={() => {
-                    debouncedSearchDate(
-                      moment().startOf('weeks'),
-                      moment().endOf('weeks'),
-                      'timeGridWeek',
-                    );
-                  }}
-                >
-                  Tuần
-                </ButtonCustom>
-                <ButtonCustom
-                  permission="TKB"
-                  color={search.type === 'timeGridDay' ? 'green' : 'white'}
-                  onClick={() => {
-                    debouncedSearchDate(
-                      moment().startOf('days'),
-                      moment().endOf('days'),
-                      'timeGridDay',
-                    );
-                  }}
-                >
-                  Ngày
-                </ButtonCustom>
-                <ButtonCustom
-                  permission="TKB"
-                  color={search.type === 'listDay' ? 'green' : 'white'}
-                  onClick={() => {
-                    debouncedSearchDate(
-                      moment().startOf('days'),
-                      moment().endOf('days'),
-                      'listDay',
-                    );
-                  }}
-                >
-                  Lịch biểu
+              <div className="col-lg-4">
+                <ButtonCustom color="success" icon="search" htmlType="submit">
+                  Tìm kiếm
                 </ButtonCustom>
               </div>
             </div>
-            <>{search.type === 'timeGridWeek' && tableWeek()}</>
-            <>
-              {search.type === 'dayGridMonth' && (
-                <Table
-                  bordered
-                  columns={header(search.type)}
-                  dataSource={renderCalendar(search.type, data)}
-                  pagination={false}
-                  params={{
-                    header: header(search.type),
-                    type: 'table',
-                  }}
-                  rowKey={(record) => record.id}
-                  scroll={{ x: '100%' }}
-                />
-              )}
-            </>
-            <>
-              {search.type === 'timeGridDay' && (
-                <Table
-                  bordered
-                  columns={header(search.type)}
-                  dataSource={renderCalendar(search.type, data)}
-                  pagination={false}
-                  params={{
-                    header: header(search.type),
-                    type: 'table',
-                  }}
-                  rowKey={(record) => record.id}
-                  scroll={{ x: '100%' }}
-                />
-              )}
-            </>
-            <>
-              {search.type === 'listDay' && (
-                <div className="w-100">
-                  {renderCalendar(search.type, data).map((item, idx) => (
-                    <React.Fragment key={item.id}>
-                      <ListDay
-                        value={item}
-                        lastPoint={idx === renderCalendar(search.type, data).length - 1 ? idx : 0}
-                      />
-                    </React.Fragment>
-                  ))}
-                </div>
-              )}
-            </>
-          </div>
+          </Form>
         </div>
-      </>
-    )
+        {/* FORM SEARCH */}
+        <div className={classnames(styles['block-table'], 'schedules-custom', 'mt20')}>
+          <div className="d-flex align-items-center justify-content-between mb-4">
+            <div className="d-flex align-items-center justify-content-between">
+              <div className="d-flex flex-row">
+                <Button
+                  icon={<LeftOutlined className={styles.colorIcon} />}
+                  onClick={() => {
+                    if (search.type === 'dayGridMonth') {
+                      debouncedSearchDate(
+                        moment(search.fromDate).subtract(1, 'months'),
+                        moment(search.toDate).subtract(1, 'months'),
+                        'dayGridMonth',
+                      );
+                    }
+                    if (search.type === 'timeGridWeek') {
+                      debouncedSearchDate(
+                        moment(search.fromDate).subtract(1, 'months'),
+                        moment(search.toDate).subtract(1, 'months'),
+                        'timeGridWeek',
+                      );
+                    }
+                    if (search.type === 'timeGridDay' || search.type === 'listDay') {
+                      debouncedSearchDate(
+                        moment(search.fromDate).subtract(1, 'days'),
+                        moment(search.toDate).subtract(1, 'days'),
+                        'timeGridDay',
+                      );
+                    }
+                  }}
+                  className={styles.btnStyle}
+                />
+                <Button
+                  icon={<RightOutlined className={styles.colorIcon} />}
+                  onClick={() => {
+                    if (search.type === 'dayGridMonth') {
+                      debouncedSearchDate(
+                        moment(search.fromDate).add(1, 'months'),
+                        moment(search.toDate).add(1, 'months'),
+                        'dayGridMonth',
+                      );
+                    }
+                    if (search.type === 'timeGridWeek') {
+                      debouncedSearchDate(
+                        moment(search.fromDate).add(1, 'months'),
+                        moment(search.toDate).add(1, 'months'),
+                        'timeGridWeek',
+                      );
+                    }
+                    if (search.type === 'timeGridDay' || search.type === 'listDay') {
+                      debouncedSearchDate(
+                        moment(search.fromDate).add(1, 'days'),
+                        moment(search.toDate).add(1, 'days'),
+                        'timeGridDay',
+                      );
+                    }
+                  }}
+                  className={styles.btnStyle}
+                />
+              </div>
+              <ButtonCustom permission="TKB" color="white" className="ml-2">
+                Hôm nay
+              </ButtonCustom>
+            </div>
+            <div className={classnames('d-flex align-items-end', styles['title-time-table'])}>
+              <Text color="dark" size="large-medium">
+                {titleDateTable(search.type)}
+              </Text>
+            </div>
+            <div className="d-flex flex-row">
+              <ButtonCustom
+                permission="TKB"
+                color={search.type === 'dayGridMonth' ? 'green' : 'white'}
+                onClick={() => {
+                  debouncedSearchDate(
+                    moment().startOf('month'),
+                    moment().endOf('month'),
+                    'dayGridMonth',
+                  );
+                }}
+              >
+                Tháng
+              </ButtonCustom>
+              <ButtonCustom
+                permission="TKB"
+                color={search.type === 'timeGridWeek' ? 'green' : 'white'}
+                onClick={() => {
+                  debouncedSearchDate(
+                    moment().startOf('weeks'),
+                    moment().endOf('weeks'),
+                    'timeGridWeek',
+                  );
+                }}
+              >
+                Tuần
+              </ButtonCustom>
+              <ButtonCustom
+                permission="TKB"
+                color={search.type === 'timeGridDay' ? 'green' : 'white'}
+                onClick={() => {
+                  debouncedSearchDate(
+                    moment().startOf('days'),
+                    moment().endOf('days'),
+                    'timeGridDay',
+                  );
+                }}
+              >
+                Ngày
+              </ButtonCustom>
+              <ButtonCustom
+                permission="TKB"
+                color={search.type === 'listDay' ? 'green' : 'white'}
+                onClick={() => {
+                  debouncedSearchDate(moment().startOf('days'), moment().endOf('days'), 'listDay');
+                }}
+              >
+                Lịch biểu
+              </ButtonCustom>
+            </div>
+          </div>
+          <>{search.type === 'timeGridWeek' && tableWeek()}</>
+          <>
+            {search.type === 'dayGridMonth' && (
+              <Table
+                bordered
+                columns={header(search.type)}
+                dataSource={renderCalendar(search.type, data)}
+                loading={effects['timeTablesChildren/GET_DATA']}
+                pagination={false}
+                params={{
+                  header: header(search.type),
+                  type: 'table',
+                }}
+                rowKey={() => `${Math.random() * 100000}`}
+                scroll={{ x: '100%' }}
+              />
+            )}
+          </>
+          <>
+            {search.type === 'timeGridDay' && (
+              <Table
+                bordered
+                columns={header(search.type)}
+                dataSource={renderCalendar(search.type, data)}
+                loading={effects['timeTablesChildren/GET_DATA']}
+                pagination={false}
+                params={{
+                  header: header(search.type),
+                  type: 'table',
+                }}
+                rowKey={() => `${Math.random() * 100000}`}
+                scroll={{ x: '100%' }}
+              />
+            )}
+          </>
+          <>
+            {search.type === 'listDay' && (
+              <div className="w-100">
+                {renderCalendar(search.type, data).map((item, idx) => (
+                  <React.Fragment key={item.id}>
+                    <ListDay
+                      value={item}
+                      lastPoint={idx === renderCalendar(search.type, data).length - 1 ? idx : 0}
+                    />
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+          </>
+        </div>
+      </div>
+    </>
+    // )
   );
 });
 
