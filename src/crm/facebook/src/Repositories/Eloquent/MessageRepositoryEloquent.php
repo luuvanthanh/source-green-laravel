@@ -247,8 +247,8 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
     public function refreshLinkFile($attributes)
     {
-        $message = Message::where('conversation_id', $attributes['conversation_id']);
-        $messageVideo = $message->whereLike('content', 'https://video')->get();
+        $messageVideo = Message::where('conversation_id', $attributes['conversation_id'])->whereLike('content', 'https://video')->get();
+        
         if (!empty($messageVideo)) {
             foreach ($messageVideo as $value) {
                 $statusCode = $this->getResponseCode($value->content);
@@ -260,7 +260,8 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             }
         }
 
-        $messageFile = $message->whereLike('content', 'https://cdn.fbsbx.com')->get();
+        $messageFile = Message::where('conversation_id', $attributes['conversation_id'])->whereLike('content', 'https://cdn.fbsbx.com')->get();
+        
         if (!empty($messageFile)) {
             foreach ($messageFile as $value) {
                 $statusCode = $this->getResponseCode($value->content);
@@ -272,7 +273,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             }
         }
 
-        // $messageImage = $message->whereLike('content', 'https://scontent')->get();
+        // $messageImage = Message::where('conversation_id', $attributes['conversation_id'])->whereLike('content', 'https://scontent')->get();
         // if (!empty($messageImage)) {
         //     foreach ($messageImage as $value) {
         //         $statusCode = $this->getResponseCode($value->content);
@@ -284,7 +285,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         //     }
         // }
 
-        return $message;
+        return;
     }
 
     function getResponseCode($url)
