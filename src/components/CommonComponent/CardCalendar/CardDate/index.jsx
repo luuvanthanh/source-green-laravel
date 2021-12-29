@@ -1,20 +1,29 @@
-import { Helper, variables } from '@/utils';
 import { Button } from 'antd';
 import classNames from 'classnames';
 import { isEmpty } from 'lodash';
 import PropType from 'prop-types';
-import styles from "../style.module.scss";
+import styles from '../style.module.scss';
 
-const CardDate = ({ times, content, onClick }) => !isEmpty(times) ? (
+const CardDate = ({ times, content, onClick }) =>
+  !isEmpty(times) ? (
     <div className="d-flex align-items-center justify-content-left">
       <div className="d-flex flex-row pl-2">
-        <span>{Helper.getDate(times.timeStart, variables.DATE_FORMAT.HOUR)}</span>
-        <span className='px-10'>-</span>
-        <span>{Helper.getDate(times.timeEnd, variables.DATE_FORMAT.HOUR)}</span>
+        <span>{times.timeStart}</span>
+        <span className="px-10">-</span>
+        <span>{times.timeEnd}</span>
       </div>
     </div>
-  ) : 
-  <Button className={classNames('w-100 pl-2 d-flex align-items-center justify-content-left', styles.rmPadding)} onClick={onClick}>{content.title}</Button>;
+  ) : (
+    <Button
+      className={classNames(
+        'w-100 pl-2 d-flex align-items-center justify-content-left',
+        styles.rmPadding,
+      )}
+      onClick={onClick}
+    >
+      {content.dayOfWeek ? content?.timetableActivityDetail?.name : content.name}
+    </Button>
+  );
 
 export default CardDate;
 
