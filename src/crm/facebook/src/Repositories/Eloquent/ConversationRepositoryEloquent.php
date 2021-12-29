@@ -88,8 +88,8 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         }
 
         if (!empty($attributes['not_reply']) && $attributes['not_reply'] == 'true') {
-            $conversationId = $this->notReply($this->model->get(), $attributes['page_id']);
-            $this->model = $this->model->whereIn('id', $conversationId);
+            //$conversationId = $this->notReply($this->model->get(), $attributes['page_id']);
+            $this->model = $this->model->where('from', '!=', $attributes['page_id']);
         }
 
         if (!empty($attributes['not_phone_number']) && $attributes['not_phone_number'] == 'true') {
@@ -120,6 +120,10 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
             $this->model = $this->model->whereIn('id', $conversationId);
         }
 
+        if (!empty($attributes['show_conversation']) && $attributes['show_conversation'] == 'true') {
+            $this->model = $this->model->where('show_conversation', true);
+        }
+
         if (!empty($attributes['limit'])) {
             $conversation = $this->paginate($attributes['limit']);
         } else {
@@ -132,7 +136,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
     public function synchronizeConversation($attributes)
     {
         $conversations = FacebookService::pageConversation($attributes);
-        
+
         foreach ($conversations as $conversation) {
             $conversationId = $conversation->id;
             foreach ($conversation->senders as $value) {
@@ -187,18 +191,18 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         return;
     }
 
-    public function notReply($conversations, $pageId)
-    {
-        $conversationId = [];
-        foreach ($conversations as $conversation) {
-            $message = Message::where('conversation_id', $conversation->id)->orderBy('created_at', 'desc')->first();
-            if (!is_null($message)) {
-                if ($message->from != $pageId) {
-                    $conversationId[] = $message->conversation_id;
-                }
-            }
-        }
+    // public function notReply($conversations, $pageId)
+    // {
+    //     $conversationId = [];
+    //     foreach ($conversations as $conversation) {
+    //         $message = Message::where('conversation_id', $conversation->id)->orderBy('created_at', 'desc')->first();
+    //         if (!is_null($message)) {
+    //             if ($message->from != $pageId) {
+    //                 $conversationId[] = $message->conversation_id;
+    //             }
+    //         }
+    //     }
 
-        return $conversationId;
-    }
+    //     return $conversationId;
+    // }
 }

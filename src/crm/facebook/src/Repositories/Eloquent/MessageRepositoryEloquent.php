@@ -135,7 +135,10 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         $created_at = $message->created_at;
         $dataConversation = [
             'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
-            'snippet' => $message->content
+            'snippet' => $message->content,
+            'from' => $message->from,
+            'to' => $message->to,
+            'show_conversation' => true
         ];
 
         $conversation->update($dataConversation);
@@ -177,7 +180,10 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         $dataConversation = [
             'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
             'snippet' => $message->content,
-            'noti_inbox' => $notiInbox
+            'noti_inbox' => $notiInbox,
+            'from' => $message->from,
+            'to' => $message->to,
+            'show_conversation' => true
         ];
 
         $conversation->update($dataConversation);
