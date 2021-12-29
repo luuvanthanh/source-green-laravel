@@ -11,6 +11,7 @@ use GGPHP\Crm\Facebook\Models\Page;
 use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use GGPHP\Crm\Facebook\Presenters\MessagePresenter;
 use GGPHP\Crm\Facebook\Repositories\Contracts\MessageRepository;
+use GGPHP\Crm\Facebook\Services\FacebookService;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -125,7 +126,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
         $message = Message::create($dataMessage);
 
-        \Log::info("khach hang cu");
+        //\Log::info("khach hang cu");
         broadcast(new FacebookMessageReceive([
             'from' => $message->from,
             'to' => $message->to,
@@ -181,7 +182,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
         $conversation->update($dataConversation);
 
-        \Log::info("khach hang moi");
+        //\Log::info("khach hang moi");
         broadcast(new FacebookSynchronizeConversation([
             'synchronize_conversation' => 'synchronizeConversation'
         ]));
@@ -197,7 +198,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
     {
         $conversation = Conversation::find($conversation_id);
         $conversation->update(['noti_inbox' => Conversation::NOTI_INBOX['SEEN']]);
-        return;
+        return $conversation;
     }
 
     public function statusSendMessage($attributes, $statusSendMessage)
@@ -236,5 +237,54 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             ]));
             $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['SEND']]);
         }
+    }
+
+    public function refreshLinkFile($attributes)
+    {
+        $message = Message::where('conversation_id', $attributes['conversation_id']);
+        $messageVideo = $message->whereLike('content', 'https://video')->get();
+        if (!empty($messageVideo)) {
+            foreach ($messageVideo as $value) {
+                $statusCode = $this->getResponseCode($value->content);
+                if ($statusCode == '403') {
+                    $attributes['message_id_facebook'] = $value->message_id_facebook;
+                    $attachmentMessage = FacebookService::getAttachmentMessage($attributes);
+                    $value->update(['content' => $attachmentMessage[0]->video_data->url]);
+                }
+            }
+        }
+
+        $messageFile = $message->whereLike('content', 'https://cdn.fbsbx.com')->get();
+        if (!empty($messageFile)) {
+            foreach ($messageFile as $value) {
+                $statusCode = $this->getResponseCode($value->content);
+                if ($statusCode == '403') {
+                    $attributes['message_id_facebook'] = $value->message_id_facebook;
+                    $attachmentMessage = FacebookService::getAttachmentMessage($attributes);
+                    $value->update(['content' => $attachmentMessage[0]->file_url]);
+                }
+            }
+        }
+
+        // $messageImage = $message->whereLike('content', 'https://scontent')->get();
+        // if (!empty($messageImage)) {
+        //     foreach ($messageImage as $value) {
+        //         $statusCode = $this->getResponseCode($value->content);
+        //         if ($statusCode == '403') {
+        //             $attributes['message_id_facebook'] = $value->message_id_facebook;
+        //             $attachmentMessage = FacebookService::getAttachmentMessage($attributes);
+        //             $value->update(['content' => $attachmentMessage[0]->image_data->url]);
+        //         }
+        //     }
+        // }
+
+        return $message;
+    }
+
+    function getResponseCode($url)
+    {
+        @file_get_contents($url);
+        list($version, $status, $text) = explode(' ', $http_response_header[0], 3);
+        return $status;
     }
 }
