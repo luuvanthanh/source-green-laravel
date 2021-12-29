@@ -51,9 +51,8 @@ class ChargeStudentController extends Controller
 
             return $this->success($chargeStudents, trans('lang::messages.common.createSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            return $this->error(trans('lang::messages.common.serverError'), $th->getMessage(), $th->getStatusCode());
         }
-
     }
 
     /**
@@ -85,9 +84,8 @@ class ChargeStudentController extends Controller
 
             return $this->success($chargeStudent, trans('lang::messages.common.modifySuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            return $this->error(trans('lang::messages.common.serverError'), $th->getMessage(), $th->getStatusCode());
         }
-
     }
 
     /**
