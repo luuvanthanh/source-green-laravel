@@ -70,28 +70,32 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
 
     public function create(array $attributes)
     {
-        $pageRole = FacebookService::pageRole($attributes);
-        $page = Page::where('page_id_facebook', $attributes['page_id'])->first();
-        foreach ($pageRole as $key => $value) {
-            $attributes['user_id'] = $value->id;
-            $avatar = FacebookService::getAvatarUser($attributes);
-            $data = [
-                'employee_fb_name' => $value->name,
-                'employee_fb_id' => $value->id,
-                'page_id' => $page->id,
-                'avatar' => $avatar
-            ];
+        if (!empty($attributes['data_page'])) {
+            foreach ($attributes['data_page'] as $attributes) {
+                $pageRole = FacebookService::pageRole($attributes);
+                $page = Page::where('page_id_facebook', $attributes['page_id'])->first();
+                foreach ($pageRole as $key => $value) {
+                    $attributes['user_id'] = $value->id;
+                    $avatar = FacebookService::getAvatarUser($attributes);
+                    $data = [
+                        'employee_fb_name' => $value->name,
+                        'employee_fb_id' => $value->id,
+                        'page_id' => $page->id,
+                        'avatar' => $avatar
+                    ];
 
-            $employeeFacebook = EmployeeFacebook::where('employee_fb_id', $value->id)->first();
+                    $employeeFacebook = EmployeeFacebook::where('employee_fb_id', $value->id)->first();
 
-            if (is_null($employeeFacebook)) {
-                $employeeFacebook = EmployeeFacebook::create($data);
-            } else {
-                $employeeFacebook->update(['employee_fb_name' => $data['employee_fb_name']]);
-                $employeeFacebook->update(['avatar' => $data['avatar']]);
+                    if (is_null($employeeFacebook)) {
+                        $employeeFacebook = EmployeeFacebook::create($data);
+                    } else {
+                        $employeeFacebook->update(['employee_fb_name' => $data['employee_fb_name']]);
+                        $employeeFacebook->update(['avatar' => $data['avatar']]);
+                    }
+                }
             }
         }
-
+        
         return parent::all();
     }
 

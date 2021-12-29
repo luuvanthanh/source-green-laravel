@@ -135,49 +135,52 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
 
     public function synchronizeConversation($attributes)
     {
-        $conversations = FacebookService::pageConversation($attributes);
+        if (!empty($attributes['data_page'])) {
+            foreach ($attributes['data_page'] as $attributes) {
+                $conversations = FacebookService::pageConversation($attributes);
+                foreach ($conversations as $conversation) {
+                    $conversationId = $conversation->id;
+                    foreach ($conversation->senders as $value) {
+                        $attributes['user_id'] = $value[0]->id;
+                        $avatar = FacebookService::getAvatarUser($attributes);
+                        $dataUserFacebookInfo = [
+                            'user_id' => $value[0]->id,
+                            'user_name' => $value[0]->name,
+                            'avatar' => $avatar
+                        ];
+                        $dataPage = [
+                            'page_id_facebook' => $value[1]->id,
+                            'name' => $value[1]->name,
+                        ];
+                        $userFacebookInfo = UserFacebookInfo::Where('user_id', $dataUserFacebookInfo['user_id'])->first();
 
-        foreach ($conversations as $conversation) {
-            $conversationId = $conversation->id;
-            foreach ($conversation->senders as $value) {
-                $attributes['user_id'] = $value[0]->id;
-                $avatar = FacebookService::getAvatarUser($attributes);
-                $dataUserFacebookInfo = [
-                    'user_id' => $value[0]->id,
-                    'user_name' => $value[0]->name,
-                    'avatar' => $avatar
-                ];
-                $dataPage = [
-                    'page_id_facebook' => $value[1]->id,
-                    'name' => $value[1]->name,
-                ];
-                $userFacebookInfo = UserFacebookInfo::Where('user_id', $dataUserFacebookInfo['user_id'])->first();
+                        if (is_null($userFacebookInfo)) {
+                            $userFacebookInfo = UserFacebookInfo::create($dataUserFacebookInfo);
+                        } else {
+                            $userFacebookInfo->update(['user_name' => $dataUserFacebookInfo['user_name']]);
+                            $userFacebookInfo->update(['avatar' => $dataUserFacebookInfo['avatar']]);
+                        }
 
-                if (is_null($userFacebookInfo)) {
-                    $userFacebookInfo = UserFacebookInfo::create($dataUserFacebookInfo);
-                } else {
-                    $userFacebookInfo->update(['user_name' => $dataUserFacebookInfo['user_name']]);
-                    $userFacebookInfo->update(['avatar' => $dataUserFacebookInfo['avatar']]);
+                        $page = Page::Where('page_id_facebook', $dataPage['page_id_facebook'])->first();
+
+                        if (is_null($page)) {
+                            $page = Page::create($dataPage);
+                        }
+
+                        $conversation = Conversation::Where('page_id', $page->id)->Where('user_facebook_info_id', $userFacebookInfo->id)->first();
+
+                        $dataConversation = [
+                            'page_id' => $page->id,
+                            'user_facebook_info_id' => $userFacebookInfo->id,
+                            'conversation_id_facebook' => $conversationId
+                        ];
+                        if (is_null($conversation)) {
+                            $conversation = Conversation::create($dataConversation);
+                        }
+
+                        $conversation->update(['conversation_id_facebook' => $dataConversation['conversation_id_facebook']]);
+                    }
                 }
-
-                $page = Page::Where('page_id_facebook', $dataPage['page_id_facebook'])->first();
-
-                if (is_null($page)) {
-                    $page = Page::create($dataPage);
-                }
-
-                $conversation = Conversation::Where('page_id', $page->id)->Where('user_facebook_info_id', $userFacebookInfo->id)->first();
-
-                $dataConversation = [
-                    'page_id' => $page->id,
-                    'user_facebook_info_id' => $userFacebookInfo->id,
-                    'conversation_id_facebook' => $conversationId
-                ];
-                if (is_null($conversation)) {
-                    $conversation = Conversation::create($dataConversation);
-                }
-
-                $conversation->update(['conversation_id_facebook' => $dataConversation['conversation_id_facebook']]);
             }
         }
 
