@@ -1842,7 +1842,7 @@ export default [
           },
           {
             path: '/thoi-khoa-bieu/tu-dong',
-            component: './timetable/schedules-auto/test',
+            component: './timetable/schedules-auto',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TKB],
           },
