@@ -24,11 +24,15 @@ class ReportService
                 $periodDate = new \DatePeriod($begin, $intervalDate, $end);
 
                 //event behavior
-                $attributes['event_code'] = "RAC,BHR";
+                $attributes['event_code'] = 'RAC,BHR';
                 $eventBehavior = self::reportNumberEventBehaviorByTouristDestination($attributes, $periodDate, 'Y-m-d');
 
+                //event warning
+                $attributes['event_code'] = null;
+                $eventWarning = self::reportWarningEvent($attributes, $periodDate, 'Y-m-d');
+
                 //event object
-                $attributes['event_code'] = "HDVHP,HDVBHP";
+                $attributes['event_code'] = 'HDVHP,HDVBHP';
                 $eventObject = self::reportNumberEventObject($attributes, $periodDate, 'Y-m-d');
 
                 //number_of_guest
@@ -42,11 +46,11 @@ class ReportService
                 $periodDate = new \DatePeriod($begin, $intervalDate, $end);
 
                 //event behavior
-                $attributes['event_code'] = "RAC,BHR";
+                $attributes['event_code'] = 'RAC,BHR';
                 $eventBehavior = self::reportNumberEventBehaviorByTouristDestination($attributes, $periodDate, 'Y-m-d');
 
                 //event object
-                $attributes['event_code'] = "HDVHP,HDVBHP";
+                $attributes['event_code'] = 'HDVHP,HDVBHP';
                 $eventObject = self::reportNumberEventObject($attributes, $periodDate, 'Y-m-d');
 
                 //number_of_guest
@@ -56,10 +60,11 @@ class ReportService
         }
 
         return [
-            "number_of_guest" => $numberOfGuest['number_of_guest'],
-            "number_of_guest_max" => $numberOfGuest['number_of_guest_max'],
-            "data_event_behavior" =>  $eventBehavior,
-            "data_event_object" =>  $eventObject
+            'number_of_guest' => $numberOfGuest['number_of_guest'],
+            'number_of_guest_max' => $numberOfGuest['number_of_guest_max'],
+            'data_event_behavior' =>  $eventBehavior,
+            'data_event_object' =>  $eventObject,
+            'data_event_warning' =>  $eventWarning
         ];
     }
 
@@ -161,7 +166,7 @@ class ReportService
         $eventTypes = EventType::query();
 
         if (!empty($attributes['event_code'])) {
-            $eventTypes->whereIn('code', explode(",", $attributes['event_code']));
+            $eventTypes->whereIn('code', explode(',', $attributes['event_code']));
         }
 
         $eventTypes = $eventTypes->get();
@@ -170,7 +175,7 @@ class ReportService
             $touristDestination =  TouristDestination::query();
 
             if (!empty($attributes['tourist_destination_id'])) {
-                $touristDestination->whereIn('id', explode(",", $attributes['tourist_destination_id']));
+                $touristDestination->whereIn('id', explode(',', $attributes['tourist_destination_id']));
             }
 
             $dataByTime = [];
@@ -228,10 +233,10 @@ class ReportService
 
 
             $data[] = [
-                "event_name" => $item->name,
-                "event_code" => $item->code,
-                "total" => $total,
-                "data_by_time" => $dataByTime
+                'event_name' => $item->name,
+                'event_code' => $item->code,
+                'total' => $total,
+                'data_by_time' => $dataByTime
             ];
         }
 
@@ -246,7 +251,7 @@ class ReportService
         $eventTypes = EventType::query();
 
         if (!empty($attributes['event_code'])) {
-            $eventTypes->whereIn('code', explode(",", $attributes['event_code']));
+            $eventTypes->whereIn('code', explode(',', $attributes['event_code']));
         }
 
         $eventTypes = $eventTypes->get();
@@ -255,7 +260,7 @@ class ReportService
             $touristDestination =  TouristDestination::query();
 
             if (!empty($attributes['tourist_destination_id'])) {
-                $touristDestination->whereIn('id', explode(",", $attributes['tourist_destination_id']));
+                $touristDestination->whereIn('id', explode(',', $attributes['tourist_destination_id']));
             }
 
             $total = 0;
@@ -304,10 +309,10 @@ class ReportService
             }
 
             $data[] = [
-                "event_name" => $item->name,
-                "event_code" => $item->code,
-                "total" => $total,
-                "data_by_tourist_destination" => $dataBytouristDestination
+                'event_name' => $item->name,
+                'event_code' => $item->code,
+                'total' => $total,
+                'data_by_tourist_destination' => $dataBytouristDestination
             ];
         }
 
@@ -323,7 +328,7 @@ class ReportService
         $eventTypes = EventType::query();
 
         if (!empty($attributes['event_code'])) {
-            $eventTypes->whereIn('code', explode(",", $attributes['event_code']));
+            $eventTypes->whereIn('code', explode(',', $attributes['event_code']));
         }
 
         $eventTypes = $eventTypes->get();
@@ -332,7 +337,7 @@ class ReportService
             $touristDestination =  TouristDestination::query();
 
             if (!empty($attributes['tourist_destination_id'])) {
-                $touristDestination->whereIn('id', explode(",", $attributes['tourist_destination_id']));
+                $touristDestination->whereIn('id', explode(',', $attributes['tourist_destination_id']));
             }
 
             $dataByTime = [];
@@ -396,10 +401,10 @@ class ReportService
 
 
             $data[] = [
-                "event_name" => $item->name,
-                "event_code" => $item->code,
-                "total" => $total,
-                "data_by_time" => $dataByTime
+                'event_name' => $item->name,
+                'event_code' => $item->code,
+                'total' => $total,
+                'data_by_time' => $dataByTime
             ];
         }
 
@@ -414,7 +419,7 @@ class ReportService
         $touristDestination =  TouristDestination::query();
 
         if (!empty($attributes['tourist_destination_id'])) {
-            $touristDestination->whereIn('id', explode(",", $attributes['tourist_destination_id']));
+            $touristDestination->whereIn('id', explode(',', $attributes['tourist_destination_id']));
         }
 
         $dataByTime = [];
@@ -489,7 +494,7 @@ class ReportService
         if ($diffDate <= 31) {
             $tourGuides = TourGuide::withCount(['event' => function ($query) use ($attributes) {
                 if (!empty($attributes['tourist_destination_id'])) {
-                    $query->whereIn('tourist_destination_id', explode(",", $attributes['tourist_destination_id']));
+                    $query->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                 }
             }])->has('event', '>', 0)->orderBy('event_count', 'desc');
 
@@ -503,58 +508,58 @@ class ReportService
             ksort($dataCount);
             foreach ($dataCount as $key => $value) {
                 $data[] = [
-                    "milestones" => $key,
-                    "value" => $value
+                    'milestones' => $key,
+                    'value' => $value
                 ];
             }
         } else {
             $arrayMilestones = [
                 [
-                    "start" => 1,
-                    "end" => 2
+                    'start' => 1,
+                    'end' => 2
                 ],
                 [
-                    "start" => 3,
-                    "end" => 5
+                    'start' => 3,
+                    'end' => 5
                 ],
                 [
-                    "start" => 6,
-                    "end" => 10
+                    'start' => 6,
+                    'end' => 10
                 ],
                 [
-                    "start" => 11,
-                    "end" => 20
+                    'start' => 11,
+                    'end' => 20
                 ],
                 [
-                    "start" => 21,
-                    "end" => 30
+                    'start' => 21,
+                    'end' => 30
                 ],
                 [
-                    "start" => 31,
-                    "end" => 45
+                    'start' => 31,
+                    'end' => 45
                 ],
                 [
-                    "start" => 46,
-                    "end" => 60
+                    'start' => 46,
+                    'end' => 60
                 ],
                 [
-                    "start" => 61,
-                    "end" => 80
+                    'start' => 61,
+                    'end' => 80
                 ],
                 [
-                    "start" => 81,
-                    "end" => 100
+                    'start' => 81,
+                    'end' => 100
                 ],
                 [
-                    "start" => 101,
-                    "end" => null
+                    'start' => 101,
+                    'end' => null
                 ]
             ];
 
             foreach ($arrayMilestones as $item) {
                 $tourGuides = TourGuide::withCount(['event' => function ($query) use ($attributes) {
                     if (!empty($attributes['tourist_destination_id'])) {
-                        $query->whereIn('tourist_destination_id', explode(",", $attributes['tourist_destination_id']));
+                        $query->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                     }
                 }])->has('event', '>=', $item['start']);
 
@@ -564,7 +569,7 @@ class ReportService
 
                 $end = null;
                 if (!is_null($item['end'])) {
-                    $end =  "-" . $item['end'];
+                    $end =  '-' . $item['end'];
                     $tourGuides->has('event', '<=', $item['end']);
                 }
 
@@ -572,11 +577,88 @@ class ReportService
 
 
                 $data[] = [
-                    "milestones" => $item['start'] . $end,
-                    "value" => $tourGuides
+                    'milestones' => $item['start'] . $end,
+                    'value' => $tourGuides
                 ];
             }
         }
+
+        return $data;
+    }
+
+    //func
+    public static function reportWarningEvent($attributes, $periodDate, $formatTime = 'Y-m-d')
+    {
+        $data = [];
+
+        $eventTypes = EventType::query();
+
+        if (!empty($attributes['event_code'])) {
+            $eventTypes->whereIn('code', explode(',', $attributes['event_code']));
+        }
+
+        $eventTypes = $eventTypes->get();
+
+        foreach ($eventTypes as $key => $item) {
+            $touristDestination =  TouristDestination::query();
+
+            if (!empty($attributes['tourist_destination_id'])) {
+                $touristDestination->whereIn('id', explode(',', $attributes['tourist_destination_id']));
+            }
+
+            $total = 0;
+            $touristDestinations = $touristDestination->get();
+
+            $dataBytouristDestination = [];
+
+            foreach ($touristDestinations as $key => $value) {
+                $events = 0;
+
+                switch ($attributes['report_type']) {
+                    case 'DATE':
+                        $events = Event::where('tourist_destination_id', $value->id)
+                            ->where('event_type_id', $item->id)
+                            ->where('time', '>=', $attributes['start_time'])
+                            ->where('time', '<=', $attributes['end_time'])->count();
+                        break;
+                    case 'MONTH':
+                        $startTime = Carbon::parse($attributes['start_time'])->startOfMonth();
+                        $endTime = Carbon::parse($attributes['end_time'])->endOfMonth();
+
+                        $events = Event::where('tourist_destination_id', $value->id)
+                            ->where('event_type_id', $item->id)
+                            ->where('time', '>=', $startTime)
+                            ->where('time', '<=', $endTime)->count();
+                        break;
+                    case 'YEAR':
+                        $startTime = Carbon::parse($attributes['start_time'])->startOfYear();
+                        $endTime = Carbon::parse($attributes['end_time'])->endOfYear();
+                        $events = Event::where('tourist_destination_id', $value->id)
+                            ->where('event_type_id', $item->id)
+                            ->where('time', '>=', $startTime)
+                            ->where('time', '<=', $endTime)->count();
+                        break;
+                }
+
+                if ($events == 0) {
+                    continue;
+                }
+
+                $total += $events;
+                $dataBytouristDestination[] = [
+                    'name' => $value->name,
+                    'number' => $events
+                ];
+            }
+
+            $data[] = [
+                'event_name' => $item->name,
+                'event_code' => $item->code,
+                'total' => $total,
+                'data_by_tourist_destination' => $dataBytouristDestination
+            ];
+        }
+
 
         return $data;
     }

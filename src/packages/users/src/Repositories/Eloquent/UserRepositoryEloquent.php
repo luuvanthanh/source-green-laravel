@@ -2,6 +2,7 @@
 
 namespace GGPHP\Users\Repositories\Eloquent;
 
+use GGPHP\Notification\Models\Player;
 use GGPHP\RolePermission\Models\Role;
 use GGPHP\Users\Jobs\SendEmail;
 use GGPHP\Users\Models\User;
@@ -185,7 +186,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             }
             \DB::table('model_has_permissions')
                 ->where('model_id', $id)
-                ->where('model_type',  User::class)
+                ->where('model_type', User::class)
                 ->where('collection_id', '00000000-0000-0000-0000-000000000000')->delete();
             \DB::table('model_has_permissions')->insert($data);
         }
@@ -200,5 +201,53 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         $user->update($attributes);
 
         return $this->parserResult($user);
+    }
+
+    /**
+     * Add player to user
+     * @param $player_id
+     * @param $user_id
+     */
+    public static function addPlayer($player_id, $user_id)
+    {
+        $player = Player::where('player_id', $player_id)
+            ->where('user_id', $user_id)
+            ->get();
+
+        if ($player->isEmpty()) {
+            Player::create(['player_id' => $player_id, 'user_id' => $user_id]);
+        }
+    }
+
+    /**
+     * Delete player
+     * @param $player_id
+     * @param $user_id
+     */
+    public function deletePlayer($player_id, $user_id)
+    {
+        Player::where('player_id', $player_id)
+            ->where('user_id', $user_id)
+            ->delete();
+    }
+
+    /**
+     * Add Player user
+     * @param  array  $attributes attributes from request
+     * @return object
+     */
+    public function addPlayerUser(array $attributes, $id)
+    {
+        $player = Player::where('player_id', $attributes['player_id'])
+            ->where('user_id', $id)
+            ->first();
+
+        if (is_null($player)) {
+            Player::create(['player_id' => $attributes['player_id'], 'user_id' => $id]);
+        }
+
+        $user = $this->find($id);
+
+        return $user;
     }
 }

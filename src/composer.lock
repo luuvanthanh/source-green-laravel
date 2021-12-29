@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f5dd94cf307da02c9e071e9d92779547",
+    "content-hash": "d3e0394fca043f180837082d6d1c0255",
     "packages": [
         {
             "name": "alhimik1986/php-excel-templator",
@@ -253,6 +253,74 @@
                 "source": "https://github.com/aws/aws-sdk-php/tree/3.208.2"
             },
             "time": "2021-12-06T19:15:55+00:00"
+        },
+        {
+            "name": "berkayk/onesignal-laravel",
+            "version": "v1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/berkayk/laravel-onesignal.git",
+                "reference": "11a3015f33a2cd0c98f2fe1c1ea47cf67cc3e5e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/berkayk/laravel-onesignal/zipball/11a3015f33a2cd0c98f2fe1c1ea47cf67cc3e5e6",
+                "reference": "11a3015f33a2cd0c98f2fe1c1ea47cf67cc3e5e6",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.2|^7.0.1",
+                "illuminate/support": "~5.5|~6.0|~7.0|~8.0",
+                "php": ">=5.4.0",
+                "symfony/psr-http-message-bridge": "1.*|2.*"
+            },
+            "require-dev": {
+                "vlucas/phpdotenv": "^2.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Berkayk\\OneSignal\\OneSignalServiceProvider"
+                    ],
+                    "aliases": {
+                        "OneSignal": "Berkayk\\OneSignal\\OneSignalFacade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Berkayk\\OneSignal\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Berkay Kaya",
+                    "email": "berkayk@gmail.com",
+                    "homepage": "http://berkaykaya.com"
+                },
+                {
+                    "name": "Maykonn Welington Candido",
+                    "email": "maykonn@outlook.com"
+                }
+            ],
+            "description": "OneSignal Push Wrapper Laravel",
+            "keywords": [
+                "WebPush",
+                "laravel",
+                "laravel 5",
+                "onesignal",
+                "push"
+            ],
+            "support": {
+                "issues": "https://github.com/berkayk/laravel-onesignal/issues",
+                "source": "https://github.com/berkayk/laravel-onesignal/tree/v1.0.7"
+            },
+            "time": "2021-01-28T10:52:07+00:00"
         },
         {
             "name": "brick/math",
