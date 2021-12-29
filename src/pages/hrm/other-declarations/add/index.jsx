@@ -144,7 +144,7 @@ class Index extends PureComponent {
 
   onSetParamaterValuesContract = (item) => {
     this.setStateData({
-      paramaterValuesContract: item || [],
+      paramaterValuesContract: [item] || [],
     });
   };
 
