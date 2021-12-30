@@ -107,7 +107,8 @@
             "GGPHP\\WorkOnline\\": "packages/work-online/src",
             "GGPHP\\ChildDevelop\\Category\\": "child-develop/category/src",
             "GGPHP\\ChildDevelop\\ChildEvaluate\\": "child-develop/child-evaluate/src",
-            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/"
+            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
+            "GGPHP\\DocumentManagement\\": "packages/document-management/src"
         },
         "classmap": [
             "database/seeds",

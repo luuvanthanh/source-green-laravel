@@ -179,5 +179,8 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     GGPHP\ChildDevelop\ChildEvaluate\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\DocumentManagement\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
 });
-    // });

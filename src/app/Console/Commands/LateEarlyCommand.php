@@ -31,7 +31,6 @@ class LateEarlyCommand extends Command
     {
         parent::__construct();
         $this->attendanceRepositoryEloquent = $attendanceRepositoryEloquent;
-
     }
 
     /**
@@ -47,7 +46,7 @@ class LateEarlyCommand extends Command
         $date = Carbon::now('GMT+7')->format('Y-m-d');
 
         $attributes = [
-            "date" => $date,
+            'date' => $date,
         ];
 
         $this->attendanceRepositoryEloquent->attendanceCrontab($attributes);
