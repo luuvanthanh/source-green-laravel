@@ -10,10 +10,26 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ServerRequestInterface;
 use Response;
 use \Laravel\Passport\Http\Controllers\AccessTokenController as ATController;
+use GGPHP\Users\Repositories\Contracts\UserRepository;
+use Laravel\Passport\TokenRepository;
+use Lcobucci\JWT\Parser as JwtParser;
+use League\OAuth2\Server\AuthorizationServer;
 
 class AccessTokenController extends ATController
 {
     use ResponseTrait;
+
+    /**
+     * @var UserRepository
+     */
+    protected $userRepository;
+
+    public function __construct(AuthorizationServer $server, TokenRepository $tokens, JwtParser $jwt, UserRepository $userRepository)
+    {
+        parent::__construct($server, $tokens, $jwt);
+
+        $this->userRepository = $userRepository;
+    }
 
     public function issueToken(ServerRequestInterface $request)
     {
@@ -44,6 +60,7 @@ class AccessTokenController extends ATController
             //password not correct..token not granted
             return $this->error('Invalid_credentials', 'Password is not correct', 401);
         } catch (Exception $e) {
+            dd($e);
             return response(['error' => 'unsupported_grant_type', 'message' => 'The authorization grant type is not supported by the authorization server.', 'hint' => 'Check that all required parameters have been provided'], 400);
         }
     }

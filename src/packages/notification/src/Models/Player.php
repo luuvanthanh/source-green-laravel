@@ -2,9 +2,9 @@
 
 namespace GGPHP\Notification\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class Player extends CoreModel
+class Player extends UuidModel
 {
 
     /**
