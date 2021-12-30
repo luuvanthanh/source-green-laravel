@@ -8,12 +8,12 @@ export const itemsFromBackend = {
 };
 
 export const timeStamp = [
-  { id: 1, startTime: '07:00', endTime: '07:30' },
-  { id: 2, startTime: '07:30', endTime: '08:00' },
-  { id: 3, startTime: '08:00', endTime: '08:30' },
-  { id: 4, startTime: '08:30', endTime: '09:00' },
-  { id: 5, startTime: '09:00', endTime: '09:30' },
-  { id: 6, startTime: '09:30', endTime: '10:00' },
+  { id: 1, startTime: '7:00', endTime: '7:30' },
+  { id: 2, startTime: '7:30', endTime: '8:00' },
+  { id: 3, startTime: '8:00', endTime: '8:30' },
+  { id: 4, startTime: '8:30', endTime: '9:00' },
+  { id: 5, startTime: '9:00', endTime: '9:30' },
+  { id: 6, startTime: '9:30', endTime: '10:00' },
   { id: 7, startTime: '10:00', endTime: '10:30' },
   { id: 8, startTime: '10:30', endTime: '11:00' },
   { id: 9, startTime: '11:00', endTime: '11:30' },
