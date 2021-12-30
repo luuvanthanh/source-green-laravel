@@ -125,14 +125,18 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         ];
 
         $message = Message::create($dataMessage);
-
+        $created_at = $message->created_at;
         //\Log::info("khach hang cu");
         broadcast(new FacebookMessageReceive([
             'from' => $message->from,
             'to' => $message->to,
             'content' => $message->content,
+            'avatar' => $userFacebookInfo->avatar,
+            'user_name' => $userFacebookInfo->user_name,
+            'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
+            'id' => $conversation->id
         ]));
-        $created_at = $message->created_at;
+
         $dataConversation = [
             'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
             'snippet' => $message->content,
@@ -197,6 +201,10 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             'from' => $message->from,
             'to' => $message->to,
             'content' => $message->content,
+            'avatar' => $userFacebookInfo->avatar,
+            'user_name' => $userFacebookInfo->user_name,
+            'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
+            'id' => $conversation->id
         ]));
     }
 
@@ -248,7 +256,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
     public function refreshLinkFile($attributes)
     {
         $messageVideo = Message::where('conversation_id', $attributes['conversation_id'])->whereLike('content', 'https://video')->get();
-        
+
         if (!empty($messageVideo)) {
             foreach ($messageVideo as $value) {
                 $statusCode = $this->getResponseCode($value->content);
@@ -261,7 +269,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         }
 
         $messageFile = Message::where('conversation_id', $attributes['conversation_id'])->whereLike('content', 'https://cdn.fbsbx.com')->get();
-        
+
         if (!empty($messageFile)) {
             foreach ($messageFile as $value) {
                 $statusCode = $this->getResponseCode($value->content);
