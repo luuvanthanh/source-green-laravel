@@ -2,6 +2,7 @@
 
 namespace GGPHP\Notification\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Notification\Models\Notification;
 use GGPHP\Notification\Presenters\NotificationPresenter;
 use GGPHP\Notification\Repositories\Contracts\NotificationRepository;
@@ -55,10 +56,56 @@ class NotificationRepositoryEloquent extends BaseRepository implements Notificat
         $this->pushCriteria(app(RequestCriteria::class));
     }
 
+    public function getNoti($attributes)
+    {
+        if (!empty($attributes['user_id'])) {
+            $this->model = $this->model->where('notifiable_id', $attributes['user_id']);
+        }
+
+        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
+            $this->model = $this->model->where('created_at', '>=', $attributes['start_date'])->where('created_at', '<=', $attributes['end_date']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $notifications = $this->paginate($attributes['limit']);
+        } else {
+            $notifications = $this->get();
+        }
+
+        return $notifications;
+    }
+
+    /**
+     * Get Notifications.
+     *
+     * @param  array $attributes attributes from request
+     * @return object
+     * @throws \Exception
+     */
+    public function markAsRead($id)
+    {
+        $notification = $this->model()::findOrFail($id);
+
+        $notification->markAsRead();
+
+        return parent::parserResult($notification);
+    }
+
+    /**
+     * Get Notifications.
+     *
+     * @param  array $attributes attributes from request
+     * @return object
+     * @throws \Exception
+     */
     public function readAll($id)
     {
-        Notification::where('user_id', $id)->update(['is_read' => true]);
+        $notification = $this->model()::where('notifiable_id', $id)->get();
 
-        return true;
+        $notification->update([
+            'read_at' => Carbon::now()
+        ]);
+
+        return parent::parserResult($notification);
     }
 }

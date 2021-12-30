@@ -31,13 +31,14 @@ class NotificationTransformer extends BaseTransformer
      */
     public function customMeta(): array
     {
+        $user = auth()->user();
         $count = 0;
-        if (Auth::check()) {
-            $userId = Auth::id();
-            $count = Notification::where('user_id', $userId)->where('is_read', false)->count();
+
+        if ($user && \Route::currentRouteName() == 'notifications.index') {
+            $count = $user->unreadNotifications()->count();
         }
         return [
-            'unread' => $count,
+            'un_read' => $count,
         ];
     }
 

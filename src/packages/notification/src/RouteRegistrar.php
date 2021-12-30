@@ -35,10 +35,6 @@ class RouteRegistrar extends CoreRegistrar
                     'uses' => 'NotificationController@index',
                     'as' => 'notifications.index',
                 ]);
-                \Route::post('notifications', [
-                    'uses' => 'NotificationController@store',
-                    'as' => 'notifications.index',
-                ]);
 
                 \Route::post('notifications/{id}/read', [
                     'uses' => 'NotificationController@read',
@@ -50,7 +46,6 @@ class RouteRegistrar extends CoreRegistrar
                     'as' => 'notifications.readAll',
                 ]);
             });
-
         });
     }
 }

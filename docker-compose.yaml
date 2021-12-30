@@ -12,6 +12,7 @@ services:
       - ./src:/var/www/app:delegated
       - ./deployment/certs/cert.pem:/etc/nginx/www-ssl/certificate.crt
       - ./deployment/certs/private.key:/etc/nginx/www-ssl/privateKey.key
+      - ./deployment/configs/supervisord.conf:/etc/supervisor/supervisord.conf
       - ./deployment/configs/queue.conf:/etc/supervisor/conf.d/queue.conf
       - ./deployment/configs/nginx.conf:/etc/nginx/sites-enabled/default.conf
       - ./deployment/configs/php.ini:/etc/php8/php.ini

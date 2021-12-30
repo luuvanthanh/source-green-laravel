@@ -20,8 +20,6 @@ use GGPHP\WordExporter\Services\WordExporterServices;
 class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRepository
 {
 
-
-
     /**
      * @var array
      */
@@ -229,10 +227,10 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         $result = null;
         switch ($value) {
             case TourGuide::SEX['MALE']:
-                $result = "Nam";
+                $result = 'Nam';
                 break;
             case TourGuide::SEX['FEMALE']:
-                $result = "Nữ";
+                $result = 'Nữ';
                 break;
         }
 

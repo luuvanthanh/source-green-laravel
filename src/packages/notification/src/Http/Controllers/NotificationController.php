@@ -60,16 +60,7 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $notification = $this->notificationRepository->all();
-        } else {
-            $notification = $this->notificationRepository->paginate($limit);
-        }
+        $notification = $this->notificationRepository->getNoti($request->all());
 
         return $this->success($notification, trans('lang::messages.common.getListSuccess'));
     }
@@ -111,7 +102,7 @@ class NotificationController extends Controller
      */
     public function read($id)
     {
-        $notification = $this->notificationRepository->update(['is_read' => true], $id);
+        $notification = $this->notificationRepository->markAsRead($id);
 
         return $this->success($notification, trans('lang::messages.common.deleteSuccess'));
     }
@@ -126,6 +117,6 @@ class NotificationController extends Controller
     {
         $notification = $this->notificationRepository->readAll($id);
 
-        return $this->success([], trans('lang::messages.common.modifySuccess'));
+        return $this->success($notification, trans('lang::messages.common.modifySuccess'));
     }
 }

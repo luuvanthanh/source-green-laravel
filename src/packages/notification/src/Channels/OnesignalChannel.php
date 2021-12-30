@@ -24,6 +24,7 @@ class OnesignalChannel
         if (!empty($players)) {
             foreach ($players as $player) {
                 $params = $this->prepareParams($data, $player->player_id);
+
                 OneSignal::sendNotificationCustom($params);
             }
         }
