@@ -156,61 +156,51 @@ const Index = memo(() => {
     switch (type) {
       case 'dayGridMonth': {
         const calendar = [];
-        const objectDay = {
+        const objectDataDay = {
           Monday: {
-            date: null,
-            month: '',
             data: [],
           },
           Tuesday: {
-            date: null,
-            month: '',
             data: [],
           },
           Wednesday: {
-            date: null,
-            month: '',
             data: [],
           },
           Thursday: {
-            date: null,
-            month: '',
             data: [],
           },
           Friday: {
-            date: null,
-            month: '',
             data: [],
           },
           Saturday: {
-            date: null,
-            month: '',
             data: [],
           },
           Sunday: {
-            date: null,
-            month: '',
             data: [],
           },
         };
-        data?.forEach((item, idx) => {
+        data?.forEach((item) => {
           let groupClass;
           if (!search.branchId) {
             groupClass = { ...item.timetableDetailGroupByClasses[0] };
           } else if (search.branchId && !search.classId) {
             groupClass = { ...item.timetableDetailGroupByClasses[0] };
           } else {
-            groupClass = reduce(item.timetableDetailGroupByClasses, (obj, itemDetail) => {
-              if(itemDetail.class.id === search.classId) {
-                return {...obj, ...itemDetail};
-              }
-              return {};
-            }, {});
+            groupClass = reduce(
+              item.timetableDetailGroupByClasses,
+              (obj, itemDetail) => {
+                if (itemDetail.class.id === search.classId) {
+                  return { ...obj, ...itemDetail };
+                }
+                return {};
+              },
+              {},
+            );
           }
           if (!isEmpty(groupClass)) {
             if (groupClass.timetableDetailActivities) {
               groupClass.timetableDetailActivities[0].dayOfWeeks.forEach((itemDay) => {
-                objectDay[itemDay].data = objectDay[itemDay].data.concat({
+                objectDataDay[itemDay].data = objectDataDay[itemDay].data.concat({
                   startTime: item.startTime,
                   endTime: item.endTime,
                   class: groupClass.timetableDetailActivities,
@@ -219,7 +209,7 @@ const Index = memo(() => {
             }
             if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
               groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
-                objectDay[itemDay.dayOfWeek].data = objectDay[itemDay.dayOfWeek].data.concat({
+                objectDataDay[itemDay.dayOfWeek].data = objectDataDay[itemDay.dayOfWeek].data.concat({
                   startTime: item.startTime,
                   endTime: item.endTime,
                   class: itemDay.timetableActivityDetail,
@@ -227,26 +217,23 @@ const Index = memo(() => {
               });
             }
           }
-          if (idx === data.length - 1) {
-            const startDay = moment(search.fromDate).startOf('week');
-            const endDay = moment(search.toDate).endOf('week');
-
-            const day = moment(startDay).subtract(1, 'day');
-            while (day.isBefore(endDay, 'day')) {
-              let i = 0;
-              while (i < 7) {
-                const d = day.add(1, 'day').clone();
-                objectDay[dayName[i]] = {
-                  date: moment(d),
-                  month: search.fromDate,
-                  data: objectDay[dayName[i]].data,
-                };
-                i += 1;
-              }
-              calendar.push(objectDay);
-            }
-          }
         });
+        const startDay = moment(search.fromDate).startOf('week');
+        const endDay = moment(search.toDate).endOf('week');
+        const date = startDay.subtract(1, 'day');
+        while (date.isBefore(endDay, 'day')) {
+          const objTime = Object.create({});
+          let i = 0;
+          while (i < 7) {
+            objTime[dayName[i]] = {
+              date: date.add(1, 'day').clone(),
+              month: search.fromDate,
+              data: objectDataDay[dayName[i]].data,
+            };
+            i += 1;
+          }
+          calendar.push(objTime);
+        }
 
         return calendar || [];
       }
@@ -259,12 +246,16 @@ const Index = memo(() => {
           } else if (search.branchId && !search.classId) {
             groupClass = { ...item.timetableDetailGroupByClasses[0] };
           } else {
-            groupClass = reduce(item.timetableDetailGroupByClasses, (obj, itemDetail) => {
-              if(itemDetail.class.id === search.classId) {
-                return {...obj, ...itemDetail};
-              }
-              return {};
-            }, {});
+            groupClass = reduce(
+              item.timetableDetailGroupByClasses,
+              (obj, itemDetail) => {
+                if (itemDetail.class.id === search.classId) {
+                  return { ...obj, ...itemDetail };
+                }
+                return {};
+              },
+              {},
+            );
           }
 
           if (!isEmpty(groupClass)) {
@@ -327,12 +318,16 @@ const Index = memo(() => {
           } else if (search.branchId && !search.classId) {
             groupClass = { ...item.timetableDetailGroupByClasses[0] };
           } else {
-            groupClass = reduce(item.timetableDetailGroupByClasses, (obj, itemDetail) => {
-              if(itemDetail.class.id === search.classId) {
-                return {...obj, ...itemDetail};
-              }
-              return {};
-            }, {});
+            groupClass = reduce(
+              item.timetableDetailGroupByClasses,
+              (obj, itemDetail) => {
+                if (itemDetail.class.id === search.classId) {
+                  return { ...obj, ...itemDetail };
+                }
+                return {};
+              },
+              {},
+            );
           }
           if (!isEmpty(groupClass)) {
             if (groupClass.timetableDetailActivities) {
@@ -366,12 +361,16 @@ const Index = memo(() => {
             } else if (search.branchId && !search.classId) {
               groupClass = { ...item.timetableDetailGroupByClasses[0] };
             } else {
-              groupClass = reduce(item.timetableDetailGroupByClasses, (obj, itemDetail) => {
-                if(itemDetail.class.id === search.classId) {
-                  return {...obj, ...itemDetail};
-                }
-                return {};
-              }, {});
+              groupClass = reduce(
+                item.timetableDetailGroupByClasses,
+                (obj, itemDetail) => {
+                  if (itemDetail.class.id === search.classId) {
+                    return { ...obj, ...itemDetail };
+                  }
+                  return {};
+                },
+                {},
+              );
             }
             if (!isEmpty(groupClass)) {
               if (groupClass.timetableDetailActivities) {
@@ -739,7 +738,6 @@ const Index = memo(() => {
   };
 
   return (
-    // !isEmpty(fake_data) && (
     <>
       <Helmet title="Thời khóa biểu trẻ" />
       <Modal
@@ -981,8 +979,9 @@ const Index = memo(() => {
           </div>
           <>{search.type === 'timeGridWeek' && tableWeek()}</>
           <>
-            {search.type === 'dayGridMonth' && (
+            {search.type === 'dayGridMonth' || search.type === 'timeGridDay' ? (
               <Table
+                showHeader
                 bordered
                 columns={header(search.type)}
                 dataSource={renderCalendar(search.type, data)}
@@ -995,9 +994,9 @@ const Index = memo(() => {
                 rowKey={() => `${Math.random() * 100000}`}
                 scroll={{ x: '100%' }}
               />
-            )}
+            ): <></>}
           </>
-          <>
+          {/* <>
             {search.type === 'timeGridDay' && (
               <Table
                 bordered
@@ -1013,7 +1012,7 @@ const Index = memo(() => {
                 scroll={{ x: '100%' }}
               />
             )}
-          </>
+          </> */}
           <>
             {search.type === 'listDay' && (
               <div className="w-100">
@@ -1031,7 +1030,6 @@ const Index = memo(() => {
         </div>
       </div>
     </>
-    // )
   );
 });
 
