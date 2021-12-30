@@ -52,5 +52,9 @@ class RouteRegistrar extends CoreRegistrar
         \Route::get('me', 'AuthController@authenticated');
 
         \Route::put('user-lock/{id}', 'UserController@lockUser');
+
+        \Route::post('users/player/{id}', [
+            'uses' => 'UserController@addPlayer',
+        ]);
     }
 }

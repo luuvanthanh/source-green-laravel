@@ -31,4 +31,15 @@ class RouteRegistrar extends CoreRegistrar
         // Tourist
         \Route::resource('tourists', 'TouristController');
     }
+
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forAi()
+    {
+        // Tourist
+        \Route::resource('tourists', 'TouristController')->only('store');
+    }
 }

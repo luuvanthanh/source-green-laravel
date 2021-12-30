@@ -64,6 +64,16 @@
             margin-bottom: 30px;
         }
     </style>
+
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+                appId: "0b735db4-f69e-46f4-8561-cdf2287f7fdd",
+            });
+        });
+    </script>
 </head>
 
 <body>

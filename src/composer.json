@@ -10,6 +10,7 @@
     "require": {
         "php": ">=7.2.5",
         "alhimik1986/php-excel-templator": "^1.0",
+        "berkayk/onesignal-laravel": "^1.0",
         "coraxster/flysystem-aws-s3-v3-minio": "^1.0",
         "cviebrock/eloquent-sluggable": "^8.0",
         "doctrine/dbal": "^3.1.4",
@@ -74,7 +75,8 @@
             "GGPHP\\Report\\": "packages/report/src/",
             "GGPHP\\SurveyForm\\": "packages/survey-form/src/",
             "GGPHP\\Tourist\\": "packages/tourist/src/",
-            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/"
+            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
+            "GGPHP\\Notification\\": "packages/notification/src/"
         },
         "classmap": [
             "database/seeds",

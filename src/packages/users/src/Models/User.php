@@ -3,6 +3,7 @@
 namespace GGPHP\Users\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Notification\Models\Player;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -142,5 +143,13 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
             config('permission.column_names.model_morph_key'),
             'permission_id'
         )->withPivot('collection_id');
+    }
+
+    /**
+     * Define relations player
+     */
+    public function players()
+    {
+        return $this->hasMany(Player::class);
     }
 }

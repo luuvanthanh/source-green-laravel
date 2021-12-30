@@ -198,6 +198,7 @@ return [
         GGPHP\SurveyForm\Providers\SurveyFormServiceProvider::class,
         GGPHP\Tourist\Providers\TouristServiceProvider::class,
         Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
+        GGPHP\Notification\Providers\NotificationServiceProvider::class,
     ],
 
     /*

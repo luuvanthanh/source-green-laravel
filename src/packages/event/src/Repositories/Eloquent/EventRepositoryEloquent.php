@@ -10,6 +10,7 @@ use GGPHP\Event\Models\EventHandle;
 use GGPHP\Event\Presenters\EventPresenter;
 use GGPHP\Event\Repositories\Contracts\EventRepository;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\Notification\Services\NotificationService;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -154,23 +155,34 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
         $event = null;
 
-        if (!empty($attributes['track_id'])) {
-            $event = $this->model()::where('track_id', $attributes['track_id'])->first();
-        }
+        // if (!empty($attributes['track_id'])) {
+        //     $event = $this->model()::where('track_id', $attributes['track_id'])->first();
+        // }
 
         if (is_null($event)) {
             $event = $this->model()::create($attributes);
+
+            if (!empty($attributes['image_path'])) {
+                $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
+            }
+
+            if (!empty($attributes['video_path'])) {
+                $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
+            }
+
+            NotificationService::eventCreated(NotificationService::EVENT, $event);
         } else {
             $event->update($attributes);
+
+            if (!empty($attributes['image_path'])) {
+                $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
+            }
+
+            if (!empty($attributes['video_path'])) {
+                $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
+            }
         }
 
-        if (!empty($attributes['image_path'])) {
-            $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
-        }
-
-        if (!empty($attributes['video_path'])) {
-            $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
-        }
 
         // if (!empty($attributes['related_images'])) {
         //     $event->clearMediaCollection('related_images');
@@ -185,8 +197,8 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         $event = $this->model()::findOrFail($id);
 
         $event->update([
-            "status" => $this->model()::STATUS['DONE'],
-            "status_detail" => $this->model()::STATUS_DETAIL['SKIP']
+            'status' => $this->model()::STATUS['DONE'],
+            'status_detail' => $this->model()::STATUS_DETAIL['SKIP']
         ]);
 
         $attributes['event_id'] = $id;
@@ -205,9 +217,9 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         }
 
         $event->update([
-            "status" => $attributes['status'],
-            "status_detail" => $attributes['status_detail'],
-            "is_follow" => $attributes['is_follow']
+            'status' => $attributes['status'],
+            'status_detail' => $attributes['status_detail'],
+            'is_follow' => $attributes['is_follow']
         ]);
 
         $attributes['event_id'] = $id;
@@ -230,10 +242,10 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $idHandle = Uuid::generate(4)->string;
 
             $event->update([
-                "status" => $attributes['status'],
-                "status_detail" => $attributes['status_detail'],
-                "is_follow" => $attributes['is_follow'],
-                "event_handle_muti_id" => $idHandle
+                'status' => $attributes['status'],
+                'status_detail' => $attributes['status_detail'],
+                'is_follow' => $attributes['is_follow'],
+                'event_handle_muti_id' => $idHandle
             ]);
 
             $attributes['event_id'] = $id;
@@ -243,10 +255,10 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
                 $relatedEvent = $this->model()::findOrFail($relatedEventId);
 
                 $relatedEvent->update([
-                    "status" => $attributes['status'],
-                    "status_detail" => $attributes['status_detail'],
-                    "is_follow" => $attributes['is_follow'],
-                    "event_handle_muti_id" => $idHandle
+                    'status' => $attributes['status'],
+                    'status_detail' => $attributes['status_detail'],
+                    'is_follow' => $attributes['is_follow'],
+                    'event_handle_muti_id' => $idHandle
                 ]);
 
                 $attributes['event_id'] = $relatedEventId;
@@ -326,16 +338,16 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         $result = null;
         switch ($value) {
             case Event::WARNING_LEVEL['LOW']:
-                $result = "Thấp";
+                $result = 'Thấp';
                 break;
             case Event::WARNING_LEVEL['MEDIUM']:
-                $result = "Trung bình";
+                $result = 'Trung bình';
                 break;
             case Event::WARNING_LEVEL['HIGH']:
-                $result = "Cao";
+                $result = 'Cao';
                 break;
             case Event::WARNING_LEVEL['EMERGENCY']:
-                $result = "Khẩn cấp";
+                $result = 'Khẩn cấp';
                 break;
         }
 
@@ -347,13 +359,13 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         $result = null;
         switch ($value) {
             case Event::STATUS['PENDING']:
-                $result = "Chưa xử lý";
+                $result = 'Chưa xử lý';
                 break;
             case Event::STATUS['DOING']:
-                $result = "Đang xử lý";
+                $result = 'Đang xử lý';
                 break;
             case Event::STATUS['DONE']:
-                $result = "Đã xử lý";
+                $result = 'Đã xử lý';
                 break;
         }
 

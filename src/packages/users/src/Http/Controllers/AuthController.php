@@ -43,7 +43,12 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        if (!empty($request->player_id)) {
+            $this->userRepository->deletePlayer($request->player_id, $request->user()->id);
+        }
+
         $request->user()->token()->revoke();
+
         return $this->success([], trans('lang::messages.auth.logoutSuccess'), ['isShowData' => false]);
     }
 

@@ -28,6 +28,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\NumberOfTourist\RouteRegistrar::routes(function ($router) {
             $router->forAi();
         });
+        \GGPHP\Tourist\RouteRegistrar::routes(function ($router) {
+            $router->forAi();
+        });
     });
 
     \GGPHP\Storage\RouteRegistrar::routes(function ($router) {

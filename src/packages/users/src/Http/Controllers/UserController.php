@@ -120,4 +120,17 @@ class UserController extends Controller
 
         return $this->success($user, trans('lang::messages.common.modifySuccess'));
     }
+
+    /**
+     * Get User birthday
+     * @param  int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function addPlayer(Request $request, $id)
+    {
+        $users = $this->userRepository->addPlayerUser($request->all(), $id);
+
+        return $this->success($users, trans('lang::messages.common.getListSuccess'));
+    }
 }
