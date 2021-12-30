@@ -6,7 +6,6 @@ use GGPHP\Camera\Events\CameraAdded;
 use GGPHP\Camera\Events\CameraUpdated;
 use GGPHP\Camera\Events\CameraDeleted;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use GGPHP\Camera\Models\CameraVideoProperties;
 
 class CameraSubscriber //implements ShouldQueue
@@ -22,10 +21,10 @@ class CameraSubscriber //implements ShouldQueue
     {
         $camera = $event->camera;
         if (empty($camera)) {
-            \Log::debug("On Camera added: Camera invalid");
+            \Log::debug('On Camera added: Camera invalid');
             return;
         }
-        \Log::debug("On Camera added");
+        \Log::debug('On Camera added');
         Redis::publish(config('constants.CAMERA.PUBLISH.PUBLISH_CHANEL', 'vmscore_to_camserver'), json_encode(
             [
                 'event' => config('constants.CAMERA.PUBLISH.EVENT.ADD', 'camera_added'),
@@ -50,10 +49,10 @@ class CameraSubscriber //implements ShouldQueue
     {
         $camera = $event->camera;
         if (empty($camera)) {
-            \Log::debug("On Camera updated: Camera invalid");
+            \Log::debug('On Camera updated: Camera invalid');
             return;
         }
-        \Log::debug("On Camera updated");
+        \Log::debug('On Camera updated');
         Redis::publish(config('constants.CAMERA.PUBLISH.PUBLISH_CHANEL', 'vmscore_to_camserver'), json_encode(
             [
                 'event' => config('constants.CAMERA.PUBLISH.EVENT.UPDATE', 'camera_updated'),
@@ -78,10 +77,10 @@ class CameraSubscriber //implements ShouldQueue
     {
         $camera = $event->camera;
         if (empty($camera)) {
-            \Log::debug("On Camera deleted: Camera invalid");
+            \Log::debug('On Camera deleted: Camera invalid');
             return;
         }
-        \Log::debug("On Camera deleted");
+        \Log::debug('On Camera deleted');
         Redis::publish(config('constants.CAMERA.PUBLISH.PUBLISH_CHANEL', 'vmscore_to_camserver'), json_encode(
             [
                 'event' => config('constants.CAMERA.PUBLISH.EVENT.DELETE', 'camera_removed'),
@@ -101,14 +100,16 @@ class CameraSubscriber //implements ShouldQueue
     public function subscribe($events)
     {
         $events->listen(
-                CameraAdded::class, 'GGPHP\Camera\Listeners\CameraSubscriber@onCaremaAdded'
+            CameraAdded::class,
+            'GGPHP\Camera\Listeners\CameraSubscriber@onCaremaAdded'
         );
         $events->listen(
-                CameraUpdated::class, 'GGPHP\Camera\Listeners\CameraSubscriber@onCaremaUpdated'
+            CameraUpdated::class,
+            'GGPHP\Camera\Listeners\CameraSubscriber@onCaremaUpdated'
         );
         $events->listen(
-                CameraDeleted::class, 'GGPHP\Camera\Listeners\CameraSubscriber@onCaremaDeleted'
+            CameraDeleted::class,
+            'GGPHP\Camera\Listeners\CameraSubscriber@onCaremaDeleted'
         );
     }
-
 }

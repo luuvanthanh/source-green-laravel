@@ -68,7 +68,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 $endTime = Carbon::now()->setHour($attributes['end_time'])->setMinute('00')->setSecond('00');
                 $numberOfTourist = NumberOfTourist::query();
                 if (!empty($attributes['tourist_destination_id'])) {
-                    $numberOfTourist->whereIn('tourist_destination_id', explode(",", $attributes['tourist_destination_id']));
+                    $numberOfTourist->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                 }
                 $data = [];
                 $numberOfTourists = $numberOfTourist->where('time', '>=', $startTime)->where('time', '<=', $endTime)->get();
@@ -82,8 +82,8 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                             'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
                             'tourist_destination' => [
                                 $numberOfTourist->touristDestination->name => [
-                                    "name" => $numberOfTourist->touristDestination->name,
-                                    "number_of_guest" => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                    'name' => $numberOfTourist->touristDestination->name,
+                                    'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
                                 ]
                             ]
                         ];
@@ -92,8 +92,8 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
                         if (!array_key_exists($numberOfTourist->touristDestination->name, $data[$hours]['tourist_destination'])) {
                             $data[$hours]['tourist_destination'][$numberOfTourist->touristDestination->name] = [
-                                "name" => $numberOfTourist->touristDestination->name,
-                                "number_of_guest" => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                'name' => $numberOfTourist->touristDestination->name,
+                                'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
 
                             ];
                         } else {
@@ -106,7 +106,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 $numberOfTourist = NumberOfTourist::query();
 
                 if (!empty($attributes['tourist_destination_id'])) {
-                    $numberOfTourist->whereIn('tourist_destination_id', explode(",", $attributes['tourist_destination_id']));
+                    $numberOfTourist->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                 }
                 $data = [];
                 $numberOfTourists = $numberOfTourist->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time'])->get();
@@ -120,8 +120,8 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                             'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
                             'tourist_destination' => [
                                 $numberOfTourist->touristDestination->name => [
-                                    "name" => $numberOfTourist->touristDestination->name,
-                                    "number_of_guest" => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                    'name' => $numberOfTourist->touristDestination->name,
+                                    'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
                                 ]
                             ]
                         ];
@@ -130,8 +130,8 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
                         if (!array_key_exists($numberOfTourist->touristDestination->name, $data[$date]['tourist_destination'])) {
                             $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name] = [
-                                "name" => $numberOfTourist->touristDestination->name,
-                                "number_of_guest" => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                'name' => $numberOfTourist->touristDestination->name,
+                                'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
 
                             ];
                         } else {
@@ -146,7 +146,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 $numberOfTourist = NumberOfTourist::query();
 
                 if (!empty($attributes['tourist_destination_id'])) {
-                    $numberOfTourist->whereIn('tourist_destination_id', explode(",", $attributes['tourist_destination_id']));
+                    $numberOfTourist->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                 }
                 $data = [];
                 $numberOfTourists = $numberOfTourist->where('time', '>=', $startTime)->where('time', '<=', $endTime)->get();
@@ -160,8 +160,8 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                             'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
                             'tourist_destination' => [
                                 $numberOfTourist->touristDestination->name => [
-                                    "name" => $numberOfTourist->touristDestination->name,
-                                    "number_of_guest" => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                    'name' => $numberOfTourist->touristDestination->name,
+                                    'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
                                 ]
                             ]
                         ];
@@ -170,8 +170,8 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
                         if (!array_key_exists($numberOfTourist->touristDestination->name, $data[$date]['tourist_destination'])) {
                             $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name] = [
-                                "name" => $numberOfTourist->touristDestination->name,
-                                "number_of_guest" => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                'name' => $numberOfTourist->touristDestination->name,
+                                'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
 
                             ];
                         } else {
@@ -186,7 +186,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 $numberOfTourist = NumberOfTourist::query();
 
                 if (!empty($attributes['tourist_destination_id'])) {
-                    $numberOfTourist->whereIn('tourist_destination_id', explode(",", $attributes['tourist_destination_id']));
+                    $numberOfTourist->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                 }
                 $data = [];
                 $numberOfTourists = $numberOfTourist->where('time', '>=', $startTime)->where('time', '<=', $endTime)->get();
@@ -200,8 +200,8 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                             'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
                             'tourist_destination' => [
                                 $numberOfTourist->touristDestination->name => [
-                                    "name" => $numberOfTourist->touristDestination->name,
-                                    "number_of_guest" => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
+                                    'name' => $numberOfTourist->touristDestination->name,
+                                    'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
                                 ]
                             ]
                         ];
@@ -210,8 +210,8 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
                         if (!array_key_exists($numberOfTourist->touristDestination->name, $data[$date]['tourist_destination'])) {
                             $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name] = [
-                                "name" => $numberOfTourist->touristDestination->name,
-                                "number_of_guest" => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
+                                'name' => $numberOfTourist->touristDestination->name,
+                                'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
                             ];
                         } else {
                             $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
@@ -307,7 +307,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
                 foreach ($mergeCoordinate as $key => $coordinate) {
                     if ($key % 2 != 0) {
-                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
                         $listMerge[] = $merge;
                     }
                 }
@@ -318,11 +318,11 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
                 $sheet = $param->sheet;
-                $sheet->getCell($cell_coordinate)->setValue("Thời gian");
+                $sheet->getCell($cell_coordinate)->setValue('Thời gian');
             },
         ];
 

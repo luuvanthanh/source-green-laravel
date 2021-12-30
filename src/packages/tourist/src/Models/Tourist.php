@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\Tourist\Models;
+namespace  GGPHP\Tourist\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use Spatie\MediaLibrary\HasMedia;

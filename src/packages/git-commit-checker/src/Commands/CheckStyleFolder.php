@@ -3,26 +3,25 @@
 namespace Botble\GitCommitChecker\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use JakubOnderka\PhpParallelLint\ConsoleWriter;
 use JakubOnderka\PhpParallelLint\TextOutputColored;
 use RuntimeException;
 
-class PreCommitHook extends Command
+class CheckStyleFolder extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'git:pre-commit-hook';
+    protected $signature = 'check-style-folder';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Hook before commit GIT';
+    protected $description = 'Check type folder';
 
     /**
      * Execute the console command.
@@ -36,7 +35,7 @@ class PreCommitHook extends Command
             return false;
         }
 
-        $changed = $this->getChangedPhpFiles();
+        $changed = $this->getDirContents(base_path());
 
         $output = new TextOutputColored(new ConsoleWriter);
 
@@ -64,45 +63,30 @@ class PreCommitHook extends Command
         return 0;
     }
 
-    /**
-     * Get a list of changed PHP files.
-     *
-     * @return array
-     */
-    protected function getChangedPhpFiles(): array
+    public function getDirContents($dir, &$results = array())
     {
-        $changed = [];
+        if ($dir == base_path() . '/vendor') {
+            return;
+        }
+        if ($dir == base_path() . '/storage') {
+            return;
+        }
 
-        foreach ($this->getChangedFiles() as $path) {
-            if (Str::endsWith($path, '.php') && !Str::endsWith($path, '.blade.php')) {
-                $changed[] = $path;
+        $files = scandir($dir);
+
+        foreach ($files as $key => $value) {
+            $path = realpath($dir . DIRECTORY_SEPARATOR . $value);
+            if (!is_dir($path)) {
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+                if ($ext == 'php') {
+                    $results[] = $path;
+                }
+            } elseif ($value != '.' && $value != '..') {
+                $this->getDirContents($path, $results);
             }
         }
 
-        // dd($changed);
-        return $changed;
-    }
-
-    /**
-     * Get a list of changed files.
-     *
-     * @return array
-     */
-    protected function getChangedFiles(): array
-    {
-        if (!$this->exec($cmd = 'git status --short', $output)) {
-            throw new RuntimeException('Unable to run command: ' . $cmd);
-        }
-
-        $changed = [];
-
-        foreach ($output as $line) {
-            if ($path = $this->parseGitStatus($line)) {
-                $changed[] = $path;
-            }
-        }
-
-        return $changed;
+        return $results;
     }
 
     /**

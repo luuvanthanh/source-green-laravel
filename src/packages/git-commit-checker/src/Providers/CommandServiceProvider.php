@@ -2,6 +2,7 @@
 
 namespace Botble\GitCommitChecker\Providers;
 
+use Botble\GitCommitChecker\Commands\CheckStyleFolder;
 use Botble\GitCommitChecker\Commands\InstallHooks;
 use Botble\GitCommitChecker\Commands\InstallPhpCs;
 use Botble\GitCommitChecker\Commands\PreCommitHook;
@@ -16,6 +17,7 @@ class CommandServiceProvider extends ServiceProvider
                 InstallHooks::class,
                 PreCommitHook::class,
                 InstallPhpCs::class,
+                CheckStyleFolder::class,
             ]);
         }
     }

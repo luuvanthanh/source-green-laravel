@@ -65,8 +65,8 @@ class EventTransformer extends BaseTransformer
 
         if (!is_null($imageMedia)) {
             $image = [
-                "path" => $imageMedia->getPath(),
-                "name" => $imageMedia->name,
+                'path' => $imageMedia->getPath(),
+                'name' => $imageMedia->name,
             ];
         }
 
@@ -77,8 +77,8 @@ class EventTransformer extends BaseTransformer
 
         if (!is_null($videoMedia)) {
             $video = [
-                "path" => $videoMedia->getPath(),
-                "name" => $videoMedia->name,
+                'path' => $videoMedia->getPath(),
+                'name' => $videoMedia->name,
             ];
         }
 

@@ -54,18 +54,18 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
                 $action = $route->getAction();
                 if (array_key_exists('as', $action) && array_key_exists('comment', $action)) {
                     $dataPermission[] = [
-                        "name" => $action['as'],
-                        "description" => $action['comment'],
-                        "guard_name" => "api",
-                        "is_system" => isset($action['is_system']) ? $action['is_system'] : false,
-                        "group" => isset($action['group']) ? $action['group'] : "Khác",
+                        'name' => $action['as'],
+                        'description' => $action['comment'],
+                        'guard_name' => 'api',
+                        'is_system' => isset($action['is_system']) ? $action['is_system'] : false,
+                        'group' => isset($action['group']) ? $action['group'] : 'Khác',
                     ];
                 }
             }
         }
 
         foreach ($dataPermission as $permission) {
-            Permission::updateOrCreate(["name" => $permission['name']], $permission);
+            Permission::updateOrCreate(['name' => $permission['name']], $permission);
         }
 
         $this->resetModel();

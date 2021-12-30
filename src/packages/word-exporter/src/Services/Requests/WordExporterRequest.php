@@ -1,12 +1,11 @@
 <?php
 
-namespace GGPHP\ExcelExporter\Services\Requests;
+namespace GGPHP\WordExporter\Services\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
-class ExcelExporterRequest extends FormRequest
+class WordExporterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

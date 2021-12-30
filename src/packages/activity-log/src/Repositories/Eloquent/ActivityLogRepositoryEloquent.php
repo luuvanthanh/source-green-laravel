@@ -60,7 +60,7 @@ class ActivityLogRepositoryEloquent extends BaseRepository implements ActivityLo
     public function filterAcitivity($attributes, $parse = true)
     {
         if (!empty($attributes['user_name'])) {
-            $user = User::where('full_name', 'like', "%{$attributes['user_name']}%")->get()->pluck('id')->toArray();
+            $user = User::where('full_name', 'like', '%{' . $attributes['user_name'] . '}%')->get()->pluck('id')->toArray();
             $this->model = $this->model->whereIn('causer_id', $user);
         }
 

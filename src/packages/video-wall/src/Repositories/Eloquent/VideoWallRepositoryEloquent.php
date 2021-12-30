@@ -84,7 +84,7 @@ class VideoWallRepositoryEloquent extends BaseRepository implements VideoWallRep
         // Add cameras to video wall
         if (isset($attributes['cameras']) && count($attributes['cameras']) == 0) {
             $videoWall->cameras()->detach();
-        } else if (!empty($attributes['cameras'])) {
+        } elseif (!empty($attributes['cameras'])) {
             $cameras = $attributes['cameras'];
             $cameraArray = [];
             foreach ($cameras as $key => $camera) {

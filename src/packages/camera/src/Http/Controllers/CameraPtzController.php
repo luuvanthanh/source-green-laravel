@@ -34,9 +34,9 @@ class CameraPtzController extends Controller
         }
 
         $linkPtz = $this->getUrlPtz($ip);
-        $body = '<PTZData version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">'.
-            '<pan>{$pan}</pan>'.
-            '<tilt>{$tilt}</tilt>'.
+        $body = '<PTZData version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">' .
+            '<pan>{$pan}</pan>' .
+            '<tilt>{$tilt}</tilt>' .
             '</PTZData>';
 
         $zoomActive = false;
@@ -151,8 +151,8 @@ class CameraPtzController extends Controller
         if ($presetId) {
             // Call API create preset
             $urlCreatPreset = $this->getUrlCreatePreset($ip, $presetId);
-            $body = '<PTZPreset version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">'.
-                '<id>'. $presetId. '</id>'.
+            $body = '<PTZPreset version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">' .
+                '<id>' . $presetId . '</id>' .
                 '</PTZPreset>';
             $response = $this->call('PUT', $urlCreatPreset, $body);
             if (empty($response)) {
@@ -358,13 +358,13 @@ class CameraPtzController extends Controller
     {
         $client = new Client();
 
-        $credentials = base64_encode($this->username. ':'. $this->password);
+        $credentials = base64_encode($this->username . ':' . $this->password);
 
         try {
             $resClientRequest = $client->request($method, $link, [
                 'headers' => [
                     'Content-Type'  => 'text/xml; charset=UTF8',
-                    'Authorization' => ['Basic '. $credentials],
+                    'Authorization' => ['Basic ' . $credentials],
                 ],
                 'body' => $body
             ]);
@@ -395,7 +395,7 @@ class CameraPtzController extends Controller
             $this->$key = $value;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -410,6 +410,6 @@ class CameraPtzController extends Controller
             return $this->$key;
         }
 
-        return;
+        return null;
     }
 }

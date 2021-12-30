@@ -131,22 +131,22 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
         $value = null;
         switch ($value) {
             case TravelAgency::SERVICE_TYPE['AUTHORIZED_DEALER']:
-                $value = "Đại lý ủy quyền";
+                $value = 'Đại lý ủy quyền';
                 break;
             case TravelAgency::SERVICE_TYPE['REPRESENTATIVE_OFFICE']:
-                $value = "Văn phòng đại diện";
+                $value = 'Văn phòng đại diện';
                 break;
             case TravelAgency::SERVICE_TYPE['INTERNATIONAL_TO_BRANCH']:
-                $value = "Chi nhánh lữ hành quốc tế";
+                $value = 'Chi nhánh lữ hành quốc tế';
                 break;
             case TravelAgency::SERVICE_TYPE['INLAND_TO_BRANCH']:
-                $value = "Chi nhánh lữ hành nội địa";
+                $value = 'Chi nhánh lữ hành nội địa';
                 break;
             case TravelAgency::SERVICE_TYPE['INLAND_TO']:
-                $value = "Công ty lữ hành nội địa";
+                $value = 'Công ty lữ hành nội địa';
                 break;
             case TravelAgency::SERVICE_TYPE['INTERNATIONAL_TO']:
-                $value = "Công ty lữ hành quốc tế";
+                $value = 'Công ty lữ hành quốc tế';
                 break;
         }
 

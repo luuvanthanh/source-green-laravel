@@ -1,4 +1,5 @@
 <?php
+
 namespace GGPHP\RolePermission\Http\Controllers;
 
 use GGPHP\Core\Http\Controllers\Controller;
@@ -92,5 +93,4 @@ class PermissionController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
     }
-
 }

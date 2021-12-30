@@ -15,11 +15,11 @@ class Camera extends UuidModel
     use SoftDeletes;
 
     const STATUS = [
-        "STATUS_READY" => 0,
-        "STATUS_STARTED" => 1,
-        "STATUS_RUNNING" => 2,
-        "STATUS_STOPPED" => 3,
-        "STATUS_FAILED" => 4,
+        'STATUS_READY' => 0,
+        'STATUS_STARTED' => 1,
+        'STATUS_RUNNING' => 2,
+        'STATUS_STOPPED' => 3,
+        'STATUS_FAILED' => 4,
     ];
 
     /**
@@ -50,12 +50,12 @@ class Camera extends UuidModel
     /**
      * Define latitude default if camera do not have input: 0.00000000
      */
-    const LAT_DEFAULT = "0.00000000";
+    const LAT_DEFAULT = '0.00000000';
 
     /**
      * Define longitude default if camera do not have input: 0.00000000
      */
-    const LONG_DEFAULT = "0.00000000";
+    const LONG_DEFAULT = '0.00000000';
 
     /**
      * The attributes that are mass assignable.

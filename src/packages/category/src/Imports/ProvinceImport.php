@@ -24,6 +24,6 @@ class ProvinceImport implements ToModel
             Province::create($dataPapa);
         }
 
-        return;
+        return null;
     }
 }

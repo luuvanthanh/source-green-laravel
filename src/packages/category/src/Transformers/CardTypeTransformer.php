@@ -43,8 +43,8 @@ class CardTypeTransformer extends BaseTransformer
 
         if (!is_null($model->getPreviousFile())) {
             $previousFile = [
-                "path" => $model->getPreviousFile()->getPath(),
-                "name" => $model->getPreviousFile()->name,
+                'path' => $model->getPreviousFile()->getPath(),
+                'name' => $model->getPreviousFile()->name,
             ];
         }
 
@@ -52,14 +52,14 @@ class CardTypeTransformer extends BaseTransformer
 
         if (!is_null($model->getAfterFile())) {
             $afterFile = [
-                "path" => $model->getAfterFile()->getPath(),
-                "name" => $model->getAfterFile()->name,
+                'path' => $model->getAfterFile()->getPath(),
+                'name' => $model->getAfterFile()->name,
             ];
         }
 
         return [
-            "previous_file" => $previousFile,
-            "after_file" => $afterFile
+            'previous_file' => $previousFile,
+            'after_file' => $afterFile
         ];
     }
 }

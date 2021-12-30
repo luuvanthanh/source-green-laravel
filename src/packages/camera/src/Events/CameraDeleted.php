@@ -20,5 +20,4 @@ class CameraDeleted
     {
         $this->camera = $camera;
     }
-
 }

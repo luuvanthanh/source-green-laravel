@@ -52,8 +52,8 @@ class UserTransformer extends BaseTransformer
 
         if (!is_null($media)) {
             $avatar = [
-                "path" => $media->getPath(),
-                "name" => $media->name,
+                'path' => $media->getPath(),
+                'name' => $media->name,
             ];
         }
 
@@ -67,8 +67,8 @@ class UserTransformer extends BaseTransformer
         }
 
         return [
-            "avatar" => $avatar,
-            "status" => $status,
+            'avatar' => $avatar,
+            'status' => $status,
         ];
     }
 

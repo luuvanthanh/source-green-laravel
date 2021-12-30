@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use GGPHP\VideoWall\Http\Requests\VideoWallCreateRequest;
 use GGPHP\VideoWall\Http\Requests\VideoWallUpdateRequest;
 use GGPHP\VideoWall\Repositories\Contracts\VideoWallRepository;
-use  GGPHP\VideoWall\Models\VideoWall;
+use GGPHP\VideoWall\Models\VideoWall;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

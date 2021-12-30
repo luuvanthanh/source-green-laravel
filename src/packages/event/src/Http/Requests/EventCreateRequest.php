@@ -24,8 +24,8 @@ class EventCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            "event_code" => 'required',
-            "camera_id" => 'required|exists:cameras,id',
+            'event_code' => 'required',
+            'camera_id' => 'required|exists:cameras,id',
         ];
     }
 }

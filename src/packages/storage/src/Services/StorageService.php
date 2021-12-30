@@ -24,7 +24,7 @@ class StorageService
 
             if ($isVector) {
                 $response = Http::attach('image', file_get_contents($files), 'image.jpg')
-                    ->post(env('AI_URL') . "/face_service/get_face_vector", []);
+                    ->post(env('AI_URL') . '/face_service/get_face_vector', []);
                 if ($response->successful()) {
                     $respone = json_decode($response->body());
                     $vector = json_encode($respone->vector[0]);

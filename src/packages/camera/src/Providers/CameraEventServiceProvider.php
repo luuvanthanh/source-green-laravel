@@ -14,8 +14,7 @@ class CameraEventServiceProvider extends ServiceProvider
      *
      * @var array
      */
-    protected $listen = [
-    ];
+    protected $listen = [];
 
     /**
      * The subscriber classes to register.
@@ -25,5 +24,4 @@ class CameraEventServiceProvider extends ServiceProvider
     protected $subscribe = [
         CameraSubscriber::class,
     ];
-
 }

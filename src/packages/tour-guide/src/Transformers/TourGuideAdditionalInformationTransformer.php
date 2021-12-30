@@ -32,8 +32,8 @@ class TourGuideAdditionalInformationTransformer extends BaseTransformer
         if (!empty(count($media))) {
             foreach ($media as $value) {
                 $files[] = [
-                    "path" => $value->getPath(),
-                    "file_name" => $value->name,
+                    'path' => $value->getPath(),
+                    'file_name' => $value->name,
                 ];
             }
         }

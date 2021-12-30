@@ -11,7 +11,10 @@ use PhpOffice\PhpWord\TemplateProcessor;
  */
 class WordExporterServices
 {
-    protected $disk, $endPoint, $templateFileUrl, $resultFileUrl;
+    protected $disk;
+    protected $endPoint;
+    protected $templateFileUrl;
+    protected $resultFileUrl;
 
     public $configs = [
         'event' => [

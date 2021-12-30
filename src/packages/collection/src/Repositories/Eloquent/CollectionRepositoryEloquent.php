@@ -239,8 +239,6 @@ class CollectionRepositoryEloquent extends BaseRepository implements CollectionR
             if ($collection->delete()) {
                 \DB::commit();
 
-                //TODO: Push notification
-
                 return true;
             }
         } catch (\Exception $e) {

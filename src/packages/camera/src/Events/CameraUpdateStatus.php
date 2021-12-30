@@ -34,8 +34,8 @@ class CameraUpdateStatus implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        Log::info("Camera update status");
-        return new Channel("camera.update.status");
+        Log::info('Camera update status');
+        return new Channel('camera.update.status');
     }
 
     /**

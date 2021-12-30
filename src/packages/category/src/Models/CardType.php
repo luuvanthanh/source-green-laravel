@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class CardType extends  UuidModel implements HasMedia
+class CardType extends UuidModel implements HasMedia
 {
     use InteractsWithMedia;
     use SoftDeletes;

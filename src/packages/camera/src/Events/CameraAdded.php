@@ -20,5 +20,4 @@ class CameraAdded
     {
         $this->camera = $camera;
     }
-
 }

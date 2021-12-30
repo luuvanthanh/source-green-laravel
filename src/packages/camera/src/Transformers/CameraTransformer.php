@@ -69,10 +69,9 @@ class CameraTransformer extends BaseTransformer
             }
         }
 
-
         return [
-            "permission_camera" => $permissions,
-            "status" => $status,
+            'permission_camera' => $permissions,
+            'status' => $status,
         ];
     }
 

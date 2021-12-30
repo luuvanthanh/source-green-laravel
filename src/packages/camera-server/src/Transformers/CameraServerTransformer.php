@@ -53,9 +53,8 @@ class CameraServerTransformer extends BaseTransformer
             }
         }
 
-
         return [
-            "status" => $status,
+            'status' => $status,
         ];
     }
 

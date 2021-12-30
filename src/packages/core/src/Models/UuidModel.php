@@ -5,6 +5,8 @@ namespace GGPHP\Core\Models;
 use GGPHP\Core\Models\CoreModel;
 use Webpatser\Uuid\Uuid;
 
+use function GuzzleHttp\json_decode;
+
 class UuidModel extends CoreModel
 {
     public $keyType = 'string';
@@ -33,7 +35,7 @@ class UuidModel extends CoreModel
             $vector = isset($image_path['vector']) ? $image_path['vector'] : null;
             $entity->addMediaFromDisk($image_path['path'])->usingName($fileName)
                 ->withCustomProperties([
-                    "vector" => $vector
+                    'vector' => json_decode($vector)
                 ])->preservingOriginal()->toMediaCollection($collection);
         }
     }

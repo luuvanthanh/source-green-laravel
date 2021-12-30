@@ -50,7 +50,7 @@ class CollectionTransformer extends BaseTransformer
         $permissions = $user->permissions()->where('collection_id', $model->id)->get();
 
         return [
-            "permission_collection" => $permissions,
+            'permission_collection' => $permissions,
         ];
     }
 

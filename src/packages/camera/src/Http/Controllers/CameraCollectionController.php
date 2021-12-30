@@ -25,7 +25,6 @@ class CameraCollectionController extends Controller
         $this->collectionRepository = $collectionRepository;
     }
 
-
     /**
      * Add camera to collection
      *
@@ -48,5 +47,4 @@ class CameraCollectionController extends Controller
         }
         return $this->error([], trans('lang::messages.common.serverError'), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
-
 }

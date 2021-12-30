@@ -10,12 +10,12 @@ class CameraServer extends UuidModel
     use SoftDeletes;
 
     const STATUS = [
-        "NOT_ACTIVATED" => 0,
-        "CONNECTING" => 1,
-        "CONNECTION" => 2,
-        "DISABLE" => 3,
-        "DISCONNECT" => 4,
-        "LOCK" => 5,
+        'NOT_ACTIVATED' => 0,
+        'CONNECTING' => 1,
+        'CONNECTION' => 2,
+        'DISABLE' => 3,
+        'DISCONNECT' => 4,
+        'LOCK' => 5,
     ];
 
     /**

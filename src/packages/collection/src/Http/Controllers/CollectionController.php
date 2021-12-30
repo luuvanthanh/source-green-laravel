@@ -123,7 +123,5 @@ class CollectionController extends Controller
         }
 
         return $this->success($this->videoWallRepository->parserResult($videoWall), trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
-
     }
-
 }
