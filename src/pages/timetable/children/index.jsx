@@ -34,11 +34,6 @@ const Index = memo(() => {
   ] = useSelector(({ timeTablesChildren, user, loading }) => [timeTablesChildren, user, loading]);
   const dispatch = useDispatch();
   const { data } = objectData;
-  const [state, setState] = useState({
-    defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
-    details: {},
-    visible: false,
-  });
   const [search, setSearch] = useState({
     fromDate: moment().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
     toDate: moment().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
@@ -99,46 +94,6 @@ const Index = memo(() => {
 
   const Collapse = () => {
     setShowColumn(!showColumn);
-  };
-
-  const handleClick = (value, type) => {
-    switch (type) {
-      case 'dayGridMonth':
-        setState((prev) => ({
-          ...prev,
-          visible: true,
-          details: {
-            content: value?.class?.name,
-            start: value?.startTime,
-            end: value?.endTime,
-          },
-        }));
-        break;
-      case 'timeGridWeek':
-        setState((prev) => ({
-          ...prev,
-          visible: true,
-          details: {
-            content: value?.class?.name,
-            start: value?.start,
-            end: value?.end,
-          },
-        }));
-        break;
-      case 'timeGridDay':
-        setState((prev) => ({
-          ...prev,
-          visible: true,
-          details: {
-            content: value?.timetableActivityDetail?.name,
-            start: value?.start,
-            end: value?.end,
-          },
-        }));
-        break;
-      default:
-        break;
-    }
   };
 
   const renderCalendar = (type, data) => {
@@ -414,13 +369,7 @@ const Index = memo(() => {
             dataIndex: 'Monday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth
-                date={value.date}
-                month={value.month}
-                data={value.data}
-                day={value.day}
-                handleClick={handleClick}
-              />
+              <CardMonth date={value.date} month={value.month} data={value.data} day={value.day} />
             ),
           },
           {
@@ -429,13 +378,7 @@ const Index = memo(() => {
             dataIndex: 'Tuesday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth
-                date={value.date}
-                day={value.day}
-                month={value.month}
-                data={value.data}
-                handleClick={handleClick}
-              />
+              <CardMonth date={value.date} day={value.day} month={value.month} data={value.data} />
             ),
           },
           {
@@ -444,13 +387,7 @@ const Index = memo(() => {
             dataIndex: 'Wednesday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth
-                date={value.date}
-                day={value.day}
-                month={value.month}
-                data={value.data}
-                handleClick={handleClick}
-              />
+              <CardMonth date={value.date} day={value.day} month={value.month} data={value.data} />
             ),
           },
           {
@@ -459,13 +396,7 @@ const Index = memo(() => {
             dataIndex: 'Thursday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth
-                date={value.date}
-                day={value.day}
-                month={value.month}
-                data={value.data}
-                handleClick={handleClick}
-              />
+              <CardMonth date={value.date} day={value.day} month={value.month} data={value.data} />
             ),
           },
           {
@@ -474,13 +405,7 @@ const Index = memo(() => {
             dataIndex: 'Friday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth
-                date={value.date}
-                day={value.day}
-                month={value.month}
-                data={value.data}
-                handleClick={handleClick}
-              />
+              <CardMonth date={value.date} day={value.day} month={value.month} data={value.data} />
             ),
           },
           {
@@ -531,12 +456,7 @@ const Index = memo(() => {
               dataIndex: 'timeStart',
               width: 50,
               className: classnames(styles['td-time'], 'min-width-50'),
-              render: (value) =>
-                value ? (
-                  <CardTime value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
-                ) : (
-                  ''
-                ),
+              render: (value) => (value ? <CardTime value={value} /> : ''),
             },
             {
               title: (
@@ -549,9 +469,7 @@ const Index = memo(() => {
               dataIndex: 'Monday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => (
-                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
-              ),
+              render: (value) => <CardLesson value={value} />,
             },
             {
               title: (
@@ -564,9 +482,7 @@ const Index = memo(() => {
               dataIndex: 'Tuesday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => (
-                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
-              ),
+              render: (value) => <CardLesson value={value} />,
             },
             {
               title: (
@@ -579,9 +495,7 @@ const Index = memo(() => {
               dataIndex: 'Wednesday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => (
-                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
-              ),
+              render: (value) => <CardLesson value={value} />,
             },
             {
               title: (
@@ -594,9 +508,7 @@ const Index = memo(() => {
               dataIndex: 'Thursday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => (
-                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
-              ),
+              render: (value) => <CardLesson value={value} />,
             },
             {
               title: (
@@ -609,9 +521,7 @@ const Index = memo(() => {
               dataIndex: 'Friday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: (value) => (
-                <CardLesson value={value} onClick={() => handleClick(value, 'timeGridWeek')} />
-              ),
+              render: (value) => <CardLesson value={value} />,
             },
             {
               title: (
@@ -674,9 +584,7 @@ const Index = memo(() => {
             key: 'content',
             dataIndex: 'content',
             className: 'min-width-100',
-            render: (value) => (
-              <CardDate content={value} onClick={() => handleClick(value, 'timeGridDay')} />
-            ),
+            render: (value) => <CardDate content={value} />,
           },
         ];
       default:
@@ -785,33 +693,17 @@ const Index = memo(() => {
             ref={formRef}
           >
             <div className="row">
-              {!defaultBranch?.id && (
-                <div className="col-lg-4">
-                  <FormItem
-                    className="ant-form-item-row"
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                    label="CƠ SỞ"
-                    name="branchId"
-                    onChange={(event) => onChangeSelectBranch(event)}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
-              )}
-              {defaultBranch?.id && (
-                <div className="col-lg-4">
-                  <FormItem
-                    className="ant-form-item-row"
-                    data={state.defaultBranchs}
-                    label="CƠ SỞ"
-                    name="branchId"
-                    onChange={(event) => onChangeSelectBranch(event)}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
-              )}
-
+              <div className="col-lg-4">
+                <FormItem
+                  className="ant-form-item-row"
+                  data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                  label="CƠ SỞ"
+                  name="branchId"
+                  onChange={(event) => onChangeSelectBranch(event)}
+                  type={variables.SELECT}
+                  allowClear={false}
+                />
+              </div>
               <div className="col-lg-4">
                 <FormItem
                   className="ant-form-item-row"

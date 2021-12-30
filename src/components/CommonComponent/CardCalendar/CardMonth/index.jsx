@@ -6,11 +6,8 @@ import { Button, List } from 'antd';
 import { useState } from 'react';
 import styles from '../style.module.scss';
 
-const CardMonth = ({ date, month, data, handleClick }) => {
+const CardMonth = ({ date, month, data }) => {
   const [show, setShow] = useState(false);
-  const clickButton = (value, type) => {
-    handleClick(value, type);
-  };
 
   return (
     <div
@@ -36,7 +33,6 @@ const CardMonth = ({ date, month, data, handleClick }) => {
             idx < 2 && (
               <Button
                 className={classNames('w-100 d-flex flex-row align-items-center', styles.rmPadding)}
-                onClick={() => clickButton(item, 'dayGridMonth')}
                 key={idx}
               >
                 <span className={styles.dotStyle} />
@@ -69,7 +65,6 @@ const CardMonth = ({ date, month, data, handleClick }) => {
             <List.Item>
               <Button
                 className="w-100 d-flex align-items-center justify-content-left"
-                onClick={() => clickButton(item, 'dayGridMonth')}
               >
                 <span className={classNames('mr-2', styles.dotStyle)} />
                 <span>{item.startTime}</span>
@@ -93,13 +88,11 @@ export default CardMonth;
 CardMonth.propTypes = {
   date: PropType.objectOf(PropType.any),
   month: PropType.any,
-  handleClick: PropType.func,
   data: PropType.arrayOf(PropType.any),
 };
 
 CardMonth.defaultProps = {
   date: {},
   month: '',
-  handleClick: () => {},
   data: [],
 };
