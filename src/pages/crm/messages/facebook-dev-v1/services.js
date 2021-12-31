@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import requestCrm from '@/utils/requestCrm';
 import { Helper } from '@/utils';
+import { omit } from 'lodash';
 
 export function get(data = {}) {
   return request('/v1/districts', {
@@ -60,6 +61,7 @@ export function getMessages(params = {}) {
     params: {
       ...params,
       orderBy: 'created_at',
+      sortedBy: 'desc',
     },
   });
 }
