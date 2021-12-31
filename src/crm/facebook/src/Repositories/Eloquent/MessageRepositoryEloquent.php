@@ -12,8 +12,12 @@ use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use GGPHP\Crm\Facebook\Presenters\MessagePresenter;
 use GGPHP\Crm\Facebook\Repositories\Contracts\MessageRepository;
 use GGPHP\Crm\Facebook\Services\FacebookService;
+use Illuminate\Support\Facades\Storage;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Support\Facades\Http;
+
+use function CloudCreativity\LaravelJsonApi\json_decode;
 
 /**
  * Class PageRepositoryEloquent.
@@ -290,8 +294,19 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
     function getResponseCode($url)
     {
-        @file_get_contents($url);
+        file_get_contents($url);
         list($version, $status, $text) = explode(' ', $http_response_header[0], 3);
         return $status;
+    }
+
+    public function storeFileByUrl($url)
+    {
+        $contents = file_get_contents($url);
+        $url = strtok($url, '?');
+        $name = substr($url, strrpos($url, '/') + 1);
+        Storage::disk('local')->put('public/files/' . $name, $contents);
+        $url = env('URL_CRM') . '/storage/files/' . $name;
+
+        return $url;
     }
 }

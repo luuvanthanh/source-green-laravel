@@ -91,10 +91,11 @@ class FacebookController extends Controller
                         $this->messageRepository->checkCutomerConversationMessage($attributes);
                     } elseif (isset($messaging['message']) && !is_null($attachment) && !is_null($messageId)) {
                         foreach ($attachment as $key => $value) {
+                            $urlFile = $this->messageRepository->storeFileByUrl($value['payload']['url']);
                             $attributes = [
                                 'from' => $messaging['sender']['id'],
                                 'to' => $messaging['recipient']['id'],
-                                'content' => $value['payload']['url'],
+                                'content' => $urlFile,
                                 'message_id_facebook' => $messageId
                             ];
                             $this->messageRepository->checkCutomerConversationMessage($attributes);
@@ -141,7 +142,7 @@ class FacebookController extends Controller
         try {
             $pages = FacebookService::listPages($request->all());
 
-            return $this->success(["data" => $pages], trans('lang::messages.common.getListSuccess'));
+            return $this->success(['data' => $pages], trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
             return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
         }
