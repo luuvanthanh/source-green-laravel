@@ -79,5 +79,4 @@ class AttendanceTransformer extends BaseTransformer
 
         return $this->collection($attendance->attendanceLog, new AttendanceLogTransformer, 'AttendanceLog');
     }
-
 }

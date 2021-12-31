@@ -43,8 +43,7 @@ class DivisionDeleteRequest extends FormRequest
                     $transferDetail = TransferDetail::where('DivisionId', $value)->first();
                     $divisionShift = DivisionShift::where('DivisionId', $value)->first();
 
-                    if (
-                        !is_null($appointDetails) || !is_null($dismissedDetail) || !is_null($positionLevel) || !is_null($labourContract)
+                    if (!is_null($appointDetails) || !is_null($dismissedDetail) || !is_null($positionLevel) || !is_null($labourContract)
                         || !is_null($probationaryContract) || !is_null($transferDetail) || !is_null($divisionShift)
                     ) {
                         return $fail('Dữ liệu đang được sử dụng!');

@@ -262,7 +262,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
             if (!empty($user->busRegistrationSummary)) {
                 foreach ($user->busRegistrationSummary as $item) {
                     if ($values[$item['date']] == 'WK') {
-                        $values[$item['date']] = $values[$item['date']] . "," . round($item['value'], 2);
+                        $values[$item['date']] = $values[$item['date']] . ',' . round($item['value'], 2);
                     } else {
 
                         $values[$item['date']] = $item['value'] ? round($item['value'], 2) : '_';
@@ -316,7 +316,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 
                 foreach ($mergeCoordinate as $key => $coordinate) {
                     if ($key % 2 != 0) {
-                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
                         $listMerge[] = $merge;
                     }
                 }
@@ -354,7 +354,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
             },
@@ -365,7 +365,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
             },
@@ -381,7 +381,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
                 $sheet->getCell($mergeColFirst)->setValue('Trưởng bộ phận xác nhận');
                 $sheet->getCell($cell_coordinate)->setValue(null);
 
-                $merge = $mergeColFirst . ":" . $mergeColEnd;
+                $merge = $mergeColFirst . ':' . $mergeColEnd;
 
                 $listMerge[] = $merge;
             },

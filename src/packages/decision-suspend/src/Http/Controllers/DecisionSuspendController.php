@@ -109,5 +109,4 @@ class DecisionSuspendController extends Controller
 
         return $result;
     }
-
 }

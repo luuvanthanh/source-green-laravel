@@ -13,5 +13,4 @@ class AbsentStudentDetail extends UuidModel
     protected $fillable = [
         'AbsentStudentId', 'Date', 'IsRefunds',
     ];
-
 }

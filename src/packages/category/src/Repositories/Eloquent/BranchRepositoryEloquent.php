@@ -138,7 +138,6 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
             \DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
-
-        return;
+        return parent::all();
     }
 }

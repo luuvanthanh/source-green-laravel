@@ -16,5 +16,4 @@ class ParamaterFormulaLog extends UuidModel
     protected $fillable = [
         'ParameterFormulaId', 'EditEmployee', 'EditDate', 'Name', 'ApplyDate', 'Recipe',
     ];
-
 }

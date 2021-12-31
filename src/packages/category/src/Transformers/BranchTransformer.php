@@ -19,5 +19,4 @@ class BranchTransformer extends BaseTransformer
      * @var array
      */
     protected $defaultIncludes = [];
-
 }

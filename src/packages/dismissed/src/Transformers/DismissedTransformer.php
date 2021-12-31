@@ -30,5 +30,4 @@ class DismissedTransformer extends BaseTransformer
     {
         return $this->collection($dismissed->dismissedDetails, new DismissedDetailTransformer, 'DismissedDetail');
     }
-
 }

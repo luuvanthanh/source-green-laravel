@@ -74,5 +74,4 @@ class PositionLevelTransformer extends BaseTransformer
         }
         return $this->item($positionLevel->branch, new BranchTransformer, 'Branch');
     }
-
 }

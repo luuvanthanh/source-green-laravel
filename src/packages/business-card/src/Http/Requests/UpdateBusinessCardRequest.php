@@ -38,7 +38,7 @@ class UpdateBusinessCardRequest extends FormRequest
                         $accessAbsent = $this->checkDuplicateBusinessCard($value);
 
                         if (!is_null($accessAbsent)) {
-                            return $fail("Bạn đã có lịch đi công tác vào ngày " . $accessAbsent);
+                            return $fail('Bạn đã có lịch đi công tác vào ngày ' . $accessAbsent);
                         }
                     }
 
@@ -46,7 +46,7 @@ class UpdateBusinessCardRequest extends FormRequest
                         $accessSameHoliday = $this->checkSameHoliday($item);
 
                         if ($accessSameHoliday !== true) {
-                            return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
+                            return $fail('Không được đăng ký vào ngày lễ ' . $accessSameHoliday);
                         }
                     }
 
@@ -68,7 +68,7 @@ class UpdateBusinessCardRequest extends FormRequest
                 $query->whereHas('absentType', function ($query) {
                     $query->where('Type', 'BUSINESS_TRAVEL');
                 });
-                
+
                 $query->where('Id', '!=', request()->id);
                 $query->where('EmployeeId', $employeeId);
             })->get();
@@ -87,7 +87,6 @@ class UpdateBusinessCardRequest extends FormRequest
                     break;
                 case 2:
                     return $item['date'];
-                    break;
             }
         }
 

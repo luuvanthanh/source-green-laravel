@@ -55,5 +55,4 @@ class RevokeShiftTransformer extends BaseTransformer
     {
         return $this->collection($revokeShift->timekeeping ?? [], new TimekeepingTransformer(), 'Timekeeping');
     }
-
 }

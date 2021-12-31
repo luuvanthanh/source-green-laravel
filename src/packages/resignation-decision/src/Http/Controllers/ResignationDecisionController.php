@@ -109,5 +109,4 @@ class ResignationDecisionController extends Controller
 
         return $result;
     }
-
 }

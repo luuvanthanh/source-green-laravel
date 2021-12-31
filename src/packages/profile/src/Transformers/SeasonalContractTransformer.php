@@ -62,7 +62,7 @@ class SeasonalContractTransformer extends BaseTransformer
         }
 
         return [
-            "parameterValues" => $parameterValues,
+            'parameterValues' => $parameterValues,
         ];
     }
 

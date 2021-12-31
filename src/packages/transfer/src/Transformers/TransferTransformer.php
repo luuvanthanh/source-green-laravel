@@ -30,5 +30,4 @@ class TransferTransformer extends BaseTransformer
     {
         return $this->collection($transfer->transferDetails, new TransferDetailTransformer, 'TransferDetail');
     }
-
 }

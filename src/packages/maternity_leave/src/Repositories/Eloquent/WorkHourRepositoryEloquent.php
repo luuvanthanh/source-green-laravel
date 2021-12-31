@@ -88,5 +88,4 @@ class MaternityLeaveRepositoryEloquent extends CoreRepositoryEloquent implements
 
         return $maternityLeave;
     }
-
 }

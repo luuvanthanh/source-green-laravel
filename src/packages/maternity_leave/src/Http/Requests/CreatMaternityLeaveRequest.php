@@ -41,7 +41,7 @@ class CreatMaternityLeaveRequest extends FormRequest
                     })->get();
 
                     if (!empty(count($maternityLeave))) {
-                        return $fail("Bạn đã nghỉ vào khoảng thời gian này");
+                        return $fail('Bạn đã nghỉ vào khoảng thời gian này.');
                     }
 
                     return true;

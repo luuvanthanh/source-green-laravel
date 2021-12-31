@@ -108,5 +108,4 @@ class LabourContractController extends Controller
 
         return $result;
     }
-
 }

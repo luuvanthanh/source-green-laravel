@@ -26,7 +26,7 @@ class TrainingSchoolCreateRequest extends FormRequest
         return [
             'name' => 'required|string|unique:TrainingSchools,Name',
             'code' => 'required|string|unique:TrainingSchools,Code',
-            "address" => 'string',
+            'address' => 'string',
         ];
     }
 }

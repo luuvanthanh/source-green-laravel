@@ -28,5 +28,4 @@ class Position extends UuidModel
      * @var array
      */
     protected $hidden = [];
-
 }

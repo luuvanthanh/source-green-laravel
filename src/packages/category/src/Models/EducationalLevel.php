@@ -16,5 +16,4 @@ class EducationalLevel extends UuidModel
     protected $fillable = [
         'Code', 'Name',
     ];
-
 }

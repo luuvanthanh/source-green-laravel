@@ -33,7 +33,7 @@ class DivisionShiftUpdateRequest extends FormRequest
                     $divisionId = request()->divisionId;
                     $shift = DivisionShift::where('DivisionId', $divisionId)->whereNotIn('Id', [$id])->orderBy('CreationTime', 'DESC')->first();
                     if (!is_null($shift) && $value <= $shift->StartDate->format('Y-m-d')) {
-                        return $fail("Thời gian bắt đầu phải lớn hơn " . $shift->StartDate->format('d-m-Y'));
+                        return $fail('Thời gian bắt đầu phải lớn hơn ' . $shift->StartDate->format('d-m-Y'));
                     }
 
                     $now = Carbon::now();

@@ -137,11 +137,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             switch ($attendance->Status) {
                 case 2:
                     $date = $attendance->Date->format('d-m-Y');
-                    $message = "Bé $nameStudent vắng không phép ngày $date";
+                    $message = 'Bé $nameStudent vắng không phép ngày $date';
                     break;
                 case 3:
                     $timeCheckIn = $attendance->CheckIn;
-                    $message = "Bé $nameStudent đã vào lớp lúc $timeCheckIn";
+                    $message = 'Bé $nameStudent đã vào lớp lúc $timeCheckIn';
                     break;
                 case 4:
                     $timeCheckOut = $attendance->CheckOut;
@@ -151,10 +151,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                         $transporter = $attendance->studentTransporter;
                         $nameTransporter = $transporter->FullName;
                         $relationshipTransporter = $transporter->Relationship;
-                        $textTransporter = "do $nameTransporter - $relationshipTransporter của bé đón về";
+                        $textTransporter = 'do $nameTransporter - $relationshipTransporter của bé đón về';
                     }
 
-                    $message = "Bé $nameStudent đã ra về  lúc $timeCheckOut $textTransporter";
+                    $message = 'Bé $nameStudent đã ra về  lúc $timeCheckOut $textTransporter';
                     break;
                 default:
                     break;
@@ -174,7 +174,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 6,
-                    'moduleCode' => "ATTENDANCE",
+                    'moduleCode' => 'ATTENDANCE',
                     'refId' => $attributes['studentId'],
                 ];
 
@@ -211,11 +211,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             switch ($attendance->Status) {
                 case 2:
                     $date = $attendance->Date->format('d-m-Y');
-                    $message = "Bé $nameStudent vắng không phép ngày $date";
+                    $message = 'Bé $nameStudent vắng không phép ngày $date';
                     break;
                 case 3:
                     $timeCheckIn = $attendance->CheckIn;
-                    $message = "Bé $nameStudent đã vào lớp lúc $timeCheckIn";
+                    $message = 'Bé $nameStudent đã vào lớp lúc $timeCheckIn';
                     break;
                 case 4:
                     $timeCheckOut = $attendance->CheckOut;
@@ -224,10 +224,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                         $transporter = $attendance->studentTransporter;
                         $nameTransporter = $transporter->FullName;
                         $relationshipTransporter = $transporter->Relationship;
-                        $textTransporter = "do $nameTransporter - $relationshipTransporter của bé đón về";
+                        $textTransporter = 'do $nameTransporter - $relationshipTransporter của bé đón về';
                     }
 
-                    $message = "Bé $nameStudent đã ra về  lúc $timeCheckOut $textTransporter";
+                    $message = 'Bé $nameStudent đã ra về  lúc $timeCheckOut $textTransporter';
                     break;
                 default:
                     break;
@@ -248,7 +248,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 6,
-                    'moduleCode' => "ATTENDANCE",
+                    'moduleCode' => 'ATTENDANCE',
                     'refId' => $attributes['studentId'],
                 ];
 
@@ -441,7 +441,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $timeCheckIn = $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s');
-                                $message = "Bé $nameStudent đã vào lớp lúc $timeCheckIn";
+                                $message = 'Bé $nameStudent đã vào lớp lúc $timeCheckIn';
 
                                 if (!empty($userId)) {
                                     $dataNoti = [
@@ -450,7 +450,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'imageURL' => $urlImage,
                                         'message' => $message,
                                         'moduleType' => 6,
-                                        'moduleCode' => "ATTENDANCE",
+                                        'moduleCode' => 'ATTENDANCE',
                                         'refId' => $student->Id,
                                     ];
 
@@ -507,7 +507,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
-                                $message = "Bé $nameStudent đã ra về lúc $timeCheckOut";
+                                $message = 'Bé $nameStudent đã ra về lúc $timeCheckOut';
 
 
                                 if (!empty($userId)) {
@@ -517,13 +517,13 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'imageURL' => $urlImage,
                                         'message' => $message,
                                         'moduleType' => 6,
-                                        'moduleCode' => "ATTENDANCE",
+                                        'moduleCode' => 'ATTENDANCE',
                                         'refId' => $student->Id,
                                     ];
 
                                     dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                                 }
-                            } else if ($existCheckOut[0]->Status == Attendance::STATUS['HAVE_IN']) {
+                            } elseif ($existCheckOut[0]->Status == Attendance::STATUS['HAVE_IN']) {
 
                                 $existCheckOut[0]->update([
                                     'Status' => Attendance::STATUS['HAVE_OUT'],
@@ -550,7 +550,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
-                                $message = "Bé $nameStudent đã ra về lúc $timeCheckOut";
+                                $message = 'Bé $nameStudent đã ra về lúc $timeCheckOut';
 
                                 if (!empty($userId)) {
                                     $dataNoti = [
@@ -559,7 +559,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'imageURL' => $urlImage,
                                         'message' => $message,
                                         'moduleType' => 6,
-                                        'moduleCode' => "ATTENDANCE",
+                                        'moduleCode' => 'ATTENDANCE',
                                         'refId' => $student->Id,
                                     ];
 
@@ -615,7 +615,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 $urlImage = env('IMAGE_URL') . $images[0];
                             }
 
-                            $message = "Bé $nameStudent vắng không phép ngày $date";
+                            $message = 'Bé $nameStudent vắng không phép ngày $date';
 
                             if (!empty($userId)) {
                                 $dataNoti = [
@@ -624,7 +624,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                     'imageURL' => $urlImage,
                                     'message' => $message,
                                     'moduleType' => 6,
-                                    'moduleCode' => "ATTENDANCE",
+                                    'moduleCode' => 'ATTENDANCE',
                                     'refId' => $student->Id,
                                 ];
 
@@ -635,8 +635,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 }
             }
         }
-
-        return;
+        return true;
     }
 
     /**
@@ -721,11 +720,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $attendanceUnpaidLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['UNPAID_LEAVE'])->count();
 
             $item->report = [
-                "totalStudent" => count($student),
-                "haveIn" => $attendanceHaveIn,
-                "haveOut" => $attendanceHaveOut,
-                "annualLeave" => $attendanceAnnualLeave,
-                "unpaidLeave" => $attendanceUnpaidLeave
+                'totalStudent' => count($student),
+                'haveIn' => $attendanceHaveIn,
+                'haveOut' => $attendanceHaveOut,
+                'annualLeave' => $attendanceAnnualLeave,
+                'unpaidLeave' => $attendanceUnpaidLeave
             ];
         });
 

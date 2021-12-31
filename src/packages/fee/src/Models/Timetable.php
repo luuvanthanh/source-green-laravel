@@ -21,5 +21,4 @@ class Timetable extends UuidModel
     protected $fillable = [
         'SchoolYearId', 'Month', 'Week', 'StartDate', 'EndDate',
     ];
-
 }

@@ -31,5 +31,4 @@ class ScheduleCreateRequest extends FormRequest
             'shiftId' => 'required|exists:ShiftStudents,Id',
         ];
     }
-
 }

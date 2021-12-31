@@ -109,5 +109,4 @@ class DismissedController extends Controller
 
         return $result;
     }
-
 }

@@ -73,5 +73,4 @@ class PaymentFormRepositoryEloquent extends CoreRepositoryEloquent implements Pa
 
         return $paymentForm;
     }
-
 }

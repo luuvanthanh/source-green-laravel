@@ -36,5 +36,4 @@ class MaternityLeaveTransformer extends BaseTransformer
 
         return $this->item($maternityLeave->employee, new UserTransformer, 'Employee');
     }
-
 }

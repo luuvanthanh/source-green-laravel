@@ -16,5 +16,4 @@ class TrainingMajor extends UuidModel
     protected $fillable = [
         'Code', 'Name',
     ];
-
 }

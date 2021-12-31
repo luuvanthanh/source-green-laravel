@@ -92,8 +92,8 @@ class AbsentConfigTimeRepositoryEloquent extends CoreRepositoryEloquent implemen
         };
 
         return [
-            "data" => [
-                "startDate" => !is_null($startDate) ? $startDate->format('Y-m-d') : $startDate,
+            'data' => [
+                'startDate' => !is_null($startDate) ? $startDate->format('Y-m-d') : $startDate,
             ]
         ];
     }

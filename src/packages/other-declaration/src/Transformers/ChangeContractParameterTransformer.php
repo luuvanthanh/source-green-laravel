@@ -18,7 +18,7 @@ class ChangeContractParameterTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            "Detail" => json_decode($model->Detail),
+            'Detail' => json_decode($model->Detail),
         ];
     }
 

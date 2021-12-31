@@ -51,5 +51,4 @@ class ParentRepositoryEloquent extends CoreRepositoryEloquent implements ParentR
     {
         return ParentsPresenter::class;
     }
-
 }

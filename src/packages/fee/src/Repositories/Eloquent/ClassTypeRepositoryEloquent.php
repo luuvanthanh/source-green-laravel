@@ -73,5 +73,4 @@ class ClassTypeRepositoryEloquent extends CoreRepositoryEloquent implements Clas
 
         return $fee;
     }
-
 }

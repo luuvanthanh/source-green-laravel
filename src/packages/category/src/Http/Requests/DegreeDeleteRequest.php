@@ -2,7 +2,6 @@
 
 namespace GGPHP\Category\Http\Requests;
 
-
 use GGPHP\Users\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 

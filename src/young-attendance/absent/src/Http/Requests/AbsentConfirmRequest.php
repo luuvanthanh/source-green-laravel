@@ -17,5 +17,4 @@ class AbsentConfirmRequest extends FormRequest
             'status' => 'required',
         ];
     }
-
 }

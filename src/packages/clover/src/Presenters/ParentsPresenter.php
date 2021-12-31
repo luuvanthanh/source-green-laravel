@@ -31,5 +31,4 @@ class ParentsPresenter extends FractalPresenter
     {
         return new ParentsTransformer();
     }
-
 }

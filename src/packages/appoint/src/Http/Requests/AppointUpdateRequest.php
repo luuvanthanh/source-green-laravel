@@ -32,7 +32,7 @@ class AppointUpdateRequest extends FormRequest
                     $appointDetail = AppointDetail::where('EmployeeId', $value)->orderBy('CreationTime', 'DESC')->first();
 
                     if (!is_null($appointDetail)  && $appointDetail->appoint->Id != request()->id) {
-                        return $fail("Quyết định không phải là mới nhất, không được phép chỉnh sửa.");
+                        return $fail('Quyết định không phải là mới nhất, không được phép chỉnh sửa.');
                     }
                 },
             ],

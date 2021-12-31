@@ -13,7 +13,6 @@ use GGPHP\YoungAttendance\ShiftSchedule\Models\Shift;
  */
 class ShiftTransformer extends BaseTransformer
 {
-
     /**
      * List of resources possible to include
      *
@@ -43,5 +42,4 @@ class ShiftTransformer extends BaseTransformer
         }
         return $this->item($shift->branch, new BranchTransformer, 'Branch');
     }
-
 }

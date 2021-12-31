@@ -54,5 +54,4 @@ class Appoint extends UuidModel
     {
         return $this->hasMany(AppointDetail::class, 'AppointId');
     }
-
 }

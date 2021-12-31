@@ -12,6 +12,5 @@ use GGPHP\Core\Transformers\BaseTransformer;
  */
 class ParameterTaxLogTransformer extends BaseTransformer
 {
-
     protected $availableIncludes = [];
 }

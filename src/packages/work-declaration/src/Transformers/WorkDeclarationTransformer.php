@@ -39,5 +39,4 @@ class WorkDeclarationTransformer extends BaseTransformer
 
         return $this->item($workDeclaration->employee, new UserTransformer, 'Employee');
     }
-
 }

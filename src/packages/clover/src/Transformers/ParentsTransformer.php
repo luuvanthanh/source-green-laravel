@@ -41,8 +41,6 @@ class ParentsTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-
         return [];
     }
-
 }

@@ -139,7 +139,7 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
             'yearNow' => $resignationDecision->DecisionDate ? $resignationDecision->DecisionDate->format('Y') : '.......',
             'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '........',
             'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '........',
-            'positionDivision' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name . " - " . $employee->positionLevelNow->division->Name : '........',
+            'positionDivision' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name . ' - ' . $employee->positionLevelNow->division->Name : '........',
             'fullName' => $employee->FullName ? $employee->FullName : '........',
             'payEndDate' => $resignationDecision->PayEndDate ? $resignationDecision->PayEndDate->format('d-m-Y') : '........',
         ];

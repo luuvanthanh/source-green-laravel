@@ -83,7 +83,7 @@ class CreatWorkHourRequest extends FormRequest
     public function messages()
     {
         return [
-            'date.after_or_equal' => "Trường phải là một ngày sau ngày hiện tại.",
+            'date.after_or_equal' => 'Trường phải là một ngày sau ngày hiện tại.',
         ];
     }
 }

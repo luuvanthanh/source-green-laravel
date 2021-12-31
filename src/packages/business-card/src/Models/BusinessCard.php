@@ -60,5 +60,4 @@ class BusinessCard extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Absent\Models\AbsentType::class, 'AbsentTypeId');
     }
-
 }

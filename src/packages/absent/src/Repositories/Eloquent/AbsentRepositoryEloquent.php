@@ -18,8 +18,8 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentRepository
 {
-    protected $employeeRepositoryEloquent, $excelExporterServices;
-
+    protected $employeeRepositoryEloquent;
+    protected $excelExporterServices;
     public function __construct(
         UserRepositoryEloquent $employeeRepositoryEloquent,
         Application $app

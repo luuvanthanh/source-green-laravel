@@ -41,5 +41,4 @@ class ChildrenTransformer extends BaseTransformer
     {
         return $this->item($children->employee, new UserTransformer, 'Employee');
     }
-
 }
