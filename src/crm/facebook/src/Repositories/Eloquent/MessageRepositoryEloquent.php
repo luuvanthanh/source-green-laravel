@@ -130,15 +130,11 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         broadcast(new FacebookMessageReceive([
             'from' => $message->from,
             'to' => $message->to,
-            'content' => $message->content,
-            'avatar' => $userFacebookInfo->avatar,
-            'user_name' => $userFacebookInfo->user_name,
-            'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
-            'id' => $conversation->id
+            'content' => $message->content
         ]));
 
         $dataConversation = [
-            'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
+            'time' => $created_at->setTimezone('GMT+7')->format('Y-m-d H:i'),
             'snippet' => $message->content,
             'from' => $message->from,
             'to' => $message->to,
@@ -182,7 +178,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
         $created_at = $message->created_at;
         $dataConversation = [
-            'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
+            'time' => $created_at->setTimezone('GMT+7')->format('Y-m-d H:i'),
             'snippet' => $message->content,
             'noti_inbox' => $notiInbox,
             'from' => $message->from,
@@ -200,11 +196,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         broadcast(new FacebookMessageReceive([
             'from' => $message->from,
             'to' => $message->to,
-            'content' => $message->content,
-            'avatar' => $userFacebookInfo->avatar,
-            'user_name' => $userFacebookInfo->user_name,
-            'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
-            'id' => $conversation->id
+            'content' => $message->content
         ]));
     }
 
@@ -293,7 +285,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         //     }
         // }
 
-        return;
+        return null;
     }
 
     function getResponseCode($url)
