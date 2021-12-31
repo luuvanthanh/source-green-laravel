@@ -72,7 +72,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         if (!empty($attributes['hasClass'])) {
-            if ($attributes['hasClass'] == "true") {
+            if ($attributes['hasClass'] == 'true') {
                 $this->model = $this->model->whereHas('classTeacher');
             } else {
                 $this->model = $this->model->whereDoesnthave('classTeacher');

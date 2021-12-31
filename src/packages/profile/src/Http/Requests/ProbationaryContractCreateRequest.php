@@ -35,7 +35,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
 
                     if (!is_null($labourContract)) {
-                        return $fail("Đã có hợp đồng lao động, không được tạo hợp đồng thử việc.");
+                        return $fail('Đã có hợp đồng lao động, không được tạo hợp đồng thử việc.');
                     }
                 },
             ],
@@ -48,7 +48,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractDate->format('Y-m-d')) {
-                        return $fail("Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất " . $probationaryContract->ContractDate->format('d-m-Y'));
+                        return $fail('Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất ' . $probationaryContract->ContractDate->format('d-m-Y'));
                     }
                 },
             ],
@@ -65,7 +65,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->contractTo->format('Y-m-d')) {
-                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng thử việc gần nhất " . $probationaryContract->contractTo->format('d-m-Y'));
+                        return $fail('Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng thử việc gần nhất ' . $probationaryContract->contractTo->format('d-m-Y'));
                     }
                 },
             ],

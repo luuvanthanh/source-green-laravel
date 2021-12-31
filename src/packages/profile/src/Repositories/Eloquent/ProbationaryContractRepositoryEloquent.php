@@ -314,7 +314,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'salaryRatio' => $labourContract->SalaryRatio ? $labourContract->SalaryRatio : '........',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
-            'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . " - " . $labourContract->division->Name : '........',
+            'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . ' - ' . $labourContract->division->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Address : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => number_format($salary),

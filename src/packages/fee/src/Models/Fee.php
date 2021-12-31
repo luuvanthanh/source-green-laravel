@@ -21,5 +21,4 @@ class Fee extends UuidModel
     protected $fillable = [
         'Code', 'Name', 'Type',
     ];
-
 }

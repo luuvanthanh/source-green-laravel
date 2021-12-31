@@ -109,5 +109,4 @@ class ShiftController extends Controller
 
         return $this->success($shifts, trans('lang::messages.common.getListSuccess'));
     }
-
 }

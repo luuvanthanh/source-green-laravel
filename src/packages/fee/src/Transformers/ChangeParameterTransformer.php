@@ -44,8 +44,6 @@ class ChangeParameterTransformer extends BaseTransformer
      */
     public function includeChangeParameterDetail(ChangeParameter $changeParameter)
     {
-
         return $this->collection($changeParameter->changeParameterDetail, new ChangeParameterDetailTransformer, 'ChangeParameterDetail');
     }
-
 }

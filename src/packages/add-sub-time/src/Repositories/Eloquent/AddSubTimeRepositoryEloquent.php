@@ -140,5 +140,4 @@ class AddSubTimeRepositoryEloquent extends CoreRepositoryEloquent implements Add
 
         return $this->employeeRepositoryEloquent->parserResult($employees);
     }
-
 }

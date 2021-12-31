@@ -21,7 +21,7 @@ class WorkHourTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            "Hours" => json_decode($model->Hours),
+            'Hours' => json_decode($model->Hours),
         ];
     }
 

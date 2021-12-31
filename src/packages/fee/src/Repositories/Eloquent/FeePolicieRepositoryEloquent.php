@@ -324,9 +324,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                             ->whereHas('paymentForm', function ($query) use ($month) {
                                                 $query->where('Code', 'HOCKY1');
                                                 $query->where('Date', '!=', $month->Date);
-                                                $query->where('StartDate', '>',  $month->EndDate);
+                                                $query->where('StartDate', '>', $month->EndDate);
                                             })->get();
-
                                         // tháng học kỳ 1
                                         $monthsemester1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                                             ->whereHas('paymentForm', function ($query) {
@@ -359,9 +358,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                             ->whereHas('paymentForm', function ($query) use ($month) {
                                                 $query->where('Code', 'HOCKY2');
                                                 $query->where('Date', '!=', $month->Date);
-                                                $query->where('StartDate', '>',  $month->EndDate);
+                                                $query->where('StartDate', '>', $month->EndDate);
                                             })->get();
-
                                         // tháng học kỳ 2
                                         $monthsemester2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                                             ->whereHas('paymentForm', function ($query) {
@@ -438,9 +436,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             }
 
             $data[] = [
-                "id" => isset($detail->id) ? $detail->id : null,
-                "feeId" => $detail->feeId,
-                "paymentFormId" => $detail->paymentFormId,
+                'id' => isset($detail->id) ? $detail->id : null,
+                'feeId' => $detail->feeId,
+                'paymentFormId' => $detail->paymentFormId,
                 'money' => $result,
             ];
         }

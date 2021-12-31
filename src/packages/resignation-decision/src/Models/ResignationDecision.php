@@ -46,5 +46,4 @@ class ResignationDecision extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
-
 }

@@ -25,5 +25,4 @@ class AbsentDetail extends UuidModel
     {
         return $this->belongsTo(Absent::class, 'AbsentId');
     }
-
 }

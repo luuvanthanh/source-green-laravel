@@ -16,5 +16,4 @@ class TrainingSchool extends UuidModel
     protected $fillable = [
         'Code', 'Name', 'Address',
     ];
-
 }

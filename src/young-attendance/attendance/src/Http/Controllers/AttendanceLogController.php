@@ -104,5 +104,4 @@ class AttendanceLogController extends Controller
 
         return $this->success($attendanceLogs, trans('lang::messages.common.getListSuccess'));
     }
-
 }

@@ -21,5 +21,4 @@ class ClassType extends UuidModel
     protected $fillable = [
         'Name', 'Code', 'From', 'To', 'Description',
     ];
-
 }

@@ -108,5 +108,4 @@ class ProbationaryContractController extends Controller
 
         return $result;
     }
-
 }

@@ -28,5 +28,4 @@ class HolidayCreateRequest extends FormRequest
         return [
         ];
     }
-
 }

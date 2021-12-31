@@ -21,5 +21,4 @@ class PaymentForm extends UuidModel
     protected $fillable = [
         'Code', 'Name', 'Type', 'IsSemester',
     ];
-
 }

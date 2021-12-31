@@ -32,7 +32,7 @@ class DismissedUpdateRequest extends FormRequest
                     $dismissedDetail = DismissedDetail::where('EmployeeId', $value)->orderBy('CreationTime', 'DESC')->first();
 
                     if (!is_null($dismissedDetail)  && $dismissedDetail->dismissed->Id != request()->id) {
-                        return $fail("Quyết định không phải là mới nhất, không được phép chỉnh sửa.");
+                        return $fail('Quyết định không phải là mới nhất, không được phép chỉnh sửa.');
                     }
                 },
             ],

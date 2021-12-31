@@ -12,12 +12,10 @@ use GGPHP\ShiftSchedule\Models\ShiftDetail;
  */
 class ShiftDetailTransformer extends BaseTransformer
 {
-
     /**
      * List of resources possible to include
      *
      * @var array
      */
     protected $defaultIncludes = [];
-
 }

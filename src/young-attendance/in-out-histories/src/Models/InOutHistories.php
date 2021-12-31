@@ -43,5 +43,4 @@ class InOutHistories extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Student::class, 'StudentId');
     }
-
 }

@@ -41,6 +41,6 @@ class MagneticCard extends UuidModel
 
     public function getCardNumberAttribute()
     {
-        return "{$this->MagneticCard}{$this->MagneticCardPatch}";
+        return '{$this->MagneticCard}{$this->MagneticCardPatch}';
     }
 }

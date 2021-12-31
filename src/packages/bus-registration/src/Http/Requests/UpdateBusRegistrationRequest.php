@@ -30,7 +30,7 @@ class UpdateBusRegistrationRequest extends FormRequest
                 function ($attribute, $value, $fail) {
 
                     if ($value < 0) {
-                        return $fail("Trường dữ liệu phải lớn hơn 0.");
+                        return $fail('Trường dữ liệu phải lớn hơn 0.');
                     }
                 },
             ],
@@ -45,7 +45,7 @@ class UpdateBusRegistrationRequest extends FormRequest
 
                         $accessSameHoliday = $this->checkSameHoliday($item['date']);
                         if ($accessSameHoliday !== true) {
-                            return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
+                            return $fail('Không được đăng ký vào ngày lễ ' . $accessSameHoliday);
                         }
                     }
 

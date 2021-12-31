@@ -45,16 +45,16 @@ class CreatBusinessCardRequest extends FormRequest
 
                         if (!is_null($accessAbsent)) {
                             $accessAbsent = Carbon::parse($accessAbsent)->format('d-m-Y');
-                            return $fail("Bạn đã có lịch đi công tác vào ngày " . $accessAbsent);
+                            return $fail('Bạn đã có lịch đi công tác vào ngày ' . $accessAbsent);
                         }
                     }
-
+                    
                     if ($absentType->Type === AbsentType::GO_OUT) {
 
                         $accessAbsent = $this->checkDuplicateBusinessCardGoOut($value);
 
                         if (!is_null($accessAbsent)) {
-                            return $fail("Đơn đi ra ngoài vào thời gian " . $accessAbsent . " đã tồn tại");
+                            return $fail('Đơn đi ra ngoài vào thời gian ' . $accessAbsent . ' đã tồn tại');
                         }
                     }
 
@@ -62,7 +62,7 @@ class CreatBusinessCardRequest extends FormRequest
                         $accessSameHoliday = $this->checkSameHoliday($item);
 
                         if ($accessSameHoliday !== true) {
-                            return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
+                            return $fail('Không được đăng ký vào ngày lễ ' . $accessSameHoliday);
                         }
                     }
 
@@ -109,7 +109,6 @@ class CreatBusinessCardRequest extends FormRequest
                     break;
                 case 2:
                     return $item['date'];
-                    break;
             }
         }
 
@@ -137,7 +136,7 @@ class CreatBusinessCardRequest extends FormRequest
                     || ($item['startTime'] >= $businessCardDetail->StartTime && $item['endTime'] <= $businessCardDetail->EndTime)
                     || ($item['startTime'] <= $businessCardDetail->EndTime && $item['endTime'] >= $businessCardDetail->EndTime)
                 ) {
-                    return $item['startTime'] . " - " . $item['endTime'];
+                    return $item['startTime'] . ' - ' . $item['endTime'];
                 }
             }
         }

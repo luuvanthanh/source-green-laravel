@@ -12,7 +12,5 @@ use GGPHP\Core\Transformers\BaseTransformer;
  */
 class EducationalLevelTransformer extends BaseTransformer
 {
-
     protected $availableIncludes = [];
-
 }

@@ -44,5 +44,4 @@ class DecisionReward extends UuidModel
     {
         return $this->hasMany(DecisionRewardDetail::class, 'DecisionRewardId');
     }
-
 }

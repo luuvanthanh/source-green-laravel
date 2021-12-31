@@ -69,5 +69,4 @@ class FeeRepositoryEloquent extends CoreRepositoryEloquent implements FeeReposit
 
         return $fee;
     }
-
 }

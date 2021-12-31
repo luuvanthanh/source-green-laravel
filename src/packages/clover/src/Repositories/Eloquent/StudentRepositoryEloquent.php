@@ -51,5 +51,4 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
     {
         return StudentPresenter::class;
     }
-
 }

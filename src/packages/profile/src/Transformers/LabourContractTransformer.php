@@ -61,7 +61,7 @@ class LabourContractTransformer extends BaseTransformer
         }
 
         return [
-            "parameterValues" => $parameterValues,
+            'parameterValues' => $parameterValues,
         ];
     }
 
@@ -129,5 +129,4 @@ class LabourContractTransformer extends BaseTransformer
 
         return $this->item($labourContract->branch, new BranchTransformer, 'Branch');
     }
-
 }

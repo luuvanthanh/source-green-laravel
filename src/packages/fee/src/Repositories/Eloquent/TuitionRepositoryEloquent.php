@@ -58,5 +58,4 @@ class TuitionRepositoryEloquent extends CoreRepositoryEloquent implements Tuitio
 
         return $paymentForm;
     }
-
 }

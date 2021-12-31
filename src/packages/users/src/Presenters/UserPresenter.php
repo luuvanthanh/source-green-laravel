@@ -31,5 +31,4 @@ class UserPresenter extends FractalPresenter
     {
         return new UserTransformer();
     }
-
 }

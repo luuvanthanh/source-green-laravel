@@ -61,7 +61,7 @@ class ProbationaryContractTransformer extends BaseTransformer
         }
 
         return [
-            "parameterValues" => $parameterValues,
+            'parameterValues' => $parameterValues,
         ];
     }
 
@@ -129,5 +129,4 @@ class ProbationaryContractTransformer extends BaseTransformer
 
         return $this->item($probationaryContract->branch, new BranchTransformer, 'Branch');
     }
-
 }

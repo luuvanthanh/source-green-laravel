@@ -109,9 +109,9 @@ class ParamaterFormulaRepositoryEloquent extends CoreRepositoryEloquent implemen
                 case 'formular':
                     $value = $this->getFormular($item['formular']);
                     if (!is_null($item['operator'])) {
-                        $formular .= $item['operator'] . "(" . $value . ")";
+                        $formular .= $item['operator'] . '('. $value . ')';
                     } else {
-                        $formular .= "(" . $value . ")";
+                        $formular .= '('. $value . ')';
                     }
                     break;
             }

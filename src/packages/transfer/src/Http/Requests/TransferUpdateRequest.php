@@ -33,7 +33,7 @@ class TransferUpdateRequest extends FormRequest
                     $transferDetail = TransferDetail::where('EmployeeId', $value)->orderBy('CreationTime', 'DESC')->first();
 
                     if (!is_null($transferDetail)  && $transferDetail->transfer->Id != request()->id) {
-                        return $fail("Quyết định không phải là mới nhất, không được phép chỉnh sửa.");
+                        return $fail('Quyết định không phải là mới nhất, không được phép chỉnh sửa.');
                     }
                 },
             ],

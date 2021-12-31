@@ -16,5 +16,4 @@ class ParamaterValueLog extends UuidModel
     protected $fillable = [
         'ParameterValueId', 'EditEmployee', 'EditDate', 'ApplyDate', 'ValueDefault',
     ];
-
 }

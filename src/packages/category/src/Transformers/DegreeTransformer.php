@@ -12,7 +12,5 @@ use GGPHP\Core\Transformers\BaseTransformer;
  */
 class DegreeTransformer extends BaseTransformer
 {
-
     protected $availableIncludes = [];
-
 }

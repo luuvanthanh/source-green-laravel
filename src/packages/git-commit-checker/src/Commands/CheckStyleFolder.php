@@ -35,7 +35,7 @@ class CheckStyleFolder extends Command
             return false;
         }
 
-        $changed = $this->getDirContents(base_path('/packages/absent'));
+        $changed = $this->getDirContents(base_path('/young-attendance/shift-schedule'));
 
         $output = new TextOutputColored(new ConsoleWriter);
 

@@ -40,13 +40,13 @@ class AbsentCreateRequest extends FormRequest
 
                     if (!is_null($accessAbsent)) {
                         $date = Carbon::parse($accessAbsent)->setTimezone('GMT+7')->format('d-m-Y');
-                        return $fail("Bạn đã nghỉ vào ngày " . $date);
+                        return $fail('Bạn đã nghỉ vào ngày ' . $date);
                     }
 
                     $checkShift = $this->checkShift($value);
                     if (!is_null($checkShift)) {
                         $date = Carbon::parse($checkShift)->setTimezone('GMT+7')->format('d-m-Y');
-                        return $fail("Ngày $date không có ca làm việc");
+                        return $fail('Ngày' . $date . 'không có ca làm việc');
                     }
 
                     foreach ($value as $key => $item) {
@@ -86,11 +86,9 @@ class AbsentCreateRequest extends FormRequest
                     if ($item['isFullDate']) {
                         return $item['date'];
                     }
-
                     break;
                 case 2:
                     return $item['date'];
-                    break;
             }
         }
 
@@ -136,7 +134,7 @@ class AbsentCreateRequest extends FormRequest
     public function messages()
     {
         return [
-            'endDate.after_or_equal' => "Trường thời gian kết thúc phải là một ngày sau hoặc bằng thời gian bắt đầu.",
+            'endDate.after_or_equal' => 'Trường thời gian kết thúc phải là một ngày sau hoặc bằng thời gian bắt đầu.',
         ];
     }
 }

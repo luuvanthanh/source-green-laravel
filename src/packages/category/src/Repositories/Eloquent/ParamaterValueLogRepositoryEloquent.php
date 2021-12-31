@@ -47,5 +47,4 @@ class ParamaterValueLogRepositoryEloquent extends CoreRepositoryEloquent impleme
     {
         return ParamaterValueLogPresenter::class;
     }
-
 }

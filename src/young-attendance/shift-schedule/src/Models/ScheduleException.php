@@ -49,5 +49,4 @@ class ScheduleException extends UuidModel
     {
         return $this->belongsTo(\GGPHP\YoungAttendance\ShiftSchedule\Models\Schedule::class, 'ScheduleId');
     }
-
 }

@@ -47,5 +47,4 @@ class ParamaterFormulaLogRepositoryEloquent extends CoreRepositoryEloquent imple
     {
         return ParamaterFormulaLogPresenter::class;
     }
-
 }
