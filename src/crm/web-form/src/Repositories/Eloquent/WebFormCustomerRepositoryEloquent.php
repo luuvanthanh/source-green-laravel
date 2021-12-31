@@ -72,11 +72,11 @@ class WebFormCustomerRepositoryEloquent extends BaseRepository implements WebFor
             $customerLead_code = CustomerLead::max('code');
 
             if (is_null($customerLead_code)) {
-                $attributes['code'] = CustomerLead::CODE . $now . "01";
+                $attributes['code'] = CustomerLead::CODE . $now . '01';
             } else {
 
                 if (substr($customerLead_code, 2, 8)  != $now) {
-                    $attributes['code'] = CustomerLead::CODE . $now . "01";
+                    $attributes['code'] = CustomerLead::CODE . $now . '01';
                 } else {
                     $stt = substr($customerLead_code, 2) + 1;
                     $attributes['code'] = CustomerLead::CODE . $stt;
@@ -103,6 +103,6 @@ class WebFormCustomerRepositoryEloquent extends BaseRepository implements WebFor
         }
 
 
-        return;
+        return parent::parserResult($webFormCustomerCustomer);
     }
 }

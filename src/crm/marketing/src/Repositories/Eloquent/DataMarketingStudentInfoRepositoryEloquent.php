@@ -15,7 +15,6 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implements DataMarketingStudentInfoRepository
 {
-
     /**
      * @var array
      */
@@ -31,7 +30,6 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
     {
         return DataMarketingStudentInfo::class;
     }
-
     /**
      * Boot up the repository, pushing criteria
      */
