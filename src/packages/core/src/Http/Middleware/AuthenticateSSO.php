@@ -23,8 +23,8 @@ class AuthenticateSSO
             throw new AuthenticationException;
         }
 
-        $ssoUrl = env('SSO_URL') . '/api/user/me';;
-        $respone =  Http::withToken($bearerToken)->get("$ssoUrl");
+        $ssoUrl = env('SSO_URL') . '/api/user/me';
+        $respone =  Http::withToken($bearerToken)->get($ssoUrl);
 
         if ($respone->getStatusCode() == Response::HTTP_UNAUTHORIZED || $respone->getStatusCode() == Response::HTTP_INTERNAL_SERVER_ERROR) {
             throw new AuthenticationException;

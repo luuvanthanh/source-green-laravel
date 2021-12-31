@@ -8,7 +8,6 @@ use GGPHP\Crm\Province\Repositories\Contracts\TownWardRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
-
 /**
  * Class TownWardRepositoryEloquent.
  *

@@ -34,9 +34,9 @@ trait ExceptionRenderTrait
                 'detail' => $e->getMessage() ?: ('An exception of ' . get_class($e)),
             ]],
         ];
-        
+
         if ($e instanceof NotEnabledTransitionException) {
-             $data = array_merge($data, [
+            $data = array_merge($data, [
                 'status' => config('constants.HTTP_STATUS_CODE.BAD_REQUEST'),
                 'errors' => [[
                     'title' => trans('lang::messages.common.badRequest'),
@@ -46,7 +46,7 @@ trait ExceptionRenderTrait
         }
 
         if ($e instanceof UndefinedTransitionException) {
-             $data = array_merge($data, [
+            $data = array_merge($data, [
                 'status' => config('constants.HTTP_STATUS_CODE.BAD_REQUEST'),
                 'errors' => [[
                     'title' => trans('lang::messages.common.badRequest'),

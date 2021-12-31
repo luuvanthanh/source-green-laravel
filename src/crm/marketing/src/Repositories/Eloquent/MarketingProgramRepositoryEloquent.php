@@ -77,10 +77,10 @@ class MarketingProgramRepositoryEloquent extends BaseRepository implements Marke
             $code = MarketingProgram::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = MarketingProgram::CODE . "1";
+                $attributes['code'] = MarketingProgram::CODE . '1';
             } else {
                 $getNumber = substr($code, 2) + 1;
-                $attributes['code'] = MarketingProgram::CODE . "$getNumber";
+                $attributes['code'] = MarketingProgram::CODE . $getNumber;
             }
 
             $marketingProgram = MarketingProgram::create($attributes);

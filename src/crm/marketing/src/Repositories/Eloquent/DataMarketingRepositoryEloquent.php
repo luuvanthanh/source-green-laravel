@@ -1,6 +1,8 @@
 <?php
 
+
 namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
+
 
 use Carbon\Carbon;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
@@ -87,11 +89,11 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         $data_marketing_code = DataMarketing::max('code');
 
         if (is_null($data_marketing_code)) {
-            $attributes['code'] = DataMarketing::CODE . $now . "01";
+            $attributes['code'] = DataMarketing::CODE . $now . '01';
         } else {
 
             if (substr($data_marketing_code, 2, 8)  != $now) {
-                $attributes['code'] = DataMarketing::CODE . $now . "01";
+                $attributes['code'] = DataMarketing::CODE . $now . '01';
             } else {
                 $stt = substr($data_marketing_code, 2) + 1;
                 $attributes['code'] = DataMarketing::CODE . $stt;
@@ -114,7 +116,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
     {
         DataMarketingProgram::where('data_marketing_id', $attributes['data_marketing_id'])->where('marketing_program_id', $attributes['marketing_program_id'])->delete();
 
-        return;
+        return null;
     }
 
     public function moveLead($attributes)
@@ -164,7 +166,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
             }
         }
 
-        return;
+        return parent::parserResult($dataMarketing);
     }
 
     public function delete($id)
@@ -173,6 +175,6 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         $dataMarketing->marketingProgram()->detach();
         $dataMarketing->delete();
 
-        return;
+        return null;
     }
 }

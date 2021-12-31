@@ -33,7 +33,7 @@ class ZaloReceiveMessage implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel("zalo");
+        return new Channel('zalo');
     }
 
     /**

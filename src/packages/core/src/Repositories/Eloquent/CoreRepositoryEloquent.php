@@ -16,7 +16,6 @@ use Prettus\Validator\Contracts\ValidatorInterface;
  */
 class CoreRepositoryEloquent extends BaseRepository
 {
-
     public function model()
     {
         //
@@ -162,5 +161,4 @@ class CoreRepositoryEloquent extends BaseRepository
 
     //     return $this->parserResult($model);
     // }
-
 }

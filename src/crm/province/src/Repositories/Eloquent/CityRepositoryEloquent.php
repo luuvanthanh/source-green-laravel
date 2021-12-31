@@ -8,7 +8,6 @@ use GGPHP\Crm\Province\Repositories\Contracts\CityRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
-
 /**
  * Class CityRepositoryEloquent.
  *
@@ -71,7 +70,7 @@ class CityRepositoryEloquent extends BaseRepository implements CityRepository
     public function sort(array $attributes)
     {
         $listId = explode(',', $attributes['id']);
-        
+
         foreach ($listId as $key => $value) {
             $fisrtValue = City::find($value);
             $fisrtValue->update(['numerical_city' => $key + 1]);

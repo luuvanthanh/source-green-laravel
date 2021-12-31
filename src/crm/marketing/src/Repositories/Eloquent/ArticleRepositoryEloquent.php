@@ -77,7 +77,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
 
         $attributes['message'] = $article->name . "\n" . $article->content;
 
-        if ($article->file_image == "[]") {
+        if ($article->file_image == '[]') {
             $response = FacebookService::publishPagePost($attributes);
             $facebook_post_id = $response->id;
         } else {
@@ -88,7 +88,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             }
             $video = false;
             foreach ($urls as $url) {
-                if (pathinfo($url, PATHINFO_EXTENSION) == "mp4") {
+                if (pathinfo($url, PATHINFO_EXTENSION) == 'mp4') {
                     $video = true;
                     break;
                 }
@@ -130,19 +130,19 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             $postFacebookInfo = PostFacebookInfo::where('facebook_post_id', $post_id)->first();
             if (!empty($postFacebookInfo)) {
                 if (!isset($attributes['value']['comment_id'])) {
-                    if ($attributes['value']['item'] == "reaction" && $attributes['value']['verb'] == "add") {
+                    if ($attributes['value']['item'] == 'reaction' && $attributes['value']['verb'] == 'add') {
                         $quantity_reaction = $postFacebookInfo->quantity_reaction;
                         $postFacebookInfo->quantity_reaction = $quantity_reaction + 1;
-                    } elseif ($attributes['value']['item'] == "reaction" && $attributes['value']['verb'] == "remove") {
+                    } elseif ($attributes['value']['item'] == 'reaction' && $attributes['value']['verb'] == 'remove') {
                         $quantity_reaction = $postFacebookInfo->quantity_reaction;
                         $postFacebookInfo->quantity_reaction = $quantity_reaction - 1;
                     }
                 }
 
-                if ($attributes['value']['item'] == "comment" && $attributes['value']['verb'] == "add") {
+                if ($attributes['value']['item'] == 'comment' && $attributes['value']['verb'] == 'add') {
                     $quantity_comment = $postFacebookInfo->quantity_comment;
                     $postFacebookInfo->quantity_comment = $quantity_comment + 1;
-                } elseif ($attributes['value']['item'] == "comment" && $attributes['value']['verb'] == "remove") {
+                } elseif ($attributes['value']['item'] == 'comment' && $attributes['value']['verb'] == 'remove') {
                     $quantity_comment = $postFacebookInfo->quantity_comment;
                     $postFacebookInfo->quantity_comment = $quantity_comment - 1;
                 }
@@ -150,7 +150,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                 $postFacebookInfo->update();
             }
 
-            if ($attributes['value']['item'] == "post" && $attributes['value']['verb'] == "remove") {
+            if ($attributes['value']['item'] == 'post' && $attributes['value']['verb'] == 'remove') {
                 PostFacebookInfo::where('facebook_post_id', $attributes['value']['post_id'])->forceDelete();
             }
 
@@ -173,6 +173,6 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
         } catch (\Throwable $th) {
             \DB::rollback();
         }
-        return;
+        return null;
     }
 }
