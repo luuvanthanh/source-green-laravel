@@ -68,6 +68,22 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
             });
         }
 
+        if (!empty($attributes['branchId'])) {
+            $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
+                $q->whereHas('classStudent', function ($query) use ($attributes) {
+                    $query->whereHas('classes', function ($queryBranch) use ($attributes) {
+                        $queryBranch->where('BranchId', $attributes['branchId']);
+                    });
+                });
+            });
+        }
+
+        if (!empty($attributes['classId'])) {
+            $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
+                $query->where('ClassId', $attributes['classId']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentForm = $this->paginate($attributes['limit']);
         } else {
