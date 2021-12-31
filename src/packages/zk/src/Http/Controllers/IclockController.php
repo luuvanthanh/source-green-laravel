@@ -60,7 +60,6 @@ class IclockController extends Controller
 
         if (!$employee) {
             $employee = $model;
-
         }
         if (!$employee) {
             $modelSync->delete();
@@ -153,7 +152,7 @@ class IclockController extends Controller
 
         $sn = request()->get('SN');
         if (request()->get('options') == 'all') {
-            $return = "GET OPTION FROM : {$sn}";
+            $return = 'GET OPTION FROM : {' . $sn . '}';
             $array = [
                 'Stamp' => time(),
                 'OpStamp' => time(),
@@ -205,7 +204,7 @@ class IclockController extends Controller
                 continue;
             }
             foreach ($haystack as $str) {
-                if (preg_match("/^{$str}/i", $value, $m)) {
+                if (preg_match('/^{$str}/i', $value, $m)) {
                     $stringAttributes = trim(str_replace($str, '', $value));
                     switch ($m[0]) {
                         case $haystack['employee']:

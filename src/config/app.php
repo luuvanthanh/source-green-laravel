@@ -224,6 +224,7 @@ return [
         GGPHP\ChildDevelop\Category\Providers\CategoryServiceProvider::class,
         GGPHP\ChildDevelop\ChildEvaluate\Providers\ChildEvaluateServiceProvider::class,
         Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
+        GGPHP\DocumentManagement\Providers\DocumentManagementServiceProvider::class,
     ],
 
     /*

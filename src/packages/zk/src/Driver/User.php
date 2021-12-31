@@ -18,8 +18,7 @@ class User
     {
         $self->_section = __METHOD__;
 
-        if (
-            (int) $uid === 0 ||
+        if((int) $uid === 0 ||
             (int) $uid > Util::USHRT_MAX ||
             strlen($employeeid) > 9 ||
             strlen($name) > 24 ||
