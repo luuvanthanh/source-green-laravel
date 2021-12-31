@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'dva';
 import { isEmpty, groupBy } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
-import { timeStamp } from './initial';
+import { dayOfWeekData } from './initial';
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
 
 const getListStyle = (isDraggingOver) => ({
@@ -24,8 +24,7 @@ const Index = memo(() => {
   const [dragRef] = Form.useForm();
   const [propertyForm] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [columnInfo, setColumnInfo] = useState({});
-
+  const [timeline, setTimeline] = useState('');
   const [items, setItems] = useState([]);
 
   const [
@@ -39,13 +38,11 @@ const Index = memo(() => {
   }));
 
   const dispatch = useDispatch();
-  const { pathname, query } = useLocation();
+  const { pathname } = useLocation();
   const history = useHistory();
 
   const [search, setSearch] = useState({
     isGroupByDayOfWeek: false,
-    branchId: query.branchId,
-    timetableSettingId: query.timetableSettingId,
   });
 
   const loadCategories = () => {
@@ -74,6 +71,13 @@ const Index = memo(() => {
     });
   };
 
+  const formatTimeline = Object.assign({}, ...years.map((item) => ({ [item?.id]: item })));
+  const timelineColumns = Helper.generateTimeline(
+    formatTimeline[timeline]?.periodDuration,
+    formatTimeline[timeline]?.fromTime,
+    formatTimeline[timeline]?.toTime,
+  );
+
   const onLoad = () => {
     dispatch({
       type: 'timeTablesAuto/GET_DATA',
@@ -84,7 +88,7 @@ const Index = memo(() => {
         if (response) {
           const { timetableDetailGroupByTimes } = response;
           const arr = classes.map((classItem) =>
-            timeStamp.map((timeItem) => {
+            timelineColumns.map((timeItem) => {
               const timetableDetail = timetableDetailGroupByTimes?.find(
                 (item) =>
                   item.startTime === timeItem.startTime && item.endTime === timeItem.endTime,
@@ -127,23 +131,21 @@ const Index = memo(() => {
     }
   }, [search, classes]);
 
-  const onChangeBranch = (branch) => {
-    if (branch) {
-      dispatch({
-        type: 'timeTablesAuto/GET_CLASSES',
-        payload: {
-          branch,
-        },
-      });
-    }
-  };
-
   const onConfigChange = (values) => {
     setSearch((prev) => ({
       ...prev,
       branchId: values.branchId,
       timetableSettingId: values.timetableSettingId,
     }));
+    setTimeline(values.timetableSettingId);
+    if (values.branchId) {
+      dispatch({
+        type: 'timeTablesAuto/GET_CLASSES',
+        payload: {
+          branch: values.branchId,
+        },
+      });
+    }
   };
 
   const formatColumns = useMemo(() => {
@@ -230,19 +232,48 @@ const Index = memo(() => {
   };
 
   const showModal = (value) => {
+    const columnInfo = formatColumns[value];
+    const { timetableDetailByClassAndActivy } = columnInfo;
+    propertyForm.setFieldsValue({
+      ...columnInfo,
+      time: `${timetableDetailByClassAndActivy.startTime} - ${timetableDetailByClassAndActivy.endTime}`,
+      branchId: columnInfo?.branchId,
+      classId: columnInfo?.classId,
+      tasks: columnInfo?.tasks.map((item) => ({
+        ...item,
+        name: item?.timetableActivityDetail?.name,
+        dayOfWeeks: item?.dayOfWeeks,
+      })),
+    });
     setIsModalVisible(true);
-    setColumnInfo(formatColumns[value]);
   };
 
   const handleOk = () => {
+    const popupInfo = propertyForm.getFieldValue();
+    const payload = {
+      branchId: popupInfo.branchId,
+      timetableSettingId: popupInfo.timetableSettingId,
+      timetableDetailByClassesAndActivities: {
+        startTime: popupInfo.timetableDetailByClassAndActivy.startTime,
+        endTime: popupInfo.timetableDetailByClassAndActivy.endTime,
+        classIds: [popupInfo.classId],
+        activities: popupInfo.tasks.map((task) => ({
+          timetableActivityDetailId: task.timetableActivityDetail.id,
+          dayOfWeeks: task.dayOfWeeks.map((day) => day),
+          // dayOfWeeks: ['Monday'],
+        })),
+      },
+    };
+    dispatch({
+      type: 'timeTablesAuto/ADD_POPUP',
+      payload,
+    });
     setIsModalVisible(false);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
-  const onFinish = () => {};
 
   return (
     <>
@@ -262,7 +293,7 @@ const Index = memo(() => {
           </Button>,
         ]}
       >
-        <Form form={propertyForm} initialValues={{ ...columnInfo }}>
+        <Form form={propertyForm}>
           <div className="row">
             <div className="col-lg-4">
               <FormItem
@@ -277,8 +308,9 @@ const Index = memo(() => {
             <div className="col-lg-4">
               <FormItem
                 className="flex-column"
+                data={branches}
                 label="Cơ sở"
-                name="branchName"
+                name="branchId"
                 type={variables.INPUT}
                 disabled
               />
@@ -290,9 +322,52 @@ const Index = memo(() => {
                 data={classes}
                 label="Lớp áp dụng"
                 name="classId"
-                type={variables.SELECT_MUTILPLE}
-                allowClear
+                type={variables.INPUT}
+                disabled
               />
+            </div>
+
+            <div className="col-lg-12">
+              <Form.List name="tasks">
+                {(fields, { remove }) => (
+                  <>
+                    {fields.map((field, index) => (
+                      <div className="row align-items-center" key={index}>
+                        <div className="col-10">
+                          <FormItem
+                            className="flex-column"
+                            label={`Hoạt động ${index + 1}`}
+                            name={[field.name, 'name']}
+                            type={variables.INPUT}
+                            disabled
+                          />
+                        </div>
+
+                        <div className="col-2 d-flex justify-content-end">
+                          <button
+                            type="button"
+                            className={styles['button-remove']}
+                            onClick={() => remove(field.name)}
+                          >
+                            <span className="icon-remove" />
+                          </button>
+                        </div>
+
+                        <div className="col-12">
+                          <FormItem
+                            className="flex-column"
+                            data={dayOfWeekData}
+                            label="Thứ"
+                            name="dayOfWeeks"
+                            type={variables.SELECT_MUTILPLE}
+                            allowClear
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </Form.List>
             </div>
           </div>
         </Form>
@@ -328,7 +403,6 @@ const Index = memo(() => {
                   name="branchId"
                   type={variables.SELECT}
                   allowClear={false}
-                  onChange={onChangeBranch}
                 />
               </div>
               <div className="col-lg-4">
@@ -346,7 +420,7 @@ const Index = memo(() => {
         </div>
         {/* FORM DRAG */}
         {!isEmpty(classes) && !isEmpty(items) && (
-          <Form layout="vertical" form={dragRef} onFinish={onFinish}>
+          <Form layout="vertical" form={dragRef}>
             <div className={classnames('schedules-custom', 'mt20', 'row')}>
               <DragDropContext onDragEnd={onDragEnd}>
                 <div className="col-lg-2">
@@ -376,7 +450,7 @@ const Index = memo(() => {
                                         <Paragraph
                                           className="py5 px10"
                                           style={{
-                                            backgroundColor: task.color,
+                                            backgroundColor: task.colorCode,
                                           }}
                                         >
                                           {task.name}
@@ -399,7 +473,7 @@ const Index = memo(() => {
                     <div className="row time-table">
                       <div className={classes.length > 3 ? 'col-lg-2' : 'col-lg-3'}>
                         <Paragraph className="header-row">Thời gian</Paragraph>
-                        {timeStamp.map((item) => (
+                        {timelineColumns.map((item) => (
                           <Paragraph className="data-row cell" key={item.id}>
                             {`${item.startTime} - ${item.endTime}`}
                           </Paragraph>
@@ -438,20 +512,29 @@ const Index = memo(() => {
                                 );
                               } else {
                                 cell = (
-                                  <div key={index} className="cell">
-                                    {tasks.map((task, index) => (
-                                      <Paragraph
-                                        key={index}
-                                        style={{
-                                          backgroundColor: task?.timetableActivityDetail?.color,
-                                        }}
-                                        className="data-row"
-                                        onClick={() => showModal(key)}
+                                  <Droppable key={index} droppableId={key} direction="horizontal">
+                                    {(provided, snapshot) => (
+                                      <div
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        style={getListStyle(snapshot.isDraggingOver)}
+                                        className="cell"
                                       >
-                                        {task?.name}
-                                      </Paragraph>
-                                    ))}
-                                  </div>
+                                        {tasks.map((task, index) => (
+                                          <Paragraph
+                                            key={index}
+                                            style={{
+                                              backgroundColor: task?.colorCode,
+                                            }}
+                                            className="data-row"
+                                            onClick={() => showModal(key)}
+                                          >
+                                            {task?.name}
+                                          </Paragraph>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </Droppable>
                                 );
                               }
 
