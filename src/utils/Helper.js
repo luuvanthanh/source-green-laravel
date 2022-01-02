@@ -785,6 +785,28 @@ export default class Helpers {
     return null;
   };
 
+  static disabledDateToHooks = (current, formRef, key = 'startDate') => {
+    if (formRef) {
+      const data = formRef.getFieldsValue();
+      if (data[key]) {
+        return current && current < moment(data[key]).startOf('day');
+      }
+      return null;
+    }
+    return null;
+  };
+
+  static disabledDateFromHooks = (current, formRef, key = 'endDate') => {
+    if (formRef) {
+      const data = formRef.getFieldsValue();
+      if (data[key]) {
+        return current && current >= moment(data[key]).startOf('day');
+      }
+      return null;
+    }
+    return null;
+  };
+
   static disabledDateTo = (current, formRef, key = 'startDate', values) => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();

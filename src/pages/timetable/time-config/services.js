@@ -18,5 +18,3 @@ export function remove(id) {
     parse: true,
   });
 }
-
-export default get;
