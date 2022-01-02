@@ -9,7 +9,7 @@ import classnames from 'classnames';
 import React, { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSelector, useDispatch } from 'dva';
-import { useHistory, useRouteMatch } from 'umi';
+import { useHistory, useParams } from 'umi';
 import moment from 'moment';
 import { get, head, isEmpty, last } from 'lodash';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -17,7 +17,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 const Index = memo(() => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const { params } = useRouteMatch();
+  const params = useParams();
   const history = useHistory();
 
   const [
@@ -135,6 +135,9 @@ const Index = memo(() => {
                           name="fromDate"
                           type={variables.DATE_PICKER}
                           rules={[variables.RULES.EMPTY]}
+                          disabledDate={(current) =>
+                            Helper.disabledDateFromHooks(current, form, 'toDate')
+                          }
                         />
                       </div>
                       <div className="col-lg-3">
@@ -143,6 +146,9 @@ const Index = memo(() => {
                           name="toDate"
                           type={variables.DATE_PICKER}
                           rules={[variables.RULES.EMPTY]}
+                          disabledDate={(current) =>
+                            Helper.disabledDateToHooks(current, form, 'fromDate')
+                          }
                         />
                       </div>
                       <div className="col-lg-6">
@@ -165,18 +171,23 @@ const Index = memo(() => {
                       size="large"
                       className="mr-3"
                       loading={
-                        loading['timeTablesConfigAdd/ADD'] || loading['timeTablesConfigAdd/UPDATE']
+                        loading['timeTablesConfigAdd/ADD'] ||
+                        loading['timeTablesConfigAdd/UPDATE'] ||
+                        loading['timeTablesConfigAdd/GET_DETAILS']
                       }
                     >
                       HỦY
                     </Button>
+
                     <Button
                       color="green"
                       icon="save"
                       htmlType="submit"
                       size="large"
                       loading={
-                        loading['timeTablesConfigAdd/ADD'] || loading['timeTablesConfigAdd/UPDATE']
+                        loading['timeTablesConfigAdd/ADD'] ||
+                        loading['timeTablesConfigAdd/UPDATE'] ||
+                        loading['timeTablesConfigAdd/GET_DETAILS']
                       }
                     >
                       LƯU
