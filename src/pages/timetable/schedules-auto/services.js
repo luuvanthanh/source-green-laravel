@@ -25,5 +25,14 @@ export function getAddDrag(data = {}) {
   return request('/timetables/by-drag-drop', {
     method: 'POST',
     data,
+    // cancelNotification: true,
+  });
+}
+
+export function getAddPopup(data = {}) {
+  return request('/timetables/by-detail-popup', {
+    method: 'POST',
+    data,
+    // cancelNotification: true,
   });
 }

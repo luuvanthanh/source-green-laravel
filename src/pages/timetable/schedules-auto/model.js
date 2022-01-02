@@ -116,6 +116,14 @@ export default {
         callback(null, error);
       }
     },
+    *ADD_POPUP({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.getAddPopup, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
     // *REMOVE({ payload, callback }, saga) {
     //   try {
     //     yield saga.call(services.remove, payload);

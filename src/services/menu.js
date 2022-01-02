@@ -807,14 +807,14 @@ export async function getLeftMenuMedical() {
 }
 export async function getLeftMenuTimeTable() {
   return [
-    {
-      title: 'Thời khóa biểu',
-      key: 'timetable',
-      url: ['/thoi-khoa-bieu', '/thoi-khoa-bieu/tao-moi', '/thoi-khoa-bieu/:id/chi-tiet'],
-      icon: 'icon icon-calendar1',
-      permission: [permissions.TKB],
-      pro: true,
-    },
+    // {
+    //   title: 'Thời khóa biểu',
+    //   key: 'timetable',
+    //   url: ['/thoi-khoa-bieu', '/thoi-khoa-bieu/tao-moi', '/thoi-khoa-bieu/:id/chi-tiet'],
+    //   icon: 'icon icon-calendar1',
+    //   permission: [permissions.TKB],
+    //   pro: true,
+    // },
     {
       title: 'Thời khóa biểu tự động',
       key: 'timetableAuto',
@@ -824,7 +824,7 @@ export async function getLeftMenuTimeTable() {
       pro: true,
     },
     {
-      title: 'Thời khóa biểu làm việc / sự kiện',
+      title: 'Lịch làm việc / sự kiện',
       key: 'schedule',
       url: [
         '/thoi-khoa-bieu/lam-viec',
@@ -837,7 +837,7 @@ export async function getLeftMenuTimeTable() {
       pro: true,
     },
     {
-      title: "Thời khóa biểu trẻ",
+      title: 'Thời khóa biểu trẻ',
       key: 'timetableChildren',
       url: [
         '/thoi-khoa-bieu/thoi-khoa-bieu-tre',

@@ -1822,24 +1822,24 @@ export default [
         path: '/thoi-khoa-bieu',
         component: './timetable/layout',
         routes: [
-          {
-            path: '/thoi-khoa-bieu',
-            component: './timetable/items',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.TKB],
-          },
-          {
-            path: '/thoi-khoa-bieu/tao-moi',
-            component: './timetable/items/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.TKB],
-          },
-          {
-            path: '/thoi-khoa-bieu/:id/chi-tiet',
-            component: './timetable/items/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.TKB],
-          },
+          // {
+          //   path: '/thoi-khoa-bieu',
+          //   component: './timetable/items',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.TKB],
+          // },
+          // {
+          //   path: '/thoi-khoa-bieu/tao-moi',
+          //   component: './timetable/items/create',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.TKB],
+          // },
+          // {
+          //   path: '/thoi-khoa-bieu/:id/chi-tiet',
+          //   component: './timetable/items/create',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.TKB],
+          // },
           {
             path: '/thoi-khoa-bieu/tu-dong',
             component: './timetable/schedules-auto',

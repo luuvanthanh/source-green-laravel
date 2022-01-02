@@ -44,6 +44,20 @@ export default class Helpers {
     return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
+  static generateTimeline(slotInterval = 30, openTime, closeTime) {
+    const startTime = moment(openTime, 'H:mm');
+    const endTime = moment(closeTime, 'H:mm');
+    const allTimes = [];
+    while (startTime < endTime) {
+      allTimes.push({
+        // format 0:00 -> 23:59
+        startTime: startTime.format('H:mm'),
+        endTime: startTime.add(slotInterval, 'minutes').format('H:mm'),
+      });
+    }
+    return allTimes.map((item, index) => ({ id: index + 1, ...item }));
+  }
+
   static getPrice = (value, number = 0, unit = false) => {
     if (Number(value) > 0 && Number(value) < 1) {
       return value;
@@ -693,7 +707,7 @@ export default class Helpers {
       .format(variables.DATE_FORMAT.TIME_FULL)}`;
 
   static getPathAvatarJson = (fileImage) => {
-    const allowTypes = ['jpeg', 'jpg', 'png','JPG','HEIC','JPEG','PNG'];
+    const allowTypes = ['jpeg', 'jpg', 'png', 'JPG', 'HEIC', 'JPEG', 'PNG'];
     if (this.isJSON(fileImage)) {
       const files = JSON.parse(fileImage);
       if (!isEmpty(files) && isArray(files)) {
