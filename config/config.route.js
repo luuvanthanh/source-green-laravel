@@ -1865,18 +1865,6 @@ export default [
             authority: [permissions.TKB],
           },
           {
-            path: '/thoi-khoa-bieu/thoi-khoa-bieu-tre/tao-moi',
-            component: './timetable/children/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.TKB],
-          },
-          {
-            path: '/thoi-khoa-bieu/thoi-khoa-bieu-tre/:id/chi-tiet',
-            component: './timetable/children/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.TKB],
-          },
-          {
             path: '/thoi-khoa-bieu/lam-viec/:id/chinh-sua',
             component: './timetable/schedules/create',
             wrappers: ['@/wrappers/auth'],

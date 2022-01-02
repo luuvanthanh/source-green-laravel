@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Tag } from 'antd';
 import PropType from 'prop-types';
 
 const colorCode = {
@@ -12,24 +12,21 @@ const colorCode = {
   swim: '#85C4FF',
 };
 
-const CardLesson = ({ value, onClick }) => (
-    <Button
+const CardLesson = ({ value }) => (
+  <Tag
     className="w-100 d-flex align-items-center justify-content-left"
-    style={{ background: colorCode[value?.class?.name ] }}
-    onClick={onClick}
+    style={{ background: colorCode[value?.class?.name] }}
   >
     {value?.class?.name}
-  </Button>
-  );
+  </Tag>
+);
 
 export default CardLesson;
 
 CardLesson.propTypes = {
   value: PropType.any,
-  onClick: PropType.func
 };
 
 CardLesson.defaultProps = {
   value: {},
-  onClick: () => {}
 };

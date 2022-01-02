@@ -12,6 +12,10 @@ export default {
     },
     branches: [],
     classes: [],
+    error: {
+      isError: false,
+      data: {}
+    }
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -88,14 +92,6 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
-      }
-    },
-    *REMOVE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.remove, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
       }
     },
   },

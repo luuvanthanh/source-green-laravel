@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import PropType from 'prop-types';
 import styles from '../style.module.scss';
 
-const CardDate = ({ times, content, onClick }) =>
+const CardDate = ({ times, content }) =>
   !isEmpty(times) ? (
     <div className="d-flex align-items-center justify-content-left">
       <div className="d-flex flex-row pl-2">
@@ -19,7 +19,6 @@ const CardDate = ({ times, content, onClick }) =>
         'w-100 pl-2 d-flex align-items-center justify-content-left',
         styles.rmPadding,
       )}
-      onClick={onClick}
     >
       {content.dayOfWeek ? content?.timetableActivityDetail?.name : content.name}
     </Button>
@@ -30,10 +29,8 @@ export default CardDate;
 CardDate.propTypes = {
   times: PropType.objectOf(PropType.any),
   content: PropType.objectOf(PropType.any),
-  onClick: PropType.func,
 };
 CardDate.defaultProps = {
   times: {},
   content: {},
-  onClick: () => {},
 };
