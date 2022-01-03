@@ -8,11 +8,10 @@ import { Form, Typography, Modal } from 'antd';
 import classnames from 'classnames';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'dva';
-import { isEmpty, groupBy, size, maxBy } from 'lodash';
+import { isEmpty, groupBy, size, maxBy, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
 import { v4 as uuidv4 } from 'uuid';
-import { dayOfWeekData } from './initial';
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
 
 const getListStyle = (isDraggingOver) => ({
@@ -321,44 +320,50 @@ const Index = memo(() => {
     }
   };
 
-  // const showModal = (value) => {
-  //   const columnInfo = formatColumns[value];
-  //   const { timetableDetailByClassAndActivy } = columnInfo;
-  //   propertyForm.setFieldsValue({
-  //     ...columnInfo,
-  //     time: `${timetableDetailByClassAndActivy.startTime} - ${timetableDetailByClassAndActivy.endTime}`,
-  //     branchId: columnInfo?.branchId,
-  //     classId: columnInfo?.classId,
-  //     tasks: columnInfo?.tasks.map((item) => ({
-  //       ...item,
-  //       name: item?.timetableActivityDetail?.name,
-  //       dayOfWeeks: item?.dayOfWeeks,
-  //     })),
-  //   });
-  //   setIsModalVisible(true);
-  // };
+  const showModal = (value) => {
+    const columnInfo = formatColumns[value];
+    const { timetableDetailByClassAndActivy } = columnInfo;
+    propertyForm.setFieldsValue({
+      ...columnInfo,
+      time: `${timetableDetailByClassAndActivy.startTime} - ${timetableDetailByClassAndActivy.endTime}`,
+      branchId: columnInfo?.branchId,
+      classId: columnInfo?.classId,
+      activities: columnInfo?.tasks.map((item) => ({
+        id: item.id,
+        name: item?.timetableActivityDetail?.name,
+        timetableActivityDetailId: item.timetableActivityDetailId,
+        timetableDetailId: item.timetableDetailId,
+        dayOfWeeks: item?.dayOfWeeks.filter(Boolean),
+      })),
+    });
+    setIsModalVisible(true);
+  };
 
   const handleOk = () => {
-    const popupInfo = propertyForm.getFieldValue();
-    const payload = {
-      branchId: popupInfo.branchId,
-      timetableSettingId: popupInfo.timetableSettingId,
-      timetableDetailByClassesAndActivities: {
-        startTime: popupInfo.timetableDetailByClassAndActivy.startTime,
-        endTime: popupInfo.timetableDetailByClassAndActivy.endTime,
-        classIds: [popupInfo.classId],
-        activities: popupInfo.tasks.map((task) => ({
-          timetableActivityDetailId: task.timetableActivityDetail.id,
-          dayOfWeeks: task.dayOfWeeks.map((day) => day),
-          // dayOfWeeks: ['Monday'],
-        })),
-      },
-    };
-    dispatch({
-      type: 'timeTablesAuto/ADD_POPUP',
-      payload,
+    propertyForm.validateFields().then((values) => {
+      const payload = {
+        branchId: search.branchId,
+        timetableSettingId: search.timetableSettingId,
+        timetableDetailByClassesAndActivities: {
+          startTime: head(values?.time?.split('-')).trim(),
+          endTime: last(values?.time?.split('-')).trim(),
+          classIds: [values.classId],
+          activities: values?.activities?.map((item) => ({
+            timetableActivityDetailId: item?.timetableActivityDetailId,
+            dayOfWeeks: item?.dayOfWeeks,
+          })),
+        },
+      };
+      dispatch({
+        type: 'timeTablesAuto/UPDATE_ACTIVITIES',
+        payload,
+        callback: (response) => {
+          if (response) {
+            setIsModalVisible(false);
+          }
+        },
+      });
     });
-    setIsModalVisible(false);
   };
 
   const handleCancel = () => {
@@ -387,10 +392,21 @@ const Index = memo(() => {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
-          <a key="back" role="presentation" onClick={handleCancel}>
+          <p
+            key="back"
+            role="presentation"
+            onClick={handleCancel}
+            loading={loading['timeTablesAuto/ADD_POPUP']}
+          >
             Hủy
-          </a>,
-          <Button key="submit" color="success" type="primary" onClick={handleOk}>
+          </p>,
+          <Button
+            key="submit"
+            color="success"
+            type="primary"
+            onClick={handleOk}
+            loading={loading['timeTablesAuto/ADD_POPUP']}
+          >
             Lưu
           </Button>,
         ]}
@@ -399,7 +415,7 @@ const Index = memo(() => {
           <div className="row">
             <div className="col-lg-4">
               <FormItem
-                className="flex-column"
+                className="flex-column form-timetable-disabled"
                 label="Thời gian"
                 name="time"
                 type={variables.INPUT}
@@ -409,35 +425,35 @@ const Index = memo(() => {
 
             <div className="col-lg-4">
               <FormItem
-                className="flex-column"
+                className="flex-column form-timetable-disabled"
                 data={branches}
                 label="Cơ sở"
                 name="branchId"
-                type={variables.INPUT}
+                type={variables.SELECT}
                 disabled
               />
             </div>
 
             <div className="col-lg-12">
               <FormItem
-                className="flex-column"
+                className="flex-column form-timetable-disabled"
                 data={classes}
                 label="Lớp áp dụng"
                 name="classId"
-                type={variables.INPUT}
+                type={variables.SELECT}
                 disabled
               />
             </div>
 
             <div className="col-lg-12">
-              <Form.List name="tasks">
+              <Form.List name="activities">
                 {(fields, { remove }) => (
                   <>
                     {fields.map((field, index) => (
                       <div className="row align-items-center" key={index}>
                         <div className="col-10">
                           <FormItem
-                            className="flex-column"
+                            className="flex-column form-timetable-disabled"
                             label={`Hoạt động ${index + 1}`}
                             name={[field.name, 'name']}
                             type={variables.INPUT}
@@ -446,21 +462,23 @@ const Index = memo(() => {
                         </div>
 
                         <div className="col-2 d-flex justify-content-end">
-                          <button
-                            type="button"
-                            className={styles['button-remove']}
-                            onClick={() => remove(field.name)}
-                          >
-                            <span className="icon-remove" />
-                          </button>
+                          {fields.length > 1 && (
+                            <button
+                              type="button"
+                              className={styles['button-remove']}
+                              onClick={() => remove(field.name)}
+                            >
+                              <span className="icon-remove" />
+                            </button>
+                          )}
                         </div>
 
                         <div className="col-12">
                           <FormItem
                             className="flex-column"
-                            data={dayOfWeekData}
+                            data={Helper.objectToArray(variables.DAY_OF_WEEKS_TEXT)}
                             label="Thứ"
-                            name="dayOfWeeks"
+                            name={[field.name, 'dayOfWeeks']}
                             type={variables.SELECT_MUTILPLE}
                             allowClear
                           />
@@ -629,7 +647,7 @@ const Index = memo(() => {
                                                   backgroundColor: task?.colorCode,
                                                 }}
                                                 className="data-row"
-                                                // onClick={() => showModal(key)}
+                                                onClick={() => showModal(key)}
                                               >
                                                 {task?.name}
                                               </Paragraph>

@@ -110,15 +110,15 @@ export default {
     },
     *ADD_DRAG({ payload, callback }, saga) {
       try {
-        yield saga.call(services.getAddDrag, payload);
+        yield saga.call(services.addDrag, payload);
         callback(payload);
       } catch (error) {
         callback(null, error);
       }
     },
-    *ADD_POPUP({ payload, callback }, saga) {
+    *UPDATE_ACTIVITIES({ payload, callback }, saga) {
       try {
-        yield saga.call(services.getAddPopup, payload);
+        yield saga.call(services.updateActivies, payload);
         callback(payload);
       } catch (error) {
         callback(null, error);

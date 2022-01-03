@@ -21,14 +21,15 @@ export function getActivities(params = {}) {
   });
 }
 
-export function getAddDrag(data = {}) {
+export function addDrag(data = {}) {
   return request('/timetables/by-drag-drop', {
     method: 'POST',
     data,
+    cancelNotification: true
   });
 }
 
-export function getAddPopup(data = {}) {
+export function updateActivies(data = {}) {
   return request('/timetables/by-detail-popup', {
     method: 'POST',
     data,
