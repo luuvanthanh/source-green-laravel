@@ -124,14 +124,22 @@ export default {
         callback(null, error);
       }
     },
-    // *REMOVE({ payload, callback }, saga) {
-    //   try {
-    //     yield saga.call(services.remove, payload);
-    //     callback(payload);
-    //   } catch (error) {
-    //     callback(null, error?.data?.error);
-    //   }
-    // },
+    *DRAG_CELL_BY_CELL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.dragCellByCell, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeActivites, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

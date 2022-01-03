@@ -1823,6 +1823,10 @@ export default [
         component: './timetable/layout',
         routes: [
           {
+            path: '/thoi-khoa-bieu',
+            redirect: '/thoi-khoa-bieu/thoi-khoa-bieu-tre',
+          },
+          {
             path: '/thoi-khoa-bieu/tu-dong',
             component: './timetable/schedules-auto',
             wrappers: ['@/wrappers/auth'],

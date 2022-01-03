@@ -8,9 +8,10 @@ import { Form, Typography, Modal } from 'antd';
 import classnames from 'classnames';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'dva';
-import { isEmpty, groupBy } from 'lodash';
+import { isEmpty, groupBy, size, maxBy } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
+import { v4 as uuidv4 } from 'uuid';
 import { dayOfWeekData } from './initial';
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
 
@@ -38,11 +39,13 @@ const Index = memo(() => {
   }));
 
   const dispatch = useDispatch();
-  const { pathname } = useLocation();
+  const { pathname, query } = useLocation();
   const history = useHistory();
 
   const [search, setSearch] = useState({
     isGroupByDayOfWeek: false,
+    branchId: query?.branchId,
+    timetableSettingId: query?.timetableSettingId,
   });
 
   const loadCategories = () => {
@@ -153,7 +156,13 @@ const Index = memo(() => {
     const activyColumns = { 'columns-1': { tasks: taskArr } };
     const newColumns = Object.assign(
       {},
-      ...items.flat(1).map((item, index) => ({ [`columns-${index + 2}`]: item })),
+      ...items.flat(1).map((item, index) => ({
+        [`columns-${index + 2}`]: {
+          ...item,
+          dragId: uuidv4(),
+          tasks: item?.tasks?.map((item) => ({ ...item, dragId: uuidv4() })),
+        },
+      })),
     );
     return { ...activyColumns, ...newColumns };
   }, [items]);
@@ -169,84 +178,165 @@ const Index = memo(() => {
   const onDragEnd = (result) => {
     if (!result.destination) return;
     const { source, destination } = result;
-
     if (source.droppableId !== destination.droppableId) {
       const sourceColumn = formatColumns[source.droppableId];
       const destColumn = formatColumns[destination.droppableId];
-
       const sourceItems = [...sourceColumn.tasks];
-
       const [removed] = sourceItems.splice(source.index, 1);
-
       const timetableActivityDetail = activities.find((item) => item.name === removed);
-
-      const columnsAfter = {
-        ...formatColumns,
-        [destination.droppableId]: {
-          ...formatColumns[destination.droppableId],
-          tasks: [
-            ...(formatColumns[destination.droppableId].tasks || []),
-            { timetableActivityDetail },
-          ],
-        },
-      };
-
-      const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-
-      const groups = groupBy(
-        arr.filter((item) => item.classId),
-        'classId',
-      );
-      setItems(Object.keys(groups).map((key) => groups[key]));
-      const payload = {
-        branchId: destColumn.branchId,
-        timetableSettingId: destColumn.timetableSettingId,
-        timetableDetailByClassAndActivy: {
-          startTime: destColumn.timetableDetailByClassAndActivy.startTime,
-          endTime: destColumn.timetableDetailByClassAndActivy.endTime,
-          classId: destColumn.classId,
-          timetableActivityDetailId: timetableActivityDetail.id,
-        },
-      };
-      dispatch({
-        type: 'timeTablesAuto/ADD_DRAG',
-        payload,
-        callback: (response, error) => {
-          if (error) {
-            const columnsAfter = {
-              ...formatColumns,
-              [destination.droppableId]: {
-                ...formatColumns[destination.droppableId],
-              },
-            };
-            const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-            const groups = groupBy(
-              arr.filter((item) => item.classId),
-              'classId',
-            );
-            setItems(Object.keys(groups).map((key) => groups[key]));
-          }
-        },
-      });
+      let columnsAfter = {};
+      let arr = [];
+      let groups = {};
+      let payload = {};
+      if (destination.droppableId === 'columns-1') {
+        columnsAfter = {
+          ...formatColumns,
+          [source.droppableId]: {
+            ...formatColumns[source.droppableId],
+            tasks: formatColumns[source.droppableId].tasks.filter(
+              (item) => item?.id !== removed?.id,
+            ),
+          },
+        };
+        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
+        groups = groupBy(
+          arr.filter((item) => item.classId),
+          'classId',
+        );
+        setItems(Object.keys(groups).map((key) => groups[key]));
+        dispatch({
+          type: 'timeTablesAuto/REMOVE',
+          payload: {
+            id: removed?.id,
+          },
+          callback: (response, error) => {
+            if (error) {
+              columnsAfter = {
+                ...formatColumns,
+              };
+              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
+              const groups = groupBy(
+                arr.filter((item) => item.classId),
+                'classId',
+              );
+              setItems(Object.keys(groups).map((key) => groups[key]));
+            }
+          },
+        });
+      } else if (destination.droppableId !== 'columns-1' && source.droppableId !== 'columns-1') {
+        columnsAfter = {
+          ...formatColumns,
+          [destination.droppableId]: {
+            ...formatColumns[destination.droppableId],
+            tasks: [...(formatColumns[destination.droppableId].tasks || []), removed],
+          },
+          [source.droppableId]: {
+            ...formatColumns[source.droppableId],
+            tasks: formatColumns[source.droppableId].tasks.filter(
+              (item) => item?.id !== removed?.id,
+            ),
+          },
+        };
+        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
+        groups = groupBy(
+          arr.filter((item) => item.classId),
+          'classId',
+        );
+        setItems(Object.keys(groups).map((key) => groups[key]));
+        dispatch({
+          type: 'timeTablesAuto/DRAG_CELL_BY_CELL',
+          payload: {
+            branchId: destColumn.branchId,
+            timetableSettingId: destColumn.timetableSettingId,
+            timetableDetailByClassAndActivy: {
+              startTime: destColumn.timetableDetailByClassAndActivy.startTime,
+              endTime: destColumn.timetableDetailByClassAndActivy.endTime,
+              classId: destColumn.classId,
+              timetableActivityDetailId: removed?.timetableActivityDetailId,
+            },
+            id: removed?.id,
+          },
+          callback: (response, error) => {
+            if (error) {
+              const columnsAfter = {
+                ...formatColumns,
+              };
+              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
+              const groups = groupBy(
+                arr.filter((item) => item.classId),
+                'classId',
+              );
+              setItems(Object.keys(groups).map((key) => groups[key]));
+            }
+          },
+        });
+      } else {
+        columnsAfter = {
+          ...formatColumns,
+          [destination.droppableId]: {
+            ...formatColumns[destination.droppableId],
+            tasks: [
+              ...(formatColumns[destination.droppableId].tasks || []),
+              { timetableActivityDetail },
+            ],
+          },
+        };
+        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
+        groups = groupBy(
+          arr.filter((item) => item.classId),
+          'classId',
+        );
+        setItems(Object.keys(groups).map((key) => groups[key]));
+        payload = {
+          branchId: destColumn.branchId,
+          timetableSettingId: destColumn.timetableSettingId,
+          timetableDetailByClassAndActivy: {
+            startTime: destColumn.timetableDetailByClassAndActivy.startTime,
+            endTime: destColumn.timetableDetailByClassAndActivy.endTime,
+            classId: destColumn.classId,
+            timetableActivityDetailId: timetableActivityDetail.id,
+          },
+        };
+        dispatch({
+          type: 'timeTablesAuto/ADD_DRAG',
+          payload,
+          callback: (response, error) => {
+            if (error) {
+              const columnsAfter = {
+                ...formatColumns,
+                [destination.droppableId]: {
+                  ...formatColumns[destination.droppableId],
+                },
+              };
+              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
+              const groups = groupBy(
+                arr.filter((item) => item.classId),
+                'classId',
+              );
+              setItems(Object.keys(groups).map((key) => groups[key]));
+            }
+          },
+        });
+      }
     }
   };
 
-  const showModal = (value) => {
-    const columnInfo = formatColumns[value];
-    const { timetableDetailByClassAndActivy } = columnInfo;
-    propertyForm.setFieldsValue({
-      ...columnInfo,
-      time: `${timetableDetailByClassAndActivy.startTime} - ${timetableDetailByClassAndActivy.endTime}`,
-      branchId: columnInfo?.branchId,
-      classId: columnInfo?.classId,
-      tasks: columnInfo?.tasks.map((item) => ({
-        ...item,
-        name: item?.timetableActivityDetail?.name,
-        dayOfWeeks: item?.dayOfWeeks,
-      })),
-    });
-    setIsModalVisible(true);
-  };
+  // const showModal = (value) => {
+  //   const columnInfo = formatColumns[value];
+  //   const { timetableDetailByClassAndActivy } = columnInfo;
+  //   propertyForm.setFieldsValue({
+  //     ...columnInfo,
+  //     time: `${timetableDetailByClassAndActivy.startTime} - ${timetableDetailByClassAndActivy.endTime}`,
+  //     branchId: columnInfo?.branchId,
+  //     classId: columnInfo?.classId,
+  //     tasks: columnInfo?.tasks.map((item) => ({
+  //       ...item,
+  //       name: item?.timetableActivityDetail?.name,
+  //       dayOfWeeks: item?.dayOfWeeks,
+  //     })),
+  //   });
+  //   setIsModalVisible(true);
+  // };
 
   const handleOk = () => {
     const popupInfo = propertyForm.getFieldValue();
@@ -273,6 +363,18 @@ const Index = memo(() => {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+  };
+
+  const getSizeMax = (record) => {
+    const itemsFlat = items
+      .flat(1)
+      .filter(
+        (item) =>
+          item?.timetableDetailByClassAndActivy?.startTime === record?.startTime &&
+          item?.timetableDetailByClassAndActivy?.endTime === record?.endTime,
+      )
+      .map((item) => ({ ...item, size: size(item.tasks) }));
+    return maxBy(itemsFlat, 'size');
   };
 
   return (
@@ -467,19 +569,23 @@ const Index = memo(() => {
                       );
                     })}
                 </div>
-
                 <div className="col-lg-10">
                   <div className={classnames(styles['block-table'])}>
                     <div className="row time-table">
                       <div className={classes.length > 3 ? 'col-lg-2' : 'col-lg-3'}>
                         <Paragraph className="header-row">Thời gian</Paragraph>
                         {timelineColumns.map((item) => (
-                          <Paragraph className="data-row cell" key={item.id}>
+                          <Paragraph
+                            className={classnames(
+                              'data-row cell',
+                              `size-row-${getSizeMax(item)?.size || 1}`,
+                            )}
+                            key={item.id}
+                          >
                             {`${item.startTime} - ${item.endTime}`}
                           </Paragraph>
                         ))}
                       </div>
-
                       {classes.map((classItem, index) => (
                         <div className="col-lg-3" key={index}>
                           <Paragraph className="header-row">{classItem.name}</Paragraph>
@@ -487,58 +593,54 @@ const Index = memo(() => {
                             .slice(1)
                             .filter((column) => column[1].classId === classItem.id)
                             .map(([key, value], index) => {
-                              const tasks = value.tasks.map(
-                                (task) => formatNewItems[task?.timetableActivityDetail?.name],
+                              const indexParent = index;
+                              const tasks = value.tasks.map((task) => ({
+                                ...formatNewItems[task?.timetableActivityDetail?.name],
+                                dragId: task.dragId,
+                              }));
+                              const sizeMax = getSizeMax(value?.timetableDetailByClassAndActivy);
+
+                              return (
+                                <Droppable key={index} droppableId={key}>
+                                  {(provided, snapshot) => (
+                                    <div
+                                      {...provided.droppableProps}
+                                      ref={provided.innerRef}
+                                      style={getListStyle(snapshot.isDraggingOver)}
+                                      className={classnames(
+                                        'cell',
+                                        `size-row-${sizeMax?.size || 1}`,
+                                      )}
+                                    >
+                                      {tasks.map((task, index) => (
+                                        <Draggable
+                                          key={`${task.id}-${indexParent}-${index}`}
+                                          draggableId={task.dragId}
+                                          index={index}
+                                        >
+                                          {(provided) => (
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              {...provided.dragHandleProps}
+                                            >
+                                              <Paragraph
+                                                style={{
+                                                  backgroundColor: task?.colorCode,
+                                                }}
+                                                className="data-row"
+                                                // onClick={() => showModal(key)}
+                                              >
+                                                {task?.name}
+                                              </Paragraph>
+                                            </div>
+                                          )}
+                                        </Draggable>
+                                      ))}
+                                    </div>
+                                  )}
+                                </Droppable>
                               );
-                              let cell = null;
-
-                              if (isEmpty(value.tasks)) {
-                                cell = (
-                                  <Droppable key={index} droppableId={key} direction="horizontal">
-                                    {(provided, snapshot) => (
-                                      <div
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                        style={getListStyle(snapshot.isDraggingOver)}
-                                        className="no-data-row cell"
-                                      >
-                                        {tasks.map((task, index) => (
-                                          <Paragraph key={index}>{task?.name}</Paragraph>
-                                        ))}
-                                        {provided.placeholder}
-                                      </div>
-                                    )}
-                                  </Droppable>
-                                );
-                              } else {
-                                cell = (
-                                  <Droppable key={index} droppableId={key} direction="horizontal">
-                                    {(provided, snapshot) => (
-                                      <div
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                        style={getListStyle(snapshot.isDraggingOver)}
-                                        className="cell"
-                                      >
-                                        {tasks.map((task, index) => (
-                                          <Paragraph
-                                            key={index}
-                                            style={{
-                                              backgroundColor: task?.colorCode,
-                                            }}
-                                            className="data-row"
-                                            onClick={() => showModal(key)}
-                                          >
-                                            {task?.name}
-                                          </Paragraph>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </Droppable>
-                                );
-                              }
-
-                              return cell;
                             })}
                         </div>
                       ))}

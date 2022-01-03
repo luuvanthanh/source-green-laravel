@@ -25,12 +25,22 @@
     .data-row {
       padding: 5px 10px;
       text-align: center;
-      margin: 0px;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .no-data-row {
       min-height: 32px !important;
       box-sizing: unset;
+      @for $i from 0 through 10 {
+        $value: $i * 33;
+        $unit: 'px';
+        &.size-row-#{$i*1} {
+          min-height: #{$value}#{$unit} !important;
+        }
+      }
     }
 
     &:not(:first-child) .data-row {
@@ -62,4 +72,16 @@
       }
     }
   }
+}
+
+@for $i from 0 through 10 {
+  $value: $i * 33;
+  $unit: 'px';
+  .size-row-#{$i*1} {
+    min-height: calc(#{$value}#{$unit} + 1px);
+  }
+}
+
+.row-drag {
+  transform: rotate(-10deg);
 }
