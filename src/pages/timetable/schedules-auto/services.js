@@ -25,7 +25,6 @@ export function getAddDrag(data = {}) {
   return request('/timetables/by-drag-drop', {
     method: 'POST',
     data,
-    // cancelNotification: true,
   });
 }
 
@@ -33,6 +32,18 @@ export function getAddPopup(data = {}) {
   return request('/timetables/by-detail-popup', {
     method: 'POST',
     data,
-    // cancelNotification: true,
+  });
+}
+
+export function removeActivites(data = {}) {
+  return request(`/timetable-detail-activities/${data.id}`, {
+    method: 'DELETE',
+  });
+}
+
+export function dragCellByCell(data = {}) {
+  return request(`/timetables/by-drag-drop/${data.id}`, {
+    method: 'PUT',
+    data,
   });
 }
