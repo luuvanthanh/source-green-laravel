@@ -85,3 +85,31 @@
 .row-drag {
   transform: rotate(-10deg);
 }
+
+.form-timetable-disabled {
+  margin-bottom: 0;
+  .ant-input-disabled,
+  .ant-select-selector {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: $text-dark;
+    font-weight: bold;
+  }
+  .ant-select-selector {
+    color: $text-dark !important;
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .ant-form-item-label {
+    label {
+      &::after {
+        display: none;
+      }
+    }
+  }
+  .ant-select-arrow {
+    display: none;
+  }
+}

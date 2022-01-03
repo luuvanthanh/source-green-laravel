@@ -1159,4 +1159,7 @@ export default class Helpers {
     if (isEmpty(items)) return [];
     return [...new Set(items.map((item) => item[key]))];
   };
+
+  static objectToArray = (object, keyName = 'name') =>
+    Object.keys(object).map((key) => ({ id: key, [`${keyName}`]: object[key] }));
 }
