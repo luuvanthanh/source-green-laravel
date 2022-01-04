@@ -66,4 +66,13 @@ class FeePolicie extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Fee\Models\SchoolYear::class, 'SchoolYearId');
     }
+
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function moneybus()
+    {
+        return $this->hasMany(\GGPHP\Fee\Models\MoneyBus::class, 'FeePoliceId');
+    }
 }

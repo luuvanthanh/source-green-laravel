@@ -5,6 +5,7 @@ namespace GGPHP\Fee\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Fee\Models\FeePolicie;
+use GGPHP\Fee\Models\MoneyBus;
 use GGPHP\Fee\Presenters\FeePoliciePresenter;
 use GGPHP\Fee\Repositories\Contracts\FeePolicieRepository;
 use Illuminate\Support\Facades\DB;
@@ -115,6 +116,13 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                     $feePolicie->otherMoneyDetail()->create($value);
                 }
             }
+
+            if (!empty($attributes['moneyBus'])) {
+                foreach ($attributes['moneyBus'] as $value) {
+                    $value['FeePoliceId'] = $feePolicie->Id;
+                    MoneyBus::create($value);
+                }
+            }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -186,6 +194,16 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                     $feePolicie->otherMoneyDetail()->create($value);
                 }
             }
+
+            if (!empty($attributes['moneyBus'])) {
+                $feePolicie->moneyBus()->delete();
+                
+                foreach ($attributes['moneyBus'] as $value) {
+                    $value['FeePoliceId'] = $feePolicie->Id;
+                    MoneyBus::create($value);
+                }
+            }
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();

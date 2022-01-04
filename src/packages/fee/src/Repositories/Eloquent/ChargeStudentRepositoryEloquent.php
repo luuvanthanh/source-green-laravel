@@ -66,6 +66,10 @@ class ChargeStudentRepositoryEloquent extends CoreRepositoryEloquent implements 
             });
         }
 
+        if (!empty($attributes['classTypeId'])) {
+            $this->model = $this->model->where('ClassTypeId', $attributes['classTypeId']);
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentForm = $this->paginate($attributes['limit']);
         } else {

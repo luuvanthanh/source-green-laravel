@@ -14,12 +14,11 @@ class FeePolicieTransformer extends BaseTransformer
 {
 
     protected $availableIncludes = ['schoolYear'];
-    protected $defaultIncludes = ['feeDetail', 'moneyMeal', 'otherMoneyDetail'];
+    protected $defaultIncludes = ['feeDetail', 'moneyMeal', 'otherMoneyDetail', 'moneyBus'];
 
     public function customAttributes($model): array
     {
-        return [
-        ];
+        return [];
     }
 
     /**
@@ -74,5 +73,10 @@ class FeePolicieTransformer extends BaseTransformer
         }
 
         return $this->item($feePolicie->schoolYear, new SchoolYearTransformer, 'SchoolYear');
+    }
+
+    public function includeMoneyBus(FeePolicie $feePolicie)
+    {
+        return $this->collection($feePolicie->moneyBus, new MoneyBusTransformer, 'MoneyBus');
     }
 }
