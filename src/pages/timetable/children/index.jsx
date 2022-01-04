@@ -28,7 +28,7 @@ import {
 const Index = memo(() => {
   const formRef = useRef();
   const [
-    { branches, classes, objectData },
+    { branches, classes, objectData, years },
     { defaultBranch },
     { effects },
   ] = useSelector(({ timeTablesChildren, user, loading }) => [timeTablesChildren, user, loading]);
@@ -46,6 +46,11 @@ const Index = memo(() => {
   });
 
   const [showColumn, setShowColumn] = useState(false);
+
+  const yearsConvert = years.map((item) => ({
+    id: item.id,
+    name: `${item.fromYear} - ${item.toYear}`,
+  }));
 
   const getYears = () => {
     dispatch({
@@ -129,6 +134,10 @@ const Index = memo(() => {
         branch: e,
       },
     });
+    setSearch((prevState) => ({
+      ...prevState,
+      branchId: e,
+    }));
   };
 
   const Collapse = () => {
@@ -640,15 +649,6 @@ const Index = memo(() => {
     }));
   }, 500);
 
-  const onFinish = (values) => {
-    const { branchId, classId } = values;
-    setSearch((prev) => ({
-      ...prev,
-      branchId,
-      classId,
-    }));
-  };
-
   const disabledToday = (type) => {
     switch (type) {
       case 'dayGridMonth':
@@ -727,12 +727,25 @@ const Index = memo(() => {
                 ...search,
                 branchId: query?.branchId || branches[0]?.id,
                 classId: query?.classId || null,
+                timetableSettingId: query?.timetableSettingId || years[0]?.id
               }}
               layout="vertical"
-              onFinish={onFinish}
               ref={formRef}
             >
               <div className="row">
+                <div className="col-lg-4">
+                  <FormItem
+                    className="ant-form-item-row"
+                    data={yearsConvert}
+                    label="Năm học"
+                    name="timetableSettingId"
+                    onChange={(event) =>
+                      setSearch((prevState) => ({ ...prevState, timetableSettingId: event }))
+                    }
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
                 <div className="col-lg-4">
                   <FormItem
                     className="ant-form-item-row"
@@ -750,14 +763,12 @@ const Index = memo(() => {
                     data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
                     label="LỚP"
                     name="classId"
+                    onChange={(event) => {
+                      setSearch((prevState) => ({ ...prevState, classId: event }));
+                    }}
                     type={variables.SELECT}
                     allowClear={false}
                   />
-                </div>
-                <div className="col-lg-4">
-                  <ButtonCustom color="success" icon="search" htmlType="submit">
-                    Tìm kiếm
-                  </ButtonCustom>
                 </div>
               </div>
             </Form>
