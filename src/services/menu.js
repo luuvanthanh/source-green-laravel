@@ -721,6 +721,14 @@ export async function getLeftMenuAllocation() {
       permission: [permissions.PB],
       pro: true,
     },
+    {
+      title: 'Cấu hình đăng ký ngoài giờ',
+      key: 'register-overtime',
+      url: ['/phan-bo/cau-hinh-dang-ky-ngoai-gio'],
+      icon: 'icon icon-setting',
+      permission: [permissions.PB],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuMedical() {

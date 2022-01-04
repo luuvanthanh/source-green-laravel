@@ -1690,6 +1690,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.PB],
           },
+          {
+            path: '/phan-bo/cau-hinh-dang-ky-ngoai-gio',
+            component: './allocation/register-overtime',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
         ],
       },
       // ALLOCATION
