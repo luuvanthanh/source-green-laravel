@@ -796,9 +796,9 @@ export async function getLeftMenuMedical() {
       pro: true,
     },
     {
-      title: 'Danh mục học sinh bị sự cố',
+      title: 'Danh sách học sinh bị sự cố',
       key: 'student-problem',
-      url: ['/y-te/danh-muc-hoc-sinh-bi-su-co'],
+      url: ['/y-te/danh-sach-hoc-sinh-bi-su-co'],
       icon: 'icon icon-list',
       permission: [permissions.YTE],
       pro: true,
@@ -1092,6 +1092,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'HĐ lao động',

@@ -285,11 +285,7 @@ class Index extends PureComponent {
         title: 'Hình ảnh',
         key: 'name',
         width: 100,
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.fileImage)}
-          />
-        ),
+        render: (record) => <AvatarTable fileImage={Helper.getPathAvatarJson(record?.fileImage)} />,
       },
       {
         title: 'Trạng thái',
@@ -331,11 +327,11 @@ class Index extends PureComponent {
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh mục học sinh bị sự cố" />
+        <Helmet title="Danh sách học sinh bị sự cố" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh mục học sinh bị sự cố</Text>
+            <Text color="dark">Danh sách học sinh bị sự cố</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

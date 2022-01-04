@@ -1145,6 +1145,31 @@ export default class Helpers {
     return '';
   };
 
+  static getStatusProbationaryContracts = (contractFrom, contractTo) => {
+    const diffSignDate = moment(
+      moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDate = moment(
+      moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
+      return <Tag color="success">Đang hiệu lực</Tag>;
+    }
+    if (diffExpirationDate >= 0 && diffExpirationDate <= 7) {
+      return (
+        <Tag color="yellow">
+          <Badge status="error" />
+          Gần hết hạn
+        </Tag>
+      );
+    }
+    if (diffExpirationDate < 0) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
+    }
+    return '';
+  };
+
   static summary = (items, key = 'amount', number = 0) => {
     if (!isEmpty(items)) {
       return items.reduce(
