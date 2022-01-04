@@ -15,7 +15,9 @@ const ListDay = ({ value, lastPoint }) => {
           <Text size="normal">{timeEnd}</Text>
         </div>
       </div>
-      <Text size='normal' className='pl-4'>{content.dayOfWeek ? content?.timetableActivityDetail?.name : content.name}</Text>
+      <Text size="normal" className="pl-4">
+        {content.dayOfWeek ? content?.timetableActivityDetail?.name : content.name}
+      </Text>
     </div>
   );
 };

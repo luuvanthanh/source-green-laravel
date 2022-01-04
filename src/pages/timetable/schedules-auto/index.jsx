@@ -315,6 +315,42 @@ const Index = memo(() => {
           type: 'timeTablesAuto/ADD_DRAG',
           payload,
           callback: (response, error) => {
+            if (response) {
+              dispatch({
+                type: 'timeTablesAuto/DRAG_AFTER',
+                payload: {
+                  ...search,
+                },
+                callback: (response) => {
+                  if (response) {
+                    const { timetableDetailGroupByTimes } = response;
+                    const arr = classes.map((classItem) =>
+                      timelineColumns.map((timeItem) => {
+                        const timetableDetail = timetableDetailGroupByTimes?.find(
+                          (item) =>
+                            item.startTime === timeItem.startTime &&
+                            item.endTime === timeItem.endTime,
+                        );
+                        const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
+                          (item) => item?.class?.id === classItem?.id,
+                        );
+                        return {
+                          branchId: search?.branchId,
+                          timetableSettingId: search?.timetableSettingId,
+                          classId: classItem?.id,
+                          tasks: timetableDetailClass?.timetableDetailActivities || [],
+                          timetableDetailByClassAndActivy: {
+                            startTime: timeItem?.startTime,
+                            endTime: timeItem?.endTime,
+                          },
+                        };
+                      }),
+                    );
+                    setItems(arr);
+                  }
+                },
+              });
+            }
             if (error) {
               const columnsAfter = {
                 ...formatColumns,
@@ -342,7 +378,7 @@ const Index = memo(() => {
       ...columnInfo,
       time: `${timetableDetailByClassAndActivy.startTime} - ${timetableDetailByClassAndActivy.endTime}`,
       branchId: columnInfo?.branchId,
-      classId: columnInfo?.classId,
+      classIds: [columnInfo?.classId],
       activities: columnInfo?.tasks.map((item) => ({
         id: item.id,
         name: item?.timetableActivityDetail?.name,
@@ -362,7 +398,7 @@ const Index = memo(() => {
         timetableDetailByClassesAndActivities: {
           startTime: head(values?.time?.split('-')).trim(),
           endTime: last(values?.time?.split('-')).trim(),
-          classIds: [values.classId],
+          classIds: values.classIds,
           activities: values?.activities?.map((item) => ({
             timetableActivityDetailId: item?.timetableActivityDetailId,
             dayOfWeeks: item?.dayOfWeeks,
@@ -375,6 +411,40 @@ const Index = memo(() => {
         callback: (response) => {
           if (response) {
             setIsModalVisible(false);
+            dispatch({
+              type: 'timeTablesAuto/DRAG_AFTER',
+              payload: {
+                ...search,
+              },
+              callback: (response) => {
+                if (response) {
+                  const { timetableDetailGroupByTimes } = response;
+                  const arr = classes.map((classItem) =>
+                    timelineColumns.map((timeItem) => {
+                      const timetableDetail = timetableDetailGroupByTimes?.find(
+                        (item) =>
+                          item.startTime === timeItem.startTime &&
+                          item.endTime === timeItem.endTime,
+                      );
+                      const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
+                        (item) => item?.class?.id === classItem?.id,
+                      );
+                      return {
+                        branchId: search?.branchId,
+                        timetableSettingId: search?.timetableSettingId,
+                        classId: classItem?.id,
+                        tasks: timetableDetailClass?.timetableDetailActivities || [],
+                        timetableDetailByClassAndActivy: {
+                          startTime: timeItem?.startTime,
+                          endTime: timeItem?.endTime,
+                        },
+                      };
+                    }),
+                  );
+                  setItems(arr);
+                }
+              },
+            });
           }
         },
       });
@@ -407,12 +477,7 @@ const Index = memo(() => {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
-          <p
-            key="back"
-            role="presentation"
-            onClick={handleCancel}
-            loading={loading['timeTablesAuto/ADD_POPUP']}
-          >
+          <p key="back" role="presentation" onClick={handleCancel}>
             Hủy
           </p>,
           <Button
@@ -420,7 +485,7 @@ const Index = memo(() => {
             color="success"
             type="primary"
             onClick={handleOk}
-            loading={loading['timeTablesAuto/ADD_POPUP']}
+            loading={loading['timeTablesAuto/UPDATE_ACTIVITIES']}
           >
             Lưu
           </Button>,
@@ -451,11 +516,11 @@ const Index = memo(() => {
 
             <div className="col-lg-12">
               <FormItem
-                className="flex-column form-timetable-disabled"
+                className="flex-column"
                 data={classes}
                 label="Lớp áp dụng"
-                name="classId"
-                type={variables.SELECT}
+                name="classIds"
+                type={variables.SELECT_MUTILPLE}
                 disabled
               />
             </div>

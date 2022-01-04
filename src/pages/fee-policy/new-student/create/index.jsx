@@ -147,6 +147,7 @@ const Index = memo(() => {
       }),
       tuition,
       id: params?.id || undefined,
+      chargeStudentId: !params?.id && formRef.current.getFieldValue().id,
     };
     dispatch({
       type: params?.id ? 'newStudentAdd/UPDATE' : 'newStudentAdd/ADD',
@@ -290,6 +291,7 @@ const Index = memo(() => {
       formRef.current.setFieldsValue({
         ...response,
         rangeDate,
+        id: response.id,
         dateOfBirth: moment(response.dateOfBirth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
         dayAdmission: moment(response.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
         type,
@@ -411,7 +413,6 @@ const Index = memo(() => {
                       </div>
                       <div className="col-lg-3">
                         <FormItem
-                          className={type === 'oldStudent' ? 'input-noborder' : ''}
                           label="Ngày nhập học"
                           name="dayAdmission"
                           type={variables.DATE_PICKER}

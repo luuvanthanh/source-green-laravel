@@ -35,7 +35,7 @@ const CardMonth = ({ date, month, data }) => {
                 className={classNames('w-100 d-flex flex-row align-items-center', styles.rmPadding)}
                 key={idx}
               >
-                <span className={styles.dotStyle} />
+                <span className={styles.dotStyle} style={{background: item?.class.colorCode}} />
                 <Text className="p-1" color="dark" size="normal">
                   {item.startTime}
                 </Text>
@@ -66,7 +66,7 @@ const CardMonth = ({ date, month, data }) => {
               <Button
                 className="w-100 d-flex align-items-center justify-content-left"
               >
-                <span className={classNames('mr-2', styles.dotStyle)} />
+                <span className={classNames('mr-2', styles.dotStyle)} style={{background: item?.class.colorCode}} />
                 <span>{item.startTime}</span>
                 <span className="pl-2 pr-2">-</span>
                 <span>{item.endTime}</span>
