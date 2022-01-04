@@ -13,14 +13,10 @@ import { v4 as uuidv4 } from 'uuid';
 import Loading from '@/components/CommonComponent/Loading';
 import stylesModule from './styles.module.scss';
 
-
 const { Option } = Select;
 
 const Index = memo(() => {
-  const {
-    colorTags,
-    loading,
-  } = useSelector(({ loading, crmTags }) => ({
+  const { colorTags, loading } = useSelector(({ loading, crmTags }) => ({
     loading,
     colorTags: crmTags.colorTags,
   }));
@@ -85,24 +81,25 @@ const Index = memo(() => {
     });
   }, [params.id]);
 
-
   const onSelectColor = (productId, record) => {
     setData((prev) =>
       prev.map((item) => ({
         ...item,
-        color_code: item.test ?
-          `${item.test === record.test ? productId : item.color_code} ` :
-          `${item.id === record.id ? productId : item.color_code}`,
+        color_code: item.test
+          ? `${item.test === record.test ? productId : item.color_code} `
+          : `${item.id === record.id ? productId : item.color_code}`,
       })),
     );
   };
 
   const onChangeTitle = (e, record) => {
     setData((prev) =>
-      prev.map((item) => (
-        item.test === record.test && item.id === record.id ? { ...item, name: e.target.value } : { ...item }
+      prev.map((item) =>
+        item.test === record.test && item.id === record.id
+          ? { ...item, name: e.target.value }
+          : { ...item },
       ),
-      ));
+    );
   };
 
   const columns = [
@@ -121,7 +118,11 @@ const Index = memo(() => {
             onChange={(val) => onSelectColor(val, record)}
           >
             {colorTags.map((item) => (
-              <Option value={item?.name || ''} key={item.name} style={{ backgroundColor: `${item.name}` }}>
+              <Option
+                value={item?.name || ''}
+                key={item.name}
+                style={{ backgroundColor: `${item.name}` }}
+              >
                 {item?.name || ''}
               </Option>
             ))}
@@ -154,7 +155,13 @@ const Index = memo(() => {
             defaultValue={value}
             className="w-auto"
             color={record.color_code}
-            style={{ color: 'black', fontSize: '14px', alignItems: 'center', display: 'inline-block', width: '50px' }}
+            style={{
+              color: 'black',
+              fontSize: '14px',
+              alignItems: 'center',
+              display: 'inline-block',
+              width: '50px',
+            }}
           >
             {record.name}
           </Tag>
@@ -170,13 +177,18 @@ const Index = memo(() => {
         <div className={styles['list-button']}>
           <Button
             onClick={() => {
-              setData(data.filter((val) => (val.key || val.id || val.test) !== (record.key || record.id || record.test)));
+              setData(
+                data.filter(
+                  (val) =>
+                    (val.key || val.id || val.test) !== (record.key || record.id || record.test),
+                ),
+              );
               setRemove([...remove, record.id]);
             }}
             type="button"
-            color="danger" icon="remove"
+            color="danger"
+            icon="remove"
           />
-
         </div>
       ),
     },
@@ -186,9 +198,7 @@ const Index = memo(() => {
     <>
       <Pane className="pl20 pr20 mt20">
         <Form ref={formRef} onFinish={onFinish} initialValues={{}} layout="vertical">
-          <Loading
-            loading={loading['crmTags/GET_DATA'] || loading['crmTags/GET_UNITS']}
-          >
+          <Loading loading={loading['crmTags/GET_DATA'] || loading['crmTags/GET_UNITS']}>
             <Pane className="row">
               <Pane className="offset-lg-12 col-lg-12">
                 <Pane
@@ -200,7 +210,7 @@ const Index = memo(() => {
                   <Text color="dark">Tags</Text>
                 </Pane>
                 <Pane className="card">
-                  <Pane >
+                  <Pane>
                     <Pane className={classnames('vertical', styles['table-vertical'])}>
                       <TableCus
                         rowKey={(record) => record.id}
@@ -235,14 +245,12 @@ const Index = memo(() => {
                   <p
                     className="btn-delete mr10"
                     role="presentation"
-                    onClick={() => setData(data.filter((val) => (val.key || val.id)))}
+                    onClick={() => setData(data.filter((val) => val.key || val.id))}
                   >
                     Hủy thay đổi
                   </p>
                   <Button
-                    loading={
-                      loading['crmTags/ADD']
-                    }
+                    loading={loading['crmTags/ADD']}
                     className="px25"
                     color="success"
                     htmlType="submit"

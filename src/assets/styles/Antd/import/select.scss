@@ -1,11 +1,11 @@
 // Import mixins
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN SELECT */
 
 .ant-select {
-  font-family: "Nunito Sans", sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
 }
 
 .ant-select-dropdown {
@@ -39,5 +39,71 @@
   }
   .ant-select-selection-item-remove {
     color: $text-white;
+  }
+}
+
+.select-color {
+  .ant-select-selection-item[title='#FF8D8D'] {
+    color: #ff8d8d;
+  }
+  .ant-select-selection-item[title='#FFA5AC'] {
+    color: #ffa5ac;
+  }
+  .ant-select-selection-item[title='#FFC0A5'] {
+    color: #ffc0a5;
+  }
+  .ant-select-selection-item[title='#FFCC97'] {
+    color: #ffcc97;
+  }
+  .ant-select-selection-item[title='#FFEE97'] {
+    color: #ffee97;
+  }
+  .ant-select-selection-item[title='#DEFF97'] {
+    color: #deff97;
+  }
+  .ant-select-selection-item[title='#ACFF97'] {
+    color: #acff97;
+  }
+  .ant-select-selection-item[title='#97FFBA'] {
+    color: #97ffba;
+  }
+  .ant-select-selection-item[title='#7FEBE5'] {
+    color: #7febe5;
+  }
+  .ant-select-selection-item[title='#8DC8FF'] {
+    color: #8dc8ff;
+  }
+  .ant-select-selection-item[title='#96ADFF'] {
+    color: #96adff;
+  }
+  .ant-select-selection-item[title='#A59DFF'] {
+    color: #a59dff;
+  }
+  .ant-select-selection-item[title='#D49DFF'] {
+    color: #d49dff;
+  }
+  .ant-select-selection-item[title='#FD9DFF'] {
+    color: #fd9dff;
+  }
+  .ant-select-selection-item[title='#FF9DDE'] {
+    color: #ff9dde;
+  }
+  .ant-select-selection-item[title='#FFFF00'] {
+    color: #ffff00;
+  }
+  .ant-select-selection-item[title='#7030A0'] {
+    color: #7030a0;
+  }
+  .ant-select-selection-item[title='#E9BDE0'] {
+    color: #e9bde0;
+  }
+  .ant-select-selection-item[title='#00B0F0'] {
+    color: #00b0f0;
+  }
+  .ant-select-selection-item[title='#FFD966'] {
+    color: #ffd966;
+  }
+  .ant-select-selection-item[title='#C6E0B4'] {
+    color: #c6e0b4;
   }
 }

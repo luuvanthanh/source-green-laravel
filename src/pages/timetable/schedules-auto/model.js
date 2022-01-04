@@ -44,14 +44,16 @@ export default {
     }),
   },
   effects: {
-    *GET_BRANCHES({ payload }, saga) {
+    *GET_BRANCHES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);
         yield saga.put({
           type: 'SET_BRANCHES',
           payload: response,
         });
+        callback(response.parsePayload || []);
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -72,14 +74,16 @@ export default {
         });
       }
     },
-    *GET_YEARS({ payload }, saga) {
+    *GET_YEARS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getYears, payload);
         yield saga.put({
           type: 'SET_YEARS',
           payload: response,
         });
+        callback(response.items || []);
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
