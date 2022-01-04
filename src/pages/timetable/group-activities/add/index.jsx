@@ -21,7 +21,12 @@ const Index = memo(() => {
   const [
     { error, details },
     { menuLeftTimeTable },
-  ] = useSelector(({ timetableGroupActivitiesAdd, menu }) => [timetableGroupActivitiesAdd, menu]);
+    loading,
+  ] = useSelector(({ timetableGroupActivitiesAdd, menu, loading: { effects } }) => [
+    timetableGroupActivitiesAdd,
+    menu,
+    effects,
+  ]);
 
   useEffect(() => {
     if (params.id) {
@@ -42,6 +47,7 @@ const Index = memo(() => {
           id: item?.id,
           name: item?.name,
           isTeachJoining: item?.isTeachJoining,
+          colorCode: item?.colorCode,
         })),
       });
     }
@@ -57,6 +63,7 @@ const Index = memo(() => {
           id: item?.id || null,
           name: item?.name && item?.name,
           isTeachJoining: !!item?.isTeachJoining,
+          colorCode: item?.colorCode,
         })),
       },
       callback: (response) => {
@@ -84,11 +91,12 @@ const Index = memo(() => {
       >
         <div className={styles['content-form']}>
           <Loading
+            loading={loading['timetableGroupActivitiesAdd/GET_DETAILS']}
             isError={error.isError}
             params={{ error, goBack: '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong' }}
           >
             <div className="row">
-              <div className="col-lg-8 offset-lg-2">
+              <div className="col-lg-12">
                 <div className={classnames(styles['content-children'], 'mt10')}>
                   <Text color="dark" size="large-medium">
                     Thông tin thêm mới
@@ -128,14 +136,20 @@ const Index = memo(() => {
                                     Hoạt động {index + 1}
                                   </Text>
                                 </div>
-                                <div className="col-5">
+                                <div className="col-4">
                                   <FormItem
                                     name={[field.name, 'name']}
                                     rules={[variables.RULES.EMPTY]}
                                     type={variables.INPUT}
                                   />
                                 </div>
-                                <div className="col-4">
+                                <div className="col-2">
+                                  <FormItem
+                                    name={[field.name, 'colorCode']}
+                                    type={variables.INPUT}
+                                  />
+                                </div>
+                                <div className="col-3">
                                   <FormItem
                                     className="checkbox-row checkbox-small"
                                     label="Có giáo viên phụ trách"
@@ -173,10 +187,25 @@ const Index = memo(() => {
                     onClick={() => history.goBack()}
                     size="large"
                     className="mr-3"
+                    loading={
+                      loading['timetableGroupActivitiesAdd/ADD'] ||
+                      loading['timetableGroupActivitiesAdd/UPDATE'] ||
+                      loading['timetableGroupActivitiesAdd/GET_DETAILS']
+                    }
                   >
                     HỦY
                   </Button>
-                  <Button color="green" icon="save" htmlType="submit" size="large">
+                  <Button
+                    color="green"
+                    icon="save"
+                    htmlType="submit"
+                    size="large"
+                    loading={
+                      loading['timetableGroupActivitiesAdd/ADD'] ||
+                      loading['timetableGroupActivitiesAdd/UPDATE'] ||
+                      loading['timetableGroupActivitiesAdd/GET_DETAILS']
+                    }
+                  >
                     LƯU
                   </Button>
                 </div>
