@@ -622,9 +622,9 @@ const Index = memo(() => {
         {/* FORM DRAG */}
         {!isEmpty(classes) && !isEmpty(items) && (
           <Form layout="vertical" form={dragRef}>
-            <div className={classnames('schedules-custom', 'mt20', 'row')}>
+            <div className={classnames('schedules-custom', 'mt20')}>
               <DragDropContext onDragEnd={onDragEnd}>
-                <div className="col-lg-2">
+                <div className="col-activites">
                   {Object.entries(formatColumns)
                     .slice(0, 1)
                     .map(([key, value], index) => {
@@ -668,25 +668,25 @@ const Index = memo(() => {
                       );
                     })}
                 </div>
-                <div className="col-lg-10">
-                  <div className={classnames(styles['block-table'])}>
-                    <div className="row time-table">
-                      <div className={classes.length > 3 ? 'col-lg-2' : 'col-lg-3'}>
-                        <Paragraph className="header-row">Thời gian</Paragraph>
-                        {timelineColumns.map((item) => (
-                          <Paragraph
-                            className={classnames(
-                              'data-row cell',
-                              `size-row-${getSizeMax(item)?.size || 1}`,
-                            )}
-                            key={item.id}
-                          >
-                            {`${item.startTime} - ${item.endTime}`}
-                          </Paragraph>
-                        ))}
-                      </div>
+                <div className="activiies-block">
+                  <div className={classnames(styles['block-table'], 'block')}>
+                    <div className="col-time">
+                      <Paragraph className="header-row">Thời gian</Paragraph>
+                      {timelineColumns.map((item) => (
+                        <Paragraph
+                          className={classnames(
+                            'data-row cell',
+                            `size-row-${getSizeMax(item)?.size || 1}`,
+                          )}
+                          key={item.id}
+                        >
+                          {`${item.startTime} - ${item.endTime}`}
+                        </Paragraph>
+                      ))}
+                    </div>
+                    <div className="wrapper-droppable">
                       {classes.map((classItem, index) => (
-                        <div className="col-lg-3" key={index}>
+                        <div className="col-block" key={index}>
                           <Paragraph className="header-row">{classItem.name}</Paragraph>
                           {Object.entries(formatColumns)
                             .slice(1)
