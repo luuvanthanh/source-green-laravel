@@ -16,7 +16,7 @@ class Tourist extends UuidModel implements HasMedia
      *
      * @var array
      */
-    protected $fillable = ['camera_id', 'tourist_destination_id', 'time', 'track_id'];
+    protected $fillable = ['camera_id', 'tourist_destination_id', 'object_id', 'time', 'track_id'];
 
     public function registerMediaCollections(): void
     {
