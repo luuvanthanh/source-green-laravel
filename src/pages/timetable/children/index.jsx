@@ -39,7 +39,7 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     fromDate: moment().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
     toDate: moment().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
-    type: 'dayGridMonth',
+    type: 'timeGridWeek',
     branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId,
     timetableSettingId: query?.timetableSettingId,
@@ -57,7 +57,7 @@ const Index = memo(() => {
       type: 'timeTablesChildren/GET_YEARS',
       payload: {},
       callback: (response) => {
-        if (response) {
+        if (response && !search.timetableSettingId) {
           response.forEach((item) => {
             if (
               `${item.fromYear}` === Helper.getDate(search.fromDate, variables.DATE_FORMAT.YEAR)
@@ -502,7 +502,7 @@ const Index = memo(() => {
               title: '',
               key: 'timeStart',
               dataIndex: 'timeStart',
-              width: 50,
+              width: 80,
               className: classnames(styles['td-time'], 'min-width-50'),
               render: (value) => (value ? <CardTime value={value} /> : ''),
             },
@@ -865,19 +865,6 @@ const Index = memo(() => {
               <div className="d-flex flex-row">
                 <ButtonCustom
                   permission="TKB"
-                  color={search.type === 'dayGridMonth' ? 'green' : 'white'}
-                  onClick={() => {
-                    debouncedSearchDate(
-                      moment().startOf('month'),
-                      moment().endOf('month'),
-                      'dayGridMonth',
-                    );
-                  }}
-                >
-                  Tháng
-                </ButtonCustom>
-                <ButtonCustom
-                  permission="TKB"
                   color={search.type === 'timeGridWeek' ? 'green' : 'white'}
                   onClick={() => {
                     debouncedSearchDate(
@@ -901,6 +888,19 @@ const Index = memo(() => {
                   }}
                 >
                   Ngày
+                </ButtonCustom>
+                <ButtonCustom
+                  permission="TKB"
+                  color={search.type === 'dayGridMonth' ? 'green' : 'white'}
+                  onClick={() => {
+                    debouncedSearchDate(
+                      moment().startOf('month'),
+                      moment().endOf('month'),
+                      'dayGridMonth',
+                    );
+                  }}
+                >
+                  Tháng
                 </ButtonCustom>
                 <ButtonCustom
                   permission="TKB"
