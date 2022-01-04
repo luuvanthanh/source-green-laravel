@@ -38,34 +38,49 @@ const Index = memo(() => {
   }));
 
   const dispatch = useDispatch();
-  const { pathname, query } = useLocation();
+  const { pathname } = useLocation();
   const history = useHistory();
 
   const [search, setSearch] = useState({
     isGroupByDayOfWeek: false,
-    branchId: query?.branchId,
-    timetableSettingId: query?.timetableSettingId,
+    branchId: null,
+    timetableSettingId: null,
   });
 
   const loadCategories = () => {
     dispatch({
       type: 'timeTablesAuto/GET_BRANCHES',
       payload: {},
+      callback: (response) => {
+        if (response) {
+          setSearch((prev) => ({ ...prev, branchId: head(response)?.id }));
+          formRef.setFieldsValue({
+            branchId: head(response)?.id,
+          });
+          dispatch({
+            type: 'timeTablesAuto/GET_CLASSES',
+            payload: {
+              branch: head(response)?.id,
+            },
+          });
+        }
+      },
     });
-    if (search.branchId) {
-      dispatch({
-        type: 'timeTablesAuto/GET_CLASSES',
-        payload: {
-          branch: search.branchId,
-        },
-      });
-    }
   };
 
   const loadYears = () => {
     dispatch({
       type: 'timeTablesAuto/GET_YEARS',
       payload: {},
+      callback: (response) => {
+        if (response) {
+          setSearch((prev) => ({ ...prev, timetableSettingId: head(response)?.id }));
+          formRef.setFieldsValue({
+            timetableSettingId: head(response)?.id,
+          });
+          setTimeline(head(response)?.id);
+        }
+      },
     });
     dispatch({
       type: 'timeTablesAuto/GET_ACTIVITIES',
@@ -512,6 +527,7 @@ const Index = memo(() => {
                   label="NĂM HỌC"
                   name="timetableSettingId"
                   type={variables.SELECT}
+                  allowClear={false}
                 />
               </div>
 

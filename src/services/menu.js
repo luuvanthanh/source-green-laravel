@@ -808,6 +808,14 @@ export async function getLeftMenuMedical() {
 export async function getLeftMenuTimeTable() {
   return [
     {
+      title: 'Thời khóa biểu tự động',
+      key: 'timetableAuto',
+      url: ['/thoi-khoa-bieu/tu-dong'],
+      icon: 'icon icon-calendar1',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
       title: 'Thời khóa biểu trẻ',
       key: 'timetableChildren',
       url: [
@@ -828,14 +836,6 @@ export async function getLeftMenuTimeTable() {
         '/thoi-khoa-bieu/lam-viec/:id/chinh-sua',
         '/thoi-khoa-bieu/lam-viec/:id/chi-tiet',
       ],
-      icon: 'icon icon-calendar1',
-      permission: [permissions.TKB],
-      pro: true,
-    },
-    {
-      title: 'Thời khóa biểu tự động',
-      key: 'timetableAuto',
-      url: ['/thoi-khoa-bieu/tu-dong'],
       icon: 'icon icon-calendar1',
       permission: [permissions.TKB],
       pro: true,

@@ -1,6 +1,6 @@
 import React, { memo, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'umi';
-import { Form } from 'antd';
+import { Form, Select } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty } from 'lodash';
@@ -144,10 +144,22 @@ const Index = memo(() => {
                                   />
                                 </div>
                                 <div className="col-2">
-                                  <FormItem
+                                  <Form.Item
                                     name={[field.name, 'colorCode']}
-                                    type={variables.INPUT}
-                                  />
+                                    className="select-color"
+                                  >
+                                    <Select className="w-100">
+                                      {variables.COLORS.map((item) => (
+                                        <Select.Option
+                                          value={item}
+                                          key={item}
+                                          style={{ backgroundColor: item }}
+                                        >
+                                          {item}
+                                        </Select.Option>
+                                      ))}
+                                    </Select>
+                                  </Form.Item>
                                 </div>
                                 <div className="col-3">
                                   <FormItem
