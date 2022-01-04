@@ -333,6 +333,8 @@
     }
   }
   .messager-item {
+    display: flex;
+    flex-direction: column-reverse;
     &:not(:first-child) {
       margin-top: 20px;
     }
@@ -372,7 +374,7 @@
   }
 
   .messager-sendImg {
-    width: 100%;
+    max-width: 100%;
     display: flex;
     justify-content: flex-end;
     .messager-loading {
@@ -424,6 +426,16 @@
     display: flex;
     justify-content: flex-end;
     .video {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+
+  .messager-mp3 {
+    justify-content: flex-start;
+    margin-left: auto;
+    display: flex;
+    .audio {
       display: flex;
       justify-content: flex-end;
     }

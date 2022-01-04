@@ -60,6 +60,8 @@ export function getMessages(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      hasMore: true,
+      loading: true,
       orderBy: 'created_at',
       sortedBy: 'desc',
     },
