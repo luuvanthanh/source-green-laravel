@@ -9,6 +9,7 @@ use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use GGPHP\Crm\Facebook\Repositories\Contracts\EmployeeFacebookRepository;
 use GGPHP\Crm\Facebook\Services\FacebookService;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class EmployeeFacebookRepositoryEloquent.
@@ -76,7 +77,8 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
                 $page = Page::where('page_id_facebook', $attributes['page_id'])->first();
                 foreach ($pageRole as $key => $value) {
                     $attributes['user_id'] = $value->id;
-                    $avatar = FacebookService::getAvatarUser($attributes);
+                    $url = FacebookService::getAvatarUser($attributes);
+                    $avatar = $this->storeAvatarEmployee($url, $value->id);
                     $data = [
                         'employee_fb_name' => $value->name,
                         'employee_fb_id' => $value->id,
@@ -95,7 +97,7 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
                 }
             }
         }
-        
+
         return parent::all();
     }
 
@@ -103,5 +105,15 @@ class EmployeeFacebookRepositoryEloquent extends BaseRepository implements Emplo
     {
         $employeeFacebook = EmployeeFacebook::query()->delete();
         return $employeeFacebook;
+    }
+
+    public function storeAvatarEmployee($url, $userId)
+    {
+        $contents = file_get_contents($url);
+        $name = $userId . '.jpg';
+        Storage::disk('local')->put('public/files/' . $name, $contents);
+        $url = env('URL_CRM') . '/storage/files/' . $name;
+
+        return $url;
     }
 }

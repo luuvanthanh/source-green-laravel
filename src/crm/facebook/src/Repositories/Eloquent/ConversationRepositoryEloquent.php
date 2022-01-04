@@ -12,6 +12,10 @@ use GGPHP\Crm\Facebook\Repositories\Contracts\ConversationRepository;
 use GGPHP\Crm\Facebook\Services\FacebookService;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+use function GuzzleHttp\json_decode;
 
 /**
  * Class PageRepositoryEloquent.
@@ -88,7 +92,6 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         }
 
         if (!empty($attributes['not_reply']) && $attributes['not_reply'] == 'true') {
-            //$conversationId = $this->notReply($this->model->get(), $attributes['page_id']);
             $this->model = $this->model->where('from', '!=', $attributes['page_id']);
         }
 
@@ -142,7 +145,8 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
                     $conversationId = $conversation->id;
                     foreach ($conversation->senders as $value) {
                         $attributes['user_id'] = $value[0]->id;
-                        $avatar = FacebookService::getAvatarUser($attributes);
+                        $url = FacebookService::getAvatarUser($attributes);
+                        $avatar = $this->storeAvatarUser($url, $value[0]->id);
                         $dataUserFacebookInfo = [
                             'user_id' => $value[0]->id,
                             'user_name' => $value[0]->name,
@@ -194,18 +198,13 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         return;
     }
 
-    // public function notReply($conversations, $pageId)
-    // {
-    //     $conversationId = [];
-    //     foreach ($conversations as $conversation) {
-    //         $message = Message::where('conversation_id', $conversation->id)->orderBy('created_at', 'desc')->first();
-    //         if (!is_null($message)) {
-    //             if ($message->from != $pageId) {
-    //                 $conversationId[] = $message->conversation_id;
-    //             }
-    //         }
-    //     }
+    public function storeAvatarUser($url, $userId)
+    {
+        $contents = file_get_contents($url);
+        $name = $userId . '.jpg';
+        Storage::disk('local')->put('public/files/' . $name, $contents);
+        $url = env('URL_CRM') . '/storage/files/' . $name;
 
-    //     return $conversationId;
-    // }
+        return $url;
+    }
 }
