@@ -112,6 +112,14 @@ export default {
         callback(null, error);
       }
     },
+    *DRAG_AFTER({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
     *ADD_DRAG({ payload, callback }, saga) {
       try {
         yield saga.call(services.addDrag, payload);
