@@ -6,10 +6,9 @@ export default {
   state: {
     objectData: {
       data: [],
-      fromYear: null,
-      toYear: null,
       duration: null
     },
+    years: [],
     branches: [],
     classes: [],
     error: {
@@ -27,6 +26,10 @@ export default {
         toYear: payload.toYear,
         duration: payload.toYear,
       },
+    }),
+    SET_YEARS: (state, {payload}) => ({
+      ...state,
+      years: payload
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -47,9 +50,10 @@ export default {
     }),
   },
   effects: {
-    *GET_BRANCHES({ payload }, saga) {
+    *GET_BRANCHES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);
+        callback(response.parsePayload);
         yield saga.put({
           type: 'SET_BRANCHES',
           payload: response,
@@ -94,6 +98,23 @@ export default {
         });
       }
     },
+    *GET_YEARS({payload, callback}, saga) {
+      try {
+        const response = yield saga.call(services.getYears, payload);
+        if(response) {
+          callback(response.items);
+          yield saga.put({
+            type: 'SET_YEARS',
+            payload: response.items,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data
+        });
+      }
+    }, 
   },
   subscriptions: {},
 };
