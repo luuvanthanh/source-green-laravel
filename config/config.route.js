@@ -1910,6 +1910,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TKB],
           },
+          {
+            path: '/thoi-khoa-bieu/thong-ke-tiem-can',
+            component: './timetable/asymptotic',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
         ],
       },
       // MEDICAL
