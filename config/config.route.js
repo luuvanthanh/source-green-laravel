@@ -1811,7 +1811,7 @@ export default [
             authority: [permissions.YTE],
           },
           {
-            path: '/y-te/danh-muc-hoc-sinh-bi-su-co',
+            path: '/y-te/danh-sach-hoc-sinh-bi-su-co',
             component: './medical/student-problem',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.YTE],

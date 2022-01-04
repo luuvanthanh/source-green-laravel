@@ -63,9 +63,21 @@ export default {
         },
       });
     },
-    *GET_COUNT_CONTRACT({ payload, callback }, saga) {
+    *GET_COUNT_LABOURS_CONTRACT({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(categories.getCountContract, payload);
+        const response = yield saga.call(categories.getCountLaboursContract, payload);
+        callback(response.parsePayload);
+      } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_COUNT_PROBATIONARY_CONTRACT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getCountProbationaryContract, payload);
         callback(response.parsePayload);
       } catch (error) {
         callback(null, error);
