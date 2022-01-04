@@ -53,7 +53,12 @@ export const variables = {
       message: 'Trường này tối đa 12',
     },
     MIN_LENGTH_INPUT: { type: 'number', min: 1, message: 'Trường này tối thiểu 1' },
-    MAX_LENGTH_INPUT_DATE: { type: 'number', min: 0, max: 365, message: 'Số ngày không được quá 12 tháng' },
+    MAX_LENGTH_INPUT_DATE: {
+      type: 'number',
+      min: 0,
+      max: 365,
+      message: 'Số ngày không được quá 12 tháng',
+    },
     // TODO: Rename
     MAX_LENGTH_255: { max: 255, message: 'Trường này không quá 255 kí tự' },
     MAX_NUMBER: { max: 15, message: 'Trường này không quá 15 kí tự' },
@@ -199,6 +204,29 @@ export const variables = {
     { id: 'GAN_HET_HAN', name: 'Gần hết hạn' },
     { id: 'DA_HET_HAN', name: 'Đã hết hạn' },
     { id: 'CHUA_DEN_HAN', name: 'Chưa đến hạn' },
+  ],
+  COLORS: [
+    '#FF8D8D',
+    '#FFA5AC',
+    '#FFC0A5',
+    '#FFCC97',
+    '#FFEE97',
+    '#DEFF97',
+    '#ACFF97',
+    '#97FFBA',
+    '#7FEBE5',
+    '#8DC8FF',
+    '#96ADFF',
+    '#A59DFF',
+    '#D49DFF',
+    '#FD9DFF',
+    '#FF9DDE',
+    '#FFFF00',
+    '#7030A0',
+    '#E9BDE0',
+    '#00B0F0',
+    '#FFD966',
+    '#C6E0B4'
   ],
 };
 
