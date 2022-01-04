@@ -1451,3 +1451,10 @@
 .title-time-table {
   height: 32px;
 }
+
+.btnControl-timetable {
+  width: 78px; 
+  & button {
+    width: 50%;
+  }
+}
