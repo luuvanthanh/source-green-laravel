@@ -146,6 +146,60 @@ class ReportService
         return $event;
     }
 
+    public static function warningReport($attributes)
+    {
+        //event
+        $eventTypes = EventType::query();
+
+        if (!empty($attributes['event_code'])) {
+            $eventTypes->whereIn('code', explode(',', $attributes['event_code']));
+        }
+
+        $eventTypes = $eventTypes->get();
+        $data = [];
+
+        foreach ($eventTypes as $key => $item) {
+            $events = 0;
+            $events = Event::where('event_type_id', $item->id)
+                ->where('time', '>=', $attributes['start_time'])
+                ->where('time', '<=', $attributes['end_time']);
+
+            if (!empty($attributes['tourist_destination_id'])) {
+                $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
+                $events->whereIn('tourist_destination_id', $touristDestinationId);
+            }
+
+            $events = $events->count();
+            $eventMistakes = Event::where('event_type_id', $item->id)
+                ->where('status_detail', Event::STATUS_DETAIL['MISTAKE'])
+                ->where('time', '>=', $attributes['start_time'])
+                ->where('time', '<=', $attributes['end_time']);
+
+            if (!empty($attributes['tourist_destination_id'])) {
+                $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
+                $eventMistakes->whereIn('tourist_destination_id', $touristDestinationId);
+            }
+
+            $eventMistakes = $eventMistakes->count();
+            $falseRecognitionRate = 0;
+
+            if ($events > 0) {
+                $falseRecognitionRate = ($eventMistakes / $events) * 100;
+            }
+
+            $data[] = [
+                'event_name' => $item->name,
+                'event_code' => $item->code,
+                'total_event_warning' => $events,
+                'total_event_mistake' => $eventMistakes,
+                'false_recognition_rate' => $falseRecognitionRate,
+                'correct_recognition_rate' => 100 - $falseRecognitionRate,
+            ];
+        }
+
+        return $data;
+    }
+
     // báo cáo tần suất
     public static function frequencyOfAppearanceReport($attributes)
     {
@@ -598,68 +652,57 @@ class ReportService
         }
 
         $eventTypes = $eventTypes->get();
+        $touristDestination =  TouristDestination::query();
 
-        foreach ($eventTypes as $key => $item) {
-            $touristDestination =  TouristDestination::query();
+        if (!empty($attributes['tourist_destination_id'])) {
+            $touristDestination->whereIn('id', explode(',', $attributes['tourist_destination_id']));
+        }
 
-            if (!empty($attributes['tourist_destination_id'])) {
-                $touristDestination->whereIn('id', explode(',', $attributes['tourist_destination_id']));
+        $touristDestinations = $touristDestination->get();
+
+        $total = 0;
+        $data = [];
+
+        foreach ($touristDestinations as $key => $value) {
+            $events = 0;
+
+            switch ($attributes['report_type']) {
+                case 'DATE':
+                    $events = Event::where('tourist_destination_id', $value->id)
+                        ->where('time', '>=', $attributes['start_time'])
+                        ->where('time', '<=', $attributes['end_time'])->count();
+                    break;
+                case 'MONTH':
+                    $startTime = Carbon::parse($attributes['start_time'])->startOfMonth();
+                    $endTime = Carbon::parse($attributes['end_time'])->endOfMonth();
+
+                    $events = Event::where('tourist_destination_id', $value->id)
+                        ->where('time', '>=', $startTime)
+                        ->where('time', '<=', $endTime)->count();
+                    break;
+                case 'YEAR':
+                    $startTime = Carbon::parse($attributes['start_time'])->startOfYear();
+                    $endTime = Carbon::parse($attributes['end_time'])->endOfYear();
+                    $events = Event::where('tourist_destination_id', $value->id)
+                        ->where('time', '>=', $startTime)
+                        ->where('time', '<=', $endTime)->count();
+                    break;
             }
 
-            $total = 0;
-            $touristDestinations = $touristDestination->get();
-
-            $dataBytouristDestination = [];
-
-            foreach ($touristDestinations as $key => $value) {
-                $events = 0;
-
-                switch ($attributes['report_type']) {
-                    case 'DATE':
-                        $events = Event::where('tourist_destination_id', $value->id)
-                            ->where('event_type_id', $item->id)
-                            ->where('time', '>=', $attributes['start_time'])
-                            ->where('time', '<=', $attributes['end_time'])->count();
-                        break;
-                    case 'MONTH':
-                        $startTime = Carbon::parse($attributes['start_time'])->startOfMonth();
-                        $endTime = Carbon::parse($attributes['end_time'])->endOfMonth();
-
-                        $events = Event::where('tourist_destination_id', $value->id)
-                            ->where('event_type_id', $item->id)
-                            ->where('time', '>=', $startTime)
-                            ->where('time', '<=', $endTime)->count();
-                        break;
-                    case 'YEAR':
-                        $startTime = Carbon::parse($attributes['start_time'])->startOfYear();
-                        $endTime = Carbon::parse($attributes['end_time'])->endOfYear();
-                        $events = Event::where('tourist_destination_id', $value->id)
-                            ->where('event_type_id', $item->id)
-                            ->where('time', '>=', $startTime)
-                            ->where('time', '<=', $endTime)->count();
-                        break;
-                }
-
-                if ($events == 0) {
-                    continue;
-                }
-
-                $total += $events;
-                $dataBytouristDestination[] = [
-                    'name' => $value->name,
-                    'number' => $events
-                ];
+            if ($events == 0) {
+                continue;
             }
 
+            $total += $events;
             $data[] = [
-                'event_name' => $item->name,
-                'event_code' => $item->code,
-                'total' => $total,
-                'data_by_tourist_destination' => $dataBytouristDestination
+                'name' => $value->name,
+                'number' => $events
             ];
         }
 
-
-        return $data;
+        return [
+            'total' => $total,
+            'detail' => $data
+        ];
     }
 }

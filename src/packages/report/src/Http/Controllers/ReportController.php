@@ -64,4 +64,17 @@ class ReportController extends Controller
 
         return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function warningReport(Request $request)
+    {
+        $report = ReportService::warningReport($request->all());
+
+        return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
+    }
 }

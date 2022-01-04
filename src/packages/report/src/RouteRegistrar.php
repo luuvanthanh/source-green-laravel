@@ -33,6 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('report-number-event-behavior', 'ReportController@numberEventReportBehavior');
             \Route::get('report-number-event-object', 'ReportController@numberEventReportObject');
             \Route::get('report-frequency-of-appearance', 'ReportController@frequencyOfAppearanceReport');
+            \Route::get('report-warning', 'ReportController@warningReport');
         });
     }
 }
