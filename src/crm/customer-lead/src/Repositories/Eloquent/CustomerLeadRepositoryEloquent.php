@@ -196,11 +196,11 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         $customerLead_code = CustomerLead::max('code');
 
         if (is_null($customerLead_code)) {
-            $attributes['code'] = CustomerLead::CODE . $now . "01";
+            $attributes['code'] = CustomerLead::CODE . $now . '01';
         } else {
 
             if (substr($customerLead_code, 2, 8)  != $now) {
-                $attributes['code'] = CustomerLead::CODE . $now . "01";
+                $attributes['code'] = CustomerLead::CODE . $now . '01';
             } else {
                 $stt = substr($customerLead_code, 2) + 1;
                 $attributes['code'] = CustomerLead::CODE . $stt;
@@ -279,7 +279,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         ];
         CustomerPotentialStatusCare::create($data);
 
-        return;
+        return null;
     }
 
     public function storeCareProgram($attributes)
@@ -302,7 +302,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
     {
         $url_email = env('EMAIL_URL') . '/api/v1/subscribers/';
         $bearerToken = env('TOKEN_EMAIL');
-        $response = Http::withToken("$bearerToken")->get("$url_email");
+        $response = Http::withToken($bearerToken)->get($url_email);
         $email = $response->json();
 
         foreach ($email['data'] as $value) {
@@ -310,7 +310,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             if ($value['customer_lead_id'] == $id) {
                 $url = $url_email . $value['id'];
 
-                $response = Http::withToken("$bearerToken")->put("$url", ['customer_group' => '1']);
+                $response = Http::withToken($bearerToken)->put($url, ['customer_group' => '1']);
             }
         }
 

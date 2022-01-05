@@ -21,6 +21,7 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
     protected $fieldSearchable = [
         'created_at',
     ];
+
     /**
      * Specify Model class name
      *
@@ -30,6 +31,7 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
     {
         return DataMarketingStudentInfo::class;
     }
+
     /**
      * Boot up the repository, pushing criteria
      */
@@ -60,7 +62,6 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
 
     public function create(array $attributes)
     {
-
         if (!empty($attributes['create_rows'])) {
             foreach ($attributes['create_rows'] as $value) {
                 $value['relationship'] = DataMarketingStudentInfo::RELATIONSHIP[$value['relationship']];

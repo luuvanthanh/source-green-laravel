@@ -72,10 +72,10 @@ class SearchSourceRepositoryEloquent extends BaseRepository implements SearchSou
             $code = SearchSource::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = SearchSource::CODE . "1";
+                $attributes['code'] = SearchSource::CODE . 1;
             } else {
                 $getNumber = substr($code, 1) + 1;
-                $attributes['code'] = SearchSource::CODE . "$getNumber";
+                $attributes['code'] = SearchSource::CODE . $getNumber;
             }
             $searchSource = SearchSource::create($attributes);
 

@@ -72,10 +72,10 @@ class StatusAdmissionRegisterRepositoryEloquent extends BaseRepository implement
             $code = StatusAdmissionRegister::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = StatusAdmissionRegister::CODE . "1";
+                $attributes['code'] = StatusAdmissionRegister::CODE . 1;
             } else {
                 $getNumber = substr($code, 3) + 1;
-                $attributes['code'] = StatusAdmissionRegister::CODE . "$getNumber";
+                $attributes['code'] = StatusAdmissionRegister::CODE . $getNumber;
             }
             $statusAdmissionRegister = StatusAdmissionRegister::create($attributes);
 

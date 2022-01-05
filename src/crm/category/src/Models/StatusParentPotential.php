@@ -2,7 +2,6 @@
 
 namespace GGPHP\Crm\Category\Models;
 
-
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialReference;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;

@@ -2,7 +2,6 @@
 
 namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
-
 use GGPHP\Crm\AdmissionRegister\Models\ConfirmTransporter;
 use GGPHP\Crm\AdmissionRegister\Presenters\ConfirmTransporterPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ConfirmTransporterRepository;

@@ -32,7 +32,7 @@ class MoveLeadRequest extends FormRequest
                         $query->select('email')->from('data_marketings')->whereIn('id', $value)->get();
                     })->whereIn('phone', function ($query) use ($value) {
                         $query->select('phone')->from('data_marketings')->whereIn('id', $value)->get();
-                    })->where('deleted_at','!=',null)->first();
+                    })->where('deleted_at', '!=', null)->first();
 
                     if (!is_null($dataMarketing)) {
                         return $fail('Dữ liệu bị trùng số điện thoại hoặc email, vui lòng kiểm tra lại trước khi chuyển sang lead');

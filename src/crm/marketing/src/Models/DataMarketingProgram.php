@@ -4,7 +4,6 @@ namespace GGPHP\Crm\Marketing\Models;
 
 use GGPHP\Core\Models\UuidModel;
 
-
 class DataMarketingProgram extends UuidModel
 {
 
