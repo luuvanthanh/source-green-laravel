@@ -203,6 +203,15 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDate = (e, type) => {
+    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+  };
+
+  /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
@@ -381,6 +390,14 @@ class Index extends PureComponent {
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.DATE_PICKER}
                     allowClear={false}
                   />
                 </div>

@@ -1,17 +1,16 @@
-import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Input } from 'antd';
+import { memo, useRef, useEffect } from 'react';
+import { Form } from 'antd';
 import { useParams, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { head, isEmpty, get, omit } from 'lodash';
+import { head, isEmpty, get } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import classnames from 'classnames';
 import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
-import TableCus from '@/components/CommonComponent/Table';
 import styles from '@/assets/styles/Common/common.scss';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import { v4 as uuidv4 } from 'uuid';
 import stylesModule from '../styles.module.scss';
 
 const General = memo(() => {
@@ -33,11 +32,11 @@ const General = memo(() => {
     return mounted.current;
   }, []);
 
-  const [data, setData] = useState([{
-    id: uuidv4(),
-    position: undefined,
-    symptomName: undefined,
-  }]);
+  useEffect(() => {
+    form.setFieldsValue({
+      data: [""]
+    });
+  }, []);
 
   useEffect(() => {
     if (params.id) {
@@ -46,12 +45,11 @@ const General = memo(() => {
         payload: params,
         callback: (response) => {
           if (response) {
-            setData(
-              response?.symptoms.map((item, index) => ({
+            form.setFieldsValue({
+              data: response.symptoms.map((item) => ({
                 ...item,
-                index,
               })),
-            );
+            });
           }
         },
       });
@@ -68,15 +66,16 @@ const General = memo(() => {
   }, [details]);
 
   const onFinish = (values) => {
+    const items = values.data.map((item) => ({
+      ...item,
+    }));
     dispatch({
       type: params.id ? 'medicalListTroubleAdd/UPDATE' : 'medicalListTroubleAdd/ADD',
       payload: {
         ...details,
         ...params,
         name: values?.name,
-        symptoms: data.map((item) => ({
-          ...omit(item, 'index')
-        }))
+        symptoms: items,
       },
       callback: (response, error) => {
         if (response) {
@@ -97,60 +96,6 @@ const General = memo(() => {
       },
     });
   };
-
-  const onChange = (e, record, key = 'position') => {
-    setData((prev) =>
-      prev.map((item) => (
-        item.index === record.index ? { ...item, [key]: e.target.value } : { ...item }
-      ),
-      ));
-  };
-
-  const columns = [
-    {
-      title: 'Vị trí vết thương',
-      key: 'position',
-      lassName: 'min-width-100',
-      render: (value, record) => (
-        <Input.TextArea
-          value={record.position}
-          autoSize={{ minRows: 1, maxRows: 1 }}
-          placeholder="Nhập"
-          onChange={(e) => onChange(e, record, 'position')}
-        />
-      ),
-    },
-    {
-      title: 'Tên triệu chứng',
-      key: 'symptomName',
-      lassName: 'min-width-100',
-      render: (value, record) => (
-        <Input.TextArea
-          value={record.symptomName}
-          autoSize={{ minRows: 1, maxRows: 1 }}
-          placeholder="Nhập"
-          onChange={(e) => onChange(e, record, 'symptomName')}
-        />
-      ),
-    },
-    {
-      key: 'action',
-      className: 'min-width-100',
-      width: 100,
-      fixed: 'right',
-      render: (record) =>
-        <div className={styles['list-button']}>
-          <Button
-            onClick={() => {
-              setData(data.filter((val) => (val.index) !== (record.index)));
-            }}
-            type="button"
-            color="danger" icon="remove"
-          />
-        </div>
-
-    },
-  ];
 
   return (
     <>
@@ -179,35 +124,80 @@ const General = memo(() => {
                     <Heading type="form-title" className="mb20">
                       Triệu chứng
                     </Heading>
-                    <div className={stylesModule['wrapper-table']}>
-                      <TableCus
-                        rowKey={(record) => record.id}
-                        className="table-edit mb20"
-                        columns={columns}
-                        dataSource={data}
-                        pagination={false}
-                        scroll={{ x: '100%' }}
-                        footer={(item, index) => (
-                          <Button
-                            key={index}
-                            onClick={() =>
-                              setData([
-                                ...data,
-                                {
-                                  dataId: uuidv4(),
-                                  index: data.length,
-                                },
-                              ])
-                            }
-                            className={stylesModule.btn}
-                            color="transparent-success"
-                            icon="plus"
-                          >
-                            Thêm
-                          </Button>
-                        )}
-                      />
-                    </div>
+
+                    <Pane >
+                      <div className={stylesModule['wrapper-table']}>
+                        <div className={stylesModule['card-heading']}>
+                          <div className={stylesModule.col}>
+                            <p className={stylesModule.norm}>Vị trí vết thương</p>
+                          </div>
+                          <div className={stylesModule.col}>
+                            <p className={stylesModule.norm}>Tên triệu chứng</p>
+                          </div>
+                          <div className={stylesModule.cols}>
+                            <p className={stylesModule.norm} />
+                          </div>
+                        </div>
+                        <Form.List name="data">
+                          {(fields, { add, remove }) => (
+                            <>
+                              {fields.map((fieldItem, index) => (
+                                <Pane
+                                  key={index}
+                                  className="d-flex"
+                                >
+                                  <div className={stylesModule['card-item']}>
+                                    <div className={classnames(stylesModule.col)}>
+                                      <FormItem
+                                        className={stylesModule.item}
+                                        fieldKey={[fieldItem.fieldKey, 'position']}
+                                        name={[fieldItem.name, 'position']}
+                                        type={variables.INPUT}
+                                        rules={[variables.RULES.EMPTY_INPUT]}
+                                      />
+                                    </div>
+                                    <div className={classnames(stylesModule.col)}>
+                                      <FormItem
+                                        className={stylesModule.item}
+                                        fieldKey={[fieldItem.fieldKey, 'symptomName']}
+                                        name={[fieldItem.name, 'symptomName']}
+                                        type={variables.INPUT}
+                                        rules={[variables.RULES.EMPTY_INPUT]}
+                                      />
+                                    </div>
+                                    <div className={classnames(stylesModule.cols)}>
+                                      {fields.length > 1 && (
+                                        <div className={styles['list-button']}>
+                                          <button
+                                            className={styles['button-circle']}
+                                            onClick={() => {
+                                              remove(index);
+                                            }}
+                                            type="button"
+                                          >
+                                            <span className="icon-remove" />
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </Pane>
+                              ))}
+                              <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer " >
+                                <span
+                                  onClick={() => add()}
+                                  role="presentation"
+                                  className={stylesModule.add}
+                                >
+                                  <span className="icon-plus-circle mr5" />
+                                  Thêm
+                                </span>
+                              </Pane>
+                            </>
+                          )}
+                        </Form.List>
+                      </div>
+                    </Pane>
                   </Pane>
                 </Pane>
                 <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
