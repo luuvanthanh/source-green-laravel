@@ -4,11 +4,11 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Text from '@/components/CommonComponent/Text';
 import { Helper, variables } from '@/utils';
-import { Form, Typography, Modal } from 'antd';
+import { Form, Typography, Modal, Input } from 'antd';
 import classnames from 'classnames';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'dva';
-import { isEmpty, groupBy, size, maxBy, head, last } from 'lodash';
+import { isEmpty, groupBy, size, maxBy, head, last, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
 import { v4 as uuidv4 } from 'uuid';
@@ -46,6 +46,8 @@ const Index = memo(() => {
     branchId: null,
     timetableSettingId: null,
   });
+
+  const [searchText, setSearchText] = useState('');
 
   const loadCategories = () => {
     dispatch({
@@ -144,26 +146,10 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (search.branchId && search.timetableSettingId && !isEmpty(classes)) {
+      setTimeline(search.timetableSettingId);
       onLoad();
     }
   }, [search, classes]);
-
-  const onConfigChange = (values) => {
-    setSearch((prev) => ({
-      ...prev,
-      branchId: values.branchId,
-      timetableSettingId: values.timetableSettingId,
-    }));
-    setTimeline(values.timetableSettingId);
-    if (values.branchId) {
-      dispatch({
-        type: 'timeTablesAuto/GET_CLASSES',
-        payload: {
-          branch: values.branchId,
-        },
-      });
-    }
-  };
 
   const formatColumns = useMemo(() => {
     const taskArr = activities.map((item) => item.name);
@@ -467,6 +453,26 @@ const Index = memo(() => {
     return maxBy(itemsFlat, 'size');
   };
 
+  const changeFilterDebouce = debounce((name, value) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value,
+    }));
+  }, 300);
+
+  const changeFilter = (name) => (value) => {
+    changeFilterDebouce(name, value);
+  };
+
+  const formatTextSearch = (tasks) => {
+    if (searchText) {
+      return tasks.filter(
+        (item) => Helper.slugify(item.name)?.indexOf(Helper.slugify(searchText)) >= 0,
+      );
+    }
+    return tasks;
+  };
+
   return (
     <>
       <Helmet title="Thời khóa biểu" />
@@ -578,12 +584,7 @@ const Index = memo(() => {
         </div>
         {/* FORM SEARCH */}
         <div className={classnames(styles.search, 'pt20')}>
-          <Form
-            layout="vertical"
-            form={formRef}
-            initialValues={{ ...search }}
-            onFinish={onConfigChange}
-          >
+          <Form layout="vertical" form={formRef} initialValues={{ ...search }}>
             <div className="row">
               <div className="col-lg-4">
                 <FormItem
@@ -593,9 +594,9 @@ const Index = memo(() => {
                   name="timetableSettingId"
                   type={variables.SELECT}
                   allowClear={false}
+                  onChange={(value) => changeFilter('timetableSettingId')(value)}
                 />
               </div>
-
               <div className="col-lg-4">
                 <FormItem
                   className="ant-form-item-row"
@@ -604,17 +605,8 @@ const Index = memo(() => {
                   name="branchId"
                   type={variables.SELECT}
                   allowClear={false}
+                  onChange={(value) => changeFilter('branchId')(value)}
                 />
-              </div>
-              <div className="col-lg-4">
-                <Button
-                  color="success"
-                  permission="TKB"
-                  htmlType="submit"
-                  loading={loading['timeTablesAuto/GET_DATA']}
-                >
-                  Cấu hình
-                </Button>
               </div>
             </div>
           </Form>
@@ -635,12 +627,14 @@ const Index = memo(() => {
                           {(provided) => (
                             <div {...provided.droppableProps} ref={provided.innerRef}>
                               <div className={classnames(styles['block-table'])}>
-                                <FormItem
-                                  className="ant-form-item-row"
-                                  name="type"
-                                  type={variables.INPUT}
-                                />
-                                {tasks.map((task, index) => (
+                                <div className="mb15">
+                                  <Input
+                                    placeholder="Nhập"
+                                    value={searchText}
+                                    onChange={(e) => setSearchText(e.target.value)}
+                                  />
+                                </div>
+                                {formatTextSearch(tasks).map((task, index) => (
                                   <Draggable key={task.id} draggableId={task.name} index={index}>
                                     {(provided) => (
                                       <div
