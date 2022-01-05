@@ -70,6 +70,10 @@ class UserFacebookInfoTransformer extends BaseTransformer
 
     public function includeEmployeeFacebook(UserFacebookInfo $userFacebookInfo)
     {
+        if (is_null($userFacebookInfo->employeeFacebook)) {
+            return;
+        }
+
         return $this->item($userFacebookInfo->employeeFacebook, new EmployeeFacebookTransformer, 'EmployeeFacebook');
     }
 }
