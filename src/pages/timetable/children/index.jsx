@@ -268,7 +268,7 @@ const Index = memo(() => {
               );
             }
 
-            if (!isEmpty(groupClass)) {
+            if (!isEmpty(groupClass) && !isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)) {
               if (idx === 0) {
                 const objectEmpty = {};
                 objectEmpty.time = '';
