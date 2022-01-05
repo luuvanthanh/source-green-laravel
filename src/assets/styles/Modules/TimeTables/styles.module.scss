@@ -33,12 +33,22 @@
   }
 
   .data-row {
+    position: relative;
     padding: 5px 10px;
     text-align: center;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    .dot-warning {
+      position: absolute;
+      right: 5px;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 100%;
+      background-color: $background-danger;
+    }
   }
 
   .no-data-row {

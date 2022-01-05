@@ -702,6 +702,7 @@ const Index = memo(() => {
                               const tasks = value.tasks.map((task) => ({
                                 ...formatNewItems[task?.timetableActivityDetail?.name],
                                 dragId: task.dragId,
+                                isEmptyDayOfWeek: task.isEmptyDayOfWeek,
                               }));
                               const sizeMax = getSizeMax(value?.timetableDetailByClassAndActivy);
 
@@ -736,6 +737,9 @@ const Index = memo(() => {
                                                 className="data-row"
                                                 onClick={() => showModal(key)}
                                               >
+                                                {task?.isEmptyDayOfWeek && (
+                                                  <span className="dot-warning" />
+                                                )}
                                                 {task?.name}
                                               </Paragraph>
                                             </div>
