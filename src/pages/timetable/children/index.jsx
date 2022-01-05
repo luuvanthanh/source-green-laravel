@@ -4,8 +4,8 @@ import Text from '@/components/CommonComponent/Text';
 import { Helper, variables } from '@/utils';
 import classnames from 'classnames';
 import moment from 'moment';
-import { debounce, isEmpty, reduce } from 'lodash';
-import React, { useRef, useState, memo, useEffect, useMemo } from 'react';
+import { debounce, head, isEmpty, reduce } from 'lodash';
+import React, { useState, memo, useEffect, useMemo } from 'react';
 import styles from '@/assets/styles/Common/common.scss';
 import Table from '@/components/CommonComponent/Table';
 import CardTime from '@/components/CommonComponent/CardCalendar/CardTime';
@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
 
 const Index = memo(() => {
-  const formRef = useRef();
+  const [formRef] = Form.useForm();
   const [
     { branches, classes, objectData, years },
     { defaultBranch },
@@ -34,23 +34,22 @@ const Index = memo(() => {
   ] = useSelector(({ timeTablesChildren, user, loading }) => [timeTablesChildren, user, loading]);
   const dispatch = useDispatch();
   const { pathname, query } = useLocation();
+  const yearsConvert = years.map((item) => ({
+    id: item.id,
+    name: `${item.fromYear} - ${item.toYear}`,
+  }));
   const history = useHistory();
   const { data } = objectData;
   const [search, setSearch] = useState({
     fromDate: moment().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
     toDate: moment().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
     type: 'timeGridWeek',
-    branchId: query?.branchId || defaultBranch?.id,
+    branchId: defaultBranch?.id,
     classId: query?.classId,
-    timetableSettingId: query?.timetableSettingId,
+    timetableSettingId: null,
   });
 
   const [showColumn, setShowColumn] = useState(false);
-
-  const yearsConvert = years.map((item) => ({
-    id: item.id,
-    name: `${item.fromYear} - ${item.toYear}`,
-  }));
 
   const getYears = () => {
     dispatch({
@@ -58,14 +57,18 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response && !search.timetableSettingId) {
+          const time = moment(search.fromDate);
           response.forEach((item) => {
             if (
-              `${item.fromYear}` === Helper.getDate(search.fromDate, variables.DATE_FORMAT.YEAR)
+              time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))
             ) {
               setSearch((prevState) => ({
                 ...prevState,
                 timetableSettingId: item.id,
               }));
+              formRef.setFieldsValue({
+                timetableSettingId: item.id,
+              });
             }
           });
         }
@@ -112,7 +115,10 @@ const Index = memo(() => {
             ...prev,
             branchId: query?.branchId || response[0]?.id,
           }));
-          getClass(query?.branchId || response[0]?.id);
+          formRef.setFieldsValue({
+            branchId: head(response)?.id,
+          });
+          getClass(response[0]?.id);
         }
       },
     });
@@ -145,6 +151,14 @@ const Index = memo(() => {
   };
 
   const renderCalendar = (type, data) => {
+    const sortDataCalendar = Helper.onSortDates(
+      data.map((item) => ({
+        ...item,
+        dateSort: moment(item.startTime, variables.DATE_FORMAT.HOUR),
+      })),
+      'dateSort',
+      'asc',
+    );
     const dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     switch (type) {
       case 'dayGridMonth': {
@@ -172,7 +186,7 @@ const Index = memo(() => {
             data: [],
           },
         };
-        data?.forEach((item) => {
+        sortDataCalendar?.forEach((item) => {
           let groupClass;
           if (!search.branchId) {
             groupClass = { ...item.timetableDetailGroupByClasses[0] };
@@ -234,15 +248,8 @@ const Index = memo(() => {
       }
       case 'timeGridWeek': {
         const dataWeek = [];
-        if (!isEmpty(data)) {
-          Helper.onSortDates(
-            data.map((item) => ({
-              ...item,
-              dateSort: moment(item.startTime, variables.DATE_FORMAT.HOUR),
-            })),
-            'dateSort',
-            'asc',
-          ).forEach((item, idx) => {
+        if (!isEmpty(sortDataCalendar)) {
+          sortDataCalendar.forEach((item, idx) => {
             let groupClass;
             if (!search.branchId) {
               groupClass = { ...item.timetableDetailGroupByClasses[0] };
@@ -315,14 +322,7 @@ const Index = memo(() => {
         return Array(objectEmpty);
       }
       case 'timeGridDay': {
-        const dataGridDay = Helper.onSortDates(
-          data.map((item) => ({
-            ...item,
-            dateSort: moment(item.startTime, variables.DATE_FORMAT.HOUR),
-          })),
-          'dateSort',
-          'asc',
-        )?.map((item) => {
+        const dataGridDay = sortDataCalendar?.map((item) => {
           const objectDay = {};
           objectDay.times = {
             timeStart: item.startTime,
@@ -370,7 +370,7 @@ const Index = memo(() => {
       }
       case 'listDay': {
         const arrTimeTable = reduce(
-          data,
+          sortDataCalendar,
           (arr, item) => {
             let groupClass;
             if (!search.branchId) {
@@ -733,7 +733,6 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Thời khóa biểu trẻ" />
-      {!isEmpty(branches) && (
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Thời khóa biểu trẻ</Text>
@@ -743,12 +742,12 @@ const Index = memo(() => {
             <Form
               initialValues={{
                 ...search,
-                branchId: query?.branchId || branches[0]?.id,
+                // branchId: query?.branchId || branches[0]?.id,
                 classId: query?.classId || null,
-                timetableSettingId: query?.timetableSettingId || years[0]?.id,
+                // timetableSettingId: query?.timetableSettingId || search.timetableSettingId,
               }}
               layout="vertical"
-              ref={formRef}
+              form={formRef}
             >
               <div className="row">
                 <div className="col-lg-4">
@@ -805,6 +804,20 @@ const Index = memo(() => {
                           moment(search.toDate).subtract(1, 'months'),
                           'dayGridMonth',
                         );
+
+                        const time = moment(search.fromDate).subtract(1, 'month').clone();
+                        let id = '';
+                        years.forEach(item => {
+                          if(time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
+                            id = item.id;                          
+                          }
+                        });
+                        if( id !== search.timetableSettingId){
+                          setSearch(prev => ({...prev, timetableSettingId: id}));
+                          formRef.setFieldsValue({
+                            timetableSettingId: id,
+                          });
+                        }
                       }
                       if (search.type === 'timeGridWeek') {
                         debouncedSearchDate(
@@ -812,6 +825,22 @@ const Index = memo(() => {
                           moment(search.toDate).subtract(1, 'weeks'),
                           'timeGridWeek',
                         );
+                        const time = moment(search.fromDate).subtract(1, 'weeks').clone();
+                        let id = '';
+                        years.forEach(item => {
+                          if(time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
+                            id = item.id;   
+                            formRef.setFieldsValue({
+                              timetableSettingId: id,
+                            });                       
+                          }
+                        });
+                        if( id !== search.timetableSettingId){
+                          setSearch(prev => ({...prev, timetableSettingId: id}));
+                          formRef.setFieldsValue({
+                            timetableSettingId: id,
+                          });
+                        }
                       }
                       if (search.type === 'timeGridDay' || search.type === 'listDay') {
                         debouncedSearchDate(
@@ -819,6 +848,22 @@ const Index = memo(() => {
                           moment(search.toDate).subtract(1, 'days'),
                           'timeGridDay',
                         );
+                        const time = moment(search.fromDate).subtract(1, 'days').clone();
+                        let id = '';
+                        years.forEach(item => {
+                          if(time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
+                            id = item.id;
+                            formRef.setFieldsValue({
+                              timetableSettingId: id,
+                            });                       
+                          }
+                        });
+                        if( id !== search.timetableSettingId){
+                          setSearch(prev => ({...prev, timetableSettingId: id}));
+                          formRef.setFieldsValue({
+                            timetableSettingId: id,
+                          });
+                        }
                       }
                     }}
                     className={styles.btnStyle}
@@ -832,6 +877,19 @@ const Index = memo(() => {
                           moment(search.toDate).add(1, 'months'),
                           'dayGridMonth',
                         );
+                        const time = moment(search.fromDate).subtract(1, 'month').clone();
+                        let id = '';
+                        years.forEach(item => {
+                          if(time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
+                            id = item.id;                          
+                          }
+                        });
+                        if( id !== search.timetableSettingId){
+                          setSearch(prev => ({...prev, timetableSettingId: id}));
+                          formRef.setFieldsValue({
+                            timetableSettingId: id,
+                          });
+                        }
                       }
                       if (search.type === 'timeGridWeek') {
                         debouncedSearchDate(
@@ -839,6 +897,19 @@ const Index = memo(() => {
                           moment(search.toDate).add(1, 'weeks'),
                           'timeGridWeek',
                         );
+                        const time = moment(search.fromDate).subtract(1, 'weeks').clone();
+                        let id = '';
+                        years.forEach(item => {
+                          if(time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
+                            id = item.id;                          
+                          }
+                        });
+                        if( id !== search.timetableSettingId){
+                          setSearch(prev => ({...prev, timetableSettingId: id}));
+                          formRef.setFieldsValue({
+                            timetableSettingId: id,
+                          });
+                        }
                       }
                       if (search.type === 'timeGridDay' || search.type === 'listDay') {
                         debouncedSearchDate(
@@ -846,6 +917,19 @@ const Index = memo(() => {
                           moment(search.toDate).add(1, 'days'),
                           'timeGridDay',
                         );
+                        const time = moment(search.fromDate).subtract(1, 'days').clone();
+                        let id = '';
+                        years.forEach(item => {
+                          if(time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
+                            id = item.id;                          
+                          }
+                        });
+                        if( id !== search.timetableSettingId){
+                          setSearch(prev => ({...prev, timetableSettingId: id}));
+                          formRef.setFieldsValue({
+                            timetableSettingId: id,
+                          });
+                        }
                       }
                     }}
                     className={styles.btnStyle}
@@ -856,6 +940,19 @@ const Index = memo(() => {
                   color="white"
                   className="ml-2"
                   onClick={() => {
+                    const time = moment().clone();
+                    let id = '';
+                    years.forEach(item => {
+                      if(time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
+                        id = item.id;                          
+                      }
+                    });
+                    if( id !== search.timetableSettingId){
+                      setSearch(prev => ({...prev, timetableSettingId: id}));
+                      formRef.setFieldsValue({
+                        timetableSettingId: id,
+                      });
+                    }
                     if (search.type === 'dayGridMonth') {
                       debouncedSearchDate(
                         moment().startOf('month'),
@@ -966,7 +1063,6 @@ const Index = memo(() => {
             )}
           </div>
         </div>
-      )}
     </>
   );
 });
