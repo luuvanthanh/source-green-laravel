@@ -11,6 +11,7 @@ use Prettus\Repository\Eloquent\BaseRepository;
 use Carbon\Carbon;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Class TourGuideRepositoryEloquent.
@@ -235,5 +236,57 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         }
 
         return $result;
+    }
+
+    public function tourGuidesByImage($attributes)
+    {
+        if (!empty($attributes['image_url'])) {
+            $imageUrl = [];
+
+            foreach (explode(',', $attributes['image_url']) as $value) {
+                $imageUrl[] = env('IMAGE_URL') . '/' . $value;
+            }
+
+            $response = Http::get(env('AI_URL') . '/watchlist_search_url', [
+                'image_url' => implode(',', $imageUrl),
+            ]);
+
+            $attributes['object_id'] = null;
+            if ($response->successful()) {
+                $attributes['object_id'] = json_decode($response->body())->uuid_lis;
+            }
+
+            if (is_null($attributes['object_id']) || empty($attributes['object_id'])) {
+                return  [
+                    'data' => []
+                ];
+            } else {
+                $this->model = $this->model->whereIn('id', $attributes['object_id']);
+            }
+        }
+
+        $this->model = $this->model->whereHas('event', function ($query) use ($attributes) {
+            $query->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+            if (!empty($attributes['tourist_destination_id'])) {
+                $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
+                $query->whereIn('tourist_destination_id', $touristDestinationId);
+            }
+        })->with(['event' => function ($query) use ($attributes) {
+            $query->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+            if (!empty($attributes['tourist_destination_id'])) {
+                $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
+                $query->whereIn('tourist_destination_id', $touristDestinationId);
+            }
+        }]);
+
+        if (empty($attributes['limit'])) {
+            $tourGuide = $this->all();
+        } else {
+            $tourGuide = $this->paginate($attributes['limit']);
+        }
+
+        return $tourGuide;
     }
 }

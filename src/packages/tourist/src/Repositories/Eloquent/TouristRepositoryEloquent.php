@@ -6,6 +6,7 @@ use GGPHP\Camera\Models\Camera;
 use GGPHP\Tourist\Models\Tourist;
 use GGPHP\Tourist\Presenters\TouristPresenter;
 use GGPHP\Tourist\Repositories\Contracts\TouristRepository;
+use Illuminate\Support\Facades\Http;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -58,6 +59,29 @@ class TouristRepositoryEloquent extends BaseRepository implements TouristReposit
      */
     public function getTourists(array $attributes)
     {
+        if (!empty($attributes['image_url'])) {
+            $imageUrl = [];
+
+            foreach (explode(',', $attributes['image_url']) as $value) {
+                $imageUrl[] = env('IMAGE_URL') . '/' . $value;
+            }
+            $response = Http::get(env('AI_URL') . '/tourist_search_url', [
+                'image_url' => implode(',', $imageUrl),
+            ]);
+
+            $attributes['object_id'] = null;
+            if ($response->successful()) {
+                $attributes['object_id'] = json_decode($response->body())->uuid_lis;
+            }
+
+            if (is_null($attributes['object_id']) || empty($attributes['object_id'])) {
+                $this->model = $this->model->where('object_id', null);
+            } else {
+                $this->model = $this->model->whereIn('object_id', $attributes['object_id']);
+            }
+        }
+
+
         if (!empty($attributes['tourist_destination_id'])) {
             $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
             $this->model = $this->model->whereIn('tourist_destination_id', $touristDestinationId);

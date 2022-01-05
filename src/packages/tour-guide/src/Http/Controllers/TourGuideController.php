@@ -87,6 +87,19 @@ class TourGuideController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function tourGuidesByImage(Request $request)
+    {
+        $attributes = $request->all();
+        $tourGuide = $this->tourGuideRepository->tourGuidesByImage($attributes);
+
+        return $this->success($tourGuide, trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  Request $request
