@@ -2,6 +2,8 @@
 
 namespace GGPHP\DocumentManagement\Transformers;
 
+use GGPHP\Category\Transformers\BranchTransformer;
+use GGPHP\Category\Transformers\DivisionTransformer;
 use GGPHP\DocumentManagement\Models\DocumentManagement;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Users\Transformers\UserTransformer;
@@ -18,8 +20,8 @@ class DocumentManagementTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['employee'];
-    protected $availableIncludes = [];
+    protected $defaultIncludes = [];
+    protected $availableIncludes = ['employee', 'employeeSender', 'branch', 'sentDivision', 'receiveDivision'];
 
     /**
      * Transform the custom field entity.
@@ -32,7 +34,7 @@ class DocumentManagementTransformer extends BaseTransformer
         $topic = null;
 
         foreach (DocumentManagement::TYPE_DOCUMENT as $key => $value) {
-            
+
             if ($model->TypeOfDocument == $value) {
                 $typeOfDocument = $key;
             }
@@ -54,5 +56,41 @@ class DocumentManagementTransformer extends BaseTransformer
     public function includeEmployee(DocumentManagement $documentManagement)
     {
         return $this->collection($documentManagement->employee, new UserTransformer, 'Employee');
+    }
+
+    public function includeEmployeeSender(DocumentManagement $documentManagement)
+    {
+        if (empty($documentManagement->employeeSender)) {
+            return;
+        }
+
+        return $this->item($documentManagement->employeeSender, new UserTransformer, 'EmployeeSender');
+    }
+
+    public function includeBranch(DocumentManagement $documentManagement)
+    {
+        if (empty($documentManagement->branch)) {
+            return;
+        }
+
+        return $this->item($documentManagement->branch, new BranchTransformer, 'Branch');
+    }
+
+    public function includeSentDivision(DocumentManagement $documentManagement)
+    {
+        if (empty($documentManagement->sentDivision)) {
+            return;
+        }
+
+        return $this->item($documentManagement->sentDivision, new DivisionTransformer, 'SentDivision');
+    }
+
+    public function includeReceiveDivision(DocumentManagement $documentManagement)
+    {
+        if (empty($documentManagement->receiveDivision)) {
+            return;
+        }
+
+        return $this->item($documentManagement->receiveDivision, new DivisionTransformer, 'ReceiveDivision');
     }
 }
