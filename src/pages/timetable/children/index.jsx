@@ -5,7 +5,7 @@ import { Helper, variables } from '@/utils';
 import classnames from 'classnames';
 import moment from 'moment';
 import { debounce, isEmpty, reduce } from 'lodash';
-import React, { useRef, useState, memo, useEffect } from 'react';
+import React, { useRef, useState, memo, useEffect, useMemo } from 'react';
 import styles from '@/assets/styles/Common/common.scss';
 import Table from '@/components/CommonComponent/Table';
 import CardTime from '@/components/CommonComponent/CardCalendar/CardTime';
@@ -235,7 +235,14 @@ const Index = memo(() => {
       case 'timeGridWeek': {
         const dataWeek = [];
         if (!isEmpty(data)) {
-          data.forEach((item, idx) => {
+          Helper.onSortDates(
+            data.map((item) => ({
+              ...item,
+              dateSort: moment(item.startTime, variables.DATE_FORMAT.HOUR),
+            })),
+            'dateSort',
+            'asc',
+          ).forEach((item, idx) => {
             let groupClass;
             if (!search.branchId) {
               groupClass = { ...item.timetableDetailGroupByClasses[0] };
@@ -308,7 +315,14 @@ const Index = memo(() => {
         return Array(objectEmpty);
       }
       case 'timeGridDay': {
-        const dataGridDay = data?.map((item) => {
+        const dataGridDay = Helper.onSortDates(
+          data.map((item) => ({
+            ...item,
+            dateSort: moment(item.startTime, variables.DATE_FORMAT.HOUR),
+          })),
+          'dateSort',
+          'asc',
+        )?.map((item) => {
           const objectDay = {};
           objectDay.times = {
             timeStart: item.startTime,
@@ -677,13 +691,17 @@ const Index = memo(() => {
     return false;
   };
 
+  const arrDate = useMemo(() => {
+    const startWeek = moment(search.fromDate).startOf('week').subtract(1, 'day');
+    const arr = [];
+    while (startWeek.isBefore(search.toDate)) {
+      arr.push(startWeek.add(1, 'day').clone());
+    }
+    return arr;
+  }, [search.fromDate, search.toDate]);
+
   const tableWeek = () => {
     if (search.type === 'timeGridWeek') {
-      const startWeek = moment(search.fromDate).startOf('week').subtract(1, 'day');
-      const arrDate = [];
-      while (startWeek.isBefore(search.toDate)) {
-        arrDate.push(startWeek.add(1, 'day').clone());
-      }
       return (
         <div className="mb-5">
           <Table
@@ -727,7 +745,7 @@ const Index = memo(() => {
                 ...search,
                 branchId: query?.branchId || branches[0]?.id,
                 classId: query?.classId || null,
-                timetableSettingId: query?.timetableSettingId || years[0]?.id
+                timetableSettingId: query?.timetableSettingId || years[0]?.id,
               }}
               layout="vertical"
               ref={formRef}
@@ -774,7 +792,7 @@ const Index = memo(() => {
             </Form>
           </div>
           {/* FORM SEARCH */}
-          <div className={classnames(styles['block-table'], 'schedules-custom', 'mt20')}>
+          <div className={classnames(styles['block-table'], 'mt20')}>
             <div className="d-flex align-items-center justify-content-between mb-4">
               <div className="d-flex align-items-center justify-content-between">
                 <div className={classnames('d-flex flex-row', styles['btnControl-timetable'])}>
@@ -917,41 +935,35 @@ const Index = memo(() => {
                 </ButtonCustom>
               </div>
             </div>
-            <>{search.type === 'timeGridWeek' && tableWeek()}</>
-            <>
-              {search.type === 'dayGridMonth' || search.type === 'timeGridDay' ? (
-                <Table
-                  showHeader
-                  bordered
-                  columns={header(search.type)}
-                  dataSource={renderCalendar(search.type, data)}
-                  loading={effects['timeTablesChildren/GET_DATA']}
-                  pagination={false}
-                  params={{
-                    header: header(search.type),
-                    type: 'table',
-                  }}
-                  rowKey={() => `${Math.random() * 100000}`}
-                  scroll={{ x: '100%' }}
-                />
-              ) : (
-                <></>
-              )}
-            </>
-            <>
-              {search.type === 'listDay' && (
-                <div className="w-100">
-                  {renderCalendar(search.type, data).map((item, idx) => (
-                    <React.Fragment key={item.id}>
-                      <ListDay
-                        value={item}
-                        lastPoint={idx === renderCalendar(search.type, data).length - 1 ? idx : 0}
-                      />
-                    </React.Fragment>
-                  ))}
-                </div>
-              )}
-            </>
+            {search.type === 'timeGridWeek' && tableWeek()}
+            {(search.type === 'dayGridMonth' || search.type === 'timeGridDay') && (
+              <Table
+                showHeader
+                bordered
+                columns={header(search.type)}
+                dataSource={renderCalendar(search.type, data)}
+                loading={effects['timeTablesChildren/GET_DATA']}
+                pagination={false}
+                params={{
+                  header: header(search.type),
+                  type: 'table',
+                }}
+                rowKey={() => `${Math.random() * 100000}`}
+                scroll={{ x: '100%' }}
+              />
+            )}
+            {search.type === 'listDay' && (
+              <div className="w-100">
+                {renderCalendar(search.type, data).map((item, idx) => (
+                  <React.Fragment key={item.id}>
+                    <ListDay
+                      value={item}
+                      lastPoint={idx === renderCalendar(search.type, data).length - 1 ? idx : 0}
+                    />
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
