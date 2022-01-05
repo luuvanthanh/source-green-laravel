@@ -203,6 +203,15 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDate = (e, type) => {
+    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+  };
+
+  /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
@@ -285,11 +294,7 @@ class Index extends PureComponent {
         title: 'Hình ảnh',
         key: 'name',
         width: 100,
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.fileImage)}
-          />
-        ),
+        render: (record) => <AvatarTable fileImage={Helper.getPathAvatarJson(record?.fileImage)} />,
       },
       {
         title: 'Trạng thái',
@@ -331,11 +336,11 @@ class Index extends PureComponent {
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh mục học sinh bị sự cố" />
+        <Helmet title="Danh sách học sinh bị sự cố" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh mục học sinh bị sự cố</Text>
+            <Text color="dark">Danh sách học sinh bị sự cố</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -385,6 +390,14 @@ class Index extends PureComponent {
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.DATE_PICKER}
                     allowClear={false}
                   />
                 </div>

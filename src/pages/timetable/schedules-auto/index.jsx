@@ -4,11 +4,11 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Text from '@/components/CommonComponent/Text';
 import { Helper, variables } from '@/utils';
-import { Form, Typography, Modal } from 'antd';
+import { Form, Typography, Modal, Input } from 'antd';
 import classnames from 'classnames';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'dva';
-import { isEmpty, groupBy, size, maxBy, head, last } from 'lodash';
+import { isEmpty, groupBy, size, maxBy, head, last, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
 import { v4 as uuidv4 } from 'uuid';
@@ -46,6 +46,8 @@ const Index = memo(() => {
     branchId: null,
     timetableSettingId: null,
   });
+
+  const [searchText, setSearchText] = useState('');
 
   const loadCategories = () => {
     dispatch({
@@ -144,26 +146,10 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (search.branchId && search.timetableSettingId && !isEmpty(classes)) {
+      setTimeline(search.timetableSettingId);
       onLoad();
     }
   }, [search, classes]);
-
-  const onConfigChange = (values) => {
-    setSearch((prev) => ({
-      ...prev,
-      branchId: values.branchId,
-      timetableSettingId: values.timetableSettingId,
-    }));
-    setTimeline(values.timetableSettingId);
-    if (values.branchId) {
-      dispatch({
-        type: 'timeTablesAuto/GET_CLASSES',
-        payload: {
-          branch: values.branchId,
-        },
-      });
-    }
-  };
 
   const formatColumns = useMemo(() => {
     const taskArr = activities.map((item) => item.name);
@@ -315,6 +301,42 @@ const Index = memo(() => {
           type: 'timeTablesAuto/ADD_DRAG',
           payload,
           callback: (response, error) => {
+            if (response) {
+              dispatch({
+                type: 'timeTablesAuto/DRAG_AFTER',
+                payload: {
+                  ...search,
+                },
+                callback: (response) => {
+                  if (response) {
+                    const { timetableDetailGroupByTimes } = response;
+                    const arr = classes.map((classItem) =>
+                      timelineColumns.map((timeItem) => {
+                        const timetableDetail = timetableDetailGroupByTimes?.find(
+                          (item) =>
+                            item.startTime === timeItem.startTime &&
+                            item.endTime === timeItem.endTime,
+                        );
+                        const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
+                          (item) => item?.class?.id === classItem?.id,
+                        );
+                        return {
+                          branchId: search?.branchId,
+                          timetableSettingId: search?.timetableSettingId,
+                          classId: classItem?.id,
+                          tasks: timetableDetailClass?.timetableDetailActivities || [],
+                          timetableDetailByClassAndActivy: {
+                            startTime: timeItem?.startTime,
+                            endTime: timeItem?.endTime,
+                          },
+                        };
+                      }),
+                    );
+                    setItems(arr);
+                  }
+                },
+              });
+            }
             if (error) {
               const columnsAfter = {
                 ...formatColumns,
@@ -342,7 +364,7 @@ const Index = memo(() => {
       ...columnInfo,
       time: `${timetableDetailByClassAndActivy.startTime} - ${timetableDetailByClassAndActivy.endTime}`,
       branchId: columnInfo?.branchId,
-      classId: columnInfo?.classId,
+      classIds: [columnInfo?.classId],
       activities: columnInfo?.tasks.map((item) => ({
         id: item.id,
         name: item?.timetableActivityDetail?.name,
@@ -362,7 +384,7 @@ const Index = memo(() => {
         timetableDetailByClassesAndActivities: {
           startTime: head(values?.time?.split('-')).trim(),
           endTime: last(values?.time?.split('-')).trim(),
-          classIds: [values.classId],
+          classIds: values.classIds,
           activities: values?.activities?.map((item) => ({
             timetableActivityDetailId: item?.timetableActivityDetailId,
             dayOfWeeks: item?.dayOfWeeks,
@@ -375,6 +397,40 @@ const Index = memo(() => {
         callback: (response) => {
           if (response) {
             setIsModalVisible(false);
+            dispatch({
+              type: 'timeTablesAuto/DRAG_AFTER',
+              payload: {
+                ...search,
+              },
+              callback: (response) => {
+                if (response) {
+                  const { timetableDetailGroupByTimes } = response;
+                  const arr = classes.map((classItem) =>
+                    timelineColumns.map((timeItem) => {
+                      const timetableDetail = timetableDetailGroupByTimes?.find(
+                        (item) =>
+                          item.startTime === timeItem.startTime &&
+                          item.endTime === timeItem.endTime,
+                      );
+                      const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
+                        (item) => item?.class?.id === classItem?.id,
+                      );
+                      return {
+                        branchId: search?.branchId,
+                        timetableSettingId: search?.timetableSettingId,
+                        classId: classItem?.id,
+                        tasks: timetableDetailClass?.timetableDetailActivities || [],
+                        timetableDetailByClassAndActivy: {
+                          startTime: timeItem?.startTime,
+                          endTime: timeItem?.endTime,
+                        },
+                      };
+                    }),
+                  );
+                  setItems(arr);
+                }
+              },
+            });
           }
         },
       });
@@ -397,6 +453,38 @@ const Index = memo(() => {
     return maxBy(itemsFlat, 'size');
   };
 
+  const changeFilterDebouce = debounce((name, value) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value,
+    }));
+  }, 300);
+
+  const changeFilter = (name) => (value) => {
+    changeFilterDebouce(name, value);
+  };
+
+  const changeBanchFilter = (name) => (value) => {
+    if (value) {
+      dispatch({
+        type: 'timeTablesAuto/GET_CLASSES',
+        payload: {
+          branch: value,
+        },
+      });
+    }
+    changeFilterDebouce(name, value);
+  };
+
+  const formatTextSearch = (tasks) => {
+    if (searchText) {
+      return tasks.filter(
+        (item) => Helper.slugify(item.name)?.indexOf(Helper.slugify(searchText)) >= 0,
+      );
+    }
+    return tasks;
+  };
+
   return (
     <>
       <Helmet title="Thời khóa biểu" />
@@ -407,12 +495,7 @@ const Index = memo(() => {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
-          <p
-            key="back"
-            role="presentation"
-            onClick={handleCancel}
-            loading={loading['timeTablesAuto/ADD_POPUP']}
-          >
+          <p key="back" role="presentation" onClick={handleCancel}>
             Hủy
           </p>,
           <Button
@@ -420,7 +503,7 @@ const Index = memo(() => {
             color="success"
             type="primary"
             onClick={handleOk}
-            loading={loading['timeTablesAuto/ADD_POPUP']}
+            loading={loading['timeTablesAuto/UPDATE_ACTIVITIES']}
           >
             Lưu
           </Button>,
@@ -451,11 +534,11 @@ const Index = memo(() => {
 
             <div className="col-lg-12">
               <FormItem
-                className="flex-column form-timetable-disabled"
+                className="flex-column"
                 data={classes}
                 label="Lớp áp dụng"
-                name="classId"
-                type={variables.SELECT}
+                name="classIds"
+                type={variables.SELECT_MUTILPLE}
                 disabled
               />
             </div>
@@ -513,12 +596,7 @@ const Index = memo(() => {
         </div>
         {/* FORM SEARCH */}
         <div className={classnames(styles.search, 'pt20')}>
-          <Form
-            layout="vertical"
-            form={formRef}
-            initialValues={{ ...search }}
-            onFinish={onConfigChange}
-          >
+          <Form layout="vertical" form={formRef} initialValues={{ ...search }}>
             <div className="row">
               <div className="col-lg-4">
                 <FormItem
@@ -528,9 +606,9 @@ const Index = memo(() => {
                   name="timetableSettingId"
                   type={variables.SELECT}
                   allowClear={false}
+                  onChange={(value) => changeFilter('timetableSettingId')(value)}
                 />
               </div>
-
               <div className="col-lg-4">
                 <FormItem
                   className="ant-form-item-row"
@@ -539,17 +617,8 @@ const Index = memo(() => {
                   name="branchId"
                   type={variables.SELECT}
                   allowClear={false}
+                  onChange={(value) => changeBanchFilter('branchId')(value)}
                 />
-              </div>
-              <div className="col-lg-4">
-                <Button
-                  color="success"
-                  permission="TKB"
-                  htmlType="submit"
-                  loading={loading['timeTablesAuto/GET_DATA']}
-                >
-                  Cấu hình
-                </Button>
               </div>
             </div>
           </Form>
@@ -557,9 +626,9 @@ const Index = memo(() => {
         {/* FORM DRAG */}
         {!isEmpty(classes) && !isEmpty(items) && (
           <Form layout="vertical" form={dragRef}>
-            <div className={classnames('schedules-custom', 'mt20', 'row')}>
+            <div className={classnames('schedules-custom', 'mt20')}>
               <DragDropContext onDragEnd={onDragEnd}>
-                <div className="col-lg-2">
+                <div className="col-activites">
                   {Object.entries(formatColumns)
                     .slice(0, 1)
                     .map(([key, value], index) => {
@@ -570,12 +639,14 @@ const Index = memo(() => {
                           {(provided) => (
                             <div {...provided.droppableProps} ref={provided.innerRef}>
                               <div className={classnames(styles['block-table'])}>
-                                <FormItem
-                                  className="ant-form-item-row"
-                                  name="type"
-                                  type={variables.INPUT}
-                                />
-                                {tasks.map((task, index) => (
+                                <div className="mb15">
+                                  <Input
+                                    placeholder="Nhập"
+                                    value={searchText}
+                                    onChange={(e) => setSearchText(e.target.value)}
+                                  />
+                                </div>
+                                {formatTextSearch(tasks).map((task, index) => (
                                   <Draggable key={task.id} draggableId={task.name} index={index}>
                                     {(provided) => (
                                       <div
@@ -603,25 +674,25 @@ const Index = memo(() => {
                       );
                     })}
                 </div>
-                <div className="col-lg-10">
-                  <div className={classnames(styles['block-table'])}>
-                    <div className="row time-table">
-                      <div className={classes.length > 3 ? 'col-lg-2' : 'col-lg-3'}>
-                        <Paragraph className="header-row">Thời gian</Paragraph>
-                        {timelineColumns.map((item) => (
-                          <Paragraph
-                            className={classnames(
-                              'data-row cell',
-                              `size-row-${getSizeMax(item)?.size || 1}`,
-                            )}
-                            key={item.id}
-                          >
-                            {`${item.startTime} - ${item.endTime}`}
-                          </Paragraph>
-                        ))}
-                      </div>
+                <div className="activiies-block">
+                  <div className={classnames(styles['block-table'], 'block')}>
+                    <div className="col-time">
+                      <Paragraph className="header-row">Thời gian</Paragraph>
+                      {timelineColumns.map((item) => (
+                        <Paragraph
+                          className={classnames(
+                            'data-row cell',
+                            `size-row-${getSizeMax(item)?.size || 1}`,
+                          )}
+                          key={item.id}
+                        >
+                          {`${item.startTime} - ${item.endTime}`}
+                        </Paragraph>
+                      ))}
+                    </div>
+                    <div className="wrapper-droppable">
                       {classes.map((classItem, index) => (
-                        <div className="col-lg-3" key={index}>
+                        <div className="col-block" key={index}>
                           <Paragraph className="header-row">{classItem.name}</Paragraph>
                           {Object.entries(formatColumns)
                             .slice(1)
@@ -631,6 +702,7 @@ const Index = memo(() => {
                               const tasks = value.tasks.map((task) => ({
                                 ...formatNewItems[task?.timetableActivityDetail?.name],
                                 dragId: task.dragId,
+                                isEmptyDayOfWeek: task.isEmptyDayOfWeek,
                               }));
                               const sizeMax = getSizeMax(value?.timetableDetailByClassAndActivy);
 
@@ -665,6 +737,9 @@ const Index = memo(() => {
                                                 className="data-row"
                                                 onClick={() => showModal(key)}
                                               >
+                                                {task?.isEmptyDayOfWeek && (
+                                                  <span className="dot-warning" />
+                                                )}
                                                 {task?.name}
                                               </Paragraph>
                                             </div>

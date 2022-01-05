@@ -1829,7 +1829,7 @@ export default [
             authority: [permissions.YTE],
           },
           {
-            path: '/y-te/danh-muc-hoc-sinh-bi-su-co',
+            path: '/y-te/danh-sach-hoc-sinh-bi-su-co',
             component: './medical/student-problem',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.YTE],
@@ -1925,6 +1925,12 @@ export default [
           {
             path: '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/:id/chi-tiet',
             component: './timetable/group-activities/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/thong-ke-tiem-can',
+            component: './timetable/asymptotic',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TKB],
           },
