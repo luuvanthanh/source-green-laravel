@@ -464,6 +464,18 @@ const Index = memo(() => {
     changeFilterDebouce(name, value);
   };
 
+  const changeBanchFilter = (name) => (value) => {
+    if (value) {
+      dispatch({
+        type: 'timeTablesAuto/GET_CLASSES',
+        payload: {
+          branch: value,
+        },
+      });
+    }
+    changeFilterDebouce(name, value);
+  };
+
   const formatTextSearch = (tasks) => {
     if (searchText) {
       return tasks.filter(
@@ -605,7 +617,7 @@ const Index = memo(() => {
                   name="branchId"
                   type={variables.SELECT}
                   allowClear={false}
-                  onChange={(value) => changeFilter('branchId')(value)}
+                  onChange={(value) => changeBanchFilter('branchId')(value)}
                 />
               </div>
             </div>
