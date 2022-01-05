@@ -205,6 +205,18 @@ export const variables = {
     { id: 'DA_HET_HAN', name: 'Đã hết hạn' },
     { id: 'CHUA_DEN_HAN', name: 'Chưa đến hạn' },
   ],
+  DOCUMENT_TYPE: [
+    { id: 'CONG_VAN_DEN', name: 'Công văn đến' },
+    { id: 'CONG_VAN_DI', name: 'Công văn đi' },
+    { id: 'CONG_VAN_NOI_BO', name: 'Công văn nội bộ' },
+    { id: 'TAI_LIEU', name: 'Tài liệu' },
+  ],
+  TOPIC_TYPE: [
+    { id: 'THONG_BAO', name: 'Thông báo' },
+    { id: 'QUYET_DINH', name: 'Quyết định' },
+    { id: 'QUY_DINH', name: 'Quy định' },
+    { id: 'TO_TRINH', name: 'Tờ trình' },
+  ],
   COLORS: [
     '#FF8D8D',
     '#FFA5AC',
@@ -226,7 +238,7 @@ export const variables = {
     '#E9BDE0',
     '#00B0F0',
     '#FFD966',
-    '#C6E0B4'
+    '#C6E0B4',
   ],
 };
 

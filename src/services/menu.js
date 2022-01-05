@@ -1086,6 +1086,16 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
         },
         {
+          title: 'Quản lý công văn',
+          key: 'documentary',
+          url: [
+            '/quan-ly-nhan-su/quan-ly-cong-van',
+            '/quan-ly-nhan-su/quan-ly-cong-van/tao-moi',
+            '/quan-ly-nhan-su/quan-ly-cong-van/:id/chi-tiet',
+          ],
+          permission: [permissions.HRM],
+        },
+        {
           title: 'Hợp đồng',
           key: 'contracts',
           permission: [permissions.HRM],

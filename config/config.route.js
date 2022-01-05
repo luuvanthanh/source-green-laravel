@@ -1253,6 +1253,24 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/quan-ly-cong-van',
+            component: './hrm/documentary',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/quan-ly-cong-van/tao-moi',
+            component: './hrm/documentary/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/quan-ly-cong-van/:id/chi-tiet',
+            component: './hrm/documentary/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat',
             component: './hrm/decision-rewards',
             wrappers: ['@/wrappers/auth'],
