@@ -22,8 +22,6 @@ export default {
       ...state,
       objectData: {
         data: payload.parsePayload,
-        fromYear: payload.fromYear,
-        toYear: payload.toYear,
         duration: payload.toYear,
       },
     }),
@@ -86,8 +84,6 @@ export default {
           type: 'SET_DATA',
           payload: {
             parsePayload: response.timetableDetailGroupByTimes,
-            fromYear: response.timetableSetting.fromYear,
-            toYear: response.timetableSetting.toYear,
             duration: response.timetableSetting.periodDuration,
           },
         });

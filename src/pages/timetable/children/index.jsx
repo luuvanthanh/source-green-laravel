@@ -278,23 +278,11 @@ const Index = memo(() => {
                 dataWeek.push(objectEmpty);
               }
               const objectData = Object.create({});
-              objectData.timeStart = item.startTime;
-              if (groupClass.timetableDetailActivities) {
-                groupClass.timetableDetailActivities[0].dayOfWeeks.forEach((itemDay) => {
-                  objectData[itemDay] = {
-                    class: groupClass.timetableDetailActivities,
-                    start: item.startTime,
-                    end: item.endTime,
-                  };
-                });
-                dayName.forEach((itemDay) => {
-                  if (!objectData[itemDay]) {
-                    objectData[itemDay] = {};
-                  }
-                });
-
-                dataWeek.push(objectData);
-              }
+              objectData.time = {
+                startTime: item.startTime,
+                endTime: item.endTime,
+                class: groupClass
+              };
               if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
                 groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
                   objectData[itemDay.dayOfWeek] = {
@@ -514,10 +502,10 @@ const Index = memo(() => {
           const arrHeader = [
             {
               title: '',
-              key: 'timeStart',
-              dataIndex: 'timeStart',
-              width: 80,
-              className: classnames(styles['td-time'], 'min-width-50'),
+              key: 'time',
+              dataIndex: 'time',
+              width: 100,
+              className: classnames(styles['td-time'], 'min-width-100'),
               render: (value) => (value ? <CardTime value={value} /> : ''),
             },
             {
@@ -742,9 +730,7 @@ const Index = memo(() => {
             <Form
               initialValues={{
                 ...search,
-                // branchId: query?.branchId || branches[0]?.id,
                 classId: query?.classId || null,
-                // timetableSettingId: query?.timetableSettingId || search.timetableSettingId,
               }}
               layout="vertical"
               form={formRef}

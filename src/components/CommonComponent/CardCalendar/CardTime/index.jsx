@@ -1,13 +1,21 @@
 import PropsType from 'prop-types';
+import Text from '@/components/CommonComponent/Text';
+import { isEmpty } from 'lodash';
 import styles from '../style.module.scss';
 
 const CardTime = (props) => {
   const { value } = props;
-  return (
-    <div className={value ? styles['time-content'] : undefined}>
-      <p className={styles['time-title']}>{value}</p>
+  return !isEmpty(value.class.timetableDetailActivityGroupByDayOfWeeks) ? (
+    <div className={ styles['time-content']}>
+      <div className={styles['time-title']}>
+        <div className='d-flex flex-row align-items-center'>
+          <Text color='dark' size='normal'>{value?.startTime}</Text>
+          <span className='px-1'>:</span>
+          <Text color='dark' size='normal'>{value?.endTime}</Text>
+        </div>
+      </div>
     </div>
-  );
+  ) : <></>;
 };
 
 export default CardTime;
