@@ -195,7 +195,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
     {
         $conversation = Conversation::find($attributes['conversation_id']);
         $conversation->update(['noti_inbox' => Conversation::NOTI_INBOX[$attributes['noti_inbox']]]);
-        return;
+        return $conversation;
     }
 
     public function storeAvatarUser($url, $userId)

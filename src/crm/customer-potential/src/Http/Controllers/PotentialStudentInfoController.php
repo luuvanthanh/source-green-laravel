@@ -49,6 +49,6 @@ class PotentialStudentInfoController extends Controller
 
         $potentialStudentInfo = $this->potentialStudentInfoRepository->create($attributes);
 
-        return $this->success($potentialStudentInfo, trans('lang::messages.common.createSuccess'),['code' => Response::HTTP_CREATED]);
+        return $this->success($potentialStudentInfo, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 }

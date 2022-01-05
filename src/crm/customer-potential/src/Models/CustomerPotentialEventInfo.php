@@ -2,7 +2,6 @@
 
 namespace GGPHP\Crm\CustomerPotential\Models;
 
-
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 

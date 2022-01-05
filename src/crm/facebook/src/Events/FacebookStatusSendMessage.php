@@ -33,7 +33,7 @@ class FacebookStatusSendMessage implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel("facebook");
+        return new Channel('facebook');
     }
 
     /**

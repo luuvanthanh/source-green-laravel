@@ -73,10 +73,10 @@ class CategoryRelationshipRepositoryEloquent extends BaseRepository implements C
             $code = CategoryRelationship::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = CategoryRelationship::CODE . "1";
+                $attributes['code'] = CategoryRelationship::CODE . 1;
             } else {
                 $stt = substr($code, 3) + 1;
-                $attributes['code'] = CategoryRelationship::CODE . "$stt";
+                $attributes['code'] = CategoryRelationship::CODE . $stt;
             }
 
             $categoryRelationship = CategoryRelationship::create($attributes);

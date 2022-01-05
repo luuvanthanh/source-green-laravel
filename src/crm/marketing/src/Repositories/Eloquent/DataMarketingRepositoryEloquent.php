@@ -1,8 +1,6 @@
 <?php
 
-
 namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
-
 
 use Carbon\Carbon;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;

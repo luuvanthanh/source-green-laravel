@@ -69,10 +69,10 @@ class StatusParentPotentialRepositoryEloquent extends BaseRepository implements 
             $code = StatusParentPotential::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = StatusParentPotential::CODE . "1";
+                $attributes['code'] = StatusParentPotential::CODE . 1;
             } else {
                 $stt = substr($code, 3) + 1;
-                $attributes['code'] = StatusParentPotential::CODE . "$stt";
+                $attributes['code'] = StatusParentPotential::CODE . $stt;
             }
 
             $statusParentPotential = StatusParentPotential::create($attributes);

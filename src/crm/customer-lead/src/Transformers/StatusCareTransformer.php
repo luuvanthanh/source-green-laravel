@@ -43,7 +43,7 @@ class StatusCareTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            "user_update_info" => json_decode($model->user_update_info),
+            'user_update_info' => json_decode($model->user_update_info),
         ];
     }
 

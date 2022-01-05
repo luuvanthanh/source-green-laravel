@@ -106,11 +106,11 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
         $customerPotential_code = CustomerPotential::max('code');
 
         if (is_null($customerPotential_code)) {
-            $attributes['code'] = CustomerPotential::CODE . $now . "01";
+            $attributes['code'] = CustomerPotential::CODE . $now . '01';
         } else {
 
             if (substr($customerPotential_code, 2, 8)  != $now) {
-                $attributes['code'] = CustomerPotential::CODE . $now . "01";
+                $attributes['code'] = CustomerPotential::CODE . $now . '01';
             } else {
                 $stt = substr($customerPotential_code, 2) + 1;
                 $attributes['code'] = CustomerPotential::CODE . $stt;

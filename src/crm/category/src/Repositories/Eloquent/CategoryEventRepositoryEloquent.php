@@ -73,10 +73,10 @@ class CategoryEventRepositoryEloquent extends BaseRepository implements Category
             $code = CategoryEvent::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = CategoryEvent::CODE . "1";
+                $attributes['code'] = CategoryEvent::CODE . 1;
             } else {
                 $stt = substr($code, 2) + 1;
-                $attributes['code'] = CategoryEvent::CODE . "$stt";
+                $attributes['code'] = CategoryEvent::CODE . $stt;
             }
            
             $categoryEvent = CategoryEvent::create($attributes);
