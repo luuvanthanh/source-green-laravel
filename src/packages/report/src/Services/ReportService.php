@@ -3,6 +3,7 @@
 namespace GGPHP\Report\Services;
 
 use Carbon\Carbon;
+use GGPHP\Camera\Models\Camera;
 use GGPHP\Category\Models\EventType;
 use GGPHP\Category\Models\TouristDestination;
 use GGPHP\Event\Models\Event;
@@ -644,14 +645,6 @@ class ReportService
     public static function reportWarningEvent($attributes, $periodDate, $formatTime = 'Y-m-d')
     {
         $data = [];
-
-        $eventTypes = EventType::query();
-
-        if (!empty($attributes['event_code'])) {
-            $eventTypes->whereIn('code', explode(',', $attributes['event_code']));
-        }
-
-        $eventTypes = $eventTypes->get();
         $touristDestination =  TouristDestination::query();
 
         if (!empty($attributes['tourist_destination_id'])) {
@@ -659,7 +652,6 @@ class ReportService
         }
 
         $touristDestinations = $touristDestination->get();
-
         $total = 0;
         $data = [];
 
@@ -702,6 +694,46 @@ class ReportService
 
         return [
             'total' => $total,
+            'detail' => $data
+        ];
+    }
+
+    public static function cameraStatusReport($attributes)
+    {
+        $data = [];
+        $touristDestination =  TouristDestination::query();
+
+        if (!empty($attributes['tourist_destination_id'])) {
+            $touristDestination->whereIn('id', explode(',', $attributes['tourist_destination_id']));
+        }
+
+        $touristDestinations = $touristDestination->get();
+
+        $total = 0;
+        $totalRunning = 0;
+        $totalFail = 0;
+        $data = [];
+
+        foreach ($touristDestinations as $key => $value) {
+            $cameraRunning = Camera::where('tourist_destination_id', $value->id)
+                ->whereIn('status', [Camera::STATUS['STATUS_RUNNING']])->count();
+            $cameraFailed = Camera::where('tourist_destination_id', $value->id)
+                ->whereIn('status', [Camera::STATUS['STATUS_FAILED']])->count();
+
+            $totalRunning += $cameraRunning;
+            $totalFail += $cameraFailed;
+            $total += $cameraRunning + $cameraFailed;
+            $data[] = [
+                'name' => $value->name,
+                'number_running' => $cameraRunning,
+                'number_failed' => $cameraFailed
+            ];
+        }
+
+        return [
+            'total' => $total,
+            'total_running' => $totalRunning,
+            'total_fail' => $totalFail,
             'detail' => $data
         ];
     }
