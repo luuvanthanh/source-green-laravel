@@ -836,6 +836,14 @@ export async function getLeftMenuTimeTable() {
       pro: true,
     },
     {
+      title: 'Thống kê tiệm cận',
+      key: 'asymptotic',
+      url: ['/thoi-khoa-bieu/thong-ke-tiem-can'],
+      icon: 'icon icon-clock',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
       title: 'Lịch làm việc / sự kiện',
       key: 'schedule',
       url: [

@@ -1458,3 +1458,19 @@
     width: 50%;
   }
 }
+
+.tabStyle {
+  background-color: $background-white;
+  border-radius: 4px;
+  padding: 14px 0px 0px 24px;
+}
+
+.tabContent {
+  background-color: $background-white;
+  border-radius: 4px;
+  
+  &:global(.ant-tabs-nav) {
+    padding-left: 24px!important;
+    z-index: 10;
+  }
+}
