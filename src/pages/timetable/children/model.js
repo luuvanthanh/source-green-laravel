@@ -6,7 +6,9 @@ export default {
   state: {
     objectData: {
       data: [],
-      duration: null
+      duration: null,
+      fromTime: null,
+      toTime:null,
     },
     years: [],
     branches: [],
@@ -22,7 +24,9 @@ export default {
       ...state,
       objectData: {
         data: payload.parsePayload,
-        duration: payload.toYear,
+        duration: payload.duration,
+        fromTime: payload.fromTime,
+        toTime: payload.toTime,
       },
     }),
     SET_YEARS: (state, {payload}) => ({
@@ -80,13 +84,27 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.timetableDetailGroupByTimes,
-            duration: response.timetableSetting.periodDuration,
-          },
-        });
+        if(response.timetableDetailGroupByTimes) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: {
+              parsePayload: response.timetableDetailGroupByTimes,
+              duration: response.timetableSetting.periodDuration,
+              fromTime: response.timetableSetting.fromTime,
+              toTime: response.timetableSetting.toTime
+            },
+          });
+        } else {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: {
+              parsePayload: [],
+              duration: 0,
+              fromTime: null,
+              toTime: null
+            },
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
