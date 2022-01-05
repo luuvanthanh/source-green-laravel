@@ -42,33 +42,7 @@ class SystemConfigTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        //get image
-        $imageMedia = $model->getMedia('image');
-        $imageMedia = $imageMedia->isEmpty() ? null : $imageMedia->first();
-        $image = null;
 
-        if (!is_null($imageMedia)) {
-            $image = [
-                'path' => $imageMedia->getPath(),
-                'name' => $imageMedia->name,
-            ];
-        }
-
-        //get video
-        $videoMedia = $model->getMedia('video');
-        $videoMedia = $videoMedia->isEmpty() ? null : $videoMedia->first();
-        $video = null;
-
-        if (!is_null($videoMedia)) {
-            $video = [
-                'path' => $videoMedia->getPath(),
-                'name' => $videoMedia->name,
-            ];
-        }
-
-        return [
-            'image' => $image,
-            'video' => $video
-        ];
+        return [];
     }
 }

@@ -33,5 +33,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TourGuidesTableSeeder::class);
         $this->call(TravelAgenciesTableSeeder::class);
         $this->call(EventsTableSeeder::class);
+        $this->call(SystemConfigsTableSeeder::class);
     }
 }

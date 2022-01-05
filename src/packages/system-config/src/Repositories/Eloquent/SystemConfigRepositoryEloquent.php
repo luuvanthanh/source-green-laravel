@@ -58,15 +58,6 @@ class SystemConfigRepositoryEloquent extends BaseRepository implements SystemCon
      */
     public function getSystemConfigs(array $attributes)
     {
-        if (!empty($attributes['systemConfig_destination_id'])) {
-            $systemConfigDestinationId = explode(',', $attributes['systemConfig_destination_id']);
-            $this->model = $this->model->whereIn('systemConfig_destination_id', $systemConfigDestinationId);
-        }
-
-        if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
-            $this->model = $this->model->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
-        }
-
         if (empty($attributes['limit'])) {
             $result = $this->all();
         } else {
@@ -74,44 +65,5 @@ class SystemConfigRepositoryEloquent extends BaseRepository implements SystemCon
         }
 
         return $result;
-    }
-
-    public function create(array $attributes)
-    {
-        if (!empty($attributes['event_code']) && $attributes['event_code'] == 'UPDATE_VIDEO') {
-            $systemConfig = $this->model()::where('track_id', $attributes['track_id'])->first();
-            if (!is_null($systemConfig) && !empty($attributes['video_path'])) {
-                $systemConfig->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
-
-                return parent::find($systemConfig->id);
-            }
-
-            return [];
-        }
-
-        $camera = Camera::find($attributes['camera_id']);
-        $attributes['systemConfig_destination_id'] = $camera->systemConfig_destination_id;
-
-        $systemConfig = null;
-
-        if (!empty($attributes['track_id'])) {
-            $systemConfig = $this->model()::where('track_id', $attributes['track_id'])->first();
-        }
-
-        if (is_null($systemConfig)) {
-            $systemConfig = $this->model()::create($attributes);
-        } else {
-            $systemConfig->update($attributes);
-        }
-
-        if (!empty($attributes['image_path'])) {
-            $systemConfig->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
-        }
-
-        if (!empty($attributes['video_path'])) {
-            $systemConfig->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
-        }
-
-        return parent::find($systemConfig->id);
     }
 }

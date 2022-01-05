@@ -76,7 +76,8 @@
             "GGPHP\\SurveyForm\\": "packages/survey-form/src/",
             "GGPHP\\Tourist\\": "packages/tourist/src/",
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
-            "GGPHP\\Notification\\": "packages/notification/src/"
+            "GGPHP\\Notification\\": "packages/notification/src/",
+            "GGPHP\\SystemConfig\\": "packages/system-config/src/"
         },
         "classmap": [
             "database/seeds",

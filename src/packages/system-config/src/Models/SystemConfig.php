@@ -13,5 +13,11 @@ class SystemConfig extends UuidModel
      *
      * @var array
      */
-    protected $fillable = ['camera_id', 'systemConfig_destination_id', 'object_id', 'time', 'track_id'];
+    protected $fillable = ['config_event', 'config_count_tourist'];
+
+
+    protected $casts = [
+        'config_event'  =>  'array',
+        'config_count_tourist'  =>  'array',
+    ];
 }
