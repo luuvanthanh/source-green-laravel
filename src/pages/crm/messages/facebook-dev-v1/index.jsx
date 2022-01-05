@@ -20,12 +20,14 @@ const Index = memo(() => {
   const scrollbars = useRef();
 
   const dispatch = useDispatch();
-  const [{ user, pages, tags, users }, loading] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
+  const [{ user, pages, tags }, loading] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
     crmFBDevV1,
     effects,
   ]);
+  //note
+  const [noteValue, setNoteValue] = useState([]);
+  const [noteModal, setNoteModal] = useState(false);
 
-  const [parents, setParents] = useState([]);
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState(undefined);
   const [isAction, setIsAction] = useState(false);
@@ -33,7 +35,7 @@ const Index = memo(() => {
   const [page, setPage] = useState([]);
   const [pageID, setPageID] = useState([]);
   const [conversationCurrent, setConversationCurrent] = useState({});
-  const [, setUsers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [messagers, setMessagers] = useState([]);
   const [message, setMessage] = useState(null);
   const [messageFile, setMessageFile] = useState(null);
@@ -49,7 +51,16 @@ const Index = memo(() => {
     hasMore: true,
     loading: false,
   });
-  console.log("searchParent", searchParent)
+console.log("usser",users)
+  const [searchUser, setSearchUser] = useState({
+    page: 1,
+    limit: 7,
+    total: 1,
+    hasMore: true,
+    loading: false,
+  });
+  console.log("searchUser", searchUser);
+  console.log("searchParent", searchParent);
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
@@ -114,23 +125,26 @@ const Index = memo(() => {
   useEffect(() => {
     if (page.length > 0) {
       setLoadingMessageUser(true);
+      mountedSet(setSearchUser, { ...searchUser, loading: true });
       dispatch({
         type: 'crmFBDevV1/GET_CONVERSATIONS',
-        payload: { page_id_facebook: pageCurrent[0]?.id },
+        payload: {
+          page_id_facebook: pageCurrent[0]?.id,
+          ...searchUser,
+          page: searchUser.page,
+        },
         callback: (response) => {
           if (response) {
+            console.log("responseresponse",response)
+            setUsers( response?.parsePayload);
             setLoadingMessageUser(false);
             const firstUser = head(
               response?.parsePayload?.map((item) => ({
                 ...item,
               })),
-            );
-            setConversationCurrent(firstUser);
-            setUsers(
-              response?.parsePayload?.map((item) => ({
-                ...item,
-              })),
-            );
+              );
+              setConversationCurrent(firstUser);
+              mountedSet(setSearchUser, { ...searchUser, total: response.meta.pagination.total });
           }
         },
       });
@@ -140,8 +154,7 @@ const Index = memo(() => {
       });
     }
   }, [page.length]);
-
-
+console.log("conversationCurrent",conversationCurrent)
 
   useEffect(() => {
     if (conversationCurrent?.id) {
@@ -176,6 +189,7 @@ const Index = memo(() => {
                       ...item,
                     })),
                   );
+                  setNoteValue(response?.parsePayload[0]?.userFacebookInfo?.note);
                   setConversationCurrent(firstUser);
                   users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
                   // users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
@@ -190,7 +204,6 @@ const Index = memo(() => {
   }, [conversationCurrent?.id]);
 
 
-
   useEffect(() => {
     const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
       transports: ['websocket'],
@@ -203,8 +216,6 @@ const Index = memo(() => {
 
     if (conversationCurrent?.id) {
       socket.on('facebook.message.receive', (event, data) => {
-        console.log("data", data);
-        console.log("event", event);
         if (event) {
           dispatch({
             type: 'crmFBDevV1/GET_CONVERSATIONSCALL',
@@ -265,8 +276,8 @@ const Index = memo(() => {
   const uploadFiles = (files) => {
     mountedSet(setFiles, (prev) => [...prev, files]);
   };
-  // console.log("files", files)
   const onChangeConversation = (id) => {
+    setNoteModal(false);
     setConversationCurrent(users.find((item) => item.id === id));
     setSearchParent({
       page: 1,
@@ -276,7 +287,6 @@ const Index = memo(() => {
       loading: false,
     });
   };
-  console.log("mess", messagers)
   const onPressEnter = (e) => {
     setMessagers((prev) => [
       {
@@ -288,7 +298,7 @@ const Index = memo(() => {
       },
       ...prev,
     ]);
-   
+
     scrollbars.current.scrollToBottom();
     setMessage(undefined);
     setFiles(undefined);
@@ -303,7 +313,7 @@ const Index = memo(() => {
         urls: JSON.stringify(file),
       },
       callback: (response) => {
-        setMessagers(messagers);
+        // setMessagers(messagers);
       },
     });
   };
@@ -365,7 +375,7 @@ const Index = memo(() => {
 
   const onStatus = (attributes, ulr) => {
     const check = attributes?.content?.substr(-4, 4);
-    const checkHttp = attributes?.content?.lastIndexOf("http://");
+    const checkHttp = attributes?.content?.lastIndexOf("https://");
     const checkAudio = attributes?.content?.lastIndexOf("audioclip");
 
     const a = ulr?.map(i => i?.substring(i.length, i.length - 4));
@@ -448,7 +458,7 @@ const Index = memo(() => {
           {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
             <div className={styles['messager-item']}>
               <div className={styles['messager-video']}>
-                <video controls  width={300} className={styles.video} >
+                <video controls width={300} className={styles.video} >
                   <source src={attributes?.content} />
                 </video>
               </div>
@@ -461,7 +471,7 @@ const Index = memo(() => {
           )}
           {attributes?.from === conversationCurrent?.user_facebook_info_id && (
             <div className={styles['messager-recieve']}>
-              <video controls  width={300} className={styles.video}>
+              <video controls width={300} className={styles.video}>
                 <source src={attributes?.content} />
               </video>
               <p className={styles.time}>
@@ -473,7 +483,7 @@ const Index = memo(() => {
         </>
       );
     }
-    if (check === '.mp3' || checkAudio !== -1 ) {
+    if (check === '.mp3' || checkAudio !== -1) {
       return (
         <>
           {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
@@ -631,41 +641,73 @@ const Index = memo(() => {
     );
   };
 
-  const onSnippet = (attributes) => {
-    const check = attributes?.content?.substr(-4, 4);
-    const checkHttp = attributes?.content?.lastIndexOf("http://");
-    if (check === '.jpg' || check === '.png') {
-      return (
-        <>
-          <p className={styles.norm}>Đã gửi một ảnh</p>
-        </>
-      );
+  const onSnippet = (attributes, from, to, name) => {
 
-    }
-    if (check === '.mp4') {
-      return (
-        <>
-          <p className={styles.norm}>Đã gửi một video</p>
-        </>
-      );
-    } if (check && checkHttp !== -1) {
-      return (
-        <>
-          <p className={styles.norm}>Đã gửi một file</p>
-        </>
-      );
-    }
+    const check = attributes?.substr(-4, 4);
+    const checkHttp = attributes?.lastIndexOf("https://");
+    if (pageID[0]?.id === from) {
+      if (check === '.jpg' || check === '.png') {
+        return (
+          <>
+            <p className={styles.norm}>Bạn Đã gửi một ảnh</p>
+          </>
+        );
 
-    return (
-      <>
-        <p className={styles.norm}>{attributes}</p>
-      </>
-    );
+      }
+      if (check === '.mp4') {
+        return (
+          <>
+            <p className={styles.norm}>Bạn Đã gửi một video</p>
+          </>
+        );
+      } if (check && checkHttp !== -1) {
+        return (
+          <>
+            <p className={styles.norm}>Bạn Đã gửi một file</p>
+          </>
+        );
+      }
+      return (
+        <>
+          <p className={styles.norm}>Bạn: {attributes}</p>
+        </>
+      );
+    }
+    if (pageID[0]?.id !== from) {
+      if (check === '.jpg' || check === '.png') {
+        return (
+          <>
+            <p className={styles.norm}>{name} Đã gửi một ảnh</p>
+          </>
+        );
+
+      }
+      if (check === '.mp4') {
+        return (
+          <>
+            <p className={styles.norm}>{name} Đã gửi một video</p>
+          </>
+        );
+      } if (check && checkHttp !== -1) {
+        return (
+          <>
+            <p className={styles.norm}>{name} Đã gửi một file</p>
+          </>
+        );
+      }
+      return (
+        <>
+          <p className={styles.norm}>{attributes}</p>
+        </>
+      );
+    }
   };
-  //console.log("page", page)
+
   const preventDefault = (e, page) => {
     setUsers(undefined);
     setMessagers([]);
+    setNoteModal(false);
+    setNoteValue();
     setConversationCurrent({});
     dispatch({
       type: 'crmFBDevV1/GET_CONVERSATIONS',
@@ -673,12 +715,13 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
 
-         mountedSet(setSearchParent, ({ page: 1,
-          limit: 15,
-          total: 0,
-          hasMore: true,
-          loading: false,
-        }));
+          mountedSet(setSearchParent, ({
+            page: 1,
+            limit: 15,
+            total: 0,
+            hasMore: true,
+            loading: false,
+          }));
           const firstUser = head(
             response?.parsePayload?.map((item) => ({
               ...item,
@@ -701,7 +744,7 @@ const Index = memo(() => {
     });
   };
 
-  const handleInfiniteOnLoadParent = () => {
+  const handleInfiniteOnLoadMessages = () => {
     mountedSet(setSearchParent, { ...searchParent, loading: true });
     if (messagers.length >= searchParent.total) {
       mountedSet(setSearchParent, { ...searchParent, hasMore: false, loading: false });
@@ -733,7 +776,55 @@ const Index = memo(() => {
     });
   };
 
-  //console.log("page?.map[0]?.id",page[0]?.attributes?.name)
+  const handleInfiniteOnLoadUser = () => {
+    mountedSet(setSearchUser, { ...searchUser, loading: true });
+    // if (messagers.length >= searchUser.total) {
+    //   mountedSet(setSearchUser, { ...searchUser, hasMore: false, loading: false });
+    //   return;
+    // }
+
+    dispatch({
+      type: 'crmFBDevV1/GET_CONVERSATIONS',
+      payload: {
+        page_id_facebook: pageCurrent[0]?.id,
+        ...searchUser,
+        page: searchUser.page + 1,
+      },
+      callback: (response, error) => {
+        if (response) {
+          mountedSet(setUsers, users.concat(response?.parsePayload));
+          mountedSet(setSearchUser, {
+            ...searchUser,
+            total: response.meta.pagination.total,
+            page: searchUser.page + 1,
+            loading: false,
+          });
+        }
+        if (error) {
+          message.error('Lỗi hệ thống.');
+          mountedSet(setSearchUser, { ...searchUser, hasMore: false, loading: false });
+        }
+      },
+    });
+  };
+
+  //NOTE
+  const onChangeNote = (value) => {
+    mountedSet(setNoteValue, value);
+  };
+  const handleNote = () => {
+    dispatch({
+      type: 'crmFBDevV1/UPDATE_NOTE',
+      payload: { noteValue, conversationCurrent },
+      callback: (response) => {
+        if (response) {
+          setNoteModal(false);
+        }
+      },
+    });
+  };
+
+
   return (
     <div className={styles.wrapper}>
       <div className={styles['heading-container']}>
@@ -764,7 +855,7 @@ const Index = memo(() => {
         <div className={styles['sidebar-container']}>
           <div className={styles['sidebar-header']}>
             <img src="/images/facebook/logoFacebook.svg" alt="facebook" className={styles.icon} />
-            <Select value={pageID[0]?.attributes?.name} style={{ width: 120 }} bordered={false} onChange={(e) => preventDefault(e, page)}>
+            <Select value={pageID[0]?.attributes?.name} bordered={false} onChange={(e) => preventDefault(e, page)}>
               {page?.map((i, index) =>
                 <Option value={i?.attributes?.page_id_facebook} key={index} className={styles.norm}> {i?.attributes?.name}</Option>
               )}
@@ -805,112 +896,125 @@ const Index = memo(() => {
             <p className={styles.norm}>Gần đây</p>
           </div>
           <div className={styles['user-container']}>
-            <Scrollbars
-              autoHide
-              autoHideTimeout={1000}
-              autoHideDuration={100}
-              autoHeight
-              autoHeightMax="calc(100vh - 355px)"
-            >
-              <div>
-                {loading['crmFBDevV1/GET_PAGES'] ||
-                  (loading['crmFBDevV1/GET_CONVERSATIONS'] && (
-                    <>
-                      <div className={classnames(styles['user-item'], {})} role="presentation">
-                        <div className={styles['user-content']}>
-                          <div className={styles['avatar-container']}>
-                            <Skeleton.Avatar active size="default" shape="circle" />
-                          </div>
-                          <div className={styles['user-info']}>
-                            <Skeleton.Input className="w-100" active size="default" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className={classnames(styles['user-item'], {})} role="presentation">
-                        <div className={styles['user-content']}>
-                          <div className={styles['avatar-container']}>
-                            <Skeleton.Avatar active size="default" shape="circle" />
-                          </div>
-                          <div className={styles['user-info']}>
-                            <Skeleton.Input className="w-100" active size="default" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className={classnames(styles['user-item'], {})} role="presentation">
-                        <div className={styles['user-content']}>
-                          <div className={styles['avatar-container']}>
-                            <Skeleton.Avatar active size="default" shape="circle" />
-                          </div>
-                          <div className={styles['user-info']}>
-                            <Skeleton.Input className="w-100" active size="default" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className={classnames(styles['user-item'], {})} role="presentation">
-                        <div className={styles['user-content']}>
-                          <div className={styles['avatar-container']}>
-                            <Skeleton.Avatar active size="default" shape="circle" />
-                          </div>
-                          <div className={styles['user-info']}>
-                            <Skeleton.Input className="w-100" active size="default" />
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  ))}
-                {(!loading['crmFBDevV1/GET_PAGES'] || !loading['crmFBDevV1/GET_CONVERSATIONS']) &&
-                  users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox }) => (
-                    <div
-                      className={classnames(styles['user-item'], {
-                        [styles['user-item-active']]:
-                          userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
-                      })}
-                      key={id}
-                      role="presentation"
-                      onClick={() => onChangeConversation(id)}
-                    >
+
+            <div>
+              {/* {loading['crmFBDevV1/GET_PAGES'] ||
+                (loading['crmFBDevV1/GET_CONVERSATIONS'] && (
+                  <>
+                    <div className={classnames(styles['user-item'], {})} role="presentation">
                       <div className={styles['user-content']}>
                         <div className={styles['avatar-container']}>
-                          <span
-                            className={classnames(styles.dot, { [styles.active]: can_reply })}
-                          />
-                          <img
-                            src={userFacebookInfo?.avatar}
-                            alt="facebook"
-                            className={styles.img}
-                          />
+                          <Skeleton.Avatar active size="default" shape="circle" />
                         </div>
-                        {noti_inbox === "SEEN" ?
-                          <>
-                            <div className={styles['user-info']}>
-                              <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                              <div>{onSnippet(snippet, userFacebookInfo?.user_name)}</div>
-                            </div>
-                            <p className={styles.time}>
-                              {time}
-                            </p>
-                          </>
-                          :
-                          <>
-                            <div className={styles['user-info-notseen']}>
-                              <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                              <div>{onSnippet(snippet, userFacebookInfo?.user_name)}</div>
-                              <p className={styles.time}>
-                                {time}
-                              </p>
-                            </div>
-                          </>
-                        }
+                        <div className={styles['user-info']}>
+                          <Skeleton.Input className="w-100" active size="default" />
+                        </div>
                       </div>
-                      {userFacebookInfo?.userFacebookInfoTag.map((i, index) =>
-                        <div className='mt5' key={index}>
-                          <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
-                        </div>
-                      )}
                     </div>
-                  ))}
-              </div>
-            </Scrollbars>
+                    <div className={classnames(styles['user-item'], {})} role="presentation">
+                      <div className={styles['user-content']}>
+                        <div className={styles['avatar-container']}>
+                          <Skeleton.Avatar active size="default" shape="circle" />
+                        </div>
+                        <div className={styles['user-info']}>
+                          <Skeleton.Input className="w-100" active size="default" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className={classnames(styles['user-item'], {})} role="presentation">
+                      <div className={styles['user-content']}>
+                        <div className={styles['avatar-container']}>
+                          <Skeleton.Avatar active size="default" shape="circle" />
+                        </div>
+                        <div className={styles['user-info']}>
+                          <Skeleton.Input className="w-100" active size="default" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className={classnames(styles['user-item'], {})} role="presentation">
+                      <div className={styles['user-content']}>
+                        <div className={styles['avatar-container']}>
+                          <Skeleton.Avatar active size="default" shape="circle" />
+                        </div>
+                        <div className={styles['user-info']}>
+                          <Skeleton.Input className="w-100" active size="default" />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ))} */}
+              {/* {(!loading['crmFBDevV1/GET_PAGES'] || !loading['crmFBDevV1/GET_CONVERSATIONS']) && */}
+                <Scrollbars
+                  autoHide
+                  autoHideTimeout={1000}
+                  autoHideDuration={100}
+                  autoHeight
+                  autoHeightMax="calc(100vh - 355px)"
+                >
+                  <InfiniteScroll
+                    hasMore={!searchUser.loading && searchUser.hasMore}
+                    initialLoad={searchUser.loading}
+                    loadMore={handleInfiniteOnLoadUser}
+                    pageStart={0}
+                    useWindow={false}
+                  >
+                    {
+                      users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
+                        <div
+                          className={classnames(styles['user-item'], {
+                            [styles['user-item-active']]:
+                              userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
+                          })}
+                          key={id}
+                          role="presentation"
+                          onClick={() => onChangeConversation(id)}
+                        >
+                          <div className={styles['user-content']}>
+                            <div className={styles['avatar-container']}>
+                              <span
+                                className={classnames(styles.dot, { [styles.active]: can_reply })}
+                              />
+                              <img
+                                src={userFacebookInfo?.avatar}
+                                alt="facebook"
+                                className={styles.img}
+                              />
+                            </div>
+                            {noti_inbox === "SEEN" ?
+                              <>
+                                <div className={styles['user-info']}>
+                                  <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                  <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                </div>
+                                <p className={styles.time}>
+                                  {time?.substr(-5, 5)}
+                                </p>
+                              </>
+                              :
+                              <>
+                                <div className={styles['user-info-notseen']}>
+                                  <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                  <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                  <p className={styles.time}>
+                                    {time?.substr(-5, 5)}
+                                  </p>
+                                </div>
+                              </>
+                            }
+                          </div>
+                          {userFacebookInfo?.userFacebookInfoTag.map((i, index) =>
+                            <div className='mt5' key={index}>
+                              <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    }
+
+                  </InfiniteScroll>
+                </Scrollbars>
+              {/* } */}
+            </div>
           </div>
         </div>
         <div className={styles['main-container']}>
@@ -1000,7 +1104,7 @@ const Index = memo(() => {
                     <InfiniteScroll
                       hasMore={!searchParent.loading && searchParent.hasMore}
                       initialLoad={searchParent.loading}
-                      loadMore={handleInfiniteOnLoadParent}
+                      loadMore={handleInfiniteOnLoadMessages}
                       style={{ display: 'flex', flexDirection: 'column-reverse' }}
                       scrollableTarget="scrollableDiv"
                       pageStart={1}
@@ -1008,11 +1112,10 @@ const Index = memo(() => {
                       isReverse
                     >
 
-                      {messagers?.map(({ attributes, ulr }, index) => (
+                      {messagers?.map(({ attributes, ulr }) => (
                         <div className={styles['messager-item']} key={ulr} style={{ display: 'flex', flexDirection: 'column-reverse' }}>
                           <div className={styles['messager-item']} >
                             <div>{onStatus(attributes, ulr)}</div>
-                            <div>{index}</div>
                           </div>
                         </div>
                       ))}
@@ -1169,16 +1272,18 @@ const Index = memo(() => {
               <div className={styles['avatar-container']}>
                 <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} />
               </div>
-              <div className={styles['user-info']}>
-                <p className={styles.norm}>{conversationCurrent?.userFacebookInfo?.user_name}</p>
-              </div>
-              <div className={styles['status-container']}>
-                <div className={styles['tags-container']}>
-                  <span>Chưa là khách hàng</span>
+              <div className='pl10'>
+                <div className={styles['user-info']}>
+                  <p className={styles.norm}>{conversationCurrent?.userFacebookInfo?.user_name}</p>
                 </div>
-                <Button color="success" className={styles['group-button']}>
+                <div className={styles['status-container']}>
+                  <div className={styles['tags-container']}>
+                    <span>Chưa là khách hàng</span>
+                  </div>
+                  {/* <Button color="success" className={styles['group-button']}>
                   Thêm Lead
-                </Button>
+                </Button> */}
+                </div>
               </div>
             </div>
             <div className={styles['actions-container']}>
@@ -1254,9 +1359,40 @@ const Index = memo(() => {
               <div className={styles['note-container']}>
                 <div className={styles['note-heading']}>
                   <h3 className={styles.title}>GHI CHÚ</h3>
-                  <span className="icon-write-plus" />
+                  <span className="icon-write-plus" onClick={() => setNoteModal(!noteModal)} role="presentation" />
                 </div>
-                <Input.TextArea autoSize={{ minRows: 4, maxRows: 4 }} />
+                <div className={styles['note-body']}>
+                  <div>
+                    {noteModal ?
+                      <div>
+                        <Input.TextArea className={styles.text} autoSize={{ minRows: 4, maxRows: 4 }} value={noteValue} onChange={(e) => onChangeNote(e.target.value)} />
+                        <div className='d-flex justify-content-end pt5 align-items-center'>
+                          <p
+                            className="btn-delete mr10"
+                            role="presentation"
+                            onClick={() => setNoteModal(false)}
+                          >
+                            Hủy
+                          </p>
+                          <Button
+                            key="submit"
+                            color="success"
+                            type="primary"
+                            className={styles['cheack-btn-ok']}
+                            onClick={handleNote}
+                          >
+                            Lưu
+                          </Button>
+                        </div>
+                      </div>
+                      :
+                      <div className='d-flex justify-content-between'>
+                        {noteValue}
+
+                      </div>
+                    }
+                  </div>
+                </div>
               </div>
             </Scrollbars>
           </div>

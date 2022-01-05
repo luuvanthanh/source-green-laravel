@@ -201,6 +201,14 @@ export default {
         callback(null, error);
       }
     },
+    *UPDATE_NOTE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateNote, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

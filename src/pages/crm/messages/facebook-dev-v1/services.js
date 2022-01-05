@@ -132,3 +132,14 @@ export function getConversationsId(params = {}) {
     },
   });
 }
+
+export function updateNote(data = {}) {
+  return request(`/v1/facebook/pages/user-facebook-infos/${data.conversationCurrent.userFacebookInfo.id}`, {
+    prefix: API_URL_CRM,
+    method: 'PUT',
+    data: {
+      note: data.noteValue,
+    },
+    cancelNotification: true,
+  });
+}
