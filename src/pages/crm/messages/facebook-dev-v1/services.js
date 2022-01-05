@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import requestCrm from '@/utils/requestCrm';
 import { Helper } from '@/utils';
+import { omit } from 'lodash';
 
 export function get(data = {}) {
   return request('/v1/districts', {
@@ -31,7 +32,23 @@ export function getConversations(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      orderBy: 'created_at',
+      show_conversation: 'true',
+      orderBy: 'updated_at',
+      sortedBy: 'desc',
+      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
+    },
+  });
+}
+
+export function getConversationsCall(params = {}) {
+  return requestCrm('/v1/facebook/pages/get-conversations', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params: {
+      ...params,
+      show_conversation: 'true',
+      orderBy: 'updated_at',
+      sortedBy: 'desc',
       include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
     },
   });
@@ -41,7 +58,13 @@ export function getMessages(params = {}) {
   return request('/v1/facebook/pages/get-messages', {
     prefix: API_URL_CRM,
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      hasMore: true,
+      loading: true,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+    },
   });
 }
 
@@ -103,8 +126,20 @@ export function getConversationsId(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      show_conversation: 'true',
       orderBy: 'created_at',
       include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
     },
+  });
+}
+
+export function updateNote(data = {}) {
+  return request(`/v1/facebook/pages/user-facebook-infos/${data.conversationCurrent.userFacebookInfo.id}`, {
+    prefix: API_URL_CRM,
+    method: 'PUT',
+    data: {
+      note: data.noteValue,
+    },
+    cancelNotification: true,
   });
 }
