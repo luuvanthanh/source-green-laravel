@@ -12,10 +12,7 @@ export default {
       isError: false,
       data: {},
     },
-    user: {
-      accessToken:"EAAM8onYIpqUBAHcZBRRyZASNqw8ho7hUr5pO1CkA4RfqUG7yQFIkrGFCwOwopWapqJIQUYeCcKisVDNPrUrUI5renj2h3A3ZAppYSMOUhJBW1mMK08FQ4KwqlSZB48Kq5jWzZCCJVksFaggeairEGbZBpjBZA0rMTup2ekrc71XlAZDZD",
-      userID: "2973416992874415"
-    },
+    user: {},
     pages: [],
     users : [],
   },

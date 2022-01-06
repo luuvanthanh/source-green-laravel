@@ -33,7 +33,7 @@ export function getConversations(params = {}) {
     params: {
       ...params,
       show_conversation: 'true',
-      orderBy: 'updated_at',
+      orderBy: 'time',
       sortedBy: 'desc',
       include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
     },
@@ -47,7 +47,7 @@ export function getConversationsCall(params = {}) {
     params: {
       ...params,
       show_conversation: 'true',
-      orderBy: 'updated_at',
+      orderBy: 'time',
       sortedBy: 'desc',
       include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
     },
