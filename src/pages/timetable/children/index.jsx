@@ -115,23 +115,31 @@ const Index = memo(() => {
   };
 
   const onLoad = () => {
-    dispatch({
-      type: 'timeTablesChildren/GET_DATA',
-      payload: {
-        classId: search.classId || null,
-        branchId: search.branchId || null,
-        isGroupByDayOfWeek: true,
-        timetableSettingId: search.timetableSettingId,
-      },
+    let isRun = true;
+    Object.entries(search).forEach(item => {
+      if(!item[1]){
+        isRun = false;
+      }
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch({
-        timetableSettingId: search?.timetableSettingId,
-        branchId: search?.branchId,
-        classId: search?.classId,
-      }),
-    });
+    if(isRun) {
+      dispatch({
+        type: 'timeTablesChildren/GET_DATA',
+        payload: {
+          classId: search.classId,
+          branchId: search.branchId,
+          isGroupByDayOfWeek: true,
+          timetableSettingId: search.timetableSettingId,
+        },
+      });
+      history.push({
+        pathname,
+        query: Helper.convertParamSearch({
+          timetableSettingId: search?.timetableSettingId,
+          branchId: search?.branchId,
+          classId: search?.classId,
+        }),
+      });
+    }
   };
 
   const getClass = (idBranch) => {
