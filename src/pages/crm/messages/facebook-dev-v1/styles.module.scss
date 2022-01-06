@@ -452,7 +452,7 @@
     width: 60%;
     margin-left: auto;
     .messager-content {
-      background-color: #3B5CAD;
+      background-color: #3b5cad;
       border-radius: 6px;
       font-weight: normal;
       font-size: 14px;
@@ -472,7 +472,7 @@
       color: rgba($color: $text, $alpha: 0.6);
     }
     .messager-file {
-      background-color: #3B5CAD;
+      background-color: #3b5cad;
       border-radius: 6px;
       font-weight: normal;
       font-size: 14px;
@@ -601,7 +601,7 @@
   .user-container {
     display: flex;
     padding: 10px;
-     align-items: center;
+    align-items: center;
     border-bottom: 1px solid #eaeaea;
     .avatar-container {
       align-items: center;
@@ -708,17 +708,139 @@
 
   .contact-container {
     border-top: 1px solid #eaeaea;
+    .information-parents {
+      padding: 10px 16px 0px 16px;
+      .title {
+        font-family: "ProximaNovaBold";
+        font-size: 12px;
+        line-height: 20px;
+        color: #3b5cad;
+        margin-bottom: 10px;
+      }
+      :global(.ant-form-item) {
+        margin-bottom: 0px !important;
+      }
+    }
+    .information-students {
+      padding: 8px 16px 0px 16px;
+      position: relative;
+      :global(.ant-form-item) {
+        margin-bottom: 0px !important;
+      }
+      .title {
+        font-family: "ProximaNovaBold";
+        font-size: 12px;
+        line-height: 20px;
+        color: #3b5cad;
+      }
+      .students-title {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0px;
+        .titleContent {
+          font-style: normal;
+          font-weight: bold;
+          font-size: 13px;
+          line-height: 18px;
+          color: #3e4247;
+          font-weight: 700;
+        }
+      }
+      .students-titles {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
+        .titleContent {
+          font-style: normal;
+          font-weight: bold;
+          font-size: 13px;
+          line-height: 18px;
+          color: #3e4247;
+          font-weight: 700;
+        }
+      }
+      .students-add {
+        :first-child {
+          position: absolute;
+          top: 10px;
+          right: 16px;
+          width: 16px;
+          height: 16px;
+          background-color: #27a600;
+          color: white;
+          font-size: 16px;
+          border-radius: 50%;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .menuRight-add {
+      width: 100%;
+      padding-left: 16px;
+      padding-right: 16px;
+      margin-top: 7px;
+    }
     .contact-item {
       display: flex;
       justify-content: space-between;
-      padding: 16px 21px;
+      align-items: center;
+      padding: 0px 0px;
+      margin-bottom: 8px;
+      // border-bottom: 1px solid #eaeaea;
+      .label {
+        font-weight: normal;
+        font-size: 13px;
+        line-height: 18px;
+        color: $text;
+        width: auto;
+      }
+      .labelRequired {
+        width: auto;
+        p {
+          position: relative;
+          width: auto;
+          font-weight: normal;
+          font-size: 13px;
+          line-height: 18px;
+          color: $text;
+          &::after {
+            color: $danger;
+            content: "*";
+            font-size: 13px;
+            line-height: 1;
+            position: absolute;
+            right: -10px;
+            top: 2px;
+          }
+        }
+      }
+      .norm {
+        width: 65%;
+      }
+    }
+    .contact-items {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0px 0px;
+      padding-top: 10px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #eaeaea;
       .label {
         font-weight: normal;
         font-size: 13px;
         line-height: 18px;
         color: $text;
-        width: 30%;
+        width: 40%;
+      }
+      .name {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 13px;
+        line-height: 18px;
+        color: #3e4247;
+        font-weight: 600;
       }
       .norm {
         font-weight: normal;
