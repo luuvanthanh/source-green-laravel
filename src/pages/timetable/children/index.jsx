@@ -46,7 +46,7 @@ const Index = memo(() => {
     type: 'timeGridWeek',
     branchId: defaultBranch?.id,
     classId: query?.classId,
-    timetableSettingId: null,
+    timetableSettingId: query?.timetableSettingId,
   });
 
   const timelineColumns = Helper.generateTimeline(duration, fromTime, toTime);
@@ -81,14 +81,32 @@ const Index = memo(() => {
           ) {
             setSearch((prevState) => ({
               ...prevState,
-              fromDate: moment().startOf('week'),
+              fromDate: moment(),
               toDate: moment().endOf('week'),
             }));
           } else {
             setSearch((prevState) => ({
               ...prevState,
-              fromDate: moment(head(response)?.fromDate).startOf('week'),
+              fromDate: moment(head(response)?.fromDate),
               toDate: moment(head(response)?.fromDate).endOf('week'),
+            }));
+          }
+        }
+        if (search.timetableSettingId && response) {
+          const dataYear = response?.find((item) => item.id === search.timetableSettingId);
+          if (moment().isBefore(dataYear?.toDate) && moment().isAfter(dataYear?.fromDate)) {
+            setSearch((prev) => ({
+              ...prev,
+              fromDate: moment(),
+              toDate: moment().endOf('week'),
+              timetableSettingId: search.timetableSettingId,
+            }));
+          } else {
+            setSearch((prev) => ({
+              ...prev,
+              fromDate: moment(dataYear.fromDate),
+              toDate: moment(dataYear.fromDate).endOf('week'),
+              timetableSettingId: search.timetableSettingId,
             }));
           }
         }
@@ -126,7 +144,7 @@ const Index = memo(() => {
         if (response) {
           setSearch((prev) => ({
             ...prev,
-            classId: query?.classId || head(response)?.id,
+            classId: head(response)?.id,
           }));
           formRef.setFieldsValue({
             classId: head(response)?.id,
@@ -147,9 +165,9 @@ const Index = memo(() => {
             branchId: query?.branchId || head(response)?.id,
           }));
           formRef.setFieldsValue({
-            branchId: head(response)?.id,
+            branchId: query?.branchId || head(response)?.id,
           });
-          getClass(response[0]?.id);
+          getClass(query?.branchId || head(response)?.id);
         }
       },
     });
@@ -175,6 +193,26 @@ const Index = memo(() => {
       ...prevState,
       branchId: e,
     }));
+    getClass(e);
+  };
+
+  const onSelectYears = (e) => {
+    const dataYear = years?.find((item) => item.id === e);
+    if (moment().isBefore(dataYear?.toDate) && moment().isAfter(dataYear?.fromDate)) {
+      setSearch((prev) => ({
+        ...prev,
+        fromDate: moment().startOf('week'),
+        toDate: moment().endOf('week'),
+        timetableSettingId: e,
+      }));
+    } else {
+      setSearch((prev) => ({
+        ...prev,
+        fromDate: moment(dataYear.fromDate).startOf('week'),
+        toDate: moment(dataYear.fromDate).endOf('week'),
+        timetableSettingId: e,
+      }));
+    }
   };
 
   const Collapse = () => {
@@ -259,7 +297,7 @@ const Index = memo(() => {
             }
           }
         });
-        const startDay = moment(search.fromDate);
+        const startDay = moment(search.fromDate).startOf('month').startOf('week');
         const endDay = moment(search.toDate).endOf('month').endOf('week');
         const date = startDay.subtract(1, 'day');
         while (date.isBefore(endDay, 'day')) {
@@ -318,11 +356,7 @@ const Index = memo(() => {
                 {},
               );
             }
-
-            if (
-              !isEmpty(groupClass) &&
-              !isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)
-            ) {
+            if (!isEmpty(groupClass)) {
               if (idx === 0) {
                 const objectEmpty = {};
                 objectEmpty.time = '';
@@ -337,7 +371,7 @@ const Index = memo(() => {
                 endTime: item.endTime,
                 class: groupClass,
               };
-              if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
+              if (!isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)) {
                 groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
                   objectData[itemDay.dayOfWeek] = {
                     class: itemDay.timetableActivityDetail,
@@ -388,23 +422,16 @@ const Index = memo(() => {
               {},
             );
           }
-          if (!isEmpty(groupClass)) {
-            if (groupClass.timetableDetailActivities) {
-              const { timetableDetailActivities } = groupClass;
-              objectDay.content = {
-                ...timetableDetailActivities[0],
-                start: item.startTime,
-                end: item.endTime,
-              };
-            }
-            if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
-              const { timetableDetailActivityGroupByDayOfWeeks } = groupClass;
-              objectDay.content = {
-                ...timetableDetailActivityGroupByDayOfWeeks[0],
-                start: item.startTime,
-                end: item.endTime,
-              };
-            }
+          if (
+            !isEmpty(groupClass) &&
+            !isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)
+          ) {
+            const { timetableDetailActivityGroupByDayOfWeeks } = groupClass;
+            objectDay.content = {
+              ...timetableDetailActivityGroupByDayOfWeeks[0],
+              start: item.startTime,
+              end: item.endTime,
+            };
           }
           return objectDay;
         });
@@ -431,25 +458,17 @@ const Index = memo(() => {
                 {},
               );
             }
-            if (!isEmpty(groupClass)) {
-              if (groupClass.timetableDetailActivities) {
-                const { timetableDetailActivities } = groupClass;
-                arr.push({
-                  timeStart: item.startTime,
-                  timeEnd: item.endTime,
-                  id: `${Math.floor(Math.random() * 100000)}`,
-                  content: { ...timetableDetailActivities[0] },
-                });
-              }
-              if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
-                const { timetableDetailActivityGroupByDayOfWeeks } = groupClass;
-                arr.push({
-                  timeStart: item.startTime,
-                  timeEnd: item.endTime,
-                  id: `${Math.floor(Math.random() * 100000)}`,
-                  content: { ...timetableDetailActivityGroupByDayOfWeeks[0] },
-                });
-              }
+            if (
+              !isEmpty(groupClass) &&
+              !isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)
+            ) {
+              const { timetableDetailActivityGroupByDayOfWeeks } = groupClass;
+              arr.push({
+                timeStart: item.startTime,
+                timeEnd: item.endTime,
+                id: `${Math.floor(Math.random() * 100000)}`,
+                content: { ...timetableDetailActivityGroupByDayOfWeeks[0] },
+              });
             }
             return arr;
           },
@@ -763,7 +782,12 @@ const Index = memo(() => {
         variables.DATE_FORMAT.MONTH_FULL,
       );
     }
-    return moment(search.fromDate).format('[Ngày] DD [tháng] MM [năm] YYYY');
+
+    const dataYear = years?.find((item) => item.id === search.timetableSettingId);
+    if (moment().isBefore(dataYear?.toDate) && moment().isAfter(dataYear?.fromDate)) {
+      return moment().format('[Ngày] DD [tháng] MM [năm] YYYY');
+    }
+    return moment(dataYear.fromDate).format('[Ngày] DD [tháng] MM [năm] YYYY');
   };
 
   return (
@@ -789,9 +813,7 @@ const Index = memo(() => {
                   data={yearsConvert}
                   label="Năm học"
                   name="timetableSettingId"
-                  onChange={(event) =>
-                    setSearch((prevState) => ({ ...prevState, timetableSettingId: event }))
-                  }
+                  onChange={(event) => onSelectYears(event)}
                   type={variables.SELECT}
                   allowClear={false}
                 />
