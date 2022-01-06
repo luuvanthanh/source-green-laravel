@@ -57,9 +57,17 @@ const Index = memo(() => {
   const loadCategories = () => {
     if (defaultBranch?.id) {
       dispatch({
-        type: 'timeTablesAuto/GET_CLASSES',
-        payload: {
-          branch: defaultBranch?.id,
+        type: 'timeTablesAuto/GET_BRANCHES',
+        payload: {},
+        callback: (response) => {
+          if (response) {
+            dispatch({
+              type: 'timeTablesAuto/GET_CLASSES',
+              payload: {
+                branch: defaultBranch?.id,
+              },
+            });
+          }
         },
       });
     } else {

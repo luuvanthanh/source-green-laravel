@@ -12,6 +12,7 @@ import { variables, Helper } from '@/utils';
 import ability from '@/utils/ability';
 import { useHistory, useLocation, useParams } from 'umi';
 import { useDispatch, useSelector } from 'dva';
+import moment from 'moment';
 
 const Index = memo(() => {
   const [form] = Form.useForm();
@@ -150,25 +151,26 @@ const Index = memo(() => {
         className: 'min-width-150',
         fixed: 'right',
         align: 'center',
-        render: (record) => (
-          <ul className="list-unstyled list-inline">
-            <li className="list-inline-item">
-              <Button
-                color="primary"
-                icon="edit"
-                onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              />
-            </li>
-            <li className="list-inline-item">
-              <Button
-                color="danger"
-                icon="remove"
-                className="ml-2"
-                onClick={() => onRemove(record.id)}
-              />
-            </li>
-          </ul>
-        ),
+        render: (record) =>
+          moment(record.toDate).isAfter() && (
+            <ul className="list-unstyled list-inline">
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  icon="edit"
+                  onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+                />
+              </li>
+              <li className="list-inline-item">
+                <Button
+                  color="danger"
+                  icon="remove"
+                  className="ml-2"
+                  onClick={() => onRemove(record.id)}
+                />
+              </li>
+            </ul>
+          ),
       },
     ];
 
