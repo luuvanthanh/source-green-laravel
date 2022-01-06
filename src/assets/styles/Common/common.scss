@@ -1477,3 +1477,16 @@
     z-index: 10;
   }
 }
+.dotStyle {
+  height: 9px;
+  width: 9px;
+  border-radius: 50%;
+}
+.modal-subject {
+  &:global(.ant-modal) {
+    top: 20px;
+  }
+  :global(.ant-modal-body) {
+    padding: 12px;
+  }
+}

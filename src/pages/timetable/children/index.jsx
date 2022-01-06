@@ -14,7 +14,7 @@ import CardDate from '@/components/CommonComponent/CardCalendar/CardDate';
 import CardLesson from '@/components/CommonComponent/CardCalendar/CardLesson';
 import CardMonth from '@/components/CommonComponent/CardCalendar/CardMonth';
 import ListDay from '@/components/CommonComponent/CardCalendar/ListDay';
-import { Form, Button } from 'antd';
+import { Form, Button, Modal, List } from 'antd';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'dva';
 import { useLocation, useHistory } from 'umi';
@@ -35,8 +35,8 @@ const Index = memo(() => {
   const dispatch = useDispatch();
   const { pathname, query } = useLocation();
   const yearsConvert = years.map((item) => ({
-    id: item.id,
-    name: `${item.fromYear} - ${item.toYear}`,
+    id: item?.id,
+    name: `${item?.fromYear} - ${item?.toYear}`,
   }));
   const history = useHistory();
   const { data, duration, fromTime, toTime } = objectData;
@@ -52,13 +52,18 @@ const Index = memo(() => {
   const timelineColumns = Helper.generateTimeline(duration, fromTime, toTime);
 
   const [showColumn, setShowColumn] = useState(false);
+  const [listSubjects, setListSubjects] = useState({
+    data: [],
+    visible: false,
+    title: '',
+  });
 
   const debouncedSearchDate = debounce((fromDate = moment(), toDate = moment(), type) => {
     setSearch((prev) => ({
       ...prev,
       type,
-      fromDate: moment(fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
-      toDate: moment(toDate).format(variables.DATE_FORMAT.DATE_AFTER),
+      fromDate: Helper.getDate(fromDate, variables.DATE_FORMAT.DATE_AFTER),
+      toDate: Helper.getDate(toDate, variables.DATE_FORMAT.DATE_AFTER),
     }));
   }, 500);
 
@@ -81,32 +86,30 @@ const Index = memo(() => {
           ) {
             setSearch((prevState) => ({
               ...prevState,
-              fromDate: moment(),
+              fromDate: Helper.getDate(moment(), variables.DATE_FORMAT.DATE_TIME_UTC),
               toDate: moment().endOf('week'),
             }));
           } else {
             setSearch((prevState) => ({
               ...prevState,
-              fromDate: moment(head(response)?.fromDate),
+              fromDate: head(response)?.fromDate,
               toDate: moment(head(response)?.fromDate).endOf('week'),
             }));
           }
         }
         if (search.timetableSettingId && response) {
-          const dataYear = response?.find((item) => item.id === search.timetableSettingId);
+          const dataYear = response?.find((item) => item?.id === search.timetableSettingId);
           if (moment().isBefore(dataYear?.toDate) && moment().isAfter(dataYear?.fromDate)) {
             setSearch((prev) => ({
               ...prev,
               fromDate: moment(),
               toDate: moment().endOf('week'),
-              timetableSettingId: search.timetableSettingId,
             }));
           } else {
             setSearch((prev) => ({
               ...prev,
-              fromDate: moment(dataYear.fromDate),
+              fromDate: dataYear.fromDate,
               toDate: moment(dataYear.fromDate).endOf('week'),
-              timetableSettingId: search.timetableSettingId,
             }));
           }
         }
@@ -115,31 +118,23 @@ const Index = memo(() => {
   };
 
   const onLoad = () => {
-    let isRun = true;
-    Object.entries(search).forEach(item => {
-      if(!item[1]){
-        isRun = false;
-      }
+    dispatch({
+      type: 'timeTablesChildren/GET_DATA',
+      payload: {
+        classId: search.classId,
+        branchId: search.branchId,
+        isGroupByDayOfWeek: true,
+        timetableSettingId: search.timetableSettingId,
+      },
     });
-    if(isRun) {
-      dispatch({
-        type: 'timeTablesChildren/GET_DATA',
-        payload: {
-          classId: search.classId,
-          branchId: search.branchId,
-          isGroupByDayOfWeek: true,
-          timetableSettingId: search.timetableSettingId,
-        },
-      });
-      history.push({
-        pathname,
-        query: Helper.convertParamSearch({
-          timetableSettingId: search?.timetableSettingId,
-          branchId: search?.branchId,
-          classId: search?.classId,
-        }),
-      });
-    }
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch({
+        timetableSettingId: search?.timetableSettingId,
+        branchId: search?.branchId,
+        classId: search?.classId,
+      }),
+    });
   };
 
   const getClass = (idBranch) => {
@@ -182,8 +177,10 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    onLoad();
-  }, [search]);
+    if (search.branchId && search.classId && search.timetableSettingId) {
+      onLoad();
+    }
+  }, [search.branchId, search.classId, search.timetableSettingId]);
 
   useEffect(() => {
     getYears();
@@ -205,39 +202,51 @@ const Index = memo(() => {
   };
 
   const onSelectYears = (e) => {
-    const dataYear = years?.find((item) => item.id === e);
+    const dataYear = years?.find((item) => item?.id === e);
     if (moment().isBefore(dataYear?.toDate) && moment().isAfter(dataYear?.fromDate)) {
       setSearch((prev) => ({
         ...prev,
-        fromDate: moment().startOf('week'),
+        fromDate: moment(),
         toDate: moment().endOf('week'),
         timetableSettingId: e,
       }));
     } else {
       setSearch((prev) => ({
         ...prev,
-        fromDate: moment(dataYear.fromDate).startOf('week'),
+        fromDate: dataYear.fromDate,
         toDate: moment(dataYear.fromDate).endOf('week'),
         timetableSettingId: e,
       }));
     }
   };
 
-  const Collapse = () => {
-    setShowColumn(!showColumn);
+  const Collapse = (data, isShow, title) => {
+    setListSubjects({
+      visible: isShow,
+      data,
+      title,
+    });
   };
   const renderCalendar = (type, data) => {
-    const betweenYear = years.find((item) => item.id === search?.timetableSettingId);
+    const betweenYear = years.find((item) => item?.id === search?.timetableSettingId);
     const sortDataCalendar = Helper.onSortDates(
       data.map((item) => ({
         ...item,
-        dateSort: moment(item.startTime, variables.DATE_FORMAT.HOUR),
+        dateSort: moment(item?.startTime, variables.DATE_FORMAT.HOUR),
       })),
       'dateSort',
       'asc',
     );
 
-    const dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const dayName = [
+      { key: 'T2', value: 'Monday' },
+      { key: 'T3', value: 'Tuesday' },
+      { key: 'T4', value: 'Wednesday' },
+      { key: 'T5', value: 'Thursday' },
+      { key: 'T6', value: 'Friday' },
+      { key: 'T7', value: 'Saturday' },
+      { key: 'CN', value: 'Sunday' },
+    ];
     switch (type) {
       case 'dayGridMonth': {
         const calendar = [];
@@ -267,12 +276,12 @@ const Index = memo(() => {
         sortDataCalendar?.forEach((item) => {
           let groupClass;
           if (!search.branchId) {
-            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+            groupClass = { ...item?.timetableDetailGroupByClasses[0] };
           } else if (search.branchId && !search.classId) {
-            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+            groupClass = { ...item?.timetableDetailGroupByClasses[0] };
           } else {
             groupClass = reduce(
-              item.timetableDetailGroupByClasses,
+              item?.timetableDetailGroupByClasses,
               (obj, itemDetail) => {
                 if (itemDetail.class.id === search.classId) {
                   return { ...obj, ...itemDetail };
@@ -282,27 +291,17 @@ const Index = memo(() => {
               {},
             );
           }
-          if (!isEmpty(groupClass)) {
-            if (groupClass.timetableDetailActivities) {
-              groupClass.timetableDetailActivities[0].dayOfWeeks.forEach((itemDay) => {
-                objectDataDay[itemDay].data = objectDataDay[itemDay].data.concat({
-                  startTime: item.startTime,
-                  endTime: item.endTime,
-                  class: groupClass.timetableDetailActivities,
-                });
+          if (
+            !isEmpty(groupClass) &&
+            !isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)
+          ) {
+            groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
+              objectDataDay[itemDay.dayOfWeek].data = objectDataDay[itemDay.dayOfWeek].data.concat({
+                startTime: item?.startTime,
+                endTime: item?.endTime,
+                class: itemDay.timetableActivityDetail,
               });
-            }
-            if (groupClass.timetableDetailActivityGroupByDayOfWeeks) {
-              groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
-                objectDataDay[itemDay.dayOfWeek].data = objectDataDay[
-                  itemDay.dayOfWeek
-                ].data.concat({
-                  startTime: item.startTime,
-                  endTime: item.endTime,
-                  class: itemDay.timetableActivityDetail,
-                });
-              });
-            }
+            });
           }
         });
         const startDay = moment(search.fromDate).startOf('month').startOf('week');
@@ -313,7 +312,7 @@ const Index = memo(() => {
           let i = 0;
           while (i < 7) {
             const time = date.add(1, 'day').clone();
-            objTime[dayName[i]] = {
+            objTime[dayName[i].value] = {
               date: time,
               month: search.toDate,
               data:
@@ -323,7 +322,7 @@ const Index = memo(() => {
                 moment(Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY)).isAfter(
                   moment(betweenYear?.fromDate),
                 )
-                  ? objectDataDay[dayName[i]].data
+                  ? objectDataDay[dayName[i].value].data
                   : [],
             };
             i += 1;
@@ -337,10 +336,10 @@ const Index = memo(() => {
         const dataWeek = [];
         if (!isEmpty(sortDataCalendar)) {
           const mainData = [];
-          timelineColumns.forEach((item) => {
-            const flagTime = sortDataCalendar.find(
+          timelineColumns?.forEach((item) => {
+            const flagTime = sortDataCalendar?.find(
               (itemSort) =>
-                item.startTime === itemSort.startTime && item.endTime && itemSort.endTime,
+                item?.startTime === itemSort?.startTime && item?.endTime && itemSort?.endTime,
             );
             if (flagTime) {
               mainData.push(flagTime);
@@ -349,12 +348,12 @@ const Index = memo(() => {
           mainData.forEach((item, idx) => {
             let groupClass;
             if (!search.branchId) {
-              groupClass = { ...item.timetableDetailGroupByClasses[0] };
+              groupClass = { ...item?.timetableDetailGroupByClasses[0] };
             } else if (search.branchId && !search.classId) {
-              groupClass = { ...item.timetableDetailGroupByClasses[0] };
+              groupClass = { ...item?.timetableDetailGroupByClasses[0] };
             } else {
               groupClass = reduce(
-                item.timetableDetailGroupByClasses,
+                item?.timetableDetailGroupByClasses,
                 (obj, itemDetail) => {
                   if (itemDetail.class.id === search.classId) {
                     return { ...obj, ...itemDetail };
@@ -369,27 +368,27 @@ const Index = memo(() => {
                 const objectEmpty = {};
                 objectEmpty.time = '';
                 dayName.forEach((item) => {
-                  objectEmpty[item] = '';
+                  objectEmpty[item.value] = '';
                 });
                 dataWeek.push(objectEmpty);
               }
               const objectData = Object.create({});
               objectData.time = {
-                startTime: item.startTime,
-                endTime: item.endTime,
+                startTime: item?.startTime,
+                endTime: item?.endTime,
                 class: groupClass,
               };
               if (!isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)) {
                 groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
                   objectData[itemDay.dayOfWeek] = {
                     class: itemDay.timetableActivityDetail,
-                    start: item.startTime,
-                    end: item.endTime,
+                    start: item?.startTime,
+                    end: item?.endTime,
                   };
                 });
                 dayName.forEach((itemDay) => {
-                  if (!objectData[itemDay]) {
-                    objectData[itemDay] = {};
+                  if (!objectData[itemDay.value]) {
+                    objectData[itemDay.value] = {};
                   }
                 });
                 dataWeek.push(objectData);
@@ -401,26 +400,37 @@ const Index = memo(() => {
         const objectEmpty = {};
         objectEmpty.time = '';
         dayName.forEach((item) => {
-          objectEmpty[item] = '';
+          objectEmpty[item.value] = '';
         });
         return Array(objectEmpty);
       }
       case 'timeGridDay': {
-        const dataGridDay = sortDataCalendar?.map((item) => {
+        const mainData = [];
+        timelineColumns.forEach((item) => {
+          const flagTime = sortDataCalendar.find(
+            (itemSort) =>
+              item?.startTime === itemSort.startTime && item?.endTime && itemSort.endTime,
+          );
+          if (flagTime) {
+            mainData.push(flagTime);
+          }
+        });
+        const dataGridDay = [];
+        mainData?.forEach((item) => {
           const objectDay = {};
           objectDay.times = {
-            timeStart: item.startTime,
-            timeEnd: item.endTime,
+            timeStart: item?.startTime,
+            timeEnd: item?.endTime,
           };
 
           let groupClass;
           if (!search.branchId) {
-            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+            groupClass = { ...item?.timetableDetailGroupByClasses[0] };
           } else if (search.branchId && !search.classId) {
-            groupClass = { ...item.timetableDetailGroupByClasses[0] };
+            groupClass = { ...item?.timetableDetailGroupByClasses[0] };
           } else {
             groupClass = reduce(
-              item.timetableDetailGroupByClasses,
+              item?.timetableDetailGroupByClasses,
               (obj, itemDetail) => {
                 if (itemDetail.class.id === search.classId) {
                   return { ...obj, ...itemDetail };
@@ -435,28 +445,47 @@ const Index = memo(() => {
             !isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)
           ) {
             const { timetableDetailActivityGroupByDayOfWeeks } = groupClass;
-            objectDay.content = {
-              ...timetableDetailActivityGroupByDayOfWeeks[0],
-              start: item.startTime,
-              end: item.endTime,
-            };
+            let content;
+            timetableDetailActivityGroupByDayOfWeeks.forEach((item, idx) => {
+              let valueDay;
+              if (dayName[idx].key === moment(search.fromDate).format('ddd')) {
+                valueDay = dayName[idx].value;
+              }
+              if (valueDay && valueDay === item.dayOfWeek) {
+                content = item;
+              }
+            });
+            if (content) {
+              objectDay.content = {
+                ...content,
+                start: item?.startTime,
+                end: item?.endTime,
+              };
+              dataGridDay.push(objectDay);
+            }
           }
-          return objectDay;
         });
         return dataGridDay;
       }
       case 'listDay': {
+        const mainData = timelineColumns.map((item) => {
+          const flagTime = sortDataCalendar.find(
+            (itemSort) =>
+              item?.startTime === itemSort.startTime && item?.endTime && itemSort.endTime,
+          );
+          return flagTime && flagTime;
+        });
         const arrTimeTable = reduce(
-          sortDataCalendar,
+          mainData,
           (arr, item) => {
             let groupClass;
             if (!search.branchId) {
-              groupClass = { ...item.timetableDetailGroupByClasses[0] };
+              groupClass = { ...item?.timetableDetailGroupByClasses[0] };
             } else if (search.branchId && !search.classId) {
-              groupClass = { ...item.timetableDetailGroupByClasses[0] };
+              groupClass = { ...item?.timetableDetailGroupByClasses[0] };
             } else {
               groupClass = reduce(
-                item.timetableDetailGroupByClasses,
+                item?.timetableDetailGroupByClasses,
                 (obj, itemDetail) => {
                   if (itemDetail.class.id === search.classId) {
                     return { ...obj, ...itemDetail };
@@ -471,12 +500,24 @@ const Index = memo(() => {
               !isEmpty(groupClass.timetableDetailActivityGroupByDayOfWeeks)
             ) {
               const { timetableDetailActivityGroupByDayOfWeeks } = groupClass;
-              arr.push({
-                timeStart: item.startTime,
-                timeEnd: item.endTime,
-                id: `${Math.floor(Math.random() * 100000)}`,
-                content: { ...timetableDetailActivityGroupByDayOfWeeks[0] },
+              let content;
+              timetableDetailActivityGroupByDayOfWeeks.forEach((item, idx) => {
+                let valueDay;
+                if (dayName[idx].key === moment(search.fromDate).format('ddd')) {
+                  valueDay = dayName[idx].value;
+                }
+                if (valueDay && valueDay === item.dayOfWeek) {
+                  content = item;
+                }
               });
+              if (content) {
+                arr.push({
+                  timeStart: item?.startTime,
+                  timeEnd: item?.endTime,
+                  id: `${Math.floor(Math.random() * 100000)}`,
+                  content,
+                });
+              }
             }
             return arr;
           },
@@ -500,7 +541,14 @@ const Index = memo(() => {
             dataIndex: 'Monday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth date={value.date} month={value.month} data={value.data} day={value.day} />
+              <CardMonth
+                date={value.date}
+                month={value.month}
+                data={value.data}
+                day={value.day}
+                Collapse={Collapse}
+                name="Thứ hai"
+              />
             ),
           },
           {
@@ -509,7 +557,14 @@ const Index = memo(() => {
             dataIndex: 'Tuesday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth date={value.date} day={value.day} month={value.month} data={value.data} />
+              <CardMonth
+                date={value.date}
+                day={value.day}
+                month={value.month}
+                data={value.data}
+                Collapse={Collapse}
+                name="Thứ ba"
+              />
             ),
           },
           {
@@ -518,7 +573,14 @@ const Index = memo(() => {
             dataIndex: 'Wednesday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth date={value.date} day={value.day} month={value.month} data={value.data} />
+              <CardMonth
+                date={value.date}
+                day={value.day}
+                month={value.month}
+                data={value.data}
+                Collapse={Collapse}
+                name="Thứ tư"
+              />
             ),
           },
           {
@@ -527,7 +589,14 @@ const Index = memo(() => {
             dataIndex: 'Thursday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth date={value.date} day={value.day} month={value.month} data={value.data} />
+              <CardMonth
+                date={value.date}
+                day={value.day}
+                month={value.month}
+                data={value.data}
+                Collapse={Collapse}
+                name="Thứ năm"
+              />
             ),
           },
           {
@@ -536,7 +605,14 @@ const Index = memo(() => {
             dataIndex: 'Friday',
             className: 'min-width-100',
             render: (value) => (
-              <CardMonth date={value.date} day={value.day} month={value.month} data={value.data} />
+              <CardMonth
+                date={value.date}
+                day={value.day}
+                month={value.month}
+                data={value.data}
+                Collapse={Collapse}
+                name="Thứ sáu"
+              />
             ),
           },
           {
@@ -582,7 +658,7 @@ const Index = memo(() => {
         if (arrDate.length > 0) {
           const arrHeader = [
             {
-              title: '',
+              title: 'Thời gian',
               key: 'time',
               dataIndex: 'time',
               width: 100,
@@ -684,7 +760,7 @@ const Index = memo(() => {
               title: (
                 <Button
                   icon={showColumn ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
-                  onClick={() => Collapse()}
+                  onClick={() => setShowColumn(!showColumn)}
                 />
               ),
               key: 'acction',
@@ -790,17 +866,39 @@ const Index = memo(() => {
         variables.DATE_FORMAT.MONTH_FULL,
       );
     }
-
-    const dataYear = years?.find((item) => item.id === search.timetableSettingId);
-    if (moment().isBefore(dataYear?.toDate) && moment().isAfter(dataYear?.fromDate)) {
-      return moment().format('[Ngày] DD [tháng] MM [năm] YYYY');
-    }
-    return moment(dataYear.fromDate).format('[Ngày] DD [tháng] MM [năm] YYYY');
+    return moment(search.fromDate).format('[Ngày] DD [tháng] MM [năm] YYYY');
   };
 
   return (
     <>
       <Helmet title="Thời khóa biểu trẻ" />
+      <Modal
+        title={listSubjects.title}
+        visible={listSubjects.visible}
+        onCancel={() => Collapse([], false, '')}
+        footer={[]}
+        className={styles['modal-subject']}
+        width={350}
+      >
+        <List
+          bordered
+          dataSource={listSubjects.data}
+          renderItem={(item) => (
+            <List.Item className="py-1">
+              <div className="w-100 d-flex align-items-center justify-content-left">
+                <span
+                  className={classnames('mr-2', styles.dotStyle)}
+                  style={{ background: item?.class.colorCode }}
+                />
+                <span>{item.startTime}</span>
+                <span className="pl-2 pr-2">-</span>
+                <span>{item.endTime}</span>
+                <span className="pl-3">{item?.class?.name}</span>
+              </div>
+            </List.Item>
+          )}
+        />
+      </Modal>
       <div className={classnames(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
           <Text color="dark">Thời khóa biểu trẻ</Text>
@@ -875,15 +973,15 @@ const Index = memo(() => {
                         if (
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isBefore(moment(item.toDate)) &&
+                          ).isBefore(moment(item?.toDate)) &&
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isAfter(moment(item.fromDate))
+                          ).isAfter(moment(item?.fromDate))
                         ) {
-                          id = item.id;
+                          id = item?.id;
                         }
                       });
-                      if (id !== search.timetableSettingId && id) {
+                      if (id !== search.timetableSettingId) {
                         setSearch((prev) => ({ ...prev, timetableSettingId: id }));
                         formRef.setFieldsValue({
                           timetableSettingId: id,
@@ -902,12 +1000,12 @@ const Index = memo(() => {
                         if (
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isBefore(moment(item.toDate)) &&
+                          ).isBefore(moment(item?.toDate)) &&
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isAfter(moment(item.fromDate))
+                          ).isAfter(moment(item?.fromDate))
                         ) {
-                          id = item.id;
+                          id = item?.id;
                           formRef.setFieldsValue({
                             timetableSettingId: id,
                           });
@@ -922,33 +1020,30 @@ const Index = memo(() => {
                     }
                     if (search.type === 'timeGridDay' || search.type === 'listDay') {
                       debouncedSearchDate(
-                        moment(search.fromDate).subtract(1, 'days'),
-                        moment(search.toDate).subtract(1, 'days'),
-                        'timeGridDay',
+                        moment(search.fromDate).subtract(1, 'day'),
+                        moment(search.toDate).subtract(1, 'day'),
+                        search.type,
                       );
-                      const time = moment(search.fromDate).subtract(1, 'days').clone();
+                      const time = moment(search.fromDate).subtract(1, 'day');
                       let id = '';
                       years.forEach((item) => {
                         if (
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isBefore(moment(item.toDate)) &&
+                          ).isBefore(moment(item?.toDate)) &&
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isAfter(moment(item.fromDate))
+                          ).isAfter(moment(item?.fromDate))
                         ) {
-                          id = item.id;
+                          id = item?.id;
+                        }
+                        if (id !== search.timetableSettingId) {
+                          setSearch((prev) => ({ ...prev, timetableSettingId: id }));
                           formRef.setFieldsValue({
                             timetableSettingId: id,
                           });
                         }
                       });
-                      if (id !== search.timetableSettingId) {
-                        setSearch((prev) => ({ ...prev, timetableSettingId: id }));
-                        formRef.setFieldsValue({
-                          timetableSettingId: id,
-                        });
-                      }
                     }
                   }}
                   className={styles.btnStyle}
@@ -968,12 +1063,12 @@ const Index = memo(() => {
                         if (
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isBefore(moment(item.toDate)) &&
+                          ).isBefore(moment(item?.toDate)) &&
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isAfter(moment(item.fromDate))
+                          ).isAfter(moment(item?.fromDate))
                         ) {
-                          id = item.id;
+                          id = item?.id;
                         }
                       });
                       if (id !== search.timetableSettingId) {
@@ -995,12 +1090,12 @@ const Index = memo(() => {
                         if (
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isBefore(moment(item.toDate)) &&
+                          ).isBefore(moment(item?.toDate)) &&
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isAfter(moment(item.fromDate))
+                          ).isAfter(moment(item?.fromDate))
                         ) {
-                          id = item.id;
+                          id = item?.id;
                         }
                       });
                       if (id !== search.timetableSettingId) {
@@ -1014,7 +1109,7 @@ const Index = memo(() => {
                       debouncedSearchDate(
                         moment(search.fromDate).add(1, 'days'),
                         moment(search.toDate).add(1, 'days'),
-                        'timeGridDay',
+                        search.type,
                       );
                       const time = moment(search.fromDate).add(1, 'days');
                       let id = '';
@@ -1022,12 +1117,12 @@ const Index = memo(() => {
                         if (
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isBefore(moment(item.toDate)) &&
+                          ).isBefore(moment(item?.toDate)) &&
                           moment(
                             Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-                          ).isAfter(moment(item.fromDate))
+                          ).isAfter(moment(item?.fromDate))
                         ) {
-                          id = item.id;
+                          id = item?.id;
                         }
                       });
                       if (id !== search.timetableSettingId) {
@@ -1049,8 +1144,11 @@ const Index = memo(() => {
                   const time = moment().clone();
                   let id = '';
                   years.forEach((item) => {
-                    if (time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
-                      id = item.id;
+                    if (
+                      time.isBefore(moment(item?.toDate)) &&
+                      time.isAfter(moment(item?.fromDate))
+                    ) {
+                      id = item?.id;
                     }
                   });
                   if (id !== search.timetableSettingId) {
@@ -1070,7 +1168,7 @@ const Index = memo(() => {
                     debouncedSearchDate(moment(), moment(), 'timeGridWeek');
                   }
                   if (search.type === 'timeGridDay' || search.type === 'listDay') {
-                    debouncedSearchDate(moment(), moment(), 'timeGridDay');
+                    debouncedSearchDate(moment(), moment(), search.type);
                   }
                 }}
                 disabled={disabledToday(search.type)}
@@ -1088,11 +1186,7 @@ const Index = memo(() => {
                 permission="TKB"
                 color={search.type === 'timeGridWeek' ? 'green' : 'white'}
                 onClick={() => {
-                  debouncedSearchDate(
-                    moment(search.fromDate).startOf('weeks'),
-                    moment(search.toDate).endOf('weeks'),
-                    'timeGridWeek',
-                  );
+                  setSearch((prev) => ({ ...prev, type: 'timeGridWeek' }));
                 }}
               >
                 Tuần
@@ -1101,11 +1195,7 @@ const Index = memo(() => {
                 permission="TKB"
                 color={search.type === 'timeGridDay' ? 'green' : 'white'}
                 onClick={() => {
-                  debouncedSearchDate(
-                    moment(search.fromDate).startOf('days'),
-                    moment(search.toDate).endOf('days'),
-                    'timeGridDay',
-                  );
+                  setSearch((prev) => ({ ...prev, type: 'timeGridDay' }));
                 }}
               >
                 Ngày
@@ -1114,11 +1204,7 @@ const Index = memo(() => {
                 permission="TKB"
                 color={search.type === 'dayGridMonth' ? 'green' : 'white'}
                 onClick={() => {
-                  debouncedSearchDate(
-                    moment(search.fromDate),
-                    moment(search.toDate),
-                    'dayGridMonth',
-                  );
+                  setSearch((prev) => ({ ...prev, type: 'dayGridMonth' }));
                 }}
               >
                 Tháng
@@ -1127,11 +1213,7 @@ const Index = memo(() => {
                 permission="TKB"
                 color={search.type === 'listDay' ? 'green' : 'white'}
                 onClick={() => {
-                  debouncedSearchDate(
-                    moment(search.fromDate).startOf('days'),
-                    moment(search.fromDate).endOf('days'),
-                    'listDay',
-                  );
+                  setSearch((prev) => ({ ...prev, type: 'listDay' }));
                 }}
               >
                 Lịch biểu
@@ -1158,7 +1240,7 @@ const Index = memo(() => {
           {search.type === 'listDay' && (
             <div className="w-100">
               {renderCalendar(search.type, data).map((item, idx) => (
-                <React.Fragment key={item.id}>
+                <React.Fragment key={item?.id}>
                   <ListDay
                     value={item}
                     lastPoint={idx === renderCalendar(search.type, data).length - 1 ? idx : 0}
