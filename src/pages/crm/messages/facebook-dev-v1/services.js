@@ -143,3 +143,36 @@ export function updateNote(data = {}) {
     cancelNotification: true,
   });
 }
+
+export function getRelationships() {
+  return requestCrm(`/v1/category-relationships`, {
+    method: 'GET',
+  });
+}
+
+export function addLead(data = {}) {
+  return requestCrm('/v1/facebook/pages/user-facebook-infos/add-leads', {
+    method: 'POST',
+    data,
+    cancelNotification: true,
+  });
+}
+
+export function detailsLead(params = {}) {
+  return requestCrm(`/v1/customer-leads/${params?.userFacebookInfo?.customer_lead_id}`, {
+    method: 'GET',
+    params: {
+      include: Helper.convertIncludes([
+        'studentInfo.categoryRelationship',
+        'city',
+        'district',
+        'searchSource',
+        'statusCare.statusParentLead',
+        'employee',
+        'marketingProgram',
+        'customerTag.tag',
+        'relationship',
+      ]),
+    },
+  });
+}

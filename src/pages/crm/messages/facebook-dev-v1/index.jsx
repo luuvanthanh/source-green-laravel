@@ -1,12 +1,14 @@
 import { memo, useEffect, useState, useRef } from 'react';
-import { Menu, Dropdown, Input, Skeleton, Tag, Select, Image, Upload, List } from 'antd';
+import { Menu, Dropdown, Input, Skeleton, Tag, Select, Image, Upload, List, Form } from 'antd';
 import { DownOutlined, SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
+import FormItem from '@/components/CommonComponent/FormItem';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useDispatch, useSelector } from 'dva';
 import moment from 'moment';
 import { head, isEmpty } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import Text from '@/components/CommonComponent/Text';
 import { variables, Helper } from '@/utils';
 import InfiniteScroll from 'react-infinite-scroller';
 import Button from '@/components/CommonComponent/Button';
@@ -14,19 +16,28 @@ import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props
 import MultipleImageUpload from './UploadAvatar';
 import styles from './styles.module.scss';
 
+
+const sex = [
+  { id: 'MALE', name: 'Nam' },
+  { id: 'FEMALE', name: 'Nữ' },
+  { id: 'OTHER', name: 'Khác' },
+];
 const { Item: ListItem } = List;
 const { Option } = Select;
 const Index = memo(() => {
   const scrollbars = useRef();
 
+  const [formRef] = Form.useForm();
   const dispatch = useDispatch();
-  const [{ user, pages, tags }, loading] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
+  const [{ user, pages, tags, relationships, detailLead }, loading] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
     crmFBDevV1,
     effects,
   ]);
   //note
+  console.log("detailLead", detailLead);
   const [noteValue, setNoteValue] = useState([]);
   const [noteModal, setNoteModal] = useState(false);
+  const [dayOfBirth, setDayOfBirth] = useState(null);
 
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState(undefined);
@@ -51,7 +62,7 @@ const Index = memo(() => {
     hasMore: true,
     loading: false,
   });
-console.log("usser",users)
+  console.log("usser", users)
   const [searchUser, setSearchUser] = useState({
     page: 1,
     limit: 7,
@@ -135,16 +146,19 @@ console.log("usser",users)
         },
         callback: (response) => {
           if (response) {
-            console.log("responseresponse",response)
-            setUsers( response?.parsePayload);
+            formRef.setFieldsValue({
+              data: [""]
+            });
+            console.log("responseresponse", response)
+            setUsers(response?.parsePayload);
             setLoadingMessageUser(false);
             const firstUser = head(
               response?.parsePayload?.map((item) => ({
                 ...item,
               })),
-              );
-              setConversationCurrent(firstUser);
-              mountedSet(setSearchUser, { ...searchUser, total: response.meta.pagination.total });
+            );
+            setConversationCurrent(firstUser);
+            mountedSet(setSearchUser, { ...searchUser, total: response.meta.pagination.total });
           }
         },
       });
@@ -152,9 +166,15 @@ console.log("usser",users)
         type: 'crmFBDevV1/GET_TAGS',
         payload: {},
       });
+      dispatch({
+        type: 'crmFBDevV1/GET_RELATIONSHIPS',
+        payload: {},
+      });
     }
   }, [page.length]);
-console.log("conversationCurrent",conversationCurrent)
+  console.log("conversationCurrent", conversationCurrent)
+
+
 
   useEffect(() => {
     if (conversationCurrent?.id) {
@@ -196,7 +216,12 @@ console.log("conversationCurrent",conversationCurrent)
                 }
               },
             });
-
+            if (conversationCurrent?.userFacebookInfo?.status === 'LEAD') {
+              dispatch({
+                type: 'crmFBDevV1/GET_LEAD',
+                payload: conversationCurrent,
+              });
+            }
           }
         },
       });
@@ -253,6 +278,12 @@ console.log("conversationCurrent",conversationCurrent)
                   payload: { conversation_id: conversationCurrent?.id, },
                   callback: (response) => {
                     if (response) {
+                      if (conversationCurrent?.userFacebookInfo?.status === 'LEAD') {
+                        dispatch({
+                          type: 'crmFBDevV1/GET_LEAD',
+                          payload: conversationCurrent,
+                        });
+                      }
                       const firstUser = head(
                         response?.parsePayload?.map((item) => ({
                           ...item,
@@ -714,7 +745,6 @@ console.log("conversationCurrent",conversationCurrent)
       payload: { page_id_facebook: e },
       callback: (response) => {
         if (response) {
-
           mountedSet(setSearchParent, ({
             page: 1,
             limit: 15,
@@ -735,6 +765,12 @@ console.log("conversationCurrent",conversationCurrent)
             })),
           );
           setLoadingMessage(true);
+          // if (conversationCurrent?.userFacebookInfo?.status === 'LEAD') {
+          //   dispatch({
+          //     type: 'crmFBDevV1/GET_LEAD',
+          //     payload: {},
+          //   });
+          // }
         }
       },
     });
@@ -824,6 +860,68 @@ console.log("conversationCurrent",conversationCurrent)
     });
   };
 
+  //STUDENT
+  const onChaneDate = (e) => {
+    mountedSet(setDayOfBirth, e);
+  };
+
+  const onFinish = (values) => {
+    const items = values.data.map((item, index) => ({
+      ...item,
+      birth_date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: item.birth_date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    }));
+    const payload = { ...values, student_info: items, user_facebook_info_id: conversationCurrent?.user_facebook_info_id };
+    dispatch({
+      type: 'crmFBDevV1/ADD_LEAD',
+      payload,
+      callback: (response, error) => {
+        if (response) {
+          setConversationCurrent([]);
+          dispatch({
+            type: 'crmFBDevV1/GET_CONVERSATIONSID',
+            payload: { conversation_id: conversationCurrent?.id, },
+            callback: (response) => {
+              if (response) {
+                const firstUser = head(
+                  response?.parsePayload?.map((item) => ({
+                    ...item,
+                  })),
+                );
+                setNoteValue(response?.parsePayload[0]?.userFacebookInfo?.note);
+                setConversationCurrent(firstUser);
+                users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+                if (conversationCurrent?.userFacebookInfo?.customer_lead_id) {
+                  dispatch({
+                    type: 'crmFBDevV1/GET_LEAD',
+                    payload: conversationCurrent,
+                  });
+                }
+              }
+            },
+          });
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              formRef.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -944,75 +1042,75 @@ console.log("conversationCurrent",conversationCurrent)
                   </>
                 ))} */}
               {/* {(!loading['crmFBDevV1/GET_PAGES'] || !loading['crmFBDevV1/GET_CONVERSATIONS']) && */}
-                <Scrollbars
-                  autoHide
-                  autoHideTimeout={1000}
-                  autoHideDuration={100}
-                  autoHeight
-                  autoHeightMax="calc(100vh - 355px)"
+              <Scrollbars
+                autoHide
+                autoHideTimeout={1000}
+                autoHideDuration={100}
+                autoHeight
+                autoHeightMax="calc(100vh - 355px)"
+              >
+                <InfiniteScroll
+                  hasMore={!searchUser.loading && searchUser.hasMore}
+                  initialLoad={searchUser.loading}
+                  loadMore={handleInfiniteOnLoadUser}
+                  pageStart={0}
+                  useWindow={false}
                 >
-                  <InfiniteScroll
-                    hasMore={!searchUser.loading && searchUser.hasMore}
-                    initialLoad={searchUser.loading}
-                    loadMore={handleInfiniteOnLoadUser}
-                    pageStart={0}
-                    useWindow={false}
-                  >
-                    {
-                      users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
-                        <div
-                          className={classnames(styles['user-item'], {
-                            [styles['user-item-active']]:
-                              userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
-                          })}
-                          key={id}
-                          role="presentation"
-                          onClick={() => onChangeConversation(id)}
-                        >
-                          <div className={styles['user-content']}>
-                            <div className={styles['avatar-container']}>
-                              <span
-                                className={classnames(styles.dot, { [styles.active]: can_reply })}
-                              />
-                              <img
-                                src={userFacebookInfo?.avatar}
-                                alt="facebook"
-                                className={styles.img}
-                              />
-                            </div>
-                            {noti_inbox === "SEEN" ?
-                              <>
-                                <div className={styles['user-info']}>
-                                  <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                  <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
-                                </div>
+                  {
+                    users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
+                      <div
+                        className={classnames(styles['user-item'], {
+                          [styles['user-item-active']]:
+                            userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
+                        })}
+                        key={id}
+                        role="presentation"
+                        onClick={() => onChangeConversation(id)}
+                      >
+                        <div className={styles['user-content']}>
+                          <div className={styles['avatar-container']}>
+                            <span
+                              className={classnames(styles.dot, { [styles.active]: can_reply })}
+                            />
+                            <img
+                              src={userFacebookInfo?.avatar}
+                              alt="facebook"
+                              className={styles.img}
+                            />
+                          </div>
+                          {noti_inbox === "SEEN" ?
+                            <>
+                              <div className={styles['user-info']}>
+                                <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                              </div>
+                              <p className={styles.time}>
+                                {time?.substr(-5, 5)}
+                              </p>
+                            </>
+                            :
+                            <>
+                              <div className={styles['user-info-notseen']}>
+                                <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
                                 <p className={styles.time}>
                                   {time?.substr(-5, 5)}
                                 </p>
-                              </>
-                              :
-                              <>
-                                <div className={styles['user-info-notseen']}>
-                                  <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                  <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
-                                  <p className={styles.time}>
-                                    {time?.substr(-5, 5)}
-                                  </p>
-                                </div>
-                              </>
-                            }
-                          </div>
-                          {userFacebookInfo?.userFacebookInfoTag.map((i, index) =>
-                            <div className='mt5' key={index}>
-                              <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
-                            </div>
-                          )}
+                              </div>
+                            </>
+                          }
                         </div>
-                      ))
-                    }
+                        {userFacebookInfo?.userFacebookInfoTag.map((i, index) =>
+                          <div className='mt5' key={index}>
+                            <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  }
 
-                  </InfiniteScroll>
-                </Scrollbars>
+                </InfiniteScroll>
+              </Scrollbars>
               {/* } */}
             </div>
           </div>
@@ -1200,25 +1298,11 @@ console.log("conversationCurrent",conversationCurrent)
               autoHeightMax="calc(100vh - 450px)"
             >
               <div className={styles['contact-container']}>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Ngày sinh</p>
-                  <Skeleton.Input className="w-100" active size="default" />
+                <div className={styles['information-parents']}>
+                  <h3 className={styles.title}>Thông tin Chung</h3>
                 </div>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Số điện thoại</p>
-                  <Skeleton.Input className="w-100" active size="default" />
-                </div>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Email</p>
-                  <Skeleton.Input className="w-100" active size="default" />
-                </div>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Địa chỉ</p>
-                  <Skeleton.Input className="w-100" active size="default" />
-                </div>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Facebook id</p>
-                  <Skeleton.Input className="w-100" active size="default" />
+                <div className={styles['information-students']}>
+                  <h3 className={styles.title}>Thông tin học sinh</h3>
                 </div>
               </div>
               <div className={styles['tags-container']}>
@@ -1274,15 +1358,25 @@ console.log("conversationCurrent",conversationCurrent)
               </div>
               <div className='pl10'>
                 <div className={styles['user-info']}>
-                  <p className={styles.norm}>{conversationCurrent?.userFacebookInfo?.user_name}</p>
+                  <p className={styles.norm}>{conversationCurrent?.userFacebookInfo?.status === 'LEAD' ?
+                    detailLead?.full_name
+                    : conversationCurrent?.userFacebookInfo?.user_name}</p>
                 </div>
                 <div className={styles['status-container']}>
                   <div className={styles['tags-container']}>
-                    <span>Chưa là khách hàng</span>
+                    {
+                      conversationCurrent?.userFacebookInfo?.status === 'LEAD' ?
+                        <span>{detailLead?.statusCare
+                          ?.map((item, index) => (
+                            <div key={index}>
+                              {item?.statusParentLead?.name}
+                            </div>
+                          ))
+                          .pop()}</span>
+                        :
+                        <span>Chưa là khách hàng</span>
+                    }
                   </div>
-                  {/* <Button color="success" className={styles['group-button']}>
-                  Thêm Lead
-                </Button> */}
                 </div>
               </div>
             </div>
@@ -1297,30 +1391,258 @@ console.log("conversationCurrent",conversationCurrent)
               autoHideTimeout={1000}
               autoHideDuration={100}
               autoHeight
-              autoHeightMax="calc(100vh - 450px)"
+              autoHeightMax="calc(100vh - 350px)"
             >
-              <div className={styles['contact-container']}>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Ngày sinh</p>
-                  {/* <p className={styles.norm}>22/07/1997</p> */}
-                </div>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Số điện thoại</p>
-                  {/* <p className={styles.norm}>093548930</p> */}
-                </div>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Email</p>
-                  {/* <p className={styles.norm}>email@gmail.com</p> */}
-                </div>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Địa chỉ</p>
+              {
+                conversationCurrent?.userFacebookInfo?.status === 'LEAD' && conversationCurrent?.userFacebookInfo?.customer_lead_id === detailLead?.id ?
 
-                </div>
-                <div className={styles['contact-item']}>
-                  <p className={styles.label}>Facebook id</p>
-                  {/* <p className={styles.norm}>facebook.com/thuttn</p> */}
-                </div>
-              </div>
+                  <div className={styles['contact-container']}>
+                    <div className={styles['information-parents']}>
+                      <h3 className={styles.title}>THÔNG TIN CHUNG</h3>
+                      <div className={styles['contact-items']}>
+                        <p className={styles.label}>Họ và tên</p>
+                        <h3 className={styles.name}>{detailLead?.full_name}</h3>
+                      </div>
+                      <div className={styles['contact-items']}>
+                        <p className={styles.label}>Giới tính</p>
+                        <h3 className={styles.name}>
+                          {detailLead?.sex === "MALE" ? "Nam" : ""}
+                          {detailLead?.sex === "FEMALE" ? "Nữ" : ""}
+                          {detailLead?.sex === "OTHER" ? "Khác" : ""}
+                        </h3>
+                      </div>
+                      <div className={styles['contact-items']}>
+                        <p className={styles.label}>Ngày sinh</p>
+                        <h3 className={styles.name}>{detailLead?.birth_date}</h3>
+                      </div>
+                      <div className={styles['contact-items']}>
+                        <p className={styles.label}>Điện thoại</p>
+                        <h3 className={styles.name}>{detailLead?.phone}</h3>
+                      </div>
+                      <div className={styles['contact-items']}>
+                        <p className={styles.label}>Email</p>
+                        <h3 className={styles.name}>{detailLead?.email}</h3>
+                      </div>
+                      <div className={styles['contact-items']}>
+                        <p className={styles.label}>Địa chỉ</p>
+                        <h3 className={styles.name}>{detailLead?.address}</h3>
+                      </div>
+                    </div>
+                    <div className={styles['information-students']}>
+                      <h3 className={styles.title}>THÔNG TIN HỌC SINH</h3>
+                      {
+                        detailLead?.studentInfo?.map((item, index) =>
+                          <div key={index}>
+                            <div className={styles['students-titles']}>
+                              <div type="form-title" className={styles.titleContent}>
+                                Học sinh {index + 1}
+                              </div>
+                            </div>
+                            <div className={styles['contact-items']}>
+                              <p className={styles.label}>Họ và tên</p>
+                              <h3 className={styles.name}>{item?.full_name}</h3>
+                            </div>
+                            <div className={styles['contact-items']}>
+                              <p className={styles.label}>Giới tính</p>
+                              <h3 className={styles.name}>
+                                {item?.sex === "MALE" ? "Nam" : ""}
+                                {item?.sex === "FEMALE" ? "Nữ" : ""}
+                                {item?.sex === "OTHER" ? "Khác" : ""}
+                              </h3>
+                            </div>
+                            <div className={styles['contact-items']}>
+                              <p className={styles.label}>Ngày sinh</p>
+                              <h3 className={styles.name}>{item.birth_date} ({item?.age_month} Tháng tuổi)</h3>
+                            </div>
+                            <div className={styles['contact-items']}>
+                              <p className={styles.label}>Mối quan hệ</p>
+                              <h3 className={styles.name}>{item?.categoryRelationship?.name}</h3>
+                            </div>
+                          </div>
+                        )
+                      }
+                    </div>
+                  </div>
+                  :
+                  <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+                    <div className={styles['contact-container']}>
+                      <div className={styles['information-parents']}>
+                        <h3 className={styles.title}>THÔNG TIN CHUNG</h3>
+                        <div className={styles['contact-item']}>
+                          <label className={styles.labelRequired}>
+                            <p>Họ và tên</p>
+                          </label>
+                          <FormItem
+                            name="user_full_name"
+                            type={variables.INPUT}
+                            className={styles.norm}
+                            rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                          />
+                        </div>
+                        <div className={styles['contact-item']}>
+                          <label className={styles.labelRequired}>
+                            <p>Giới tính</p>
+                          </label>
+                          <FormItem
+                            options={['id', 'name']}
+                            data={sex}
+                            placeholder="Chọn"
+                            className={styles.norm}
+                            type={variables.SELECT}
+                            rules={[variables.RULES.EMPTY_INPUT]}
+                          />
+                        </div>
+                        <div className={styles['contact-item']}>
+                          <p className={styles.label}>Ngày sinh</p>
+                          <FormItem
+                            name="user_birth_date"
+                            className={styles.norm}
+                            type={variables.DATE_PICKER}
+                            disabledDate={(current) => current > moment()}
+                          />
+                        </div>
+                        <div className={styles['contact-item']}>
+                          <label className={styles.labelRequired}>
+                            <p>Điện thoại</p>
+                          </label>
+                          <FormItem
+                            name="user_phone"
+                            className={styles.norm}
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
+                          />
+                        </div>
+                        <div className={styles['contact-item']}>
+                          <p className={styles.label}>Email</p>
+                          <FormItem
+                            name="user_email"
+                            className={styles.norm}
+                            type={variables.EMAIL}
+                          />
+                        </div>
+                        <div className={styles['contact-item']}>
+                          <p className={styles.label}>Địa chỉ</p>
+                          <FormItem
+                            name="user_address"
+                            className={styles.norm}
+                            type={variables.INPUT}
+                          />
+                        </div>
+                      </div>
+                      <div className={styles['information-students']}>
+                        <h3 className={styles.title}>THÔNG TIN HỌC SINH</h3>
+                        <Form.List name="data">
+                          {(fields, { add, remove }) => (
+                            <>
+                              {fields.map((field, index) => (
+                                <div
+                                  key={field.key}
+                                  className='border-bottom'
+                                >
+                                  <div className={styles['students-title']}>
+                                    <div type="form-title" className={styles.titleContent}>
+                                      Học sinh {index + 1}
+                                    </div>
+                                    {fields.length > 0 && (
+                                      <DeleteOutlined
+                                        onClick={() => {
+                                          remove(index);
+                                        }}
+                                      />
+                                    )}
+                                  </div>
+                                  <div className="row">
+                                    <div className="col-lg-12">
+                                      <div className={styles['contact-item']}>
+                                        <p className={styles.label}>Họ và tên</p>
+                                        <FormItem
+                                          name={[field.name, 'full_name']}
+                                          className={styles.norm}
+                                          fieldKey={[field.fieldKey, 'full_name']}
+                                          type={variables.INPUT}
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-12">
+                                      <div className={styles['contact-item']}>
+                                        <p className={styles.label}>Giới tính</p>
+                                        <FormItem
+                                          data={sex}
+                                          className={styles.norm}
+                                          name={[field.name, 'sex']}
+                                          fieldKey={[field.fieldKey, 'sex']}
+                                          type={variables.SELECT}
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-12">
+                                      <div className={styles['contact-item']}>
+                                        <p className={styles.label}>Ngày sinh</p>
+                                        <FormItem
+                                          name={[field.name, 'birth_date']}
+                                          className={styles.norm}
+                                          fieldKey={[field.fieldKey, 'birth_date']}
+                                          type={variables.DATE_PICKER}
+                                          onChange={onChaneDate}
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-12">
+                                      <div className={styles['contact-item']}>
+                                        <p className={styles.label}>Tháng tuổi</p>
+                                        {
+                                          file?.age_month ?
+                                            <Form.Item >
+                                              <Text size="normal" className={styles.norm}>
+                                                {file?.age_month}
+                                              </Text>
+                                            </Form.Item>
+                                            : <Form.Item name={[field.name, 'age_month']} className={styles.norm}>
+                                              {dayOfBirth &&
+                                                moment().diff(moment(dayOfBirth), 'month')} Tháng tuổi
+                                            </Form.Item >
+                                        }
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-12">
+                                      <div className={styles['contact-item']}>
+                                        <p className={styles.label}>Mối quan hệ</p>
+                                        <FormItem
+                                          data={relationships}
+                                          className={styles.norm}
+                                          name={[field.name, 'category_relationship_id']}
+                                          fieldKey={[field.fieldKey, 'category_relationship_id']}
+                                          type={variables.SELECT}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+
+                              <div className={styles['students-add']}>
+                                <pane
+                                  color="success"
+                                  ghost
+                                  className="icon-plus-circle"
+                                  onClick={() => {
+                                    add();
+                                  }}
+                                />
+                              </div>
+                            </>
+                          )}
+                        </Form.List>
+                      </div>
+                      <div className={styles['menuRight-add']}>
+                        <Button color="success" htmlType="submit" className="w-100">
+                          Thêm phụ huynh Lead
+                        </Button>
+                      </div>
+                    </div>
+                  </Form>
+              }
+
               <div className={styles['tags-container']}>
                 <h3 className={styles.title}>GẮN TAGS</h3>
                 <div >
@@ -1394,6 +1716,7 @@ console.log("conversationCurrent",conversationCurrent)
                   </div>
                 </div>
               </div>
+
             </Scrollbars>
           </div>
         )}

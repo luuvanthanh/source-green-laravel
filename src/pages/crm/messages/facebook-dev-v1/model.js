@@ -15,6 +15,8 @@ export default {
     user: {},
     pages: [],
     users : [],
+    relationships: [],
+    detailLead: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -48,6 +50,14 @@ export default {
     SET_CONVERSATIONS: (state, { payload }) => ({
       ...state,
       users: payload.parsePayload,
+    }),
+    SET_RELATIONSHIPS: (state, { payload }) => ({
+      ...state,
+      relationships: payload.parsePayload,
+    }),
+    SET_LEAD: (state, { payload }) => ({
+      ...state,
+      detailLead: payload.parsePayload,
     }),
   },
   effects: {
@@ -204,6 +214,42 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_RELATIONSHIPS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRelationships, payload);
+        yield saga.put({
+          type: 'SET_RELATIONSHIPS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_LEAD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addLead, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_LEAD({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.detailsLead, payload);
+        yield saga.put({
+          type: 'SET_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },
