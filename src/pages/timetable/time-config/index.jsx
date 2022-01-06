@@ -151,9 +151,9 @@ const Index = memo(() => {
         className: 'min-width-150',
         fixed: 'right',
         align: 'center',
-        render: (record) =>
-          moment(record.toDate).isAfter() && (
-            <ul className="list-unstyled list-inline">
+        render: (record) => (
+          <ul className="list-unstyled list-inline">
+            {moment(record.toDate).isAfter() && (
               <li className="list-inline-item">
                 <Button
                   color="primary"
@@ -161,16 +161,18 @@ const Index = memo(() => {
                   onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
                 />
               </li>
-              <li className="list-inline-item">
-                <Button
-                  color="danger"
-                  icon="remove"
-                  className="ml-2"
-                  onClick={() => onRemove(record.id)}
-                />
-              </li>
-            </ul>
-          ),
+            )}
+
+            <li className="list-inline-item">
+              <Button
+                color="danger"
+                icon="remove"
+                className="ml-2"
+                onClick={() => onRemove(record.id)}
+              />
+            </li>
+          </ul>
+        ),
       },
     ];
 

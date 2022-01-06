@@ -112,11 +112,14 @@ const Index = memo(() => {
     });
   };
 
-  const formatTimeline = Object.assign({}, ...years.map((item) => ({ [item?.id]: item })));
-  const timelineColumns = Helper.generateTimeline(
-    formatTimeline[timeline]?.periodDuration,
-    formatTimeline[timeline]?.fromTime,
-    formatTimeline[timeline]?.toTime,
+  const timelineColumns = useMemo(
+    () =>
+      Helper.generateTimeline(
+        Object.assign({}, ...years.map((item) => ({ [item?.id]: item })))[timeline]?.periodDuration,
+        Object.assign({}, ...years.map((item) => ({ [item?.id]: item })))[timeline]?.fromTime,
+        Object.assign({}, ...years.map((item) => ({ [item?.id]: item })))[timeline]?.toTime,
+      ),
+    [timeline, years],
   );
 
   const onLoad = () => {
@@ -166,9 +169,9 @@ const Index = memo(() => {
     loadYears();
   }, []);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (search.branchId && search.timetableSettingId && !isEmpty(classes)) {
-      setTimeline(search.timetableSettingId);
+      await setTimeline(search.timetableSettingId);
       onLoad();
     }
   }, [search, classes]);
@@ -483,6 +486,7 @@ const Index = memo(() => {
   }, 300);
 
   const changeFilter = (name) => (value) => {
+    setTimeline(value);
     changeFilterDebouce(name, value);
   };
 
