@@ -1442,6 +1442,9 @@
 
 .colorIcon {
   color: #BFBFBF;
+  display: flex!important;
+  align-items: center;
+  justify-content: center;
 }
 .btnStyle {
   &:hover {
