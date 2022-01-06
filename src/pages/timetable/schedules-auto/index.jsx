@@ -632,7 +632,7 @@ const Index = memo(() => {
                   type={variables.SELECT}
                   allowClear={false}
                   onChange={(value) => changeBanchFilter('branchId')(value)}
-                  disabled={defaultBranch?.id}
+                  disabled={!!defaultBranch?.id}
                 />
               </div>
             </div>
