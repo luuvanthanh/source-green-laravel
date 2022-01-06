@@ -41,8 +41,8 @@ const Index = memo(() => {
   const history = useHistory();
   const { data, duration, fromTime, toTime } = objectData;
   const [search, setSearch] = useState({
-    fromDate: moment().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
-    toDate: moment().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
+    fromDate: null,
+    toDate: null,
     type: 'timeGridWeek',
     branchId: defaultBranch?.id,
     classId: query?.classId,
@@ -53,24 +53,44 @@ const Index = memo(() => {
 
   const [showColumn, setShowColumn] = useState(false);
 
+  const debouncedSearchDate = debounce((fromDate = moment(), toDate = moment(), type) => {
+    setSearch((prev) => ({
+      ...prev,
+      type,
+      fromDate: moment(fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
+      toDate: moment(toDate).format(variables.DATE_FORMAT.DATE_AFTER),
+    }));
+  }, 500);
+
   const getYears = () => {
     dispatch({
       type: 'timeTablesChildren/GET_YEARS',
       payload: {},
       callback: (response) => {
         if (response && !search.timetableSettingId) {
-          const time = moment(search.fromDate);
-          response.forEach((item) => {
-            if (time.isBefore(moment(item.toDate)) && time.isAfter(moment(item.fromDate))) {
-              setSearch((prevState) => ({
-                ...prevState,
-                timetableSettingId: item.id,
-              }));
-              formRef.setFieldsValue({
-                timetableSettingId: item.id,
-              });
-            }
+          setSearch((prevState) => ({
+            ...prevState,
+            timetableSettingId: head(response)?.id,
+          }));
+          formRef.setFieldsValue({
+            timetableSettingId: head(response)?.id,
           });
+          if (
+            moment().isAfter(moment(head(response)?.fromDate)) &&
+            moment().isBefore(moment(head(response)?.toDate))
+          ) {
+            setSearch((prevState) => ({
+              ...prevState,
+              fromDate: moment().startOf('week'),
+              toDate: moment().endOf('week'),
+            }));
+          } else {
+            setSearch((prevState) => ({
+              ...prevState,
+              fromDate: moment(head(response)?.fromDate).startOf('week'),
+              toDate: moment(head(response)?.fromDate).endOf('week'),
+            }));
+          }
         }
       },
     });
@@ -102,6 +122,17 @@ const Index = memo(() => {
       payload: {
         branch: idBranch,
       },
+      callback: (response) => {
+        if (response) {
+          setSearch((prev) => ({
+            ...prev,
+            classId: query?.classId || head(response)?.id,
+          }));
+          formRef.setFieldsValue({
+            classId: head(response)?.id,
+          });
+        }
+      },
     });
   };
 
@@ -113,7 +144,7 @@ const Index = memo(() => {
         if (response) {
           setSearch((prev) => ({
             ...prev,
-            branchId: query?.branchId || response[0]?.id,
+            branchId: query?.branchId || head(response)?.id,
           }));
           formRef.setFieldsValue({
             branchId: head(response)?.id,
@@ -228,8 +259,8 @@ const Index = memo(() => {
             }
           }
         });
-        const startDay = moment(search.fromDate).startOf('week');
-        const endDay = moment(search.toDate).endOf('week');
+        const startDay = moment(search.fromDate);
+        const endDay = moment(search.toDate).endOf('month').endOf('week');
         const date = startDay.subtract(1, 'day');
         while (date.isBefore(endDay, 'day')) {
           const objTime = Object.create({});
@@ -238,7 +269,7 @@ const Index = memo(() => {
             const time = date.add(1, 'day').clone();
             objTime[dayName[i]] = {
               date: time,
-              month: search.fromDate,
+              month: search.toDate,
               data:
                 moment(Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY)).isBefore(
                   moment(betweenYear?.toDate),
@@ -665,15 +696,6 @@ const Index = memo(() => {
     }
   };
 
-  const debouncedSearchDate = debounce((fromDate = moment(), toDate = moment(), type) => {
-    setSearch((prev) => ({
-      ...prev,
-      type,
-      fromDate: moment(fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
-      toDate: moment(toDate).format(variables.DATE_FORMAT.DATE_AFTER),
-    }));
-  }, 500);
-
   const disabledToday = (type) => {
     switch (type) {
       case 'dayGridMonth':
@@ -736,7 +758,10 @@ const Index = memo(() => {
 
   const titleDateTable = (type) => {
     if (type === 'dayGridMonth' || type === 'timeGridWeek') {
-      return moment(search.fromDate).format(variables.DATE_FORMAT.MONTH_FULL);
+      return Helper.getDate(
+        moment(search.fromDate).endOf('week'),
+        variables.DATE_FORMAT.MONTH_FULL,
+      );
     }
     return moment(search.fromDate).format('[Ngày] DD [tháng] MM [năm] YYYY');
   };
@@ -753,7 +778,6 @@ const Index = memo(() => {
           <Form
             initialValues={{
               ...search,
-              classId: query?.classId || null,
             }}
             layout="vertical"
             form={formRef}
@@ -786,7 +810,7 @@ const Index = memo(() => {
               <div className="col-lg-4">
                 <FormItem
                   className="ant-form-item-row"
-                  data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
+                  data={classes}
                   label="LỚP"
                   name="classId"
                   onChange={(event) => {
@@ -1035,8 +1059,8 @@ const Index = memo(() => {
                 color={search.type === 'timeGridWeek' ? 'green' : 'white'}
                 onClick={() => {
                   debouncedSearchDate(
-                    moment().startOf('weeks'),
-                    moment().endOf('weeks'),
+                    moment(search.fromDate).startOf('weeks'),
+                    moment(search.toDate).endOf('weeks'),
                     'timeGridWeek',
                   );
                 }}
@@ -1048,8 +1072,8 @@ const Index = memo(() => {
                 color={search.type === 'timeGridDay' ? 'green' : 'white'}
                 onClick={() => {
                   debouncedSearchDate(
-                    moment().startOf('days'),
-                    moment().endOf('days'),
+                    moment(search.fromDate).startOf('days'),
+                    moment(search.toDate).endOf('days'),
                     'timeGridDay',
                   );
                 }}
@@ -1061,8 +1085,8 @@ const Index = memo(() => {
                 color={search.type === 'dayGridMonth' ? 'green' : 'white'}
                 onClick={() => {
                   debouncedSearchDate(
-                    moment().startOf('month'),
-                    moment().endOf('month'),
+                    moment(search.fromDate),
+                    moment(search.toDate),
                     'dayGridMonth',
                   );
                 }}
@@ -1073,7 +1097,11 @@ const Index = memo(() => {
                 permission="TKB"
                 color={search.type === 'listDay' ? 'green' : 'white'}
                 onClick={() => {
-                  debouncedSearchDate(moment().startOf('days'), moment().endOf('days'), 'listDay');
+                  debouncedSearchDate(
+                    moment(search.fromDate).startOf('days'),
+                    moment(search.fromDate).endOf('days'),
+                    'listDay',
+                  );
                 }}
               >
                 Lịch biểu

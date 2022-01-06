@@ -8,15 +8,15 @@ export default {
       data: [],
       duration: null,
       fromTime: null,
-      toTime:null,
+      toTime: null,
     },
     years: [],
     branches: [],
     classes: [],
     error: {
       isError: false,
-      data: {}
-    }
+      data: {},
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -29,9 +29,9 @@ export default {
         toTime: payload.toTime,
       },
     }),
-    SET_YEARS: (state, {payload}) => ({
+    SET_YEARS: (state, { payload }) => ({
       ...state,
-      years: payload
+      years: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -67,9 +67,10 @@ export default {
         });
       }
     },
-    *GET_CLASSES({ payload }, saga) {
+    *GET_CLASSES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getClasses, payload);
+        callback(response.items);
         yield saga.put({
           type: 'SET_CLASSES',
           payload: response,
@@ -84,14 +85,14 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        if(response.timetableDetailGroupByTimes) {
+        if (response.timetableDetailGroupByTimes) {
           yield saga.put({
             type: 'SET_DATA',
             payload: {
               parsePayload: response.timetableDetailGroupByTimes,
               duration: response.timetableSetting.periodDuration,
               fromTime: response.timetableSetting.fromTime,
-              toTime: response.timetableSetting.toTime
+              toTime: response.timetableSetting.toTime,
             },
           });
         } else {
@@ -101,7 +102,7 @@ export default {
               parsePayload: [],
               duration: 0,
               fromTime: null,
-              toTime: null
+              toTime: null,
             },
           });
         }
@@ -112,10 +113,10 @@ export default {
         });
       }
     },
-    *GET_YEARS({payload, callback}, saga) {
+    *GET_YEARS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getYears, payload);
-        if(response) {
+        if (response) {
           callback(response.items);
           yield saga.put({
             type: 'SET_YEARS',
@@ -125,10 +126,10 @@ export default {
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
-    }, 
+    },
   },
   subscriptions: {},
 };
