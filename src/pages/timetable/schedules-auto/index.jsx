@@ -30,7 +30,12 @@ const Index = memo(() => {
   const [
     loading,
     { classes, branches, years, activities },
-  ] = useSelector(({ loading: { effects }, timeTablesAuto }) => [effects, timeTablesAuto]);
+    { defaultBranch },
+  ] = useSelector(({ loading: { effects }, timeTablesAuto, user }) => [
+    effects,
+    timeTablesAuto,
+    user,
+  ]);
 
   const dataYears = years.map((item) => ({
     id: item.id,
@@ -43,31 +48,40 @@ const Index = memo(() => {
 
   const [search, setSearch] = useState({
     isGroupByDayOfWeek: false,
-    branchId: null,
+    branchId: defaultBranch?.id,
     timetableSettingId: null,
   });
 
   const [searchText, setSearchText] = useState('');
 
   const loadCategories = () => {
-    dispatch({
-      type: 'timeTablesAuto/GET_BRANCHES',
-      payload: {},
-      callback: (response) => {
-        if (response) {
-          setSearch((prev) => ({ ...prev, branchId: head(response)?.id }));
-          formRef.setFieldsValue({
-            branchId: head(response)?.id,
-          });
-          dispatch({
-            type: 'timeTablesAuto/GET_CLASSES',
-            payload: {
-              branch: head(response)?.id,
-            },
-          });
-        }
-      },
-    });
+    if (defaultBranch?.id) {
+      dispatch({
+        type: 'timeTablesAuto/GET_CLASSES',
+        payload: {
+          branch: defaultBranch?.id,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'timeTablesAuto/GET_BRANCHES',
+        payload: {},
+        callback: (response) => {
+          if (response) {
+            setSearch((prev) => ({ ...prev, branchId: head(response)?.id }));
+            formRef.setFieldsValue({
+              branchId: head(response)?.id,
+            });
+            dispatch({
+              type: 'timeTablesAuto/GET_CLASSES',
+              payload: {
+                branch: head(response)?.id,
+              },
+            });
+          }
+        },
+      });
+    }
   };
 
   const loadYears = () => {
@@ -618,6 +632,7 @@ const Index = memo(() => {
                   type={variables.SELECT}
                   allowClear={false}
                   onChange={(value) => changeBanchFilter('branchId')(value)}
+                  disabled={defaultBranch?.id}
                 />
               </div>
             </div>
