@@ -60,4 +60,11 @@ class SurveyFormRepositoryEloquent extends BaseRepository implements SurveyFormR
 
         return $result;
     }
+
+    public function getSurveyFormBySlug($slug)
+    {
+        $surveyForm = SurveyForm::where('slug', $slug)->firstOrFail();
+
+        return parent::parserResult($surveyForm);
+    }
 }

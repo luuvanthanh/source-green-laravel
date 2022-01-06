@@ -34,6 +34,17 @@ class SurveyFormController extends Controller
      * @param Request $request
      * @return Response
      */
+    public function getSurveyFormBySlug($slug)
+    {
+        $surveyForms = $this->surveyFormRepository->getSurveyFormBySlug($slug);
+
+        return $this->success($surveyForms, trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function index(Request $request)
     {
         $surveyForms = $this->surveyFormRepository->getSurveyForm($request->all());

@@ -17,6 +17,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Users\RouteRegistrar::routes(function ($router) {
         $router->forGuest();
     });
+    \GGPHP\SurveyForm\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
 
     Route::group(['prefix' => 'ai'], function () {
         \GGPHP\TourGuide\RouteRegistrar::routes(function ($router) {
@@ -60,6 +63,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\NumberOfTourist\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+        \GGPHP\SurveyForm\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
         \GGPHP\Collection\RouteRegistrar::routes();
         \GGPHP\CameraServer\RouteRegistrar::routes();
         \GGPHP\VideoWall\RouteRegistrar::routes();
@@ -67,7 +73,6 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\RolePermission\RouteRegistrar::routes();
         \GGPHP\ActivityLog\RouteRegistrar::routes();
         \GGPHP\Report\RouteRegistrar::routes();
-        \GGPHP\SurveyForm\RouteRegistrar::routes();
         \GGPHP\Tourist\RouteRegistrar::routes();
         \GGPHP\Notification\RouteRegistrar::routes();
         \GGPHP\SystemConfig\RouteRegistrar::routes();

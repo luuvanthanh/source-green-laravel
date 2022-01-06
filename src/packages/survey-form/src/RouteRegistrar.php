@@ -20,6 +20,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forGuest();
     }
 
     /**
@@ -33,6 +34,19 @@ class RouteRegistrar extends CoreRegistrar
         \Route::resource('survey-forms', 'SurveyFormController');
 
         // Create video wall from surveyForm
-        \Route::resource('survey-form-results', 'SurveyFormResultController');
+        \Route::resource('survey-form-results', 'SurveyFormResultController')->only('destroy', 'update', 'show', 'index');
+    }
+
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forGuest()
+    {
+        // SurveyForm
+        \Route::get('survey-form-by-slug/{slug}', 'SurveyFormController@getSurveyFormBySlug');
+
+        \Route::resource('survey-form-results', 'SurveyFormResultController')->only('store');
     }
 }

@@ -77,7 +77,8 @@
             "GGPHP\\Tourist\\": "packages/tourist/src/",
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
             "GGPHP\\Notification\\": "packages/notification/src/",
-            "GGPHP\\SystemConfig\\": "packages/system-config/src/"
+            "GGPHP\\SystemConfig\\": "packages/system-config/src/",
+            "GGPHP\\AiService\\": "packages/ai-service/src/"
         },
         "classmap": [
             "database/seeds",
