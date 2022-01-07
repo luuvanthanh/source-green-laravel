@@ -1037,13 +1037,13 @@ const Index = memo(() => {
                         ) {
                           id = item?.id;
                         }
-                        if (id !== search.timetableSettingId) {
-                          setSearch((prev) => ({ ...prev, timetableSettingId: id }));
-                          formRef.setFieldsValue({
-                            timetableSettingId: id,
-                          });
-                        }
                       });
+                      if (id !== search.timetableSettingId) {
+                        setSearch((prev) => ({ ...prev, timetableSettingId: id }));
+                        formRef.setFieldsValue({
+                          timetableSettingId: id,
+                        });
+                      }
                     }
                   }}
                   className={styles.btnStyle}
