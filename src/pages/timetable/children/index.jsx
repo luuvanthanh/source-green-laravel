@@ -147,11 +147,11 @@ const Index = memo(() => {
         if (response) {
           setSearch((prev) => ({
             ...prev,
-            classId: head(response)?.id,
+            classId: query.classId || head(response)?.id,
             branchId: idBranch
           }));
           formRef.setFieldsValue({
-            classId: head(response)?.id,
+            classId: query?.classId || head(response)?.id,
           });
         }
       },
