@@ -1,0 +1,35 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-top {
+  background-color: white;
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  display: block;
+  :global(.ant-form-item) {
+    margin-bottom: 0px !important;
+  }
+  .title {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    font-weight: 400;
+    margin-bottom: 5px;
+  }
+  .content {
+    display: flex;
+  }
+}
+
+.wrapper-table {
+  background-color: white;
+  .title {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
+    color: #36383a;
+    font-weight: 700;
+  }
+}

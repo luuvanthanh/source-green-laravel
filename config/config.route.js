@@ -1934,6 +1934,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TKB],
           },
+          {
+            path: '/thoi-khoa-bieu/thong-ke-bao-cao-phu-huynh-tham-gia-su-kien',
+            component: './timetable/report',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
         ],
       },
       // MEDICAL
