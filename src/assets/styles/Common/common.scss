@@ -254,6 +254,9 @@
   :global(.ant-table-wrapper) {
     overflow-x: auto;
   }
+  :global(.fc-direction-ltr) {
+    width: 100%;
+  }
 }
 
 
