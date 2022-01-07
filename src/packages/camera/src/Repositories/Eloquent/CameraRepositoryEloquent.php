@@ -3,24 +3,12 @@
 namespace GGPHP\Camera\Repositories\Eloquent;
 
 use DB;
-use GGPHP\Camera\Events\CameraAdded;
-use GGPHP\Camera\Events\CameraDeleted;
-use GGPHP\Camera\Events\CameraUpdated;
 use GGPHP\Camera\Models\Camera;
-use GGPHP\Camera\Models\CameraVideoProperties;
 use GGPHP\Camera\Presenters\CameraPresenter;
 use GGPHP\Camera\Repositories\Contracts\CameraCollectionRepository;
-use GGPHP\Camera\Repositories\Contracts\CameraGeneralPropertiesRepository;
-use GGPHP\Camera\Repositories\Contracts\CameraNetworkPropertiesRepository;
-use GGPHP\Camera\Repositories\Contracts\CameraPtzPropertiesRepository;
 use GGPHP\Camera\Repositories\Contracts\CameraRepository;
-use GGPHP\Camera\Repositories\Contracts\CameraVideoPropertiesRepository;
-use GGPHP\Camera\Transformers\SimpleCameraTransformer;
 use Illuminate\Container\Container as Application;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use League\Fractal;
-use League\Fractal\Manager;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -37,7 +25,6 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         'address',
         'address_detail',
         'status',
-        'generalProperties.device_name'
     ];
 
     /**
@@ -54,26 +41,32 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
      * Init
      *
      * @param CameraCollectionRepository $cameraCollectionRepository
-     * @param CameraGeneralPropertiesRepository $cameraGeneralPropertiesRepository
-     * @param CameraNetworkPropertiesRepository $cameraNetworkPropertiesRepository
-     * @param CameraVideoPropertiesRepository $cameraVideoPropertiesRepository
-     * @param CameraPtzPropertiesRepository $cameraPtzPropertiesRepository
      * @param Application $app
      */
     public function __construct(
         CameraCollectionRepository $cameraCollectionRepository,
-        CameraGeneralPropertiesRepository $cameraGeneralPropertiesRepository,
-        CameraNetworkPropertiesRepository $cameraNetworkPropertiesRepository,
-        CameraVideoPropertiesRepository $cameraVideoPropertiesRepository,
-        CameraPtzPropertiesRepository $cameraPtzPropertiesRepository,
         Application $app
     ) {
-        $this->cameraCollectionRepository = $cameraCollectionRepository;
-        $this->cameraGeneralPropertiesRepository = $cameraGeneralPropertiesRepository;
-        $this->cameraNetworkPropertiesRepository = $cameraNetworkPropertiesRepository;
-        $this->cameraVideoPropertiesRepository = $cameraVideoPropertiesRepository;
-        $this->cameraPtzPropertiesRepository = $cameraPtzPropertiesRepository;
         parent::__construct($app);
+        $this->cameraCollectionRepository = $cameraCollectionRepository;
+    }
+
+    /**
+     * Boot up the repository, pushing criteria
+     */
+    public function boot()
+    {
+        $this->pushCriteria(app(RequestCriteria::class));
+    }
+
+    /**
+     * Specify Presenter class name
+     *
+     * @return string
+     */
+    public function presenter()
+    {
+        return CameraPresenter::class;
     }
 
     /**
@@ -161,19 +154,27 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 $camera->collection()->attach($data['collection_id']);
             }
 
-            if (isset($data['video'])) {
-                $videoProperties = array_merge($data['video'], [
-                    'camera_id' => $camera->id
-                ]);
+            // $dataDeactive = [
+            //     'server_id' => $camera->cameraServer->uuid,
+            //     'cam_info_as_bytes' =>[
+            //         'on'=>true,
+            //         'rtsp'=>''
+            //         'cam_id'=>''
+            //         'name'=>''
+            //         'backup'=>''
+            //         'streaming'=>''
+            //         'streaming_info'=>''
+            //     ],
+            // ];
 
-                $this->cameraVideoPropertiesRepository->create($videoProperties);
-            }
+            // VmsCoreServices::deactivationVmsCore($dataDeactive);
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();
             throw $e;
         }
+
         return parent::parserResult($camera);
     }
 
@@ -196,7 +197,6 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             'uuid' => (string) Str::uuid(),
             'status' => Camera::STATUS_STOPPED,
         ]);
-
 
         try {
             // Update camera information
@@ -237,30 +237,11 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         \DB::beginTransaction();
         try {
 
-            if (!empty($camera->videoProperties->id)) {
-                $camVideo = $this->cameraVideoPropertiesRepository->find($camera->videoProperties->id);
-                if (!empty($camVideo)) {
-                    $camVideo->delete();
-                }
-            }
-
-            if (!empty($camera->ptzProperties->id)) {
-                $camPtz = $this->cameraPtzPropertiesRepository->find($camera->ptzProperties->id);
-                if (!empty($camPtz)) {
-                    $camPtz->delete();
-                }
-            }
             if (!empty($camera->collection)) {
                 $camera->collection()->detach();
             }
 
-            if (!empty($camera->videoWalls)) {
-                $camera->videoWalls()->detach();
-            }
-
             if ($camera->delete()) {
-                // Publish event deleted
-                event(new CameraDeleted($camera));
                 \DB::commit();
                 return true;
             }
@@ -268,81 +249,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             \DB::rollback();
             \Log::error($ex->getMessage());
         }
+
         return false;
-    }
-
-    public function getSimpleListing()
-    {
-        $cameras = Camera::with('videoProperties')->get();
-        $fractal = new Manager;
-        $resource = new Fractal\Resource\Collection($cameras, new SimpleCameraTransformer);
-        $data = $fractal->createData($resource)->toArray();
-
-        return $data;
-    }
-
-    /**
-     * Auto generate device name
-     *
-     * @param type $camera_id
-     * @return type
-     */
-    public function autoGenCameraGeneralName($camera_id)
-    {
-        $prefix = env('CAMERA_PREFIX_NAME', 'Camera');
-        return $prefix . ' ' . $camera_id;
-    }
-
-    /**
-     * Auto generate device number
-     *
-     * @return type
-     */
-    public function autoGenCameraGeneralNumber()
-    {
-        $latest = Camera::latest()->first();
-        return $latest->id ? (int) $latest->id : 1;
-    }
-
-    /**
-     * Generate stream url when enabaled streaming status
-     *
-     * @param Camera $camera
-     */
-    public static function generateStreamURL(Camera $camera)
-    {
-        return sprintf('%s/live/%s.flv', env('PLAYBACK_SERVER', ''), $camera->uuid);
-    }
-
-    /**
-     * Generate video source
-     *
-     * @param Camera $camera
-     */
-    public static function generateVideoSource($userName, $password, $ip, $port)
-    {
-        if (empty($userName) || empty($password)) {
-            return sprintf('rtsp://%s:%s', $ip, $port);
-        }
-
-        return sprintf('rtsp://%s:%s@%s:%s', $userName, $password, $ip, $port);
-    }
-
-    /**
-     * Boot up the repository, pushing criteria
-     */
-    public function boot()
-    {
-        $this->pushCriteria(app(RequestCriteria::class));
-    }
-
-    /**
-     * Specify Presenter class name
-     *
-     * @return string
-     */
-    public function presenter()
-    {
-        return CameraPresenter::class;
     }
 }

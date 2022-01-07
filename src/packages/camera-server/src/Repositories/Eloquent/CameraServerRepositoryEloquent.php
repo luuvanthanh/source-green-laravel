@@ -6,8 +6,12 @@ use GGPHP\Camera\Models\Camera;
 use GGPHP\CameraServer\Models\CameraServer;
 use GGPHP\CameraServer\Presenters\CameraServerPresenter;
 use GGPHP\CameraServer\Repositories\Contracts\CameraServerRepository;
+use GGPHP\CameraServer\Services\VmsCoreServices;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
+use function GuzzleHttp\json_decode;
 
 /**
  * Class CameraServerRepositoryEloquent.
@@ -95,6 +99,41 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
         return parent::parserResult($cameraServer);
     }
 
+    public function create(array $attributes)
+    {
+        \DB::beginTransaction();
+
+        try {
+            $cameraServer = CameraServer::create($attributes);
+
+            $dataActive = [
+                'server_id' => $cameraServer->uuid,
+                'cam_data_as_bytes' => json_encode([
+                    'input' => [
+                        'cameras' => []
+                    ],
+                    'output' => [
+                        'backup_video' => [
+                            'root_path' => $cameraServer->root_path_bk,
+                            'second_interval' => $cameraServer->second_interval_bk
+                        ],
+                        'media_server_url' => $cameraServer->media_server_url,
+                        'clip_root_path' => $cameraServer->clip_root_path,
+                        'log_root_path' => $cameraServer->log_root_path,
+                        'log_level' => $cameraServer->log_level
+                    ]
+                ])
+            ];
+
+            VmsCoreServices::activatedVmsCore($dataActive);
+            \DB::commit();
+            return parent::parserResult($cameraServer);
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+    }
+
     public function changeStatus(array $attributes, $id)
     {
         $cameraServer = CameraServer::findOrFail($id);
@@ -104,5 +143,62 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
         ]);
 
         return parent::parserResult($cameraServer);
+    }
+
+    public function activeVmsCore($id)
+    {
+        \DB::beginTransaction();
+
+        try {
+            $cameraServer = CameraServer::findOrFail($id);
+
+            $dataActive = [
+                'server_id' => $cameraServer->uuid,
+                'cam_data_as_bytes' => [
+                    'input' => [
+                        'cameras' => []
+                    ],
+                    'output' => [
+                        'backup_video' => [
+                            'root_path' => $cameraServer->root_path_bk,
+                            'second_interval' => $cameraServer->second_interval_bk
+                        ],
+                        'media_server_url' => $cameraServer->media_server_url,
+                        'clip_root_path' => $cameraServer->clip_root_path,
+                        'log_root_path' => $cameraServer->log_root_path,
+                        'log_level' => $cameraServer->log_level
+                    ]
+                ]
+            ];
+
+            VmsCoreServices::activatedVmsCore($dataActive);
+            \DB::commit();
+
+            return parent::parserResult($cameraServer);
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+    }
+
+    public function deactivationVmsCore($id)
+    {
+        \DB::beginTransaction();
+
+        try {
+            $cameraServer = CameraServer::findOrFail($id);
+
+            $dataDeactive = [
+                'server_id' => $cameraServer->uuid
+            ];
+
+            VmsCoreServices::deactivationVmsCore($dataDeactive);
+
+
+            return parent::parserResult($cameraServer);
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
     }
 }

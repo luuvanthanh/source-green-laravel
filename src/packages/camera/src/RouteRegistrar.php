@@ -34,18 +34,6 @@ class RouteRegistrar extends CoreRegistrar
         // Camera collection
         \Route::post('camera-collections', 'CameraCollectionController@store');
 
-        // Camera PTZ
-        \Route::put('cameras/{camera}/ptz', 'CameraPtzController@ptz');
-
-        // Camera Preset
-        \Route::put('cameras/{camera}/preset', 'CameraPtzController@createPreset');
-
-        // Camera Goto Preset
-        \Route::put('cameras/{camera}/preset/goto', 'CameraPtzController@gotoPreset');
-
-        // Camera get Info Device
-        \Route::get('cameras/{camera}/info', 'CameraPtzController@info');
-
         // Camera playback
         \Route::post('cameras/{camera}/playback', 'CameraMediaController@playback');
 

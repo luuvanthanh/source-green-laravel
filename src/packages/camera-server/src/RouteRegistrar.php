@@ -30,6 +30,8 @@ class RouteRegistrar extends CoreRegistrar
     {
         // CameraServer
         \Route::resource('camera-servers', 'CameraServerController');
+        \Route::post('camera-servers/{id}/active-vms-core', 'CameraServerController@activeVmsCore');
+        \Route::post('camera-servers/{id}/deactivation-vms-core', 'CameraServerController@deactivationVmsCore');
         \Route::post('camera-servers/uuid', 'CameraServerController@uuid');
 
         \Route::post('camera-servers/{id}/transfer-cameras', 'CameraServerController@transferCamera');

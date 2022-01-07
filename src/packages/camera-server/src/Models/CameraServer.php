@@ -24,7 +24,9 @@ class CameraServer extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'ipv4', 'ipv6', 'nas_folder', 'status', 'user_id'
+        'ipv4', 'ipv6', 'nas_folder', 'status', 'user_id', 'uuid',
+        'root_path_bk', 'second_interval_bk', 'media_server_url', 'clip_root_path',
+        'log_root_path', 'log_level'
     ];
 
     /**

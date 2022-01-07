@@ -136,4 +136,18 @@ class CameraServerController extends Controller
 
         return $this->success($cameraServer, trans('lang::messages.common.createSuccess'));
     }
+
+    public function activeVmsCore($id)
+    {
+        $cameraServer = $this->cameraServerRepository->activeVmsCore($id);
+
+        return $this->success($cameraServer, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function deactivationVmsCore($id)
+    {
+        $cameraServer = $this->cameraServerRepository->deactivationVmsCore($id);
+
+        return $this->success($cameraServer, trans('lang::messages.common.createSuccess'));
+    }
 }

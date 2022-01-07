@@ -34,15 +34,15 @@ class EditColumnToCamerasTable extends Migration
     public function down()
     {
         Schema::table('cameras', function (Blueprint $table) {
-            $table->dropColumn('name')->nullable();
-            $table->dropColumn('ip')->nullable();
-            $table->dropColumn('port')->nullable();
-            $table->dropColumn('user_name')->nullable();
-            $table->dropColumn('password')->nullable();
-            $table->dropColumn('video_source')->nullable();
-            $table->dropColumn('is_recording')->default(false);
-            $table->dropColumn('is_streaming')->default(false);
-            $table->dropColumn('video_url')->nullable();
+            $table->dropColumn('name');
+            $table->dropColumn('ip');
+            $table->dropColumn('port');
+            $table->dropColumn('user_name');
+            $table->dropColumn('password');
+            $table->dropColumn('video_source');
+            $table->dropColumn('is_recording');
+            $table->dropColumn('is_streaming');
+            $table->dropColumn('video_url');
         });
     }
 }

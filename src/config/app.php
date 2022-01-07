@@ -187,7 +187,6 @@ return [
         GGPHP\TravelAgency\Providers\TravelAgencyServiceProvider::class,
         GGPHP\Event\Providers\EventServiceProvider::class,
         GGPHP\Camera\Providers\CameraServiceProvider::class,
-        GGPHP\Camera\Providers\CameraEventServiceProvider::class,
         GGPHP\Collection\Providers\CollectionServiceProvider::class,
         GGPHP\CameraServer\Providers\CameraServerServiceProvider::class,
         GGPHP\VideoWall\Providers\VideoWallServiceProvider::class,

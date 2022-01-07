@@ -15,37 +15,9 @@ class Camera extends UuidModel
     use SoftDeletes;
 
     const STATUS = [
-        'STATUS_READY' => 0,
-        'STATUS_STARTED' => 1,
-        'STATUS_RUNNING' => 2,
-        'STATUS_STOPPED' => 3,
-        'STATUS_FAILED' => 4,
+        'STATUS_RUNNING' => 1,
+        'STATUS_FAILED' => 2,
     ];
-
-    /**
-     * Status: Ready(User not activated Recording or Streaming)
-     */
-    const STATUS_READY = 1;
-
-    /**
-     * Status: started(User not activated Recording or Streaming)
-     */
-    const STATUS_STARTED = 2;
-
-    /**
-     * Status: Running(Active Recording or Streaming sucessfully)
-     */
-    const STATUS_RUNNING = 3;
-
-    /**
-     * Status: Stopped(User stop Recording and Streaming)
-     */
-    const STATUS_STOPPED = 4;
-
-    /**
-     * Status: Failed(Camera faild)
-     */
-    const STATUS_FAILED = 5;
 
     /**
      * Define latitude default if camera do not have input: 0.00000000
@@ -63,10 +35,11 @@ class Camera extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'status', 'status_label', 'address', 'address_detail', 'lat', 'long',
-        'user_id', 'camera_server_id', 'preset_view_id', 'preset_update_id', 'tourist_destination_id',
-        'name', 'ip', 'port', 'user_name', 'password', 'video_source', 'is_recording', 'is_streaming', 'video_url'
+        'name', 'address', 'lat', 'long', 'ip', 'port', 'user_name', 'password', 'camera_server_id',
+        'tourist_destination_id', 'is_recording', 'is_streaming', 'bit_rate', 'frame_rate', 'rtsp',
+        'resolution', 'profile', 'fps', 'gop', 'status', 'user_id'
     ];
+
     protected $appends = ['status_label'];
     protected $guard_name = 'api';
     protected $casts = [
@@ -76,13 +49,6 @@ class Camera extends UuidModel
     ];
 
     /**
-     * The storage format of the model's date columns.
-     *
-     * @var string
-     */
-    protected $dateTimeFormat = 'c';
-
-    /**
      * Get collection of camera
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -90,46 +56,6 @@ class Camera extends UuidModel
     public function collection()
     {
         return $this->belongsToMany(Collection::class, 'camera_collection');
-    }
-
-    /**
-     * Get general peroperties of camera
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function generalProperties()
-    {
-        return $this->hasOne(CameraGeneralProperties::class, 'camera_id');
-    }
-
-    /**
-     * Get video peroperties of camera
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function videoProperties()
-    {
-        return $this->hasOne(CameraVideoProperties::class, 'camera_id');
-    }
-
-    /**
-     * Get network peroperties of camera
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function networkProperties()
-    {
-        return $this->hasOne(CameraNetworkProperties::class, 'camera_id');
-    }
-
-    /**
-     * Get ptz peroperties of camera
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function ptzProperties()
-    {
-        return $this->hasOne(CameraPtzProperties::class, 'camera_id');
     }
 
     /**
@@ -158,39 +84,6 @@ class Camera extends UuidModel
     public function touristDestination()
     {
         return $this->belongsTo(TouristDestination::class);
-    }
-
-    public static function publishRedis($camera, $chanel = '')
-    {
-        $data = [
-            'camera_id' => $camera['uuid'] ?? '',
-            'rtsp_url' => $camera['rtsp'] ?? '',
-            'is_recording' => $camera['recording_status'] ?? '',
-        ];
-        return Redis::publish($chanel, json_encode($data));
-    }
-
-    /**
-     * Get status camera
-     *
-     * @return type
-     */
-    public function getStatusLabelAttribute()
-    {
-        switch ($this->status) {
-            case self::STATUS_READY:
-                return trans('lang::messages.status.ready');
-            case self::STATUS_STARTED:
-                return trans('lang::messages.status.started');
-            case self::STATUS_RUNNING:
-                return trans('lang::messages.status.running');
-            case self::STATUS_STOPPED:
-                return trans('lang::messages.status.stopped');
-            case self::STATUS_FAILED:
-                return trans('lang::messages.status.failed');
-            default:
-                return trans('lang::messages.status.failed');
-        }
     }
 
     /**
