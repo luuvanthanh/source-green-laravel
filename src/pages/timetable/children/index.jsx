@@ -148,6 +148,7 @@ const Index = memo(() => {
           setSearch((prev) => ({
             ...prev,
             classId: head(response)?.id,
+            branchId: idBranch
           }));
           formRef.setFieldsValue({
             classId: head(response)?.id,
@@ -163,10 +164,6 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          setSearch((prev) => ({
-            ...prev,
-            branchId: query?.branchId || head(response)?.id,
-          }));
           formRef.setFieldsValue({
             branchId: query?.branchId || head(response)?.id,
           });
@@ -188,10 +185,6 @@ const Index = memo(() => {
   }, []);
 
   const onChangeSelectBranch = (e) => {
-    setSearch((prevState) => ({
-      ...prevState,
-      branchId: e,
-    }));
     getClass(e);
   };
 
