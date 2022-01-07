@@ -32,4 +32,13 @@
     color: #36383a;
     font-weight: 700;
   }
+  :global(.ant-table-row-level-0) {
+   background-color: #FFF1EB !important;
+    :global(.ant-table-cell-with-append) {
+      background-color: #FFF1EB !important;
+    }
+  }
+  :global(.ant-table-thead) {
+    background-color: #EEF0F4 !important;
+  }
 }

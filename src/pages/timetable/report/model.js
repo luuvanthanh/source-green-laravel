@@ -1,4 +1,3 @@
-import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {

@@ -1,6 +1,4 @@
 import request from '@/utils/request';
-import { omit } from 'lodash';
-import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
   return request(`/event-timetable-attendances/group-by-class/${params.dataIDSearch}`, {
