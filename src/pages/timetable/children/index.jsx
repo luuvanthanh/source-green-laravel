@@ -137,7 +137,7 @@ const Index = memo(() => {
     });
   };
 
-  const getClass = (idBranch) => {
+  const getClass = (idBranch, type = null) => {
     dispatch({
       type: 'timeTablesChildren/GET_CLASSES',
       payload: {
@@ -145,14 +145,25 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          setSearch((prev) => ({
-            ...prev,
-            classId: query.classId || head(response)?.id,
-            branchId: idBranch
-          }));
-          formRef.setFieldsValue({
-            classId: query?.classId || head(response)?.id,
-          });
+          if(type) {
+            setSearch((prev) => ({
+              ...prev,
+              classId: head(response)?.id,
+              branchId: idBranch
+            }));
+            formRef.setFieldsValue({
+              classId: head(response)?.id,
+            });
+          } else {
+            setSearch((prev) => ({
+              ...prev,
+              classId: query.classId || head(response)?.id,
+              branchId: idBranch
+            }));
+            formRef.setFieldsValue({
+              classId: query?.classId || head(response)?.id,
+            });
+          }
         }
       },
     });
@@ -185,7 +196,7 @@ const Index = memo(() => {
   }, []);
 
   const onChangeSelectBranch = (e) => {
-    getClass(e);
+    getClass(e, 'change');
   };
 
   const onSelectYears = (e) => {
