@@ -34,7 +34,7 @@ class AdmissionRegister extends UuidModel
 
     public function confirmTransporter()
     {
-        return $this->hasMany(ConfirmTransporter::class);
+        return $this->hasMany(ConfirmTransporter::class, 'admission_register_id');
     }
 
     public function testInput()
@@ -50,5 +50,10 @@ class AdmissionRegister extends UuidModel
     public function profileInfo()
     {
         return $this->hasMany(ProfileInfo::class, 'admission_register_id');
+    }
+
+    public function childEvaluateInfo()
+    {
+        return $this->hasMany(ChildEvaluateInfo::class, 'admission_register_id');
     }
 }
