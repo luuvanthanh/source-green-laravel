@@ -896,6 +896,14 @@ export async function getLeftMenuTimeTable() {
       permission: [permissions.TKB],
       pro: true,
     },
+    {
+      title: 'Thống kê báo cáo',
+      key: 'timetableReport',
+      url: ['/thoi-khoa-bieu/thong-ke-bao-cao-phu-huynh-tham-gia-su-kien'],
+      icon: 'icon icon-report',
+      permission: [permissions.TKB],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuNotification() {
