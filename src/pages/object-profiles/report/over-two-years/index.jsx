@@ -14,6 +14,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import stylesModule from './styles.module.scss';
 
+
 let isMounted = true;
 /**
  * Set isMounted
@@ -29,9 +30,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicalStudentProblem, loading, user, OPSixMonth }) => ({
+const mapStateToProps = ({ medicalStudentProblem, loading, user, OPOverTwoYears }) => ({
     loading,
-    data: OPSixMonth.data,
+    data: OPOverTwoYears.data,
     error: medicalStudentProblem.error,
     classes: medicalStudentProblem.classes,
     branches: medicalStudentProblem.branches,
@@ -239,27 +240,23 @@ class Index extends PureComponent {
                 key: 'name',
             },
             {
-                title: 'Ngày nhập học',
-                dataIndex: 'date',
-                key: 'date',
-
-            },
-            {
                 title: 'Ngày sinh',
                 dataIndex: 'birthDay',
-
                 key: 'birthDay',
             },
             {
                 title: 'Số tháng tuổi',
                 dataIndex: 'age',
-
                 key: 'addageress',
+            },
+            {
+                title: 'Ngày nhập học',
+                dataIndex: 'date',
+                key: 'date',
             },
             {
                 title: 'Số tháng học của bé tại trường	',
                 dataIndex: 'month',
-
                 key: 'month',
             },
         ];
@@ -283,11 +280,11 @@ class Index extends PureComponent {
         const loading = effects['medicalStudentProblem/GET_DATA'];
         return (
             <>
-                <Helmet title="Danh sách học sinh dưới 6 tháng, 12 tháng đến thời điểm" />
+                <Helmet title="Danh sách học sinh đủ 24, 36 tháng cho đến ngày đầu tháng" />
                 <div className={classnames(styles['content-form'], styles['content-form-children'])}>
                     {/* FORM SEARCH */}
                     <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-                        <Text color="dark">Danh sách học sinh dưới 6 tháng, 12 tháng đến thời điểm</Text>
+                        <Text color="dark">Danh sách học sinh đủ 24, 36 tháng cho đến ngày đầu tháng</Text>
                         <Button color="primary" icon="export" className="ml-2">
                             Tải danh sách
                         </Button>
