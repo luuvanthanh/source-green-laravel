@@ -100,9 +100,10 @@ export default {
         });
       }
     },
-    *GET_BRANCHES({ payload }, saga) {
+    *GET_BRANCHES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);
+        callback(response.parsePayload);
         yield saga.put({
           type: 'SET_BRANCHES',
           payload: response,
@@ -114,9 +115,10 @@ export default {
         });
       }
     },
-    *GET_CLASSES({ payload }, saga) {
+    *GET_CLASSES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getClasses, payload);
+        callback(response.items);
         yield saga.put({
           type: 'SET_CLASSES',
           payload: response,

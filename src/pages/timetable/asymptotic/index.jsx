@@ -12,6 +12,7 @@ import { isEmpty } from 'lodash';
 import Table from '@/components/CommonComponent/Table';
 import { useLocation, useHistory } from 'umi';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import moment from 'moment';
 
 const Index = memo(() => {
   const [
@@ -25,11 +26,11 @@ const Index = memo(() => {
       paginationExpected,
     },
     { effects },
-    { defaultBranch },
-  ] = useSelector(({ timetableAsymptotic, loading, user }) => [timetableAsymptotic, loading, user]);
+  ] = useSelector(({ timetableAsymptotic, loading }) => [timetableAsymptotic, loading]);
   const dispatch = useDispatch();
   const { pathname, query } = useLocation();
   const history = useHistory();
+  const [formRef] = Form.useForm();
   const yearsConvert = years.map((item) => ({
     id: item.id,
     name: `Năm học  ${item.fromYear} - ${item.toYear}`,
@@ -37,7 +38,7 @@ const Index = memo(() => {
 
   const [search, setSearch] = useState({
     keyWord: query?.keyWord,
-    branchId: query?.branchId || defaultBranch?.id,
+    branchId: query?.branchId,
     timetableSettingId: query?.timetableSettingId,
     classId: query?.classId,
     status: 'EXPECTED',
@@ -54,10 +55,17 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          setSearch((prev) => ({
-            ...prev,
-            timetableSettingId: search.timetableSettingId || response[0]?.id,
-          }));
+          response.forEach((item) => {
+            if (moment().isBefore(item.toDate) && moment().isAfter(item.fromDate)) {
+              formRef.setFieldsValue({
+                timetableSettingId: query?.timetableSettingId || item.id,
+              });
+              setSearch((prev) => ({
+                ...prev,
+                timetableSettingId: query?.timetableSettingId || item.id,
+              }));
+            }
+          });
         }
       },
     });
@@ -67,7 +75,6 @@ const Index = memo(() => {
     dispatch({
       type: 'timetableAsymptotic/GET_DATA',
       payload: {
-        timetableSettingId: search.timetableSettingId || years[0]?.id,
         ...search,
       },
     });
@@ -77,31 +84,89 @@ const Index = memo(() => {
     });
   };
 
-  const loadCategories = () => {
-    if (search.branchId) {
+  const loadClasses = (idBranch, type = null) => {
+    if (idBranch) {
       dispatch({
         type: 'timetableAsymptotic/GET_CLASSES',
         payload: {
-          branch: search.branchId,
+          branch: idBranch,
+        },
+        callback: (response) => {
+          if (response) {
+            if (type) {
+              formRef.setFieldsValue({
+                classId: null,
+              });
+              setSearch((prev) => ({
+                ...prev,
+                classId: null,
+                branchId: idBranch,
+              }));
+            } else {
+              formRef.setFieldsValue({
+                classId: query.classId || null,
+              });
+              setSearch((prev) => ({
+                ...prev,
+                classId: query?.classId || null,
+                branchId: idBranch,
+              }));
+            }
+          }
+        },
+      });
+    } else {
+      dispatch({
+        type: 'timetableAsymptotic/GET_CLASSES',
+        payload: {
+          branch: idBranch,
+        },
+        callback: (response) => {
+          if (response) {
+            if(type) {
+              formRef.setFieldsValue({
+                classId: idBranch,
+              });
+              setSearch((prev) => ({
+                ...prev,
+                classId: idBranch,
+                branchId: idBranch,
+              }));
+            } else {
+              formRef.setFieldsValue({
+                classId: idBranch,
+              });
+            }
+          }
         },
       });
     }
+  };
+
+  const loadBranch = () => {
     dispatch({
       type: 'timetableAsymptotic/GET_BRANCHES',
       payload: {},
+      callback: (response) => {
+        if (response) {
+          formRef.setFieldsValue({
+            branchId: query?.branchId || null,
+          });
+          loadClasses(query?.branchId || null);
+        }
+      },
     });
   };
 
   useEffect(() => {
     getYears();
+    loadBranch();
   }, []);
 
   useEffect(() => {
-    loadCategories();
     onLoad();
   }, [search]);
 
-  
   const onChangeStudying = (event, type) => {
     switch (type) {
       case 'keyWord':
@@ -117,10 +182,7 @@ const Index = memo(() => {
         }));
         break;
       case 'branchId':
-        setSearch((prevState) => ({
-          ...prevState,
-          [type]: event,
-        }));
+        loadClasses(event, 'change');
         break;
       case 'classId':
         setSearch((prevState) => ({
@@ -149,10 +211,7 @@ const Index = memo(() => {
         }));
         break;
       case 'branchId':
-        setSearch((prevState) => ({
-          ...prevState,
-          [type]: event,
-        }));
+        loadClasses(event, 'change');
         break;
       case 'classId':
         setSearch((prevState) => ({
@@ -269,6 +328,7 @@ const Index = memo(() => {
         }));
       },
     });
+
   const changePaginationStudying = (pagination) =>
     Helper.paginationNet({
       pagination,
@@ -315,11 +375,9 @@ const Index = memo(() => {
                   <Form
                     initialValues={{
                       ...search,
-                      timetableSettingId: search.timetableSettingId || years[0].id,
-                      branchId: search.branchId || null,
-                      classId: search.classId || null,
                     }}
                     layout="vertical"
+                    form={formRef}
                   >
                     <div className="row">
                       <div className="col-lg-3">
@@ -343,14 +401,14 @@ const Index = memo(() => {
                       <div className="col-lg-3">
                         <FormItem
                           className="ant-form-item-row"
-                          data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                          data={[{ id: null, name: 'Chọn tất cả các cơ sở' }, ...branches]}
                           name="branchId"
                           onChange={(event) => onChangeExpected(event, 'branchId')}
                           type={variables.SELECT}
                           allowClear={false}
                         />
                       </div>
-                      <div className="col-lg-">
+                      <div className="col-lg-3">
                         <FormItem
                           className="ant-form-item-row"
                           data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
@@ -367,9 +425,7 @@ const Index = memo(() => {
                   <Table
                     bordered
                     columns={header()}
-                    dataSource={dataExpected?.filter(
-                      (item) => item.age <= 72 && item.age >= 60 && item,
-                    )}
+                    dataSource={dataExpected}
                     loading={effects['timetableAsymptotic/GET_DATA']}
                     pagination={changePaginationExpected(paginationExpected)}
                     rowSelection={{
@@ -392,11 +448,9 @@ const Index = memo(() => {
                   <Form
                     initialValues={{
                       ...search,
-                      timetableSettingId: years[1]?.id,
-                      branchId: search.branchId || null,
-                      classId: search.classId || null,
                     }}
                     layout="vertical"
+                    form={formRef}
                   >
                     <div className="row">
                       <div className="col-lg-3">
@@ -427,7 +481,7 @@ const Index = memo(() => {
                           allowClear={false}
                         />
                       </div>
-                      <div className="col-lg-">
+                      <div className="col-lg-3">
                         <FormItem
                           className="ant-form-item-row"
                           data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
