@@ -101,7 +101,20 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         if (!empty($attributes['parent_info'])) {
             $admissionRegister->parentInfo()->create($attributes['parent_info']);
         }
-        
+
         return $this->parserResult($admissionRegister);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $admissionRegister = AdmissionRegister::find($id);
+        $admissionRegister->update($attributes);
+
+        if (!empty($attributes['parent_info'])) {
+            $parent = ParentInfo::where('admission_register_id', $id)->where('customer_lead_id', null)->first();
+            $parent->update($attributes['parent_info']);
+        }
+
+        return parent::find($id);
     }
 }
