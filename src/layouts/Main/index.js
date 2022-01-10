@@ -119,6 +119,11 @@ const OBJECTS = {
     title: 'Sự phát triển của trẻ',
     menu: 'menuLeftChildDevelop',
   },
+  CURRENCY: {
+    icon: '/images/home/spreadsheet.svg',
+    title: 'Biểu phí',
+    menu: 'menuLeftCurrency',
+  },
 };
 
 @withRouter
@@ -186,6 +191,9 @@ class MainLayout extends React.PureComponent {
     }
     if (/^\/su-phat-trien-cua-tre(?=\/|$)/i.test(pathname)) {
       key = 'CHILD_DEVELOP';
+    }
+    if (/^\/bieu-phi(?=\/|$)/i.test(pathname)) {
+      key = 'CURRENCY';
     }
     return key;
   };

@@ -635,6 +635,51 @@ export default class Helpers {
       });
   };
 
+  static exportExcelClover = async (
+    path,
+    paramSearch,
+    nameFile = 'total.xlsx',
+    prefix = API_URL,
+  ) => {
+    const params = {
+      ...pickBy(paramSearch, (value) => value),
+    };
+    const url = new URL(`${prefix}${path}`);
+    Object.keys(params).forEach((key) => {
+      if (params[key]) {
+        url.searchParams.append(key, params[key]);
+      }
+    });
+    await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${cookies.get('access_token')}`,
+      },
+    })
+      .then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          const data = nameFile;
+          response.blob().then((blob) => {
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = data;
+            link.click();
+          });
+        } else {
+          notification.error({
+            message: 'Thất bại',
+            description: 'Bạn đã tải excel không thành công',
+          });
+        }
+      })
+      .catch(() => {
+        notification.error({
+          message: 'Thất bại',
+          description: 'Bạn đã tải excel không thành công',
+        });
+      });
+  };
+
   static sttList(page, index, size = variables.PAGINATION.SIZE) {
     const num = (page - 1) * size + index + 1;
     return num;

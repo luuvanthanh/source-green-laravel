@@ -89,10 +89,10 @@ export const feature = {
       permission: [permissions.BEP],
     },
     {
-      title: 'Biếu phí',
+      title: 'Biểu phí',
       src: '/images/home/currency.svg',
       animation: animationImage.tariffs,
-      url: '/',
+      url: '/bieu-phi',
       permission: [permissions.BIEUPHI],
     },
     {

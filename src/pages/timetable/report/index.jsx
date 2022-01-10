@@ -212,12 +212,12 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeExcel = () => {
-    // const { dataIDSearch } = this.state;
-    // Helper.exportExcel(
-    //   `/v1/event-timetable-attendances/export-to-excel/${dataIDSearch}`,
-    //   {},
-    //   `PhieuGiaoHang.docx`,
-    // );
+    const { dataIDSearch } = this.state;
+    Helper.exportExcelClover(
+      `/event-timetable-attendances/export-to-excel/${dataIDSearch}`,
+      {},
+      `Thongkebaocao.xlsx`,
+    );
   };
 
   /**
@@ -274,7 +274,7 @@ class Index extends PureComponent {
       {
         title: 'STT ',
         key: 'index',
-        width: 80,
+        width: 100,
         fixed: 'left',
         render: (text, record, index) => {
           if (record?.parentEventTimetableAttendances) {
