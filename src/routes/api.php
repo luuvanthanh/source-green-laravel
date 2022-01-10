@@ -36,6 +36,12 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
     });
 
+    Route::group(['prefix' => 'vms-core'], function () {
+        \GGPHP\Camera\RouteRegistrar::routes(function ($router) {
+            $router->forVmsCore();
+        });
+    });
+
     \GGPHP\Storage\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });

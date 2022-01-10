@@ -108,7 +108,7 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
 
             $dataActive = [
                 'server_id' => $cameraServer->uuid,
-                'cam_data_as_bytes' => json_encode([
+                'cam_data_as_bytes' => ([
                     'input' => [
                         'cameras' => []
                     ],
@@ -154,21 +154,21 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
 
             $dataActive = [
                 'server_id' => $cameraServer->uuid,
-                'cam_data_as_bytes' => [
+                'cam_data_as_bytes' => json_encode([
                     'input' => [
                         'cameras' => []
                     ],
                     'output' => [
                         'backup_video' => [
                             'root_path' => $cameraServer->root_path_bk,
-                            'second_interval' => $cameraServer->second_interval_bk
+                            'second_interval' => (int) $cameraServer->second_interval_bk
                         ],
                         'media_server_url' => $cameraServer->media_server_url,
                         'clip_root_path' => $cameraServer->clip_root_path,
                         'log_root_path' => $cameraServer->log_root_path,
-                        'log_level' => $cameraServer->log_level
+                        'log_level' => (int) $cameraServer->log_level
                     ]
-                ]
+                ])
             ];
 
             VmsCoreServices::activatedVmsCore($dataActive);

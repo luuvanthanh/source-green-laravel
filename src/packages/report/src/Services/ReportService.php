@@ -50,6 +50,10 @@ class ReportService
                 $attributes['event_code'] = 'RAC,BHR';
                 $eventBehavior = self::reportNumberEventBehaviorByTouristDestination($attributes, $periodDate, 'Y-m-d');
 
+                //event warning
+                $attributes['event_code'] = null;
+                $eventWarning = self::reportWarningEvent($attributes, $periodDate, 'Y-m-d');
+
                 //event object
                 $attributes['event_code'] = 'HDVHP,HDVBHP';
                 $eventObject = self::reportNumberEventObject($attributes, $periodDate, 'Y-m-d');

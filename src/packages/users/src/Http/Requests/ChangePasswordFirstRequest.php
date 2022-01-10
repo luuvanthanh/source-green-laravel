@@ -1,13 +1,13 @@
 <?php
 
-namespace GGPHP\Camera\Http\Requests;
+namespace GGPHP\Users\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CameraPlayBackRequest extends FormRequest
+class ChangePasswordFirstRequest extends FormRequest
 {
     /**
-     * Determine if the camera is authorized to make this request.
+     * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
@@ -24,8 +24,7 @@ class CameraPlayBackRequest extends FormRequest
     public function rules()
     {
         return [
-            'start_time' => 'required|date_format:Y-m-d H:i:s',
-            'end_time'   => 'required|date_format:Y-m-d H:i:s',
+            'password' => 'required|string|confirmed|min:8',
         ];
     }
 }

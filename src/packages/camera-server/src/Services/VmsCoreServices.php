@@ -14,6 +14,7 @@ class VmsCoreServices
         $response = Http::asForm()->post($url, $attributes);
 
         if ($response->failed()) {
+            dd($response->body());
             $message = 'Có lỗi từ api vms-core';
             if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
                 $message = 'Vms-core: ' . json_decode($response->body())->error->message;
@@ -28,7 +29,7 @@ class VmsCoreServices
     {
         $url = env('VMS_CORE_URL') . '/vms_core/stop';
 
-        $response = Http::post($url, $attributes);
+        $response = Http::asForm()->post($url, $attributes);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api vms-core';

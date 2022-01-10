@@ -4,6 +4,7 @@ namespace GGPHP\Camera\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Camera\Http\Requests\CameraCreateRequest;
+use GGPHP\Camera\Http\Requests\CameraPlayBackRequest;
 use GGPHP\Camera\Http\Requests\CameraUpdateRequest;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Camera\Repositories\Contracts\CameraRepository;
@@ -131,5 +132,69 @@ class CameraController extends Controller
         }
 
         return response()->json(null, 422);
+    }
+
+    public function onOffRecord(Request $request, $id)
+    {
+        $camera = $this->cameraRepository->onOffRecord($request->all(), $id);
+
+        return $this->success($camera, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function onOffStream(Request $request, $id)
+    {
+        $camera = $this->cameraRepository->onOffStream($request->all(), $id);
+
+        return $this->success($camera, trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * Play back
+     *
+     * @param  mixed $request
+     * @param  mixed $camera
+     * @return Response
+     */
+    public function playback(CameraPlayBackRequest $request, $id)
+    {
+        $camera = $this->cameraRepository->playback($request->all(), $id);
+
+        return $this->success($camera, trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * @param  mixed $request
+     * @param  mixed $camera
+     * @return Response
+     */
+    public function updateStatusForVmsCore(Request $request,  $id)
+    {
+        $response = $this->cameraRepository->updateStatusForVmsCore($request->all(), $id);
+
+        return $this->success($response, trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * @param  mixed $request
+     * @param  mixed $camera
+     * @return Response
+     */
+    public function onOffStreamForVmsCore(Request $request,  $id)
+    {
+        $response = $this->cameraRepository->onOffStreamForVmsCore($request->all(), $id);
+
+        return $this->success($response, trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * @param  mixed $request
+     * @param  mixed $camera
+     * @return Response
+     */
+    public function onOffRecordForVmsCore(Request $request,  $id)
+    {
+        $response = $this->cameraRepository->onOffRecordForVmsCore($request->all(), $id);
+
+        return $this->success($response, trans('lang::messages.common.modifySuccess'));
     }
 }

@@ -4,6 +4,7 @@ namespace GGPHP\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use GGPHP\Users\Http\Requests\ChangePasswordFirstRequest;
 use GGPHP\Users\Http\Requests\ChangePasswordRequest;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Hash;
@@ -58,5 +59,24 @@ class ChangePasswordController extends Controller
         ];
 
         return $this->success($dataSuccess, trans('lang::messages.auth.changePasswordSuccess'));
+    }
+
+    /**
+     * Change password
+     *
+     * @param ChangePasswordRequest $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function changePasswordFirst(ChangePasswordFirstRequest $request)
+    {
+        $user = Auth::user();
+
+        $user->update([
+            'password' => Hash::make($request->password),
+            'is_first_login' => false
+        ]);
+
+        return $this->success(['data' => $user], trans('lang::messages.auth.changePasswordSuccess'));
     }
 }

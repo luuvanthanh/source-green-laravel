@@ -6,6 +6,7 @@ use GGPHP\Notification\Channels\OnesignalChannel;
 
 class ModelCreated extends BaseNotification
 {
+
     /**
      * Get the message of the notification.
      *

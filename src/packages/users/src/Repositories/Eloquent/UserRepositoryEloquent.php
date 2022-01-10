@@ -144,6 +144,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             'password' => $password,
             'url_login' => env('LOGIN_URL', 'http://localhost:11005/login'),
         ];
+
         dispatch(new SendEmail($dataMail, 'NOTI_PASSWORD'));
 
         return parent::find($user->id);

@@ -2,15 +2,19 @@
 
 namespace GGPHP\Camera\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use DB;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Camera\Presenters\CameraPresenter;
 use GGPHP\Camera\Repositories\Contracts\CameraCollectionRepository;
 use GGPHP\Camera\Repositories\Contracts\CameraRepository;
+use GGPHP\Camera\Services\VmsCoreServices;
+use GGPHP\Notification\Services\NotificationService;
 use Illuminate\Container\Container as Application;
 use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class CameraRepositoryEloquent.
@@ -139,40 +143,48 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
      * @return type
      * @throws \Throwable
      */
-    public function create($data)
+    public function create($attributes)
     {
-        // Merge with fills default
-        $data = array_merge($data, [
-            'status' => Camera::STATUS_STOPPED,
-        ]);
-
         DB::beginTransaction();
         try {
-            $camera = Camera::create($data);
+            $attributes['status'] = Camera::STATUS['STATUS_PENDING'];
 
-            if (isset($data['collection_id']) && !empty($data['collection_id'])) {
-                $camera->collection()->attach($data['collection_id']);
+            $camera = Camera::create($attributes);
+
+            if (isset($data['collection_id']) && !empty($attributes['collection_id'])) {
+                $camera->collection()->attach($attributes['collection_id']);
             }
 
-            // $dataDeactive = [
-            //     'server_id' => $camera->cameraServer->uuid,
-            //     'cam_info_as_bytes' =>[
-            //         'on'=>true,
-            //         'rtsp'=>''
-            //         'cam_id'=>''
-            //         'name'=>''
-            //         'backup'=>''
-            //         'streaming'=>''
-            //         'streaming_info'=>''
-            //     ],
-            // ];
+            $dataResolution = $this->getResolutionValue($camera->resolution);
 
-            // VmsCoreServices::deactivationVmsCore($dataDeactive);
+            $dataStartCamera = [
+                'server_id' => $camera->cameraServer->uuid,
+                'cam_info_as_bytes' => json_encode([
+                    'on' => true,
+                    'rtsp' => $camera->rtsp,
+                    'cam_id' => $camera->id,
+                    'name' => $camera->name,
+                    'backup' => $camera->is_recording,
+                    'streaming' => $camera->is_streaming,
+                    'streaming_infor' => [
+                        'codec_id' => 27,
+                        'profile' => $camera->profile,
+                        'width' => $dataResolution['width'],
+                        'height' => $dataResolution['height'],
+                        'fps' => $camera->fps,
+                        'bit_rate' => $camera->bit_rate,
+                        'gop' => $camera->gop,
+                        'max_B_frame' => $camera->frame_rate,
+                    ],
+                ]),
+            ];
+
+            VmsCoreServices::startCamera($dataStartCamera);
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();
-            throw $e;
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::parserResult($camera);
@@ -188,20 +200,15 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
      */
     public function update($data, $id)
     {
-        // Check camera exist before update
-        $camera = Camera::findOrFail($id);
-
-        // Merge with fills default
-        $dataCamera = array_merge($data, [
-            'user_id' => auth()->user()->id,
-            'uuid' => (string) Str::uuid(),
-            'status' => Camera::STATUS_STOPPED,
-        ]);
-
+        DB::beginTransaction();
         try {
+            // Check camera exist before update
+            $camera = Camera::findOrFail($id);
+
+            $data['status'] = Camera::STATUS['STATUS_PENDING'];
             // Update camera information
             if (!empty($dataCamera)) {
-                $camera->update($dataCamera);
+                $camera->update($data);
             }
 
             if (!empty($data['collection_id'])) {
@@ -209,20 +216,39 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 $camera->collection()->sync($data['collection_id']);
             }
 
-            if (isset($data['video'])) {
-                if (!empty($camera->videoProperties->id)) {
-                    $this->cameraVideoPropertiesRepository->update($data['video'], $camera->videoProperties->id);
-                } else {
-                    $this->cameraVideoPropertiesRepository->create(array_merge($data['video'], ['camera_id' => $camera->id]));
-                }
-            }
+            $dataResolution = $this->getResolutionValue($camera->resolution);
 
-            $camera = Camera::with('videoProperties')->find($camera->id);
+            $dataStartCamera = [
+                'server_id' => $camera->cameraServer->uuid,
+                'cam_info_as_bytes' => json_encode([
+                    'on' => true,
+                    'rtsp' => $camera->rtsp,
+                    'cam_id' => $camera->id,
+                    'name' => $camera->name,
+                    'backup' => $camera->is_recording,
+                    'streaming' => $camera->is_streaming,
+                    'streaming_infor' => [
+                        'codec_id' => 27,
+                        'profile' => $camera->profile,
+                        'width' => $dataResolution['width'],
+                        'height' => $dataResolution['height'],
+                        'fps' => $camera->fps,
+                        'bit_rate' => $camera->bit_rate,
+                        'gop' => $camera->gop,
+                        'max_B_frame' => $camera->frame_rate,
+                    ],
+                ]),
+            ];
+
+            VmsCoreServices::updateCamera($dataStartCamera);
+
+            DB::commit();
         } catch (\Throwable $e) {
-            throw $e;
+            DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
-        return parent::parserResult($camera);
+        return parent::find($id);
     }
 
     /**
@@ -234,6 +260,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
     public function delete($id)
     {
         $camera = Camera::findOrFail($id);
+
         \DB::beginTransaction();
         try {
 
@@ -241,15 +268,163 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 $camera->collection()->detach();
             }
 
-            if ($camera->delete()) {
-                \DB::commit();
-                return true;
-            }
+            $dataDeleteCamera = [
+                'server_id' => $camera->cameraServer->uuid,
+                'cam_id' =>  $camera->id,
+            ];
+
+            VmsCoreServices::stopCamera($dataDeleteCamera);
+
+            $camera->delete();
+
+            \DB::commit();
         } catch (\Exception $ex) {
             \DB::rollback();
-            \Log::error($ex->getMessage());
+            throw new HttpException(500, $ex->getMessage());
         }
 
-        return false;
+        return true;
+    }
+
+    public function getResolutionValue($value)
+    {
+        $width = 0;
+        $height = 0;
+
+        // switch ($value) {
+        //     case 'FULLHD':
+        //         $width = 1920;
+        //         $height = 1080;
+        //         break;
+        //     case 'HD':
+        //         $width = 1280;
+        //         $height = 720;
+        //         break;
+        //     case '2K':
+        //         $width = 2560;
+        //         $height = 1440;
+        //         break;
+        // }
+
+        return [
+            'width' => $width,
+            'height' => $height
+        ];
+    }
+
+    public function onOffRecord($attributes, $id)
+    {
+        DB::beginTransaction();
+        try {
+            // Check camera exist before update
+            $camera = Camera::findOrFail($id);
+
+
+            $camera->update([
+                'is_recording' => $attributes['is_recording']
+            ]);
+
+            $dataOnOffRecord = [
+                'server_id' => $camera->cameraServer->uuid,
+                'cam_id' => $camera->id,
+                'on_flag' => $attributes['is_recording']
+            ];
+
+            VmsCoreServices::onOffRecord($dataOnOffRecord);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw new HttpException(500, $e->getMessage());
+        }
+
+        return parent::find($id);
+    }
+
+    public function onOffStream($attributes, $id)
+    {
+        DB::beginTransaction();
+        try {
+            // Check camera exist before update
+            $camera = Camera::findOrFail($id);
+
+
+            $camera->update([
+                'is_streaming' => $attributes['is_streaming']
+            ]);
+
+            $dataOnOffStream = [
+                'server_id' => $camera->cameraServer->uuid,
+                'cam_id' => $camera->id,
+                'on_flag' => $attributes['is_streaming']
+            ];
+
+            VmsCoreServices::onOffStream($dataOnOffStream);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw new HttpException(500, $e->getMessage());
+        }
+
+        return parent::find($id);
+    }
+
+    public function playback($attributes, $id)
+    {
+        // Check camera exist before update
+        $camera = Camera::findOrFail($id);
+
+
+        $dataBackup = [
+            'server_id' => $camera->cameraServer->uuid,
+            'cam_id' => $camera->id,
+            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y h:m:s'),
+            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y h:m:s'),
+        ];
+
+        $result = VmsCoreServices::backupVideo($dataBackup);
+
+        return parent::find($id);
+    }
+
+    public function updateStatusForVmsCore($attributes, $id)
+    {
+
+        $camera = Camera::findOrFail($id);
+
+        $camera->update([
+            'status' => Camera::STATUS[$attributes['status']]
+        ]);
+
+        NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_STATUS, $camera);
+
+        return parent::find($id);
+    }
+
+    public function onOffStreamForVmsCore($attributes, $id)
+    {
+        $camera = Camera::findOrFail($id);
+
+        $camera->update([
+            'is_streaming' => $attributes['on_flag']
+        ]);
+
+        NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_STREAM, $camera);
+
+        return parent::find($id);
+    }
+
+    public function onOffRecordForVmsCore($attributes, $id)
+    {
+        $camera = Camera::findOrFail($id);
+
+        $camera->update([
+            'is_recording' => $attributes['on_flag']
+        ]);
+
+        NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_RECORD, $camera);
+
+        return parent::find($id);
     }
 }

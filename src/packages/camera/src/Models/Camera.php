@@ -16,7 +16,8 @@ class Camera extends UuidModel
 
     const STATUS = [
         'STATUS_RUNNING' => 1,
-        'STATUS_FAILED' => 2,
+        'STATUS_PENDING' => 2,
+        'STATUS_FAILED' => 3,
     ];
 
     /**
@@ -37,15 +38,16 @@ class Camera extends UuidModel
     protected $fillable = [
         'name', 'address', 'lat', 'long', 'ip', 'port', 'user_name', 'password', 'camera_server_id',
         'tourist_destination_id', 'is_recording', 'is_streaming', 'bit_rate', 'frame_rate', 'rtsp',
-        'resolution', 'profile', 'fps', 'gop', 'status', 'user_id'
+        'resolution', 'profile', 'fps', 'gop', 'status', 'user_id',
     ];
 
-    protected $appends = ['status_label'];
     protected $guard_name = 'api';
     protected $casts = [
         'status' => 'integer',
         'lat' => 'float',
         'long' => 'float',
+        'is_recording' => 'boolean',
+        'is_streaming' => 'boolean'
     ];
 
     /**

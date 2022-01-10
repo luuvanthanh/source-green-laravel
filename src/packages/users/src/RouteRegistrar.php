@@ -48,6 +48,7 @@ class RouteRegistrar extends CoreRegistrar
         \Route::get('session', 'AuthController@logged')->name('logged');
         \Route::post('logout', 'AuthController@logout');
         \Route::post('password/change', 'ChangePasswordController@changePassword');
+        \Route::post('password/change/first', 'ChangePasswordController@changePasswordFirst');
 
         \Route::get('me', 'AuthController@authenticated');
 

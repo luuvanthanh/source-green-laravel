@@ -25,6 +25,7 @@ class AddFieldVmsCoreToCamerasTabel extends Migration
             $table->string('profile')->nullable();
             $table->string('fps')->nullable();
             $table->string('gop')->nullable();
+            $table->string('code_id')->nullable();
         });
     }
 
@@ -47,6 +48,7 @@ class AddFieldVmsCoreToCamerasTabel extends Migration
             $table->dropColumn('profile');
             $table->dropColumn('fps');
             $table->dropColumn('gop');
+            $table->dropColumn('code_id');
         });
     }
 }

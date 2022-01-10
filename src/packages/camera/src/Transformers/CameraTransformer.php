@@ -29,7 +29,7 @@ class CameraTransformer extends BaseTransformer
      */
     protected $defaultIncludes = [];
 
-    protected $availableIncludes = ['collection', 'video', 'touristDestination'];
+    protected $availableIncludes = ['collection', 'touristDestination'];
 
     // protected $availableIncludes = ['collection', 'generalProperties'];
     /**

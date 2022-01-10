@@ -60,7 +60,6 @@ class AccessTokenController extends ATController
             //password not correct..token not granted
             return $this->error('Invalid_credentials', 'Password is not correct', 401);
         } catch (Exception $e) {
-            dd($e);
             return response(['error' => 'unsupported_grant_type', 'message' => 'The authorization grant type is not supported by the authorization server.', 'hint' => 'Check that all required parameters have been provided'], 400);
         }
     }

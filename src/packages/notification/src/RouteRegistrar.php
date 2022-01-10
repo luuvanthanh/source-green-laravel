@@ -41,7 +41,7 @@ class RouteRegistrar extends CoreRegistrar
                     'as' => 'notifications.read',
                 ]);
 
-                \Route::get('notifications/read-all/{id}', [
+                \Route::post('notifications/read-all/{id}', [
                     'uses' => 'NotificationController@readAll',
                     'as' => 'notifications.readAll',
                 ]);
