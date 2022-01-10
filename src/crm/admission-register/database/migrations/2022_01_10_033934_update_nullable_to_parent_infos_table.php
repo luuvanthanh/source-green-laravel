@@ -16,7 +16,6 @@ class UpdateNullableToParentInfosTable extends Migration
         Schema::table('parent_infos', function (Blueprint $table) {
             $table->string('full_name')->nullable()->change();
             $table->string('phone')->nullable()->change();
-            $table->uuid('admission_register_id');
         });
     }
 
