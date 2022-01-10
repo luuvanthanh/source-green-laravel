@@ -99,15 +99,9 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
 
         if (!empty($attributes['parent_info'])) {
-            $data = [
-                'full_name' => $attributes['parent_info']['name'],
-                'email' => $attributes['parent_info']['email'],
-                'phone' => $attributes['parent_info']['phone'],
-                'admission_register_id' => $admissionRegister->id
-            ];
-
-            ParentInfo::create($data);
+            $admissionRegister->parentInfo()->create($attributes['parent_info']);
         }
+        
         return $this->parserResult($admissionRegister);
     }
 }

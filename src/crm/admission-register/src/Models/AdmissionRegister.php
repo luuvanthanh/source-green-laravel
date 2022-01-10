@@ -24,7 +24,7 @@ class AdmissionRegister extends UuidModel
 
     public function parentInfo()
     {
-        return $this->hasMany(ParentInfo::class);
+        return $this->hasMany(ParentInfo::class, 'admission_register_id');
     }
 
     public function statusAdmissionRegister()
