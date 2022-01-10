@@ -507,8 +507,20 @@ export default [
             authority: [permissions.HSDT],
           },
           {
-            path: '/ho-so-doi-tuong/bao-cao/6-thang-den-12-thang',
+            path: '/ho-so-doi-tuong/bao-cao/sau-thang-den-muoi-hai-thang',
             component: './object-profiles/report/six-month',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/hai-bon-thang-den-ba-sau-thang',
+            component: './object-profiles/report/twentyFour-month',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/tren-hai-nam-ba-nam-bon-nam',
+            component: './object-profiles/report/over-two-years',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },

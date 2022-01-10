@@ -218,7 +218,21 @@ export async function getLeftMenuProfile() {
         {
           title: 'Danh sách học sinh dưới 6 tháng, 12 tháng đến thời điểm',
           key: '6month-12month',
-          url: [ '/ho-so-doi-tuong/bao-cao/6-thang-den-12-thang'],
+          url: [ '/ho-so-doi-tuong/bao-cao/sau-thang-den-muoi-hai-thang'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh đủ 24, 36 tháng cho đến ngày đầu tháng',
+          key: '24month-36month',
+          url: [ '/ho-so-doi-tuong/bao-cao/hai-bon-thang-den-ba-sau-thang'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh học trên 2 năm, 3 năm, 4 năm đến thời điểm',
+          key: '2year',
+          url: [ '/ho-so-doi-tuong/bao-cao/tren-hai-nam-ba-nam-bon-nam'],
           permission: [permissions.HSDT],
           pro: true,
         },
