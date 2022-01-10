@@ -31,7 +31,7 @@ class AdmissionRegisterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'parentInfo', 'statusAdmissionRegister', 'testInput'];
+    protected $availableIncludes = ['studentInfo', 'parentInfo', 'statusAdmissionRegister', 'testInput', 'medicalInfo', 'confirmTransporter', 'childEvaluateInfo'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -76,5 +76,24 @@ class AdmissionRegisterTransformer extends BaseTransformer
         }
 
         return $this->item($admissionRegister->testInput, new TestInputTransformer, 'TestInput');
+    }
+
+    public function includeMedicalInfo(AdmissionRegister $admissionRegister)
+    {
+        if (empty($admissionRegister->medicalInfo)) {
+            return;
+        }
+
+        return $this->item($admissionRegister->medicalInfo, new MedicalInfoTransformer, 'MedicalInfo');
+    }
+
+    public function includeConfirmTransporter(AdmissionRegister $admissionRegister)
+    {
+        return $this->collection($admissionRegister->confirmTransporter, new ConfirmTransporterTransformer, 'ConfirmTransporter');
+    }
+
+    public function includeChildEvaluateInfo(AdmissionRegister $admissionRegister)
+    {
+        return $this->collection($admissionRegister->childEvaluateInfo, new ChildEvaluateInfoTransformer, 'ChildEvaluateInfo');
     }
 }

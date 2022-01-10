@@ -16,7 +16,7 @@ class ConfirmTransporter extends UuidModel
 
     public function admissionRegister()
     {
-        return $this->belongsTo(AdmissionRegister::class);
+        return $this->belongsTo(AdmissionRegister::class, 'admission_register_id');
     }
 
     public function categoryRelationship()
