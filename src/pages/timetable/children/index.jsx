@@ -137,7 +137,7 @@ const Index = memo(() => {
     });
   };
 
-  const getClass = (idBranch) => {
+  const getClass = (idBranch, type = null) => {
     dispatch({
       type: 'timeTablesChildren/GET_CLASSES',
       payload: {
@@ -145,13 +145,25 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          setSearch((prev) => ({
-            ...prev,
-            classId: head(response)?.id,
-          }));
-          formRef.setFieldsValue({
-            classId: head(response)?.id,
-          });
+          if(type) {
+            setSearch((prev) => ({
+              ...prev,
+              classId: head(response)?.id,
+              branchId: idBranch
+            }));
+            formRef.setFieldsValue({
+              classId: head(response)?.id,
+            });
+          } else {
+            setSearch((prev) => ({
+              ...prev,
+              classId: query.classId || head(response)?.id,
+              branchId: idBranch
+            }));
+            formRef.setFieldsValue({
+              classId: query?.classId || head(response)?.id,
+            });
+          }
         }
       },
     });
@@ -163,10 +175,6 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          setSearch((prev) => ({
-            ...prev,
-            branchId: query?.branchId || head(response)?.id,
-          }));
           formRef.setFieldsValue({
             branchId: query?.branchId || head(response)?.id,
           });
@@ -188,17 +196,7 @@ const Index = memo(() => {
   }, []);
 
   const onChangeSelectBranch = (e) => {
-    dispatch({
-      type: 'timeTablesChildren/GET_CLASSES',
-      payload: {
-        branch: e,
-      },
-    });
-    setSearch((prevState) => ({
-      ...prevState,
-      branchId: e,
-    }));
-    getClass(e);
+    getClass(e, 'change');
   };
 
   const onSelectYears = (e) => {
@@ -1187,6 +1185,11 @@ const Index = memo(() => {
                 color={search.type === 'timeGridWeek' ? 'green' : 'white'}
                 onClick={() => {
                   setSearch((prev) => ({ ...prev, type: 'timeGridWeek' }));
+                  debouncedSearchDate(
+                    search.fromDate,
+                    moment(search.fromDate).endOf('week'),
+                    'timeGridWeek',
+                  );
                 }}
               >
                 Tuần
@@ -1195,7 +1198,7 @@ const Index = memo(() => {
                 permission="TKB"
                 color={search.type === 'timeGridDay' ? 'green' : 'white'}
                 onClick={() => {
-                  setSearch((prev) => ({ ...prev, type: 'timeGridDay' }));
+                  debouncedSearchDate(search.fromDate, search.toDate, 'timeGridDay');
                 }}
               >
                 Ngày
@@ -1205,6 +1208,11 @@ const Index = memo(() => {
                 color={search.type === 'dayGridMonth' ? 'green' : 'white'}
                 onClick={() => {
                   setSearch((prev) => ({ ...prev, type: 'dayGridMonth' }));
+                  debouncedSearchDate(
+                    search.fromDate,
+                    moment(search.fromDate).endOf('months'),
+                    'dayGridMonth',
+                  );
                 }}
               >
                 Tháng
@@ -1213,7 +1221,7 @@ const Index = memo(() => {
                 permission="TKB"
                 color={search.type === 'listDay' ? 'green' : 'white'}
                 onClick={() => {
-                  setSearch((prev) => ({ ...prev, type: 'listDay' }));
+                  debouncedSearchDate(search.fromDate, search.toDate, 'listDay');
                 }}
               >
                 Lịch biểu
