@@ -209,6 +209,21 @@ export async function getLeftMenuProfile() {
         },
       ],
     },
+    {
+      title: 'Báo cáo',
+      key: 'report',
+      icon: 'icon icon-list',
+      permission: [permissions.HSDT],
+      children: [
+        {
+          title: 'Danh sách học sinh dưới 6 tháng, 12 tháng đến thời điểm',
+          key: '6month-12month',
+          url: [ '/ho-so-doi-tuong/bao-cao/6-thang-den-12-thang'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuSchedules() {

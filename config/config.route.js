@@ -506,6 +506,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/6-thang-den-12-thang',
+            component: './object-profiles/report/six-month',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
         ],
       },
       // OBJECT PROFILES
