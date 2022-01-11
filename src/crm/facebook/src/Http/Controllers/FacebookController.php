@@ -89,7 +89,8 @@ class FacebookController extends Controller
                             'message_id_facebook' => $messageId
                         ];
                         $this->messageRepository->checkCutomerConversationMessage($attributes);
-                    } elseif (isset($messaging['message']) && !is_null($attachment) && !is_null($messageId)) {
+                    }
+                    if (isset($messaging['message']) && !is_null($attachment) && !is_null($messageId)) {
                         foreach ($attachment as $key => $value) {
                             $urlFile = $this->messageRepository->storeFileByUrl($value['payload']['url']);
                             $attributes = [
