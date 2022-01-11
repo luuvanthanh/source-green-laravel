@@ -2871,6 +2871,59 @@ export default [
           },
         ],
       },
+      // CURRENCY
+      {
+        path: '/bieu-phi',
+        component: './menu/layout',
+        routes: [
+          {
+            path: '/bieu-phi',
+            redirect: '/bieu-phi/tinh-phi-hoc-sinh-cu',
+          },
+          {
+            path: '/bieu-phi/tinh-phi-hoc-sinh-cu',
+            component: './currency/category/old-student',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet',
+            component: './currency/category/old-student/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/bieu-phi/tinh-phi-hoc-sinh-moi',
+            component: './currency/category/new-student',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+            component: './currency/category/new-student/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/bieu-phi/ke-hoach-dong-phi',
+            component: './currency/category/payment-plan',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/bieu-phi/ke-hoach-dong-phi/tao-moi',
+            component: './currency/category/payment-plan/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/bieu-phi/ke-hoach-dong-phi/:id/chi-tiet',
+            component: './currency/category/payment-plan/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+        ],
+      },
       //PHYSICAL
       {
         path: '/error',

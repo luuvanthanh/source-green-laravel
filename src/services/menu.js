@@ -2144,3 +2144,47 @@ export async function getLeftMenuChildDevelop() {
     },
   ];
 }
+
+export async function getLeftMenuCurrency() {
+  return [
+    {
+      title: 'Khai báo danh mục',
+      key: 'Currency',
+      icon: 'icon icon-list',
+      permission: [],
+      children: [
+        {
+          title: 'Tính phí học sinh cũ',
+          key: 'old-student',
+          url: [
+            '/bieu-phi/tinh-phi-hoc-sinh-cu',
+            '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Tính phí học sinh mới',
+          key: 'new-student',
+          url: [
+            '/bieu-phi/tinh-phi-hoc-sinh-moi',
+            '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        // {
+        //   title: 'Kế hoạch đóng phí',
+        //   key: 'payment-plan',
+        //   url: [
+        //     '/bieu-phi/ke-hoach-dong-phi',
+        //     '/bieu-phi/ke-hoach-dong-phi/tao-moi',
+        //     '/bieu-phi/ke-hoach-dong-phi/:id/chi-tiet',
+        //   ],
+        //   permission: [],
+        //   pro: true,
+        // },
+      ],
+    },
+  ];
+}

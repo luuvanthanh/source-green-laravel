@@ -20,7 +20,8 @@ import {
   getLeftMenuSalary,
   getLeftMenuPhysical,
   getLeftMenuCRM,
-  getLeftMenuChildDevelop
+  getLeftMenuChildDevelop,
+  getLeftMenuCurrency
 } from '@/services/menu';
 
 export default {
@@ -48,6 +49,7 @@ export default {
     menuLeftPhysical: [],
     menuLeftCRM: [],
     menuLeftChildDevelop: [],
+    menuLeftCurrency: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -76,6 +78,7 @@ export default {
       const menuLeftPhysical = yield call(getLeftMenuPhysical);
       const menuLeftCRM = yield call(getLeftMenuCRM);
       const menuLeftChildDevelop = yield call(getLeftMenuChildDevelop);
+      const menuLeftCurrency = yield call(getLeftMenuCurrency);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -100,7 +103,8 @@ export default {
           menuLeftSalary,
           menuLeftPhysical,
           menuLeftCRM,
-          menuLeftChildDevelop
+          menuLeftChildDevelop,
+          menuLeftCurrency
         },
       });
     },
