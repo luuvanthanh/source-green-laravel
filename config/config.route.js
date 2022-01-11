@@ -2209,6 +2209,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
+          {
+            path: '/chinh-sach-phi/cau-hinh-hoan-phi',
+            component: './fee-policy/configuration',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/cau-hinh-hoan-phi/tao-moi',
+            component: './fee-policy/configuration/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/cau-hinh-hoan-phi/:id/chi-tiet',
+            component: './fee-policy/configuration/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc',
+            component: './fee-policy/refunds-absent',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc/tao-moi',
+            component: './fee-policy/refunds-absent/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc/:id/chi-tiet',
+            component: './fee-policy/refunds-absent/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
         ],
       },
       // FEE POLICY
