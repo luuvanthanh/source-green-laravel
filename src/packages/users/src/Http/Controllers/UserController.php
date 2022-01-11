@@ -122,4 +122,10 @@ class UserController extends Controller
 
         return $this->success($employee, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function sendEmployeeAccountant()
+    {
+        $employee = $this->employeeRepository->sendEmployeeAccountant();
+        return $this->success(['data' => $employee], trans('lang::messages.common.getListSuccess'));
+    }
 }
