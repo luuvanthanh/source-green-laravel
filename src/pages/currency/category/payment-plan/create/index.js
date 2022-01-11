@@ -109,8 +109,8 @@ const General = memo(() => {
       <Pane className="p20">
         <Form layout="vertical" form={form} initialValues={{}} onFinish={onFinish}>
           <Pane>
-          <Pane className="card">
-              <Pane >
+            <Pane className="card">
+              <Pane>
                 <Pane className="card p20">
                   <Heading type="form-title" className="mb10">
                     Thông tin chung
@@ -119,7 +119,17 @@ const General = memo(() => {
                   <Pane className="row">
                     <div className="col-lg-3">
                       <FormItem
-                        className="mb-2"
+                        className="mb-3"
+                        label="Ngày kế hoạch"
+                        name="currencyOldStudentAddId"
+                        type={variables.DATE_PICKER}
+                        allowClear={false}
+                        rules={[variables.RULES.EMPTY]}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        className="mb-3"
                         label="Năm học"
                         name="currencyOldStudentAddId"
                         type={variables.SELECT}
@@ -130,74 +140,68 @@ const General = memo(() => {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        className="mb-2"
-                        label="Thời gian hiệu lực"
-                        name="currencyOldStudentAddId"
-                        type={variables.SELEINPUTCT}
-                        allowClear={false}
-                      />
-                    </div>
-                  </Pane>
-                  <Pane className="row">
-                    <div className="col-lg-3">
-                      <FormItem
-                        className="mb-0"
-                        label="Tên học sinh"
+                        className="mb-3"
+                        label="Tháng tính phí"
                         name="currencyOldStudentAddId"
                         type={variables.SELECT}
-                        placeholder="Chọn năm"
+                        placeholder="Chọn tháng"
                         allowClear={false}
                         rules={[variables.RULES.EMPTY]}
                       />
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        className="mb0"
-                        label="Mã học sinh"
-                        name="decisionDate"
-                        type={variables.INPUT}
+                        className="mb-3"
+                        label="Cơ sở"
+                        name="currencyOldStudentAddId"
+                        type={variables.SELECT}
+                        placeholder="Chọn cơ sở"
+                        allowClear={false}
+                        rules={[variables.RULES.EMPTY]}
                       />
                     </div>
-                    <div className="col-lg-2">
+                    <div className="col-lg-3">
                       <FormItem
-                        className="mb0"
-                        label="Cơ sở"
-                        name="decisionDate"
-                        type={variables.INPUT}
+                        className="mb-0"
+                        label="Lớp học"
+                        name="currencyOldStudentAddId"
+                        type={variables.SELECT}
+                        placeholder="Chọn lớp học"
+                        allowClear={false}
+                        rules={[variables.RULES.EMPTY]}
                       />
-                    </div>{' '}
-                    <div className="col-lg-2">
+                    </div>
+                    <div className="col-lg-3">
                       <FormItem
-                        className="mb0"
-                        label="Khối lớp"
-                        name="decisionDate"
+                        className="mb-0"
+                        label="Loại lớp"
+                        name="currencyOldStudentAddId"
                         type={variables.INPUT}
+                        placeholder=" "
+                        allowClear={false}
+                        disabled
                       />
-                    </div>{' '}
-                    <div className="col-lg-2">
-                      <FormItem
-                        className="mb0"
-                        label="Lớp"
-                        name="decisionDate"
-                        type={variables.INPUT}
-                      />
+                    </div>
+                    <div className='pt30 pl15'>
+                      <Button
+                        className="ml-auto px25"
+                        color="success"
+                        htmlType="submit"
+                      >
+                        Tính phí
+                      </Button>
                     </div>
                   </Pane>
                 </Pane>
               </Pane>
-
             </Pane>
             <Pane className="card">
               <Pane className="p20">
                 <Heading type="form-title" className="mb20">
-                  Thông tin thêm mới
+                Thông tin tính phí
                 </Heading>
                 <Pane className="row mt20">
                   <Pane className="col-lg-12">
-                    <Heading type="form-title" className="mb20">
-                      Triệu chứng
-                    </Heading>
-
                     <Pane>
                       <div className={stylesModule['wrapper-table']}>
                         <div className={stylesModule['card-heading']}>
@@ -207,9 +211,15 @@ const General = memo(() => {
                           <div className={stylesModule.col}>
                             <p className={stylesModule.norm}>Khoản phí</p>
                           </div>
-                          <div className={stylesModule.cols}>
-                            <p className={stylesModule.norm} />
+                          <div className={stylesModule.col}>
+                            <p className={stylesModule.norm}>Tiền (đ)</p>
                           </div>
+                          <div className={stylesModule.col}>
+                            <p className={stylesModule.norm}>Ghi chú</p>
+                          </div>
+                          {/* <div className={stylesModule.cols}>
+                            <p className={stylesModule.norm} />
+                          </div> */}
                         </div>
                         <Form.List name="data">
                           {(fields, { add, remove }) => (
@@ -226,13 +236,13 @@ const General = memo(() => {
                                         rules={[variables.RULES.EMPTY_INPUT]}
                                       />
                                     </div>
-                                    <div className={classnames(stylesModule.col)}>
+                                    <div className={classnames(stylesModule.nol)}>
                                       <Form.List name="datas">
                                         {(fields, { add, remove }) => (
                                           <>
                                             {fields.map((fieldItem, index) => (
                                               <Pane key={index} className="d-flex">
-                                                <div className={stylesModule['card-item']}>
+                                                <div className={stylesModule['card-child']}>
                                                   <div className={classnames(stylesModule.col)}>
                                                     <FormItem
                                                       className={stylesModule.item}

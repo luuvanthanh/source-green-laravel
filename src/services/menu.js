@@ -2151,7 +2151,7 @@ export async function getLeftMenuCurrency() {
       title: 'Khai báo danh mục',
       key: 'Currency',
       icon: 'icon icon-list',
-      permission: [],
+      permission: [permissions.BIEUPHI],
       children: [
         {
           title: 'Tính phí học sinh cũ',
@@ -2160,7 +2160,7 @@ export async function getLeftMenuCurrency() {
             '/bieu-phi/tinh-phi-hoc-sinh-cu',
             '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.BIEUPHI],
           pro: true,
         },
         {
@@ -2170,21 +2170,54 @@ export async function getLeftMenuCurrency() {
             '/bieu-phi/tinh-phi-hoc-sinh-moi',
             '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.BIEUPHI],
           pro: true,
         },
-        // {
-        //   title: 'Kế hoạch đóng phí',
-        //   key: 'payment-plan',
-        //   url: [
-        //     '/bieu-phi/ke-hoach-dong-phi',
-        //     '/bieu-phi/ke-hoach-dong-phi/tao-moi',
-        //     '/bieu-phi/ke-hoach-dong-phi/:id/chi-tiet',
-        //   ],
-        //   permission: [],
-        //   pro: true,
-        // },
+        {
+          title: 'Kế hoạch đóng phí',
+          key: 'payment-plan',
+          url: [
+            '/bieu-phi/ke-hoach-dong-phi',
+            '/bieu-phi/ke-hoach-dong-phi/tao-moi',
+            '/bieu-phi/ke-hoach-dong-phi/:id/chi-tiet',
+          ],
+          permission: [permissions.BIEUPHI],
+          pro: true,
+        },
       ],
+    },
+    {
+      title: 'Báo cáo',
+      key: 'Report',
+      icon: 'icon icon-list',
+      permission: [permissions.BIEUPHI],
+      children: [
+        {
+          title: 'TH công nợ theo đối tượng',
+          key: 'debt',
+          url: [
+            '/bieu-phi/bao-cao/cong-no-theo-doi-tuong'
+          ],
+          permission: [permissions.BIEUPHI],
+          pro: true,
+        },
+        {
+          title: 'TH thu - chi theo đối tượng',
+          key: 'revenue-expenditure',
+          url: [
+            '/bieu-phi/bao-cao/thu-chi-theo-doi-tuong',
+          ],
+          permission: [permissions.BIEUPHI],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Cấu hình nội dung',
+      key: 'configuration',
+      icon: 'icon icon-list',
+      permission: [permissions.BIEUPHI],
+      url: [ '/bieu-phi/cau-hinh-noi-dung'],
     },
   ];
 }

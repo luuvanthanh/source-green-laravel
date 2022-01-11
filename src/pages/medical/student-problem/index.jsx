@@ -202,13 +202,31 @@ class Index extends PureComponent {
     );
   };
 
+  debouncedSearchDateRank = debounce((FromDate, ToDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          FromDate,
+          ToDate,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
   /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+  onChangeDate = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   /**
@@ -397,7 +415,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="date"
                     onChange={(event) => this.onChangeDate(event, 'date')}
-                    type={variables.DATE_PICKER}
+                    type={variables.RANGE_PICKER}
                     allowClear={false}
                   />
                 </div>

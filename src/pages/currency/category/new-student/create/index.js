@@ -271,7 +271,7 @@ const Index = memo(() => {
             <Pane className="row pt20">
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="Tên học sinh"
                   name="currencyOldStudentAddId"
                   type={variables.SELECT}
@@ -287,7 +287,7 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="Năm học"
                   name="currencyOldStudentAddId"
                   type={variables.SELECT}
@@ -303,7 +303,7 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="Ngày sinh"
                   name="currencyOldStudentAddId"
                   type={variables.DATE_PICKER}
@@ -317,7 +317,7 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="Tuổi (tháng)"
                   name="currencyOldStudentAddId"
                   type={variables.INPUT}
@@ -328,7 +328,7 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="Ngày nhập học"
                   name="currencyOldStudentAddId"
                   type={variables.DATE_PICKER}
@@ -358,7 +358,7 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="Họ tên Cha"
                   name="currencyOldStudentAddId"
                   type={variables.INPUT}
@@ -369,7 +369,7 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="SĐT Cha"
                   name="currencyOldStudentAddId"
                   type={variables.INPUT}
@@ -380,7 +380,7 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="Họ tên Mẹ"
                   name="currencyOldStudentAddId"
                   type={variables.INPUT}
@@ -391,7 +391,7 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  className="mb-2"
+                  className="mb-3"
                   label="SĐT Mẹ"
                   name="currencyOldStudentAddId"
                   type={variables.INPUT}

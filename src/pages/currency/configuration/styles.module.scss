@@ -1,0 +1,27 @@
+@import "@/assets/styles/mixins.scss";
+
+.content-top {
+  display: flex;
+  align-items: center;
+  .left {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: #36383A;
+    margin-right: 40px;
+  }
+  .right {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: #36383A;
+    margin-left: 40px;
+  }
+  :global(.ant-form-item) {
+    margin: 0px;
+  }
+}

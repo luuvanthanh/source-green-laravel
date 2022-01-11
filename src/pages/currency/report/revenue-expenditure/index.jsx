@@ -6,13 +6,11 @@ import { debounce, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -29,10 +27,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ currencyPaymentPlan, loading }) => ({
-  data: currencyPaymentPlan.data,
-  error: currencyPaymentPlan.error,
-  pagination: currencyPaymentPlan.pagination,
+const mapStateToProps = ({ currencyRevenueExpenditure, loading }) => ({
+  data: currencyRevenueExpenditure.data,
+  error: currencyRevenueExpenditure.error,
+  pagination: currencyRevenueExpenditure.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -86,7 +84,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'currencyPaymentPlan/GET_DATA',
+      type: 'currencyRevenueExpenditure/GET_DATA',
       payload: {
         ...search,
         orderBy: 'CreationTime',
@@ -170,61 +168,60 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     const columns = [
       {
-        title: 'Ngày tạo',
+        title: 'Mã học sinh',
         key: 'code',
-        className: 'min-width-200',
-        render: (record) => record?.date || '',
+        className: 'min-width-120',
+        render: (record) => record?.code || '',
       },
       {
-        title: 'Năm học',
+        title: 'Tên học sinh',
         key: 'name',
         className: 'min-width-200',
-        render: (record) => record?.year || '',
-      },
-      {
-        title: 'Tháng',
-        key: 'basic',
-        className: 'min-width-200',
-        render: (record) => record?.month || '',
+        render: (record) => record?.nameStudent || '',
       },
       {
         title: 'Cơ sở',
-        key: 'Grade',
+        key: 'code',
         className: 'min-width-200',
         render: (record) => record?.basic || '',
       },
       {
-        title: 'Lớp học',
-        key: 'class',
-        className: 'min-width-150',
+        title: 'Lớp',
+        key: 'code',
+        className: 'min-width-200',
         render: (record) => record?.class || '',
       },
       {
-        title: 'Trạng thái',
-        key: 'year',
+        title: 'Phải thu đầu kỳ',
+        key: 'basic',
         className: 'min-width-200',
-        render: (record) => record?.status || '',
+        render: (record) => record?.Beginning || '',
       },
       {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={stylesModule['list-button']} >
-             <Button  icon="plan" className={stylesModule.plan} />
-            <Button icon="remove" className={stylesModule.remove} />
-            <Button
-              icon="edit"
-              className={stylesModule.edit}
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-          </div>
-        ),
+        title: 'Phải thu trong kỳ',
+        key: 'class',
+        className: 'min-width-200',
+        render: (record) => record?.revenueInThePeriod || '',
+      },
+      {
+        title: 'Đã thu trong kỳ',
+        key: 'year',
+        className: 'min-width-200',
+        render: (record) => record?.Collected || '',
+      },
+      {
+        title: 'Đã hoàn trong kỳ',
+        key: 'detail',
+        className: 'min-width-200',
+        render: (record) => record?.Done || ''
+      },
+      {
+        title: 'Còn lại phải thu',
+        key: 'detail',
+        className: 'min-width-200',
+        render: (record) => record?.Remaining || ''
       },
     ];
     return columns;
@@ -237,13 +234,13 @@ class Index extends PureComponent {
       data,
     } = this.props;
     const { search } = this.state;
-    const loading = effects['currencyPaymentPlan/GET_DATA'];
+    const loading = effects['currencyRevenueExpenditure/GET_DATA'];
     return (
       <>
-        <Helmet title="Tính phí học sinh cũ" />
+        <Helmet title="TỔNG HỢP THU - CHI THEO ĐỐI TƯỢNG" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Tính phí học sinh cũ</Text>
+          <div className="d-flex justify-content-between align-items-center mt-4">
+            <Text color="dark">TỔNG HỢP THU - CHI THEO ĐỐI TƯỢNG</Text>
           </div>
           <div className={styles['block-table']}>
             <Form
@@ -255,14 +252,23 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+              <div className="col-lg-2">
                   <FormItem
-                    name="key"
-                    placeholder="Nhập từ khóa"
-                    type={variables.INPUT_SEARCH}
+                    name="date"
+                    type={variables.RANGE_PICKER}
+                    allowClear={false}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-2">
+                  <FormItem
+                    data={[{ name: 'Tất cả đối tượng' },]}
+                    name="district"
+                    type={variables.SELECT}
+                    allowClear={false}
+                    placeholder="Chọn đối tượng"
+                  />
+                </div>
+                <div className="col-lg-2">
                   <FormItem
                     data={[{ name: 'Tất cả năm học' },]}
                     name="district"
@@ -271,7 +277,7 @@ class Index extends PureComponent {
                     placeholder="Chọn năm học"
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-2">
                   <FormItem
                     data={[{ name: 'Tất cả lớp học' },]}
                     name="district"
