@@ -2245,6 +2245,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
+          {
+            path: '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi',
+            component: './fee-policy/refunds-takeABreak',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi/tao-moi',
+            component: './fee-policy/refunds-takeABreak/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi/:id/chi-tiet',
+            component: './fee-policy/refunds-takeABreak/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
         ],
       },
       // FEE POLICY

@@ -21,10 +21,10 @@ const Index = memo(() => {
   const params = useParams();
 
   const { menuLeftFeePolicy, data } = useSelector(
-    ({ loading, menu, feePolicyRefundsAbsentAdd }) => ({
+    ({ loading, menu, feePolicyRefundstakeABreakAdd }) => ({
       loading: loading.effects,
       menuLeftFeePolicy: menu.menuLeftFeePolicy,
-      data: feePolicyRefundsAbsentAdd?.data,
+      data: feePolicyRefundstakeABreakAdd?.data,
     }),
   );
   const { query } = useLocation();
@@ -106,7 +106,7 @@ const Index = memo(() => {
                 <FormItem
                   className="mb-2"
                   label="Tháng tính hoàn phí"
-                  name="feePolicyRefundsAbsentAddId"
+                  name="feePolicyRefundstakeABreakAddId"
                   type={variables.DATE_PICKER}
                   placeholder="Chọn năm"
                   allowClear={false}
@@ -117,6 +117,9 @@ const Index = memo(() => {
                 <Button color="primary" className="ml-2">
                   Tính phí hoàn
                 </Button>
+              </div>
+              <div className="col-lg-6">
+              <p className={stylesModule['wrapper-btn']}>Xem chi tiết điểm danh học sinh</p>
               </div>
             </Pane>
           </Pane>
