@@ -108,7 +108,8 @@
             "GGPHP\\ChildDevelop\\Category\\": "child-develop/category/src",
             "GGPHP\\ChildDevelop\\ChildEvaluate\\": "child-develop/child-evaluate/src",
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
-            "GGPHP\\DocumentManagement\\": "packages/document-management/src"
+            "GGPHP\\DocumentManagement\\": "packages/document-management/src",
+            "GGPHP\\Tariff\\ConfigContent\\": "tariff/config-content/src"
         },
         "classmap": [
             "database/seeds",
