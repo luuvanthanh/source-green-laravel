@@ -2,18 +2,14 @@
 
 namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 
-use Carbon\Carbon;
-use GGPHP\Crm\Facebook\Models\Conversation;
-use GGPHP\Crm\Facebook\Models\Message;
 use GGPHP\Crm\Facebook\Models\Page;
-use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use GGPHP\Crm\Facebook\Presenters\PagePresenter;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use GGPHP\Crm\Facebook\Repositories\Contracts\PageRepository;
 use GGPHP\Crm\Facebook\Services\FacebookService;
-use Illuminate\Support\Str;
-use Webpatser\Uuid\Uuid;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class PageRepositoryEloquent.
@@ -78,7 +74,18 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
         }
         if (!empty($paths)) {
             foreach ($paths as $path) {
-                $urls[] = env('IMAGE_URL') . $path;
+                $url =  env('IMAGE_URL') . $path;
+                $name = substr($url, strrpos($url, '/') + 1);
+                $nameArr = explode('.', $name);
+                if ($nameArr[1] != 'jpg' & $nameArr[1] != 'png' & $nameArr[1] != 'jpeg' & $nameArr[1] != 'mp4') {
+                    $contents = file_get_contents($url);
+                    $response = Http::get(env('IMAGE_URL') . '/api/files?fileIds=' . $nameArr[0]);
+                    $result = json_decode($response->body());
+                    $name = $result->results[0]->name;
+                    Storage::disk('local')->put('public/files/' . $name, $contents);
+                    $url = env('URL_CRM') . '/storage/files/' . $name;
+                }
+                $urls[] = $url;
             }
             $type = 'file';
             foreach ($urls as $url) {
