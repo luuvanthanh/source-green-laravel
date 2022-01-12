@@ -110,7 +110,9 @@ class Index extends PureComponent {
       this.onSetDetail(details.otherDeclarationDetail);
       this.onSetDetailContract(details.changeContractParameter);
       this.onSetParamaterValues(head(details.otherDeclarationDetail));
-      this.onSetParamaterValuesContract(head(details.changeContractParameter));
+      if(head(details.changeContractParameter)){
+        this.onSetParamaterValuesContract(head(details.changeContractParameter));
+      }
     }
   }
 
