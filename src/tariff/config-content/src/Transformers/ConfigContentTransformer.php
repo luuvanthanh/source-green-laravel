@@ -4,7 +4,7 @@ namespace GGPHP\Tariff\ConfigContent\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Tariff\ConfigContent\Models\ConfigContent;
-use  GGPHP\Tariff\ConfigContent\Transformers\ConfigContentDetailTransformer;
+use GGPHP\Tariff\ConfigContent\Transformers\ConfigContentDetailTransformer;
 
 /**
  * Class UserTransformer.

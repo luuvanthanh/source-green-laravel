@@ -36,7 +36,7 @@ class DocumentManagement extends UuidModel
      */
     protected $fillable = [
         'TypeOfDocument', 'Topic', 'SentDivisionId', 'EmployeeId', 'BranchId', 'ReceiveDivisionId',
-        'Title', 'Content', 'FileDocument'
+        'Title', 'Content', 'FileDocument', 'FileName'
     ];
 
     public function employee()
