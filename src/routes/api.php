@@ -183,4 +183,8 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\DocumentManagement\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\Tariff\ConfigContent\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
 });
