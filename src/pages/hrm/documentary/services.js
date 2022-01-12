@@ -6,6 +6,8 @@ export function get(data = {}) {
     method: 'GET',
     params: {
       ...data,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
       include: Helper.convertIncludes([
         'employee',
         'employeeSender',

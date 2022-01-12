@@ -120,7 +120,7 @@ function Index() {
         key: 'STT',
         className: 'min-width-80',
         render: (text, record, index) =>
-          Helper.sttList(pagination?.current_page, index, pagination?.per_page),
+          `CV${Helper.serialOrder(search?.page, index, search?.limit)}`,
       },
       {
         title: 'Thời gian gởi',

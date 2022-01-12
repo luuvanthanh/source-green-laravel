@@ -7,6 +7,10 @@ export default {
     branches: [],
     divisions: [],
     details: {},
+    error: {
+      isError: false,
+      data: {},
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -29,7 +33,7 @@ export default {
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: payload.parsePayload,
     }),
   },
   effects: {
@@ -80,14 +84,6 @@ export default {
     *GET_EMPLOYEES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getEmployees, payload);
-        callback(response);
-      } catch (error) {
-        callback(null, error);
-      }
-    },
-    *GET_PARENTS({ payload, callback }, saga) {
-      try {
-        const response = yield saga.call(categories.getParents, payload);
         callback(response);
       } catch (error) {
         callback(null, error);
