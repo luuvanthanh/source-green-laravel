@@ -13,6 +13,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from './utils/Helper';
+import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -398,22 +399,24 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              error={error}
-              isError={error.isError}
-              childrenColumnName="studentMedicalProblems"
-              bordered
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id || record?.class?.id}
-              scroll={{ x: '100%' }}
-            />
+            <div className={stylesModule['wrapper-table']}>
+              <Table
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                error={error}
+                isError={error.isError}
+                childrenColumnName="studentMedicalProblems"
+                bordered
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id || record?.class?.id}
+                scroll={{ x: '100%' }}
+              />
+            </div>
           </div>
         </div>
       </>

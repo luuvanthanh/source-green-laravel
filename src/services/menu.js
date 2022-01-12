@@ -1616,6 +1616,42 @@ export async function getLeftMenuFeePolicy() {
       icon: 'icon icon-calculate',
       permission: [permissions.CHINHSACHPHI],
     },
+    {
+      title: 'Hoàn phí HS nghỉ học',
+      key: 'refunds-absent',
+      icon: 'icon icon-coin-dollar',
+      url: [
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc',
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc/tao-moi',
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc/:id/chi-tiet',
+    ],
+      permission: [permissions.CHINHSACHPHI],
+      pro: true,
+    },
+    {
+      title: 'Hoàn phí HS tạm nghỉ',
+      key: 'refunds-takeABreak',
+      icon: 'icon icon-coin-dollar',
+      url: [
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi',
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi/tao-moi',
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi/:id/chi-tiet',
+    ],
+      permission: [permissions.CHINHSACHPHI],
+      pro: true,
+    },
+    {
+      title: 'Cấu hình hoàn phí',
+      key: 'feePolicy-configuration',
+      icon: 'icon icon-setting',
+      url: [
+        '/chinh-sach-phi/cau-hinh-hoan-phi',
+      '/chinh-sach-phi/cau-hinh-hoan-phi/tao-moi',
+      '/chinh-sach-phi/cau-hinh-hoan-phi/:id/chi-tiet',
+    ],
+      permission: [permissions.HRM],
+      pro: true,
+    },
   ];
 }
 export async function getTopMenuData() {
