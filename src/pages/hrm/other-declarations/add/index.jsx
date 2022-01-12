@@ -110,7 +110,9 @@ class Index extends PureComponent {
       this.onSetDetail(details.otherDeclarationDetail);
       this.onSetDetailContract(details.changeContractParameter);
       this.onSetParamaterValues(head(details.otherDeclarationDetail));
-      this.onSetParamaterValuesContract(head(details.changeContractParameter));
+      if(head(details.changeContractParameter)){
+        this.onSetParamaterValuesContract(head(details.changeContractParameter));
+      }
     }
   }
 
@@ -144,7 +146,7 @@ class Index extends PureComponent {
 
   onSetParamaterValuesContract = (item) => {
     this.setStateData({
-      paramaterValuesContract: [item] || [],
+      paramaterValuesContract: item.detail || [],
     });
   };
 
@@ -296,7 +298,7 @@ class Index extends PureComponent {
       ],
       detailContract: prevState.detailContract.map((item) => ({
         ...item,
-        detailContract: value
+        detail: value
           ? [
               ...value.map((item) => {
                 const itemParamaterValues = categories.paramaterContract.find(
@@ -332,7 +334,7 @@ class Index extends PureComponent {
     }));
   };
 
-  onChangeNumberContract = (value, record, paramaterValue) => {
+  onChangeNumberContract = (valueDefault, record, paramaterValue) => {
     this.setStateData((prevState) => ({
       detailContract: prevState.detailContract.map((item) => {
         if (item?.employee?.id === record?.employee?.id) {
@@ -342,7 +344,7 @@ class Index extends PureComponent {
               if (itemDetail.id === paramaterValue.id) {
                 return {
                   ...itemDetail,
-                  value,
+                  valueDefault,
                 };
               }
               return itemDetail;
@@ -384,9 +386,9 @@ class Index extends PureComponent {
 
   onChangeCheckbox = (value) => {
     this.setStateData(() => ({
-      isContactSocialInsurance: value.target.checked
+      isContactSocialInsurance: value.target.checked,
     }));
-  }
+  };
 
   /**
    * Function header table
@@ -466,35 +468,36 @@ class Index extends PureComponent {
         ),
       },
     ];
-    
+
     const columnsMerge = paramaterValuesContract?.map((item) => ({
-          title: item.name,
-          key: item.code,
-          className: item.code === 'T_BHXH' ? 'min-width-80 d-flex justify-content-center' : 'min-width-200',
-          width: item.code === 'T_BHXH' ? 80 : 200,
-          render: (record) => {
-            const itemParamater = record?.detailContract?.find((itemDetail) => itemDetail.id === item.id);
-            if(itemParamater?.code === 'T_BHXH'){
-              return (
-                <FormItem
-                  type={variables.CHECKBOX_FORM}
-                  onChange={(value) => this.onChangeCheckbox(value, record, item)}
-                  valuePropName="checked"
-                  checked={isContactSocialInsurance}
-                />
-              );
-            }
-            return (
-              <InputNumber
-                className={classnames('input-number', styles['input-number-container'])}
-                formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-                placeholder="Nhập"
-                value={itemParamater?.valueDefault || 0}
-                onChange={(value) => this.onChangeNumberContract(value, record, item)}
-              />
-            );
-          },
-        }));
+      title: item.name,
+      key: item.code,
+      className:
+        item.code === 'T_BHXH' ? 'min-width-80 d-flex justify-content-center' : 'min-width-200',
+      width: item.code === 'T_BHXH' ? 80 : 200,
+      render: (record) => {
+        const itemParamater = record?.detail?.find(({ id }) => id === item.id);
+        if (itemParamater?.code === 'T_BHXH') {
+          return (
+            <FormItem
+              type={variables.CHECKBOX_FORM}
+              onChange={(value) => this.onChangeCheckbox(value, record, item)}
+              valuePropName="checked"
+              checked={isContactSocialInsurance}
+            />
+          );
+        }
+        return (
+          <InputNumber
+            className={classnames('input-number', styles['input-number-container'])}
+            formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+            placeholder="Nhập"
+            value={itemParamater?.valueDefault || 0}
+            onChange={(value) => this.onChangeNumberContract(value, record, item)}
+          />
+        );
+      },
+    }));
 
     return [...columns.slice(0, 1), ...columnsMerge, ...columns.slice(1)];
   };

@@ -1,0 +1,56 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-table {
+  padding-top: 10px;
+  :global(.ant-table-thead > tr > th) {
+    // background-color: #EEF0F4 !important;
+    // font-weight: 700;
+    padding: 20px !important;
+  }
+  :global(.ant-table-summary) {
+    background-color: #fff1eb !important;
+    // font-weight: 700;
+  }
+  .footer {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 700;
+    color: #3e4247;
+  }
+}
+
+.table-content {
+  padding: 0px !important;
+  min-width: 200px;
+}
+
+.table-contents {
+  padding: 0px !important;
+  min-width: 200px;
+  text-align: right !important;
+  justify-content: flex-end;
+}
+
+.table-items {
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  justify-content: flex-end;
+}
+.table-items:last-child {
+  padding: 10px;
+  border: none !important;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.table-item {
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+.table-item:last-child {
+  padding: 10px;
+  border: none !important;
+}

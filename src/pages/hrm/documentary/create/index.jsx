@@ -16,7 +16,6 @@ import { useDispatch, useSelector } from 'dva';
 import { debounce, head, isEmpty, last, size, slice } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
-import './styles.module.scss';
 
 const { Item: FormItemAntd } = Form;
 
@@ -38,10 +37,13 @@ function Index() {
 
   const [content, setContent] = useState('');
   const [employees, setEmployees] = useState([]);
+  const [employeesActive, setEmployeesActive] = useState([]);
   const [sentEmployees, setSentEmployees] = useState([]);
   const [file, setFile] = useState([]);
   const [isAllEmployees, setIsAllEmployees] = useState(false);
   const [searchEmployee, setSearchEmployee] = useState({
+    page: variables.PAGINATION.PAGE,
+    limit: variables.PAGINATION.PAGE_SIZE,
     total: 0,
     hasMore: true,
     loading: false,
@@ -78,6 +80,8 @@ function Index() {
           setSearchEmployee({
             ...searchEmployee,
             total: response.totalCount,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
           });
           checkHasValue(response);
         }
@@ -138,6 +142,7 @@ function Index() {
       type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
       payload: {
         ...searchEmployee,
+        page: searchEmployee.page + 1,
       },
       callback: (response, error) => {
         if (response) {
@@ -145,6 +150,7 @@ function Index() {
           setSearchEmployee({
             ...searchEmployee,
             total: response.pagination.total,
+            page: searchEmployee.page + 1,
             loading: false,
           });
         }
@@ -184,12 +190,16 @@ function Index() {
       payload: {
         ...searchEmployee,
         branchId: value,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
       },
       callback: (response) => {
         if (response) {
           setEmployees(response.parsePayload);
           setSearchEmployee({
             ...searchEmployee,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
             branchId: value,
             total: response.pagination.total,
             loading: false,
@@ -206,12 +216,16 @@ function Index() {
       payload: {
         ...searchEmployee,
         divisionId: value,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
       },
       callback: (response) => {
         if (response) {
           setEmployees(response.parsePayload);
           setSearchEmployee({
             ...searchEmployee,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
             divisionId: value,
             total: response.pagination.total,
             loading: false,
@@ -269,7 +283,6 @@ function Index() {
         ? employees.filter((item) => item.checked).map((item) => item.id)
         : [],
     };
-    // console.log(payload);
     dispatch({
       type: params.id ? 'HRMdocumentaryAdd/UPDATE' : 'HRMdocumentaryAdd/ADD',
       payload,
@@ -323,6 +336,7 @@ function Index() {
             setContent(response.parsePayload?.content);
             setFile([response.parsePayload?.fileDocument, response.parsePayload?.fileName]);
             checkHasValue(response);
+            setEmployeesActive(response.parsePayload?.employee);
           }
         },
       });
@@ -437,28 +451,32 @@ function Index() {
                           pageStart={0}
                           useWindow={false}
                         >
-                          {employees?.map(({ id, fullName, positionLevel, fileImage, checked }) => (
-                            <List.Item key={id} className="border-bottom">
-                              <Pane className="px20 w-100 d-flex align-items-center">
-                                <Checkbox
-                                  defaultChecked={checked}
-                                  className="mr15"
-                                  onChange={() => changeCheckboxEmployee(id)}
-                                />
-                                <Pane className="d-flex align-items-center">
-                                  <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                  <Pane className="ml15">
-                                    <h3 className="font-weight-bold" style={{ fontSize: '14px' }}>
-                                      {fullName}
-                                    </h3>
-                                    <Text size="small" style={{ color: '#7a7e84' }}>
-                                      {head(positionLevel)?.position?.name}
-                                    </Text>
+                          {employees?.map(({ id, fullName, positionLevel, fileImage }) => {
+                            const checked = employeesActive.find((item) => item.id === id);
+
+                            return (
+                              <List.Item key={id} className="border-bottom">
+                                <Pane className="px20 w-100 d-flex align-items-center">
+                                  <Checkbox
+                                    defaultChecked={checked}
+                                    className="mr15"
+                                    onChange={() => changeCheckboxEmployee(id)}
+                                  />
+                                  <Pane className="d-flex align-items-center">
+                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                    <Pane className="ml15">
+                                      <h3 className="font-weight-bold" style={{ fontSize: '14px' }}>
+                                        {fullName}
+                                      </h3>
+                                      <Text size="small" style={{ color: '#7a7e84' }}>
+                                        {head(positionLevel)?.position?.name}
+                                      </Text>
+                                    </Pane>
                                   </Pane>
                                 </Pane>
-                              </Pane>
-                            </List.Item>
-                          ))}
+                              </List.Item>
+                            );
+                          })}
                         </InfiniteScroll>
                       </Scrollbars>
                     </Pane>
@@ -498,7 +516,7 @@ function Index() {
                       <label className="ant-col ant-form-item-label d-flex">
                         <span>Tài liệu đính kèm</span>
                       </label>
-                      <Upload {...props} className="upload-file">
+                      <Upload {...props} className={styles['upload-file']}>
                         <Button color="transparent" icon="upload1">
                           Tải lên
                         </Button>
@@ -506,7 +524,7 @@ function Index() {
                       </Upload>
                     </div>
                     {!isEmpty(file) && (
-                      <div className="documentary-file">
+                      <div className={styles['documentary-file']}>
                         <div>{last(file)}</div>
                         <Button
                           color="danger"

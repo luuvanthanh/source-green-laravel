@@ -64,6 +64,8 @@ const Index = memo(() => {
   });
   const [employees, setEmployees] = useState([]);
   const [parents, setParents] = useState([]);
+  const [employeesActive, setEmployeesActive] = useState([]);
+  const [parentsActive, setParentsActive] = useState([]);
 
   const onChangeEditor = (value) => {
     mountedSet(setContent, value);
@@ -378,6 +380,8 @@ const Index = memo(() => {
                 };
               }),
             );
+            mountedSet(setEmployeesActive, response?.employeeNews);
+            mountedSet(setParentsActive, response?.parentNews);
           }
         },
       });
@@ -466,24 +470,32 @@ const Index = memo(() => {
                           <List
                             loading={searchEmployee.loading}
                             dataSource={employees}
-                            renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
-                              <ListItem key={id} className={styles.listItem}>
-                                <Pane className="px20 w-100 d-flex align-items-center">
-                                  <Checkbox
-                                    checked={!!checked}
-                                    className="mr15"
-                                    onChange={() => changeCheckboxEmployee(id)}
-                                  />
-                                  <Pane className={styles.userInformation}>
-                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                    <Pane>
-                                      <h3>{fullName}</h3>
-                                      <p>{head(positionLevel)?.position?.name}</p>
+                            renderItem={({ id, fullName, positionLevel, fileImage }) => {
+                              const checked = employeesActive.find(
+                                (item) => item.employee.id === id,
+                              );
+
+                              return (
+                                <ListItem key={id} className={styles.listItem}>
+                                  <Pane className="px20 w-100 d-flex align-items-center">
+                                    <Checkbox
+                                      defaultChecked={checked}
+                                      className="mr15"
+                                      onChange={() => changeCheckboxEmployee(id)}
+                                    />
+                                    <Pane className={styles.userInformation}>
+                                      <AvatarTable
+                                        fileImage={Helper.getPathAvatarJson(fileImage)}
+                                      />
+                                      <Pane>
+                                        <h3>{fullName}</h3>
+                                        <p>{head(positionLevel)?.position?.name}</p>
+                                      </Pane>
                                     </Pane>
                                   </Pane>
-                                </Pane>
-                              </ListItem>
-                            )}
+                                </ListItem>
+                              );
+                            }}
                           />
                         </InfiniteScroll>
                       </Scrollbars>
@@ -493,7 +505,7 @@ const Index = memo(() => {
                   <Pane className="p20">
                     {!isAllEmployees && (
                       <Text color="dark" size="normal">
-                        Đã chọn {size(employees.filter((item) => item.checked))} nhân viên
+                        Đã chọn {size(employees?.filter((item) => item.checked))} nhân viên
                       </Text>
                     )}
                   </Pane>
@@ -536,23 +548,29 @@ const Index = memo(() => {
                         >
                           <List
                             dataSource={parents}
-                            renderItem={({ id, fullName, fileImage, checked }) => (
-                              <ListItem key={id} className={styles.listItem}>
-                                <Pane className="px20 w-100 d-flex align-items-center">
-                                  <Checkbox
-                                    checked={!!checked}
-                                    className="mr15"
-                                    onChange={() => changeCheckboxParent(id)}
-                                  />
-                                  <Pane className={styles.userInformation}>
-                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                    <Pane>
-                                      <h3>{fullName}</h3>
+                            renderItem={({ id, fullName, fileImage }) => {
+                              const checked = parentsActive?.find((item) => item.parent.id === id);
+
+                              return (
+                                <ListItem key={id} className={styles.listItem}>
+                                  <Pane className="px20 w-100 d-flex align-items-center">
+                                    <Checkbox
+                                      defaultChecked={checked}
+                                      className="mr15"
+                                      onChange={() => changeCheckboxParent(id)}
+                                    />
+                                    <Pane className={styles.userInformation}>
+                                      <AvatarTable
+                                        fileImage={Helper.getPathAvatarJson(fileImage)}
+                                      />
+                                      <Pane>
+                                        <h3>{fullName}</h3>
+                                      </Pane>
                                     </Pane>
                                   </Pane>
-                                </Pane>
-                              </ListItem>
-                            )}
+                                </ListItem>
+                              );
+                            }}
                           />
                         </InfiniteScroll>
                       </Scrollbars>
@@ -562,7 +580,7 @@ const Index = memo(() => {
                   <Pane className="p20">
                     {!isAllParents && (
                       <Text color="dark" size="normal">
-                        Đã chọn {size(parents.filter((item) => item.checked))} phụ huynh
+                        Đã chọn {size(parents?.filter((item) => item.checked))} phụ huynh
                       </Text>
                     )}
                   </Pane>
