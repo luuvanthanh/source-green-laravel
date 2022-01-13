@@ -38,7 +38,7 @@ class Camera extends UuidModel
     protected $fillable = [
         'name', 'address', 'lat', 'long', 'ip', 'port', 'user_name', 'password', 'camera_server_id',
         'tourist_destination_id', 'is_recording', 'is_streaming', 'bit_rate', 'frame_rate', 'rtsp',
-        'resolution', 'profile', 'fps', 'gop', 'status', 'user_id',
+        'resolution', 'profile', 'fps', 'gop', 'status', 'user_id', 'cam_info'
     ];
 
     protected $guard_name = 'api';
@@ -47,7 +47,8 @@ class Camera extends UuidModel
         'lat' => 'float',
         'long' => 'float',
         'is_recording' => 'boolean',
-        'is_streaming' => 'boolean'
+        'is_streaming' => 'boolean',
+        'cam_info' => 'array'
     ];
 
     /**

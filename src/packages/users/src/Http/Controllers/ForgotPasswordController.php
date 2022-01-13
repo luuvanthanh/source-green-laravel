@@ -42,7 +42,7 @@ class ForgotPasswordController extends Controller
         // send mail
         $email = $user->email;
         $domainClient = env('RESET_PASSWORD_URL', 'http://localhost:11000/password/reset');
-        $urlReset = $domainClient . '?token=' . $token . '?email=' . $email;
+        $urlReset = $domainClient . '?token=' . $token . '&email=' . $email;
 
         // send mail
         $dataMail = [

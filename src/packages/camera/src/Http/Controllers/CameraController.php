@@ -167,33 +167,9 @@ class CameraController extends Controller
      * @param  mixed $camera
      * @return Response
      */
-    public function updateStatusForVmsCore(Request $request,  $id)
+    public function cameraChangeLog(Request $request)
     {
-        $response = $this->cameraRepository->updateStatusForVmsCore($request->all(), $id);
-
-        return $this->success($response, trans('lang::messages.common.modifySuccess'));
-    }
-
-    /**
-     * @param  mixed $request
-     * @param  mixed $camera
-     * @return Response
-     */
-    public function onOffStreamForVmsCore(Request $request,  $id)
-    {
-        $response = $this->cameraRepository->onOffStreamForVmsCore($request->all(), $id);
-
-        return $this->success($response, trans('lang::messages.common.modifySuccess'));
-    }
-
-    /**
-     * @param  mixed $request
-     * @param  mixed $camera
-     * @return Response
-     */
-    public function onOffRecordForVmsCore(Request $request,  $id)
-    {
-        $response = $this->cameraRepository->onOffRecordForVmsCore($request->all(), $id);
+        $response = $this->cameraRepository->cameraChangeLog($request->all());
 
         return $this->success($response, trans('lang::messages.common.modifySuccess'));
     }

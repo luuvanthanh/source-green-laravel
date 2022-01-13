@@ -47,17 +47,10 @@ EOD;
                 $status = null;
                 switch ($model->status) {
                     case Camera::STATUS['STATUS_RUNNING']:
-                        $status = 'khởi động thành công.';
-                        break;
-                    case Camera::STATUS['STATUS_PENDING']:
-                        $status = 'đang được khởi động.';
+                        $status = 'kết nối thành công.';
                         break;
                     case Camera::STATUS['STATUS_FAILED']:
-                        $status = 'khởi động thất bại.';
-                        break;
-
-                    default:
-                        # code...
+                        $status = 'bị ngắt kết nối.';
                         break;
                 }
                 $text =  'Camera ' . $name . ' tại ' . $nameTouristDestination . ' ' . $status;
@@ -68,7 +61,7 @@ EOD;
                 $name = $model->name;
                 $nameTouristDestination = $model->touristDestination->name;
 
-                if ($model->is_streaming) {
+                if ($model->cam_info['streaming_living']) {
                     $status = 'đã bật';
                 } else {
                     $status = 'đã tắt';
@@ -82,13 +75,27 @@ EOD;
                 $name = $model->name;
                 $nameTouristDestination = $model->touristDestination->name;
 
-                if ($model->is_recording) {
+                if ($model->cam_info['capture_living']) {
                     $status = 'đã bật';
                 } else {
                     $status = 'đã tắt';
                 }
 
                 $text = 'Chế độ record của camera ' . $name . ' tại ' . $nameTouristDestination . ' ' . $status;
+                break;
+            case 'CAMERA_UPDATE_LIVING':
+                $model = $this->model;
+
+                $name = $model->name;
+                $nameTouristDestination = $model->touristDestination->name;
+
+                if ($model->cam_info['capture_living']) {
+                    $status = 'đã bật';
+                } else {
+                    $status = 'đã tắt';
+                }
+
+                $text = 'Trạng thái live của camera ' . $name . ' tại ' . $nameTouristDestination . ' ' . $status;
                 break;
         }
 
