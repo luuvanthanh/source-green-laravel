@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 .menu-horizontal-children {
   padding: 0 rem(20);
@@ -20,7 +20,7 @@
     position: relative;
 
     &::after {
-      content: "";
+      content: '';
       height: 22px;
       width: 1px;
       background-color: #dbdbdb;
@@ -48,7 +48,7 @@
 
   :global(.ant-menu-item) {
     color: rgba($color: $text-dark, $alpha: 0.65);
-    font-family: "Montserrat", sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -259,8 +259,6 @@
   }
 }
 
-
-
 .list-button {
   display: flex;
   justify-content: center;
@@ -286,24 +284,24 @@
     outline: none;
 
     &.success {
-      span[class*="icon"] {
+      span[class*='icon'] {
         color: $text-success;
       }
     }
 
     &.primary {
-      span[class*="icon"] {
+      span[class*='icon'] {
         color: $text-primary;
       }
     }
 
     &.danger {
-      span[class*="icon"] {
+      span[class*='icon'] {
         color: $text-danger;
       }
     }
 
-    span[class*="icon"] {
+    span[class*='icon'] {
       font-size: 12px;
       color: rgba($color: $text-dark, $alpha: 0.65);
     }
@@ -701,7 +699,7 @@
       border-bottom: unset;
     }
 
-    span[class*="icon"] {
+    span[class*='icon'] {
       padding-right: 10px;
       color: rgba($color: $text-dark, $alpha: 0.65);
     }
@@ -736,7 +734,7 @@
 
   &::after {
     color: $danger;
-    content: "*";
+    content: '*';
     font-size: 13px;
     line-height: 1;
     position: absolute;
@@ -786,7 +784,7 @@
   &.input-number-count {
     :global(.ant-input-number-input-wrap) {
       &::after {
-        content: "";
+        content: '';
       }
     }
   }
@@ -794,7 +792,7 @@
   &.input-number-date {
     :global(.ant-input-number-input-wrap) {
       &::after {
-        content: "ngày";
+        content: 'ngày';
       }
     }
   }
@@ -807,7 +805,7 @@
     position: relative;
 
     &::after {
-      content: "đ";
+      content: 'đ';
       position: absolute;
       right: 5px;
       top: 4px;
@@ -827,7 +825,7 @@
   padding: 4px;
   align-items: center;
 
-  span[class^="icon"] {
+  span[class^='icon'] {
     color: #e28631;
     padding-right: 10px;
   }
@@ -1147,7 +1145,7 @@
   align-items: center;
   cursor: pointer;
 
-  span[class*="icon"] {
+  span[class*='icon'] {
     padding-right: 10px;
   }
 }
@@ -1163,7 +1161,7 @@
   justify-content: center;
   background-color: transparent;
 
-  span[class*="icon"] {
+  span[class*='icon'] {
     font-size: 10px;
   }
 
@@ -1262,11 +1260,11 @@
       font-size: 13px;
       line-height: 20px;
       color: $text-success;
-      font-family: "ProximaNovaSemibold";
+      font-family: 'ProximaNovaSemibold';
     }
 
     .label {
-      font-family: "ProximaNovaSemibold";
+      font-family: 'ProximaNovaSemibold';
       font-size: 13px;
       line-height: 18px;
       color: #6d7177;
@@ -1274,7 +1272,7 @@
     }
 
     .norm {
-      font-family: "ProximaNovaSemibold";
+      font-family: 'ProximaNovaSemibold';
       font-size: 14px;
       line-height: 20px;
       color: #1f1f1f;
@@ -1391,7 +1389,7 @@
       background-color: rgba($color: #000000, $alpha: 0.05);
     }
 
-    span[class*="icon"] {
+    span[class*='icon'] {
       color: rgba($text-dark, 0.65);
 
       &:hover {
@@ -1444,8 +1442,8 @@
 }
 
 .colorIcon {
-  color: #BFBFBF;
-  display: flex!important;
+  color: #bfbfbf;
+  display: flex !important;
   align-items: center;
   justify-content: center;
 }
@@ -1459,7 +1457,7 @@
 }
 
 .btnControl-timetable {
-  width: 78px; 
+  width: 78px;
   & button {
     width: 50%;
   }
@@ -1474,9 +1472,9 @@
 .tabContent {
   background-color: $background-white;
   border-radius: 4px;
-  
+
   &:global(.ant-tabs-nav) {
-    padding-left: 24px!important;
+    padding-left: 24px !important;
     z-index: 10;
   }
 }
@@ -1492,4 +1490,29 @@
   :global(.ant-modal-body) {
     padding: 12px;
   }
+}
+
+.upload-file {
+  :global(.ant-upload) {
+    display: flex;
+    align-items: center;
+
+    button {
+      color: $primary;
+      border: 1px solid $primary;
+      margin-right: 10px;
+    }
+
+    i {
+      color: $text-darken;
+    }
+  }
+}
+
+.documentary-file {
+  padding: 10px;
+  margin-top: 10px;
+  display: inline-flex;
+  border: 1px dashed $border-lighten;
+  align-items: center;
 }

@@ -69,6 +69,7 @@ class Index extends PureComponent {
   componentDidMount() {
     this.fetchBranches();
     this.fetchPositions();
+    this.fetchTeachers();
   }
 
   componentWillUnmount() {
@@ -122,25 +123,6 @@ class Index extends PureComponent {
     );
     this.formRef?.current?.resetFields(['classId']);
     this.fetchClasses(value);
-  };
-
-  selectPosition = (value) => {
-    this.setStateData(
-      (prev) => ({
-        ...prev,
-        searchTeachers: {
-          totalCount: 0,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.SIZEMAX,
-        },
-        hasMore: true,
-        loadingLoadMore: false,
-        positionId: value,
-      }),
-      () => {
-        this.fetchTeachers();
-      },
-    );
   };
 
   fetchTeachers = () => {
@@ -327,7 +309,7 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const {
-      categories: { teachers, branches, classes, positions },
+      categories: { teachers, branches, classes },
       selectedTeachers,
       loadingTeacher,
       loadingLoadMore,
@@ -392,16 +374,6 @@ class Index extends PureComponent {
                         data={branches}
                         onChange={this.selectBranch}
                         allowClear={false}
-                      />
-                    </div>
-                    <div className="col-lg-6">
-                      <FormItem
-                        className="mb-0"
-                        data={positions}
-                        onChange={this.selectPosition}
-                        label="Chức vụ"
-                        name="positionId"
-                        type={variables.SELECT_MUTILPLE}
                       />
                     </div>
                   </div>
