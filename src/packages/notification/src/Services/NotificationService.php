@@ -12,6 +12,7 @@ class NotificationService
     const CAMERA_UPDATE_STATUS = 'CAMERA_UPDATE_STATUS';
     const CAMERA_UPDATE_STREAM = 'CAMERA_UPDATE_STREAM';
     const CAMERA_UPDATE_RECORD = 'CAMERA_UPDATE_RECORD';
+    const CAMERA_UPDATE_LIVING = 'CAMERA_UPDATE_LIVING';
 
     /**
      * @param $attributes

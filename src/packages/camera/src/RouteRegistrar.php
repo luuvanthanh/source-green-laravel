@@ -53,10 +53,6 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function forVmsCore()
     {
-        \Route::put('cameras/on-off-record/{id}', 'CameraController@onOffRecordForVmsCore');
-
-        \Route::put('cameras/on-off-stream/{id}', 'CameraController@onOffStreamForVmsCore');
-
-        \Route::put('cameras/status/{id}', 'CameraController@updateStatusForVmsCore');
+        \Route::put('cameras-change-log', 'CameraController@cameraChangeLog');
     }
 }

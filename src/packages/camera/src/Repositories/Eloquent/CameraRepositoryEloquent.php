@@ -388,43 +388,62 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         return parent::find($id);
     }
 
-    public function updateStatusForVmsCore($attributes, $id)
+    public function cameraChangeLog($attributes)
     {
+        $camera = Camera::findOrFail($attributes['came_id']);
 
-        $camera = Camera::findOrFail($id);
+        $statusNow = $camera->status;
+        switch ($attributes['status']) {
+            case 'remove':
+                $attributes['status'] =  Camera::STATUS['STATUS_FAILED'];
+                $camera->update([
+                    'status' => $attributes['status'],
+                    'cam_info' => $attributes['cam_info']
+                ]);
 
-        $camera->update([
-            'status' => Camera::STATUS[$attributes['status']]
-        ]);
+                break;
+            case 'running':
+                $attributes['status'] =  Camera::STATUS['STATUS_RUNNING'];
 
-        NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_STATUS, $camera);
+                $isLiveNow = false;
+                $isStreamNow = false;
+                $isBackupNow = false;
 
-        return parent::find($id);
-    }
+                $camInfo = $camera->cam_info;
+                if (!is_null($camInfo)) {
+                    $isLiveNow = $camInfo['capture_living'];
+                    $isStreamNow = $camInfo['streaming_living'];
+                    $isBackupNow = $camInfo['capture_living'];
+                }
 
-    public function onOffStreamForVmsCore($attributes, $id)
-    {
-        $camera = Camera::findOrFail($id);
+                $isLiveChange = $attributes['cam_info']['capture_living'];
+                $isStreamChange = $attributes['cam_info']['streaming_living'];
+                $isBackupChange = $attributes['cam_info']['capture_living'];
 
-        $camera->update([
-            'is_streaming' => $attributes['on_flag']
-        ]);
+                $camera->update([
+                    'status' => $attributes['status'],
+                    'cam_info' => $attributes['cam_info']
+                ]);
 
-        NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_STREAM, $camera);
+                if ($isLiveNow != $isLiveChange) {
+                    NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_LIVING, $camera);
+                }
 
-        return parent::find($id);
-    }
+                if ($isStreamNow != $isStreamChange) {
+                    NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_STREAM, $camera);
+                }
 
-    public function onOffRecordForVmsCore($attributes, $id)
-    {
-        $camera = Camera::findOrFail($id);
+                if ($isBackupNow != $isBackupChange) {
+                    NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_RECORD, $camera);
+                }
 
-        $camera->update([
-            'is_recording' => $attributes['on_flag']
-        ]);
+                break;
+        }
 
-        NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_RECORD, $camera);
+        if ($statusNow != $attributes['status']) {
+            NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_STATUS, $camera);
+        }
 
-        return parent::find($id);
+        return parent::find($attributes['came_id']);
     }
 }
