@@ -192,6 +192,7 @@ return [
         GGPHP\Crm\Icon\Providers\IconServiceProvider::class,
         GGPHP\Crm\Config\Providers\ConfigServiceProvider::class,
         Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
+        GGPHP\Crm\ChildDevelop\Providers\ChildDevelopServiceProvider::class,
     ],
 
     /*
