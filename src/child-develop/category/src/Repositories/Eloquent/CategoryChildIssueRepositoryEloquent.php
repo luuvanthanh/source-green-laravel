@@ -5,8 +5,10 @@ namespace GGPHP\ChildDevelop\Category\Repositories\Eloquent;
 use GGPHP\ChildDevelop\Category\Models\CategoryChildIssue;
 use GGPHP\ChildDevelop\Category\Presenters\CategoryChildIssuePresenter;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategoryChildIssueRepository;
+use GGPHP\ChildDevelop\Category\Services\ChildDevelopCrmServices;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -67,15 +69,36 @@ class CategoryChildIssueRepositoryEloquent extends BaseRepository implements Cat
 
     public function create(array $attributes)
     {
-        $code = CategoryChildIssue::max('Code');
+        \DB::beginTransaction();
+        try {
 
-        if (is_null($code)) {
-            $attributes['Code'] = CategoryChildIssue::CODE . "1";
-        } else {
-            $stt = substr($code, 2) + 1;
-            $attributes['Code'] = CategoryChildIssue::CODE . "$stt";
+            $code = CategoryChildIssue::max('Code');
+
+            if (is_null($code)) {
+                $attributes['Code'] = CategoryChildIssue::CODE . "1";
+            } else {
+                $stt = substr($code, 2) + 1;
+                $attributes['Code'] = CategoryChildIssue::CODE . "$stt";
+            }
+            $categoryChildIssue = CategoryChildIssue::create($attributes);
+
+            $data = [
+                'name' => $categoryChildIssue->Name,
+                'category_child_issue_clover_id' => $categoryChildIssue->Id
+            ];
+
+            $categoryChildIssueCrmId = ChildDevelopCrmServices::createCategoryChildIssue($data);
+
+            if (isset($categoryChildIssueCrmId->data->id)) {
+                $categoryChildIssue->CategoryChildIssueCrmId = $categoryChildIssueCrmId->data->id;
+                $categoryChildIssue->update();
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
-        $categoryChildIssue = CategoryChildIssue::create($attributes);
 
         return parent::parserResult($categoryChildIssue);
     }

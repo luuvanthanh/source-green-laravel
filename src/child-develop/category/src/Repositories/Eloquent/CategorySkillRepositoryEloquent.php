@@ -5,8 +5,10 @@ namespace GGPHP\ChildDevelop\Category\Repositories\Eloquent;
 use GGPHP\ChildDevelop\Category\Models\CategorySkill;
 use GGPHP\ChildDevelop\Category\Presenters\CategorySkillPresenter;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategorySkillRepository;
+use GGPHP\ChildDevelop\Category\Services\ChildDevelopCrmServices;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -67,17 +69,38 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
 
     public function create(array $attributes)
     {
-        $code = CategorySkill::max('Code');
-        $numericalSkill = CategorySkill::max('NumericalSkill');
+        \DB::beginTransaction();
+        try {
+            $code = CategorySkill::max('Code');
+            $numericalSkill = CategorySkill::max('NumericalSkill');
 
-        if (is_null($code)) {
-            $attributes['Code'] = CategorySkill::CODE . "1";
-        } else {
-            $stt = substr($code, 3) + 1;
-            $attributes['Code'] = CategorySkill::CODE . "$stt";
+            if (is_null($code)) {
+                $attributes['Code'] = CategorySkill::CODE . '1';
+            } else {
+                $stt = substr($code, 3) + 1;
+                $attributes['Code'] = CategorySkill::CODE . $stt;
+            }
+            $attributes['NumericalSkill'] = $numericalSkill + 1;
+            $categorySkill = CategorySkill::create($attributes);
+
+            $data = [
+                'name' => $categorySkill->Name,
+                'use' => $categorySkill->Use,
+                'category_skill_clover_id' => $categorySkill->Id,
+            ];
+
+            $categorySkilCrm = ChildDevelopCrmServices::createCategorySkill($data);
+
+            if (isset($categorySkilCrm->data->id)) {
+                $categorySkill->CategorySkillCrmId = $categorySkilCrm->data->id;
+                $categorySkill->update();
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
-        $attributes['NumericalSkill'] = $numericalSkill + 1;
-        $categorySkill = CategorySkill::create($attributes);
 
         return parent::parserResult($categorySkill);
     }
@@ -98,9 +121,54 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
 
     public function update(array $attributes, $id)
     {
-        $categorySkill = CategorySkill::find($id);
-        $categorySkill->update($attributes);
+        \DB::beginTransaction();
+        try {
+
+            $categorySkill = CategorySkill::find($id);
+            $categorySkill->update($attributes);
+
+            $data = [
+                'id' => $categorySkill->CategorySkillCrmId,
+                'name' => $categorySkill->Name,
+                'use' => $categorySkill->Use,
+            ];
+
+            $categorySkilCrmId = $categorySkill->CategorySkillCrmId;
+
+            if (!is_null($categorySkilCrmId)) {
+                ChildDevelopCrmServices::updateCategorySkill($data, $categorySkilCrmId);
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
 
         return parent::find($id);
+    }
+
+    public function delete($id)
+    {
+        \DB::beginTransaction();
+        try {
+            $categorySkill = CategorySkill::findOrFail($id);
+            $categorySkilCrmId = $categorySkill->CategorySkillCrmId;
+
+            if (!is_null($categorySkilCrmId)) {
+                $paramId = [
+                    'id' => $categorySkill->CategorySkillCrmId
+                ];
+
+                ChildDevelopCrmServices::deleteCategorySkill($paramId, $categorySkilCrmId);
+            }
+
+            $categorySkill->delete();
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+        return parent::all();
     }
 }
