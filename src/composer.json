@@ -77,7 +77,8 @@
             "GGPHP\\Crm\\WebForm\\": "crm/web-form/src",
             "GGPHP\\Crm\\Icon\\": "crm/icon/src",
             "GGPHP\\Crm\\Config\\": "crm/config/src",
-            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/"
+            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
+            "GGPHP\\Crm\\ChildDevelop\\": "crm/child-develop/src"
         },
         "classmap": [
             "database/seeds",

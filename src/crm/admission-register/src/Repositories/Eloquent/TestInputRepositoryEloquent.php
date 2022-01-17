@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
+use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
 use GGPHP\Crm\AdmissionRegister\Models\TestInput;
 use GGPHP\Crm\AdmissionRegister\Presenters\TestInputPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
@@ -70,6 +71,8 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         $testInput = TestInput::where('admission_register_id', $attributes['admission_register_id'])->first();
 
         if (is_null($testInput)) {
+            $admission = AdmissionRegister::where('id', $attributes['admission_register_id'])->first();
+            $admission->update(['status_admission' => AdmissionRegister::STATUS_REGISTER['UNTESTED']]);
             TestInput::create($attributes);
         }
 

@@ -9,7 +9,7 @@ class ChildHeathDevelop extends UuidModel
     protected $table = 'child_heath_develops';
 
     protected $fillable = [
-        'sick', 'year', 'hospital_time', 'status', 'medical_info_id'
+        'sick', 'year', 'hospital_time', 'status', 'medical_info_id', 'note'
     ];
 
     public function medicalInfo()
