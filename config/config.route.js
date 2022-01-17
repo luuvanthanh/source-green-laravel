@@ -2263,6 +2263,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
+          {
+            path: '/chinh-sach-phi/bao-cao/bao-cao-tien-hoan-phi',
+            component: './fee-policy/report/refund-reports',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
         ],
       },
       // FEE POLICY
