@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\ChildDevelop\Http\Requests;
 
 use GGPHP\Crm\ChildDevelop\Models\CategorySkill;
+use GGPHP\Crm\ChildDevelop\Models\ChildEvaluate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCategorySkillRequest extends FormRequest
@@ -29,12 +30,13 @@ class UpdateCategorySkillRequest extends FormRequest
             'name' => [
                 function ($attribute, $value, $fail) {
                     $categorySkill = CategorySkill::where('name', $value)->where('id', '!=', $this->id)->first();
+                    $childEvaluate = ChildEvaluate::where('category_skill_id', $this->id)->first();
 
-                    if (is_null($categorySkill)) {
+                    if (is_null($categorySkill) && is_null($childEvaluate)) {
                         return true;
                     }
 
-                    return $fail('Dữ liệu đã có trong hệ thống');
+                    return $fail('Dữ liệu đang được sử dụng');
                 },
             ],
         ];

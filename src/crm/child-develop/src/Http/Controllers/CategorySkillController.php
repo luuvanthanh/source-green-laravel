@@ -5,6 +5,7 @@ namespace GGPHP\Crm\ChildDevelop\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\ChildDevelop\Http\Requests\CreateCategorySkillRequest;
+use GGPHP\Crm\ChildDevelop\Http\Requests\DeleteCategorySkillRequest;
 use GGPHP\Crm\ChildDevelop\Http\Requests\UpdateCategorySkillRequest;
 use GGPHP\Crm\ChildDevelop\Repositories\Contracts\CategorySkillRepository;
 
@@ -86,7 +87,7 @@ class CategorySkillController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(DeleteCategorySkillRequest $request, $id)
     {
         $this->categorySkillRepository->delete($id);
 
