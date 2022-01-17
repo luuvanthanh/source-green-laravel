@@ -336,7 +336,7 @@ const Index = memo(() => {
     },
     {
       id: 'food',
-      name: 'Dự KIẾN PHẢI THU',
+      name: 'DỰ KIẾN PHẢI THU',
       component: (
         <Expected
           tuition={tuition}
