@@ -53,6 +53,13 @@ class ConfigMedicalDeclareController extends Controller
         return $this->success($configMedicalDeclare, trans('lang::messages.common.createSuccess'));
     }
 
+    public function show($id)
+    {
+        $configMedicalDeclare = $this->configMedicalDeclareRepository->find($id);
+
+        return $this->success($configMedicalDeclare, trans('lang::messages.common.getInfoSuccess'));
+    }
+
     /**
      * Remove the specified resource from storage.
      *

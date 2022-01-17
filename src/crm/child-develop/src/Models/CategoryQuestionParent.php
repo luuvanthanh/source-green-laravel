@@ -9,6 +9,6 @@ class CategoryQuestionParent extends UuidModel
     protected $table = 'category_question_parents';
 
     protected $fillable = [
-        'question'
+        'question', 'category_question_parent_clover_id'
     ];
 }

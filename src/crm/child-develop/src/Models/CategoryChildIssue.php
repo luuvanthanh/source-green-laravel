@@ -11,6 +11,6 @@ class CategoryChildIssue extends UuidModel
     protected $table = 'category_child_issues';
 
     protected $fillable = [
-        'code', 'name'
+        'code', 'name', 'category_child_issue_clover_id'
     ];
 }
