@@ -107,4 +107,11 @@ class SurveyFormController extends Controller
 
         return response()->json(null, 422);
     }
+
+    public function summaryResultSurvey($id)
+    {
+        $surveyForm = $this->surveyFormRepository->summaryResultSurvey($id);
+
+        return $this->success($surveyForm, trans('lang::messages.common.getInfoSuccess'));
+    }
 }

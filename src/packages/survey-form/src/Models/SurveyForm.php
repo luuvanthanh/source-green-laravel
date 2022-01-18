@@ -42,6 +42,11 @@ class SurveyForm extends UuidModel
      */
     public function results()
     {
-        return $this->hasMany('GGPHP\SurveyForm\Models\SurveyResult', 'survey_id');
+        return $this->hasMany(\GGPHP\SurveyForm\Models\SurveyFormResult::class, 'survey_id');
+    }
+
+    public function touristDestination()
+    {
+        return $this->belongsTo(\GGPHP\Category\Models\TouristDestination::class);
     }
 }

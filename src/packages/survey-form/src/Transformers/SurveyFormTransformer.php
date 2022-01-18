@@ -2,7 +2,9 @@
 
 namespace GGPHP\SurveyForm\Transformers;
 
+use GGPHP\Category\Transformers\TouristDestinationTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\SurveyForm\Models\SurveyForm;
 
 /**
  * Class SurveyFormTransformer.
@@ -23,7 +25,7 @@ class SurveyFormTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['touristDestination'];
 
     /**
      * Array attribute doesn't parse.
@@ -39,6 +41,28 @@ class SurveyFormTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $numberQuestion = 0;
+
+        foreach ($model->json['pages'] as $key => $page) {
+            $numberQuestion += count($page['elements']);
+        }
+
+        return [
+            'number_question' => $numberQuestion,
+            'number_result' => $model->results->count()
+        ];
+    }
+
+    /**
+     * Include EventAdditionalInformation
+     * @param SurveyForm $fault
+     */
+    public function includeTouristDestination(SurveyForm $surveyForm)
+    {
+        if (is_null($surveyForm->touristDestination)) {
+            return;
+        }
+
+        return $this->item($surveyForm->touristDestination, new TouristDestinationTransformer, 'TouristDestination');
     }
 }

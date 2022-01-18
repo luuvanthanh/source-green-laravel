@@ -33,8 +33,12 @@ class RouteRegistrar extends CoreRegistrar
         // SurveyForm
         \Route::resource('survey-forms', 'SurveyFormController');
 
+        \Route::get('survey-form-result-summary/{id}', 'SurveyFormController@summaryResultSurvey');
+
         // Create video wall from surveyForm
         \Route::resource('survey-form-results', 'SurveyFormResultController')->only('destroy', 'update', 'show', 'index');
+
+        \Route::resource('handle-works', 'HandleWorkController');
     }
 
     /**
