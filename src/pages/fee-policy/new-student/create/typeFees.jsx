@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'dva';
-import { Table } from 'antd';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import Button from '@/components/CommonComponent/Button';
@@ -12,13 +11,17 @@ import TableCus from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 
-const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRef }) => {
+const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRef, hanDleChangeText }) => {
   const dispatch = useDispatch();
   const { fees, paymentForm } = useSelector(({ fees, paymentMethod }) => ({
     fees: fees.data,
     paymentForm: paymentMethod.data,
   }));
 
+  const changeText=(e)=>{
+    hanDleChangeText(e);
+  };
+  
   useEffect(() => {
     dispatch({
       type: 'fees/GET_DATA',
@@ -106,7 +109,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
     const newTuition = [...tuition].filter((item) => item.id !== record.id);
     setTuition(newTuition);
   };
-
+  changeText(tuition);
   const columns = useMemo(() => [
     {
       title: 'Loại phí',
@@ -133,7 +136,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
     {
       title: 'Hình thức',
       key: 'format',
-      className: 'min-width-150',
+      className: 'min-width-200',
       render: (record) => (
         <>
           <FormItem
@@ -153,21 +156,10 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
       ),
     },
     {
-      title: () => (
-        <>
-          <span>Tiền dự kiến </span>
-          <span className="underline">đ</span>
-        </>
-      ),
-      key: 'money',
-      className: 'min-width-120',
-      align: 'right',
-      render: (record) => Helper.getPrice(record?.money, 0, true),
-    },
-    {
       title: '',
       key: 'delete',
       with: 40,
+      align: 'center',
       render: (record) => (
         <DeleteOutlined
           className="btn-delete-table"
@@ -194,7 +186,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
   return (
     <>
       <TableCus
-        className="table-edit content-vertical-top mb20"
+        className="table-edit mb20 w-100" 
         columns={columns}
         dataSource={tuition}
         loading={false}
@@ -204,15 +196,6 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
         pagination={false}
         rowKey="id"
         scroll={{ x: '100%' }}
-        summary={(pageData) => (
-          <Table.Summary.Row>
-            <Table.Summary.Cell colSpan={2} />
-            <Table.Summary.Cell align="right">
-              <strong>{Helper.getPrice(Helper.summary(pageData, 'money'), 0, true)}</strong>
-            </Table.Summary.Cell>
-            <Table.Summary.Cell />
-          </Table.Summary.Row>
-        )}
       />
       {addFees && (
         <Pane className="px20">

@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd';
+import { Form, Tabs } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import _, { isEmpty } from 'lodash';
@@ -16,6 +16,9 @@ import { variables, Helper } from '@/utils';
 import Loading from '@/components/CommonComponent/Loading';
 import TypeFees from './typeFees';
 
+import Expected from './expected';
+
+const { TabPane } = Tabs;
 const radios = [
   {
     value: 'newStudent',
@@ -38,13 +41,16 @@ const Index = memo(() => {
       students: newStudent.data,
     }),
   );
-
+  const [tab, setTab] = useState('tuition');
   const dispatch = useDispatch();
 
   const history = useHistory();
   const formRef = useRef();
   const type = formRef?.current?.getFieldValue('type');
 
+  const [YearsDetail, setYearsDetail] = useState([]);
+  const [idRes, setIdRes] = useState();
+  const [idYear, setIdYear] = useState();
   const [tuition, setTuition] = useState([]);
   const [errorTable, setErrorTable] = useState({
     tuition: false,
@@ -78,6 +84,7 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res?.id) {
+            setYearsDetail(res?.schoolYear?.changeParameter?.changeParameterDetail);
             const rangeDate = Helper.getDateRank(
               res?.schoolYear?.startDate,
               res?.schoolYear?.endDate,
@@ -212,6 +219,7 @@ const Index = memo(() => {
       setAddFees(false);
     }
     if (name === 'schoolYearId') {
+      setIdYear(value);
       const schoolYear = yearsSchool.find((item) => item.id === value);
       setDisableDayAdmission((prev) => ({
         ...prev,
@@ -257,7 +265,7 @@ const Index = memo(() => {
     });
   };
 
-  const changeTab = (e) => {
+  const s = (e) => {
     formRef.current.resetFields();
     setTuition([]);
     const { value } = e.target;
@@ -302,6 +310,48 @@ const Index = memo(() => {
     }
   };
 
+  const changeTab = (key) => {
+    setTab(key);
+  };
+
+  const hanDleChangeText = (childData) => {
+    setIdRes(childData);
+  };
+
+  const tabs = () => [
+    {
+      id: 'tuition',
+      name: 'CÁC KHOẢN HỌC PHÍ',
+      component: (
+        <TypeFees
+          tuition={tuition}
+          setTuition={setTuition}
+          error={errorTable?.tuition}
+          checkValidate={checkValidate}
+          addFees={addFees}
+          formRef={formRef}
+          hanDleChangeText={hanDleChangeText}
+        />
+      ),
+    },
+    {
+      id: 'food',
+      name: 'DỰ KIẾN PHẢI THU',
+      component: (
+        <Expected
+          tuition={tuition}
+          idYear={idYear}
+          yearsSchool={yearsSchool}
+          setTuition={setTuition}
+          error={errorTable?.tuition}
+          checkValidate={checkValidate}
+          idRes={idRes}
+          YearsDetail={YearsDetail}
+        />
+      ),
+    },
+  ];
+
   return (
     <>
       <Helmet title={params?.id ? 'Chi tiết' : 'Thêm mới'} />
@@ -332,7 +382,7 @@ const Index = memo(() => {
                         data={radios}
                         rules={[variables.RULES.EMPTY]}
                         name="type"
-                        onChange={changeTab}
+                        onChange={s}
                       />
                     )}
                   </Pane>
@@ -477,14 +527,24 @@ const Index = memo(() => {
                 <Heading type="form-title" className="heading-tab p20">
                   Các khoản học phí <span className="text-danger">*</span>
                 </Heading>
-                <TypeFees
+                {/* <TypeFees
                   tuition={tuition}
                   setTuition={setTuition}
                   error={errorTable?.tuition}
                   checkValidate={checkValidate}
                   addFees={addFees}
                   formRef={formRef}
-                />
+                /> */}
+                <Tabs onChange={changeTab} activeKey={tab} className="test-12 p20">
+                  {tabs().map(({ id, name, component }) => (
+                    <TabPane
+                      tab={<span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>}
+                      key={id}
+                    >
+                      {component}
+                    </TabPane>
+                  ))}
+                </Tabs>
               </Pane>
               <Pane className="p20 d-flex justify-content-between align-items-center">
                 <Button
