@@ -5,6 +5,7 @@ export default {
   state: {
     data: [],
     details: {},
+    year: [],
     error: {
       isError: false,
       data: {},
@@ -15,6 +16,10 @@ export default {
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
+    }),
+    SET_YEAR: (state, { payload }) => ({
+      ...state,
+      year: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -27,9 +32,17 @@ export default {
     }),
   },
   effects: {
-    *ADD({ payload, callback }, saga) {
+    *ADD_LIMIT({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
+        yield saga.call(services.addLimit, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *ADD_TIME({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addTime, payload);
         callback(payload);
       } catch (error) {
         callback(null, error);
@@ -48,6 +61,21 @@ export default {
         const response = yield saga.call(services.details, payload);
         yield saga.put({
           type: 'SET_DETAILS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_YEAR({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.year, payload);
+        console.log("year",response);
+        yield saga.put({
+          type: 'SET_YEAR',
           payload: response,
         });
       } catch (error) {
