@@ -58,6 +58,15 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
             });
         }
 
+        if (!empty($attributes['schoolYearId'])) {
+            $this->model = $this->model->where('SchoolYearId', $attributes['schoolYearId']);
+        }
+
+        if (!empty($attributes['studentId'])) {
+            $studentId = explode(',', $attributes['studentId']);
+            $this->model = $this->model->whereIn('StudentId', $studentId);
+        }
+
         if (!empty($attributes['from']) && !empty($attributes['to'])) {
             $this->model = $this->model->whereHas('schoolYear', function ($query) use ($attributes) {
                 $query->where(function ($q) use ($attributes) {

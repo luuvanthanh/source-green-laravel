@@ -7,6 +7,7 @@ use Carbon\CarbonPeriod;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use Illuminate\Support\Facades\Route;
 
 /**
  * Class ChargeOldStudentTransformer.
@@ -21,11 +22,14 @@ class ChargeOldStudentTransformer extends BaseTransformer
 
     public function customAttributes($model): array
     {
-        $expectedToCollectMoney = $this->expectedToCollectMoney($model);
+        $attributes = [];
+        $routeName  = Route::currentRouteName();
 
-        return [
-            'expectedToCollectMoney' => $expectedToCollectMoney
-        ];
+        if ($routeName == 'accountant.charge-old-students') {
+            $attributes['expectedToCollectMoney'] = $this->expectedToCollectMoney($model);
+        }
+
+        return $attributes;
     }
 
     public function expectedToCollectMoney($model)
@@ -37,8 +41,19 @@ class ChargeOldStudentTransformer extends BaseTransformer
         $rangeMonth = collect(CarbonPeriod::create($startDate, '1 month', $endDate)->toArray());
 
         $data = [];
+        $monthFilter = request()->month;
+
+        if (!empty(request()->month)) {
+            $monthFilter = explode(',', $monthFilter);
+        }
+
         foreach ($rangeMonth as $keyMonth => $month) {
             $fee = [];
+
+            if (!empty($monthFilter) && !in_array($month->format('Y-m'), $monthFilter)) {
+                continue;
+            }
+
             foreach ($tuition as $key => $value) {
                 $paymentForm = $value->paymentForm;
                 $applyDate = Carbon::parse($value->ApplyDate)->format('Y-m');
