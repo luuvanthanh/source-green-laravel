@@ -25,6 +25,12 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
     });
 
+    Route::group(['prefix' => 'accountant', 'middleware' => []], function () {
+        \GGPHP\Fee\RouteRegistrar::routes(function ($router) {
+            $router->forAccountant();
+        });
+    });
+
     \GGPHP\Timekeeping\RouteRegistrar::routes(function ($router) {
         $router->forKiosk();
     });

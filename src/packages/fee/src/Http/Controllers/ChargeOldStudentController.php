@@ -39,6 +39,19 @@ class ChargeOldStudentController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function chargeOldStudent(Request $request)
+    {
+        $chargeOldStudents = $this->chargeOldStudentRepository->filterChargeOldStudent($request->all());
+
+        return $this->success($chargeOldStudents, trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
