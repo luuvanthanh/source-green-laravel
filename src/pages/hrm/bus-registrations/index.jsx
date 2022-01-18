@@ -268,7 +268,7 @@ class Index extends PureComponent {
         key: 'date',
         width: 120,
         className: 'min-width-120',
-        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record?.startDate, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Số giờ',
