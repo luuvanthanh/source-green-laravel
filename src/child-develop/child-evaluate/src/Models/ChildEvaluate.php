@@ -10,7 +10,7 @@ class ChildEvaluate extends UuidModel
     protected $table = 'ChildEvaluates';
 
     protected $fillable = [
-        'CategorySkillId', 'Age'
+        'CategorySkillId', 'Age', 'ChildEvaluateCrmId', 'Use'
     ];
 
     const MONTH = [

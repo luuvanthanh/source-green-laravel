@@ -62,6 +62,10 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
             $this->model = $this->model->whereLike('Title', $attributes['key']);
         }
 
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->whereBetween('CreationTime', [$attributes['startDate'], $attributes['endDate']]);
+        }
+
         if (!empty($attributes['limit'])) {
             $documentManagement = $this->paginate($attributes['limit']);
         } else {

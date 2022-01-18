@@ -2,6 +2,8 @@
 
 namespace GGPHP\Fee\Transformers;
 
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\ChargeOldStudent;
@@ -14,14 +16,115 @@ use GGPHP\Fee\Models\ChargeOldStudent;
 class ChargeOldStudentTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = [];
-    protected $defaultIncludes = ['student', 'tuition', 'schoolYear'];
+    protected $availableIncludes = ['student', 'tuition', 'schoolYear'];
+    protected $defaultIncludes = [];
 
     public function customAttributes($model): array
     {
-        return [];
+        $expectedToCollectMoney = $this->expectedToCollectMoney($model);
+
+        return [
+            'expectedToCollectMoney' => $expectedToCollectMoney
+        ];
     }
 
+    public function expectedToCollectMoney($model)
+    {
+        $startDate = $model->schoolYear->StartDate;
+        $endDate = $model->schoolYear->EndDate;
+
+        $tuition = $model->tuition;
+        $rangeMonth = collect(CarbonPeriod::create($startDate, '1 month', $endDate)->toArray());
+
+        $data = [];
+        foreach ($rangeMonth as $keyMonth => $month) {
+            $fee = [];
+            foreach ($tuition as $key => $value) {
+                $paymentForm = $value->paymentForm;
+                $applyDate = Carbon::parse($value->ApplyDate)->format('Y-m');
+
+                switch ($paymentForm->Code) {
+                    case 'NAM':
+                        if ($applyDate == $month->format('Y-m')) {
+                            $fee[] = [
+                                'fee_id' => $value->FeeId,
+                                'fee_name' => $value->fee->Name,
+                                'money' => $value->Money
+                            ];
+                        } else {
+                            $fee[] = [
+                                'fee_id' => $value->FeeId,
+                                'fee_name' => $value->fee->Name,
+                                'money' => 0
+                            ];
+                        }
+                        break;
+                    case 'THANG':
+                        if ($applyDate <= $month->format('Y-m')) {
+                            $fee[] = [
+                                'fee_id' => $value->FeeId,
+                                'fee_name' => $value->fee->Name,
+                                'money' => $value->Money
+                            ];
+                        } else {
+                            $fee[] = [
+                                'fee_id' => $value->FeeId,
+                                'fee_name' => $value->fee->Name,
+                                'money' => 0
+                            ];
+                        }
+                        break;
+                    case 'HOCKY1':
+                        $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $model->schoolYear->changeParameter->Id)
+                            ->whereHas('paymentForm', function ($query) {
+                                $query->where('Code', 'HOCKY1');
+                            })->whereMonth('Date', $month->format('m'))->whereYear('Date', $month->format('Y'))->first();
+
+                        if ($applyDate == $month->format('Y-m') && !is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $value->FeeId,
+                                'fee_name' => $value->fee->Name,
+                                'money' => $value->Money
+                            ];
+                        } elseif (!is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $value->FeeId,
+                                'fee_name' => $value->fee->Name,
+                                'money' => 0
+                            ];
+                        }
+                        break;
+                    case 'HOCKY2':
+                        $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $model->schoolYear->changeParameter->Id)
+                            ->whereHas('paymentForm', function ($query) {
+                                $query->where('Code', 'HOCKY2');
+                            })->whereMonth('Date', $month->format('m'))->whereYear('Date', $month->format('Y'))->first();
+
+                        if ($applyDate == $month->format('Y-m') && !is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $value->FeeId,
+                                'fee_name' => $value->fee->Name,
+                                'money' => $value->Money
+                            ];
+                        } elseif (!is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $value->FeeId,
+                                'fee_name' => $value->fee->Name,
+                                'money' => 0
+                            ];
+                        }
+                        break;
+                }
+            }
+
+            $data[] = [
+                'month' =>  $month->format('Y-m'),
+                'fee' => $fee
+            ];
+        }
+
+        return $data;
+    }
     /**
      * Include Owner
      * @param ChargeOldStudent $chargeOldStudent

@@ -5,7 +5,7 @@ namespace GGPHP\ChildDevelop\Category\Repositories\Eloquent;
 use GGPHP\ChildDevelop\Category\Models\CategoryChildIssue;
 use GGPHP\ChildDevelop\Category\Presenters\CategoryChildIssuePresenter;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategoryChildIssueRepository;
-use GGPHP\ChildDevelop\Category\Services\ChildDevelopCrmServices;
+use GGPHP\ChildDevelop\Category\Services\ChildDevelopCategoryCrmServices;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -75,10 +75,10 @@ class CategoryChildIssueRepositoryEloquent extends BaseRepository implements Cat
             $code = CategoryChildIssue::max('Code');
 
             if (is_null($code)) {
-                $attributes['Code'] = CategoryChildIssue::CODE . "1";
+                $attributes['Code'] = CategoryChildIssue::CODE . '1';
             } else {
                 $stt = substr($code, 2) + 1;
-                $attributes['Code'] = CategoryChildIssue::CODE . "$stt";
+                $attributes['Code'] = CategoryChildIssue::CODE . $stt;
             }
             $categoryChildIssue = CategoryChildIssue::create($attributes);
 
@@ -87,7 +87,7 @@ class CategoryChildIssueRepositoryEloquent extends BaseRepository implements Cat
                 'category_child_issue_clover_id' => $categoryChildIssue->Id
             ];
 
-            $categoryChildIssueCrmId = ChildDevelopCrmServices::createCategoryChildIssue($data);
+            $categoryChildIssueCrmId = ChildDevelopCategoryCrmServices::createCategoryChildIssue($data);
 
             if (isset($categoryChildIssueCrmId->data->id)) {
                 $categoryChildIssue->CategoryChildIssueCrmId = $categoryChildIssueCrmId->data->id;
@@ -105,9 +105,48 @@ class CategoryChildIssueRepositoryEloquent extends BaseRepository implements Cat
 
     public function update(array $attributes, $id)
     {
-        $categoryChildIssue = CategoryChildIssue::find($id);
-        $categoryChildIssue->update($attributes);
+        \DB::beginTransaction();
+        try {
+            $categoryChildIssue = CategoryChildIssue::find($id);
+            $categoryChildIssue->update($attributes);
+
+            $categoryChildIssueCrmId = $categoryChildIssue->CategoryChildIssueCrmId;
+
+            if (!is_null($categoryChildIssueCrmId)) {
+                $data = [
+                    'id' => $categoryChildIssue->CategoryChildIssueCrmId,
+                    'name' => $categoryChildIssue->Name,
+                ];
+
+                ChildDevelopCategoryCrmServices::updateCategoryChildIssue($data, $categoryChildIssueCrmId);
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
 
         return parent::find($id);
+    }
+
+    public function delete($id)
+    {
+        \DB::beginTransaction();
+        try {
+            $categoryChildIssue = CategoryChildIssue::findOrFail($id);
+            $categoryChildIssueId = $categoryChildIssue->CategoryChildIssueCrmId;
+
+            if (!is_null($categoryChildIssueId)) {
+                ChildDevelopCategoryCrmServices::deleteCategoryChildIssue($categoryChildIssueId);
+            }
+
+            $categoryChildIssue->delete();
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+        
+        return parent::all();
     }
 }

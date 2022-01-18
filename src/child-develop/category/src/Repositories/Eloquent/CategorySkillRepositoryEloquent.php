@@ -5,7 +5,7 @@ namespace GGPHP\ChildDevelop\Category\Repositories\Eloquent;
 use GGPHP\ChildDevelop\Category\Models\CategorySkill;
 use GGPHP\ChildDevelop\Category\Presenters\CategorySkillPresenter;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategorySkillRepository;
-use GGPHP\ChildDevelop\Category\Services\ChildDevelopCrmServices;
+use GGPHP\ChildDevelop\Category\Services\ChildDevelopCategoryCrmServices;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -89,7 +89,7 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
                 'category_skill_clover_id' => $categorySkill->Id,
             ];
 
-            $categorySkilCrm = ChildDevelopCrmServices::createCategorySkill($data);
+            $categorySkilCrm = ChildDevelopCategoryCrmServices::createCategorySkill($data);
 
             if (isset($categorySkilCrm->data->id)) {
                 $categorySkill->CategorySkillCrmId = $categorySkilCrm->data->id;
@@ -136,7 +136,7 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
             $categorySkilCrmId = $categorySkill->CategorySkillCrmId;
 
             if (!is_null($categorySkilCrmId)) {
-                ChildDevelopCrmServices::updateCategorySkill($data, $categorySkilCrmId);
+                ChildDevelopCategoryCrmServices::updateCategorySkill($data, $categorySkilCrmId);
             }
 
             \DB::commit();
@@ -160,7 +160,7 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
                     'id' => $categorySkill->CategorySkillCrmId
                 ];
 
-                ChildDevelopCrmServices::deleteCategorySkill($paramId, $categorySkilCrmId);
+                ChildDevelopCategoryCrmServices::deleteCategorySkill($paramId, $categorySkilCrmId);
             }
 
             $categorySkill->delete();

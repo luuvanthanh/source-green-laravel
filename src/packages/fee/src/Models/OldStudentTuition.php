@@ -19,7 +19,7 @@ class OldStudentTuition extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'ChargeOldStudentId', 'FeeId', 'PaymentFormId', 'Money',
+        'ChargeOldStudentId', 'FeeId', 'PaymentFormId', 'Money', 'ApplyDate'
     ];
 
     /**

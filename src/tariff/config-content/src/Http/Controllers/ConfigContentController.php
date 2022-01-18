@@ -32,9 +32,9 @@ class ConfigContentController extends Controller
      */
     public function index(Request $request)
     {
-        $ConfigContents = $this->configContentRepository->getAll($request->all());
+        $configContent = $this->configContentRepository->getAll($request->all());
 
-        return $this->success($ConfigContents, trans('lang::messages.common.getListSuccess'));
+        return $this->success($configContent, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -45,9 +45,9 @@ class ConfigContentController extends Controller
      */
     public function store(ConfigContentCreateRequest $request)
     {
-        $ConfigContent = $this->configContentRepository->create($request->all());
+        $configContent = $this->configContentRepository->create($request->all());
 
-        return $this->success($ConfigContent, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success($configContent, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     public function destroy($id)
