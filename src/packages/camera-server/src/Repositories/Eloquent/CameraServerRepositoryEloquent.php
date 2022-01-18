@@ -108,7 +108,7 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
 
             $dataActive = [
                 'server_id' => $cameraServer->uuid,
-                'cam_data_as_bytes' => ([
+                'cam_data_as_bytes' => json_encode([
                     'input' => [
                         'cameras' => []
                     ],
