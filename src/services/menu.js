@@ -1559,6 +1559,13 @@ export async function getLeftMenuFeePolicy() {
           permission: [permissions.HRM],
           pro: true,
         },
+        {
+          title: 'Báo cáo tiền hoàn phí',
+          key: 'refund-report',
+          url: ['/chinh-sach-phi/bao-cao/bao-cao-tien-hoan-phi'],
+          permission: [permissions.CHINHSACHPHI],
+          pro: true,
+        },
       ],
     },
     {
