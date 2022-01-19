@@ -2,8 +2,10 @@
 
 namespace GGPHP\SurveyForm\Providers;
 
+use GGPHP\SurveyForm\Repositories\Contracts\HandleWorkRepository;
 use GGPHP\SurveyForm\Repositories\Contracts\SurveyFormRepository;
 use GGPHP\SurveyForm\Repositories\Contracts\SurveyFormResultRepository;
+use GGPHP\SurveyForm\Repositories\Eloquent\HandleWorkRepositoryEloquent;
 use GGPHP\SurveyForm\Repositories\Eloquent\SurveyFormRepositoryEloquent;
 use GGPHP\SurveyForm\Repositories\Eloquent\SurveyFormResultRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
@@ -31,5 +33,6 @@ class SurveyFormServiceProvider extends ServiceProvider
     {
         $this->app->bind(SurveyFormRepository::class, SurveyFormRepositoryEloquent::class);
         $this->app->bind(SurveyFormResultRepository::class, SurveyFormResultRepositoryEloquent::class);
+        $this->app->bind(HandleWorkRepository::class, HandleWorkRepositoryEloquent::class);
     }
 }

@@ -3,20 +3,17 @@
 namespace GGPHP\SurveyForm\Models;
 
 use GGPHP\Core\Models\UuidModel;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class SurveyFormResult extends UuidModel
+class HandleWork extends UuidModel implements HasMedia
 {
-    use SoftDeletes;
+    use InteractsWithMedia;
 
-    protected $table = 'survey_results';
+    protected $table = 'handle_works';
 
     protected $fillable = [
-        'survey_id', 'ip_address', 'json',
-    ];
-
-    protected $casts = [
-        'json'  =>  'array',
+        'survey_id', 'name', 'performer', 'content'
     ];
 
     /**

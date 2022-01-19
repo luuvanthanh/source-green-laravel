@@ -32,10 +32,11 @@ class UuidModel extends CoreModel
     {
         foreach ($images as $image_path) {
             $fileName = isset($image_path['file_name']) ? $image_path['file_name'] : 'file_name';
-            $vector = isset($image_path['vector']) ? $image_path['vector'] : null;
+            $vector = isset($image_path['vector']) ? $image_path['vector'] : [];
+
             $entity->addMediaFromDisk($image_path['path'])->usingName($fileName)
                 ->withCustomProperties([
-                    'vector' => json_decode($vector)
+                    'vector' => json_encode($vector)
                 ])->preservingOriginal()->toMediaCollection($collection);
         }
     }
