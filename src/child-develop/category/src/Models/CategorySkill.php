@@ -12,7 +12,7 @@ class CategorySkill extends UuidModel
     protected $table = 'CategorySkills';
 
     protected $fillable = [
-        'Code', 'Name', 'Use', 'NumericalSkill'
+        'Code', 'Name', 'Use', 'NumericalSkill', 'CategorySkillCrmId'
     ];
 
     public function childEvaluate()

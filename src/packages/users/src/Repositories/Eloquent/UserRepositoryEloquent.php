@@ -152,7 +152,9 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             ];
             $employeeIdCrm = $user->EmployeeIdCrm;
 
-            $employeeCrm = CrmService::updateEmployee($data, $employeeIdCrm);
+            if (!is_null($employeeIdCrm)) {
+                CrmService::updateEmployee($data, $employeeIdCrm);
+            }
 
             \DB::commit();
         } catch (\Throwable $th) {

@@ -7,8 +7,10 @@ use GGPHP\ChildDevelop\ChildEvaluate\Repositories\Contracts\ChildEvaluateReposit
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetail;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetailChildrent;
+use GGPHP\ChildDevelop\ChildEvaluate\Services\ChildEvaluateCrmServices;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -91,13 +93,28 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
     public function create(array $attributes)
     {
-        $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
-        $childEvaluate = ChildEvaluate::create($attributes);
+        \DB::beginTransaction();
+        try {
+            $attributes['ageCrm'] = $attributes['age'];
+            $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
+            $childEvaluate = ChildEvaluate::create($attributes);
 
-        if (!empty($attributes['detail'])) {
-            $this->storeDetail($childEvaluate->Id, $attributes['detail']);
+            if (!empty($attributes['detail'])) {
+                $this->storeDetail($childEvaluate->Id, $attributes['detail']);
+            }
+
+            $childEvaluateCrmId = ChildEvaluateCrmServices::createChildEvaluate($attributes, $childEvaluate->Id);
+
+            if (isset($childEvaluateCrmId->data->id)) {
+                $childEvaluate->ChildEvaluateCrmId = $childEvaluateCrmId->data->id;
+                $childEvaluate->update();
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
-
         return parent::all();
     }
 
@@ -127,16 +144,45 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
     public function update(array $attributes, $id)
     {
-        $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
-        $childEvaluate = ChildEvaluate::find($id);
-        $childEvaluate->update($attributes);
+        \DB::beginTransaction();
+        try {
+            $attributes['ageCrm'] = $attributes['age'];
+            $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
+            $childEvaluate = ChildEvaluate::find($id);
+            $childEvaluate->update($attributes);
 
-        ChildEvaluateDetail::where('ChildEvaluateId', $childEvaluate->Id)->delete();
+            if (!empty($attributes['detail'])) {
+                ChildEvaluateDetail::where('ChildEvaluateId', $childEvaluate->Id)->delete();
+                $this->storeDetail($childEvaluate->Id, $attributes['detail']);
+            }
+            ChildEvaluateCrmServices::updateChildEvaluate($attributes, $childEvaluate->ChildEvaluateCrmId);
 
-        if (!empty($attributes['detail'])) {
-            $this->storeDetail($childEvaluate->Id, $attributes['detail']);
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::find($id);
+    }
+
+    public function delete($id)
+    {
+        \DB::beginTransaction();
+        try {
+            $childEvaluate = ChildEvaluate::findOrFail($id);
+
+            if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
+                ChildEvaluateCrmServices::deleteChildEvaluate($childEvaluate->ChildEvaluateCrmId);
+            }
+            $childEvaluate->delete();
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return parent::all();
     }
 }

@@ -9,6 +9,6 @@ class CategoryQuestionParent extends UuidModel
     protected $table = 'CategoryQuestionParents';
 
     protected $fillable = [
-        'Question'
+        'Question', 'CategoryQuestionParentCrmId'
     ];
 }
