@@ -13,7 +13,7 @@ import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
 import { useDispatch, useSelector } from 'dva';
-import { debounce, head, isEmpty, last, size, slice } from 'lodash';
+import { debounce, head, isEmpty, last } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
 
@@ -39,7 +39,7 @@ function Index() {
   const [employees, setEmployees] = useState([]);
   const [employeesActive, setEmployeesActive] = useState([]);
   const [sentEmployees, setSentEmployees] = useState([]);
-  const [file, setFile] = useState([]);
+  const [file, setFile] = useState(null);
   const [isAllEmployees, setIsAllEmployees] = useState(false);
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -50,18 +50,6 @@ function Index() {
     branchId: null,
     divisionId: null,
   });
-
-  const checkHasValue = (value) => {
-    setEmployees(
-      employees.map((item) => {
-        const itemEmloyee = value?.parsePayload.employee.find((itemE) => itemE?.id === item.id);
-        return {
-          ...item,
-          checked: !!itemEmloyee,
-        };
-      }),
-    );
-  };
 
   const onChangeEditor = (value) => {
     setContent(value);
@@ -83,7 +71,6 @@ function Index() {
             page: variables.PAGINATION.PAGE,
             limit: variables.PAGINATION.PAGE_SIZE,
           });
-          checkHasValue(response);
         }
       },
     });
@@ -107,22 +94,24 @@ function Index() {
 
   useEffect(() => {
     setSearchEmployee({ ...searchEmployee, loading: true });
-    dispatch({
-      type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
-      payload: {
-        ...searchEmployee,
-      },
-      callback: (response) => {
-        if (response) {
-          setEmployees(response?.parsePayload);
-          setSearchEmployee({
-            ...searchEmployee,
-            total: response.pagination.total,
-            loading: false,
-          });
-        }
-      },
-    });
+    if (!params.id) {
+      dispatch({
+        type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
+        payload: {
+          ...searchEmployee,
+        },
+        callback: (response) => {
+          if (response) {
+            setEmployees(response?.parsePayload);
+            setSearchEmployee({
+              ...searchEmployee,
+              total: response.pagination.total,
+              loading: false,
+            });
+          }
+        },
+      });
+    }
   }, []);
 
   const changeCheckboxEmployee = (id) => {
@@ -160,6 +149,15 @@ function Index() {
         }
       },
     });
+    setEmployees(
+      employees?.map((item) => {
+        const itemEmloyee = employeesActive?.find((itemE) => itemE.id === item.id);
+        return {
+          ...item,
+          checked: !!itemEmloyee,
+        };
+      }),
+    );
   };
 
   const changeAll = (event) => {
@@ -207,6 +205,15 @@ function Index() {
         }
       },
     });
+    setEmployees(
+      employees?.map((item) => {
+        const itemEmloyee = employeesActive?.find((itemE) => itemE.id === item.id);
+        return {
+          ...item,
+          checked: !itemEmloyee,
+        };
+      }),
+    );
   };
 
   const onChangeDivision = (value) => {
@@ -236,7 +243,7 @@ function Index() {
   };
 
   const removeFiles = () => {
-    setFile([]);
+    setFile(null);
   };
 
   const onUpload = (file) => {
@@ -245,11 +252,7 @@ function Index() {
       payload: file,
       callback: (response) => {
         if (response) {
-          setFile((prev) => [
-            ...prev,
-            head(response.results)?.fileInfo.url,
-            head(response.results)?.fileInfo.name,
-          ]);
+          setFile([head(response.results)?.fileInfo.url, head(response.results)?.fileInfo.name]);
         }
       },
     });
@@ -277,8 +280,7 @@ function Index() {
       ...values,
       id: params.id,
       content,
-      fileDocument: JSON.stringify(slice(file, 0, 1)),
-      fileName: last(file),
+      fileDocument: !isEmpty(file) ? JSON.stringify(file) : null,
       detail: !isAllEmployees
         ? employees.filter((item) => item.checked).map((item) => item.id)
         : [],
@@ -307,7 +309,7 @@ function Index() {
   };
 
   useEffect(() => {
-    if (params.id && !isEmpty(employees)) {
+    if (params.id) {
       dispatch({
         type: 'HRMdocumentaryAdd/GET_DETAILS',
         payload: params,
@@ -323,6 +325,38 @@ function Index() {
               },
             });
           }
+          if (response.parsePayload?.receiveDivisionId && response.parsePayload?.branchId) {
+            dispatch({
+              type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
+              payload: {
+                ...searchEmployee,
+                divisionId: response.parsePayload?.receiveDivisionId,
+                branchId: response.parsePayload?.receiveDivisionId,
+                page: variables.PAGINATION.PAGE,
+                limit: variables.PAGINATION.PAGE_SIZE,
+              },
+              callback: (response) => {
+                if (response) {
+                  setEmployees(response.parsePayload);
+                  setSearchEmployee({
+                    ...searchEmployee,
+                    page: variables.PAGINATION.PAGE,
+                    limit: variables.PAGINATION.PAGE_SIZE,
+                    divisionId: response.parsePayload?.receiveDivisionId,
+                    branchId: response.parsePayload?.receiveDivisionId,
+                    total: response.pagination.total,
+                    loading: false,
+                  });
+                }
+              },
+            });
+          }
+          if (response.parsePayload?.receiveDivisionId) {
+            onChangeDivision(response.parsePayload?.receiveDivisionId);
+          }
+          if (response.parsePayload?.branchId) {
+            onChangeBranch(response.parsePayload?.branchId);
+          }
           if (response) {
             formRef.setFieldsValue({
               typeOfDocument: response.parsePayload?.typeOfDocument,
@@ -334,14 +368,27 @@ function Index() {
               title: response.parsePayload.title,
             });
             setContent(response.parsePayload?.content);
-            setFile([response.parsePayload?.fileDocument, response.parsePayload?.fileName]);
-            checkHasValue(response);
+            if (response.parsePayload?.fileDocument) {
+              setFile([response.parsePayload?.fileDocument]);
+            }
             setEmployeesActive(response.parsePayload?.employee);
           }
         },
       });
     }
-  }, [params.id && !isEmpty(employees)]);
+  }, [params.id]);
+
+  useEffect(() => {
+    setEmployees(
+      employees?.map((item) => {
+        const itemEmloyee = employeesActive?.find((itemE) => itemE.id === item.id);
+        return {
+          ...item,
+          checked: !!itemEmloyee,
+        };
+      }),
+    );
+  }, [params.id && !isEmpty(employeesActive) && !isEmpty(employees)]);
 
   return (
     <>
@@ -481,13 +528,6 @@ function Index() {
                       </Scrollbars>
                     </Pane>
                   )}
-                  <Pane className="p20">
-                    {!isAllEmployees && (
-                      <Text color="dark" size="normal">
-                        Đã chọn {size(employees?.filter((item) => item.checked))} nhân viên
-                      </Text>
-                    )}
-                  </Pane>
                 </Pane>
               </Pane>
 
@@ -525,7 +565,7 @@ function Index() {
                     </div>
                     {!isEmpty(file) && (
                       <div className={styles['documentary-file']}>
-                        <div>{last(file)}</div>
+                        {params.id ? <div>{last(JSON.parse(file))}</div> : <div>{last(file)}</div>}
                         <Button
                           color="danger"
                           icon="remove"
