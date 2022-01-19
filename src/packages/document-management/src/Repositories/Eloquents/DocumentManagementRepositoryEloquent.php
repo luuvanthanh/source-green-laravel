@@ -2,6 +2,7 @@
 
 namespace GGPHP\DocumentManagement\Repositories\Eloquents;
 
+use GGPHP\Clover\Models\EmployeeAccount;
 use GGPHP\DocumentManagement\Models\DocumentManagement;
 use GGPHP\DocumentManagement\Presenters\DocumentManagementPresenter;
 use GGPHP\DocumentManagement\Repositories\Contracts\DocumentManagementRepository;
@@ -77,43 +78,37 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
 
     public function create(array $attributes)
     {
-        DB::beginTransaction();
-        try {
-            $attributes['typeOfDocument'] = DocumentManagement::TYPE_DOCUMENT[$attributes['typeOfDocument']];
-            $attributes['topic'] = DocumentManagement::TOPIC[$attributes['topic']];
-            $documentManagement = DocumentManagement::create($attributes);
+        $attributes['typeOfDocument'] = DocumentManagement::TYPE_DOCUMENT[$attributes['typeOfDocument']];
+        $attributes['topic'] = DocumentManagement::TOPIC[$attributes['topic']];
+        $documentManagement = DocumentManagement::create($attributes);
 
-            if (!empty($attributes['detail'])) {
-                $documentManagement->employee()->sync($attributes['detail']);
-            }
+        if (!empty($attributes['detail'])) {
+            $documentManagement->employee()->sync($attributes['detail']);
+        }
 
-            $userId = [];
-            $userId = $documentManagement->employee->pluck('Id')->toArray();
+        $userId = [];
+        $userId = $documentManagement->employee->pluck('Id')->toArray();
+        $accountId = EmployeeAccount::whereIn('EmployeeId', $userId)->pluck('AppUserId')->toArray();
 
-            $file =  json_decode($documentManagement->FileDocument);
-            $urlFile = '';
+        $file =  json_decode($documentManagement->FileDocument);
+        $urlFile = '';
 
-            if (!empty($file)) {
-                $urlFile = env('IMAGE_URL') . $file[0];
-            }
+        if (!empty($file)) {
+            $urlFile = env('IMAGE_URL') . $file[0];
+        }
 
-            if (!empty($userId)) {
-                $dataNoti = [
-                    'users' => $userId,
-                    'title' => $documentManagement->Title,
-                    'imageURL' => $urlFile,
-                    'message' => $documentManagement->Content,
-                    'moduleType' => 16,
-                    'moduleCode' => 'DOCUMENTARY',
-                    'refId' => $documentManagement->Id,
-                ];
+        if (!empty($accountId)) {
+            $dataNoti = [
+                'users' => $accountId,
+                'title' => $documentManagement->Title,
+                'imageURL' => $urlFile,
+                'message' => $documentManagement->Content,
+                'moduleType' => 16,
+                'moduleCode' => 'DOCUMENTARY',
+                'refId' => $documentManagement->Id,
+            ];
 
-                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
-            }
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
+            dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
         }
 
         return parent::find($documentManagement->Id);
