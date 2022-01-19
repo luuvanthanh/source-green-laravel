@@ -5,6 +5,7 @@ namespace GGPHP\SurveyForm\Repositories\Eloquent;
 use GGPHP\SurveyForm\Models\SurveyForm;
 use GGPHP\SurveyForm\Presenters\SurveyFormPresenter;
 use GGPHP\SurveyForm\Repositories\Contracts\SurveyFormRepository;
+use Illuminate\Support\Facades\Storage;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -83,6 +84,48 @@ class SurveyFormRepositoryEloquent extends BaseRepository implements SurveyFormR
         $surveyForm = SurveyForm::where('slug', $slug)->firstOrFail();
 
         return parent::parserResult($surveyForm);
+    }
+
+    public function create($attributes)
+    {
+        $surveyForm = $this->model()::create($attributes);
+
+        $url = env('WEB_APP_URL') . '/khao-sat' . '/' . $surveyForm->slug;
+
+        $image = \QrCode::format('svg')
+            ->size(200)->errorCorrection('H')
+            ->generate($url);
+        $output_file = '/qr-code/img-' . time() . '.svg';
+
+        Storage::disk('public')->put($output_file, $image);
+
+        $surveyForm->update([
+            'qr_code_url' => env('APP_URL') . '/storage' . '/' . $output_file
+        ]);
+
+        return parent::find($surveyForm->id);
+    }
+
+    public function update($attributes, $id)
+    {
+        $surveyForm = $this->model()::findOrFail($id);
+
+        $surveyForm->update($attributes);
+
+        $url = env('WEB_APP_URL') . '/khao-sat' . '/' . $surveyForm->slug;
+
+        $image = \QrCode::format('svg')
+            ->size(200)->errorCorrection('H')
+            ->generate($url);
+        $output_file = '/qr-code/img-' . time() . '.svg';
+
+        Storage::disk('public')->put($output_file, $image);
+
+        $surveyForm->update([
+            'qr_code_url' => env('APP_URL') . '/storage' . '/' . $output_file
+        ]);
+
+        return parent::find($id);
     }
 
     public function summaryResultSurvey($id)

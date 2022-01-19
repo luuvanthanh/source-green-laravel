@@ -3,8 +3,8 @@
 namespace GGPHP\SurveyForm\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use GGPHP\Core\Models\UuidModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SurveyForm extends UuidModel
 {
@@ -14,7 +14,7 @@ class SurveyForm extends UuidModel
     protected $table = 'surveys';
 
     protected $fillable = [
-        'name', 'description', 'tourist_destination_id', 'start_date', 'end_date', 'slug', 'json',
+        'name', 'description', 'tourist_destination_id', 'start_date', 'end_date', 'slug', 'json', 'qr_code_url'
     ];
 
     protected $casts = [
