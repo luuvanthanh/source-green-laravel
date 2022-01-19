@@ -111,41 +111,25 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   }, []);
 
   const cancelModal = () => {
-    if (loading['upload/UPLOAD'] || loading['mediaUpload/UPLOAD'] || loading['mediaUpload/CREATE']) {
+    if (
+      loading['upload/UPLOAD'] ||
+      loading['mediaUpload/UPLOAD'] ||
+      loading['mediaUpload/CREATE']
+    ) {
       return;
     }
     onCancel();
   };
 
   return (
-    <Modal
-      {...props}
-      onCancel={cancelModal }
-      title="Tải ảnh lên"
-      footer={
-        <Button
-          disabled={!size(fileList)}
-          className="w-100"
-          color="success"
-          size="large"
-          onClick={upload}
-          loading={
-            loading['upload/UPLOAD'] ||
-            loading['mediaUpload/UPLOAD'] ||
-            loading['mediaUpload/CREATE']
-          }
-        >
-          Tải lên
-        </Button>
-      }
-      width={700}
-    >
+    <Modal {...props} onCancel={cancelModal} title="Tải ảnh lên" width={700}>
       <Form
         layout="vertical"
         initialValues={{
           uploadType: DEFAULT_TYPE,
         }}
         ref={formRef}
+        onFinish={upload}
       >
         <Pane>
           <FormItem
@@ -175,42 +159,57 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
             </Pane>
           </>
         )}
-      </Form>
+        <Dragger {...imageUploadProps} customRequest={addFile} multiple accept=".jpg, .jpeg, .png">
+          <Pane className="text-center p20">
+            <span className={csx('icon-images', styles.icon)} />
+            <Text size="normal">Kéo thả hình ảnh vào đây để tải lên hoặc click vào đây</Text>
+            <Text size="normal">(Chỉ gồm định dạng .JPG,.PNG. Dung lượng &lt; 5MB)</Text>
+          </Pane>
+        </Dragger>
 
-      <Dragger {...imageUploadProps} customRequest={addFile} multiple accept=".jpg, .jpeg, .png">
-        <Pane className="text-center p20">
-          <span className={csx('icon-images', styles.icon)} />
-          <Text size="normal">Kéo thả hình ảnh vào đây để tải lên hoặc click vào đây</Text>
-          <Text size="normal">(Chỉ gồm định dạng .JPG,.PNG. Dung lượng &lt; 5MB)</Text>
-        </Pane>
-      </Dragger>
+        {!!fileList.length && (
+          <Pane className="pt10">
+            <Scrollbars autoHeight autoHeightMax={400}>
+              <Pane className="row" style={{ width: 'calc(100% + 15px)' }}>
+                {fileList.map((file, index) => (
+                  <Pane
+                    className={csx('col-lg-3 col-md-4 col-sm-6 my10', imageStyles.imageWrapper)}
+                    key={index}
+                  >
+                    <img
+                      className="d-block w-100"
+                      src={window.URL.createObjectURL(file)}
+                      alt={`preview${index}`}
+                    />
 
-      {!!fileList.length && (
+                    <Button
+                      icon="cancel"
+                      className={imageStyles.close}
+                      onClick={() => removeFile(file)}
+                    />
+                  </Pane>
+                ))}
+              </Pane>
+            </Scrollbars>
+          </Pane>
+        )}
         <Pane className="pt10">
-          <Scrollbars autoHeight autoHeightMax={400}>
-            <Pane className="row" style={{ width: 'calc(100% + 15px)' }}>
-              {fileList.map((file, index) => (
-                <Pane
-                  className={csx('col-lg-3 col-md-4 col-sm-6 my10', imageStyles.imageWrapper)}
-                  key={index}
-                >
-                  <img
-                    className="d-block w-100"
-                    src={window.URL.createObjectURL(file)}
-                    alt={`preview${index}`}
-                  />
-
-                  <Button
-                    icon="cancel"
-                    className={imageStyles.close}
-                    onClick={() => removeFile(file)}
-                  />
-                </Pane>
-              ))}
-            </Pane>
-          </Scrollbars>
+          <Button
+            disabled={!size(fileList)}
+            className="w-100"
+            color="success"
+            size="large"
+            htmlType="submit"
+            loading={
+              loading['upload/UPLOAD'] ||
+              loading['mediaUpload/UPLOAD'] ||
+              loading['mediaUpload/CREATE']
+            }
+          >
+            Tải lên
+          </Button>
         </Pane>
-      )}
+      </Form>
     </Modal>
   );
 });
@@ -222,7 +221,7 @@ Index.propTypes = {
 
 Index.defaultProps = {
   onOk: () => {},
-  onCancel: () => {}
+  onCancel: () => {},
 };
 
 export default Index;

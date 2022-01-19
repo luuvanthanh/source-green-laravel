@@ -51,6 +51,7 @@ const ICON_BUTTON = {
   next: <span className="icon-next" />,
   'arrow-right2': <span className="icon-arrow-right2" />,
   'arrow-left': <span className="icon-arrow-left" />,
+  report: <span className="icon-report" />,
 };
 export default function ButtonCustom({
   children,

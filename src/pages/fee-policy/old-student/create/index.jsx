@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Spin } from 'antd';
+import { Form, Spin, Tabs } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import _ from 'lodash';
@@ -14,7 +14,9 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 
 import TypeFees from './typeFees';
+import Expected from './expected';
 
+const { TabPane } = Tabs;
 const Index = memo(() => {
   const params = useParams();
   const {
@@ -28,14 +30,20 @@ const Index = memo(() => {
     yearsSchool: schoolYear.data,
     students: OPchildren.data
   }));
-
   const dispatch = useDispatch();
 
   const history = useHistory();
   const isCopy = !!(history?.location?.query?.type === 'ban-sao');
   const formRef = useRef();
 
+  const [tab, setTab] = useState('tuition');
   const [tuition, setTuition] = useState([]);
+
+  const [YearsDetail, setYearsDetail] = useState([]);
+
+  const [idYear, setIdYear] = useState();
+  const [idRes, setIdRes] = useState();
+
   const [errorTable, setErrorTable] = useState({
     tuition: false,
   });
@@ -62,6 +70,7 @@ const Index = memo(() => {
     });
   };
 
+
   useEffect(() => {
     dispatch({
       type: 'schoolYear/GET_DATA',
@@ -79,6 +88,7 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res) {
+            setYearsDetail(res?.schoolYear?.changeParameter?.changeParameterDetail);
             getStudents(res?.student?.code);
             setTuition(res?.tuition);
             setDetails((prev) => ({
@@ -160,6 +170,7 @@ const Index = memo(() => {
   };
 
   const changeYear = (value) => {
+    setIdYear(value);
     if (!value) {
       setDetails((prev) => ({
         ...prev,
@@ -219,7 +230,7 @@ const Index = memo(() => {
 
   const onFinish = (values) => {
     const errorTuition = checkValidate(tuition, 'tuition');
-    if(errorTuition) {
+    if (errorTuition) {
       return;
     }
     const payload = {
@@ -237,7 +248,7 @@ const Index = memo(() => {
       }),
     };
     dispatch({
-      type: (params?.id && !isCopy ) ? 'oldStudentAdd/UPDATE' : 'oldStudentAdd/ADD',
+      type: (params?.id && !isCopy) ? 'oldStudentAdd/UPDATE' : 'oldStudentAdd/ADD',
       payload,
       callback: (res) => {
         if (res) {
@@ -268,6 +279,49 @@ const Index = memo(() => {
     }
   };
 
+  const changeTab = (key) => {
+    setTab(key);
+  };
+
+  const hanDleChangeText = (childData) => {
+    setIdRes(childData);
+  };
+
+
+  const tabs = () => [
+    {
+      id: 'tuition',
+      name: 'CÁC KHOẢN HỌC PHÍ',
+      component: (
+        <TypeFees
+          tuition={tuition}
+          setTuition={setTuition}
+          error={errorTable?.tuition}
+          checkValidate={checkValidate}
+          details={details}
+          hanDleChangeText={hanDleChangeText}
+        />
+      ),
+    },
+    {
+      id: 'food',
+      name: 'Dự KIẾN PHẢI THU',
+      component: (
+        <Expected
+          tuition={tuition}
+          idYear={idYear}
+          yearsSchool={yearsSchool}
+          setTuition={setTuition}
+          error={errorTable?.tuition}
+          checkValidate={checkValidate}
+          details={details}
+          idRes={idRes}
+          YearsDetail={YearsDetail}
+        />
+      ),
+    },
+  ];
+
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
       <Helmet title={(params?.id && !isCopy) ? 'Chi tiết' : 'Thêm mới'} />
@@ -293,7 +347,7 @@ const Index = memo(() => {
                     <FormItem
                       label="Năm học"
                       name="schoolYearId"
-                      data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
+                      data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
                       onChange={changeYear}
@@ -358,13 +412,16 @@ const Index = memo(() => {
               <Heading type="form-title" className="heading-tab p20">
                 Các khoản học phí <span className="text-danger">*</span>
               </Heading>
-              <TypeFees
-                tuition={tuition}
-                setTuition={setTuition}
-                error={errorTable?.tuition}
-                checkValidate={checkValidate}
-                details={details}
-              />
+              <Tabs onChange={changeTab} activeKey={tab} className="test-12 p20">
+                {tabs().map(({ id, name, component }) => (
+                  <TabPane
+                    tab={<span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>}
+                    key={id}
+                  >
+                    {component}
+                  </TabPane>
+                ))}
+              </Tabs>
             </Pane>
             <Pane className="p20 d-flex justify-content-between align-items-center">
               <Button

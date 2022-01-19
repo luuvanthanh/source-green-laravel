@@ -219,6 +219,9 @@ class Index extends PureComponent {
         return item;
       }),
     }));
+    this.formRef.current.setFieldsValue({
+      hourNumber: hours
+    });
   };
 
   /**

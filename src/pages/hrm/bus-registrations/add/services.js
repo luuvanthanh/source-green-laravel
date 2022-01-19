@@ -73,7 +73,7 @@ export function details(id) {
   return request(`/v1/bus-registrations/${id}`, {
     method: 'GET',
     params: {
-      include: 'shiftDetail',
+      include: 'busRegistrationDetail',
     },
   });
 }
