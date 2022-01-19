@@ -126,6 +126,7 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
 
         $userId = [];
         $userId = $documentManagement->employee->pluck('Id')->toArray();
+        $accountId = EmployeeAccount::whereIn('EmployeeId', $userId)->pluck('AppUserId')->toArray();
 
         $file =  json_decode($documentManagement->FileDocument);
         $urlFile = '';
@@ -134,9 +135,9 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
             $urlFile = env('IMAGE_URL') . $file[0];
         }
 
-        if (!empty($userId)) {
+        if (!empty($accountId)) {
             $dataNoti = [
-                'users' => $userId,
+                'users' => $accountId,
                 'title' => $documentManagement->Title,
                 'imageURL' => $urlFile,
                 'message' => $documentManagement->Content,
@@ -144,6 +145,7 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
                 'moduleCode' => 'DOCUMENTARY',
                 'refId' => $documentManagement->Id,
             ];
+            
             dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
         }
 
