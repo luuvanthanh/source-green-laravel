@@ -2,14 +2,11 @@
 
 .wrapper-table {
   :global(.ant-table-thead > tr > th) {
-     padding: 20px !important;
-   }
-//   :global(.ant-table-row-level-0) {
-//     background-color: #FFF1EB !important;
-//    }
-//    :global(.ant-table-row-level-1) {
-//     background-color: #eef8ea !important;
-//    }
+    padding: 20px !important;
+  }
+  :global(.ant-table-row-indent + .ant-table-row-expand-icon) {
+    display: none !important;
+  }
 }
 
 .wrapper-top {
@@ -20,32 +17,32 @@
 }
 
 .table-content {
-    padding: 0px !important;
-    height: auto;
-    min-width: 150px;
-  }
+  padding: 0px !important;
+  height: auto;
+  min-width: 150px;
+}
 
-  .table-item {
-    padding: 10px;
-    border-bottom: 1px solid #eaeaea;
+.table-item {
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+.table-item:last-child {
+  padding: 10px;
+  border: none !important;
+}
+
+.table-name {
+  .title {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #3e4247;
+    padding: 4px 0px;
   }
-  .table-item:last-child {
-    padding: 10px;
-    border: none !important;
+  .detail {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 18px;
+    color: #6d7177;
   }
-  
-  .table-name {
-      .title {
-        font-weight: 600;
-        font-size: 14px;
-        line-height: 20px;
-        color: #3E4247;
-        padding: 4px 0px;
-      }
-      .detail {
-        font-weight: 600;
-        font-size: 12px;
-        line-height: 18px;
-        color: #6D7177;
-      }
-  }
+}

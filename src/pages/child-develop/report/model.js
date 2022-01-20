@@ -7,20 +7,59 @@ export default {
         name: 'Bé Zia',
         detail: '55 tháng tuổi Lake View Preschool 1',
         test: '25 tháng',
+        data: [
+          {
+            key: 10,
+            namekh: 'Tương tác xã hội',
+            test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+          },
+          {
+            key: 10,
+            namekh: 'Tương tác xã hội',
+            test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+          },
+          {
+            key: 10,
+            namekh: 'Tương tác xã hội',
+            test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+          },
+        ],
       },
       {
-        name: 'Bé Zia',
+        key: 2,
+        name: 'Bùi Ngọc Thy Nhân',
         detail: '55 tháng tuổi Lake View Preschool 1',
-        key: 1,
-        namekh: 'Tương tác xã hội',
-        test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+        test: '25 tháng',
+        data: [
+          {
+            key: 20,
+            namekh: 'Tương tác xã hội',
+            test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+          },
+          {
+            key: 20,
+            namekh: 'Tương tác xã hội',
+            test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+          },
+        ],
       },
       {
-        name: 'Bé Zia',
+        key: 3,
+        name: 'Nguyễn Thị Đáng',
         detail: '55 tháng tuổi Lake View Preschool 1',
-        key: 1,
-        namekh: 'Tương tác xã hội',
-        test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+        test: '25 tháng',
+        data: [
+          {
+            key: 20,
+            namekh: 'Tương tác xã hội',
+            test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+          },
+          {
+            key: 20,
+            namekh: 'Tương tác xã hội',
+            test: 'Chơi đúng cách ở các góc, các lĩnh vực đời sống (24 - 30 tháng)',
+          },
+        ],
       },
     ],
     pagination: {

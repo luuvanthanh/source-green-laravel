@@ -239,21 +239,26 @@ class Index extends PureComponent {
                 title: 'Học sinh',
                 width: 200,
                 key: 'name',
-                render: (value, row, index) => {
+                render: (value) => {
+                    const count = value?.data?.length + 1;
                     const obj = {
                         children: (
                             <div className={stylesModule['table-name']}>
-                                <AvatarTable
-                                    fileImage={Helper.getPathAvatarJson(value.file_image)}
-                                />
-                                <h4 className={stylesModule.title}>{value.name}</h4>
-                                <p className={stylesModule.detail}>{value.detail}</p>
+                                {value?.data ?
+                                    <>
+                                        <AvatarTable
+                                            fileImage={Helper.getPathAvatarJson(value.file_image)}
+                                        />
+                                        <h4 className={stylesModule.title}>{value.name}</h4>
+                                        <p className={stylesModule.detail}>{value.detail}</p>
+                                    </> : ""
+                                }
                             </div>
                         ),
                         props: {},
                     };
-                    if (index % 8 === 0) {
-                        obj.props.rowSpan = 3;
+                    if (value?.data && value?.name) {
+                        obj.props.rowSpan = count;
                     } else {
                         obj.props.rowSpan = 0;
                     }
@@ -451,7 +456,7 @@ class Index extends PureComponent {
                                 error={error}
                                 isError={error.isError}
                                 defaultExpandAllRows
-                                childrenColumnName="feeType"
+                                childrenColumnName="data"
                                 bordered
                                 pagination={this.pagination(pagination)}
                                 params={{
