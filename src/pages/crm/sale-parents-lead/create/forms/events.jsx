@@ -38,13 +38,14 @@ const General = memo(() => {
 
 
     const today = new Date();
+    const c = new Date(today.toLocaleDateString());
     const dateHistory = new Date(eventDetails.date);
     const timeHistory = `${eventDetails.time}`;
-    const date = `${today.getDate()< 10 ? `${`0${  today.getDate()}`}`: today.getDate() }-${today.getMonth() + 1}-${today.getFullYear()}`;
-    const time = `${today.getHours()< 10 ?  `${`0${ today.getHours()}:${today.getMinutes()}`}`: `${today.getHours()}:${today.getMinutes()}`}` ;
-    const miliToday = today.getTime();
+    const date = `${today.getDate() < 10 ? `${`0${today.getDate()}`}` : today.getDate()}-0${today.getMonth() + 1}-${today.getFullYear()}`;
+    const time = `${today.getHours() < 10 ? `${`0${today.getHours()}:${today.getMinutes()}`}` : `${today.getHours()}:${today.getMinutes()}`}`;
+    const miliToday = c.getTime();
     const miliDateHistory = dateHistory.getTime();
-    const dateYear = `${Helper.getDate(eventDetails.created_at, variables.DATE_FORMAT.DATE)}`;
+    const dateYear = `${Helper.getDate(eventDetails.date, variables.DATE_FORMAT.DATE)}`;
 
     const [description, setDescription] = useState('');
     const [result, setResult] = useState('');
@@ -152,7 +153,7 @@ const General = memo(() => {
     // time < timeHistory && 
     const onStatus = () => {
         if (miliToday < miliDateHistory) {
-            if (time < timeHistory && miliToday > miliDateHistory) {
+            if (time > timeHistory && date === dateYear) {
                 return (
                     <>
                         {HelperModules.tagStatus("PAST_EVENTS")}
@@ -165,19 +166,6 @@ const General = memo(() => {
                 </>
             );
 
-        } if (miliToday > miliDateHistory) {
-            if (time < timeHistory && date === dateYear) {
-                return (
-                    <>
-                        {HelperModules.tagStatus("COMING_EVENTS")}
-                    </>
-                );
-            }
-            return (
-                <>
-                    {HelperModules.tagStatus("PAST_EVENTS")}
-                </>
-            );
         }
         return (
             <>
@@ -388,15 +376,16 @@ const General = memo(() => {
 
     const onStatusTable = (a, e) => {
         const today = new Date();
+        const c = new Date(today.toLocaleDateString());
         const dateHistory = new Date(a);
         const timeHistory = `${e}`;
-        const date = `${today.getDate()< 10 ? `${`0${  today.getDate()}`}`: today.getDate() }-${today.getMonth() + 1}-${today.getFullYear()}`;
-        const time = `${today.getHours()< 10 ?  `${`0${ today.getHours()}:0${today.getMinutes()}`}`: `${today.getHours()}:${today.getMinutes()}`}` ;
-        const miliToday = today.getTime();
+        const date = `${today.getDate() < 10 ? `${`0${today.getDate()}`}` : today.getDate()}-0${today.getMonth() + 1}-${today.getFullYear()}`;
+        const time = `${today.getHours() < 10 ? `${`0${today.getHours()}:0${today.getMinutes()}`}` : `${today.getHours()}:${today.getMinutes()}`}`;
+        const miliToday = c.getTime();
         const miliDateHistory = dateHistory.getTime();
         const dateYear = `${Helper.getDate(a, variables.DATE_FORMAT.DATE)}`;
         if (miliToday < miliDateHistory) {
-            if (time < timeHistory && miliToday > miliDateHistory) {
+            if (time > timeHistory && date === dateYear) {
                 return (
                     <>
                         {HelperModules.tagStatus("PAST_EVENTS")}
@@ -409,19 +398,6 @@ const General = memo(() => {
                 </>
             );
 
-        } if (miliToday > miliDateHistory) {
-            if (time < timeHistory && date === dateYear) {
-                return (
-                    <>
-                        {HelperModules.tagStatus("COMING_EVENTS")}
-                    </>
-                );
-            }
-            return (
-                <>
-                    {HelperModules.tagStatus("PAST_EVENTS")}
-                </>
-            );
         }
         return (
             <>

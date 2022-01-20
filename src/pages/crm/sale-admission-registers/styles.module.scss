@@ -176,6 +176,16 @@
   }
 }
 .wrapper-child {
+  .child-not-tilte {
+    font-style: italic;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: 22px;
+    color: #3e4247;
+    padding: 20px;
+    width: 100%;
+    height: 300px;
+  }
   .child-title {
     padding: 20px 20px 0px 20px;
     display: flex;
@@ -205,6 +215,7 @@
       font-weight: normal;
       font-weight: 400;
       font-size: 14px;
+      margin-left: 5px;
       line-height: 20px;
       color: #3b5cad;
     }
