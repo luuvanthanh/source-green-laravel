@@ -2947,6 +2947,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
+            component: './child-develop/report',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CURRENCY

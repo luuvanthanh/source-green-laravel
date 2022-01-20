@@ -42,7 +42,7 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo', 'parentInfo']),
+      include: Helper.convertIncludes(['studentInfo,childEvaluateInfo.childDescription.childIssue', 'parentInfo']),
     },
   });
 }
@@ -235,6 +235,20 @@ export function getCategory(params) {
       orderBy: 'created_at',
       // sortedBy: 'desc',
       // searchJoin: 'and',
+    },
+  });
+}
+
+export function getChildEvaluation(data = {}) {
+  return request(`/v1/child-evaluate-infos/${data[0]?.id}`, {
+    method: 'GET',
+    params: {
+      orderBy: 'created_at',
+       sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes([
+        "childDescription,childIssue"
+      ]),
     },
   });
 }

@@ -2156,6 +2156,15 @@ export async function getLeftMenuCRM() {
 export async function getLeftMenuChildDevelop() {
   return [
     {
+      title: 'Theo dõi sự phát triển của trẻ',
+      key: 'monitor-childrens',
+      icon: 'icon icon-home',
+      permission: [],
+      url: [
+        '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
+      ],
+    },
+    {
       title: 'Danh mục',
       key: 'childsDevelop',
       icon: 'icon icon-list',
