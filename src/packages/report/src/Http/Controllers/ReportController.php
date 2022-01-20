@@ -90,4 +90,17 @@ class ReportController extends Controller
 
         return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function frequencyOfBusinessReport(Request $request)
+    {
+        $report = ReportService::frequencyOfBusinessReport($request->all());
+
+        return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
+    }
 }

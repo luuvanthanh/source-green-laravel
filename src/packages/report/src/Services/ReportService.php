@@ -741,4 +741,109 @@ class ReportService
             'detail' => $data
         ];
     }
+
+    public static function frequencyOfBusinessReport($attributes)
+    {
+        $begin =  Carbon::parse($attributes['start_time']);
+        $end =  Carbon::parse($attributes['end_time']);
+
+        $diffDate = $begin->diffInDays($end);
+
+        $data = [];
+
+        if ($diffDate <= 31) {
+            $tourGuides = TourGuide::has('travelAgencieTourGuide')->withCount(['event' => function ($query) use ($attributes) {
+                if (!empty($attributes['tourist_destination_id'])) {
+                    $query->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
+                }
+            }])->has('event', '>', 0)->orderBy('event_count', 'desc');
+
+            if (!empty($attributes['type'])) {
+                $tourGuides->where('type', TourGuide::TYPE[$attributes['type']]);
+            };
+
+            $tourGuides = $tourGuides->get();
+            $dataCount = $tourGuides->groupBy('event_count')->map->count()->toArray();
+
+            ksort($dataCount);
+
+            foreach ($dataCount as $key => $value) {
+                $data[] = [
+                    'milestones' => $key,
+                    'value' => $value
+                ];
+            }
+        } else {
+            $arrayMilestones = [
+                [
+                    'start' => 1,
+                    'end' => 2
+                ],
+                [
+                    'start' => 3,
+                    'end' => 5
+                ],
+                [
+                    'start' => 6,
+                    'end' => 10
+                ],
+                [
+                    'start' => 11,
+                    'end' => 20
+                ],
+                [
+                    'start' => 21,
+                    'end' => 30
+                ],
+                [
+                    'start' => 31,
+                    'end' => 45
+                ],
+                [
+                    'start' => 46,
+                    'end' => 60
+                ],
+                [
+                    'start' => 61,
+                    'end' => 80
+                ],
+                [
+                    'start' => 81,
+                    'end' => 100
+                ],
+                [
+                    'start' => 101,
+                    'end' => null
+                ]
+            ];
+
+            foreach ($arrayMilestones as $item) {
+                $tourGuides = TourGuide::has('travelAgencieTourGuide')->withCount(['event' => function ($query) use ($attributes) {
+                    if (!empty($attributes['tourist_destination_id'])) {
+                        $query->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
+                    }
+                }])->has('event', '>=', $item['start']);
+
+                if (!empty($attributes['type'])) {
+                    $tourGuides->where('type', TourGuide::TYPE[$attributes['type']]);
+                };
+
+                $end = null;
+                if (!is_null($item['end'])) {
+                    $end =  '-' . $item['end'];
+                    $tourGuides->has('event', '<=', $item['end']);
+                }
+
+                $tourGuides = $tourGuides->orderBy('event_count', 'desc')->count();
+
+
+                $data[] = [
+                    'milestones' => $item['start'] . $end,
+                    'value' => $tourGuides
+                ];
+            }
+        }
+
+        return $data;
+    }
 }

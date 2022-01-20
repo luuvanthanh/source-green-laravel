@@ -73,6 +73,23 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
             $this->model = $this->model->whereIn('service_type', $attributes['service_type']);
         }
 
+        if (!empty($attributes['count_travelAgencyAdditionalInformation']) && $attributes['count_travelAgencyAdditionalInformation'] == 'true') {
+            $this->model = $this->model->withCount(['travelAgencyAdditionalInformation' => function ($query) use ($attributes) {
+                $query->whereHas('tourGuide', function ($query) use ($attributes) {
+                    $query->has('event');
+                });
+            }]);
+
+            if (!empty($attributes['number_count']) && !empty($attributes['condition_count'])) {
+                $this->model = $this->model->whereHas('travelAgencyAdditionalInformation', function ($query) use ($attributes) {
+                    $query->whereHas('tourGuide', function ($query) use ($attributes) {
+                        $query->has('event', $attributes['condition_count'], $attributes['number_count']);
+                    });
+                });
+            }
+        }
+
+
         if (!$parse) {
             return $this->model->get();
         }

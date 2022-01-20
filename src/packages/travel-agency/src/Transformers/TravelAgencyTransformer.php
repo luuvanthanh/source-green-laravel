@@ -62,6 +62,7 @@ class TravelAgencyTransformer extends BaseTransformer
             'files' => $files,
             'locality' => $locality,
             'service_type' => $serviceType,
+            'travel_agency_additional_information_count' =>  $model->travel_agency_additional_information_count,
         ];
     }
 
