@@ -5,7 +5,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import { Helper, variables } from '@/utils';
-import { Form, Tabs } from 'antd';
+import { Form, Tabs, Spin } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { useSelector, useDispatch } from 'dva';
@@ -40,96 +40,136 @@ const Index = memo(() => {
     const params = useParams();
     const history = useHistory();
     const [tab, setTab] = useState('tuition');
+    const [details, setDetails] = useState({
+        schoolYearId: '',
+        startDate: '',
+        endDate: '',
+        dayAdmission: '',
+        code: '',
+        branchName: '',
+        classType: '',
+        className: '',
+        classTypeId: '',
+    });
 
     const [
-        { error, details },
+        { error },
         loading,
         { menuLeftAllocation },
+        year,
+        detailsTime,
     ] = useSelector(({ loading: { effects }, registerOvertimeAdd, menu }) => [
         registerOvertimeAdd,
         effects,
         menu,
+        registerOvertimeAdd.year,
+        registerOvertimeAdd.detailsTime,
     ]);
 
-    useEffect(() => {
-        if (params.id) {
-            dispatch({
-                type: 'registerOvertimeAdd/GET_DETAILS',
-                payload: {
-                    id: params.id,
-                },
-            });
-        }
-    }, [params.id]);
+    console.log("detailsTime", detailsTime);
 
     useEffect(() => {
-        if (!isEmpty(details) && get(params, 'id')) {
-            form.setFieldsValue({
-                year: details.fromYear &&
-                    details.toYear && [
-                        moment(details.fromYear, variables.DATE_FORMAT.YEAR),
-                        moment(details.toYear, variables.DATE_FORMAT.YEAR),
-                    ],
-                fromTime: details.fromTime && moment(details.fromTime, variables.DATE_FORMAT.HOUR),
-                toTime: details.toTime && moment(details.toTime, variables.DATE_FORMAT.HOUR),
-                periodDuration: details.periodDuration && details.periodDuration,
-                fromDate: details.fromDate && moment(details.fromDate),
-                toDate: details.toDate && moment(details.toDate),
-            });
-        }
-    }, [details]);
+        dispatch({
+            type: 'registerOvertimeAdd/GET_TIME',
+            payload: {},
+        });
+        dispatch({
+            type: 'registerOvertimeAdd/GET_YEAR',
+            payload: {},
+        });
+    }, []);
+
+    useEffect(() => {
+        const strFromTimeWeekday = `${detailsTime?.fromTimeWeekday?.hours}:${detailsTime?.fromTimeWeekday?.minutes}`;
+        const strToTimeWeekday = `${detailsTime?.toTimeWeekday?.hours}:${detailsTime?.toTimeWeekday?.minutes}`;
+        const strFromTimeWeekend = `${detailsTime?.fromTimeWeekend?.hours}:${detailsTime?.fromTimeWeekend?.minutes}`;
+        const strToTimeWeekend = `${detailsTime?.toTimeWeekend?.hours}:${detailsTime?.toTimeWeekend?.minutes}`;
+        form.setFieldsValue({
+            FromTimeWeekday: detailsTime?.fromTimeWeekday && moment(strFromTimeWeekday, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),
+            ToTimeWeekday: detailsTime?.toTimeWeekday && moment(strToTimeWeekday, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),
+            FromTimeWeekend: detailsTime?.fromTimeWeekend && moment(strFromTimeWeekend, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),
+            ToTimeWeekend: detailsTime?.toTimeWeekend && moment(strToTimeWeekend, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),
+        });
+    }, []);
+console.log("form",form)
+    //     console.log("123",hourStr);
+    // console.log("sss", detailsTime.fromTimeWeekday && moment(hourStr, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),);
 
     const onFinish = (values) => {
         const payload = {
-            id: params.id,
-            fromYear: head(values.year).year(),
-            toYear: last(values.year).year(),
-            fromTime: Helper.getDate(values.fromTime, variables.DATE_FORMAT.HOUR),
-            toTime: Helper.getDate(values.toTime, variables.DATE_FORMAT.HOUR),
-            periodDuration: values.periodDuration,
-            fromDate: moment(values.fromDate),
-            toDate: moment(values.toDate),
-            isActive: true,
+            id: params?.id,
+            year: 2030,
+            FromTimeWeekday: values.FromTimeWeekday && moment(values.FromTimeWeekday, variables.DATE_FORMAT.HOUR),
+            ToTimeWeekday: values.ToTimeWeekday && moment(values.ToTimeWeekday, variables.DATE_FORMAT.HOUR),
+            FromTimeWeekend: values.FromTimeWeekend && moment(values.FromTimeWeekend, variables.DATE_FORMAT.HOUR),
+            ToTimeWeekend: values.ToTimeWeekend && moment(values.ToTimeWeekend, variables.DATE_FORMAT.HOUR),
+            IsRegistrationConfig: false,
         };
+        console.log("va", payload)
         dispatch({
-            type: params.id ? 'registerOvertimeAdd/UPDATE' : 'registerOvertimeAdd/ADD',
+            type: 'registerOvertimeAdd/ADD_TIME',
             payload,
             callback: (response) => {
-                if (response) {
-                    history.goBack();
-                }
+                // if (response) {
+                //     history.goBack();
+                // }
             },
         });
     };
 
 
-    const tabs = () => [
-        {
-            id: 'tuition',
-            name: 'Chi tiết tiền học phí của học sinh',
-            component: (
-                <>
-                    a
-                </>
-            ),
-        },
-        {
-            id: 'food',
-            name: 'Chi tiết tiền ăn của học sinh',
-            component: (
-                <>
-                    b</>
-            ),
-        },
-    ];
+    const changeStudent = (value) => {
+        console.log("value", value);
 
-    const changeTab = (key) => {
-        setTab(key);
+        if (!value) {
+            setDetails((prev) => ({
+                ...prev,
+                code: '',
+                branchName: '',
+                grade: '',
+                className: '',
+                classTypeId: '',
+            }));
+            return;
+        }
+        const student = year.find(item => item.id === value);
+        if (student?.id) {
+            const newDetails = {
+                ...details,
+                code: student?.fromYear || '',
+                branchName: student?.class?.branch?.name || '',
+                classType: student?.class?.classType?.name || '',
+                className: student?.class?.name || '',
+                classTypeId: student?.class?.classType?.id || '',
+            };
+            setDetails(newDetails);
+            // if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
+            //     getMoney(newDetails);
+            // }
+        }
+        console.log("detail", details);
     };
+
+    const getStudents = (keyWord = '') => {
+        dispatch({
+            type: 'registerOvertimeAdd/GET_YEAR',
+            payload: {
+                keyWord: keyWord || undefined,
+                page: variables.PAGINATION.PAGE,
+                limit: variables.PAGINATION.PAGE_SIZE,
+            },
+        });
+    };
+
+    const onSearch = _.debounce((val) => {
+        getStudents(val);
+    }, 300);
+
 
     return (
         <>
             <Helmet title="Thời gian đăng ký" />
+
 
             <div className={classnames(styles['content-form'], styles['content-form-children'])}>
                 <Form className={styles['layout-form']} layout="vertical" form={form} onFinish={onFinish}>
@@ -145,18 +185,22 @@ const Index = memo(() => {
                                     params={{
                                         error,
                                         type: 'container',
-                                        goBack: '/phan-bo/cau-hinh-dang-ky-ngoai-gio',
+
                                     }}
                                 >
                                     <div className={classnames(styles['content-children'], 'mt0')}>
                                         <div className="row border-bottom">
                                             <div className="col-lg-12">
                                                 <FormItem
-                                                    label="Năm học áp dụng"
+                                                    label="Năm áp dụng"
                                                     name="year"
-                                                    type={variables.RANGE_PICKER}
-                                                    picker="year"
+                                                    data={loading['registerOvertimeAdd/GET_DETAILS'] ? [] : year.map(item => ({ ...item, name: item?.fromYear || '-' }))}
+                                                    type={variables.SELECT}
                                                     rules={[variables.RULES.EMPTY]}
+                                                    onChange={changeStudent}
+                                                    onSearch={onSearch}
+                                                    notFoundContent={loading['registerOvertimeAdd/GET_DETAILS'] ? <Spin size="small" /> : null}
+                                                    filterOption
                                                 />
                                             </div>
                                         </div>
@@ -164,24 +208,25 @@ const Index = memo(() => {
                                         <div className="row border-bottom mt20">
                                             <div className="col-lg-12 mb10">
                                                 <Text color="success" size="large-medium">
-                                                    trong tuần (thứ 2 đến thứ 6)
+                                                    Trong tuần (thứ 2 đến thứ 6)
                                                 </Text>
                                             </div>
                                             <div className="col-lg-6">
                                                 <FormItem
-                                                    data={dataTime(30)}
-                                                    label="Đăng ký trước"
-                                                    name="timeUnexpected"
-                                                    type={variables.SELECT}
+                                                  
+                                                    label="Bắt đầu"
+                                                    name="FromTimeWeekday"
                                                     rules={[variables.RULES.EMPTY]}
+                                                    type={variables.TIME_PICKER}
                                                 />
                                             </div>
-                                            <div className="col-lg-6 mt30">
+                                            <div className="col-lg-6">
                                                 <FormItem
-                                                    data={dataHour(24)}
-                                                    name="hourUnexpected"
-                                                    type={variables.SELECT}
+                                                    label="Kết thúc"
+                                                   
+                                                    name="ToTimeWeekday"
                                                     rules={[variables.RULES.EMPTY]}
+                                                    type={variables.TIME_PICKER}
                                                 />
                                             </div>
                                         </div>
@@ -189,25 +234,26 @@ const Index = memo(() => {
                                         <div className="row border-bottom mt20">
                                             <div className="col-lg-12 mb10">
                                                 <Text color="success" size="large-medium">
-                                                   Cuối tuầnuần (thứ 7)
+                                                    Cuối tuần (Thứ 7)
                                                 </Text>
                                             </div>
                                             <div className="col-lg-6">
                                                 <FormItem
-                                                    data={dataTime(30)}
-                                                    label="Huỷ trước"
-                                                    name="timeLimit"
-                                                    type={variables.SELECT}
+                                                   
+                                                    label="Bắt đầu"
+                                                    name="FromTimeWeekend"
                                                     rules={[variables.RULES.EMPTY]}
+                                                    type={variables.TIME_PICKER}
                                                     prefix="ngày"
                                                 />
                                             </div>
-                                            <div className="col-lg-6 mt30">
+                                            <div className="col-lg-6">
                                                 <FormItem
-                                                    data={dataHour(24)}
-                                                    name="hourLimit"
-                                                    type={variables.SELECT}
+                                                    label="Kết thúc"
+                                               
+                                                    name="ToTimeWeekend"
                                                     rules={[variables.RULES.EMPTY]}
+                                                    type={variables.TIME_PICKER}
                                                 />
                                             </div>
                                         </div>
@@ -218,7 +264,7 @@ const Index = memo(() => {
                                                     className="btn-delete"
                                                     role="presentation"
                                                     loading={
-                                                        loading['registerOvertimeAdd/ADD'] ||
+                                                        loading['registerOvertimeAdd/ADD_LIMIT'] ||
                                                         loading['registerOvertimeAdd/UPDATE'] ||
                                                         loading['registerOvertimeAdd/GET_DETAILS']
                                                     }
@@ -232,7 +278,7 @@ const Index = memo(() => {
                                                     htmlType="submit"
                                                     size="large"
                                                     loading={
-                                                        loading['registerOvertimeAdd/ADD'] ||
+                                                        loading['registerOvertimeAdd/ADD_LIMIT'] ||
                                                         loading['registerOvertimeAdd/UPDATE'] ||
                                                         loading['registerOvertimeAdd/GET_DETAILS']
                                                     }

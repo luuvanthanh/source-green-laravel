@@ -45,6 +45,7 @@ const Index = memo(() => {
           id: params.id,
           categorySkillId: values.categorySkillId ? values.categorySkillId : details.categorySkillId,
           age: values.age ? values.age : details.age,
+          use: values.use ? values.use : details.use,
           detail: values.data.map((i) => ({
             nameCriteria: i?.nameCriteria,
             inputAssessment: i?.inputAssessment,
@@ -96,7 +97,7 @@ const Index = memo(() => {
           callback: (response) => {
             if (response) {
               history.goBack();
-      
+
             }
           },
         });
@@ -180,6 +181,14 @@ const Index = memo(() => {
                     type={variables.SELECT}
                     label="Độ tuổi"
                     rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    valuePropName="checked"
+                    label="Sử dụng"
+                    name='use'
+                    type={variables.SWITCH}
                   />
                 </Pane>
               </Pane>
@@ -363,25 +372,14 @@ const Index = memo(() => {
               </Pane>
             </Pane>
             <Pane className="d-flex justify-content-between align-items-center mb20">
-              {params.id ? (
-                <p
-                  className="btn-delete"
-                  role="presentation"
+              <p
+                className="btn-delete"
+                role="presentation"
 
-                  onClick={() => onRemove(params.id)}
-                >
-                  Xóa
-                </p>
-              ) : (
-                <p
-                  className="btn-delete"
-                  role="presentation"
-
-                  onClick={() => history.goBack()}
-                >
-                  Hủy
-                </p>
-              )}
+                onClick={() => history.goBack()}
+              >
+                Hủy
+              </p>
               <Button
                 className="ml-auto px25"
                 color="success"

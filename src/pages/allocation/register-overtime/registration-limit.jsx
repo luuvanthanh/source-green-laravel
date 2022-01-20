@@ -114,11 +114,12 @@ const Index = memo(() => {
     const onFinish = (values) => {
         const payload = {
             id: params?.id,
-            year: '2030',
+            year: 2030,
             RegisterBeforeDays: values.RegisterBeforeDays,
             RegisterBeforeHous: values.RegisterBeforeHous,
             CancelBeforeDays: values.CancelBeforeDays,
             CancelBeforeHours: values.CancelBeforeHours,
+            IsRegistrationConfig: true,
         };
         console.log("va", payload)
         dispatch({

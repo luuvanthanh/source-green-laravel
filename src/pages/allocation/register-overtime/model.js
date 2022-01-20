@@ -6,6 +6,7 @@ export default {
     data: [],
     details: {},
     year: [],
+    detailsTime: {},
     error: {
       isError: false,
       data: {},
@@ -20,6 +21,10 @@ export default {
     SET_YEAR: (state, { payload }) => ({
       ...state,
       year: payload.items,
+    }),
+    SET_TIME: (state, { payload }) => ({
+      ...state,
+      detailsTime: payload.items[0],
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -76,6 +81,21 @@ export default {
         console.log("year",response);
         yield saga.put({
           type: 'SET_YEAR',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TIME({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTime, payload);
+        console.log("year",response);
+        yield saga.put({
+          type: 'SET_TIME',
           payload: response,
         });
       } catch (error) {
