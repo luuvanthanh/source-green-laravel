@@ -4,6 +4,7 @@ namespace GGPHP\Crm\AdmissionRegister\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\Crm\AdmissionRegister\Http\Requests\CreateTestInputDetailRequest;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\CreateTestInputRequest;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\UpdateTestInputRequest;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
@@ -93,5 +94,14 @@ class TestInputController extends Controller
         $this->testInputRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function testInputDetail(CreateTestInputDetailRequest $request)
+    {
+        $attributes = $request->all();
+
+        $testInput = $this->testInputRepository->testInputDetail($attributes);
+
+        return $this->success($testInput, trans('lang::messages.common.createSuccess'));
     }
 }
