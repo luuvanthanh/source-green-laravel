@@ -7,7 +7,6 @@ import { useSelector, useDispatch } from 'dva';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
-// import { isEmpty } from 'lodash';
 import ParentsForm from './forms/parents';
 import StudentForm from './forms/student';
 import PotentialForm from './forms/potential';
@@ -37,9 +36,9 @@ const forms = {
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [activeMenuItem] = useState(defaultKey);
-
   const dispatch = useDispatch();
-  const [{ menuLeftCRM }] = useSelector(({ menu }) => [menu]);
+  const [{ menuLeftCRM }, details] = useSelector(({ menu , crmSaleAdmissionAdd}) => [menu, crmSaleAdmissionAdd.details]);
+
 
   useEffect(() => {
     if (params.id) {
@@ -49,11 +48,10 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
       });
     }
   }, [params.id]);
-
   return (
     <div style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ phụ huynh" />
-      <Breadcrumbs className="pb20 pt0 pl0" last={params.id ? 'Chi tiết': 'thêm mới'} menu={menuLeftCRM} />
+      <Breadcrumbs className="pb20 pt0 pl0" last={params.id ? <>Cập nhập thông tin đăng ký nhập học - {details?.studentInfo?.full_name}</>  : 'thêm mới'} menu={menuLeftCRM} />
       {params.id ? (
         <div className="row">
           <div className="col-lg-3">

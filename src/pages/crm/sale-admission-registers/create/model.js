@@ -295,13 +295,12 @@ export default {
         callback(null, error);
       }
     },
-    *GET_MEDICAL({ payload, callback }, saga) {
+    *GET_MEDICAL({ payload }, saga) {
       try {
         yield saga.put({
           type: 'INIT_STATE',
         });
         const response = yield saga.call(services.getMedical, payload);
-        callback(response);
         yield saga.put({
           type: 'SET_MEDICAL',
           payload: response,
