@@ -218,21 +218,35 @@ export async function getLeftMenuProfile() {
         {
           title: 'Danh sách học sinh dưới 6 tháng, 12 tháng đến thời điểm',
           key: '6month-12month',
-          url: [ '/ho-so-doi-tuong/bao-cao/sau-thang-den-muoi-hai-thang'],
+          url: ['/ho-so-doi-tuong/bao-cao/sau-thang-den-muoi-hai-thang'],
           permission: [permissions.HSDT],
           pro: true,
         },
         {
           title: 'Danh sách học sinh đủ 24, 36 tháng cho đến ngày đầu tháng',
           key: '24month-36month',
-          url: [ '/ho-so-doi-tuong/bao-cao/hai-bon-thang-den-ba-sau-thang'],
+          url: ['/ho-so-doi-tuong/bao-cao/hai-bon-thang-den-ba-sau-thang'],
           permission: [permissions.HSDT],
           pro: true,
         },
         {
           title: 'Danh sách học sinh học trên 2 năm, 3 năm, 4 năm đến thời điểm',
           key: '2year',
-          url: [ '/ho-so-doi-tuong/bao-cao/tren-hai-nam-ba-nam-bon-nam'],
+          url: ['/ho-so-doi-tuong/bao-cao/tren-hai-nam-ba-nam-bon-nam'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh học hè theo cơ sở / theo lớp của cơ sở hoặc tổng',
+          key: 'list-student-study-at-summer',
+          url: ['/ho-so-doi-tuong/bao-cao/hoc-he-theo-co-so-theo-lop-hoac-tong'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh theo năm học theo cơ sở hoặc tổng',
+          key: 'list-student-study-at-year',
+          url: ['/ho-so-doi-tuong/bao-cao/theo-nam-hoc-theo-co-so-hoac-tong'],
           permission: [permissions.HSDT],
           pro: true,
         },
@@ -757,6 +771,21 @@ export async function getLeftMenuAllocation() {
       icon: 'icon icon-setting',
       permission: [permissions.PB],
       pro: true,
+    },
+    {
+      title: 'Báo cáo',
+      key: 'allocation-report-able-to-up-class',
+      icon: 'icon icon-list',
+      permission: [permissions.PB],
+      children: [
+        {
+          title: 'Danh sách học sinh đủ tuổi chuyển lên lớp vào cuối tháng',
+          key: 'allocationReportAbleToUpClass',
+          url: ['/phan-bo/bao-cao/danh-sach-hoc-sinh-du-tuoi-chuyen-len-lop-vao-cuoi-thang'],
+          permission: [permissions.PB],
+          pro: true,
+        },
+      ],
     },
   ];
 }
@@ -1631,7 +1660,7 @@ export async function getLeftMenuFeePolicy() {
         '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc',
         '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc/tao-moi',
         '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc/:id/chi-tiet',
-    ],
+      ],
       permission: [permissions.CHINHSACHPHI],
       pro: true,
     },
@@ -1643,7 +1672,7 @@ export async function getLeftMenuFeePolicy() {
         '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi',
         '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi/tao-moi',
         '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi/:id/chi-tiet',
-    ],
+      ],
       permission: [permissions.CHINHSACHPHI],
       pro: true,
     },
@@ -1653,9 +1682,9 @@ export async function getLeftMenuFeePolicy() {
       icon: 'icon icon-setting',
       url: [
         '/chinh-sach-phi/cau-hinh-hoan-phi',
-      '/chinh-sach-phi/cau-hinh-hoan-phi/tao-moi',
-      '/chinh-sach-phi/cau-hinh-hoan-phi/:id/chi-tiet',
-    ],
+        '/chinh-sach-phi/cau-hinh-hoan-phi/tao-moi',
+        '/chinh-sach-phi/cau-hinh-hoan-phi/:id/chi-tiet',
+      ],
       permission: [permissions.HRM],
       pro: true,
     },
@@ -2199,20 +2228,14 @@ export async function getLeftMenuCurrency() {
         {
           title: 'Tính phí học sinh cũ',
           key: 'old-student',
-          url: [
-            '/bieu-phi/tinh-phi-hoc-sinh-cu',
-            '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet',
-          ],
+          url: ['/bieu-phi/tinh-phi-hoc-sinh-cu', '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet'],
           permission: [permissions.BIEUPHI],
           pro: true,
         },
         {
           title: 'Tính phí học sinh mới',
           key: 'new-student',
-          url: [
-            '/bieu-phi/tinh-phi-hoc-sinh-moi',
-            '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
-          ],
+          url: ['/bieu-phi/tinh-phi-hoc-sinh-moi', '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet'],
           permission: [permissions.BIEUPHI],
           pro: true,
         },
@@ -2238,18 +2261,14 @@ export async function getLeftMenuCurrency() {
         {
           title: 'TH công nợ theo đối tượng',
           key: 'debt',
-          url: [
-            '/bieu-phi/bao-cao/cong-no-theo-doi-tuong'
-          ],
+          url: ['/bieu-phi/bao-cao/cong-no-theo-doi-tuong'],
           permission: [permissions.BIEUPHI],
           pro: true,
         },
         {
           title: 'TH thu - chi theo đối tượng',
           key: 'revenue-expenditure',
-          url: [
-            '/bieu-phi/bao-cao/thu-chi-theo-doi-tuong',
-          ],
+          url: ['/bieu-phi/bao-cao/thu-chi-theo-doi-tuong'],
           permission: [permissions.BIEUPHI],
           pro: true,
         },
@@ -2260,7 +2279,7 @@ export async function getLeftMenuCurrency() {
       key: 'configuration',
       icon: 'icon icon-list',
       permission: [permissions.BIEUPHI],
-      url: [ '/bieu-phi/cau-hinh-noi-dung'],
+      url: ['/bieu-phi/cau-hinh-noi-dung'],
     },
   ];
 }
