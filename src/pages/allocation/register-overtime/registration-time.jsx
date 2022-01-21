@@ -4,53 +4,19 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
-import { Helper, variables } from '@/utils';
-import { Form, Tabs, Spin } from 'antd';
+import { variables } from '@/utils';
+import { Form, Spin } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { useSelector, useDispatch } from 'dva';
-import { useHistory, useParams } from 'umi';
 import moment from 'moment';
-import { get, head, isEmpty, last } from 'lodash';
-import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { isEmpty, } from 'lodash';
 
-const { TabPane } = Tabs;
-
-const dataTime = (n) => {
-    const allTime = [];
-    for (let i = 1; i < n + 1; i += 1) {
-        allTime.push({ name: `${i} ngày` });
-    }
-
-    return allTime.map((i, id) => ({ id, ...i }));
-};
-
-const dataHour = (n) => {
-    const allHour = [];
-    for (let i = 1; i < n + 1; i += 1) {
-        allHour.push({ name: `${i} giờ` });
-    }
-
-    return allHour.map((i, id) => ({ id, ...i }));
-};
 
 const Index = memo(() => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
-    const params = useParams();
-    const history = useHistory();
-    const [tab, setTab] = useState('tuition');
-    const [details, setDetails] = useState({
-        schoolYearId: '',
-        startDate: '',
-        endDate: '',
-        dayAdmission: '',
-        code: '',
-        branchName: '',
-        classType: '',
-        className: '',
-        classTypeId: '',
-    });
+    const [details, setDetails] = useState({});
 
     const [
         { error },
@@ -66,12 +32,10 @@ const Index = memo(() => {
         registerOvertimeAdd.detailsTime,
     ]);
 
-    console.log("detailsTime", detailsTime);
 
     useEffect(() => {
         dispatch({
             type: 'registerOvertimeAdd/GET_TIME',
-            payload: {},
         });
         dispatch({
             type: 'registerOvertimeAdd/GET_YEAR',
@@ -80,47 +44,17 @@ const Index = memo(() => {
     }, []);
 
     useEffect(() => {
-        const strFromTimeWeekday = `${detailsTime?.fromTimeWeekday?.hours}:${detailsTime?.fromTimeWeekday?.minutes}`;
-        const strToTimeWeekday = `${detailsTime?.toTimeWeekday?.hours}:${detailsTime?.toTimeWeekday?.minutes}`;
-        const strFromTimeWeekend = `${detailsTime?.fromTimeWeekend?.hours}:${detailsTime?.fromTimeWeekend?.minutes}`;
-        const strToTimeWeekend = `${detailsTime?.toTimeWeekend?.hours}:${detailsTime?.toTimeWeekend?.minutes}`;
-        form.setFieldsValue({
-            FromTimeWeekday: detailsTime?.fromTimeWeekday && moment(strFromTimeWeekday, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),
-            ToTimeWeekday: detailsTime?.toTimeWeekday && moment(strToTimeWeekday, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),
-            FromTimeWeekend: detailsTime?.fromTimeWeekend && moment(strFromTimeWeekend, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),
-            ToTimeWeekend: detailsTime?.toTimeWeekend && moment(strToTimeWeekend, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),
-        });
-    }, []);
-console.log("form",form)
-    //     console.log("123",hourStr);
-    // console.log("sss", detailsTime.fromTimeWeekday && moment(hourStr, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm"),);
-
-    const onFinish = (values) => {
-        const payload = {
-            id: params?.id,
-            year: 2030,
-            FromTimeWeekday: values.FromTimeWeekday && moment(values.FromTimeWeekday, variables.DATE_FORMAT.HOUR),
-            ToTimeWeekday: values.ToTimeWeekday && moment(values.ToTimeWeekday, variables.DATE_FORMAT.HOUR),
-            FromTimeWeekend: values.FromTimeWeekend && moment(values.FromTimeWeekend, variables.DATE_FORMAT.HOUR),
-            ToTimeWeekend: values.ToTimeWeekend && moment(values.ToTimeWeekend, variables.DATE_FORMAT.HOUR),
-            IsRegistrationConfig: false,
-        };
-        console.log("va", payload)
-        dispatch({
-            type: 'registerOvertimeAdd/ADD_TIME',
-            payload,
-            callback: (response) => {
-                // if (response) {
-                //     history.goBack();
-                // }
-            },
-        });
-    };
-
+        if (!isEmpty(details)) {
+            form.setFieldsValue({
+                FromTimeWeekday: details?.FromTimeWeekday && moment(details?.FromTimeWeekday, variables.DATE_FORMAT.HOUR),
+                ToTimeWeekday: details?.ToTimeWeekday && moment(details?.ToTimeWeekday, variables.DATE_FORMAT.HOUR),
+                FromTimeWeekend: details?.FromTimeWeekend && moment(details?.FromTimeWeekend, variables.DATE_FORMAT.HOUR),
+                ToTimeWeekend: details?.ToTimeWeekend && moment(details?.ToTimeWeekend, variables.DATE_FORMAT.HOUR),
+            });
+        }
+    }, [details]);
 
     const changeStudent = (value) => {
-        console.log("value", value);
-
         if (!value) {
             setDetails((prev) => ({
                 ...prev,
@@ -132,22 +66,19 @@ console.log("form",form)
             }));
             return;
         }
-        const student = year.find(item => item.id === value);
-        if (student?.id) {
-            const newDetails = {
-                ...details,
-                code: student?.fromYear || '',
-                branchName: student?.class?.branch?.name || '',
-                classType: student?.class?.classType?.name || '',
-                className: student?.class?.name || '',
-                classTypeId: student?.class?.classType?.id || '',
-            };
-            setDetails(newDetails);
-            // if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
-            //     getMoney(newDetails);
-            // }
-        }
-        console.log("detail", details);
+        const student = detailsTime?.filter(item => item.timetableSettingId === value);
+        const newDetails = {
+            ...details,
+            FromTimeWeekday: (student[0]?.fromTimeWeekday && moment(student[0]?.fromTimeWeekday, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm")) || '',
+            ToTimeWeekday: (student[0]?.toTimeWeekday && moment(student[0]?.toTimeWeekday, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm")) || '',
+            FromTimeWeekend: (student[0]?.fromTimeWeekend && moment(student[0]?.fromTimeWeekend, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm")) || '',
+            ToTimeWeekend: (student[0]?.toTimeWeekend && moment(student[0]?.toTimeWeekend, variables.DATE_FORMAT.HOUR).add(7, 'hours').format("HH:mm")) || '',
+            id: student[0]?.id || '',
+        };
+        setDetails(newDetails);
+        // if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
+        //     getMoney(newDetails);
+        // }
     };
 
     const getStudents = (keyWord = '') => {
@@ -165,6 +96,28 @@ console.log("form",form)
         getStudents(val);
     }, 300);
 
+    const onFinish = (values) => {
+        const payload = {
+            TimetableSettingId: values.year,
+            FromTimeWeekday: values.FromTimeWeekday && moment(values.FromTimeWeekday, variables.DATE_FORMAT.HOUR),
+            ToTimeWeekday: values.ToTimeWeekday && moment(values.ToTimeWeekday, variables.DATE_FORMAT.HOUR),
+            FromTimeWeekend: values.FromTimeWeekend && moment(values.FromTimeWeekend, variables.DATE_FORMAT.HOUR),
+            ToTimeWeekend: values.ToTimeWeekend && moment(values.ToTimeWeekend, variables.DATE_FORMAT.HOUR),
+            IsRegistrationConfig: false,
+            id: details?.id
+        };
+        dispatch({
+            type: details.id ? 'registerOvertimeAdd/UPDATE_TIME' : 'registerOvertimeAdd/ADD_TIME',
+            payload,
+            callback: (response) => {
+                if (response) {
+                    dispatch({
+                        type: 'registerOvertimeAdd/GET_TIME',
+                    });
+                }
+            },
+        });
+    };
 
     return (
         <>
@@ -213,7 +166,7 @@ console.log("form",form)
                                             </div>
                                             <div className="col-lg-6">
                                                 <FormItem
-                                                  
+
                                                     label="Bắt đầu"
                                                     name="FromTimeWeekday"
                                                     rules={[variables.RULES.EMPTY]}
@@ -223,7 +176,7 @@ console.log("form",form)
                                             <div className="col-lg-6">
                                                 <FormItem
                                                     label="Kết thúc"
-                                                   
+
                                                     name="ToTimeWeekday"
                                                     rules={[variables.RULES.EMPTY]}
                                                     type={variables.TIME_PICKER}
@@ -239,7 +192,7 @@ console.log("form",form)
                                             </div>
                                             <div className="col-lg-6">
                                                 <FormItem
-                                                   
+
                                                     label="Bắt đầu"
                                                     name="FromTimeWeekend"
                                                     rules={[variables.RULES.EMPTY]}
@@ -250,7 +203,7 @@ console.log("form",form)
                                             <div className="col-lg-6">
                                                 <FormItem
                                                     label="Kết thúc"
-                                               
+
                                                     name="ToTimeWeekend"
                                                     rules={[variables.RULES.EMPTY]}
                                                     type={variables.TIME_PICKER}
@@ -260,18 +213,6 @@ console.log("form",form)
 
                                         <div className="row">
                                             <div className="col-lg-12 mt20 mb10 d-flex justify-content-end align-items-center">
-                                                <p
-                                                    className="btn-delete"
-                                                    role="presentation"
-                                                    loading={
-                                                        loading['registerOvertimeAdd/ADD_LIMIT'] ||
-                                                        loading['registerOvertimeAdd/UPDATE'] ||
-                                                        loading['registerOvertimeAdd/GET_DETAILS']
-                                                    }
-                                                    onClick={() => history.goBack()}
-                                                >
-                                                    Hủy
-                                                </p>
                                                 <Button
                                                     className="ml-auto px25"
                                                     color="success"

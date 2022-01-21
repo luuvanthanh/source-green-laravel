@@ -6,7 +6,8 @@ export default {
     data: [],
     details: {},
     year: [],
-    detailsTime: {},
+    detailsTime: [],
+    detailsLimit: [],
     error: {
       isError: false,
       data: {},
@@ -17,6 +18,7 @@ export default {
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
+      detailsLimit : payload.items,
     }),
     SET_YEAR: (state, { payload }) => ({
       ...state,
@@ -24,7 +26,7 @@ export default {
     }),
     SET_TIME: (state, { payload }) => ({
       ...state,
-      detailsTime: payload.items[0],
+      detailsTime: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -78,7 +80,6 @@ export default {
     *GET_YEAR({ payload }, saga) {
       try {
         const response = yield saga.call(services.year, payload);
-        console.log("year",response);
         yield saga.put({
           type: 'SET_YEAR',
           payload: response,
@@ -93,7 +94,6 @@ export default {
     *GET_TIME({ payload }, saga) {
       try {
         const response = yield saga.call(services.getTime, payload);
-        console.log("year",response);
         yield saga.put({
           type: 'SET_TIME',
           payload: response,
@@ -103,6 +103,22 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *UPDATE_TIME({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateTime, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE_LIMIT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateLimit, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
       }
     },
   },

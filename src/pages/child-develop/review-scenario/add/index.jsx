@@ -4,7 +4,7 @@ import { Form, Collapse } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
 import { useSelector, useDispatch } from 'dva';
-import { variables, Helper } from '@/utils';
+import { variables } from '@/utils';
 import { useParams, history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
 import classnames from 'classnames';
@@ -45,21 +45,27 @@ const Index = memo(() => {
           id: params.id,
           categorySkillId: values.categorySkillId ? values.categorySkillId : details.categorySkillId,
           age: values.age ? values.age : details.age,
-          use: values.use ? values.use : details.use,
+          use:  values.use,
           detail: values.data.map((i) => ({
             nameCriteria: i?.nameCriteria,
-            inputAssessment: i?.inputAssessment,
-            periodicAssessment: i?.periodicAssessment,
-            use: i?.use,
+            inputAssessment: i?.inputAssessment ? i?.inputAssessment : false ,
+            periodicAssessment: i?.periodicAssessment ? i?.periodicAssessment : false,
+            use: i?.use ? i?.use : false,
             detailChildren: i?.childEvaluateDetailChildrent ? i?.childEvaluateDetailChildrent?.map((item) => ({
-              content: item.content, use: item.use
+              content: item.content, use: item.use ? item.use  : false
             })) : [],
           }))
         }
           :
           {
-            categorySkillId: values.categorySkillId, age: values.age, detail: values.data.map((item) => ({
-              ...item,
+            categorySkillId: values.categorySkillId ? values.categorySkillId : false, 
+            age: values.age ? values.age : false,
+            use:  values.use ? values.use  : false,
+            detail: values.data.map((item) => ({
+              nameCriteria: item?.nameCriteria,
+              inputAssessment: item?.inputAssessment ? item?.inputAssessment  : false ,
+              periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment: false,
+              use: item?.use ? item?.use : false,
               detailChildren: item?.childEvaluateDetailChildrent ? item?.childEvaluateDetailChildrent : [],
             }))
           },
@@ -86,25 +92,6 @@ const Index = memo(() => {
     });
   };
 
-  const onRemove = (id) => {
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'childDevelopReviewScenarioAdd/REMOVE',
-          payload: {
-            id,
-          },
-          callback: (response) => {
-            if (response) {
-              history.goBack();
-
-            }
-          },
-        });
-      },
-    });
-  };
-
   useEffect(() => {
     dispatch({
       type: 'childDevelopReviewScenarioAdd/GET_SKILL',
@@ -113,6 +100,7 @@ const Index = memo(() => {
   }, []);
 
   useEffect(() => {
+    if(params.id) {
     dispatch({
       type: 'childDevelopReviewScenarioAdd/GET_DATA',
       payload: params,
@@ -124,6 +112,7 @@ const Index = memo(() => {
         }
       },
     });
+    }
   }, [params.id]);
 
   useEffect(() => {

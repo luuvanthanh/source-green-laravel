@@ -4,17 +4,13 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
-import { Helper, variables } from '@/utils';
-import { Form, Tabs, Spin } from 'antd';
+import { variables } from '@/utils';
+import { Form, Spin } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { useSelector, useDispatch } from 'dva';
-import { useHistory, useParams } from 'umi';
-import moment from 'moment';
-import { get, head, isEmpty, last } from 'lodash';
-import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { isEmpty } from 'lodash';
 
-const { TabPane } = Tabs;
 
 const dataTime = (n) => {
     const allTime = [];
@@ -37,39 +33,27 @@ const dataHour = (n) => {
 const Index = memo(() => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
-    const params = useParams();
-    const history = useHistory();
-    const [tab, setTab] = useState('tuition');
-    const [details, setDetails] = useState({
-        schoolYearId: '',
-        startDate: '',
-        endDate: '',
-        dayAdmission: '',
-        code: '',
-        branchName: '',
-        classType: '',
-        className: '',
-        classTypeId: '',
-    });
+    const [details, setDetails] = useState({});
 
     const [
         { error },
         loading,
         { menuLeftAllocation },
         year,
+        detailsLimit,
     ] = useSelector(({ loading: { effects }, registerOvertimeAdd, menu }) => [
         registerOvertimeAdd,
         effects,
         menu,
         registerOvertimeAdd.year,
+        registerOvertimeAdd.detailsLimit,
     ]);
 
-    console.log("year", year);
+
 
     useEffect(() => {
         dispatch({
             type: 'registerOvertimeAdd/GET_DETAILS',
-            payload: {},
         });
         dispatch({
             type: 'registerOvertimeAdd/GET_YEAR',
@@ -78,65 +62,17 @@ const Index = memo(() => {
     }, []);
 
     useEffect(() => {
-        if (!isEmpty(details) && get(params, 'id')) {
+        if (!isEmpty(details)) {
             form.setFieldsValue({
-                year: details.fromYear &&
-                    details.toYear && [
-                        moment(details.fromYear, variables.DATE_FORMAT.YEAR),
-                        moment(details.toYear, variables.DATE_FORMAT.YEAR),
-                    ],
-                fromTime: details.fromTime && moment(details.fromTime, variables.DATE_FORMAT.HOUR),
-                toTime: details.toTime && moment(details.toTime, variables.DATE_FORMAT.HOUR),
-                periodDuration: details.periodDuration && details.periodDuration,
-                fromDate: details.fromDate && moment(details.fromDate),
-                toDate: details.toDate && moment(details.toDate),
+                RegisterBeforeDays: details.RegisterBeforeDays,
+                RegisterBeforeHours: details.RegisterBeforeHours,
+                CancelBeforeDays: details.CancelBeforeDays,
+                CancelBeforeHours: details.CancelBeforeHours,
             });
         }
     }, [details]);
-
-    useEffect(() => {
-        if (!isEmpty(details) && get(params, 'id')) {
-            form.setFieldsValue({
-                year: details.fromYear &&
-                    details.toYear && [
-                        moment(details.fromYear, variables.DATE_FORMAT.YEAR),
-                        moment(details.toYear, variables.DATE_FORMAT.YEAR),
-                    ],
-                fromTime: details.fromTime && moment(details.fromTime, variables.DATE_FORMAT.HOUR),
-                toTime: details.toTime && moment(details.toTime, variables.DATE_FORMAT.HOUR),
-                periodDuration: details.periodDuration && details.periodDuration,
-                RegisterBeforeDays: details.RegisterBeforeDays && moment(details.RegisterBeforeDays),
-                toDate: details.toDate && moment(details.toDate),
-            });
-        }
-    }, [details]);
-
-    const onFinish = (values) => {
-        const payload = {
-            id: params?.id,
-            year: 2030,
-            RegisterBeforeDays: values.RegisterBeforeDays,
-            RegisterBeforeHous: values.RegisterBeforeHous,
-            CancelBeforeDays: values.CancelBeforeDays,
-            CancelBeforeHours: values.CancelBeforeHours,
-            IsRegistrationConfig: true,
-        };
-        console.log("va", payload)
-        dispatch({
-            type: 'registerOvertimeAdd/ADD_LIMIT',
-            payload,
-            callback: (response) => {
-                // if (response) {
-                //     history.goBack();
-                // }
-            },
-        });
-    };
-
 
     const changeStudent = (value) => {
-        console.log("value", value);
-
         if (!value) {
             setDetails((prev) => ({
                 ...prev,
@@ -148,24 +84,21 @@ const Index = memo(() => {
             }));
             return;
         }
-        const student = year.find(item => item.id === value);
-        if (student?.id) {
-            const newDetails = {
-                ...details,
-                code: student?.fromYear || '',
-                branchName: student?.class?.branch?.name || '',
-                classType: student?.class?.classType?.name || '',
-                className: student?.class?.name || '',
-                classTypeId: student?.class?.classType?.id || '',
-            };
-            setDetails(newDetails);
-            // if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
-            //     getMoney(newDetails);
-            // }
-        }
-        console.log("detail", details);
-    };
+        const student = detailsLimit?.filter(item => item.timetableSettingId === value);
+        const newDetails = {
+            ...details,
+            RegisterBeforeDays: student[0] ? student[0]?.registerBeforeDays : '',
+            RegisterBeforeHours: student[0] ? student[0]?.registerBeforeHours : '',
+            CancelBeforeDays: student[0] ? student[0]?.cancelBeforeDays : '',
+            CancelBeforeHours: student[0] ? student[0]?.cancelBeforeHours : '',
+            id: student[0]?.id || '',
+        };
+        setDetails(newDetails);
 
+        // if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
+        //     getMoney(newDetails);
+        // }
+    };
     const getStudents = (keyWord = '') => {
         dispatch({
             type: 'registerOvertimeAdd/GET_YEAR',
@@ -181,6 +114,28 @@ const Index = memo(() => {
         getStudents(val);
     }, 300);
 
+    const onFinish = (values) => {
+        const payload = {
+            TimetableSettingId: values.year,
+            RegisterBeforeDays: values.RegisterBeforeDays,
+            RegisterBeforeHours: values.RegisterBeforeHours,
+            CancelBeforeDays: values.CancelBeforeDays,
+            CancelBeforeHours: values.CancelBeforeHours,
+            IsRegistrationConfig: true,
+            id: details?.id
+        };
+        dispatch({
+            type: details.id ? 'registerOvertimeAdd/UPDATE_LIMIT' : 'registerOvertimeAdd/ADD_LIMIT',
+            payload,
+            callback: (response) => {
+                if (response) {
+                    dispatch({
+                        type: 'registerOvertimeAdd/GET_DETAILS',
+                    });
+                }
+            },
+        });
+    };
 
     return (
         <>
@@ -239,7 +194,7 @@ const Index = memo(() => {
                                             <div className="col-lg-6 mt30">
                                                 <FormItem
                                                     data={dataHour(24)}
-                                                    name="RegisterBeforeHous"
+                                                    name="RegisterBeforeHours"
                                                     type={variables.SELECT}
                                                     rules={[variables.RULES.EMPTY]}
                                                 />
@@ -274,18 +229,7 @@ const Index = memo(() => {
 
                                         <div className="row">
                                             <div className="col-lg-12 mt20 mb10 d-flex justify-content-end align-items-center">
-                                                <p
-                                                    className="btn-delete"
-                                                    role="presentation"
-                                                    loading={
-                                                        loading['registerOvertimeAdd/ADD_LIMIT'] ||
-                                                        loading['registerOvertimeAdd/UPDATE'] ||
-                                                        loading['registerOvertimeAdd/GET_DETAILS']
-                                                    }
-                                                    onClick={() => history.goBack()}
-                                                >
-                                                    Hủy
-                                                </p>
+
                                                 <Button
                                                     className="ml-auto px25"
                                                     color="success"

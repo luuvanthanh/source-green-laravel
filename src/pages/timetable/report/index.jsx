@@ -351,6 +351,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
+    const { dataIDSearch } = this.state;
     const loading = effects['timeTablesReport/GET_DATA'];
     return (
       <>
@@ -379,20 +380,32 @@ class Index extends PureComponent {
                 )}
               </Select>
 
-              <Button color="success" icon="plus" className="ml-4" onClick={this.onChangeSearch}>
-                Tải dữ liệu
-              </Button>
+              {
+                dataIDSearch.length > 0 ?
+                  <Button color="success" icon="report" className="ml-4" onClick={this.onChangeSearch}>
+                    Tải dữ liệu
+                  </Button>
+                  :
+                  <Button color="success" icon="report" className="ml-4" onClick={this.onChangeSearch} disabled>
+                    Tải dữ liệu
+                  </Button>
+              }
+
             </div>
           </div>
 
           <div className={stylesModule['wrapper-table']}>
-            <div className="d-flex justify-content-between align-items-center pt20 pl20 pr20">
-              <h3 className={stylesModule.title} color="dark">
+            <div className="d-flex flex-row-reverse align-items-center pt20 pl20 pr20">
+              {/* <h3 className={stylesModule.title} color="dark">
                 Chi tiết báo cáo tổng các khoản phải nộp{' '}
-              </h3>
-              <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
-                Xuất Excel
-              </Button>
+              </h3> */}
+              {
+                data?.length > 0 ?
+                  <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+                    Xuất Excel
+                  </Button>
+                  : ""
+              }
             </div>
             <div className={classnames(styles['block-table'])}>
               <Table
@@ -408,7 +421,7 @@ class Index extends PureComponent {
                   header: this.header(),
                   type: 'table',
                 }}
-                rowKey={(record) => record?.class?.id || record?.class?.name}
+                rowKey={(record) => record?.class?.id || record?.id}
                 scroll={{ x: '100%' }}
               />
             </div>

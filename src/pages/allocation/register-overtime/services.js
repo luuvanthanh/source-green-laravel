@@ -18,44 +18,41 @@ export function update(data = {}) {
 export function year(data) {
   return request(`/timetable-settings`, {
     method: 'GET',
+    data,
   });
 }
 
 export function details(data) {
   return request(`/extended-class-registration-configs`, {
     method: 'GET',
-    params: {
-      year: '2030',
-      
-      // ...data,
-      // limit: data.limit,
-      // page: data.page,
-      // orderBy: 'created_at',
-      // sortedBy: 'desc',
-      // searchJoin: 'and',
-    },
+    data,
   });
 }
 
 export function getTime(data) {
   return request(`/extended-class-configs`, {
     method: 'GET',
-    params: {
-      year: 2030,
-      
-      // ...data,
-      // limit: data.limit,
-      // page: data.page,
-      // orderBy: 'created_at',
-      // sortedBy: 'desc',
-      // searchJoin: 'and',
-    },
+    data,
   });
 }
 
 export function addTime(data = {}) {
-  return request('/eextended-class-configs', {
+  return request('/extended-class-configs', {
     method: 'POST',
+    data,
+  });
+}
+
+export function updateTime(data = {}) {
+  return request(`/extended-class-configs/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export function updateLimit(data = {}) {
+  return request(`/extended-class-registration-configs/${data.id}`, {
+    method: 'PUT',
     data,
   });
 }
