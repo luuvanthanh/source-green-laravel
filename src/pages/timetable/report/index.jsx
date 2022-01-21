@@ -407,7 +407,7 @@ class Index extends PureComponent {
                   header: this.header(),
                   type: 'table',
                 }}
-                rowKey={(record) => record.id || record?.class?.id}
+                rowKey={(record) => record?.class?.id || record?.class?.name}
                 scroll={{ x: '100%' }}
               />
             </div>
