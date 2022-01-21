@@ -155,6 +155,8 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 $camera->collection()->attach($attributes['collection_id']);
             }
 
+            DB::commit();
+
             $dataResolution = $this->getResolutionValue($camera->resolution);
 
             $dataStartCamera = [
@@ -180,8 +182,6 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             ];
 
             VmsCoreServices::startCamera($dataStartCamera);
-
-            DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();
             throw new HttpException(500, $e->getMessage());
@@ -391,6 +391,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
     public function cameraChangeLog($attributes)
     {
         $camera = Camera::findOrFail($attributes['came_id']);
+        $attributes['cam_info'] = json_decode($attributes['cam_info'], true);
 
         $statusNow = $camera->status;
         switch ($attributes['status']) {
