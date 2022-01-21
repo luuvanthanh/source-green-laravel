@@ -692,6 +692,56 @@ export async function getLeftMenuCriteria() {
         },
       ],
     },
+    {
+      title: 'Báo cáo',
+      key: 'program-report',
+      icon: 'icon icon-list',
+      permission: [permissions.CTH],
+      children: [
+        {
+          title: 'Báo cáo quản trị HS - Học thuật theo từng góc giáo cụ',
+          key: 'program-report-angle-tools',
+          url: ['/chuong-trinh-hoc/bao-cao-quan-tri-hs/hoc-thuat-theo-tung-goc-giao-cu'],
+          permission: [permissions.CTH],
+          pro: true,
+        },
+        // {
+        //   title: 'Báo cáo quản trị HS - Tư duy sáng tạo',
+        //   key: 'criteria-group-properties',
+        //   url: ['/chuong-trinh-hoc/bao-cao-quan-tri-hs/tu-duy-sang-tao'],
+        //   permission: [permissions.CTH],
+        //   pro: true,
+        // },
+        // {
+        //   title: 'Báo cáo quản trị HS - Nhân cách',
+        //   key: 'criteria-group-properties',
+        //   url: ['/chuong-trinh-hoc/bao-cao-quan-tri-hs/nhan-cach'],
+        //   permission: [permissions.CTH],
+        //   pro: true,
+        // },
+        // {
+        //   title: 'Báo cáo quản trị HS - Hình ảnh/videos',
+        //   key: 'criteria-group-properties',
+        //   url: ['/chuong-trinh-hoc/bao-cao-quan-tri-hs/hinh-anh-video'],
+        //   permission: [permissions.CTH],
+        //   pro: true,
+        // },
+        // {
+        //   title: 'Báo cáo quản trị HS - Kết quả luận thiên tư cho từng trẻ',
+        //   key: 'criteria-group-properties',
+        //   url: ['/chuong-trinh-hoc/bao-cao-quan-tri-hs/ket-qua-luan-thien-tu-cho-tung-tre'],
+        //   permission: [permissions.CTH],
+        //   pro: true,
+        // },
+        // {
+        //   title: 'Báo cáo quản trị HS - Xác nhận từng thời kỳ nhạy cảm của trẻ',
+        //   key: 'criteria-group-properties',
+        //   url: ['/chuong-trinh-hoc/bao-cao-quan-tri-hs/xac-nhan-tung-thoi-ky-nhay-cam-cua-tre'],
+        //   permission: [permissions.CTH],
+        //   pro: true,
+        // },
+      ],
+    },
   ];
 }
 export async function getLeftMenuChildren() {
@@ -2160,9 +2210,7 @@ export async function getLeftMenuChildDevelop() {
       key: 'monitor-childrens',
       icon: 'icon icon-home',
       permission: [],
-      url: [
-        '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
-      ],
+      url: ['/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre'],
     },
     {
       title: 'Danh mục',

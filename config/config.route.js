@@ -193,13 +193,48 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
-
           {
             path: '/chuong-trinh-hoc/bao-cao-tong-quat-tre',
             component: './criteria/report',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
+          {
+            path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/hoc-thuat-theo-tung-goc-giao-cu',
+            component: './criteria/report/report-angle-tools',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          // {
+          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/tu-duy-sang-tao',
+          //   component: './criteria/report',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.CTH],
+          // },
+          // {
+          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/nhan-cach',
+          //   component: './criteria/report',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.CTH],
+          // },
+          // {
+          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/hinh-anh-video',
+          //   component: './criteria/report',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.CTH],
+          // },
+          // {
+          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/ket-qua-luan-thien-tu-cho-tung-tre',
+          //   component: './criteria/report',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.CTH],
+          // },
+          // {
+          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/xac-nhan-tung-thoi-ky-nhay-cam-cua-tre',
+          //   component: './criteria/report',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.CTH],
+          // },
         ],
       },
       // CRITERIA
