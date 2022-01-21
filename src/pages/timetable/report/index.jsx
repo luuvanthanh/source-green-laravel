@@ -270,6 +270,7 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const { search } = this.state;
     const columns = [
       {
         title: 'STT ',
@@ -278,9 +279,9 @@ class Index extends PureComponent {
         fixed: 'left',
         render: (text, record, index) => {
           if (record?.parentEventTimetableAttendances) {
-            return;
+            return null;
           }
-          return Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit);
+          return Helper.serialOrder(search?.page, index, search?.limit);
         },
       },
       {

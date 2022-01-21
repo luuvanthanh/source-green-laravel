@@ -1751,6 +1751,12 @@ export default [
             authority: [permissions.PB],
           },
           {
+            path: '/phan-bo/giao-vien-phu-trach-ngoai-gio',
+            component: './allocation/extended-class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
+          {
             path: '/phan-bo/bao-cao/danh-sach-hoc-sinh-du-tuoi-chuyen-len-lop-vao-cuoi-thang',
             component: './allocation/report/able-to-up-class',
             wrappers: ['@/wrappers/auth'],
