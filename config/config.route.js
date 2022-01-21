@@ -1732,6 +1732,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.PB],
           },
+          {
+            path: '/phan-bo/giao-vien-phu-trach-ngoai-gio',
+            component: './allocation/extended-class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
         ],
       },
       // ALLOCATION

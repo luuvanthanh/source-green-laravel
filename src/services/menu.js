@@ -739,6 +739,14 @@ export async function getLeftMenuAllocation() {
       pro: true,
     },
     {
+      title: 'Giáo viên phụ trách ngoài giờ',
+      key: 'extended-class',
+      url: ['/phan-bo/giao-vien-phu-trach-ngoai-gio'],
+      icon: 'icon icon-clock',
+      permission: [permissions.PB],
+      pro: true,
+    },
+    {
       title: 'Đăng ký học ngoài giờ',
       key: 'register-school',
       url: [

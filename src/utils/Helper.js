@@ -716,6 +716,37 @@ export default class Helpers {
     return days.map((item) => moment(item));
   };
 
+  static convertArrayDaysNotSunday = (start_date = moment(), end_date = moment()) => {
+    const days = [];
+    let day = moment(start_date);
+    while (day <= moment(end_date).endOf('days')) {
+      if (moment(day).day() !== 0) {
+        days.push(day.toDate());
+      }
+      day = day.clone().add(1, 'd');
+    }
+    return days.map((item) => moment(item));
+  };
+
+  static getDayOfWeek = (date = 0) => {
+    switch (toNumber(date)) {
+      case 1:
+        return 'T2';
+      case 2:
+        return 'T3';
+      case 3:
+        return 'T4';
+      case 4:
+        return 'T5';
+      case 5:
+        return 'T6';
+      case 6:
+        return 'T7';
+      default:
+        return 'CN';
+    }
+  };
+
   static toFixed = (num) => {
     if (!num) return;
     // eslint-disable-next-line consistent-return
@@ -752,11 +783,13 @@ export default class Helpers {
       .format(variables.DATE_FORMAT.TIME_FULL)}`;
 
   static getPathAvatarJson = (fileImage) => {
-    const allowTypes = ['jpeg', 'jpg', 'png', 'JPG', 'HEIC', 'JPEG', 'PNG'];
+    const allowTypes = ['jpeg', 'jpg', 'png', 'heic'];
     if (this.isJSON(fileImage)) {
       const files = JSON.parse(fileImage);
       if (!isEmpty(files) && isArray(files)) {
-        return head(files.filter((item) => allowTypes.includes(last(item.split('.')))));
+        return head(
+          files.filter((item) => allowTypes.includes(last(item.split('.')).toLowerCase())),
+        );
       }
       return null;
     }
