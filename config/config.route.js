@@ -524,6 +524,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/hoc-he-theo-co-so-theo-lop-hoac-tong',
+            component: './object-profiles/report/list-student-study-at-summer',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/theo-nam-hoc-theo-co-so-hoac-tong',
+            component: './object-profiles/report/list-student-at-year',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
         ],
       },
       // OBJECT PROFILES
@@ -1729,6 +1741,12 @@ export default [
           {
             path: '/phan-bo/cau-hinh-dang-ky-ngoai-gio',
             component: './allocation/register-overtime',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
+          {
+            path: '/phan-bo/bao-cao/danh-sach-hoc-sinh-du-tuoi-chuyen-len-lop-vao-cuoi-thang',
+            component: './allocation/report/able-to-up-class',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.PB],
           },

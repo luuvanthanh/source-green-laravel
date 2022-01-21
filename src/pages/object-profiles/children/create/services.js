@@ -37,7 +37,7 @@ export function getParents() {
 }
 
 export function addTransporter(data = {}) {
-  return request(`/student-transporter?id=${data.id}`, {
+  return request(`/student-transporter`, {
     method: 'POST',
     data: data.studentTransporter,
   });
