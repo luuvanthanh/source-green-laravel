@@ -217,6 +217,11 @@ export const variables = {
     { id: 'QUY_DINH', name: 'Quy định' },
     { id: 'TO_TRINH', name: 'Tờ trình' },
   ],
+  STATUS_EXTENDED: {
+    NOT_DISTRIBUTION: 'NOT_DISTRIBUTION',
+    CONFIRMED: 'CONFIRMED',
+    WAITING: 'WAITING'
+  },
   COLORS: [
     '#FF8D8D',
     '#FFA5AC',
