@@ -513,8 +513,14 @@ export default [
             authority: [permissions.HSDT],
           },
           {
-            path: '/ho-so-doi-tuong/bao-cao/hai-bon-thang-den-ba-sau-thang',
+            path: '/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-du-hai-bon-thang',
             component: './object-profiles/report/twentyFour-month',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-du-ba-sau-thang',
+            component: './object-profiles/report/threeSix-month',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },

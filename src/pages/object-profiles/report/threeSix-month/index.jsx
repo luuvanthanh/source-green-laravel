@@ -30,9 +30,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicalStudentProblem, loading, user, OPtwentyFourMonth }) => ({
+const mapStateToProps = ({ medicalStudentProblem, loading, user, OPThreeSixMonth }) => ({
     loading,
-    data: OPtwentyFourMonth.data,
+    data: OPThreeSixMonth.data,
     error: medicalStudentProblem.error,
     classes: medicalStudentProblem.classes,
     branches: medicalStudentProblem.branches,
@@ -95,7 +95,7 @@ class Index extends PureComponent {
             location: { pathname },
         } = this.props;
         this.props.dispatch({
-            type: 'OPtwentyFourMonth/GET_DATA',
+            type: 'OPThreeSixMonth/GET_DATA',
             payload: {
                 ...search,
             },
@@ -332,10 +332,10 @@ class Index extends PureComponent {
         Helper.exportExcelClover(
             `/students/export-to-excel/group-by-branch`,
             {
-                StudiedMonths: 24,
+                StudiedMonths: 36,
                 SearchDate: dataIDSearch ? Helper.getDate(dataIDSearch, variables.DATE_FORMAT.DATE) : moment(),
             },
-            `Danhsachhocsinhhocdu24thang.xlsx`,
+            `Danhsachhocsinhhocdu36thang.xlsx`,
         );
     };
 
@@ -354,11 +354,11 @@ class Index extends PureComponent {
         const loading = effects['medicalStudentProblem/GET_DATA'];
         return (
             <>
-                <Helmet title="DANH SÁCH HỌC SINH HỌC ĐỦ 24 THÁNG ĐẾN NGÀY ĐẦU THÁNG" />
+                <Helmet title="DANH SÁCH HỌC SINH HỌC ĐỦ 36 THÁNG ĐẾN NGÀY ĐẦU THÁNG" />
                 <div className={classnames(styles['content-form'], styles['content-form-children'])}>
                     {/* FORM SEARCH */}
                     <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-                        <Text color="dark">DANH SÁCH HỌC SINH HỌC ĐỦ 24 THÁNG ĐẾN NGÀY ĐẦU THÁNG</Text>
+                        <Text color="dark">DANH SÁCH HỌC SINH HỌC ĐỦ 36 THÁNG ĐẾN NGÀY ĐẦU THÁNG</Text>
                         <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
                             Xuất Excel
                         </Button>
