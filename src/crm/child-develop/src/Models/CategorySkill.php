@@ -2,7 +2,6 @@
 
 namespace GGPHP\Crm\ChildDevelop\Models;
 
-use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\Core\Models\UuidModel;
 
 class CategorySkill extends UuidModel

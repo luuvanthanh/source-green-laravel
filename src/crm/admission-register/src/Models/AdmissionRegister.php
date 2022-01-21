@@ -18,9 +18,9 @@ class AdmissionRegister extends UuidModel
     ];
 
     const STATUS_REGISTER = [
-        'UNTESTED' => 0,
+        'NOT_TESTING' => 0,
         'TESTING' => 1,
-        'TESTED' => 2
+        'FINISH' => 2
     ];
 
     public function studentInfo()

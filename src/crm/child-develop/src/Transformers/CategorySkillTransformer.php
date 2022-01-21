@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\ChildDevelop\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\ChildDevelop\Models\CategorySkill;
 
 /**
  * Class CategoryDetailTransformer.
@@ -28,7 +29,7 @@ class CategorySkillTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['childEvaluate'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -41,5 +42,10 @@ class CategorySkillTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [];
+    }
+
+    public function includeChildEvaluate(CategorySkill $categorySkill)
+    {
+        return $this->collection($categorySkill->childEvaluate, new ChildEvaluateTransformer, 'ChildEvaluate');
     }
 }

@@ -11,8 +11,17 @@ class TestInput extends UuidModel
 
     protected $fillable = [
         'employee_id', 'date_interview', 'time_interview',
-        'teacher_comment', 'headmaster_comment', 'admission_register_id'
+        'teacher_comment', 'headmaster_comment', 'admission_register_id', 'status', 'type'
     ];
+
+    const STATUS = [
+        'UNTESTING' => 0,
+        'TESTING' => 1,
+        'FINISH' => 2,
+        'CANCEL' => 3,
+    ];
+
+    const TYPE_TEST_INPUT = 0;
 
     public function employee()
     {
@@ -22,5 +31,10 @@ class TestInput extends UuidModel
     public function AdmissionRegister()
     {
         return $this->belongsTo(AdmissionRegister::class);
+    }
+
+    public function testInputDetail()
+    {
+        return $this->hasMany(TestInputDetail::class, 'test_input_id');
     }
 }

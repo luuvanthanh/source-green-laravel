@@ -44,12 +44,12 @@ class ChildEvaluateTransformer extends BaseTransformer
         $age = null;
 
         foreach (ChildEvaluate::MONTH as $key => $value) {
-            if ($value == $model->Age) {
+            if ($value == $model->age) {
                 $age = $key;
             }
         }
         return [
-            'Age' => $age
+            'age' => $age
         ];
     }
 
