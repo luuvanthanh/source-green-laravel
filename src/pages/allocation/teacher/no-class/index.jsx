@@ -17,7 +17,6 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
-import { isEmpty } from 'lodash';
 
 let isMounted = true;
 /**
@@ -52,7 +51,6 @@ class Index extends PureComponent {
         positions: [],
       },
       branchId: '',
-      positionId: '',
       selectedTeachers: [],
       loadingTeacher: false,
       hasMore: true,
@@ -69,7 +67,7 @@ class Index extends PureComponent {
   componentDidMount() {
     this.fetchBranches();
     this.fetchPositions();
-    this.fetchTeachers();
+    // this.fetchTeachers();
   }
 
   componentWillUnmount() {
@@ -118,42 +116,11 @@ class Index extends PureComponent {
         branchId: value,
       }),
       () => {
-        this.fetchTeachers();
+        this.fetchBranches();
       },
     );
     this.formRef?.current?.resetFields(['classId']);
     this.fetchClasses(value);
-  };
-
-  fetchTeachers = () => {
-    this.setStateData({ loadingTeacher: true });
-    const { dispatch } = this.props;
-    const { searchTeachers, branchId, positionId } = this.state;
-    dispatch({
-      type: 'categories/GET_TEACHERS',
-      payload: {
-        ...searchTeachers,
-        hasClass: 'false',
-        branchId,
-        positionId: !isEmpty(positionId) ? positionId.join(',') : '',
-        include: Helper.convertIncludes(['positionLevelNow']),
-      },
-      callback: (res) => {
-        if (res) {
-          this.setStateData(({ categories }) => ({
-            categories: {
-              ...categories,
-              teachers: res?.parsePayload || [],
-            },
-            loadingTeacher: false,
-            searchTeachers: {
-              ...searchTeachers,
-              totalCount: res.pagination.total,
-            },
-          }));
-        }
-      },
-    });
   };
 
   fetchPositions = () => {
@@ -175,6 +142,7 @@ class Index extends PureComponent {
 
   fetchBranches = () => {
     const { dispatch } = this.props;
+    const { searchTeachers, branchId } = this.state;
     dispatch({
       type: 'allocationTeacherNoClass/GET_POSITIONS',
       callback: (res) => {
@@ -185,6 +153,32 @@ class Index extends PureComponent {
               positions: res?.parsePayload || [],
             },
           }));
+
+          const pos = res.parsePayload.find((item) => item.code === 'GV');
+          dispatch({
+            type: 'categories/GET_TEACHERS',
+            payload: {
+              ...searchTeachers,
+              hasClass: 'false',
+              branchId,
+              positionId: pos.id,
+            },
+            callback: (res) => {
+              if (res) {
+                this.setStateData(({ categories }) => ({
+                  categories: {
+                    ...categories,
+                    teachers: res?.parsePayload || [],
+                  },
+                  loadingTeacher: false,
+                  searchTeachers: {
+                    ...searchTeachers,
+                    totalCount: res.pagination.total,
+                  },
+                }));
+              }
+            },
+          });
         }
       },
     });
@@ -248,7 +242,7 @@ class Index extends PureComponent {
           loadingLoadMore: false,
         }));
         // gọi lại danh sách giáo viên từ API
-        this.fetchTeachers();
+        // this.fetchTeachers();
       },
     });
   };

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import requestLaravel from '@/utils/requestLavarel';
-import { variables } from '@/utils';
+import { Helper, variables } from '@/utils';
 
 export function add(data) {
   return request('/class-teachers', {
@@ -12,7 +12,10 @@ export function add(data) {
 export function getTeachers(params = {}) {
   return request('/class-teachers', {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      include: Helper.convertIncludes(['positionLevelNow']),
+    },
   });
 }
 
@@ -22,7 +25,6 @@ export function changeClassTeacher({ id, data }) {
     data,
   });
 }
-
 
 export function getPositions() {
   return requestLaravel('/v1/positions', {
