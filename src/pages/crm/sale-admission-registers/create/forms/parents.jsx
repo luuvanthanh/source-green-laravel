@@ -482,6 +482,7 @@ const General = memo(
 
                               );
                             })}
+                            { fields.length < 2 ?
                             <Pane className="pl20 pb20" >
                               <Button
                                 color="success"
@@ -493,7 +494,8 @@ const General = memo(
                               >
                                 Thêm thông tin
                               </Button>
-                            </Pane>
+                            </Pane> : ""
+                            }
                           </>
                         )}
                       </Form.List>

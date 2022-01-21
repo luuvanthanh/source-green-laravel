@@ -11,7 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
-import { Helper } from '@/utils';
+import stylesModule from '../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
 const genders = [
@@ -30,9 +30,7 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
 const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, students }) => {
     const formRef = useRef();
-    const [files, setFiles] = Helper.isJSON(get(details, 'studentInfo.file_image'))
-      ? useState(JSON.parse(get(details, 'studentInfo.file_image')))
-      : useState([]);
+    const [files, setFiles] = useState([]);
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
@@ -122,59 +120,60 @@ const General = memo(
                 </Form.Item>
               </Pane>
             </Pane>
-            <Pane className="row" {...marginProps}>
-              <Pane className="col-lg-4">
-                <Form.Item>
+            <Pane className={stylesModule['wrapper-student']}>
+              <Pane className="row" {...marginProps}>
+                <Pane className="col-lg-4">
+                  <Form.Item>
 
+                    <FormItem
+                      value={get(details, 'studentInfo.full_name')}
+                      label="Họ và tên"
+                      type={variables.INPUT}
+                      disabled
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </Form.Item>
+                </Pane>
+                <Pane className="col-lg-4">
                   <FormItem
-                    value={get(details, 'studentInfo.full_name')}
+                    value={get(details, 'studentInfo.birth_date')}
                     label="Ngày sinh"
                     type={variables.INPUT}
-                    disabled
+                    format={variables.DATE_FORMAT.DATE_TIME}
                     rules={[variables.RULES.EMPTY]}
+                    disabled
+                    disabledDate={(current) => current > moment()}
                   />
-                </Form.Item>
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  value={get(details, 'studentInfo.birth_date')}
-                  label="Ngày sinh"
-                  type={variables.INPUT}
-                  format={variables.DATE_FORMAT.DATE_TIME}
-                  rules={[variables.RULES.EMPTY]}
-                  disabled
-                  disabledDate={(current) => current > moment()}
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  value={get(details, 'studentInfo.age_month')}
-                  label="Tuổi (tháng)"
-                  type={variables.INPUT}
-                  disabled
-                  rules={[variables.RULES.EMPTY_INPUT]}
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  value={get(details, 'studentInfo.sex')}
-                  options={['id', 'name']}
-                  data={genders}
-                  placeholder="Chọn"
-                  type={variables.SELECT}
-                  disabled
-                  label="Giới tính"
-                  rules={[variables.RULES.EMPTY_INPUT]}
-                />
-              </Pane>
-              <Pane className="col-lg-8">
-                <FormItem
-                  name="address"
-                  label="Địa chỉ"
-                  type={variables.INPUT}
-                />
-              </Pane>
-              <Pane className="col-lg-4">
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    value={get(details, 'studentInfo.age_month')}
+                    label="Tuổi (tháng)"
+                    type={variables.INPUT}
+                    disabled
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    value={get(details, 'studentInfo.sex')}
+                    options={['id', 'name']}
+                    data={genders}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    disabled
+                    label="Giới tính"
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
+                <Pane className="col-lg-8">
+                  <FormItem
+                    name="address"
+                    label="Địa chỉ"
+                    type={variables.INPUT}
+                  />
+                </Pane>
+                {/* <Pane className="col-lg-4">
                 <FormItem
                   options={['id', 'name']}
                   name=""
@@ -200,6 +199,7 @@ const General = memo(
                   type={variables.SELECT}
                   label="Năm"
                 />
+              </Pane> */}
               </Pane>
             </Pane>
           </Pane>

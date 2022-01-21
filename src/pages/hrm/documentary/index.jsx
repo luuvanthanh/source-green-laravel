@@ -12,6 +12,7 @@ import { variables, Helper } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { useHistory, useLocation, useRouteMatch } from 'umi';
 import { useDispatch, useSelector } from 'dva';
+import moment from 'moment';
 
 function Index() {
   const [formRef] = Form.useForm();
@@ -26,12 +27,14 @@ function Index() {
   ] = useSelector(({ loading: { effects }, HRMdocumentary }) => [HRMdocumentary, effects]);
 
   const [search, setSearch] = useState({
-    type: query?.type,
-    fullName: query?.fullName,
-    branchId: query?.branchId,
-    positionId: query?.positionId,
     typeOfDocument: query?.typeOfDocument,
-    employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
+    key: query?.key,
+    startDate: query?.startDate
+      ? moment(query?.startDate).format(variables.DATE_FORMAT.DATE_AFTER)
+      : moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    endDate: query?.endDate
+      ? moment(query?.endDate).format(variables.DATE_FORMAT.DATE_AFTER)
+      : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
@@ -66,8 +69,29 @@ function Index() {
     }));
   }, 300);
 
+  const debouncedSearchDateRank = debounce((startDate, endDate) => {
+    setSearch((prevState) => ({
+      ...prevState.search,
+      startDate,
+      endDate,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    }));
+  }, 300);
+
   const onChangeSelect = (e, type) => {
     debouncedSearch(e, type);
+  };
+
+  const onChange = (e, type) => {
+    debouncedSearch(e.target.value, type);
+  };
+
+  const onChangeDateRank = (e) => {
+    debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   const changePagination = ({ page, limit }) => {
@@ -221,13 +245,26 @@ function Index() {
             initialValues={{
               ...search,
               typeOfDocument: search.typeOfDocument || null,
-              branchId: search.branchId || null,
-              positionId: search.positionId || null,
             }}
             layout="vertical"
             form={formRef}
           >
             <div className="row">
+              <div className="col-lg-3">
+                <FormItem
+                  name="key"
+                  onChange={(event) => onChange(event, 'key')}
+                  placeholder="Nhập từ khóa tìm kiếm"
+                  type={variables.INPUT_SEARCH}
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  name="date"
+                  onChange={(event) => onChangeDateRank(event, 'date')}
+                  type={variables.RANGE_PICKER}
+                />
+              </div>
               <div className="col-lg-3">
                 <FormItem
                   data={[{ id: null, name: 'Tất cả loại công văn' }, ...variables.DOCUMENT_TYPE]}

@@ -513,14 +513,32 @@ export default [
             authority: [permissions.HSDT],
           },
           {
-            path: '/ho-so-doi-tuong/bao-cao/hai-bon-thang-den-ba-sau-thang',
+            path: '/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-du-hai-bon-thang',
             component: './object-profiles/report/twentyFour-month',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-du-ba-sau-thang',
+            component: './object-profiles/report/threeSix-month',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
           {
             path: '/ho-so-doi-tuong/bao-cao/tren-hai-nam-ba-nam-bon-nam',
             component: './object-profiles/report/over-two-years',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/hoc-he-theo-co-so-theo-lop-hoac-tong',
+            component: './object-profiles/report/list-student-study-at-summer',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/theo-nam-hoc-theo-co-so-hoac-tong',
+            component: './object-profiles/report/list-student-at-year',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
@@ -1738,6 +1756,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.PB],
           },
+          {
+            path: '/phan-bo/bao-cao/danh-sach-hoc-sinh-du-tuoi-chuyen-len-lop-vao-cuoi-thang',
+            component: './allocation/report/able-to-up-class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
         ],
       },
       // ALLOCATION
@@ -2932,6 +2956,12 @@ export default [
           {
             path: '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/:id/chi-tiet',
             component: './child-develop/review-scenario/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
+            component: './child-develop/report',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

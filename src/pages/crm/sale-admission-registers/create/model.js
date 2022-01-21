@@ -18,6 +18,7 @@ export default {
     medical: [],
     categoryMedical: [],
     medicalCheck: {},
+    childEvaluation: {},
     error: {
       isError: false,
       data: {},
@@ -87,6 +88,10 @@ export default {
     SET_CATEGORY_MEDICAL: (state, { payload }) => ({
       ...state,
       categoryMedical: payload?.parsePayload,
+    }),
+    SET_CHILD_EVALUATION: (state, { payload }) => ({
+      ...state,
+      childEvaluation: payload?.parsePayload,
     }),
   },
   effects: {
@@ -290,13 +295,12 @@ export default {
         callback(null, error);
       }
     },
-    *GET_MEDICAL({ payload, callback }, saga) {
+    *GET_MEDICAL({ payload }, saga) {
       try {
         yield saga.put({
           type: 'INIT_STATE',
         });
         const response = yield saga.call(services.getMedical, payload);
-        callback(response);
         yield saga.put({
           type: 'SET_MEDICAL',
           payload: response,
@@ -317,6 +321,23 @@ export default {
         callback(response);
         yield saga.put({
           type: 'SET_CATEGORY_MEDICAL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CHILD_EVALUATION({ payload }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getChildEvaluation, payload);
+        yield saga.put({
+          type: 'SET_CHILD_EVALUATION',
           payload: response,
         });
       } catch (error) {
