@@ -7,6 +7,7 @@ use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\CreateTestInputDetailRequest;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\CreateTestInputRequest;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\UpdateTestInputRequest;
+use GGPHP\Crm\AdmissionRegister\Models\TestInput;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
 
 class TestInputController extends Controller
@@ -34,6 +35,16 @@ class TestInputController extends Controller
     public function index(Request $request)
     {
         $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = TestInput::STATUS[$value];
+            }
+
+            $attributes['status'] = array_values($newStatus);
+        }
 
         $testInput = $this->testInputRepository->getAll($attributes);
 

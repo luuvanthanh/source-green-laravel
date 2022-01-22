@@ -98,4 +98,13 @@ class ChildEvaluateController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function updateUse(Request $request, $id)
+    {
+        $attributes = $request->all();
+
+        $ChildEvaluate = $this->childEvaluateRepository->updateUse($attributes, $id);
+
+        return $this->success($ChildEvaluate, trans('lang::messages.common.modifySuccess'));
+    }
 }

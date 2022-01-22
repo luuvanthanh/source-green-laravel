@@ -70,17 +70,15 @@ class ChildEvaluateInfoRepositoryEloquent extends BaseRepository implements Chil
     public function create(array $attributes)
     {
         $childEvaluateInfo = ChildEvaluateInfo::where('admission_register_id', $attributes['admission_register_id'])->first();
-      
+
         if (is_null($childEvaluateInfo)) {
             $childEvaluateInfo = ChildEvaluateInfo::create($attributes);
         } else {
             $childEvaluateInfo->update($attributes);
         }
-        
-        ChildDescription::where('child_evaluate_info_id', $childEvaluateInfo->id)->delete();
-        ChildIssue::where('child_evaluate_info_id', $childEvaluateInfo->id)->delete();
 
         if (!empty($attributes['child_description'])) {
+            ChildDescription::where('child_evaluate_info_id', $childEvaluateInfo->id)->delete();
             foreach ($attributes['child_description'] as $value) {
                 $value['child_evaluate_info_id'] = $childEvaluateInfo->id;
                 ChildDescription::create($value);
@@ -88,6 +86,7 @@ class ChildEvaluateInfoRepositoryEloquent extends BaseRepository implements Chil
         }
 
         if (!empty($attributes['child_issue'])) {
+            ChildIssue::where('child_evaluate_info_id', $childEvaluateInfo->id)->delete();
             foreach ($attributes['child_issue'] as $value) {
                 $value['child_evaluate_info_id'] = $childEvaluateInfo->id;
                 ChildIssue::create($value);
