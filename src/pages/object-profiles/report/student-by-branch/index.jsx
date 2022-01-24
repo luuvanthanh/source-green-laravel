@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -17,7 +18,7 @@ const Index = memo(() => {
   const [
     { data, pagination, branches, classes, error },
     loading,
-  ] = useSelector(({ loading: { effects }, reportAngleTools }) => [reportAngleTools, effects]);
+  ] = useSelector(({ loading: { effects }, OPStudentByBranch }) => [OPStudentByBranch, effects]);
 
   const formRef = React.createRef();
   const { query, pathname } = useLocation();
@@ -33,7 +34,7 @@ const Index = memo(() => {
 
   const onLoad = () => {
     dispatch({
-      type: 'medicalStudentProblem/GET_DATA',
+      type: 'OPStudentByBranch/GET_DATA',
       payload: {
         ...search,
       },
@@ -121,125 +122,86 @@ const Index = memo(() => {
   const header = () => {
     const columns = [
       {
-        title: 'Họ và tên',
+        title: 'STT',
         key: 'name',
-        width: 200,
-        fixed: 'left',
-        render: (record) => <Text size="normal">{record?.name}</Text>,
-        // render: (text, record, index) => {
-        //   const obj = {
-        //     children: record.name,
-        //     props: {},
-        //   };
-        //   if (index > 0) {
-        //     obj.props.rowSpan = 0;
-        //     return obj;
-        //   }
-        //   obj.props.rowSpan = 3;
-        //   return obj;
-        // },
+        align: 'center',
       },
       {
-        title: 'Cơ sở',
-        key: 'branch',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.branch}</Text>,
+        title: 'Họ và tên',
+        key: 'name',
+        render: (record) => <Text size="normal">{record?.name}</Text>,
+      },
+      {
+        title: 'Ngày sinh',
+        key: 'birthDay',
+        render: (record) => <Text size="normal">{record?.birthDay}</Text>,
+      },
+      {
+        title: 'Số tháng tuổi',
+        key: 'age',
+        render: (record) => <Text size="normal">{record?.age}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
-        width: 150,
         render: (record) => <Text size="normal">{record?.class}</Text>,
       },
       {
-        title: 'Góc giáo cụ',
-        key: 'angle_tools',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.data?.angle_tools}</Text>,
-      },
-      {
-        title: 'Ý nghĩa cuộc sống',
-        key: 'meaningful_life',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.data?.meaningful_life}</Text>,
-      },
-      {
-        title: 'Ngày học giáo cụ',
+        title: 'Ngày nhập học',
         key: 'date',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.data?.date}</Text>,
+        render: (record) => <Text size="normal">{record?.date}</Text>,
       },
       {
-        title: 'Thời gian',
-        key: 'time',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.time}</Text>,
+        title: 'Họ và tên phụ huynh',
+        children: [
+          {
+            title: 'Họ và tên cha',
+            key: 'father_name',
+            render: (record) => <Text size="normal">{record?.father_name}</Text>,
+          },
+          {
+            title: 'Họ và tên mẹ',
+            key: 'mother_name',
+            render: (record) => <Text size="normal">{record?.mother_name}</Text>,
+          },
+        ],
       },
       {
-        title: 'Giáo cụ',
-        key: 'angle_tool',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.angle_tool}</Text>,
+        title: 'Lượng nước uống hiện tại',
+        key: 'amount_water',
+        render: (record) => <Text size="normal">{record?.amount_water}</Text>,
       },
       {
-        title: 'Hình ảnh giáo cụ',
-        key: 'image',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.image}</Text>,
+        title: 'Sức khoẻ',
+        children: [
+          {
+            title: 'Chiều cao',
+            key: 'height',
+            render: (record) => <Text size="normal">{record?.height}</Text>,
+          },
+          {
+            title: 'Cân nặng',
+            key: 'weight',
+            render: (record) => <Text size="normal">{record?.weight}</Text>,
+          },
+        ],
       },
       {
-        title: 'Nội dung giáo cụ',
-        key: 'content',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.content}</Text>,
-      },
-      {
-        title: 'Ý nghĩa giáo cụ',
-        key: 'meaningful_angle_tools',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.meaningful_angle_tools}</Text>,
-      },
-      {
-        title: 'Kĩ năng đạt được',
-        key: 'skill',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.skill}</Text>,
-      },
-      {
-        title: 'Cấp độ',
-        key: 'level',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.level}</Text>,
-      },
-      {
-        title: 'Diễn giải cấp độ',
-        key: 'description_level',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.description_level}</Text>,
-      },
-      {
-        title: 'Thời kỳ nhạy cảm',
-        key: 'sensitive_period',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.sensitive_period}</Text>,
-      },
-      {
-        title: 'Diễn giải thời kỳ nhạy cảm',
-        key: 'description_sensitive_period',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.description_sensitive_period}</Text>,
-      },
-      {
-        title: 'Tham gia của phụ huynh',
-        key: 'attention_parent',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.attention_parent}</Text>,
-      },
-      {
-        title: 'Nhận xét của giáo viên',
-        key: 'description_teacher',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.description_teacher}</Text>,
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        fixed: 'right',
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="success"
+              ghost
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
+          </div>
+        ),
       },
     ];
     return columns;
@@ -247,11 +209,14 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Danh sách học sinh theo năm học theo cơ sở hoặc tổng" />
+      <Helmet title="Báo cáo quản trị học sinh" />
       <div className={classnames(styles['content-form'], styles['content-form-children'])}>
         {/* FORM SEARCH */}
         <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-          <Text color="dark">Báo cáo quản trị học sinh theo góc giáo cụ</Text>
+          <Text color="dark">Báo cáo quản trị học sinh</Text>
+          <Button color="primary" icon="export" className="ml-2">
+            Tải danh sách
+          </Button>
         </div>
         <div className={classnames(styles['block-table'])}>
           <Form
@@ -267,10 +232,10 @@ const Index = memo(() => {
             <div className="row">
               <div className="col-lg-3">
                 <FormItem
-                  name="year"
-                  onChange={(event) => onChangeDate(event, 'date')}
-                  type={variables.RANGE_PICKER}
-                  allowClear={false}
+                  name="KeyWord"
+                  onChange={(event) => onChange(event, 'KeyWord')}
+                  placeholder="Nhập từ khóa tìm kiếm"
+                  type={variables.INPUT_SEARCH}
                 />
               </div>
               <div className="col-lg-3">
@@ -293,10 +258,10 @@ const Index = memo(() => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  name="KeyWord"
-                  onChange={(event) => onChange(event, 'KeyWord')}
-                  placeholder="Nhập từ khóa tìm kiếm"
-                  type={variables.INPUT_SEARCH}
+                  name="year"
+                  onChange={(event) => onChangeDate(event, 'date')}
+                  type={variables.DATE_PICKER}
+                  allowClear={false}
                 />
               </div>
             </div>
@@ -305,7 +270,7 @@ const Index = memo(() => {
             <Table
               columns={header()}
               dataSource={data}
-              loading={loading['medicalStudentProblem/GET_DATA']}
+              loading={loading['OPStudentByBranch/GET_DATA']}
               error={error}
               isError={error.isError}
               defaultExpandAllRows

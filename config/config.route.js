@@ -205,36 +205,6 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
-          // {
-          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/tu-duy-sang-tao',
-          //   component: './criteria/report',
-          //   wrappers: ['@/wrappers/auth'],
-          //   authority: [permissions.CTH],
-          // },
-          // {
-          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/nhan-cach',
-          //   component: './criteria/report',
-          //   wrappers: ['@/wrappers/auth'],
-          //   authority: [permissions.CTH],
-          // },
-          // {
-          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/hinh-anh-video',
-          //   component: './criteria/report',
-          //   wrappers: ['@/wrappers/auth'],
-          //   authority: [permissions.CTH],
-          // },
-          // {
-          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/ket-qua-luan-thien-tu-cho-tung-tre',
-          //   component: './criteria/report',
-          //   wrappers: ['@/wrappers/auth'],
-          //   authority: [permissions.CTH],
-          // },
-          // {
-          //   path: '/chuong-trinh-hoc/bao-cao-quan-tri-hs/xac-nhan-tung-thoi-ky-nhay-cam-cua-tre',
-          //   component: './criteria/report',
-          //   wrappers: ['@/wrappers/auth'],
-          //   authority: [permissions.CTH],
-          // },
         ],
       },
       // CRITERIA
@@ -574,6 +544,24 @@ export default [
           {
             path: '/ho-so-doi-tuong/bao-cao/theo-nam-hoc-theo-co-so-hoac-tong',
             component: './object-profiles/report/list-student-at-year',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/quan-tri-hoc-sinh-theo-co-so',
+            component: './object-profiles/report/student-by-branch',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/tham-nien-cong-tac',
+            component: './object-profiles/report/working-seniority',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/nhan-vien-thoi-viec',
+            component: './object-profiles/report/employee-leave',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
