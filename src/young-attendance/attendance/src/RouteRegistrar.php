@@ -36,6 +36,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('class-attendance-summary', 'AttendanceController@attendanceSummaryByClass');
 
             \Route::get('attendances-cron-tab', 'AttendanceController@attendanceCrontab');
+            \Route::get('export-excel-attendance', 'AttendanceController@exportExcelAttendance');
         });
     }
 }
