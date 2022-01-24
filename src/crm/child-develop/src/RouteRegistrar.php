@@ -34,6 +34,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('category-child-issues', 'CategoryChildIssueController');
             \Route::resource('category-question-parents', 'CategoryQuestionParentController');
             \Route::resource('child-evaluates', 'ChildEvaluateController');
+            \Route::put('child-evaluate-update-uses/{id}', 'ChildEvaluateController@updateUse');
         });
     }
 }

@@ -138,4 +138,12 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
         return parent::find($id);
     }
+
+    public function updateUse(array $attributes, $id)
+    {
+        $childEvaluate = ChildEvaluate::find($id);
+        $childEvaluate->update($attributes);
+
+        return parent::find($id);
+    }
 }

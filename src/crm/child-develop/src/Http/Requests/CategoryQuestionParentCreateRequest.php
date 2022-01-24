@@ -27,7 +27,6 @@ class CategoryQuestionParentCreateRequest extends FormRequest
             'create_rows' => 'array',
             'update_rows' => 'array',
             'delete_rows' => 'array',
-            'create_rows.*.question' => 'required|string|unique:category_question_parents,question',
         ];
     }
 }

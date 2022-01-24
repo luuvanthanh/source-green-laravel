@@ -60,6 +60,10 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
             $this->model = $this->model->where('admission_register_id', $attributes['admission_register_id']);
         }
 
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->whereIn('status', $attributes['status']);
+        }
+
         if (!empty($attributes['limit'])) {
             $testInput = $this->paginate($attributes['limit']);
         } else {
