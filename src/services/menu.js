@@ -515,6 +515,14 @@ export async function getLeftMenuConfiguration() {
       permission: [permissions.CAUHINH],
       pro: true,
     },
+    {
+      title: 'Cấu hình quy trình lớp học',
+      key: 'class-configuration',
+      url: ['/cau-hinh/cau-hinh-quy-trinh-lop-hoc'],
+      icon: 'icon icon-man',
+      permission: [permissions.CAUHINH],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuVehicel() {
