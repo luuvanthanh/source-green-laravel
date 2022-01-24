@@ -53,6 +53,14 @@ class SurveyFormResultRepositoryEloquent extends BaseRepository implements Surve
 
     public function getSurveyFormResult(array $attributes)
     {
+        if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
+            $this->model = $this->model->where('created_at', '>=', $attributes['start_time'])->where('created_at', '<=', $attributes['end_time']);
+        }
+
+        if (!empty($attributes['survey_form_id'])) {
+            $this->model = $this->model->where('survey_id', $attributes['survey_form_id']);
+        }
+
         if (empty($attributes['limit'])) {
             $result = $this->all();
         } else {
