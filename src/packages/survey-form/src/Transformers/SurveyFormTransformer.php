@@ -25,7 +25,7 @@ class SurveyFormTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['touristDestination'];
+    protected $availableIncludes = ['touristDestination', 'surveyFormResult'];
 
     /**
      * Array attribute doesn't parse.
@@ -64,5 +64,14 @@ class SurveyFormTransformer extends BaseTransformer
         }
 
         return $this->item($surveyForm->touristDestination, new TouristDestinationTransformer, 'TouristDestination');
+    }
+
+    /**
+     * Include SurveyFormResult
+     * @param SurveyForm $SurveyForm
+     */
+    public function includeSurveyForm(SurveyForm $surveyForm)
+    {
+        return $this->collection($surveyForm->results, new SurveyFormResultTransformer, 'SurveyFormResult');
     }
 }

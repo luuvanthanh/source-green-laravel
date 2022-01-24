@@ -24,6 +24,6 @@ class SurveyFormResult extends UuidModel
      */
     public function survey()
     {
-        return $this->belongsTo(\GGPHP\SurveyForm\Models\Survey::class, 'survey_id');
+        return $this->belongsTo(\GGPHP\SurveyForm\Models\SurveyForm::class, 'survey_id');
     }
 }
