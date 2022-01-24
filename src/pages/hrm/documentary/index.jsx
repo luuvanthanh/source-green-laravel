@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce, get, isEmpty, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -29,12 +29,9 @@ function Index() {
   const [search, setSearch] = useState({
     typeOfDocument: query?.typeOfDocument,
     key: query?.key,
-    startDate: query?.startDate
-      ? moment(query?.startDate).format(variables.DATE_FORMAT.DATE_AFTER)
-      : moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-    endDate: query?.endDate
-      ? moment(query?.endDate).format(variables.DATE_FORMAT.DATE_AFTER)
-      : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    startDate:
+      query?.startDate || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    endDate: query?.endDate || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
@@ -88,10 +85,17 @@ function Index() {
   };
 
   const onChangeDateRank = (e) => {
-    debouncedSearchDateRank(
-      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
-      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
-    );
+    if (!isEmpty(e)) {
+      debouncedSearchDateRank(
+        moment(head(e))?.format(variables.DATE_FORMAT.DATE_AFTER),
+        moment(last(e))?.format(variables.DATE_FORMAT.DATE_AFTER),
+      );
+    } else {
+      debouncedSearchDateRank(
+        moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+        moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+      );
+    }
   };
 
   const changePagination = ({ page, limit }) => {
@@ -245,6 +249,11 @@ function Index() {
             initialValues={{
               ...search,
               typeOfDocument: search.typeOfDocument || null,
+              date: query?.startDate &&
+                query?.endDate && [
+                  moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+                  moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+                ],
             }}
             layout="vertical"
             form={formRef}
