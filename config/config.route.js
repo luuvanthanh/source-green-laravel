@@ -945,6 +945,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CAUHINH],
           },
+          {
+            path: '/cau-hinh/cau-hinh-quy-trinh-lop-hoc',
+            component: './configuration/class-configuration',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
         ],
       },
       // CONFIGURATION
