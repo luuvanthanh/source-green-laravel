@@ -266,25 +266,14 @@ class Index extends PureComponent {
                     </Pane>
                   </Pane>
                   <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                    {params.id ? (
-                      <p
-                        className="btn-delete"
-                        role="presentation"
-                        loading={loadingSubmit}
-                        onClick={() => this.cancel(params.id)}
-                      >
-                        Xóa
-                      </p>
-                    ) : (
-                      <p
-                        className="btn-delete"
-                        role="presentation"
-                        loading={loadingSubmit}
-                        onClick={() => history.goBack()}
-                      >
-                        Hủy
-                      </p>
-                    )}
+                    <p
+                      className="btn-delete"
+                      role="presentation"
+                      loading={loadingSubmit}
+                      onClick={() => history.goBack()}
+                    >
+                      Hủy
+                    </p>
                     <Button
                       className="ml-auto px25"
                       color="success"
