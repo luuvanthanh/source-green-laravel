@@ -145,4 +145,15 @@ class AttendanceController extends Controller
 
         return $this->success($attendance, trans('lang-program::messages.attendance.getListSuccess'));
     }
+
+    public function exportExcelAttendance(Request $request)
+    {
+        $attendance = $this->attendanceRepository->exportExcelAttendance($request->all());
+
+        if (is_string($attendance)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $attendance;
+    }
 }

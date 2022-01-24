@@ -2,19 +2,26 @@
 
 namespace GGPHP\Attendance\Repositories\Eloquents;
 
+use alhimik1986\PhpExcelTemplator\params\CallbackParam;
+use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Attendance\Models\AttendanceLog;
 use GGPHP\Attendance\Presenters\AttendancePresenter;
 use GGPHP\Attendance\Repositories\Contracts\AttendanceRepository;
+use GGPHP\Category\Models\Branch;
 use GGPHP\Clover\Models\Classes;
+use GGPHP\Clover\Models\ClassStudent;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Models\StudentTransporter;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Shift;
 use GGPHP\YoungAttendance\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use Illuminate\Container\Container as Application;
 use Illuminate\Support\Facades\Http;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -34,10 +41,12 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
     public function __construct(
         StudentRepositoryEloquent $studentRepositoryEloquent,
+        ExcelExporterServices $excelExporterServices,
         Application $app
     ) {
         parent::__construct($app);
         $this->studentRepositoryEloquent = $studentRepositoryEloquent;
+        $this->excelExporterServices = $excelExporterServices;
     }
 
     /**
@@ -346,7 +355,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         }
 
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
-
+        if (!empty($attributes['excel']) && $attributes['excel'] == 'true') {
+            $inOutHistories = $this->studentRepositoryEloquent->model->get()->sortByDesc('CreationTime');
+            return $inOutHistories;
+        }
         if (!empty($attributes['limit'])) {
             $inOutHistories = $this->studentRepositoryEloquent->paginate($attributes['limit']);
         } else {
@@ -747,5 +759,190 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         return [
             'data' => $result
         ];
+    }
+
+    public function exportExcelAttendance($attributes)
+    {
+        $students = $this->getAttendance($attributes);
+
+        $branch = null;
+        if (!empty($attributes['branchId'])) {
+            $branch = Branch::where('Id', $attributes['branchId'])->first();
+        }
+
+        $className = null;
+        if (!empty($attributes['classId'])) {
+            $className = Classes::where('Id', $attributes['classId'])->first();
+        }
+
+        $studentName = null;
+        if (!empty($attributes['fullName'])) {
+            $studentName = Student::where('FullName', $attributes['fullName'])->first();
+        }
+
+        $params['{month_name}'] = 'Tháng ' . Carbon::parse($attributes['startDate'])->format('m/Y');
+        $params['{branch}'] = is_null($branch) ? '--Tất cả--' : $branch->Name;
+        $params['{class_name}'] = is_null($className) ? '--Tất cả--' : $className->Name;
+        $params['{student}'] = is_null($studentName) ? '--Tất cả--' : $studentName->FullName;
+        $params['[number]'] = [];
+        $params['[full_name]'] = [];
+        $params['[class]'] = [];
+        $params['{merge_have_in}'] = '';
+        $params['{merge_have_out}'] = '';
+        $params['{note}'] = '';
+        $month = [];
+        $init_value = [];
+
+        $period = Carbon::create($attributes['startDate'])->daysUntil($attributes['endDate']);
+        $period->setLocale('vi_VN');
+        $params['[[date]]'][] = iterator_to_array($period->map(function (Carbon $date) use (&$init_value, &$month) {
+            $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+
+            $month[] = 'Tháng ' . $date->format('m');
+            if ($check === 'Saturday' || $check === 'Sunday') {
+                $init_value[$date->format('Y-m-d')] = ''; // cuối tuần
+            } else {
+                $init_value[$date->format('Y-m-d')] = '-';
+            }
+
+            return $date->format('d');
+        }));
+        $stt = 0;
+        foreach ($students as $key => $student) {
+            $stt += 1;
+            $params['[number]'][] = $stt;
+            $params['[full_name]'][] = $student->FullName;
+            $params['[class]'][] = is_null($student->classStudent) ? '' : $student->classStudent->classes->Name;
+            $values = $init_value;
+            $quantityHaveIn = 0;
+            $quantityUnpaidLeave = 0;
+            $quantityAnnualLeave = 0;
+            if (!empty($student->attendance)) {
+                foreach ($student->attendance as $item) {
+                    if ($item->Status == '1') {
+                        $values[$item->Date->format('Y-m-d')] = 'F';
+                        $quantityUnpaidLeave += 1;
+                    } elseif ($item->Status == '2') {
+                        $values[$item->Date->format('Y-m-d')] = 'K';
+                        $quantityAnnualLeave += 1;
+                    } elseif ($item->Status == '3') {
+                        $values[$item->Date->format('Y-m-d')] = 'X';
+                        $quantityHaveIn += 1;
+                    }
+                }
+            }
+
+            $params['[[value]]'][] = array_values($values);
+            $params['[have_in]'][] = $quantityHaveIn;
+            $params['[unpaid_leave]'][] = $quantityUnpaidLeave;
+            $params['[annual_leave]'][] = $quantityAnnualLeave;
+        }
+
+        $params['[[month]]'][] = array_values($month);
+        $listMerge = [];
+        $callbacks = [
+            '[[month]]' => function (CallbackParam $param) use (&$listMerge) {
+                $row_index = $param->row_index;
+
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                if ($cell_coordinate == 'D7') {
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+
+                    for ($i = 0; $i < count($param->param[$row_index]); $i++) {
+                        $adjustedColumnIndex = $columnIndex + $i;
+
+                        if ($param->param[$row_index][$i] != $firstValue) {
+
+                            $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+
+                            $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                            $firstValue = $param->param[$row_index][$i];
+                        }
+
+                        if ($i == count($param->param[$row_index]) - 1) {
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                        }
+                    }
+                }
+
+                foreach ($mergeCoordinate as $key => $coordinate) {
+                    if ($key % 2 != 0) {
+                        $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
+                        $listMerge[] = $merge;
+                    }
+                }
+            },
+            '[[value]]' => function (CallbackParam $param) use (&$listMerge, &$listRowTs) {
+                $sheet = $param->sheet;
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $value = $param->param[$row_index][$col_index];
+
+                if ($value == '') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('4285f4');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                }
+            },
+            '{merge_have_in}' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $sheet->getColumnDimension($currentColumn)
+                    ->setWidth(500);
+                $currentRow = $currentRow + 1;
+                $merge = $cell_coordinate . ':' . $currentColumn . $currentRow;
+                $listMerge[] = $merge;
+            },
+            '{merge_have_out}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $columnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
+                $merge = $cell_coordinate . ':' . $columnBefor . $currentRow;
+                $listMerge[] = $merge;
+            },
+            '{note}' => function (CallbackParam $param) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $lastCol = 'E' . $currentRow;
+                $merge = $cell_coordinate . ':' . $lastCol;
+
+                $sheet->mergeCells($merge);
+
+                $sheet->getRowDimension($currentRow)->setRowHeight(80);
+            },
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge) {
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+                $sheet->mergeCells('D5:E5');
+                $sheet->mergeCells('G5:H5');
+                $sheet->mergeCells('J5:K5');
+                $sheet->mergeCells('M5:N5');
+            },
+
+        ];
+
+        return $this->excelExporterServices->export('attendance_report', $params, $callbacks, $events);
     }
 }

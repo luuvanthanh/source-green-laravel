@@ -22,6 +22,8 @@ class ExcelExporterServices
         ],
         'salary_month' => [
             'template' => 'salary_month.xlsx',
+        ], 'attendance_report' => [
+            'template' => 'attendance_report.xlsx',
         ],
     ];
 
