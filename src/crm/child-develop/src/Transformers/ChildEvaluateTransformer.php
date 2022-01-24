@@ -41,16 +41,7 @@ class ChildEvaluateTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $age = null;
-
-        foreach (ChildEvaluate::MONTH as $key => $value) {
-            if ($value == $model->age) {
-                $age = $key;
-            }
-        }
-        return [
-            'age' => $age
-        ];
+        return [];
     }
 
     public function includeChildEvaluateDetail(ChildEvaluate $childEvaluete)

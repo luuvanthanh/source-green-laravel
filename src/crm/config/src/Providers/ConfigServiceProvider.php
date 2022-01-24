@@ -2,8 +2,10 @@
 
 namespace GGPHP\Crm\Config\Providers;
 
+use GGPHP\Crm\Config\Repositories\Contracts\ClassArrangementRepository;
 use GGPHP\Crm\Config\Repositories\Contracts\ConfigMedicalDeclareRepository;
 use GGPHP\Crm\Config\Repositories\Contracts\ConfigProfileInfoRepository;
+use GGPHP\Crm\Config\Repositories\Eloquent\ClassArrangementRepositoryEloquent;
 use GGPHP\Crm\Config\Repositories\Eloquent\ConfigMedicalDeclareRepositoryEloquent;
 use GGPHP\Crm\Config\Repositories\Eloquent\ConfigProfileInfoRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
@@ -31,5 +33,6 @@ class ConfigServiceProvider extends ServiceProvider
     {
         $this->app->bind(ConfigMedicalDeclareRepository::class, ConfigMedicalDeclareRepositoryEloquent::class);
         $this->app->bind(ConfigProfileInfoRepository::class, ConfigProfileInfoRepositoryEloquent::class);
+        $this->app->bind(ClassArrangementRepository::class, ClassArrangementRepositoryEloquent::class);
     }
 }
