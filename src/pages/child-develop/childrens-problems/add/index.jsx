@@ -176,30 +176,19 @@ class Index extends PureComponent {
                           <FormItem label="Mã vấn đề" name="code" type={variables.INPUT} placeholder={" "} disabled />
                         </Pane>
                         <Pane className="col-lg-6">
-                          <FormItem label="Tên vấn đề khó khăn" name="name" type={variables.INPUT}  rules={[variables.RULES.EMPTY]}/>
+                          <FormItem label="Tên vấn đề khó khăn" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY]} />
                         </Pane>
                       </Pane>
                     </Pane>
                     <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                      {params.id ? (
-                        <p
-                          className="btn-delete"
-                          role="presentation"
-                        
-                          onClick={() => this.cancel(params.id)}
-                        >
-                          Xóa
-                        </p>
-                      ) : (
-                        <p
-                          className="btn-delete"
-                          role="presentation"
-                        
-                          onClick={() => history.goBack()}
-                        >
-                          Hủy
-                        </p>
-                      )}
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+
+                        onClick={() => history.goBack()}
+                      >
+                        Hủy
+                      </p>
                       <Button
                         className="ml-auto px25"
                         color="success"

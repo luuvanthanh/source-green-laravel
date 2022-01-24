@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tag } from 'antd';
+import { Form, Tag, Switch } from 'antd';
 import { get, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -232,18 +232,20 @@ class Index extends PureComponent {
         title: 'Kỹ năng',
         key: 'skill',
         className: 'min-width-150',
-        width: 500,
+        width: 200,
         render: (record) => <Text size="normal">{get(record, 'categorySkill.name')}</Text>,
       },
       {
         title: 'Độ tuổi',
         key: 'age',
+        width: 150,
         className: 'min-width-150',
         render: (record) => <Text size="normal">{record.age} Tháng</Text>,
       },
       {
         title: 'Áp dụng',
         key: 'doen_aansoek',
+        width: 150,
         className: 'min-width-150',
         render: (record) => (this.covertChildEvaluateDetail(record?.childEvaluateDetail))?.map((item, index) => (
           <div className={stylesModule['wrapper-tag']}>
@@ -252,9 +254,41 @@ class Index extends PureComponent {
         ))
       },
       {
+        title: 'Sử dụng',
+        dataIndex: 'use',
+        width: 150,
+        className: 'min-width-160',
+        render: (use, record) => (
+          <div
+            role="presentation"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Switch
+              defaultChecked={use}
+              onChange={() => {
+                const payload = {
+                  id: record?.id,
+                  use: !use,
+                };
+                this.props.dispatch({
+                  type: 'childDevelopReviewScenarioAdd/UPDATE',
+                  payload,
+                  callback: (response) => {
+                    if (response) {
+                      this.onLoad();
+                    }
+                  },
+                });
+              }}
+            />
+          </div>
+        ),
+      },
+      {
         key: 'action',
-        width: 125,
-        fixed: 'right',
+        width: 100,
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
