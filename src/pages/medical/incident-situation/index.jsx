@@ -9,11 +9,12 @@ import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from './utils/Helper';
 import stylesModule from './styles.module.scss';
+
 
 let isMounted = true;
 /**
@@ -30,13 +31,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicalIncidentSituation, loading, user }) => ({
+const mapStateToProps = ({ medicalStudentProblem, loading, user, medicalIncidentSituation }) => ({
   loading,
   data: medicalIncidentSituation.data,
-  error: medicalIncidentSituation.error,
-  classes: medicalIncidentSituation.classes,
-  branches: medicalIncidentSituation.branches,
-  pagination: medicalIncidentSituation.pagination,
+  error: medicalStudentProblem.error,
+  classes: medicalStudentProblem.classes,
+  branches: medicalStudentProblem.branches,
+  pagination: medicalStudentProblem.pagination,
   defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
@@ -56,6 +57,7 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        SearchDate: query.SearchDate ? moment(query.SearchDate) : "",
       },
     };
     setIsMounted(true);
@@ -74,7 +76,7 @@ class Index extends PureComponent {
    * Set state properties
    * @param {object} data the data input
    * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
+   * @returns {void} call this.setState to upSearchDate state
    * @memberof setStateData
    */
   setStateData = (state, callback) => {
@@ -102,7 +104,7 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          date: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
+          SearchDate: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -117,14 +119,14 @@ class Index extends PureComponent {
     const { search } = this.state;
     if (search.branchId) {
       dispatch({
-        type: 'medicalIncidentSituation/GET_CLASSES',
+        type: 'medicalStudentProblem/GET_CLASSES',
         payload: {
           branch: search.branchId,
         },
       });
     }
     dispatch({
-      type: 'medicalIncidentSituation/GET_BRACHES',
+      type: 'medicalStudentProblem/GET_BRACHES',
       payload: {},
     });
   };
@@ -175,7 +177,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     this.debouncedSearch(e, type);
     dispatch({
-      type: 'medicalIncidentSituation/GET_CLASSES',
+      type: 'medicalStudentProblem/GET_CLASSES',
       payload: {
         branch: e,
       },
@@ -202,6 +204,33 @@ class Index extends PureComponent {
     );
   };
 
+  debouncedSearchDateRank = debounce((FromDate, ToDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          FromDate,
+          ToDate,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDate = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
+  };
+
   /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
@@ -223,18 +252,24 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-
     const columns = [
       {
         title: 'Thời gian',
-        dataIndex: 'created_at',
-        width: 160,
-        className: 'min-width-160',
+        key: 'name',
+        width: 300,
+        className: 'min-width-300',
         render: (value, record) => {
-          if (record.studentMedicalProblems) {
+          if (record?.branch) {
             return (
               <Text size="normal">
-                {record.branch.name}
+                {record?.branch?.name}
+              </Text>
+            );
+          }
+          if (record?.class?.name) {
+            return (
+              <Text size="normal">
+                {record?.class?.name}
               </Text>
             );
           }
@@ -243,48 +278,69 @@ class Index extends PureComponent {
       },
       {
         title: 'Học sinh',
-        width: 150,
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.student?.fullName}</Text>,
+        key: 'birthDay',
+        width: 250,
+        className: 'min-width-250',
+        render: (value, record) =>
+          <Text size="normal">{record?.student?.fullName}</Text>
       },
       {
         title: 'Cơ sở',
-        width: 140,
-        className: 'min-width-140',
-        render: (record) => <Text size="normal">{record?.student?.class?.branch?.name}</Text>,
+        key: 'birthDay',
+        width: 150,
+        className: 'min-width-150',
+        render: (value, record) => {
+          if (record?.branch && record?.children) {
+            return "";
+          }
+          if (record?.class?.name && record?.children) {
+            return "";
+          }
+          return <Text size="normal"> {record?.branch?.name}</Text>;
+        }
       },
       {
         title: 'Lớp',
-        width: 170,
-        className: 'min-width-170',
-        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
+        key: 'birthDay',
+        width: 150,
+        className: 'min-width-150',
+        render: (value, record) => {
+          if (record?.branch && record?.children) {
+            return "";
+          }
+          if (record?.class?.name && record?.children) {
+            return "";
+          }
+          return <Text size="normal"> {record?.class?.name}</Text>;
+        }
       },
       {
         title: 'Sự cố',
-        width: 170,
-        className: 'min-width-170',
+        width: 150,
+        className: 'min-width-150',
         render: (record) => <Text size="normal">{record?.medicalProblem?.name}</Text>,
       },
       {
         title: 'Vị trí vết thương',
-        key: 'price',
-        width: 140,
-        className: 'min-width-140',
+        key: 'InjuryPosition',
+        width: 150,
+        className: 'min-width-150',
         render: (record) => <Text size="normal">{record?.injuryPosition}</Text>,
       },
       {
         title: 'Triệu chứng',
-        width: 160,
-        className: 'min-width-160',
+        width: 150,
+        key: 'symptom',
+        className: 'min-width-150',
         render: (record) => <Text size="normal">{record?.symptom}</Text>,
       },
       {
         title: 'Hình ảnh',
-        key: 'totalPrice',
-        width: 140,
-        className: 'min-width-140',
+        key: 'fileImage',
+        width: 100,
+        className: 'min-width-100',
         render: (value, record) => {
-          if (record.studentMedicalProblems) {
+          if (record.children) {
             return (
               ""
             );
@@ -295,29 +351,66 @@ class Index extends PureComponent {
         },
       },
       {
+        title: 'Nội dung xử lý y tế',
+        width: 150,
+        key: "handleWay",
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.handleWay}</Text>,
+      },
+      {
+        title: 'Tên giáo viên',
+        width: 200,
+        key: "teacher.teacher",
+        className: 'min-width-200',
+        render: (record) => <Text size="normal">{record?.teacher?.name}</Text>,
+      },
+      {
+        title: 'Xác nhận giáo viên',
+        width: 150,
+        key: "",
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.note}</Text>,
+      },
+      {
+        title: 'Tên NV y tế',
+        width: 200,
+        key: "handler.fullName",
+        className: 'min-width-200',
+        render: (record) => <Text size="normal">{record?.handler?.fullName}</Text>,
+      },
+      {
+        title: 'Xác nhận y tế',
+        width: 150,
+        key: "employeeNote",
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.employeeNote}</Text>,
+      },
+      {
+        title: 'Tên phụ huynh',
+        width: 200,
+        key: "parent.FullName",
+        className: 'min-width-200',
+        render: (record) => <Text size="normal">{record?.parent?.fullName}</Text>,
+      },
+      {
+        title: 'Xác nhận phụ huynh',
+        width: 200,
+        key: "parentNote",
+        className: 'min-width-200',
+        render: (record) => <Text size="normal">{record?.parentNote}</Text>,
+      },
+      {
         title: 'Trạng thái xử lý',
-        width: 160,
-        className: 'min-width-160',
+        width: 150,
+        className: 'min-width-150',
         render: (value, record) => {
-          if (record.studentMedicalProblems) {
+          if (record.children) {
             return (
               ""
             );
           }
           return HelperModules.tagStatus(record?.handleStatus);
         },
-      },
-      {
-        title: 'Cách xử lý',
-        width: 140,
-        className: 'min-width-140',
-        render: (record) => <Text size="normal">{record?.handleWay}</Text>,
-      },
-      {
-        title: 'Người xử lý',
-        width: 140,
-        className: 'min-width-140',
-        render: (record) => <Text size="normal">{record?.handler?.name}</Text>,
       },
     ];
     return columns;
@@ -337,7 +430,7 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search, defaultBranchs } = this.state;
-    const loading = effects['medicalIncidentSituation/GET_DATA'];
+    const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
       <>
         <Helmet title="Báo cáo tình hình sự cố của học sinh" />
@@ -352,7 +445,7 @@ class Index extends PureComponent {
                 ...search,
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                date: search.date && moment(search.date),
+                SearchDate: search.SearchDate && moment(search.SearchDate) || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -391,9 +484,17 @@ class Index extends PureComponent {
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
-                    name="classId"
-                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    name="ClassId"
+                    onChange={(event) => this.onChangeSelect(event, 'ClassId')}
                     type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.RANGE_PICKER}
                     allowClear={false}
                   />
                 </div>
@@ -406,14 +507,15 @@ class Index extends PureComponent {
                 loading={loading}
                 error={error}
                 isError={error.isError}
-                childrenColumnName="studentMedicalProblems"
+                defaultExpandAllRows
+                childrenColumnName="children"
                 bordered
                 pagination={this.pagination(pagination)}
                 params={{
                   header: this.header(),
                   type: 'table',
                 }}
-                rowKey={(record) => record?.branch?.name || record?.branch?.id}
+                rowKey={(record) => record?.branch?.name || record?.id}
                 scroll={{ x: '100%' }}
               />
             </div>

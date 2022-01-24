@@ -1,93 +1,69 @@
-import * as categories from '@/services/categories';
-  import * as services from './services';
-  
-  export default {
-    namespace: 'medicalIncidentSituation',
-    state: {
-      data: [],
-      pagination: {
-        total: 0,
-      },
-      error: {
-        isError: false,
-        data: {},
-      },
-      branches: [],
-      classes: [],
+import * as services from './services';
+
+export default {
+  namespace: 'medicalIncidentSituation',
+  state: {
+    data: [],
+    pagination: {
+      total: 0,
     },
-    reducers: {
-      INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
-      SET_DATA: (state, { payload }) => ({
-        ...state,
-        data: payload.parsePayload,
-        pagination: payload.pagination,
-      }),
-      SET_ERROR: (state, { payload }) => ({
-        ...state,
-        error: {
-          isError: true,
-          data: {
-            ...payload,
-          },
-        },
-      }),
-      SET_BRACHES: (state, { payload }) => ({
-        ...state,
-        branches: payload.parsePayload,
-      }),
-      SET_CLASSES: (state, { payload }) => ({
-        ...state,
-        classes: payload.items,
-      }),
+    error: {
+      isError: false,
+      data: {},
     },
-    effects: {
-      *GET_DATA({ payload }, saga) {
-        try {
-          const response = yield saga.call(services.get, payload);
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: {
-              parsePayload: response,
-              pagination: {
-                total: response.totalCount,
-              },
+    branches: [],
+    classes: [],
+  },
+  reducers: {
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    SET_DATA: (state, { payload }) => ({
+      ...state,
+      data: payload.parsePayload.map((key) => ({
+        branch: key?.branch || {},
+        children: key?.studentMedicalProblems.map((item) => ({
+          id: item?.student?.class?.id || '',
+          class: item?.student?.class || '',
+          children: [
+            {
+              ...item,
+              branch: key?.branch || {},
+              class: item?.student?.class || '',
             },
-          });
-        } catch (error) {
-          yield saga.put({
-            type: 'SET_ERROR',
-            payload: error.data,
-          });
-        }
+          ],
+        })),
+      })),
+      pagination: payload.pagination,
+    }),
+    SET_ERROR: (state, { payload }) => ({
+      ...state,
+      error: {
+        isError: true,
+        data: {
+          ...payload,
+        },
       },
-      *GET_BRACHES({ payload }, saga) {
-        try {
-          const response = yield saga.call(categories.getBranches, payload);
-          yield saga.put({
-            type: 'SET_BRACHES',
-            payload: response,
-          });
-        } catch (error) {
-          yield saga.put({
-            type: 'SET_ERROR',
-            payload: error.data,
-          });
-        }
-      },
-      *GET_CLASSES({ payload }, saga) {
-        try {
-          const response = yield saga.call(categories.getClasses, payload);
-          yield saga.put({
-            type: 'SET_CLASSES',
-            payload: response,
-          });
-        } catch (error) {
-          yield saga.put({
-            type: 'SET_ERROR',
-            payload: error.data,
-          });
-        }
-      },
+    }),
+  },
+  effects: {
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: {
+            parsePayload: response,
+            pagination: {
+              total: response.totalCount,
+            },
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
-    subscriptions: {},
-  };
+  },
+  subscriptions: {},
+};
