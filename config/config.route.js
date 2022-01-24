@@ -577,6 +577,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/bao-cao-ho-so-nhap-mon',
+            component: './object-profiles/report/introductory-students',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-hoc-chinh-thuc',
+            component: './object-profiles/report/official-student',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-rut-ho-so',
+            component: './object-profiles/report/students-withdraw-their-records',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
         ],
       },
       // OBJECT PROFILES

@@ -257,6 +257,27 @@ export async function getLeftMenuProfile() {
           permission: [permissions.HSDT],
           pro: true,
         },
+        {
+          title: 'Danh sách báo cáo học sinh nhập môn',
+          key: 'introductory-students',
+          url: ['/ho-so-doi-tuong/bao-cao/bao-cao-ho-so-nhap-mon'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách báo cáo học sinh nhập học chính thức',
+          key: 'official-student',
+          url: ['/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-hoc-chinh-thuc'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách báo cáo học sinh rút hồ sơ',
+          key: 'students-withdraw-their-records',
+          url: ['/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-rut-ho-so'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
       ],
     },
   ];
