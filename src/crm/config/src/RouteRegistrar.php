@@ -31,6 +31,7 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('config-medical-declares', 'ConfigMedicalDeclareController');
             \Route::resource('config-profile-infos', 'ConfigProfileInfoController');
+            \Route::resource('class-arrangements', 'ClassArrangementController');
         });
     }
 }
