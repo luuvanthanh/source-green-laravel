@@ -103,4 +103,37 @@ class ReportController extends Controller
 
         return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
     }
+
+    public function numberEventReportBehaviorExport(Request $request)
+    {
+        $result = ReportService::numberEventReportBehaviorExport($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
+
+    public function numberEventReportObjectExport(Request $request)
+    {
+        $result = ReportService::numberEventReportObjectExport($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
+
+    public function warningReportExport(Request $request)
+    {
+        $result = ReportService::warningReportExport($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }

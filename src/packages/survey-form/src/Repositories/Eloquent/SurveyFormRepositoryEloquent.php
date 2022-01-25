@@ -2,6 +2,8 @@
 
 namespace GGPHP\SurveyForm\Repositories\Eloquent;
 
+use Carbon\Carbon;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\SurveyForm\Models\SurveyForm;
 use GGPHP\SurveyForm\Presenters\SurveyFormPresenter;
 use GGPHP\SurveyForm\Repositories\Contracts\SurveyFormRepository;
@@ -51,7 +53,7 @@ class SurveyFormRepositoryEloquent extends BaseRepository implements SurveyFormR
         return SurveyFormPresenter::class;
     }
 
-    public function getSurveyForm(array $attributes)
+    public function getSurveyForm(array $attributes, $parse = true)
     {
         if (!empty($attributes['tourist_destination_id'])) {
             $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
@@ -68,6 +70,10 @@ class SurveyFormRepositoryEloquent extends BaseRepository implements SurveyFormR
                     ->orWhere([['start_date', '>=', $attributes['start_date']], ['start_date', '<=', $attributes['end_date']]])
                     ->orWhere([['end_date', '>=', $attributes['start_date']], ['end_date', '<=', $attributes['end_date']]]);
             });
+        }
+
+        if (!$parse) {
+            return $this->model->get();
         }
 
         if (empty($attributes['limit'])) {
@@ -222,5 +228,28 @@ class SurveyFormRepositoryEloquent extends BaseRepository implements SurveyFormR
         return [
             'data' =>  $questions
         ];
+    }
+
+    public function surveyFormExport($attributes)
+    {
+        $results = $this->getSurveyForm($attributes, false);
+
+        $params = [];
+        foreach ($results as $key => $value) {
+            $numberQuestion = 0;
+
+            foreach ($value->json['pages'] as $key => $page) {
+                $numberQuestion += count($page['elements']);
+            }
+
+            $params['[number]'][] = ++$key;
+            $params['[name]'][] = $value->name;
+            $params['[start_date]'][] = Carbon::parse($value->start_date)->format('d-m-Y');
+            $params['[end_date]'][] = Carbon::parse($value->end_date)->format('d-m-Y');
+            $params['[number_question]'][] = $numberQuestion;
+            $params['[number_result]'][] =  $value->results->count();
+        }
+
+        return  resolve(ExcelExporterServices::class)->export('rp_survey_form', $params);
     }
 }

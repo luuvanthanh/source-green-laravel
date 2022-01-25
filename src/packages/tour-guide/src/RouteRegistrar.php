@@ -34,6 +34,8 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::get('export-excel-tour-guides', 'TourGuideController@exportExcel');
 
+            \Route::get('tour-guide-export-count-events', 'TourGuideController@exportExcelWithCountEvent');
+
             \Route::get('tour-guides-export-word/{id}', 'TourGuideController@exportWord');
 
             \Route::get('tour-guides-by-image', 'TourGuideController@tourGuidesByImage');

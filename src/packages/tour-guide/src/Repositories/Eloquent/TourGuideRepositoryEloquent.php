@@ -203,6 +203,24 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         return  resolve(ExcelExporterServices::class)->export('hdvhp', $params);
     }
 
+    public function exportExcelWithCountEvent($attributes)
+    {
+        $tourGuides = $this->getTourGuide($attributes, false);
+
+        $params = [];
+
+        foreach ($tourGuides as $key => $tourGuide) {
+            $params['[number]'][] = ++$key;
+            $params['[full_name]'][] = $tourGuide->full_name;
+            $params['[card_type]'][] = !is_null($tourGuide->cardType) ? $tourGuide->cardType->name : null;
+            $params['[card_number]'][] = $tourGuide->card_number;
+            $params['[language]'][] = !is_null($tourGuide->language) ?  $tourGuide->language->vietnamese_name : null;
+            $params['[number_event]'][] = !is_null($tourGuide->event_count) ?  $tourGuide->event_count : null;
+        }
+
+        return  resolve(ExcelExporterServices::class)->export('sl_hdvhp', $params);
+    }
+
     public function exportWord($id)
     {
         $tourGuide = TourGuide::findOrFail($id);

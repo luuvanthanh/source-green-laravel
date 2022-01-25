@@ -114,4 +114,15 @@ class SurveyFormController extends Controller
 
         return $this->success($surveyForm, trans('lang::messages.common.getInfoSuccess'));
     }
+
+    public function surveyFormExport(Request $request)
+    {
+        $result = $this->surveyFormRepository->surveyFormExport($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }

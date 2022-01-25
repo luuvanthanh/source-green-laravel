@@ -161,6 +161,29 @@ class TourGuideController extends Controller
         return $result;
     }
 
+    public function exportExcelWithCountEvent(Request $request)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $type = explode(',', $attributes['type']);
+            $newType = [];
+            foreach ($type as $value) {
+                $newType[] = TourGuide::TYPE[$value];
+            }
+
+            $attributes['type'] = array_values($newType);
+        }
+
+        $result = $this->tourGuideRepository->exportExcelWithCountEvent($attributes);
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
+
     /**
      * Remove the specified resource from storage.
      *

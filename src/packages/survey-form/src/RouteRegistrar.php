@@ -39,6 +39,8 @@ class RouteRegistrar extends CoreRegistrar
         \Route::resource('survey-form-results', 'SurveyFormResultController')->only('destroy', 'update', 'show', 'index');
 
         \Route::resource('handle-works', 'HandleWorkController');
+
+        \Route::get('survey-form-export', 'SurveyFormController@surveyFormExport');
     }
 
     /**

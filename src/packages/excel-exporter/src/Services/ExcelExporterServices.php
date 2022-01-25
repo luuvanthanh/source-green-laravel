@@ -26,6 +26,21 @@ class ExcelExporterServices
         'activity_log' => [
             'template' => 'activity_log.xlsx',
         ],
+        'rp_sl_hdvhp' => [
+            'template' => 'rp_sl_hdvhp.xlsx',
+        ],
+        'rp_sl_hanh_vi' => [
+            'template' => 'rp_sl_hanh_vi.xlsx',
+        ],
+        'sl_hdvhp' => [
+            'template' => 'sl_hdvhp.xlsx',
+        ],
+        'rp_warning' => [
+            'template' => 'rp_warning.xlsx',
+        ],
+        'rp_survey_form' => [
+            'template' => 'rp_survey_form.xlsx',
+        ],
     ];
 
     protected $disk;
@@ -58,6 +73,7 @@ class ExcelExporterServices
         if (!file_exists($templateFileUrl)) {
             return config('excel-exporter.error.template-not-found');
         }
+
         if ($this->disk == 'local') {
             $this->makedir($this->endPoint . '/' . $this->resultFolder);
         }

@@ -2,13 +2,17 @@
 
 namespace GGPHP\Report\Services;
 
+use alhimik1986\PhpExcelTemplator\params\CallbackParam;
+use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Category\Models\EventType;
 use GGPHP\Category\Models\TouristDestination;
 use GGPHP\Event\Models\Event;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\NumberOfTourist\Models\NumberOfTourist;
 use GGPHP\TourGuide\Models\TourGuide;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ReportService
 {
@@ -845,5 +849,153 @@ class ReportService
         }
 
         return $data;
+    }
+
+    public static function numberEventReportObjectExport($attributes)
+    {
+        $data = self::numberEventReportObject($attributes);
+
+        $params = [];
+
+        $touristDestination = [];
+        foreach ($data[0]['data_by_time'] as $value) {
+
+            $params['[time]'][] = $value['time'];
+            $valueParam = [];
+
+            foreach ($value['tourist_destination'] as $key => $item) {
+                $valueParam[] = $item['number'];
+                if (!array_key_exists($item['name'], $touristDestination)) {
+                    $touristDestination[$item['name']] = $item['name'];
+                }
+            }
+
+            $params['[[value]]'][] = array_values($valueParam);
+        }
+
+        $params['[[tourist_destination]]'][] = array_values($touristDestination);
+
+        return  resolve(ExcelExporterServices::class)->export('rp_sl_hdvhp', $params);
+    }
+
+    public static function numberEventReportBehaviorExport($attributes)
+    {
+        $reports = self::numberEventReportBehavior($attributes);
+
+        $params = [];
+
+        $tourist_destination = [];
+        $column = [];
+        $total = [];
+        foreach ($reports[0]['data_by_time'] as  $item) {
+            $value = [];
+            // dd($item);
+            foreach ($item['tourist_destination'] as $touristDestination) {
+
+                $value[] = $touristDestination['number'];
+                $value[] = ($touristDestination['number'] / $reports[0]['total']) * 100;
+
+                if (!array_key_exists($touristDestination['name'], $tourist_destination)) {
+                    $tourist_destination[$touristDestination['name']] = $touristDestination['name'];
+                    $tourist_destination[] = $touristDestination['name'];
+                    $column[] = 'Số lượng du khách';
+                    $column[] = 'Tỷ lệ trên tổng (%)';
+                    $total[] = $reports[0]['total'];
+                    $total[] = 100;
+                }
+            }
+
+            $params['[time]'][] = Carbon::parse($item['time'])->format('d-m-Y');
+            $params['[[value]]'][] = array_values($value);
+        }
+
+        $params['[[tourist_destination]]'][] = array_values($tourist_destination);
+        $params['[[column]]'][] = array_values($column);
+
+        $params['[time]'][]  = 'Tổng';
+        $params['[[value]]'][] = $total;
+        $params['{c_time}'][] = '';
+
+        $listMerge = [];
+
+        $callbacks = [
+            '[[tourist_destination]]' => function (CallbackParam $param) use (&$listMerge) {
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                if ($col_index == 0) {
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                    for ($i = 0; $i < count($param->param[$row_index]); $i++) {
+                        $adjustedColumnIndex = $columnIndex + $i;
+                        if ($param->param[$row_index][$i] != $firstValue) {
+
+                            $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+
+                            $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                            $firstValue = $param->param[$row_index][$i];
+                        }
+
+                        if ($i == count($param->param[$row_index]) - 1) {
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                        }
+                    }
+                }
+
+                foreach ($mergeCoordinate as $key => $coordinate) {
+                    if ($key % 2 != 0) {
+                        $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
+                        $listMerge[] = $merge;
+                    }
+                }
+            },
+            '{c_time}' => function (CallbackParam $param)  use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ':' . $mergeCol;
+
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getCell($cell_coordinate)->setValue('Thời gian');
+            },
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge) {
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+            },
+
+        ];
+
+        return  resolve(ExcelExporterServices::class)->export('rp_sl_hanh_vi', $params, $callbacks, $events);
+    }
+
+    public static function warningReportExport($attributes)
+    {
+        $reports = self::warningReport($attributes);
+
+        $params = [];
+        foreach ($reports as $key => $value) {
+            $params['[number]'][] = ++$key;
+            $params['[event_name]'][] = $value['event_name'];
+            $params['[total_event_warning]'][] = $value['total_event_warning'];
+            $params['[total_event_mistake]'][] = $value['total_event_mistake'];
+            $params['[false_recognition_rate]'][] = $value['false_recognition_rate'];
+            $params['[correct_recognition_rate]'][] = $value['correct_recognition_rate'];
+        }
+
+        return resolve(ExcelExporterServices::class)->export('rp_warning', $params);
     }
 }
