@@ -1644,6 +1644,23 @@ export async function getLeftMenuHRM() {
         },
       ],
     },
+    {
+      title: 'Báo cáo',
+      key: 'report',
+      icon: 'icon icon-list',
+      permission: [permissions.HRM],
+      children: [
+        {
+          title: 'Báo cáo nhân viên đnag nghỉ phép',
+          key: 'employee-on-leave',
+          url: [
+            '/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep'
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuFeePolicy() {
