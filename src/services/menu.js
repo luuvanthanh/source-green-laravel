@@ -216,9 +216,16 @@ export async function getLeftMenuProfile() {
       permission: [permissions.HSDT],
       children: [
         {
-          title: 'Danh sách học sinh dưới 6 tháng, 12 tháng đến thời điểm',
-          key: '6month-12month',
-          url: ['/ho-so-doi-tuong/bao-cao/sau-thang-den-muoi-hai-thang'],
+          title: 'Danh sách học sinh dưới 6 tháng đến thời điểm',
+          key: 'six-month',
+          url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-duoi-sau-thang-den-thoi-diem'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh dưới 12 tháng đến thời điểm',
+          key: 'twelve-month',
+          url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-duoi-muoi-hai-thang-den-thoi-diem'],
           permission: [permissions.HSDT],
           pro: true,
         },

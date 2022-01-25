@@ -512,8 +512,14 @@ export default [
             authority: [permissions.HSDT],
           },
           {
-            path: '/ho-so-doi-tuong/bao-cao/sau-thang-den-muoi-hai-thang',
+            path: '/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-duoi-sau-thang-den-thoi-diem',
             component: './object-profiles/report/six-month',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-duoi-muoi-hai-thang-den-thoi-diem',
+            component: './object-profiles/report/twelve-month',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
