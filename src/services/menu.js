@@ -230,14 +230,14 @@ export async function getLeftMenuProfile() {
           pro: true,
         },
         {
-          title: 'Danh sách học sinh đủ 24 đến ngày đầu tháng',
+          title: 'Danh sách học sinh đủ 24 tháng đến ngày đầu tháng',
           key: '24month',
           url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-du-hai-bon-thang'],
           permission: [permissions.HSDT],
           pro: true,
         },
         {
-          title: 'Danh sách học sinh đủ 36 đến ngày đầu tháng',
+          title: 'Danh sách học sinh đủ 36 tháng đến ngày đầu tháng',
           key: '36month',
           url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-du-ba-sau-thang'],
           permission: [permissions.HSDT],
