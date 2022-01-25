@@ -68,6 +68,30 @@ class TestInputTransformer extends BaseTransformer
         ];
     }
 
+    public function customMeta(): array
+    {
+        $data = [];
+
+        if (request()->is_summary_test_input && request()->is_summary_test_input == 'true') {
+            
+            $items = $this->getCurrentScope()->getResource()->getData();
+            $status = $items->groupBy('status')->map->count()->toArray();
+            ksort($status);
+            $untesting = isset($status[0]) ? $status[0] : 0;
+            $testing = isset($status[1]) ? $status[1] : 0;
+            $finish = isset($status[2]) ? $status[2] : 0;
+            $cancel = isset($status[3]) ? $status[3] : 0;
+
+            $data['test_input'] = [
+                'total_untesting' => $untesting + $cancel,
+                'total_testing' => $testing,
+                'total_finish' => $finish,
+            ];
+        }
+
+        return $data;
+    }
+
     public function includeEmployee(TestInput $testInput)
     {
         if (empty($testInput->employee)) {
