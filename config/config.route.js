@@ -1821,6 +1821,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.PB],
           },
+          {
+            path: '/phan-bo/bao-cao/bang-phan-cong-xep-lop-giao-vien',
+            component: './allocation/report/class-assignment',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
         ],
       },
       // ALLOCATION

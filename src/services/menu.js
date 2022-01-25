@@ -872,6 +872,13 @@ export async function getLeftMenuAllocation() {
           permission: [permissions.PB],
           pro: true,
         },
+        {
+          title: 'Bảng phân công xếp lớp giáo viên',
+          key: 'class-assignment',
+          url: ['/phan-bo/bao-cao/bang-phan-cong-xep-lop-giao-vien'],
+          permission: [permissions.PB],
+          pro: true,
+        },
       ],
     },
   ];
