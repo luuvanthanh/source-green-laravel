@@ -30,9 +30,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicalStudentProblem, loading, user, OPSixMonth }) => ({
+const mapStateToProps = ({ medicalStudentProblem, loading, user, OPTwelveMonth }) => ({
     loading,
-    data: OPSixMonth.data,
+    data: OPTwelveMonth.data,
     error: medicalStudentProblem.error,
     classes: medicalStudentProblem.classes,
     branches: medicalStudentProblem.branches,
@@ -95,7 +95,7 @@ class Index extends PureComponent {
             location: { pathname },
         } = this.props;
         this.props.dispatch({
-            type: 'OPSixMonth/GET_DATA',
+            type: 'OPTwelveMonth/GET_DATA',
             payload: {
                 ...search,
             },
@@ -332,10 +332,10 @@ class Index extends PureComponent {
         Helper.exportExcelClover(
             `/students/export-to-excel/group-by-branch`,
             {
-                StudiedMonths: 6,
+                StudiedMonths: 12,
                 SearchDate: dataIDSearch ? Helper.getDate(dataIDSearch, variables.DATE_FORMAT.DATE) : moment(),
             },
-            `Danhsachhocsinhhocdu6thang.xlsx`,
+            `Danhsachhocsinhhocdu12thang.xlsx`,
         );
     };
 
@@ -354,11 +354,11 @@ class Index extends PureComponent {
         const loading = effects['medicalStudentProblem/GET_DATA'];
         return (
             <>
-                <Helmet title="Danh sách học sinh dưới 6 tháng đến thời điểm" />
+                <Helmet title="Danh sách học sinh dưới 12 tháng đến thời điểm" />
                 <div className={classnames(styles['content-form'], styles['content-form-children'])}>
                     {/* FORM SEARCH */}
                     <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-                        <Text color="dark">Danh sách học sinh dưới 6 tháng đến thời điểm</Text>
+                        <Text color="dark">Danh sách học sinh dưới 12 tháng đến thời điểm</Text>
                         <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
                             Xuất Excel
                         </Button>

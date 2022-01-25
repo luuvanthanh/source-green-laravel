@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'OPSixMonth',
+  namespace: 'OPTwelveMonth',
   state: {
     data: [],
     pagination: {
