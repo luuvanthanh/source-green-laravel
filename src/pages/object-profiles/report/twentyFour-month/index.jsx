@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, DatePicker } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -56,7 +56,7 @@ class Index extends PureComponent {
                 branchId: query?.branchId || defaultBranch?.id,
                 page: query?.page || variables.PAGINATION.PAGE,
                 limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-                SearchDate: query.SearchDate ? moment(query.SearchDate) : moment(),
+                SearchDate: query.SearchDate ? moment(query.SearchDate) : moment().startOf('month').format('YYYY-MM-DD'),
             },
             dataIDSearch: [],
         };
@@ -210,7 +210,7 @@ class Index extends PureComponent {
      * @param {string} type key of object search
      */
     onChangeDate = (e, type) => {
-        this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+        this.debouncedSearch(moment(e).startOf('month').format('YYYY-MM-DD'), type);
         this.setStateData({ dataIDSearch: e });
     };
 
@@ -293,7 +293,7 @@ class Index extends PureComponent {
                     if (record?.branch) {
                         return (
                             <Text size="normal">
-                                Tổng
+                                Tổng số học sinh
                             </Text>
                         );
                     }
@@ -306,14 +306,14 @@ class Index extends PureComponent {
                 render: (value, record) => {
                     if (record?.branch) {
                         return (
-                            <Text size="normal">
-                                {record.total}
+                            <Text size="normal" style={{ color: 'red' }}>
+                                {record.total} học sinh
                             </Text>
                         );
                     }
                     if (record?.class?.name && record?.total) {
                         return (
-                            <Text size="normal">
+                            <Text size="normal" style={{ color: 'red' }}>
                                 {record.total}
                             </Text>
                         );
@@ -333,7 +333,7 @@ class Index extends PureComponent {
             `/students/export-to-excel/group-by-branch`,
             {
                 StudiedMonths: 24,
-                SearchDate: dataIDSearch ? Helper.getDate(dataIDSearch, variables.DATE_FORMAT.DATE) : moment(),
+                SearchDate: dataIDSearch ? moment(dataIDSearch).startOf('month').format('YYYY-MM-DD') : moment().startOf('month').format('YYYY-MM-DD'),
             },
             `Danhsachhocsinhhocdu24thang.xlsx`,
         );
@@ -354,11 +354,11 @@ class Index extends PureComponent {
         const loading = effects['medicalStudentProblem/GET_DATA'];
         return (
             <>
-                <Helmet title="DANH SÁCH HỌC SINH HỌC ĐỦ 24 THÁNG ĐẾN NGÀY ĐẦU THÁNG" />
+                <Helmet title="Danh sách học sinh học đủ 24 tháng đến ngày đầu tháng" />
                 <div className={classnames(styles['content-form'], styles['content-form-children'])}>
                     {/* FORM SEARCH */}
                     <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-                        <Text color="dark">DANH SÁCH HỌC SINH HỌC ĐỦ 24 THÁNG ĐẾN NGÀY ĐẦU THÁNG</Text>
+                        <Text color="dark">Danh sách học sinh học đủ 24 tháng đến ngày đầu tháng</Text>
                         <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
                             Xuất Excel
                         </Button>
@@ -375,21 +375,8 @@ class Index extends PureComponent {
                             ref={this.formRef}
                         >
                             <div className="row">
-                                {/* <div className="col-lg-3">
-                                    <FormItem
-                                        name="KeyWord"
-                                        onChange={(event) => this.onChange(event, 'KeyWord')}
-                                        placeholder="Nhập từ khóa tìm kiếm"
-                                        type={variables.INPUT_SEARCH}
-                                    />
-                                </div> */}
                                 <div className="col-lg-3">
-                                    <FormItem
-                                        name="SearchDate"
-                                        onChange={(event) => this.onChangeDate(event, 'SearchDate')}
-                                        type={variables.DATE_PICKER}
-                                        allowClear={false}
-                                    />
+                                    <DatePicker picker="month" defaultValue={moment().startOf('month')} onChange={(event) => this.onChangeDate(event, 'SearchDate')} />
                                 </div>
                                 {!defaultBranch?.id && (
                                     <div className="col-lg-3">

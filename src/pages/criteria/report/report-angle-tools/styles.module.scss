@@ -6,8 +6,14 @@
    }
   :global(.ant-table-row-level-0) {
     background-color: #FFF1EB !important;
+    :global(.ant-table-cell-with-append) {
+      background-color: #FFF1EB !important;
+    }
    }
    :global(.ant-table-row-level-1) {
     background-color: #eef8ea !important;
+    :global(.ant-table-cell-with-append) {
+      background-color: #eef8ea !important;
+    }
    }
 }
