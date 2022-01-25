@@ -141,9 +141,13 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
     public function busRegistrationSummary(array $attributes, $parser = false)
     {
         $employees = $this->employeeRepositoryEloquent->model->whereHas('busRegistrations', function ($query) use ($attributes) {
-            $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            $query->whereHas('busRegistrationDetail', function ($q) use ($attributes) {
+                $q->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            });
         })->with(['busRegistrations' => function ($query) use ($attributes) {
-            $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            $query->with(['busRegistrationDetail' => function ($q) use ($attributes) {
+                $q->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            }]);
         }]);
 
         if (!empty($attributes['employeeId'])) {
@@ -178,18 +182,20 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 
     public function calculatorBusRegistrationReport($employee, $attributes)
     {
-        $busRegistrations = $employee->busRegistrations->toArray();
+        $busRegistrations = $employee->busRegistrations;
         $newBusRegistration = [];
         $totalBusRegistration = 0;
 
         if (count($busRegistrations) > 0) {
             foreach ($busRegistrations as $key => $busRegistration) {
-                $date = Carbon::parse($busRegistration['Date'])->format('Y-m-d');
+                foreach ($busRegistration->busRegistrationDetail as $key => $busRegistrationDetail) {
+                    $date = Carbon::parse($busRegistrationDetail['Date'])->format('Y-m-d');
 
-                if (array_key_exists($date, $newBusRegistration)) {
-                    $newBusRegistration[$date] += $busRegistration['HourNumber'];
-                } else {
-                    $newBusRegistration[$date] = $busRegistration['HourNumber'];
+                    if (array_key_exists($date, $newBusRegistration)) {
+                        $newBusRegistration[$date] += $busRegistrationDetail['Hours'];
+                    } else {
+                        $newBusRegistration[$date] = $busRegistrationDetail['Hours'];
+                    }
                 }
             }
 
