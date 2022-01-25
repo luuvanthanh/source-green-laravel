@@ -64,7 +64,8 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
         }
 
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
-            $this->model = $this->model->whereBetween('CreationTime', [$attributes['startDate'], $attributes['endDate']]);
+            $this->model = $this->model->whereDate('CreationTime', '>=', $attributes['startDate'])
+                ->whereDate('CreationTime', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['limit'])) {
@@ -145,7 +146,7 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
                 'moduleCode' => 'DOCUMENTARY',
                 'refId' => $documentManagement->Id,
             ];
-            
+
             dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
         }
 
