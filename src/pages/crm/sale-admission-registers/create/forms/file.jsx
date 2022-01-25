@@ -12,6 +12,12 @@ import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import stylesModule from '../../styles.module.scss';
 
+const dataTable = [
+  {
+    stt: '1',
+    full_name: 'test',
+  }
+];
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
   data: crmSaleAdmissionAdd.data,
@@ -22,14 +28,11 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   city: crmSaleAdmissionAdd.city,
   district: crmSaleAdmissionAdd.district,
 });
-const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error, data }) => {
+const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
   const mounted = useRef(false);
-  const loadingSubmit =
-    effects[`crmSaleAdmissionAdd/ADD`] ||
-    effects[`crmSaleAdmissionAdd/UPDATE`] ||
-    effects[`crmSaleAdmissionAdd/UPDATE_STATUS`];
-  const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS`];
+  const loadingSubmit = "";
+  const loading = effects[``];
 
   const onFinish = (values) => {
     dispatch({
@@ -67,15 +70,16 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
       {
         title: 'STT',
         key: 'type',
-        className: 'min-width-150',
-        width: 150,
-        dataIndex: 'full_name',
+        className: 'min-width-100',
+        width: 100,
+        dataIndex: 'stt',
       },
       {
         title: 'Tên giấy tờ',
         key: 'type',
         className: 'min-width-150',
         width: 150,
+        dataIndex: 'full_name',
       },
       {
         title: 'Tình trạng',
@@ -131,7 +135,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               <div className={stylesModule['wrapper-table']}>
                 <Table
                   columns={header()}
-                  dataSource={data}
+                  dataSource={dataTable}
                   pagination={false}
                   loading={loading}
                   className="table-edit"
