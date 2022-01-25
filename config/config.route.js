@@ -1713,6 +1713,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
+          {
+            path: '/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep',
+            component: './hrm/report/employee-on-leave',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
         ],
       },
       // HRM

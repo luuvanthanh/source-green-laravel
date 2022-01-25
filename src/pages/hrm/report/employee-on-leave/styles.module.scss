@@ -1,0 +1,14 @@
+@import "@/assets/styles/mixins.scss";
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #dee4f1 !important;
+   }
+  :global(.ant-table-row-level-0) {
+    background-color: #FFF1EB !important;
+   border-right: none !important;
+   }
+   :global(.ant-table-row-level-1) {
+    background-color: #EEF8EA !important;
+   border-right: none !important;
+   }
+}
