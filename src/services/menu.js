@@ -306,6 +306,13 @@ export async function getLeftMenuProfile() {
           permission: [permissions.HSDT],
           pro: true,
         },
+        {
+          title: 'Báo cáo thống kê số lượng học sinh nhập học chính thức theo năm',
+          key: 'official-student-by-year',
+          url: ['/ho-so-doi-tuong/bao-cao/thong-ke-luong-hoc-sinh-nhap-hoc-chinh-thuc-theo-nam'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
       ],
     },
   ];

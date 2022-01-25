@@ -589,6 +589,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/thong-ke-luong-hoc-sinh-nhap-hoc-chinh-thuc-theo-nam',
+            component: './object-profiles/report/official-student-by-year',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
         ],
       },
       // OBJECT PROFILES
