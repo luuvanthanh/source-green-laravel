@@ -77,12 +77,12 @@ class CategoryQuestionParentRepositoryEloquent extends BaseRepository implements
                     $categoryQuestionParent = CategoryQuestionParent::create($value);
                     $create[] = $categoryQuestionParent->Id;
                     $value['category_question_parent_clover_id'] = $categoryQuestionParent->Id;
-                    $data[] = $value;
+                    $dataCreate[] = $value;
                 }
 
-                $categoryCrm = ChildDevelopCategoryCrmServices::createRows($data);
+                $categoryCrm = ChildDevelopCategoryCrmServices::createRows($dataCreate);
                 $collection = collect($categoryCrm->data);
-
+               
                 foreach ($create as $valueCreate) {
                     $lastCollect = $collection->first(function ($item) use ($valueCreate) {
                         return $item->attributes->category_question_parent_clover_id == $valueCreate;
@@ -92,18 +92,19 @@ class CategoryQuestionParentRepositoryEloquent extends BaseRepository implements
                     $categoryQuestionParentUpdate->update(['CategoryQuestionParentCrmId' => $lastCollect->id]);
                 }
             }
-
+            
             if (!empty($attributes['updateRows'])) {
                 foreach ($attributes['updateRows'] as $value) {
                     $question = CategoryQuestionParent::find($value['id']);
                     $question->update($value);
 
-                    $data[] = [
+                    $dataUpdate[] = [
                         'id' => $question->CategoryQuestionParentCrmId,
                         'question' => $value['question'],
                     ];
                 }
-                ChildDevelopCategoryCrmServices::updateRows($data);
+                
+                ChildDevelopCategoryCrmServices::updateRows($dataUpdate);
             }
 
             if (!empty($attributes['deleteRows'])) {
