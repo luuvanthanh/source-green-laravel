@@ -27,7 +27,6 @@ class CategoryQuestionParentCreateRequest extends FormRequest
             'createRows' => 'array',
             'updateRows' => 'array',
             'deleteRows' => 'array',
-            'createRows.*.question' => 'required|string|unique:CategoryQuestionParents,Question',
         ];
     }
 }
