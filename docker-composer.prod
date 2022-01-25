@@ -1,0 +1,18 @@
+version: '3'
+services:
+  api:
+    image: kun391/phpup:1.1
+    ports:
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
+    volumes:
+      - ./src:/var/www/app:delegated
+      - ./deployment/certs/cert.pem:/etc/nginx/www-ssl/certificate.crt
+      - ./deployment/certs/private.key:/etc/nginx/www-ssl/privateKey.key
+      - ./deployment/configs/queue.conf:/etc/supervisor/conf.d/queue.conf
+      - ./deployment/configs/nginx.conf:/etc/nginx/sites-enabled/default.conf
+      - ./deployment/configs/nginx.ssl.conf:/etc/nginx/sites-enabled/default.ssl.conf
+      - ./deployment/configs/crontab.conf:/etc/crontabs/root
+    environment:
+      - PHP_MEM_LIMIT=${PHP_MEM_LIMIT}
+    restart: always
