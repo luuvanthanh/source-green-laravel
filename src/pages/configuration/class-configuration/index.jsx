@@ -1,20 +1,17 @@
 import { memo, useState, useRef, useEffect } from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, Upload, message } from 'antd';
 import classnames from 'classnames';
-import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import TableCus from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import { Helmet } from 'react-helmet';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import { Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
-import { isEmpty } from 'lodash';
+import { isEmpty, last, head, } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import Loading from '@/components/CommonComponent/Loading';
-// import stylesModule from './styles.module.scss';
+import styleModule from './styles.module.scss';
 
 
 const Index = memo(() => {
@@ -22,19 +19,32 @@ const Index = memo(() => {
     loading,
   }));
   const dispatch = useDispatch();
-  const params = useParams();
   const formRef = useRef();
   const [remove, setRemove] = useState([]);
 
   const [data, setData] = useState([
     {
-      id: uuidv4(),
-      category: { name: undefined },
-      product_id: undefined,
-      conversion_unit: undefined,
-      conversion_price: undefined,
+      file_image: undefined,
+      name: undefined,
+      content: undefined,
     },
   ]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'classConfiguration/GET_DETAILS',
+      payload: {},
+      callback: (response) => {
+        if (response?.parsePayload.length > 0) {
+          setData(
+            response.parsePayload.map((item) => ({
+              ...item,
+            })),
+          );
+        }
+      },
+    });
+  }, []);
 
   const onFinish = () => {
     const items = data.map((item) => ({
@@ -42,7 +52,7 @@ const Index = memo(() => {
       tag_id: item.id,
     }));
     const payload = {
-      create_rows: items.filter((item) => !item.id),
+      create_rows: items.filter((i) => i?.id || i?.content || i?.file_image || i?.name).length > 0 ? items.filter((item) => !item.id) : [],
       update_rows: items.filter((item) => item.id),
       delete_rows: remove,
     };
@@ -67,20 +77,17 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    dispatch({
-      type: 'classConfiguration/GET_TAGS',
-      payload: {},
-      callback: (response) => {
-        if (response) {
-          setData(
-            response.parsePayload.map((item) => ({
-              ...item,
-            })),
-          );
-        }
-      },
-    });
-  }, [params.id]);
+    if (data.length === 0) {
+      setData(
+        [{
+          id: undefined,
+          file_image: undefined,
+          name: undefined,
+          content: undefined,
+        }],
+      );
+    }
+  }, [data]);
 
   const onChangeTitle = (e, record) => {
     setData((prev) =>
@@ -91,6 +98,60 @@ const Index = memo(() => {
       ),
     );
   };
+  const onChangeContent = (e, record) => {
+    setData((prev) =>
+      prev.map((item) =>
+        item.test === record.test && item.id === record.id
+          ? { ...item, content: e.target.value }
+          : { ...item },
+      ),
+    );
+  };
+
+  const onRemoveFile = (record) => {
+    setData((prev) =>
+      prev.map((item) => (item.id === record.id ? { ...item, file_image: null } : item)),
+    );
+  };
+
+  const onUpload = (files, record) => {
+    dispatch({
+      type: 'upload/UPLOAD',
+      payload: files,
+      callback: (response) => {
+        if (response) {
+          setData((prev) =>
+            prev.map((item) =>
+              item.id === record.id
+                ? {
+                  ...item,
+                  file_image: head(response.results)?.fileInfo?.url,
+                }
+                : item,
+            ),
+          );
+        }
+      },
+    });
+  };
+
+  const props = (record) => ({
+    beforeUpload() {
+      return null;
+    },
+    customRequest({ file }) {
+      const { name, size } = file;
+      const allowTypes = ['jpeg', 'jpg', 'png'];
+      const maxSize = 5 * 2 ** 20;
+      if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+        message.error('Định dạng hỗ trợ:  .jpeg, .jpg, .png. Tổng dung lượng không vượt quá 20MB');
+        return;
+      }
+      onUpload(file, record);
+    },
+    showUploadList: false,
+    fileList: [],
+  });
 
   const columns = [
     {
@@ -99,9 +160,31 @@ const Index = memo(() => {
       width: 100,
       lassName: 'min-width-100',
       render: (value, record) => (
-        <AvatarTable
-          fileImage={Helper.getPathAvatarJson(record.file_image)}
-        />
+        <Upload {...props(record)}>
+          <div className={classnames('d-flex align-items-center', styleModule['upload-container'])}>
+            {!isEmpty(record.file_image) && (
+              <div
+                role="presentation"
+                className={styleModule.close}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveFile(record);
+                }}
+              >
+                <span className="icon-cancel" />
+              </div>
+            )}
+            {isEmpty(record.file_image) && <img alt="upload" src="/images/upload.png" />}
+            {!isEmpty(record.file_image) && (
+              <img
+                alt="upload"
+                src={
+                  record.file_image ? `${API_UPLOAD}${record.file_image}` : '/default-upload.png'
+                }
+              />
+            )}
+          </div>
+        </Upload>
       ),
     },
     {
@@ -120,14 +203,14 @@ const Index = memo(() => {
     },
     {
       title: 'Nội dung',
-      key: 'name',
+      key: 'content',
       lassName: 'min-width-100',
       render: (value, record) => (
         <Input.TextArea
-          value={value.name}
+          value={value.content}
           autoSize={{ minRows: 2, maxRows: 3 }}
           placeholder="Nhập"
-          onChange={(e) => onChangeTitle(e, record)}
+          onChange={(e) => onChangeContent(e, record)}
         />
       ),
     },
