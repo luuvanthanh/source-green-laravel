@@ -29,11 +29,8 @@ const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, error, data }) => {
     const formRef = useRef();
     const mounted = useRef(false);
-    const loadingSubmit =
-      effects[`crmSaleAdmissionAdd/ADD`] ||
-      effects[`crmSaleAdmissionAdd/UPDATE`] ||
-      effects[`crmSaleAdmissionAdd/UPDATE_STATUS`];
-    const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS`];
+    const loadingSubmit = "";
+    const loading = effects[``];
 
     const onFinish = (values) => {
       dispatch({
@@ -109,7 +106,7 @@ const General = memo(
         <Form layout="vertical" ref={formRef} onFinish={onFinish}>
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <Pane className="card">
-              <Pane className="border-bottom">
+              <Pane >
                 <Pane className="p20">
                   <Heading type="form-title" style={{ marginBottom: 20 }}>
                     Thông tin học phí
