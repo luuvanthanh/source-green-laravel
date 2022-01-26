@@ -35,6 +35,6 @@ class TestInput extends UuidModel
 
     public function testInputDetail()
     {
-        return $this->hasMany(TestInputDetail::class, 'test_input_id');
+        return $this->hasMany(TestInputDetail::class, 'test_input_id')->orderBy('created_at', 'DESC');
     }
 }
