@@ -1,0 +1,107 @@
+<?php
+
+namespace GGPHP\ChildDevelop\TestSemester\Http\Controllers;
+
+use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterCreateRequest;
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
+use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
+use Illuminate\Http\Request;
+use GGPHP\Core\Http\Controllers\Controller;
+
+class TestSemesterController extends Controller
+{
+    /**
+     * @var $employeeRepository
+     */
+    protected $testSemesterRepository;
+
+    /**
+     * UserController constructor.
+     * @param TestSemesterRepository $testSemesterRepository
+     */
+    public function __construct(TestSemesterRepository $testSemesterRepository)
+    {
+        $this->testSemesterRepository = $testSemesterRepository;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = TestSemester::STATUS[$value];
+            }
+
+            $attributes['status'] = array_values($newStatus);
+        }
+
+        $testSemester = $this->testSemesterRepository->getAll($attributes);
+
+        return $this->success($testSemester, trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(TestSemesterCreateRequest $request)
+    {
+        $attributes = $request->all();
+
+        $testSemester = $this->testSemesterRepository->create($attributes);
+
+        return $this->success($testSemester, trans('lang::messages.common.createSuccess'));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $testSemester = $this->testSemesterRepository->find($id);
+
+        return $this->success($testSemester, trans('lang::messages.common.getInfoSuccess'));
+    }
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $attributes = $request->all();
+
+        $testSemester = $this->testSemesterRepository->update($attributes, $id);
+
+        return $this->success($testSemester, trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $this->testSemesterRepository->delete($id);
+
+        return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+}

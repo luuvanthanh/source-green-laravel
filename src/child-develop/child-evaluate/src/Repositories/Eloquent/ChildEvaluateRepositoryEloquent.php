@@ -6,7 +6,7 @@ use GGPHP\ChildDevelop\ChildEvaluate\Presenters\ChildEvaluatePresenter;
 use GGPHP\ChildDevelop\ChildEvaluate\Repositories\Contracts\ChildEvaluateRepository;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetail;
-use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetailChildrent;
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetailChildren;
 use GGPHP\ChildDevelop\ChildEvaluate\Services\ChildEvaluateCrmServices;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -125,18 +125,18 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $detail = ChildEvaluateDetail::create($value);
 
             if (!empty($value['detailChildren'])) {
-                $this->storeDetailChildrent($detail->Id, $value['detailChildren']);
+                $this->storeDetailChildren($detail->Id, $value['detailChildren']);
             }
         }
 
         return true;
     }
 
-    public function storeDetailChildrent($id, $detailChildrent)
+    public function storeDetailChildren($id, $detailChildrent)
     {
         foreach ($detailChildrent as $value) {
             $value['ChildEvaluateDetailId'] = $id;
-            ChildEvaluateDetailChildrent::create($value);
+            ChildEvaluateDetailChildren::create($value);
         }
 
         return true;
