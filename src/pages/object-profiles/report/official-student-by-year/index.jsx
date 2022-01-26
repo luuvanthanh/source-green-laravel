@@ -338,7 +338,9 @@ class Index extends PureComponent {
       } = this.props;
     Helper.exportExcelClover(`/students/export-to-excel/by-condition`, {
         KeyWord: query?.KeyWord,
+        Class: query?.Class,
         branchId: query?.branchId || defaultBranch?.id,
+        SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
     }, `Baocaothongke.xlsx`);
   };
 

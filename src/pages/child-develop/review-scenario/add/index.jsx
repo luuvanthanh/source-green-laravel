@@ -51,7 +51,7 @@ const Index = memo(() => {
             inputAssessment: i?.inputAssessment ? i?.inputAssessment : false ,
             periodicAssessment: i?.periodicAssessment ? i?.periodicAssessment : false,
             use: i?.use ? i?.use : false,
-            detailChildren: i?.childEvaluateDetailChildrent ? i?.childEvaluateDetailChildrent?.map((item) => ({
+            detailChildren: i?.childEvaluateDetailChildren ? i?.childEvaluateDetailChildren?.map((item) => ({
               content: item.content, use: item.use ? item.use  : false
             })) : [],
           }))
@@ -66,7 +66,7 @@ const Index = memo(() => {
               inputAssessment: item?.inputAssessment ? item?.inputAssessment  : false ,
               periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment: false,
               use: item?.use ? item?.use : false,
-              detailChildren: item?.childEvaluateDetailChildrent ? item?.childEvaluateDetailChildrent : [],
+              detailChildren: item?.childEvaluateDetailChildren ? item?.childEvaluateDetailChildren : [],
             }))
           },
         callback: (response, error) => {
@@ -274,7 +274,7 @@ const Index = memo(() => {
                                                 <p className={stylesModule.norm} />
                                               </div>
                                             </div>
-                                            <Form.List label="Hình thức tiếp cận" name={[field.name, 'childEvaluateDetailChildrent']} fieldKey={[field.fieldKey, 'childEvaluateDetailChildrent']}>
+                                            <Form.List label="Hình thức tiếp cận" name={[field.name, 'childEvaluateDetailChildren']} fieldKey={[field.fieldKey, 'childEvaluateDetailChildren']}>
                                               {(fieldss, { add, remove }) => (
                                                 <Pane>
                                                   {fieldss.map((fieldItem, index) => (

@@ -1679,7 +1679,7 @@ export async function getLeftMenuHRM() {
       permission: [permissions.HRM],
       children: [
         {
-          title: 'Báo cáo nhân viên đnag nghỉ phép',
+          title: 'Báo cáo nhân viên đang nghỉ phép',
           key: 'employee-on-leave',
           url: [
             '/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep'
