@@ -1258,6 +1258,16 @@ export default class Helpers {
     return null;
   };
 
+  static getStatusTeacher = (value) => {
+    if (value === variables.STATUS_EXTENDED.NOT_DISTRIBUTION) {
+      return <Tag color="danger">variables.STATUS_EXTENDED_NAME.NOT_DISTRIBUTION</Tag>;
+    }
+    if (value === variables.STATUS_EXTENDED.CONFIRMED) {
+      return <Tag color="success">variables.STATUS_EXTENDED_NAME.CONFIRMED</Tag>;
+    }
+    return <Tag color="yellow">variables.STATUS_EXTENDED_NAME.WAITING</Tag>;
+  };
+
   static unique = (items, key = 'name') => {
     if (isEmpty(items)) return [];
     return [...new Set(items.map((item) => item[key]))];

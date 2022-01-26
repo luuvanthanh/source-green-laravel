@@ -90,3 +90,10 @@ export function dragCellByCell(data = {}) {
     data,
   });
 }
+
+export function editPopUp(data = {}) {
+  return request('/extended-class-assignments/by-popup', {
+    method: 'PUT',
+    data,
+  });
+}
