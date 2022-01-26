@@ -14,11 +14,11 @@ class ChildEvaluateDetail extends UuidModel
 
     public function childEvaluate()
     {
-        return $this->belongsTo(ChildEvaluate::class,'ChildEvaluateId');
+        return $this->belongsTo(ChildEvaluate::class, 'ChildEvaluateId');
     }
 
-    public function childEvaluateDetailChildrent()
+    public function childEvaluateDetailChildren()
     {
-        return $this->hasMany(ChildEvaluateDetailChildrent::class,'ChildEvaluateDetailId');
+        return $this->hasMany(ChildEvaluateDetailChildren::class, 'ChildEvaluateDetailId');
     }
 }

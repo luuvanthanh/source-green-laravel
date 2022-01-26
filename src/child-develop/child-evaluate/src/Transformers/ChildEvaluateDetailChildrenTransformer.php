@@ -9,7 +9,7 @@ use GGPHP\Core\Transformers\BaseTransformer;
  *
  * @package namespace App\Transformers;
  */
-class ChildEvaluateDetailChildrentTransformer extends BaseTransformer
+class ChildEvaluateDetailChildrenTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include

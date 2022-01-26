@@ -82,7 +82,7 @@ class CategoryQuestionParentRepositoryEloquent extends BaseRepository implements
 
                 $categoryCrm = ChildDevelopCategoryCrmServices::createRows($dataCreate);
                 $collection = collect($categoryCrm->data);
-               
+
                 foreach ($create as $valueCreate) {
                     $lastCollect = $collection->first(function ($item) use ($valueCreate) {
                         return $item->attributes->category_question_parent_clover_id == $valueCreate;
@@ -92,7 +92,7 @@ class CategoryQuestionParentRepositoryEloquent extends BaseRepository implements
                     $categoryQuestionParentUpdate->update(['CategoryQuestionParentCrmId' => $lastCollect->id]);
                 }
             }
-            
+
             if (!empty($attributes['updateRows'])) {
                 foreach ($attributes['updateRows'] as $value) {
                     $question = CategoryQuestionParent::find($value['id']);
@@ -103,7 +103,6 @@ class CategoryQuestionParentRepositoryEloquent extends BaseRepository implements
                         'question' => $value['question'],
                     ];
                 }
-                
                 ChildDevelopCategoryCrmServices::updateRows($dataUpdate);
             }
 
