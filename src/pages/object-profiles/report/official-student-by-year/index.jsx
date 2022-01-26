@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, DatePicker } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -29,9 +29,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicalStudentProblem, loading, user, OPtwentyFourMonth }) => ({
+const mapStateToProps = ({ medicalStudentProblem, loading, user, OPOfficialStudentYear }) => ({
   loading,
-  data: OPtwentyFourMonth.data,
+  data: OPOfficialStudentYear.data,
   error: medicalStudentProblem.error,
   classes: medicalStudentProblem.classes,
   branches: medicalStudentProblem.branches,
@@ -55,11 +55,8 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        SearchDate: query.SearchDate
-          ? moment(query.SearchDate)
-          : moment().startOf('month').format('YYYY-MM-DD'),
+        SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
       },
-      dataIDSearch: [],
     };
     setIsMounted(true);
   }
@@ -96,7 +93,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'OPtwentyFourMonth/GET_DATA',
+      type: 'OPOfficialStudentYear/GET_DATA',
       payload: {
         ...search,
       },
@@ -211,7 +208,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).startOf('month').format('YYYY-MM-DD'), type);
+    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
     this.setStateData({ dataIDSearch: e });
   };
 
@@ -236,76 +233,97 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const { search } = this.state;
     const columns = [
       {
+        title: 'STT',
+        key: 'index',
+        width: 100,
+        render: (value, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
+      },
+      {
         title: 'Họ và tên',
-        key: 'name',
-        width: 300,
-        render: (value, record) => {
-          if (record?.branch) {
-            return <Text size="normal">Cơ sở</Text>;
-          }
-          if (record?.class?.name && record?.total) {
-            return <Text size="normal">Lớp</Text>;
-          }
-          return <Text size="normal">{record?.fullName}</Text>;
-        },
+        key: 'fullName',
+        width: 250,
+        render: (value, record) => <Text size="normal">{record?.fullName}</Text>,
+      },
+      {
+        title: 'Mã học sinh',
+        key: 'code',
+        width: 150,
+        render: (value, record) => <Text size="normal">{record?.code}</Text>,
       },
       {
         title: 'Ngày sinh',
-        key: 'birthDay',
-        render: (value, record) => {
-          if (record?.branch) {
-            return <Text size="normal">{record?.branch?.name}</Text>;
-          }
-          return <Text size="normal">{Helper.getDate(record.dayOfBirth)}</Text>;
-        },
+        key: 'dayOfBirth',
+        width: 150,
+        render: (value, record) => <Text size="normal">{Helper.getDate(record.dayOfBirth)}</Text>,
       },
       {
         title: 'Số tháng tuổi',
-        key: 'addageress',
-        render: (value, record) => {
-          if (record?.class?.name && record?.total) {
-            return <Text size="normal">{record?.class?.name}</Text>;
-          }
-          return <Text size="normal">{record.age}</Text>;
-        },
+        key: 'age',
+        width: 150,
+        render: (value, record) => <Text size="normal">{record.age}</Text>,
       },
       {
-        title: 'Ngày nhập học',
-        key: 'date',
-        render: (value, record) => {
-          if (record?.branch) {
-            return <Text size="normal">Tổng số học sinh</Text>;
-          }
-          return (
-            <Text size="normal">
-              {' '}
-              {Helper.getDate(record.registerDate, variables.DATE_FORMAT.DATE)}
-            </Text>
-          );
-        },
+        title: 'Giới tính',
+        key: 'sex',
+        width: 150,
+        render: (value, record) => (
+          <Text size="normal">{record?.sex === 'MALE' ? 'Nam' : 'Nữ'}</Text>
+        ),
       },
       {
-        title: 'Số tháng học của bé tại trường	',
-        key: 'month',
-        render: (value, record) => {
-          if (record?.branch) {
-            return (
-              <Text size="normal" style={{ color: 'red' }}>
-                {record.total} học sinh
-              </Text>
-            );
-          }
-          if (record?.class?.name && record?.total) {
-            return (
-              <Text size="normal" style={{ color: 'red' }}>
-                {record.total}
-              </Text>
-            );
-          }
-          return <Text size="normal">{record.studiedMonth}</Text>;
-        },
+        title: 'Họ và tên cha',
+        key: 'father?.fullName',
+        width: 150,
+        render: (value, record) => <Text size="normal">{record?.father?.fullName}</Text>,
+      },
+      {
+        title: 'Sđt cha',
+        key: 'father?.phone',
+        width: 150,
+        render: (value, record) => <Text size="normal">{record?.father?.phone}</Text>,
+      },
+      {
+        title: 'Họ và tên mẹ',
+        key: 'mother?.fullName',
+        width: 150,
+        render: (value, record) => <Text size="normal">{record?.mother?.fullName}</Text>,
+      },
+      {
+        title: 'Sđt mẹ',
+        key: 'mother?.fullName',
+        width: 150,
+        render: (value, record) => <Text size="normal">{record?.mother?.fullName}</Text>,
+      },
+      {
+        title: 'Cơ sở',
+        key: 'branch?.name',
+        width: 150,
+        render: (value, record) => <Text size="normal">{record?.branch?.name}</Text>,
+      },
+      {
+        title: 'Lớp',
+        key: 'class?.name',
+        width: 150,
+        render: (value, record) => <Text size="normal">{record?.class?.name}</Text>,
+      },
+      {
+        title: 'Ngày vào lớp',
+        key: 'registerDate',
+        width: 150,
+        render: (value, record) => (
+          <Text size="normal">
+            {' '}
+            {Helper.getDate(record.registerDate, variables.DATE_FORMAT.DATE)}
+          </Text>
+        ),
+      },
+      {
+        title: 'Năm học',
+        key: 'code',
+        width: 150,
       },
     ];
     return columns;
@@ -314,17 +332,14 @@ class Index extends PureComponent {
   handleCancel = () => this.setStateData({ visible: false });
 
   onChangeExcel = () => {
-    const { dataIDSearch } = this.state;
-    Helper.exportExcelClover(
-      `/students/export-to-excel/group-by-branch`,
-      {
-        StudiedMonths: 24,
-        SearchDate: dataIDSearch
-          ? moment(dataIDSearch).startOf('month').format('YYYY-MM-DD')
-          : moment().startOf('month').format('YYYY-MM-DD'),
-      },
-      `Danhsachhocsinhhocdu24thang.xlsx`,
-    );
+    const {
+        defaultBranch,
+        location: { query },
+      } = this.props;
+    Helper.exportExcelClover(`/students/export-to-excel/by-condition`, {
+        KeyWord: query?.KeyWord,
+        branchId: query?.branchId || defaultBranch?.id,
+    }, `Baocaothongke.xlsx`);
   };
 
   render() {
@@ -342,11 +357,13 @@ class Index extends PureComponent {
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách học sinh học đủ 24 tháng đến ngày đầu tháng" />
+        <Helmet title="Báo cáo thống kê số lượng học sinh nhập học chính thức theo năm" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách học sinh học đủ 24 tháng đến ngày đầu tháng</Text>
+            <Text color="dark">
+              Báo cáo thống kê số lượng học sinh nhập học chính thức theo năm
+            </Text>
             <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>
@@ -365,10 +382,11 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="KeyWord"
-                    onChange={(event) => this.onChange(event, 'KeyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    type={variables.INPUT_SEARCH}
+                    data={[{ id: null, name: 'Tất cả năm học' }]}
+                    name="year"
+                    onChange={(event) => this.onChangeSelect(event, 'year')}
+                    type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 {!defaultBranch?.id && (
@@ -403,10 +421,11 @@ class Index extends PureComponent {
                   />
                 </div>
                 <div className="col-lg-3">
-                  <DatePicker
-                    picker="month"
-                    defaultValue={moment().startOf('month')}
-                    onChange={(event) => this.onChangeDate(event, 'SearchDate')}
+                  <FormItem
+                    name="KeyWord"
+                    onChange={(event) => this.onChange(event, 'KeyWord')}
+                    placeholder="Nhập từ khóa tìm kiếm"
+                    type={variables.INPUT_SEARCH}
                   />
                 </div>
               </div>

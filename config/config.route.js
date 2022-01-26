@@ -536,8 +536,20 @@ export default [
             authority: [permissions.HSDT],
           },
           {
-            path: '/ho-so-doi-tuong/bao-cao/tren-hai-nam-ba-nam-bon-nam',
-            component: './object-profiles/report/over-two-years',
+            path: '/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-tren-hai-nam',
+            component: './object-profiles/report/two-year',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-tren-ba-nam',
+            component: './object-profiles/report/three-year',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-caodanh-sach-hoc-sinh-hoc-tren-bon-nam',
+            component: './object-profiles/report/four-year',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
@@ -586,6 +598,12 @@ export default [
           {
             path: '/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-rut-ho-so',
             component: './object-profiles/report/students-withdraw-their-records',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/bao-cao/thong-ke-luong-hoc-sinh-nhap-hoc-chinh-thuc-theo-nam',
+            component: './object-profiles/report/official-student-by-year',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, DatePicker } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -29,9 +29,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicalStudentProblem, loading, user, OPtwentyFourMonth }) => ({
+const mapStateToProps = ({ medicalStudentProblem, loading, user, OPTwoYear }) => ({
   loading,
-  data: OPtwentyFourMonth.data,
+  data: OPTwoYear.data,
   error: medicalStudentProblem.error,
   classes: medicalStudentProblem.classes,
   branches: medicalStudentProblem.branches,
@@ -55,9 +55,7 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        SearchDate: query.SearchDate
-          ? moment(query.SearchDate)
-          : moment().startOf('month').format('YYYY-MM-DD'),
+        SearchDate: query.SearchDate ? moment(query.SearchDate) : moment(),
       },
       dataIDSearch: [],
     };
@@ -96,7 +94,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'OPtwentyFourMonth/GET_DATA',
+      type: 'OPTwoYear/GET_DATA',
       payload: {
         ...search,
       },
@@ -211,7 +209,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).startOf('month').format('YYYY-MM-DD'), type);
+    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
     this.setStateData({ dataIDSearch: e });
   };
 
@@ -318,12 +316,12 @@ class Index extends PureComponent {
     Helper.exportExcelClover(
       `/students/export-to-excel/group-by-branch`,
       {
-        StudiedMonths: 24,
+        StudiedMonths: 48,
         SearchDate: dataIDSearch
-          ? moment(dataIDSearch).startOf('month').format('YYYY-MM-DD')
-          : moment().startOf('month').format('YYYY-MM-DD'),
+          ? Helper.getDate(dataIDSearch, variables.DATE_FORMAT.DATE)
+          : moment(),
       },
-      `Danhsachhocsinhhocdu24thang.xlsx`,
+      `Danhsachhocsinhhoctren4nam.xlsx`,
     );
   };
 
@@ -342,11 +340,11 @@ class Index extends PureComponent {
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách học sinh học đủ 24 tháng đến ngày đầu tháng" />
+        <Helmet title="Danh sách học sinh học trên 2 năm tính đến thời điểm" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách học sinh học đủ 24 tháng đến ngày đầu tháng</Text>
+            <Text color="dark">Danh sách học sinh học trên 2 năm tính đến thời điểm</Text>
             <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>
@@ -403,10 +401,11 @@ class Index extends PureComponent {
                   />
                 </div>
                 <div className="col-lg-3">
-                  <DatePicker
-                    picker="month"
-                    defaultValue={moment().startOf('month')}
+                  <FormItem
+                    name="SearchDate"
                     onChange={(event) => this.onChangeDate(event, 'SearchDate')}
+                    type={variables.DATE_PICKER}
+                    allowClear={false}
                   />
                 </div>
               </div>
