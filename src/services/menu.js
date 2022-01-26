@@ -879,6 +879,13 @@ export async function getLeftMenuAllocation() {
           permission: [permissions.PB],
           pro: true,
         },
+        {
+          title: 'Bảng phân công xếp lớp giáo viên',
+          key: 'class-assignment',
+          url: ['/phan-bo/bao-cao/bang-phan-cong-xep-lop-giao-vien'],
+          permission: [permissions.PB],
+          pro: true,
+        },
       ],
     },
   ];
@@ -1651,6 +1658,23 @@ export async function getLeftMenuHRM() {
         },
       ],
     },
+    {
+      title: 'Báo cáo',
+      key: 'report',
+      icon: 'icon icon-list',
+      permission: [permissions.HRM],
+      children: [
+        {
+          title: 'Báo cáo nhân viên đnag nghỉ phép',
+          key: 'employee-on-leave',
+          url: [
+            '/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep'
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuFeePolicy() {
@@ -2105,42 +2129,42 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
-        {
-          title: 'Zalo',
-          key: 'zalo',
-          url: ['/crm/chat/zalo'],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Quản lý kịch bản chatbot',
-          key: 'chatbot',
-          children: [
-            {
-              title: 'Kịch bản chào mừng',
-              key: 'welcome-script',
-              url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-chao-mung'],
-              permission: [permissions.CRM],
-              pro: true,
-            },
-            {
-              title: 'Thiết lập từ khóa',
-              key: 'keyword-script',
-              url: ['/crm/chat/quan-ly-kich-ban-chatbot/thiet-lap-tu-khoa'],
-              permission: [permissions.CRM],
-              pro: true,
-            },
-            {
-              title: 'Kịch bản mặc định',
-              key: 'default-scenario',
-              url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-mac-dinh'],
-              permission: [permissions.CRM],
-              pro: true,
-            },
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
+        // {
+        //   title: 'Zalo',
+        //   key: 'zalo',
+        //   url: ['/crm/chat/zalo'],
+        //   permission: [permissions.CRM],
+        //   pro: true,
+        // },
+        // {
+        //   title: 'Quản lý kịch bản chatbot',
+        //   key: 'chatbot',
+        //   children: [
+        //     {
+        //       title: 'Kịch bản chào mừng',
+        //       key: 'welcome-script',
+        //       url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-chao-mung'],
+        //       permission: [permissions.CRM],
+        //       pro: true,
+        //     },
+        //     {
+        //       title: 'Thiết lập từ khóa',
+        //       key: 'keyword-script',
+        //       url: ['/crm/chat/quan-ly-kich-ban-chatbot/thiet-lap-tu-khoa'],
+        //       permission: [permissions.CRM],
+        //       pro: true,
+        //     },
+        //     {
+        //       title: 'Kịch bản mặc định',
+        //       key: 'default-scenario',
+        //       url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-mac-dinh'],
+        //       permission: [permissions.CRM],
+        //       pro: true,
+        //     },
+        //   ],
+        //   permission: [permissions.CRM],
+        //   pro: true,
+        // },
       ],
     },
     {

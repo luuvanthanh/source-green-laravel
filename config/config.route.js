@@ -1719,6 +1719,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
+          {
+            path: '/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep',
+            component: './hrm/report/employee-on-leave',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
         ],
       },
       // HRM
@@ -1818,6 +1824,12 @@ export default [
           {
             path: '/phan-bo/bao-cao/danh-sach-hoc-sinh-du-tuoi-chuyen-len-lop-vao-cuoi-thang',
             component: './allocation/report/able-to-up-class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.PB],
+          },
+          {
+            path: '/phan-bo/bao-cao/bang-phan-cong-xep-lop-giao-vien',
+            component: './allocation/report/class-assignment',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.PB],
           },

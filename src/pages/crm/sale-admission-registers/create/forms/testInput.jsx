@@ -20,7 +20,7 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
 });
 
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, employees }) => {
+  ({ dispatch, loading: { effects }, match: { params }, employees }) => {
     const formRef = useRef();
     const formSubmit = useRef();
 
@@ -33,7 +33,7 @@ const General = memo(
       formSubmit.current.validateFields().then((values) => {
         dispatch({
           type: 'crmSaleAdmissionAdd/ADD_TEST_INPUT',
-          payload: { ...details, ...values, admission_register_id: params.id },
+          payload: { ...values, admission_register_id: params.id },
           callback: (response, error) => {
             if (response) {
               setIsModalVisible(false);
@@ -74,16 +74,19 @@ const General = memo(
     const onSubmit = () => {
       formRef.current.validateFields().then((values) => {
         const items = values.data.map((item) => ({
-          ...item,
-          birth_date: Helper.getDateTime({
+          employee_id: item?.employee_id,
+          time_interview: item?.time_interview,
+          date_interview: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
-              originValue: item.birth_date,
+              originValue: item.date_interview,
+
             }),
             format: variables.DATE_FORMAT.DATE_AFTER,
             isUTC: false,
           }),
           customer_lead_id: params.id,
+          admission_register_id: item?.admission_register_id,
         }));
         const payload = items[0];
         dispatch({
@@ -549,7 +552,7 @@ const General = memo(
 General.propTypes = {
   dispatch: PropTypes.func,
   match: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
+  // details: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   // error: PropTypes.objectOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
@@ -558,7 +561,7 @@ General.propTypes = {
 
 General.defaultProps = {
   match: {},
-  details: {},
+  // details: {},
   dispatch: () => { },
   loading: {},
   // error: {},

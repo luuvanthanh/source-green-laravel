@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form } from 'antd';
+import { Form, Avatar } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 import { connect, withRouter } from 'umi';
@@ -11,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
+import { UserOutlined } from '@ant-design/icons';
 import stylesModule from '../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
@@ -113,10 +114,15 @@ const General = memo(
             <Pane className="row">
               <Pane className="col">
                 <Form.Item name="file_image" label="Hình ảnh học sinh">
-                  <ImageUpload
-                    callback={(files) => uploadFiles(files)}
-                    fileImage={files}
-                  />
+                  {
+                    details?.studentInfo?.file_image ?
+                      <ImageUpload
+                        callback={(files) => uploadFiles(files)}
+                        fileImage={files}
+                      />
+                      :
+                      < Avatar shape="square" size={100} icon={<UserOutlined />} />
+                  }
                 </Form.Item>
               </Pane>
             </Pane>
