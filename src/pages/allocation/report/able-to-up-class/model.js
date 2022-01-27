@@ -1,20 +1,9 @@
-import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'allocationReportAbleToUpClass',
   state: {
-    data: [
-      {
-        id: 1,
-        name: 'Trần Thùy Linh',
-        birthday: '16/10/2018',
-        age_month: 37,
-        gender: 'FEMALE',
-        class: 'Preschool',
-        division: 'Lake view',
-        cover_class: 'Montessori',
-      },
-    ],
+    data: [],
     pagination: {
       total: 0,
     },
@@ -41,36 +30,19 @@ export default {
         },
       },
     }),
-    SET_BRACHES: (state, { payload }) => ({
-      ...state,
-      branches: payload.parsePayload,
-    }),
-    SET_CLASSES: (state, { payload }) => ({
-      ...state,
-      classes: payload.items,
-    }),
   },
   effects: {
-    *GET_BRACHES({ payload }, saga) {
+    *GET_DATA({ payload }, saga) {
       try {
-        const response = yield saga.call(categories.getBranches, payload);
+        const response = yield saga.call(services.get, payload);
         yield saga.put({
-          type: 'SET_BRACHES',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *GET_CLASSES({ payload }, saga) {
-      try {
-        const response = yield saga.call(categories.getClasses, payload);
-        yield saga.put({
-          type: 'SET_CLASSES',
-          payload: response,
+          type: 'SET_DATA',
+          payload: {
+            parsePayload: response,
+            pagination: {
+              total: response.totalCount,
+            },
+          },
         });
       } catch (error) {
         yield saga.put({

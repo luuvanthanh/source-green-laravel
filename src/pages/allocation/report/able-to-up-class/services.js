@@ -3,18 +3,12 @@ import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/student-medical-problems', {
+  return request('/students/by-condition', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit', 'date'),
+      ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
+      ClassTransfer : true,
     },
-  });
-}
-
-export function remove(id = {}) {
-  return request(`/student-medical-problems/${id}`, {
-    method: 'DELETE',
-    parse: true,
   });
 }
