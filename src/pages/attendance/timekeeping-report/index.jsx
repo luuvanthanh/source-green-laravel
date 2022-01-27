@@ -367,7 +367,31 @@ class Index extends PureComponent {
   };
 
   exportData = () => {
-    Helper.exportExcel('/v1/dismisseds-export-word', {}, 'THDiemdanh.docx');
+    Helper.exportExcel(
+      '/v1/export-excel-attendance',
+      {
+        startDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: this.state.search.startDate,
+            targetValue: '00:00:00',
+          }),
+          format: variables.DATE_AFTER,
+          isUTC: false,
+        }),
+        endDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: this.state.search.endDate,
+            targetValue: '23:59:59',
+          }),
+          format: variables.DATE_AFTER,
+          isUTC: false,
+        }),
+        excel: true,
+      },
+      'THDiemdanh.xlsx',
+    );
   };
 
   /**

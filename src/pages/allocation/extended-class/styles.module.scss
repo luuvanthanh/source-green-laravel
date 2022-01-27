@@ -221,3 +221,34 @@
     }
   }
 }
+
+.titleModal {
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 18px;
+  text-transform: uppercase;
+  color: $text-success;
+  margin-bottom: 12px;
+}
+
+.tableCustom {
+  border: 1px solid $border-gray;
+
+  .tableHeaderCustom {
+    background-color: #eef0f4;
+
+    div {
+      padding: 10px 0;
+    }
+  }
+
+  .tableBodyCustom {
+    border-bottom: 1px solid $border-gray;
+  }
+
+  .tableFooterCustom {
+    button {
+      margin: 5px 10px;
+    }
+  }
+}

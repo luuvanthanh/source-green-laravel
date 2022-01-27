@@ -136,6 +136,14 @@ export default {
         callback(null, error);
       }
     },
+    *EDIT_POPUP({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.editPopUp, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
     *DRAG_CELL_BY_CELL({ payload, callback }, saga) {
       try {
         yield saga.call(services.dragCellByCell, payload);

@@ -220,7 +220,12 @@ export const variables = {
   STATUS_EXTENDED: {
     NOT_DISTRIBUTION: 'NOT_DISTRIBUTION',
     CONFIRMED: 'CONFIRMED',
-    WAITING: 'WAITING'
+    WAITING: 'WAITING',
+  },
+  STATUS_EXTENDED_NAME: {
+    NOT_DISTRIBUTION: 'Chưa phân bổ',
+    CONFIRMED: 'Đã xác nhận',
+    WAITING: 'Chưa xác nhận',
   },
   COLORS: [
     '#FF8D8D',
