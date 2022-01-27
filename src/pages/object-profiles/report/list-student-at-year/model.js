@@ -1,151 +1,93 @@
-export default {
-  namespace: 'OPListStudentStudyAtYear',
-  state: {
-    data: [
-      {
-        key: 1,
-        name: 'Cơ sở',
-        birthDay: 'Lake view',
-        children: [
-          {
-            key: 11,
-            name: 'Lớp',
-            birthDay: 'Preschool',
-            children: [
-              {
-                key: 11,
-                name: 'Trần Thùy Linh',
-                birthDay: '16/10/2017',
-                gender: 'FEMALE',
-                age: 32,
-                date: '15/01/2021',
-                father_name: 'Trần Đức Hải',
-                mother_name: 'Lê Thị Ngọc Sương',
-                address: '111A Pasteur, Bến Nghé',
-              },
-              {
-                key: 11,
-                name: 'Nguyễn Thị Minh Nguyệt',
-                birthDay: '08/05/2017',
-                gender: 'FEMALE',
-                age: 35,
-                date: '17/01/2019',
-                father_name: 'Nguyễn Văn Hùng',
-                mother_name: 'Trần Ngọc Ánh',
-                address: '114 Tôn Thất Đạm, Bến Nghé',
-              },
-            ],
-          },
-          {
-            key: 12,
-            name: 'Lớp',
-            birthDay: 'Nursery',
-            children: [
-              {
-                key: 12,
-                name: 'Vũ Hoàng Ân',
-                birthDay: '08/03/2017',
-                gender: 'MALE',
-                age: 31,
-                date: '14/01/2019',
-                father_name: 'Vũ Minh Hải',
-                mother_name: 'Trần Phương Linh',
-                address: '25 Nguyễn Thái Học, Cầu Ông Lãnh',
-              },
-              {
-                key: 12,
-                name: 'Ngô Cát Tú Nghi',
-                birthDay: '10/08/2017',
-                gender: 'FEMALE',
-                age: 29,
-                date: '15/01/2019',
-                father_name: 'Ngô Cát Thức',
-                mother_name: 'Lê Thảo Nguyên',
-                address: '90 Trần Đình Xu, Cô Giang',
-              },
-            ],
-          },
-        ],
+import * as services from './services';
+
+  export default {
+    namespace: 'OPListStudentStudyAtYear',
+    state: {
+      data: [],
+      pagination: {
+        total: 0,
       },
-      {
-        key: 2,
-        name: 'Cơ sở',
-        birthDay: 'Lake view',
-        children: [
-          {
-            key: 13,
-            name: 'Lớp',
-            birthDay: 'Preschool',
-            children: [
-              {
-                key: 13,
-                name: 'Trần Thùy Linh',
-                birthDay: '16/10/2017',
-                gender: 'FEMALE',
-                age: 32,
-                date: '15/01/2021',
-                father_name: 'Trần Đức Hải',
-                mother_name: 'Lê Thị Ngọc Sương',
-                address: '111A Pasteur, Bến Nghé',
-              },
-              {
-                key: 13,
-                name: 'Nguyễn Thị Minh Nguyệt',
-                birthDay: '08/05/2017',
-                gender: 'FEMALE',
-                age: 35,
-                date: '17/01/2019',
-                father_name: 'Nguyễn Văn Hùng',
-                mother_name: 'Trần Ngọc Ánh',
-                address: '114 Tôn Thất Đạm, Bến Nghé',
-              },
-            ],
-          },
-          {
-            key: 14,
-            name: 'Lớp',
-            birthDay: 'Nursery',
-            children: [
-              {
-                key: 14,
-                name: 'Vũ Hoàng Ân',
-                birthDay: '08/03/2017',
-                gender: 'MALE',
-                age: 31,
-                date: '14/01/2019',
-                father_name: 'Vũ Minh Hải',
-                mother_name: 'Trần Phương Linh',
-                address: '25 Nguyễn Thái Học, Cầu Ông Lãnh',
-              },
-              {
-                key: 14,
-                name: 'Ngô Cát Tú Nghi',
-                birthDay: '10/08/2017',
-                gender: 'FEMALE',
-                age: 29,
-                date: '15/01/2019',
-                father_name: 'Ngô Cát Thức',
-                mother_name: 'Lê Thảo Nguyên',
-                address: '90 Trần Đình Xu, Cô Giang',
-              },
-            ],
-          },
-        ],
+      error: {
+        isError: false,
+        data: {},
       },
-    ],
-    pagination: {
-      total: 0,
+      branches: [],
+      classes: [],
+      years: [],
     },
-    error: {
-      isError: false,
-      data: {},
+    reducers: {
+      INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+      SET_DATA: (state, { payload }) => ({
+        ...state,
+        data: payload.parsePayload.map((key) => ({
+         branch : (key?.branch || {}),
+         total : (key?.total || ""),
+         children:( 
+          key?.studentGroupByClasses.map((item) => ({
+            class : item?.class,
+            total : item?.total,
+            id: item?.class?.id,
+            children: (
+              item?.students.map((i) => ({
+                ...i
+              }))
+            )
+          }))
+         )
+        })),
+        pagination: payload.pagination,
+      }),
+      SET_ERROR: (state, { payload }) => ({
+        ...state,
+        error: {
+          isError: true,
+          data: {
+            ...payload,
+          },
+        },
+      }),
+      SET_YEARS: (state, { payload }) => ({
+        ...state,
+        years: payload,
+      }),
     },
-    branches: [],
-    classes: [],
-  },
-  reducers: {
-    INIT_STATE: (state) => ({ ...state }),
-  },
-  effects: {},
-  subscriptions: {},
-};
+    effects: {
+      *GET_DATA({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.get, payload);
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: {
+              parsePayload: response,
+              pagination: {
+                total: response.totalCount,
+              },
+            },
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_YEARS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getYears, payload);
+        if (response) {
+          callback(response.items);
+          yield saga.put({
+            type: 'SET_YEARS',
+            payload: response.items,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    },
+    subscriptions: {},
+  };
