@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, DatePicker } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -403,11 +403,12 @@ class Index extends PureComponent {
                   />
                 </div>
                 <div className="col-lg-3">
-                  <DatePicker
-                    picker="month"
-                    defaultValue={moment().startOf('month')}
-                    onChange={(event) => this.onChangeDate(event, 'SearchDate')}
-                  />
+                  <FormItem
+                  name="SearchDate"
+                  onChange={(event) => this.onChangeDate(event, 'SearchDate')}
+                  type={variables.MONTH_PICKER}
+                  allowClear={false}
+                />
                 </div>
               </div>
             </Form>

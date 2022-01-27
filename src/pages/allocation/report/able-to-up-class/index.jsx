@@ -1,5 +1,5 @@
-import React, { memo, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'umi';
+import React, { PureComponent } from 'react';
+import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
@@ -11,33 +11,92 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import { useDispatch, useSelector } from 'dva';
+import PropTypes from 'prop-types';
+import stylesModule from './styles.module.scss';
 
-const genders = { MALE: 'Nam', FEMALE: 'Nữ' };
-const Index = memo(() => {
-  const [
-    { data, pagination, branches, classes, error },
-    loading,
-  ] = useSelector(({ loading: { effects }, allocationReportAbleToUpClass }) => [
-    allocationReportAbleToUpClass,
-    effects,
-  ]);
+let isMounted = true;
+/**
+ * Set isMounted
+ * @param {boolean} value
+ * @returns {boolean} value of isMounted
+ */
+const setIsMounted = (value = true) => {
+  isMounted = value;
+  return isMounted;
+};
+/**
+ * Get isMounted
+ * @returns {boolean} value of isMounted
+ */
+const getIsMounted = () => isMounted;
+const mapStateToProps = ({ medicalStudentProblem, loading, user, allocationReportAbleToUpClass }) => ({
+  loading,
+  data: allocationReportAbleToUpClass.data,
+  error: medicalStudentProblem.error,
+  classes: medicalStudentProblem.classes,
+  branches: medicalStudentProblem.branches,
+  pagination: medicalStudentProblem.pagination,
+  defaultBranch: user.defaultBranch,
+});
+@connect(mapStateToProps)
+class Index extends PureComponent {
+  formRef = React.createRef();
 
-  const formRef = React.createRef();
-  const { query, pathname } = useLocation();
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const [search, setSearch] = useState({
-    KeyWord: query?.KeyWord,
-    branchId: query?.branchId,
-    page: query?.page || variables.PAGINATION.PAGE,
-    limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    date: query.date ? moment(query.date) : moment(),
-  });
+  constructor(props) {
+    super(props);
+    const {
+      defaultBranch,
+      location: { query },
+    } = props;
+    this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      search: {
+        KeyWord: query?.KeyWord,
+        branchId: query?.branchId || defaultBranch?.id,
+        page: query?.page || variables.PAGINATION.PAGE,
+        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        SearchDate: query.SearchDate
+          ? moment(query.SearchDate)
+          : moment().startOf('month').format('YYYY-MM-DD'),
+      },
+      dataIDSearch: [],
+    };
+    setIsMounted(true);
+  }
 
-  const onLoad = () => {
-    dispatch({
-      type: 'allocationRegister/GET_DATA',
+  componentDidMount() {
+    this.onLoad();
+    this.loadCategories();
+  }
+
+  componentWillUnmount() {
+    setIsMounted(false);
+  }
+
+  /**
+   * Set state properties
+   * @param {object} data the data input
+   * @param {function} callback the function which will be called after setState
+   * @returns {void} call this.setState to upSearchDate state
+   * @memberof setStateData
+   */
+  setStateData = (state, callback) => {
+    if (!getIsMounted()) {
+      return;
+    }
+    this.setState(state, callback);
+  };
+
+  /**
+   * Function load data
+   */
+  onLoad = () => {
+    const { search } = this.state;
+    const {
+      location: { pathname },
+    } = this.props;
+    this.props.dispatch({
+      type: 'allocationReportAbleToUpClass/GET_DATA',
       payload: {
         ...search,
       },
@@ -46,93 +105,129 @@ const Index = memo(() => {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          date: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
+          SearchDate: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
     );
   };
 
-  const loadCategories = () => {
+  /**
+   * Function load branches
+   */
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    const { search } = this.state;
     if (search.branchId) {
       dispatch({
-        type: 'allocationRegister/GET_CLASSES',
+        type: 'medicalStudentProblem/GET_CLASSES',
         payload: {
           branch: search.branchId,
         },
       });
     }
     dispatch({
-      type: 'allocationRegister/GET_BRACHES',
+      type: 'medicalStudentProblem/GET_BRACHES',
       payload: {},
     });
   };
 
-  useEffect(() => {
-    onLoad();
-    loadCategories();
-  }, [search]);
-
-  const debouncedSearch = debounce((value, type) => {
-    setSearch((prev) => ({
-      ...prev.search,
-      [`${type}`]: value,
-      page: variables.PAGINATION.PAGE,
-      limit: variables.PAGINATION.PAGE_SIZE,
-    }));
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearch = debounce((value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
   }, 300);
 
-  const onChangeSelect = (e, type) => {
-    debouncedSearch(e, type);
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChange = (e, type) => {
+    this.debouncedSearch(e.target.value, type);
   };
 
-  const onChangeSelectBranch = (e, type) => {
-    debouncedSearch(e, type);
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    const { dispatch } = this.props;
+    this.debouncedSearch(e, type);
     dispatch({
-      type: 'allocationRegister/GET_CLASSES',
+      type: 'medicalStudentProblem/GET_CLASSES',
       payload: {
         branch: e,
       },
     });
   };
 
-  const debouncedSearchDateRank = debounce((from, to) => {
-    setSearch((prev) => ({
-      ...prev.search,
-      from,
-      to,
-    }));
-  }, 200);
-
-  const onChangeDateRank = (e) => {
-    debouncedSearchDateRank(
-      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
-      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+  /**
+   * Function set pagination
+   * @param {integer} page page of pagination
+   * @param {integer} size size of pagination
+   */
+  changePagination = ({ page, limit }) => {
+    this.setState(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          page,
+          limit,
+        },
+      }),
+      () => {
+        this.onLoad();
+      },
     );
   };
 
-  const changePagination = ({ page, limit }) => {
-    setSearch((prev) => ({
-      ...prev.search,
-      page,
-      limit,
-    }));
-  };
-
-  const exportData = () => {
-    Helper.exportExcel('/v1/dismisseds-export-word', {}, 'THDiemdanh.docx');
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDate = (e, type) => {
+    this.debouncedSearch(moment(e).startOf('month').format('YYYY-MM-DD'), type);
+    this.setStateData({ dataIDSearch: e });
   };
 
   /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const paginationFunction = (pagination) => {
-    Helper.paginationNet({
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
       pagination,
       query,
       callback: (response) => {
-        changePagination(response);
+        this.changePagination(response);
       },
     });
   };
@@ -140,7 +235,8 @@ const Index = memo(() => {
   /**
    * Function header table
    */
-  const header = () => {
+  header = () => {
+    const { search } = this.state;
     const columns = [
       {
         title: 'STT',
@@ -153,143 +249,219 @@ const Index = memo(() => {
         title: 'Mã HS',
         key: 'id',
         width: 100,
-        render: (record) => <Text size="normal">{record?.id}</Text>,
+        render: (record) => <Text size="normal">{record?.code}</Text>,
       },
       {
         title: 'Họ và tên',
         key: 'name',
-        width: 100,
-        className: 'min-width-100',
-        render: (record) => <Text size="normal">{record?.name}</Text>,
+        width: 250,
+        className: 'min-width-250',
+        render: (record) => <Text size="normal">{record?.fullName}</Text>,
       },
       {
         title: 'Ngày sinh',
         key: 'birthday',
-        width: 100,
-        className: 'min-width-100',
+        width: 150,
+        className: 'min-width-150',
         render: (record) => <Text size="normal">{record?.birthday}</Text>,
       },
       {
         title: 'Số tháng tuổi',
         key: 'age_month',
-        width: 100,
-        className: 'min-width-100 ',
-        render: (record) => <Text size="normal">{record?.age_month}</Text>,
+        width: 150,
+        className: 'min-width-150 ',
+        render: (record) => <Text size="normal">{record?.age}</Text>,
       },
       {
         title: 'Giới tính',
         key: 'gender',
-        width: 100,
-        className: 'min-width-100',
-        render: (record) => <Text size="normal">{genders[record?.gender]}</Text>,
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.sex === 'FEMALE' ? "Nữ" : 'Nam'}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
-        width: 100,
-        className: 'min-width-100',
-        render: (record) => <Text size="normal">{record?.class}</Text>,
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       {
         title: 'Cơ sở',
         key: 'division',
-        width: 100,
-        className: 'min-width-100',
-        render: (record) => <Text size="normal">{record?.division}</Text>,
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp học phù trợ',
         key: 'cover_class',
-        width: 100,
-        className: 'min-width-100',
-        render: (record) => <Text size="normal">{record?.cover_class}</Text>,
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.transferedClass}</Text>,
       },
     ];
     return columns;
   };
 
-  return (
-    <>
-      <Helmet title="Danh sách học sinh đủ tuổi chuyển lên lớp trên vào cuối mỗi tháng" />
-      <div className={classnames(styles['content-form'], styles['content-form-children'], 'mt8')}>
-        {/* FORM SEARCH */}
-        <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-          <Text color="dark">
-            Danh sách học sinh đủ tuổi chuyển lên lớp trên vào cuối mỗi tháng
-          </Text>
-          <Button color="success" onClick={exportData} icon="export">
-            Tải file
-          </Button>
-        </div>
-        <div className={classnames(styles['block-table'])}>
-          <Form
-            initialValues={{
-              ...search,
-              branchId: search.branchId || null,
-              classId: search.classId || null,
-              date: search.date && moment(search.date),
-            }}
-            layout="vertical"
-            ref={formRef}
-          >
-            <div className="row">
-              <div className="col-lg-3">
-                <FormItem
-                  name="date"
-                  onChange={(event) => onChangeDateRank(event, 'date')}
-                  type={variables.MONTH_PICKER}
-                  allowClear={false}
-                />
+  handleCancel = () => this.setStateData({ visible: false });
+
+  onChangeExcel = () => {
+    const {
+      defaultBranch,
+      location: { query },
+    } = this.props;
+    const { dataIDSearch } = this.state;
+    Helper.exportExcelClover(
+      `/students/export-to-excel/group-by-branch`,
+      {
+        ClassTransfer: true,
+        KeyWord: query?.KeyWord,
+        Class: query?.Class,
+        branchId: query?.branchId || defaultBranch?.id,
+        SearchDate: dataIDSearch
+          ? moment(dataIDSearch).startOf('month').format('YYYY-MM-DD')
+          : moment().startOf('month').format('YYYY-MM-DD'),
+      },
+      `Danhsachhocsinhhocdutuoichuyenlenlop.xlsx`,
+    );
+  };
+
+  render() {
+    const {
+      data,
+      error,
+      classes,
+      branches,
+      pagination,
+      defaultBranch,
+      match: { params },
+      loading: { effects },
+    } = this.props;
+    const { search, defaultBranchs } = this.state;
+    const loading = effects['medicalStudentProblem/GET_DATA'];
+    return (
+      <>
+        <Helmet title="Danh sách học sinh đủ tuổi chuyển lên lớp trên vào cuối mỗi tháng" />
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+          {/* FORM SEARCH */}
+          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <Text color="dark">Danh sách học sinh đủ tuổi chuyển lên lớp trên vào cuối mỗi tháng</Text>
+            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+              Xuất Excel
+            </Button>
+          </div>
+          <div className={classnames(styles['block-table'])}>
+            <Form
+              initialValues={{
+                ...search,
+                branchId: search.branchId || null,
+                Class: search.Class || null,
+                SearchDate: (search.SearchDate && moment(search.SearchDate)) || null,
+              }}
+              layout="vertical"
+              ref={this.formRef}
+            >
+              <div className="row">
+                <div className="col-lg-3">
+                  <FormItem
+                    name="KeyWord"
+                    onChange={(event) => this.onChange(event, 'KeyWord')}
+                    placeholder="Nhập từ khóa tìm kiếm"
+                    type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                {!defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
+                    name="Class"
+                    onChange={(event) => this.onChangeSelect(event, 'Class')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="SearchDate"
+                    onChange={(event) => this.onChangeDate(event, 'SearchDate')}
+                    type={variables.MONTH_PICKER}
+                    allowClear={false}
+                  />
+                </div>
               </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
-                  name="branchId"
-                  onChange={(event) => onChangeSelectBranch(event, 'branchId')}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
-                  name="classId"
-                  onChange={(event) => onChangeSelect(event, 'classId')}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[{ id: null, name: 'Tất cả học sinh' }, ...classes]}
-                  name="classId"
-                  onChange={(event) => onChangeSelect(event, 'classId')}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
+            </Form>
+            <div className={stylesModule['wrapper-table']}>
+              <Table
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                error={error}
+                isError={error.isError}
+                defaultExpandAllRows
+                childrenColumnName="children"
+                bordered
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record?.branch?.name || record?.id}
+                scroll={{ x: '100%' }}
+              />
             </div>
-          </Form>
-          <Table
-            columns={header()}
-            dataSource={data}
-            loading={loading['allocationRegister/GET_DATA']}
-            error={error}
-            isError={error.isError}
-            childrenColumnName="noColumn"
-            bordered
-            pagination={paginationFunction(pagination)}
-            params={{
-              header: header(),
-              type: 'table',
-            }}
-            rowKey={(record) => record.id || record?.class?.id}
-            scroll={{ x: '100%' }}
-          />
+          </div>
         </div>
-      </div>
-    </>
-  );
-});
+      </>
+    );
+  }
+}
+
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
+  pagination: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  data: [],
+  pagination: {},
+  loading: {},
+  dispatch: {},
+  location: {},
+  branches: [],
+  error: {},
+  classes: [],
+  defaultBranch: {},
+};
 
 export default Index;
