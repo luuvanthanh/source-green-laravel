@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\AdmissionRegister\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\ChildDevelop\Models\ChildEvaluate;
 use GGPHP\Crm\ChildDevelop\Models\ChildEvaluateDetail;
 use GGPHP\Crm\ChildDevelop\Models\ChildEvaluateDetailChildrent;
 
@@ -11,7 +12,7 @@ class TestInputDetailChildren extends UuidModel
     protected $table = 'test_input_detail_childrens';
 
     protected $fillable = [
-        'child_evaluate_detail_childrent_id', 'child_evaluate_detail_id', 'test_input_detail_id'
+        'child_evaluate_detail_childrent_id', 'child_evaluate_detail_id', 'test_input_detail_id', 'child_evalue_id'
     ];
 
     public function testInputDetail()
@@ -27,5 +28,10 @@ class TestInputDetailChildren extends UuidModel
     public function childEvaluateDetail()
     {
         return $this->belongsTo(ChildEvaluateDetail::class, 'child_evaluate_detail_id');
+    }
+
+    public function childEvaluate()
+    {
+        return $this->belongsTo(ChildEvaluate::class, 'child_evalue_id');
     }
 }

@@ -6,6 +6,7 @@ use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\AdmissionRegister\Models\TestInputDetailChildren;
 use GGPHP\Crm\ChildDevelop\Transformers\ChildEvaluateDetailChildrentTransformer;
 use GGPHP\Crm\ChildDevelop\Transformers\ChildEvaluateDetailTransformer;
+use GGPHP\Crm\ChildDevelop\Transformers\ChildEvaluateTransformer;
 
 /**
  * Class CityTransformer.
@@ -31,7 +32,7 @@ class TestInputDetailChildrenTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['childEvaluateDetailChildren', 'childEvaluateDetail'];
+    protected $availableIncludes = ['childEvaluateDetailChildren', 'childEvaluateDetail', 'childEvaluate'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -62,5 +63,14 @@ class TestInputDetailChildrenTransformer extends BaseTransformer
         }
 
         return $this->item($testInputDetailChildren->childEvaluateDetail, new ChildEvaluateDetailTransformer, 'childEvaluateDetail');
+    }
+
+    public function includeChildEvaluate(TestInputDetailChildren $testInputDetailChildren)
+    {
+        if (empty($testInputDetailChildren->childEvaluate)) {
+            return;
+        }
+
+        return $this->item($testInputDetailChildren->childEvaluate, new ChildEvaluateTransformer, 'ChildEvaluate');
     }
 }

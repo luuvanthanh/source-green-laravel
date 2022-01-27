@@ -64,6 +64,14 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
             $this->model = $this->model->whereIn('status', $attributes['status']);
         }
 
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereHas('AdmissionRegister', function ($q) use ($attributes) {
+                $q->whereHas('studentInfo', function ($query) use ($attributes) {
+                    $query->whereLike('full_name', $attributes['key']);
+                });
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $testInput = $this->paginate($attributes['limit']);
         } else {
@@ -79,7 +87,6 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
 
         if (is_null($testInput)) {
             $testInput = TestInput::create($attributes);
-            $testInput->update();
         }
 
         if (!is_null($testInput)) {
@@ -96,6 +103,8 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
             $testInput = TestInput::where('admission_register_id', $attributes['admission_register_id'])->first();
 
             if (!empty($attributes['detail'])) {
+
+                TestInputDetail::where('category_skill_id', $attributes['detail']['category_skill_id'])->delete();
                 $attributes['detail']['test_input_id'] = $testInput->id;
                 $attributes['detail']['status'] = TestInputDetail::STATUS[$attributes['detail']['status']];
 

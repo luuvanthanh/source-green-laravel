@@ -42,17 +42,7 @@ class TestInputTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $type = null;
         $status = null;
-
-        switch ($model->type) {
-            case '0':
-                $type = 'TYPE_TEST_INPUT';
-                break;
-
-            default:
-                break;
-        }
 
         foreach (TestInput::STATUS as $key => $value) {
             if (!is_null($model->status)) {
@@ -63,7 +53,6 @@ class TestInputTransformer extends BaseTransformer
         }
 
         return [
-            'type' => $type,
             'status' => $status
         ];
     }
