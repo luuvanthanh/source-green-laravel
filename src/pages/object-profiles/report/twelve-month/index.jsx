@@ -55,7 +55,7 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        SearchDate: query.SearchDate ? moment(query.SearchDate) : moment(),
+        SearchDate: query.SearchDate ? moment(query.SearchDate) :moment().format('YYYY-MM-DD'),
       },
       dataIDSearch: [],
     };
@@ -243,7 +243,7 @@ class Index extends PureComponent {
           if (record?.branch) {
             return <Text size="normal">Cơ sở</Text>;
           }
-          if (record?.class?.name && record?.total) {
+          if (record?.class?.name && record?.total === 0 || record?.total) {
             return <Text size="normal">Lớp</Text>;
           }
           return <Text size="normal">{record?.fullName}</Text>;
@@ -263,7 +263,7 @@ class Index extends PureComponent {
         title: 'Số tháng tuổi',
         key: 'addageress',
         render: (value, record) => {
-          if (record?.class?.name && record?.total) {
+          if (record?.class?.name && record?.total === 0 || record?.total) {
             return <Text size="normal">{record?.class?.name}</Text>;
           }
           return <Text size="normal">{record.age}</Text>;
@@ -291,11 +291,11 @@ class Index extends PureComponent {
           if (record?.branch) {
             return (
               <Text size="normal" style={{ color: 'red' }}>
-                {record.total} học sinh
+                {record.total.length === 0 ? 0 : record?.total } học sinh
               </Text>
             );
           }
-          if (record?.class?.name && record?.total) {
+          if (record?.class?.name && record?.total === 0 || record?.total) {
             return (
               <Text size="normal" style={{ color: 'red' }}>
                 {record.total}
@@ -313,13 +313,21 @@ class Index extends PureComponent {
 
   onChangeExcel = () => {
     const { dataIDSearch } = this.state;
+    const {
+      defaultBranch,
+      location: { query },
+    } = this.props;
     Helper.exportExcelClover(
       `/students/export-to-excel/group-by-branch`,
       {
-        StudiedMonths: 12,
+        LimitStudiedMonths : 6,
+        IsMore: 'false',
+        KeyWord: query?.KeyWord,
+        Class: query?.Class,
+        branchId: query?.branchId || defaultBranch?.id,
         SearchDate: dataIDSearch
           ? Helper.getDate(dataIDSearch, variables.DATE_FORMAT.DATE)
-          : moment(),
+          : moment().format('YYYY-MM-DD'),
       },
       `Danhsachhocsinhhocdu12thang.xlsx`,
     );

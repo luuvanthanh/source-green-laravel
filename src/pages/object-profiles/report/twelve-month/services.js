@@ -8,7 +8,8 @@ export function get(params = {}) {
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
-      StudiedMonths : 12,
+      LimitStudiedMonths : 6,
+      IsMore: 'false',
     },
   });
 }

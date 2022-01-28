@@ -32,6 +32,10 @@ const Index = memo(() => {
         registerOvertimeAdd.detailsTime,
     ]);
 
+    const yearsConvert = year.map((item) => ({
+        id: item?.id,
+        name: `${item?.fromYear} - ${item?.toYear}`,
+      }));
 
     useEffect(() => {
         dispatch({
@@ -147,7 +151,7 @@ const Index = memo(() => {
                                                 <FormItem
                                                     label="Năm áp dụng"
                                                     name="year"
-                                                    data={loading['registerOvertimeAdd/GET_DETAILS'] ? [] : year.map(item => ({ ...item, name: item?.fromYear || '-' }))}
+                                                    data={loading['registerOvertimeAdd/GET_DETAILS'] ? [] : yearsConvert?.map(item => ({ ...item, name: item?.name || '-' }))}
                                                     type={variables.SELECT}
                                                     rules={[variables.RULES.EMPTY]}
                                                     onChange={changeStudent}

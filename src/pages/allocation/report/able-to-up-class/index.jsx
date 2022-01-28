@@ -313,9 +313,9 @@ class Index extends PureComponent {
     } = this.props;
     const { dataIDSearch } = this.state;
     Helper.exportExcelClover(
-      `/students/export-to-excel/group-by-branch`,
+      `/students/export-to-excel/by-condition`,
       {
-        ClassTransfer: true,
+        ClassTransfer : true,
         KeyWord: query?.KeyWord,
         Class: query?.Class,
         branchId: query?.branchId || defaultBranch?.id,

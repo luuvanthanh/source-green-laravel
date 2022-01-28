@@ -57,6 +57,9 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
       },
+      categories: {
+        yearsConvert: [],
+      },
     };
     setIsMounted(true);
   }
@@ -126,6 +129,24 @@ class Index extends PureComponent {
     dispatch({
       type: 'medicalStudentProblem/GET_BRACHES',
       payload: {},
+    });
+    dispatch({
+      type: 'OPOfficialStudentYear/GET_YEARS',
+      payload: {},
+      callback: (res) => {
+        if (res) {
+          this.setStateData(({ categories }) => ({
+            categories: {
+              ...categories,
+              yearsConvert:
+                res.map((item) => ({
+                  id: item.id,
+                  name: `Năm học  ${item.fromYear} - ${item.toYear}`,
+                })) || [],
+            },
+          }));
+        }
+      },
     });
   };
 
@@ -333,15 +354,19 @@ class Index extends PureComponent {
 
   onChangeExcel = () => {
     const {
-        defaultBranch,
-        location: { query },
-      } = this.props;
-    Helper.exportExcelClover(`/students/export-to-excel/by-condition`, {
+      defaultBranch,
+      location: { query },
+    } = this.props;
+    Helper.exportExcelClover(
+      `/students/export-to-excel/by-condition`,
+      {
         KeyWord: query?.KeyWord,
         Class: query?.Class,
         branchId: query?.branchId || defaultBranch?.id,
-        SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
-    }, `Baocaothongke.xlsx`);
+        timetableSettingId: query?.timetableSettingId,
+      },
+      `Baocaothongke.xlsx`,
+    );
   };
 
   render() {
@@ -355,7 +380,11 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    const { search, defaultBranchs } = this.state;
+    const {
+      search,
+      defaultBranchs,
+      categories: { yearsConvert },
+    } = this.state;
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
       <>
@@ -384,9 +413,10 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả năm học' }]}
-                    name="year"
-                    onChange={(event) => this.onChangeSelect(event, 'year')}
+                    className="ant-form-item-row"
+                    data={[{ id: null, name: 'Tất cả các năm ' }, ...yearsConvert]}
+                    name="timetableSettingId"
+                    onChange={(event) => this.onChangeSelect(event, 'timetableSettingId')}
                     type={variables.SELECT}
                     allowClear={false}
                   />
