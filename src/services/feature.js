@@ -1,7 +1,9 @@
 // eslint-disable-next-line import/extensions
+import Cookies from 'universal-cookie';
 import { permissions } from '../../config/permissions';
 import animationImage from './animation.json';
 
+const cookies = new Cookies();
 export const feature = {
   FEATURES: [
     {
@@ -148,7 +150,7 @@ export const feature = {
       title: 'Camera AI',
       src: '/images/home/chip.svg',
       animation: animationImage.cameraAI,
-      url: URL_AI,
+      url: `${URL_AI}/verify-token?token=${cookies.get('access_token')}`,
       target: true,
       permission: [permissions.CAMERAAI],
     },
