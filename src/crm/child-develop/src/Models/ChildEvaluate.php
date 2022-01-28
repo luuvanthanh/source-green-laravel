@@ -4,6 +4,7 @@ namespace GGPHP\Crm\ChildDevelop\Models;
 
 use GGPHP\ChildDevelop\Category\Models\CategorySkill;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\AdmissionRegister\Models\TestInputDetailChildren;
 
 class ChildEvaluate extends UuidModel
 {
@@ -33,5 +34,10 @@ class ChildEvaluate extends UuidModel
     public function categorySkill()
     {
         return $this->belongsTo(CategorySkill::class, 'category_skill_id');
+    }
+
+    public function testInputDetailChildren()
+    {
+        return $this->hasMany(TestInputDetailChildren::class, 'child_evalue_id');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\ChildDevelop\Http\Requests;
 
+use GGPHP\Crm\AdmissionRegister\Models\TestInputDetail;
 use GGPHP\Crm\ChildDevelop\Models\ChildEvaluate;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -42,8 +43,9 @@ class DeleteCategorySkillRequest extends FormRequest
     private function checkAccessDelete($id)
     {
         $childEvaluate = ChildEvaluate::where('category_skill_id', $id)->first();
+        $testInputDetail = TestInputDetail::where('category_skill_id', $id)->first();
 
-        if (is_null($childEvaluate)) {
+        if (is_null($childEvaluate) && is_null($testInputDetail)) {
             return true;
         }
 

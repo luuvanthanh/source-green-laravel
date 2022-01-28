@@ -6,7 +6,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class ChildEvaluateDetailChildrent extends UuidModel
 {
-    protected $table = 'child_evaluate_detail_childrents';
+    protected $table = 'child_evaluate_detail_childrens';
 
     protected $fillable = [
         'content', 'use', 'child_evaluate_detail_id'
