@@ -566,5 +566,13 @@ export default {
         });
       }
     },
+     *ADD_ACCOUNT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addAccount, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
 };

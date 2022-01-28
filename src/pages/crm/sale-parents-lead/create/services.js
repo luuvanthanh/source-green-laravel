@@ -91,6 +91,7 @@ export function details(params = {}) {
         'employee',
         'marketingProgram',
         'customerTag.tag',
+        'ssoAccount',
       ]),
     },
   });
@@ -412,3 +413,9 @@ export function getCategoryEvents() {
   });
 }
 
+export function addAccount(data = {}) {
+  return request('/v1/customer-lead-accounts', {
+    method: 'POST',
+    data,
+  });
+}
