@@ -11,6 +11,7 @@ use GGPHP\Crm\Marketing\Transformers\MarketingProgramTransformer;
 use GGPHP\Crm\Province\Transformers\CityTransformer;
 use GGPHP\Crm\Province\Transformers\DistrictTransformer;
 use GGPHP\Crm\Province\Transformers\TownWardTransformer;
+use GGPHP\Crm\SsoAccount\Transformers\SsoAccountTransformer;
 
 /**
  * Class CityTransformer.
@@ -36,7 +37,11 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource', 'statusCare', 'employee', 'branch', 'townWard', 'marketingProgram'];
+    protected $availableIncludes = [
+        'eventInfo', 'customerTag', 'reference', 'studentInfo',
+        'city', 'district', 'searchSource', 'statusCare', 'employee',
+        'branch', 'townWard', 'marketingProgram', 'ssoAccount'
+    ];
 
     /**
      * Transform the CategoryDetail entity.
@@ -72,6 +77,15 @@ class CustomerLeadTransformer extends BaseTransformer
         }
 
         return $this->item($customerLead->reference, new ReferenceTransformer, 'Reference');
+    }
+
+    public function includeSsoAccount(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->ssoAccount)) {
+            return;
+        }
+
+        return $this->item($customerLead->ssoAccount, new SsoAccountTransformer, 'SsoAccount');
     }
 
     public function includeEventInfo(CustomerLead $customerLead)

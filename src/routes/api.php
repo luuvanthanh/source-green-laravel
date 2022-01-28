@@ -19,7 +19,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forGuest();
     });
 
-    Route::group([], function () {
+    Route::group(['middleware' => 'auth_sso'], function () {
         //facebook
         \GGPHP\Crm\Facebook\RouteRegistrar::routes(function ($router) {
             $router->forBread();
@@ -66,6 +66,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
 
         \GGPHP\Crm\ChildDevelop\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\SsoAccount\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
     });

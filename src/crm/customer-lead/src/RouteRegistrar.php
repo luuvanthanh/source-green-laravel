@@ -46,6 +46,8 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'CustomerLeadController@moveToCustomerPotential'
             ]);
             \Route::post('customer-lead-marketing-programs', 'CustomerLeadController@storeCareProgram');
+
+            \Route::post('customer-lead-accounts', 'CustomerLeadController@customerLeadAccount');
         });
     }
 }
