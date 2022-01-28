@@ -3,18 +3,19 @@ import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/student-medical-problems', {
+  return request('/students/group-by-branch', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit', 'date'),
+      ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
+      ReportWithHealthCriterias : 'false',
     },
   });
 }
 
-export function remove(id = {}) {
-  return request(`/student-medical-problems/${id}`, {
-    method: 'DELETE',
-    parse: true,
+export function getYears(params = {}) {
+  return request('/timetable-settings', {
+    method: 'GET',
+    params,
   });
 }
