@@ -70,14 +70,12 @@ const Index = memo(() => {
     hasMore: true,
     loading: false,
   });
-  console.log("searchUser", searchUser);
-  console.log("searchParent", searchParent);
+ 
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
 
   const responseFacebook = (response) => {
-    console.log('response', response);
     if (response.userID) {
       dispatch({
         type: 'crmFBDevV1/GET_USER',
@@ -117,7 +115,7 @@ const Index = memo(() => {
       });
       dispatch({
         type: 'crmFBDevV1/GET_PAGESDB',
-        payload: {},
+        payload: {page_id_facebook: (pageCurrent.map(i => i.id).join(','))},
         callback: (response) => {
           if (response) {
             setPage(response.data);
@@ -172,13 +170,12 @@ const Index = memo(() => {
       });
     }
   }, [page.length]);
-  console.log("conversationCurrent", conversationCurrent)
 
 
 
   useEffect(() => {
     if (conversationCurrent?.id) {
-      setLoadingMessage(true);
+      // setLoadingMessage(true);
       mountedSet(setSearchParent, { ...searchParent, loading: true });
       dispatch({
         type: 'crmFBDevV1/GET_MESSAGES',
@@ -191,8 +188,8 @@ const Index = memo(() => {
           if (response) {
 
             mountedSet(setMessagers, response.data);
-            mountedSet(setSearchParent, { ...searchParent, total: response.meta.pagination.total });
             setLoadingMessage(false);
+            mountedSet(setSearchParent, { ...searchParent, total: response.meta.pagination.total });
             if (response) {
               setMessagers(response.data);
               scrollbars.current.scrollToBottom();
@@ -1047,7 +1044,7 @@ const Index = memo(() => {
                 autoHideTimeout={1000}
                 autoHideDuration={100}
                 autoHeight
-                autoHeightMax="calc(100vh - 355px)"
+                autoHeightMax="calc(100vh - 300px)"
               >
                 <InfiniteScroll
                   hasMore={!searchUser.loading && searchUser.hasMore}
@@ -1129,7 +1126,20 @@ const Index = memo(() => {
           <div className={styles['messager-container']}>
 
             <div>
+              
               {loadingMessage && (
+                <Scrollbars autoHide
+                autoHideTimeout={1000}
+                autoHideDuration={100}
+                autoHeight
+                autoHeightMax="calc(100vh - 320px)"
+                renderTrackHorizontal={(props) => (
+                  <div {...props} className="track-horizontal" style={{ display: 'none' }} />
+                )}
+                renderThumbHorizontal={(props) => (
+                  <div {...props} className="thumb-horizontal" style={{ display: 'none' }} />
+                )}
+                ref={scrollbars}>
                 <div className={styles['messager-group']}>
                   <p className={styles.date}>Chủ nhật, 31/05/2021</p>
                   <div className={styles['messager-item']}>
@@ -1183,6 +1193,7 @@ const Index = memo(() => {
                     </div>
                   </div>
                 </div>
+                </Scrollbars>
               )}
 
               {!loadingMessage && (
