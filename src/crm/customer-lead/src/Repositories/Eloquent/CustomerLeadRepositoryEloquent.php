@@ -5,7 +5,6 @@ namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
-use GGPHP\Crm\CustomerLead\Models\CustomerLeadMarketingProgram;
 use GGPHP\Crm\CustomerLead\Models\CustomerTag;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Presenters\CustomerLeadPresenter;
@@ -14,9 +13,13 @@ use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialTag;
 use GGPHP\Crm\CustomerPotential\Models\PotentialStudentInfo;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
+use GGPHP\Crm\SsoAccount\Models\SsoAccount;
+use GGPHP\Crm\SsoAccount\Repositories\Eloquent\SsoAccountRepositoryEloquent;
+use GGPHP\Crm\SsoAccount\Services\SsoService;
 use Illuminate\Support\Facades\Http;
+use Prettus\Repository\Criteria\RequestCriteria;
+use Prettus\Repository\Eloquent\BaseRepository;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class CustomerLeadRepositoryEloquent.
@@ -315,5 +318,38 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         }
 
         return true;
+    }
+
+    public function customerLeadAccount($attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $customerLead =  CustomerLead::findOrFail($attributes['customer_lead_id']);
+
+            $attributes['model_id'] = $attributes['customer_lead_id'];
+            $attributes['model_type'] = CustomerLead::class;
+
+            $ssoAcount = SsoAccount::create($attributes);
+
+            $dataSsoAcount = [
+                'userName' => $ssoAcount->user_name,
+                'fullName' => $customerLead->full_name,
+                'phoneNumber' => $customerLead->phone,
+                'password' => $attributes['password'],
+                'email' => $ssoAcount->email
+            ];
+
+            $ssoAcountLead = SsoService::createLeadAccount($dataSsoAcount);
+            $ssoAcount->update([
+                'sso_user_id' => $ssoAcountLead->result->id
+            ]);
+
+            \DB::commit();
+
+            return resolve(SsoAccountRepositoryEloquent::class)->parserResult($ssoAcount);
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
     }
 }

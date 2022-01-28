@@ -78,7 +78,8 @@
             "GGPHP\\Crm\\Icon\\": "crm/icon/src",
             "GGPHP\\Crm\\Config\\": "crm/config/src",
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
-            "GGPHP\\Crm\\ChildDevelop\\": "crm/child-develop/src"
+            "GGPHP\\Crm\\ChildDevelop\\": "crm/child-develop/src",
+            "GGPHP\\Crm\\SsoAccount\\": "crm/sso-account/src"
         },
         "classmap": [
             "database/seeds",

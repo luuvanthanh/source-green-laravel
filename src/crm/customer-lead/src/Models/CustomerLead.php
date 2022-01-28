@@ -32,7 +32,7 @@ class CustomerLead extends UuidModel
         'address', 'city_id', 'district_id', 'branch_id', 'employee_id',
         'employee_info', 'user_create_id', 'user_create_info', 'search_source_id',
         'facebook', 'zalo', 'instagram', 'skype', 'name_company', 'address_company',
-        'phone_company', 'career', 'file_image', 'town_ward_id','flag_move_potential'
+        'phone_company', 'career', 'file_image', 'town_ward_id', 'flag_move_potential'
     ];
 
     public function reference()
@@ -98,5 +98,13 @@ class CustomerLead extends UuidModel
     public function marketingProgram()
     {
         return $this->belongsToMany(MarketingProgram::class, 'customer_lead_marketing_program', 'customer_lead_id', 'marketing_program_id');
+    }
+
+    /**
+     * Define relations upload file
+     */
+    public function ssoAccount()
+    {
+        return $this->morphOne('GGPHP\Crm\SsoAccount\Models\SsoAccount', 'sso_accounts', 'model_type', 'model_id');
     }
 }

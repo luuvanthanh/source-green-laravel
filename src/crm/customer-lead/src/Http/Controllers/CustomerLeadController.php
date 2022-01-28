@@ -152,6 +152,13 @@ class CustomerLeadController extends Controller
     {
         $customerLead = $this->customerLeadRepository->storeCareProgram($request->all());
 
-        return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));    
+        return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function customerLeadAccount(Request $request)
+    {
+        $customerLead = $this->customerLeadRepository->customerLeadAccount($request->all());
+
+        return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
     }
 }
