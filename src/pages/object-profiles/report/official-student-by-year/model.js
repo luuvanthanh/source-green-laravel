@@ -13,6 +13,7 @@ export default {
     },
     branches: [],
     classes: [],
+    years: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -30,6 +31,10 @@ export default {
         },
       },
     }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years: payload,
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -44,6 +49,23 @@ export default {
             },
           },
         });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_YEARS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getYears, payload);
+        if (response) {
+          callback(response.items);
+          yield saga.put({
+            type: 'SET_YEARS',
+            payload: response.items,
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
