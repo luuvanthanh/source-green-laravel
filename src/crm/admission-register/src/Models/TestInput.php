@@ -11,7 +11,7 @@ class TestInput extends UuidModel
 
     protected $fillable = [
         'employee_id', 'date_interview', 'time_interview',
-        'strength', 'encourage', 'admission_register_id', 'status', 'type', 'class_type_id'
+        'strength', 'encourage', 'admission_register_id', 'status', 'type', 'class_type_id', 'approval_status'
     ];
 
     const STATUS = [
@@ -22,6 +22,12 @@ class TestInput extends UuidModel
     ];
 
     const TYPE_TEST_INPUT = 1;
+
+    const APPROVAL_STATUS = [
+        'UNSENT' => 0,
+        'UNQUALIFIED' => 1,
+        'APPROVED' => 2,
+    ];
 
     public function employee()
     {

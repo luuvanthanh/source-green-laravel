@@ -43,6 +43,7 @@ class TestInputTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         $status = null;
+        $approvalStatus = null;
 
         foreach (TestInput::STATUS as $key => $value) {
             if (!is_null($model->status)) {
@@ -52,8 +53,17 @@ class TestInputTransformer extends BaseTransformer
             }
         }
 
+        foreach (TestInput::APPROVAL_STATUS as $key => $value) {
+            if (!is_null($model->approval_status)) {
+                if ($model->approval_status == $value) {
+                    $approvalStatus = $key;
+                }
+            }
+        }
+
         return [
-            'status' => $status
+            'status' => $status,
+            'approval_status' => $approvalStatus
         ];
     }
 
@@ -62,7 +72,7 @@ class TestInputTransformer extends BaseTransformer
         $data = [];
 
         if (request()->is_summary_test_input && request()->is_summary_test_input == 'true') {
-            
+
             $items = $this->getCurrentScope()->getResource()->getData();
             $status = $items->groupBy('status')->map->count()->toArray();
             ksort($status);
@@ -75,6 +85,22 @@ class TestInputTransformer extends BaseTransformer
                 'total_untesting' => $untesting + $cancel,
                 'total_testing' => $testing,
                 'total_finish' => $finish,
+            ];
+        }
+
+        if (request()->is_summary_test_approval && request()->is_summary_test_approval == 'true') {
+            $items = $this->getCurrentScope()->getResource()->getData();
+            $approvalStatus = $items->groupBy('approval_status')->map->count()->toArray();
+            ksort($approvalStatus);
+
+            $unsent = isset($approvalStatus[0]) ? $approvalStatus[0] : 0;
+            $unqualified = isset($approvalStatus[1]) ? $approvalStatus[1] : 0;
+            $approved = isset($approvalStatus[2]) ? $approvalStatus[2] : 0;
+
+            $data['approval_status'] = [
+                'total_unsent' => $unsent,
+                'total_unqualified' => $unqualified,
+                'total_approed' => $approved,
             ];
         }
 
