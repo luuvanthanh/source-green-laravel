@@ -352,4 +352,17 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             throw new HttpException(500, $th->getMessage());
         }
     }
+
+    public function findCustomerLead($id)
+    {
+        $ssoAccount = SsoAccount::where('sso_user_id', $id)->first();
+
+        if (is_null($ssoAccount)) {
+            return [];
+        }
+
+        $customerLead = CustomerLead::where('id', $ssoAccount->model_id)->first();
+
+        return $this->parserResult($customerLead);
+    }
 }
