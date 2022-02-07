@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forSso();
     }
 
     /**
@@ -48,6 +49,13 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('customer-lead-marketing-programs', 'CustomerLeadController@storeCareProgram');
 
             \Route::post('customer-lead-accounts', 'CustomerLeadController@customerLeadAccount');
+        });
+    }
+
+    public function forSso()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::get('customer-lead-by-user-id/{id}', 'CustomerLeadController@getCustomerLead');
         });
     }
 }

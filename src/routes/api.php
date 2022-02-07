@@ -72,5 +72,11 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Crm\SsoAccount\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        Route::group(['prefix' => 'sso', 'middleware' => []], function () {
+            \GGPHP\Crm\CustomerLead\RouteRegistrar::routes(function ($router) {
+                $router->forSso();
+            });
+        });
     });
 });
