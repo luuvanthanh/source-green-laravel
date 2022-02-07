@@ -56,7 +56,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
     public function getAll(array $attributes)
     {
         if (!empty($attributes['status'])) {
-            $this->model = $this->model->whereIn('status', $attributes['status']);
+            $this->model = $this->model->whereIn('Status', $attributes['status']);
         }
 
         if (!empty($attributes['key'])) {
