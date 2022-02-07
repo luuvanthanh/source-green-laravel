@@ -78,5 +78,15 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
                 $router->forSso();
             });
         });
+
+        Route::group(['prefix' => 'hrm', 'middleware' => []], function () {
+            \GGPHP\Crm\Fee\RouteRegistrar::routes(function ($router) {
+                $router->forHrm();
+            });
+        });
+
+        \GGPHP\Crm\Fee\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });
