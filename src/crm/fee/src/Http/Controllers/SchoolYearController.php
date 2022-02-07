@@ -48,7 +48,6 @@ class SchoolYearController extends Controller
     public function store(CreateSchoolYearRequest $request)
     {
         $attributes = $request->all();
-
         $schoolYear = $this->schoolYearRepository->create($attributes);
 
         return $this->success($schoolYear, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
