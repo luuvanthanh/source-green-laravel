@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\AdmissionRegister\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Employee\Models\Employee;
 
 class TestInput extends UuidModel
@@ -11,7 +12,7 @@ class TestInput extends UuidModel
 
     protected $fillable = [
         'employee_id', 'date_interview', 'time_interview',
-        'strength', 'encourage', 'admission_register_id', 'status', 'type', 'class_type_id', 'approval_status'
+        'strength', 'encourage', 'admission_register_id', 'status', 'type', 'class_type_id', 'approval_status', 'branch_id'
     ];
 
     const STATUS = [
@@ -42,5 +43,10 @@ class TestInput extends UuidModel
     public function testInputDetail()
     {
         return $this->hasMany(TestInputDetail::class, 'test_input_id')->orderBy('created_at', 'DESC');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

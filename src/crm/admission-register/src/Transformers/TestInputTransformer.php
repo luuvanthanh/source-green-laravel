@@ -4,6 +4,7 @@ namespace GGPHP\Crm\AdmissionRegister\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\AdmissionRegister\Models\TestInput;
+use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 
 /**
@@ -30,7 +31,7 @@ class TestInputTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['employee', 'admissionRegister', 'testInputDetail'];
+    protected $availableIncludes = ['employee', 'admissionRegister', 'testInputDetail', 'branch'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -128,5 +129,14 @@ class TestInputTransformer extends BaseTransformer
     public function includeTestInputDetail(TestInput $testInput)
     {
         return $this->collection($testInput->testInputDetail, new TestInputDetailTransformer, 'TestInputDetail');
+    }
+
+    public function includeBranch(TestInput $testInput)
+    {
+        if (empty($testInput->branch)) {
+            return;
+        }
+
+        return $this->item($testInput->branch, new BranchTransformer, 'Branch');
     }
 }
