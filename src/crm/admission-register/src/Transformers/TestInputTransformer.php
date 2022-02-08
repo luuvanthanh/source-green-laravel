@@ -100,7 +100,7 @@ class TestInputTransformer extends BaseTransformer
             $data['approval_status'] = [
                 'total_unsent' => $unsent,
                 'total_unqualified' => $unqualified,
-                'total_approed' => $approved,
+                'total_approval' => $approved,
             ];
         }
 

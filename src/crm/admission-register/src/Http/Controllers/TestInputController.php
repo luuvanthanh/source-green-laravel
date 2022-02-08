@@ -9,6 +9,7 @@ use GGPHP\Crm\AdmissionRegister\Http\Requests\CreateTestInputRequest;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\UpdateTestInputRequest;
 use GGPHP\Crm\AdmissionRegister\Models\TestInput;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
+use GGPHP\Crm\ChildDevelop\Models\ChildEvaluate;
 
 class TestInputController extends Controller
 {
@@ -46,6 +47,14 @@ class TestInputController extends Controller
             $attributes['status'] = array_values($newStatus);
         }
 
+        if (!empty($attributes['age'])) {
+            $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
+        }
+
+        if (!empty($attributes['approval_status'])) {
+            $attributes['approval_status'] = TestInput::APPROVAL_STATUS[$attributes['approval_status']];
+        }
+
         $testInput = $this->testInputRepository->getAll($attributes);
 
         return $this->success($testInput, trans('lang::messages.common.getListSuccess'));
@@ -61,6 +70,9 @@ class TestInputController extends Controller
     {
         $attributes = $request->all();
 
+        if (!empty($attributes['approval_status'])) {
+            $attributes['approval_status'] = TestInput::APPROVAL_STATUS[$attributes['approval_status']];
+        }
         $testInput = $this->testInputRepository->createOrUpdate($attributes);
 
         return $this->success($testInput, trans('lang::messages.common.createSuccess'));

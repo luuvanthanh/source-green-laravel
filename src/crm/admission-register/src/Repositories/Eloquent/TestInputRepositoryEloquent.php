@@ -65,11 +65,43 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         }
 
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->whereHas('AdmissionRegister', function ($q) use ($attributes) {
+            $this->model = $this->model->whereHas('admissionRegister', function ($q) use ($attributes) {
                 $q->whereHas('studentInfo', function ($query) use ($attributes) {
                     $query->whereLike('full_name', $attributes['key']);
                 });
             });
+        }
+
+        if (!empty($attributes['branch_id'])) {
+            $this->model = $this->model->whereHas('admissionRegister', function ($query) use ($attributes) {
+                $query->where('branch_id', $attributes['branch_id']);
+            });
+        }
+
+        if (!empty($attributes['employee_id'])) {
+            $this->model = $this->model->where('employee_id', $attributes['employee_id']);
+        }
+
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('created_at', '>=', $attributes['startDate'])->where('created_at', '<=', $attributes['endDate']);
+        }
+
+        if (isset($attributes['age'])) {
+            $this->model = $this->model->whereHas('testInputDetail', function ($q) use ($attributes) {
+                $q->whereHas('testInputDetailChildren', function ($q1) use ($attributes) {
+                    $q1->whereHas('childEvaluate', function ($query) use ($attributes) {
+                        $query->where('age', $attributes['age']);
+                    });
+                });
+            });
+        }
+
+        if (!empty($attributes['approvalStatus'])) {
+            $this->model = $this->model->where('approval_status', $attributes['approvalStatus']);
+        }
+
+        if (!empty($attributes['class_type_id'])) {
+            $this->model = $this->model->where('class_type_id', $attributes['class_type_id']);
         }
 
         if (!empty($attributes['limit'])) {
@@ -91,6 +123,12 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
 
         if (!is_null($testInput)) {
             $testInput->update($attributes);
+        }
+
+        if (!empty($attributes['approval_status'])) {
+            $testInput->update([
+                'approval_status' => $attributes['approval_status']
+            ]);
         }
 
         return parent::all();
