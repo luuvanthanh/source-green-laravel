@@ -1,4 +1,5 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { PureComponent } from 'react';
+import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
@@ -6,34 +7,108 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import { useHistory, useLocation } from 'umi';
-import { useDispatch, useSelector } from 'dva';
+import PropTypes from 'prop-types';
 import stylesModule from './styles.module.scss';
 
-const Index = memo(() => {
-  const [
-    { data, pagination, branches, classes, error },
-    loading,
-  ] = useSelector(({ loading: { effects }, reportAngleTools }) => [reportAngleTools, effects]);
+let isMounted = true;
+/**
+ * Set isMounted
+ * @param {boolean} value
+ * @returns {boolean} value of isMounted
+ */
+const setIsMounted = (value = true) => {
+  isMounted = value;
+  return isMounted;
+};
+/**
+ * Get isMounted
+ * @returns {boolean} value of isMounted
+ */
+const getIsMounted = () => isMounted;
+const mapStateToProps = ({ medicalStudentProblem, loading, user, reportAngleTools }) => ({
+  loading,
+  data: reportAngleTools.data,
+  toolGroups: reportAngleTools.toolGroups,
+  toolDetails: reportAngleTools.toolDetails,
+  error: medicalStudentProblem.error,
+  classes: medicalStudentProblem.classes,
+  branches: medicalStudentProblem.branches,
+  pagination: medicalStudentProblem.pagination,
+  defaultBranch: user.defaultBranch,
+});
+@connect(mapStateToProps)
+class Index extends PureComponent {
+  formRef = React.createRef();
 
-  const formRef = React.createRef();
-  const { query, pathname } = useLocation();
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const [search, setSearch] = useState({
-    KeyWord: query?.KeyWord,
-    branchId: query?.branchId,
-    page: query?.page || variables.PAGINATION.PAGE,
-    limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    date: query.date ? moment(query.date) : moment(),
-  });
+  constructor(props) {
+    super(props);
+    const {
+      defaultBranch,
+      location: { query },
+    } = props;
+    this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      search: {
+        KeyWord: query?.KeyWord,
+        branchId: query?.branchId || defaultBranch?.id,
+        page: query?.page || variables.PAGINATION.PAGE,
+        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
+      },
+    };
+    setIsMounted(true);
+  }
 
-  const onLoad = () => {
-    dispatch({
-      type: 'medicalStudentProblem/GET_DATA',
+  componentDidMount() {
+    this.onLoad();
+    this.loadCategories();
+  }
+
+  componentWillUnmount() {
+    setIsMounted(false);
+  }
+
+  /**
+   * Set state properties
+   * @param {object} data the data input
+   * @param {function} callback the function which will be called after setState
+   * @returns {void} call this.setState to upSearchDate state
+   * @memberof setStateData
+   */
+  setStateData = (state, callback) => {
+    if (!getIsMounted()) {
+      return;
+    }
+    this.setState(state, callback);
+  };
+
+  /**
+   * Function load data
+   */
+  onLoad = () => {
+    const { search } = this.state;
+    const {
+      location: { pathname },
+    } = this.props;
+    this.props.dispatch({
+      type: 'reportAngleTools/GET_DATA',
+      payload: {
+        ...search,
+      },
+    });
+    this.props.dispatch({
+      type: 'reportAngleTools/GET_TOOL_GROUPS',
+      payload: {
+        ...search,
+      },
+    });
+    this.props.dispatch({
+      type: 'reportAngleTools/GET_TOOL_DETAILS',
       payload: {
         ...search,
       },
@@ -42,14 +117,19 @@ const Index = memo(() => {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          date: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
+          SearchDate: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
     );
   };
 
-  const loadCategories = () => {
+  /**
+   * Function load branches
+   */
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    const { search } = this.state;
     if (search.branchId) {
       dispatch({
         type: 'medicalStudentProblem/GET_CLASSES',
@@ -64,30 +144,51 @@ const Index = memo(() => {
     });
   };
 
-  useEffect(() => {
-    onLoad();
-    loadCategories();
-  }, [search]);
-
-  const debouncedSearch = debounce((value, type) => {
-    setSearch((prev) => ({
-      ...prev.search,
-      [`${type}`]: value,
-      page: variables.PAGINATION.PAGE,
-      limit: variables.PAGINATION.PAGE_SIZE,
-    }));
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearch = debounce((value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
   }, 300);
 
-  const onChange = (e, type) => {
-    debouncedSearch(e.target.value, type);
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChange = (e, type) => {
+    this.debouncedSearch(e.target.value, type);
   };
 
-  const onChangeSelect = (e, type) => {
-    debouncedSearch(e, type);
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
   };
 
-  const onChangeSelectBranch = (e, type) => {
-    debouncedSearch(e, type);
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    const { dispatch } = this.props;
+    this.debouncedSearch(e, type);
     dispatch({
       type: 'medicalStudentProblem/GET_CLASSES',
       payload: {
@@ -96,234 +197,699 @@ const Index = memo(() => {
     });
   };
 
-  const changePagination = ({ page, limit }) => {
-    setSearch((prev) => ({
-      ...prev.search,
-      page,
-      limit,
-    }));
+  /**
+   * Function set pagination
+   * @param {integer} page page of pagination
+   * @param {integer} size size of pagination
+   */
+  changePagination = ({ page, limit }) => {
+    this.setState(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          page,
+          limit,
+        },
+      }),
+      () => {
+        this.onLoad();
+      },
+    );
   };
 
-  const onChangeDate = (e, type) => {
-    debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+
+  debouncedSearchDateRank = debounce((FromDate, ToDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          FromDate,
+          ToDate,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDate = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
-  const paginationFunction = (pagination) => {
-    Helper.paginationNet({
+  /**
+   * Function pagination of table
+   * @param {object} pagination value of pagination items
+   */
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
       pagination,
       query,
       callback: (response) => {
-        changePagination(response);
+        this.changePagination(response);
       },
     });
   };
 
-  const header = () => {
+  /**
+   * Function header table
+   */
+  header = () => {
     const columns = [
       {
         title: 'Họ và tên',
         key: 'name',
-        width: 200,
-        fixed: 'left',
-        render: (record) => <Text size="normal">{record?.name}</Text>,
-        // render: (text, record, index) => {
-        //   const obj = {
-        //     children: record.name,
-        //     props: {},
-        //   };
-        //   if (index > 0) {
-        //     obj.props.rowSpan = 0;
-        //     return obj;
-        //   }
-        //   obj.props.rowSpan = 3;
-        //   return obj;
-        // },
+        width: 250,
+        render: (value) => {
+          const count = value?.children?.length + 1;
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value?.children ?
+                  <Text size="normal">{value?.student?.fullName}</Text> : ""
+                }
+                {value?.branch ?
+                  <Text size="normal">{value?.branch?.name}</Text> : ""
+                }
+                {value?.class ?
+                  <Text size="normal">{value?.class?.name}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.class || value?.branch) {
+            obj.props.rowSpan = 1;
+            obj.props.colSpan = 1;
+          }
+          else if (value?.student?.fullName && value?.children) {
+            obj.props.rowSpan = count;
+          }
+          else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Cơ sở',
-        key: 'branch',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.branch}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+          const count = value?.children?.length + 1;
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value?.children ?
+                  <Text size="normal">{value?.student?.class?.branch?.name}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.class || value?.branch) {
+            obj.props.rowSpan = 1;
+            obj.props.colSpan = 1;
+          }
+          else if (value?.student?.fullName && value?.children) {
+            obj.props.rowSpan = count;
+          }
+          else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Lớp',
-        key: 'class',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.class}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+          const count = value?.children?.length + 1;
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value?.children ?
+                  <Text size="normal">{value?.student?.class?.name}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.class || value?.branch) {
+            obj.props.rowSpan = 1;
+            obj.props.colSpan = 1;
+          }
+          else if (value?.student?.fullName && value?.children) {
+            obj.props.rowSpan = count;
+          }
+          else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Góc giáo cụ',
-        key: 'angle_tools',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.data?.angle_tools}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+          const count = value?.children?.length + 1;
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value?.children ?
+                  <Text size="normal">{value?.toolGroup?.name}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.class || value?.branch) {
+            obj.props.rowSpan = 1;
+            obj.props.colSpan = 1;
+          }
+          else if (value?.student?.fullName && value?.children) {
+            obj.props.rowSpan = count;
+          }
+          else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Ý nghĩa cuộc sống',
-        key: 'meaningful_life',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.data?.meaningful_life}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+          const count = value?.children?.length + 1;
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.toolGroup?.meanOfLife}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.class || value?.branch) {
+            obj.props.rowSpan = 1;
+            obj.props.colSpan = 1;
+          }
+          else if (value?.student?.fullName && value?.children) {
+            obj.props.rowSpan = count;
+          }
+          else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Ngày học giáo cụ',
-        key: 'date',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.data?.date}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{Helper.getDate(value?.reportDate)}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Thời gian',
-        key: 'time',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.time}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.totalMinutes}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Giáo cụ',
-        key: 'angle_tool',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.angle_tool}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.toolDetail?.name}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Hình ảnh giáo cụ',
-        key: 'image',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.image}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <AvatarTable
+                    fileImage={Helper.getPathAvatarJson(value?.toolDetail?.fileUrl)}
+                  />
+                  : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Nội dung giáo cụ',
-        key: 'content',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.content}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value && !value?.children ?
+                  <Text size="normal">{value?.toolDetail?.content}</Text>
+                  : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Ý nghĩa giáo cụ',
-        key: 'meaningful_angle_tools',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.meaningful_angle_tools}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.toolDetail?.meanOfLife}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
-        title: 'Kĩ năng đạt được',
-        key: 'skill',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.skill}</Text>,
+        title: 'Kỹ năng đạt được',
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.toolDetail?.skillGained}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Cấp độ',
-        key: 'level',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.level}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.level}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
-        title: 'Diễn giải cấp độ',
-        key: 'description_level',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.description_level}</Text>,
+        title: 'diễn giải cấp độ',
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.levelContent}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Thời kỳ nhạy cảm',
-        key: 'sensitive_period',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.sensitive_period}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.sensitivePeriod?.name}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Diễn giải thời kỳ nhạy cảm',
-        key: 'description_sensitive_period',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.description_sensitive_period}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.sensitivePeriod?.content}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Tham gia của phụ huynh',
-        key: 'attention_parent',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.attention_parent}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.sensitivePeriod?.parentInvolvement}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
       {
         title: 'Nhận xét của giáo viên',
-        key: 'description_teacher',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.description_teacher}</Text>,
+        key: 'name',
+        width: 250,
+        render: (value) => {
+
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value ?
+                  <Text size="normal">{value?.reviewOfTeacher}</Text> : ""
+                }
+              </div>
+            ),
+            props: {},
+          };
+          if (value?.curriculumReviewGroupByToolGroups) {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        },
       },
     ];
     return columns;
   };
 
-  return (
-    <>
-      <Helmet title="Danh sách học sinh theo năm học theo cơ sở hoặc tổng" />
-      <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-        {/* FORM SEARCH */}
-        <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-          <Text color="dark">Báo cáo quản trị học sinh theo góc giáo cụ</Text>
-        </div>
-        <div className={classnames(styles['block-table'])}>
-          <Form
-            initialValues={{
-              ...search,
-              branchId: search.branchId || null,
-              classId: search.classId || null,
-              date: search.date && moment(search.date),
-            }}
-            layout="vertical"
-            ref={formRef}
-          >
-            <div className="row">
-              <div className="col-lg-3">
-                <FormItem
-                  name="year"
-                  onChange={(event) => onChangeDate(event, 'date')}
-                  type={variables.RANGE_PICKER}
-                  allowClear={false}
-                />
-              </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
-                  name="branchId"
-                  onChange={(event) => onChangeSelectBranch(event, 'branchId')}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
-                  name="classId"
-                  onChange={(event) => onChangeSelect(event, 'classId')}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
-              <div className="col-lg-3">
-                <FormItem
-                  name="KeyWord"
-                  onChange={(event) => onChange(event, 'KeyWord')}
-                  placeholder="Nhập từ khóa tìm kiếm"
-                  type={variables.INPUT_SEARCH}
-                />
-              </div>
-            </div>
-          </Form>
-          <div className={stylesModule['wrapper-table']}>
-            <Table
-              columns={header()}
-              dataSource={data}
-              loading={loading['medicalStudentProblem/GET_DATA']}
-              error={error}
-              isError={error.isError}
-              defaultExpandAllRows
-              childrenColumnName="children"
-              bordered
-              pagination={paginationFunction(pagination)}
-              params={{
-                header: header(),
-                type: 'table',
+  handleCancel = () => this.setStateData({ visible: false });
+
+  onChangeExcel = () => {
+    const {
+      defaultBranch,
+      location: { query },
+    } = this.props;
+    Helper.exportExcelClover(
+      `/curriculum-reviews/export-excel/group-by-branch`,
+      {
+        KeyWord: query?.KeyWord,
+        Class: query?.Class,
+        ToolGroupId: query?.ToolGroupId,
+        ToolDetailId: query?.ToolDetailId,
+        branchId: query?.branchId || defaultBranch?.id,
+      },
+      `Baocaoquantrihocsinhtheogocgiaocu.xlsx`,
+    );
+  };
+
+  render() {
+    const {
+      data,
+      error,
+      classes,
+      branches,
+      toolDetails,
+      toolGroups,
+      pagination,
+      defaultBranch,
+      match: { params },
+      loading: { effects },
+    } = this.props;
+    const { search, defaultBranchs } = this.state;
+    const loading = effects['medicalStudentProblem/GET_DATA'];
+    return (
+      <>
+        <Helmet title="Báo cáo quản trị học sinh theo góc giáo cụ" />
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+          {/* FORM SEARCH */}
+          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <Text color="dark">Báo cáo quản trị học sinh theo góc giáo cụ</Text>
+            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+              Xuất Excel
+            </Button>
+          </div>
+          <div className={classnames(styles['block-table'])}>
+            <Form
+              initialValues={{
+                ...search,
+                branchId: search.branchId || null,
+                Class: search.Class || null,
+                SearchDate: (search.SearchDate && moment(search.SearchDate)) || null,
               }}
-              rowKey={(record) => record.key || record.id}
-              scroll={{ x: '100%' }}
-            />
+              layout="vertical"
+              ref={this.formRef}
+            >
+              <div className="row">
+                <div className="col-lg-2">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                    allowClear={false}
+                  />
+                </div>
+                {!defaultBranch?.id && (
+                  <div className="col-lg-2">
+                    <FormItem
+                      data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-2">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                <div className="col-lg-2">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
+                    name="Class"
+                    onChange={(event) => this.onChangeSelect(event, 'Class')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-2">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả góc giáo cụ' }, ...toolGroups]}
+                    name="ToolGroupId"
+                    onChange={(event) => this.onChangeSelect(event, 'ToolGroupId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-2">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả giáo cụ' }, ...toolDetails]}
+                    name="ToolDetailId"
+                    onChange={(event) => this.onChangeSelect(event, 'ToolDetailId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-2">
+                  <FormItem
+                    name="KeyWord"
+                    onChange={(event) => this.onChange(event, 'KeyWord')}
+                    placeholder="Nhập từ khóa tìm kiếm"
+                    type={variables.INPUT_SEARCH}
+                  />
+                </div>
+              </div>
+            </Form>
+            <div className={stylesModule['wrapper-table']}>
+              <Table
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                error={error}
+                isError={error.isError}
+                defaultExpandAllRows
+                childrenColumnName="children"
+                bordered
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record?.branch?.name || record?.id}
+                scroll={{ x: '100%' }}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </>
-  );
-});
+      </>
+    );
+  }
+}
+
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
+  pagination: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
+  toolDetails: PropTypes.arrayOf(PropTypes.any),
+  toolGroups: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  data: [],
+  pagination: {},
+  loading: {},
+  dispatch: {},
+  location: {},
+  branches: [],
+  error: {},
+  classes: [],
+  defaultBranch: {},
+  toolDetails: [],
+  toolGroups: [],
+};
 
 export default Index;
