@@ -11,7 +11,7 @@ class TestSemester extends UuidModel
     protected $table = 'TestSemesters';
 
     protected $fillable = [
-        'AssessmentPeriodId', 'StudentId', 'Status', 'Type'
+        'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus'
     ];
 
     const STATUS = [
@@ -19,6 +19,12 @@ class TestSemester extends UuidModel
         'TESTING' => 1,
         'FINISH' => 2,
         'CANCEL' => 3,
+    ];
+
+    const APPROVAL_STATUS = [
+        'UNSENT' => 0,
+        'UNQUALIFIED' => 1,
+        'APPROVED' => 2,
     ];
 
     public function student()

@@ -66,6 +66,21 @@ class TestSemesterTransformer extends BaseTransformer
             ];
         }
 
+        if (request()->is_summary_approvel_status && request()->is_summary_approvel_status == 'true') {
+            $items = $this->getCurrentScope()->getResource()->getData();
+            $status = $items->groupBy('ApprovelStatus')->map->count()->toArray();
+            ksort($status);
+            $unsent = isset($status[0]) ? $status[0] : 0;
+            $unqulified = isset($status[1]) ? $status[1] : 0;
+            $approved = isset($status[2]) ? $status[2] : 0;
+
+            $data['ApprovelStatus'] = [
+                'total_unsent' => $unsent,
+                'total_unqualified' => $unqulified,
+                'total_approved' => $approved,
+            ];
+        }
+
         return $data;
     }
 
