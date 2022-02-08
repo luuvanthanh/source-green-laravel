@@ -12,7 +12,7 @@ class TestInputDetailChildren extends UuidModel
     protected $table = 'test_input_detail_childrens';
 
     protected $fillable = [
-        'child_evaluate_detail_childrent_id', 'child_evaluate_detail_id', 'test_input_detail_id', 'child_evalue_id'
+        'child_evaluate_detail_children_id', 'child_evaluate_detail_id', 'test_input_detail_id', 'child_evalua_id'
     ];
 
     public function testInputDetail()
@@ -22,7 +22,7 @@ class TestInputDetailChildren extends UuidModel
 
     public function childEvaluateDetailChildren()
     {
-        return $this->belongsTo(ChildEvaluateDetailChildrent::class, 'child_evaluate_detail_childrent_id');
+        return $this->belongsTo(ChildEvaluateDetailChildrent::class, 'child_evaluate_detail_children_id');
     }
 
     public function childEvaluateDetail()
