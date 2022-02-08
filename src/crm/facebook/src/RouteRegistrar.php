@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forGuest();
     }
 
     /**
@@ -30,8 +31,6 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::group(['prefix' => 'facebook'], function () {
-                \Route::get('webhook', 'FacebookController@webhook');
-                \Route::post('webhook', 'FacebookController@webhookPost');
                 \Route::get('pages', 'FacebookController@getPageFacebook');
                 \Route::get('pages/token', 'FacebookController@getPageTokenFacebook');
                 \Route::get('pages/conversations', 'FacebookController@getPageConversationFacebook');
@@ -58,6 +57,16 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::post('pages/delete-specify-conversations', 'UserFacebookInfoController@deleteSpecifyConversation');
                 \Route::post('pages/delete-all-employee-facebook', 'EmployeeFacebookController@destroyAllEmployeeFacebook');
                 \Route::post('pages/refresh-link-files', 'MessageController@refreshLinkFile');
+            });
+        });
+    }
+
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::group(['prefix' => 'facebook'], function () {
+                \Route::get('webhook', 'FacebookController@webhook');
+                \Route::post('webhook', 'FacebookController@webhookPost');
             });
         });
     }
