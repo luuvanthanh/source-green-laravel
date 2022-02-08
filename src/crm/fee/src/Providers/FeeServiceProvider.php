@@ -2,7 +2,9 @@
 
 namespace GGPHP\Crm\Fee\Providers;
 
+use GGPHP\Crm\Fee\Repositories\Contracts\ClassTypeRepository;
 use GGPHP\Crm\Fee\Repositories\Contracts\SchoolYearRepository;
+use GGPHP\Crm\Fee\Repositories\Eloquent\ClassTypeRepositoryEloquent;
 use GGPHP\Crm\Fee\Repositories\Eloquent\SchoolYearRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,5 +30,6 @@ class FeeServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(SchoolYearRepository::class, SchoolYearRepositoryEloquent::class);
+        $this->app->bind(ClassTypeRepository::class, ClassTypeRepositoryEloquent::class);
     }
 }

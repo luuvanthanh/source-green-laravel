@@ -5,13 +5,13 @@ namespace GGPHP\Crm\Fee\Models;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SchoolYear extends UuidModel
+class ClassType extends UuidModel
 {
     use SoftDeletes;
 
-    protected $table = 'school_years';
+    protected $table = 'class_types';
 
     protected $fillable = [
-        'year_from', 'year_to', 'start_date', 'end_date', 'school_year_clover_id', 'total_month'
+        'name', 'code', 'from', 'to', 'description', 'class_type_clover_id'
     ];
 }

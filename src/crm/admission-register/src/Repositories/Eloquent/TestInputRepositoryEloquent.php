@@ -73,9 +73,7 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         }
 
         if (!empty($attributes['branch_id'])) {
-            $this->model = $this->model->whereHas('admissionRegister', function ($query) use ($attributes) {
-                $query->where('branch_id', $attributes['branch_id']);
-            });
+            $this->model = $this->model->where('branch_id', $attributes['branch_id']);
         }
 
         if (!empty($attributes['employee_id'])) {
@@ -96,8 +94,8 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
             });
         }
 
-        if (!empty($attributes['approvalStatus'])) {
-            $this->model = $this->model->where('approval_status', $attributes['approvalStatus']);
+        if (isset($attributes['approval_status'])) {
+            $this->model = $this->model->where('approval_status', $attributes['approval_status']);
         }
 
         if (!empty($attributes['class_type_id'])) {
@@ -123,12 +121,6 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
 
         if (!is_null($testInput)) {
             $testInput->update($attributes);
-        }
-
-        if (!empty($attributes['approval_status'])) {
-            $testInput->update([
-                'approval_status' => $attributes['approval_status']
-            ]);
         }
 
         return parent::all();

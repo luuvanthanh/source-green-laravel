@@ -83,9 +83,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
             });
         });
 
-        Route::group(['prefix' => 'hrm', 'middleware' => []], function () {
+        Route::group(['prefix' => 'clover', 'middleware' => []], function () {
             \GGPHP\Crm\Fee\RouteRegistrar::routes(function ($router) {
-                $router->forHrm();
+                $router->forClover();
             });
         });
 

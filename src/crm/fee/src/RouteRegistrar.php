@@ -19,7 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
-        $this->forHrm();
+        $this->forClover();
     }
 
     /**
@@ -27,12 +27,16 @@ class RouteRegistrar extends CoreRegistrar
      *
      * @return void
      */
-    public function forHrm()
+    public function forClover()
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::post('school-years', 'SchoolYearController@store');
             \Route::put('school-years/{id}', 'SchoolYearController@update');
             \Route::delete('school-years/{id}', 'SchoolYearController@destroy');
+
+            \Route::post('class-types', 'ClassTypeController@store');
+            \Route::put('class-types/{id}', 'ClassTypeController@update');
+            \Route::delete('class-types/{id}', 'ClassTypeController@destroy');
         });
     }
 
@@ -41,6 +45,9 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::get('school-years', 'SchoolYearController@index');
             \Route::get('school-years/{id}', 'SchoolYearController@show');
+
+            \Route::get('class-types', 'ClassTypeController@index');
+            \Route::get('class-types/{id}', 'ClassTypeController@show');
         });
     }
 }
