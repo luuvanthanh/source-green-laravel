@@ -29,7 +29,7 @@ class ChildEvaluateDetailTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['childEvaluateDetailChildrent'];
+    protected $availableIncludes = ['childEvaluateDetailChildren'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -44,8 +44,8 @@ class ChildEvaluateDetailTransformer extends BaseTransformer
         return [];
     }
 
-    public function includeChildEvaluateDetailChildrent(ChildEvaluateDetail $childEvalueteDetail)
+    public function includeChildEvaluateDetailChildren(ChildEvaluateDetail $childEvalueteDetail)
     {
-        return $this->collection($childEvalueteDetail->childEvaluateDetailChildrent, new ChildEvaluateDetailChildrentTransformer, 'ChildEvaluateDetailChildrent');
+        return $this->collection($childEvalueteDetail->childEvaluateDetailChildrent, new ChildEvaluateDetailChildrentTransformer, 'ChildEvaluateDetailChildren');
     }
 }
