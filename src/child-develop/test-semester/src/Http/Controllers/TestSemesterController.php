@@ -59,6 +59,10 @@ class TestSemesterController extends Controller
     {
         $attributes = $request->all();
 
+        if (!empty($attributes['approvalStatus'])) {
+            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
+        }
+
         $testSemester = $this->testSemesterRepository->create($attributes);
 
         return $this->success($testSemester, trans('lang::messages.common.createSuccess'));

@@ -4,6 +4,7 @@ namespace GGPHP\ChildDevelop\TestSemester\Transformers;
 
 use GGPHP\ChildDevelop\ChildEvaluate\Transformers\ChildEvaluateDetailChildrenTransformer;
 use GGPHP\ChildDevelop\ChildEvaluate\Transformers\ChildEvaluateDetailTransformer;
+use GGPHP\ChildDevelop\ChildEvaluate\Transformers\ChildEvaluateTransformer;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetailChildren;
 use GGPHP\Core\Transformers\BaseTransformer;
 
@@ -31,7 +32,7 @@ class TestSemesterDetailChildrenTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['childEvaluateDetail', 'childEvaluateDetailChildren', 'testSemesterDetail'];
+    protected $availableIncludes = ['childEvaluateDetail', 'childEvaluateDetailChildren', 'testSemesterDetail', 'childEvaluate'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -71,5 +72,14 @@ class TestSemesterDetailChildrenTransformer extends BaseTransformer
         }
 
         return $this->item($testSemesterDetailChildren->testSemesterDetail, new TestSemesterDetailTransformer, 'TestSemesterDetail');
+    }
+
+    public function includeChildEvaluate(TestSemesterDetailChildren $testSemesterDetailChildren)
+    {
+        if (empty($testSemesterDetailChildren->childEvaluate)) {
+            return;
+        }
+
+        return $this->item($testSemesterDetailChildren->childEvaluate, new ChildEvaluateTransformer, 'childEvaluate');
     }
 }
