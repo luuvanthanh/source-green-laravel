@@ -56,6 +56,9 @@ class RouteRegistrar extends CoreRegistrar
 
             //charge-old-students
             Route::resource('charge-old-students', 'ChargeOldStudentController');
+
+            //update school-year from crm
+            Route::post('school-year-crm', 'SchoolYearController@schoolYearCrm');
         });
     }
 

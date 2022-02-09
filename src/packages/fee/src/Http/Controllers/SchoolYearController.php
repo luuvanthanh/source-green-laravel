@@ -98,4 +98,11 @@ class SchoolYearController extends Controller
         $this->schoolYearRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    public function schoolYearCrm(Request $request)
+    {
+        $this->schoolYearRepository->updateSchoolYearCrm($request->all());
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
+    }
 }
