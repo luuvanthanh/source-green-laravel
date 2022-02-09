@@ -94,4 +94,11 @@ class SchoolYearController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function getSchoolYearClover()
+    {
+        $this->schoolYearRepository->getSchoolYearClover();
+
+        return $this->success([], trans('lang::messages.common.getListSuccess'));
+    }
 }

@@ -30,6 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forClover()
     {
         $this->router->group(['middleware' => []], function ($router) {
+            \Route::get('school-years', 'SchoolYearController@getSchoolYearClover');
             \Route::post('school-years', 'SchoolYearController@store');
             \Route::put('school-years/{id}', 'SchoolYearController@update');
             \Route::delete('school-years/{id}', 'SchoolYearController@destroy');
@@ -45,7 +46,8 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::get('school-years', 'SchoolYearController@index');
             \Route::get('school-years/{id}', 'SchoolYearController@show');
-
+            \Route::put('school-years/{id}', 'SchoolYearController@update');
+            \Route::post('school-years', 'SchoolYearController@store');
             \Route::get('class-types', 'ClassTypeController@index');
             \Route::get('class-types/{id}', 'ClassTypeController@show');
         });

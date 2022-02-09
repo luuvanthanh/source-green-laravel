@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use CloudCreativity\LaravelJsonApi\LaravelJsonApi;
+use GGPHP\Crm\Fee\Models\SchoolYear;
+use GGPHP\Crm\Fee\Observers\SchoolYearObserver;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         //
         LaravelJsonApi::defaultApi('v1');
 
+        SchoolYear::observe(SchoolYearObserver::class);
         /**
          * Paginate a standard Laravel Collection.
          *
