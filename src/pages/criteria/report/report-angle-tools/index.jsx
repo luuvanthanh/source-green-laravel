@@ -492,7 +492,7 @@ class Index extends PureComponent {
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
+                {value?.toolDetail ?
                   <AvatarTable
                     fileImage={Helper.getPathAvatarJson(value?.toolDetail?.fileUrl)}
                   />
@@ -598,7 +598,7 @@ class Index extends PureComponent {
         },
       },
       {
-        title: 'diễn giải cấp độ',
+        title: 'Diễn giải cấp độ',
         key: 'name',
         width: 250,
         render: (value) => {

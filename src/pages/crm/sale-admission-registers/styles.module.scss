@@ -476,3 +476,30 @@
 }
 
 //MEDICAL
+
+
+.list-button {
+  display: flex;
+  .plan {
+    width: 32px;
+    height: 32px;
+    color: #27A600;
+    border-radius: 50%;
+    border: 1px solid #C4CDD4;
+  }
+  .remove {
+    margin: 0px 7px;
+    width: 32px;
+    height: 32px;
+    color: #7A7E84;
+    border-radius: 50%;
+    border: 1px solid #C4CDD4;
+  }
+  .edit {
+    width: 32px;
+    height: 32px;
+    color: #27A600;
+    border-radius: 50%;
+    border: 1px solid #C4CDD4;
+  }
+}

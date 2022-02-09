@@ -158,6 +158,16 @@ export async function getLeftMenuProfile() {
       pro: true,
     },
     {
+      title: 'Profile học sinh',
+      key: 'Profile-children',
+      url: [
+        '/ho-so-doi-tuong/profile-hoc-sinh'
+      ],
+      icon: 'icon icon-user',
+      permission: [permissions.HSDT],
+      pro: true,
+    },
+    {
       title: 'Hồ sơ đã lưu trữ',
       key: 'stores',
       icon: 'icon icon-fileText',
@@ -856,18 +866,6 @@ export async function getLeftMenuAllocation() {
       title: 'Giáo viên phụ trách ngoài giờ',
       key: 'extended-class',
       url: ['/phan-bo/giao-vien-phu-trach-ngoai-gio'],
-      icon: 'icon icon-clock',
-      permission: [permissions.PB],
-      pro: true,
-    },
-    {
-      title: 'Đăng ký học ngoài giờ',
-      key: 'register-school',
-      url: [
-        '/phan-bo/dang-ky-hoc-ngoai-gio',
-        '/phan-bo/dang-ky-hoc-ngoai-gio/:id/them-moi',
-        '/phan-bo/dang-ky-hoc-ngoai-gio/:id/chi-tiet',
-      ],
       icon: 'icon icon-clock',
       permission: [permissions.PB],
       pro: true,

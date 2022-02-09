@@ -1,9 +1,10 @@
-import { memo, useRef, useEffect, useState } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
 import { isEmpty, get } from 'lodash';
 import moment from 'moment';
 import { connect, history, withRouter } from 'umi';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'dva';
 import Loading from '@/components/CommonComponent/Loading';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -15,24 +16,24 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
   details: crmSaleAdmissionAdd.details,
   error: crmSaleAdmissionAdd.error,
-
+  studentsLead: crmSaleAdmissionAdd.studentsLead,
   customerLead: crmSaleAdmissionAdd.customerLead,
+  studentsId: crmSaleAdmissionAdd.studentsId,
 });
 const General = memo(
-  ({ dispatch, match: { params }, loading: { effects }, error, customerLead }) => {
+  ({ loading: { effects }, error, customerLead, studentsLead, studentsId }) => {
     const formRef = useRef();
     const mounted = useRef(false);
     const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD`];
+    const dispatch = useDispatch();
     const loading =
-      effects[`crmSaleAdmissionAdd/GET_DETAILS`] ||
-      effects[`crmSaleAdmissionAdd/GET_STUDENTS_LEAD`];
-    const [studentsLead, setStudentsLead] = useState();
+      effects[`crmSaleAdmissionAdd/GET_DETAILS`];
     useEffect(() => {
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_CUSTOMER_LEAD',
         payload: {},
       });
-    }, [params.id]);
+    }, []);
 
     const onChangeStudents = (customer_lead_id) => {
       dispatch({
@@ -40,32 +41,41 @@ const General = memo(
         payload: {
           customer_lead_id,
         },
-        callback: (response) => {
-          if (response) {
-            setStudentsLead(response?.parsePayload);
-          }
-        },
+      });
+      formRef.current.setFieldsValue({
+        birth_date: undefined,
+        age_month: undefined,
+        student_info_id: undefined,
       });
     };
 
     const selectPosition = (student_info_id) => {
       dispatch({
-        type: 'crmSaleAdmissionAdd/GET_STUDENTS_LEAD',
+        type: 'crmSaleAdmissionAdd/GET_STUDENTS_ID',
         payload: {
           student_info_id,
         },
-        callback: (response) => {
-          if (response) {
-            formRef.current.setFieldsValue({
-              data: response.parsePayload.map((item) => ({
-                ...item,
-                birth_date: moment(item.birth_date),
-              })),
-            });
-          }
-        },
+        // callback: (response) => {
+        if(response) {
+          formRef.current.setFieldsValue({
+            data: response.parsePayload.map((item) => ({
+              ...item,
+              birth_date: moment(item.birth_date),
+            })),
+          });
+        }
+        // },
       });
     };
+
+    useEffect(() => {
+      if (studentsId) {
+        formRef.current.setFieldsValue({
+          ...studentsId[0],
+          birth_date: studentsId[0]?.birth_date ? moment(studentsId[0]?.birth_date) : "",
+        });
+      }
+    }, [studentsId]);
 
     /**
      * Function submit form modal
@@ -124,7 +134,7 @@ const General = memo(
                     placeholder="Chọn phụ huynh"
                     type={variables.SELECT}
                     rules={[variables.RULES.EMPTY_INPUT]}
-                    onChange={onChangeStudents}
+                    onChange={(event) => onChangeStudents(event, 'customer_lead_id')}
                   />
                 </Pane>
               </Pane>
@@ -143,44 +153,31 @@ const General = memo(
                     options={['id', 'full_name']}
                     name="student_info_id"
                     data={studentsLead}
-                    placeholder="Chọn học sinh"
                     type={variables.SELECT}
                     rules={[variables.RULES.EMPTY_INPUT]}
                     onChange={selectPosition}
                   />
                 </Pane>
                 <Pane className="col-lg-8">
-                  <Form.List name="data">
-                    {(fields) => (
-                      <>
-                        {fields.map((field) => (
-                          <Pane key={field.key}>
-                            <Pane className="row">
-                              <Pane className="col-lg-6">
-                                <FormItem
-                                  name={[field.name, 'birth_date']}
-                                  label="Ngày sinh"
-                                  fieldKey={[field.fieldKey, 'birth_date']}
-                                  type={variables.DATE_PICKER}
-                                  disabled
-                                />
-                              </Pane>
-                              <Pane className="col-lg-6">
-                                <FormItem
-                                  name={[field.name, 'age_month']}
-                                  label="Tuổi hiện tại (tháng)"
-                                  placeholder="Tháng"
-                                  fieldKey={[field.fieldKey, 'age_month']}
-                                  type={variables.INPUT}
-                                  disabled
-                                />
-                              </Pane>
-                            </Pane>
-                          </Pane>
-                        ))}
-                      </>
-                    )}
-                  </Form.List>
+                  <Pane className="row">
+                    <Pane className="col-lg-6">
+                      <FormItem
+                        name='birth_date'
+                        label="Ngày sinh"
+                        type={variables.DATE_PICKER}
+                        disabled
+                      />
+                    </Pane>
+                    <Pane className="col-lg-6">
+                      <FormItem
+                        name='age_month'
+                        label="Tuổi hiện tại (tháng)"
+                        placeholder="Tháng"
+                        type={variables.INPUT}
+                        disabled
+                      />
+                    </Pane>
+                  </Pane>
                 </Pane>
                 <Pane className="col-lg-4">
                   <FormItem
@@ -209,7 +206,7 @@ const General = memo(
               </Pane>
             </Pane>
             <Pane className="pt20 d-flex justify-content-between align-items-center ">
-            <p className="btn-delete" role="presentation" onClick={() => history.push('/crm/sale/dang-ky-nhap-hoc')}>
+              <p className="btn-delete" role="presentation" onClick={() => history.push('/crm/sale/dang-ky-nhap-hoc')}>
                 Hủy
               </p>
               <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
@@ -224,19 +221,19 @@ const General = memo(
 );
 
 General.propTypes = {
-  dispatch: PropTypes.func,
-  match: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   customerLead: PropTypes.arrayOf(PropTypes.any),
+  studentsLead: PropTypes.arrayOf(PropTypes.any),
+  studentsId: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
-  match: {},
-  dispatch: () => { },
   loading: {},
   error: {},
   customerLead: [],
+  studentsLead: [],
+  studentsId: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));

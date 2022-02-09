@@ -37,6 +37,16 @@ export function getStudentsLead(params) {
   });
 }
 
+export function getStudentsId(params) {
+  return request(`/v1/student-infos`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'full_name',
+    },
+  });
+}
+
 export function details(params = {}) {
   return request(`/v1/admission-registers/${params.id}`, {
     method: 'GET',
