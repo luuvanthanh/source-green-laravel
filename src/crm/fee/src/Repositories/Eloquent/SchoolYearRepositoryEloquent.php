@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Fee\Repositories\Eloquent;
 use GGPHP\Crm\Fee\Models\SchoolYear;
 use GGPHP\Crm\Fee\Presenters\SchoolYearPresenter;
 use GGPHP\Crm\Fee\Repositories\Contracts\SchoolYearRepository;
+use GGPHP\Crm\Fee\Services\SchoolYearCloverService;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -53,5 +54,9 @@ class SchoolYearRepositoryEloquent extends BaseRepository implements SchoolYearR
         }
 
         return $schoolYear;
+    }
+
+    public function getSchoolYearClover(){
+        SchoolYearCloverService::result();
     }
 }
