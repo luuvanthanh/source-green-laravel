@@ -6,6 +6,7 @@ use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\AdmissionRegister\Models\TestInput;
 use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
+use GGPHP\Crm\Fee\Transformers\ClassTypeTransformer;
 
 /**
  * Class CityTransformer.
@@ -31,7 +32,7 @@ class TestInputTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['employee', 'admissionRegister', 'testInputDetail', 'branch'];
+    protected $availableIncludes = ['employee', 'admissionRegister', 'testInputDetail', 'branch', 'classType'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -138,5 +139,14 @@ class TestInputTransformer extends BaseTransformer
         }
 
         return $this->item($testInput->branch, new BranchTransformer, 'Branch');
+    }
+
+    public function includeClassType(TestInput $testInput)
+    {
+        if (empty($testInput->classType)) {
+            return;
+        }
+
+        return $this->item($testInput->classType, new ClassTypeTransformer, 'ClassType');
     }
 }

@@ -5,6 +5,7 @@ namespace GGPHP\Crm\AdmissionRegister\Models;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Employee\Models\Employee;
+use GGPHP\Crm\Fee\Models\ClassType;
 
 class TestInput extends UuidModel
 {
@@ -48,5 +49,10 @@ class TestInput extends UuidModel
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function classType()
+    {
+        return $this->belongsTo(ClassType::class, 'class_type_id');
     }
 }
