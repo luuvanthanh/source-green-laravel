@@ -23,6 +23,12 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forGuest();
     });
 
+    Route::group(['prefix' => 'sso', 'middleware' => []], function () {
+        \GGPHP\Crm\CustomerLead\RouteRegistrar::routes(function ($router) {
+            $router->forSso();
+        });
+    });
+
     Route::group(['middleware' => 'auth_sso'], function () {
         //facebook
         \GGPHP\Crm\Facebook\RouteRegistrar::routes(function ($router) {
@@ -75,12 +81,6 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
 
         \GGPHP\Crm\SsoAccount\RouteRegistrar::routes(function ($router) {
             $router->forBread();
-        });
-
-        Route::group(['prefix' => 'sso', 'middleware' => []], function () {
-            \GGPHP\Crm\CustomerLead\RouteRegistrar::routes(function ($router) {
-                $router->forSso();
-            });
         });
 
         Route::group(['prefix' => 'clover', 'middleware' => []], function () {
