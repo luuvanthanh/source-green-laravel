@@ -65,6 +65,11 @@ class ClassTypeRepositoryEloquent extends CoreRepositoryEloquent implements Clas
             $this->model = $this->model->where('From', '<=', $attributes['age'])->where('To', '>=', $attributes['age']);
         }
 
+        //from Crm
+        if (!empty($attributes['classTypeCrmId'])) {
+            $this->model = $this->model->where('ClassTypeCrmId', null);
+        }
+
         if (!empty($attributes['limit'])) {
             $fee = $this->paginate($attributes['limit']);
         } else {
@@ -72,5 +77,14 @@ class ClassTypeRepositoryEloquent extends CoreRepositoryEloquent implements Clas
         }
 
         return $fee;
+    }
+
+    public function classTypeCrm(array $attributes)
+    {
+        foreach ($attributes as $item) {
+            $schoolYear = ClassType::findOrfail($item['class_type_clover_id']);
+
+            $schoolYear->update(['ClassTypeCrmId' => $item['id']]);
+        }
     }
 }
