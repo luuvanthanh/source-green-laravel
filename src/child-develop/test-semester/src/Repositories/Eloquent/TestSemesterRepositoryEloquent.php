@@ -81,15 +81,17 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
             $testSemester = TestSemester::where('StudentId', $attributes['studentId'])->where('AssessmentPeriodId', $attributes['assessmentPeriodId'])->first();
 
-            if (is_null($testSemester)) {
+            if (!empty($attributes['status'])) {
                 $attributes['status'] = TestSemester::STATUS[$attributes['status']];
+            }
+
+            if (is_null($testSemester)) {
                 $testSemester = TestSemester::create($attributes);
             } else {
-                $attributes['status'] = TestSemester::STATUS[$attributes['status']];
                 $testSemester->update($attributes);
             }
 
-            if ($attributes['detail']['isCheck']) {
+            if (!empty($attributes['detail']['isCheck'])) {
 
                 TestSemesterDetail::where('CategorySkillId', $attributes['detail']['categorySkillId'])->delete();
                 $attributes['detail']['testSemesterId'] = $testSemester->Id;
@@ -102,7 +104,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 }
             }
 
-            if ($attributes['status'] == 3) {
+            if (!empty($attributes['status']) &&  $attributes['status'] == 3) {
                 $testSemester->testSemesterDetail()->delete();
             }
 

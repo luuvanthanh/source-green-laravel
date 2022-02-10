@@ -5,6 +5,7 @@ namespace GGPHP\ChildDevelop\TestSemester\Transformers;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\ClassTypeTransformer;
 
 /**
  * Class ReviewDetailTransformer.
@@ -30,7 +31,7 @@ class TestSemesterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['testSemesterDetail', 'student'];
+    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -42,7 +43,39 @@ class TestSemesterTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $status = null;
+        $approvalStatus = null;
+        $type = null;
+
+        foreach (TestSemester::STATUS as $key => $value) {
+            if (!is_null($model->Status)) {
+                if ($value == $model->Status) {
+                    $status = $key;
+                }
+            }
+        }
+
+        foreach (TestSemester::APPROVAL_STATUS as $key => $value) {
+            if (!is_null($model->ApprovalStatus)) {
+                if ($value == $model->ApprovalStatus) {
+                    $approvalStatus = $key;
+                }
+            }
+        }
+
+        foreach (TestSemester::TYPE as $key => $value) {
+            if (!is_null($model->Type)) {
+                if ($value == $model->Type) {
+                    $type = $key;
+                }
+            }
+        }
+
+        return [
+            'Status' => $status,
+            'ApprovalStatus' => $approvalStatus,
+            'Type' => $type
+        ];
     }
 
     public function customMeta(): array
@@ -68,11 +101,11 @@ class TestSemesterTransformer extends BaseTransformer
 
         if (request()->is_summary_approvel_status && request()->is_summary_approvel_status == 'true') {
             $items = $this->getCurrentScope()->getResource()->getData();
-            $status = $items->groupBy('ApprovelStatus')->map->count()->toArray();
+            $approvelStatus = $items->groupBy('ApprovalStatus')->map->count()->toArray();
             ksort($status);
-            $unsent = isset($status[0]) ? $status[0] : 0;
-            $unqulified = isset($status[1]) ? $status[1] : 0;
-            $approved = isset($status[2]) ? $status[2] : 0;
+            $unsent = isset($approvelStatus[0]) ? $approvelStatus[0] : 0;
+            $unqulified = isset($approvelStatus[1]) ? $approvelStatus[1] : 0;
+            $approved = isset($approvelStatus[2]) ? $approvelStatus[2] : 0;
 
             $data['ApprovelStatus'] = [
                 'total_unsent' => $unsent,
@@ -96,5 +129,14 @@ class TestSemesterTransformer extends BaseTransformer
         }
 
         return $this->item($testSemester->student, new StudentTransformer, 'Student');
+    }
+
+    public function includeClassType(TestSemester $testSemester)
+    {
+        if (empty($testSemester->classType)) {
+            return;
+        }
+
+        return $this->item($testSemester->classType, new ClassTypeTransformer, 'ClassType');
     }
 }
