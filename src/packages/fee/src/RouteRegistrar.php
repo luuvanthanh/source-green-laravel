@@ -62,6 +62,9 @@ class RouteRegistrar extends CoreRegistrar
 
             //update class-type from crm
             Route::post('class-type-crm', 'ClassTypeController@classTypeCrm');
+
+            //update fee from crm
+            Route::post('fee-crm', 'FeeController@feeCrm');
         });
     }
 

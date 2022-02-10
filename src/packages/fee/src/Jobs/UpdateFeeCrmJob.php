@@ -2,30 +2,30 @@
 
 namespace GGPHP\Fee\Jobs;
 
-use GGPHP\Fee\Services\SchoolYearCrmService;
+use GGPHP\Fee\Services\FeeCrmService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UpdateSchoolYearCrmJob implements ShouldQueue
+class UpdateFeeCrmJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $schoolYear;
-    protected $schoolYearId;
+    protected $fee;
+    protected $feeCrmId;
     protected $token;
-    
-    public function __construct($schoolYear, $schoolYearId, $token)
+
+    public function __construct($fee, $feeCrmId, $token)
     {
-        $this->schoolYear = $schoolYear;
-        $this->schoolYearId = $schoolYearId;
+        $this->fee = $fee;
+        $this->feeCrmId = $feeCrmId;
         $this->token = $token;
     }
 
     public function handle()
     {
-        SchoolYearCrmService::update($this->schoolYear, $this->schoolYearId, $this->token);
+        FeeCrmService::update($this->fee, $this->feeCrmId, $this->token);
     }
 }

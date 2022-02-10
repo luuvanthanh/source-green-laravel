@@ -89,4 +89,11 @@ class FeeController extends Controller
         $this->feeRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    public function feeCrm(Request $request)
+    {
+        $this->feeRepository->updateFeeCrm($request->all());
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
+    }
 }
