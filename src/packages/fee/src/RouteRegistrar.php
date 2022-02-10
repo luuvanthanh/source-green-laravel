@@ -59,6 +59,9 @@ class RouteRegistrar extends CoreRegistrar
 
             //update school-year from crm
             Route::post('school-year-crm', 'SchoolYearController@schoolYearCrm');
+
+            //update class-type from crm
+            Route::post('class-type-crm', 'ClassTypeController@classTypeCrm');
         });
     }
 

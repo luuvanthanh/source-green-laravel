@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use CloudCreativity\LaravelJsonApi\LaravelJsonApi;
+use GGPHP\Fee\Models\ClassType;
+use GGPHP\Fee\Observers\ClassTypeObserver;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         LaravelJsonApi::defaultApi('v1');
+
+        //Observer
+        ClassType::observe(ClassTypeObserver::class);
 
         /**
          * Paginate a standard Laravel Collection.
