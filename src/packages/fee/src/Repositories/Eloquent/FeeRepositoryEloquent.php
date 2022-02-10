@@ -61,6 +61,10 @@ class FeeRepositoryEloquent extends CoreRepositoryEloquent implements FeeReposit
             $this->model = $this->model->where('Type', $attributes['type']);
         }
 
+        if (!empty($attributes['feeCrmId'])) {
+            $this->model = $this->model->where('FeeCrmId', null);
+        }
+
         if (!empty($attributes['limit'])) {
             $fee = $this->paginate($attributes['limit']);
         } else {
@@ -68,5 +72,14 @@ class FeeRepositoryEloquent extends CoreRepositoryEloquent implements FeeReposit
         }
 
         return $fee;
+    }
+
+    public function updateFeeCrm(array $attributes)
+    {
+        foreach ($attributes as $item) {
+            $schoolYear = Fee::findOrfail($item['fee_clover_id']);
+
+            $schoolYear->update(['FeeCrmId' => $item['id']]);
+        }
     }
 }
