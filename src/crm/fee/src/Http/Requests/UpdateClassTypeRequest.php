@@ -25,8 +25,6 @@ class UpdateClassTypeRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'code' => 'unique:class_types,code|max:255',
-        ];
+        return [];
     }
 }

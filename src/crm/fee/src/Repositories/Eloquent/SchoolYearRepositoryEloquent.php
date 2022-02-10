@@ -56,7 +56,8 @@ class SchoolYearRepositoryEloquent extends BaseRepository implements SchoolYearR
         return $schoolYear;
     }
 
-    public function getSchoolYearClover(){
+    public function getSchoolYearClover()
+    {
         SchoolYearCloverService::result();
     }
 }

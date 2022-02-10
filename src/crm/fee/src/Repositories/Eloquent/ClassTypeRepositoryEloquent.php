@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Fee\Repositories\Eloquent;
 use GGPHP\Crm\Fee\Models\ClassType;
 use GGPHP\Crm\Fee\Presenters\ClassTypePresenter;
 use GGPHP\Crm\Fee\Repositories\Contracts\ClassTypeRepository;
+use GGPHP\Crm\Fee\Services\ClassTypeCloverService;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -53,5 +54,10 @@ class ClassTypeRepositoryEloquent extends BaseRepository implements ClassTypeRep
         }
 
         return $classType;
+    }
+
+    public function getClassTypeClover()
+    {
+        ClassTypeCloverService::result();
     }
 }

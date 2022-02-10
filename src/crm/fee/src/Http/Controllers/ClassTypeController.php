@@ -93,4 +93,11 @@ class ClassTypeController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function getClassTypeClover()
+    {
+        $this->classTypeRepository->getClassTypeClover();
+
+        return $this->success([], trans('lang::messages.common.getListSuccess'));
+    }
 }
