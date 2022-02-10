@@ -4,7 +4,7 @@ import * as services from './services';
 export default {
   namespace: 'OPProfile',
   state: {
-    data: [],
+    dataPipiPupu: [],
     pagination: {
       total: 0,
     },
@@ -12,12 +12,15 @@ export default {
     classes: [],
     students: [],
     groupProperty: [],
+    detailsStudent: {},
+    dataWater: [],
+    dataHeight: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
+      dataPipiPupu: payload,
       pagination: payload.pagination,
     }),
     SET_BRANCHES: (state, { payload }) => ({
@@ -35,6 +38,18 @@ export default {
     SET_GROUP_PROPERTY: (state, { payload }) => ({
       ...state,
       groupProperty: payload.parsePayload,
+    }),
+    SET_DETAIL_STUDENT: (state, { payload }) => ({
+      ...state,
+      detailsStudent: payload,
+    }),
+    SET_WATER: (state, { payload }) => ({
+      ...state,
+      dataWater: payload,
+    }),
+    SET_HEIGHT: (state, { payload }) => ({
+      ...state,
+      dataHeight: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -120,6 +135,49 @@ export default {
               total: response.totalCount,
             },
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DETAIL_STUDENT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDetailStudents, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_DETAIL_STUDENT',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_WATER({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getWater, payload);
+        yield saga.put({
+          type: 'SET_WATER',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_HEIGHT({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getHeight, payload);
+        yield saga.put({
+          type: 'SET_HEIGHT',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({

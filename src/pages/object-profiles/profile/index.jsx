@@ -1,15 +1,17 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, Avatar } from 'antd';
 import { useParams, useHistory, useLocation } from 'umi';
 import TableCus from '@/components/CommonComponent/Table';
 import classnames from 'classnames';
 import { useSelector, useDispatch } from 'dva';
+import { head, isEmpty, get } from 'lodash';
 
 import common from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import moment from 'moment';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -23,22 +25,35 @@ const General = memo(() => {
     branches,
     classes,
     students,
+    dataPipiPupu,
     groupProperty,
+    detailsStudent,
+    dataWater,
+    dataHeight
   ] = useSelector(({ OPProfile }) => [
     OPProfile.branches,
     OPProfile.classes,
     OPProfile.students,
+    OPProfile.dataPipiPupu,
     OPProfile.groupProperty,
+    OPProfile.detailsStudent,
+    OPProfile.dataWater,
+    OPProfile.dataHeight
   ]);
   const dispatch = useDispatch();
   const [loadData, setLoadData] = useState(false);
-  const [formCheck, setFormCheck] = useState(true);
+  const [formCheck, setFormCheck] = useState(false);
+  const [checkStudent, setCheckStudent] = useState(false);
+  const [pipi, setPipi] = useState();
+  const [pupu, setPupu] = useState([]);
   const { query } = useLocation();
 
   const [search, setSearch] = useState({
     id: query?.id,
     SearchDate: query.SearchDate ? moment(query.SearchDate) : "",
   });
+
+  console.log("dataHeight", dataHeight);
 
   const history = useHistory();
   const chart = {
@@ -66,88 +81,76 @@ const General = memo(() => {
   const BAR = {
     data: {
       x: 'x',
+      y2: 'Bình nước',
       columns: [
-        ['x', 'Tháng 1/2021', 'Tháng 2/2021', 'Tháng 3/2021', 'Tháng 4/2021', 'Tháng 5/2021'],
-        ['Đã học', 10, 20, 30, 40, 50],
-        ['Đã vắng', 0, 2, 0, 10, 0],
+        ['x', pipi?.length > 0 ?  pipi[0]?.criteriaReportGroupByMonths.map( i => `${i?.month}/${i.year}` ) : ""].flat(),
+        ['Pipi',pipi?.length > 0 ?  pipi[0]?.criteriaReportGroupByMonths.map( i => i?.totalAmount) : ""].flat(),
+        ['Pupu',pupu?.length > 0 ?  pupu[0]?.criteriaReportGroupByMonths.map( i => i?.totalAmount) : ""].flat(),
+        ['Bình nước',dataWater?.length > 0 ?  dataWater.map( i => i?.waterBottle?.type ? i?.waterBottle?.type : "") : ""].flat(),
       ],
       type: 'bar',
+      types: {
+        'Bình nước': 'spline'
+    },
       order: 'desc',
+      axes: {
+        'Bình nước': 'y2'
+    }
     },
     axis: {
       x: {
-        type: 'category', // this needed to load string x value
+        type: 'category', 
       },
       y: {
-        label: 'Buổi học',
+        label: 'Số lần đi',
       },
+      y2: {
+        show: true,
+        label: 'Bình nước',
+      }
     },
     color: {
-      pattern: ['#3B5CAD', '#FF8300'],
+      pattern: ['#27A600', '#3B36DD', '#FF8300'],
     },
-    legend: {
-      show: true,
-      position: 'inset',
-      inset: {
-        anchor: 'top-right',
-        x: undefined,
-        y: undefined,
-        step: undefined,
-      },
-    },
+    // legend: {
+    //   show: true,
+    //   position: 'inset',
+    //   inset: {
+    //     anchor: 'top-right',
+    //     x: undefined,
+    //     y: undefined,
+    //     step: undefined,
+    //   },
+    // },
   };
 
   const data = {
-    x: "timeSeries",
-    groups: [["Resident", "Guest"]],
-    json: {
-      timeSeries: [
-        "2020-02-01",
-        "2020-02-02",
-        "2020-02-03",
-        "2020-02-04",
-        "2020-02-05",
-        "2020-02-06",
-        "2020-02-07",
-        "2020-02-08",
-        "2020-02-09"
-      ],
-
-      Resident: [136, 124, 117, 102, 124, 108, 114, 144, 184],
-      // LowerBand: [190, 224, 255, 240, 264, 290, 275, 283, 255]
-      Guest: [134, 95, 105, 67, 31, 88, 94, 95, 92],
-      Guests: [134, 95, 105, 67, 31, 88, 4, 5, 92]
-    },
+    x: 'x',
+    groups: [["Pipi", "Pupu"]],
+    columns: [
+      ['x', pipi?.length > 0 ?  pipi[0]?.criteriaReportGroupByMonths.map( i => `${i?.month}/${i.year}` ) : ""].flat(),
+      ['Pipi',pipi?.length > 0 ?  pipi[0]?.criteriaReportGroupByMonths.map( i => i?.totalAmount) : ""].flat(),
+      ['Pupu',pupu?.length > 0 ?  pupu[0]?.criteriaReportGroupByMonths.map( i => i?.totalAmount) : ""].flat(),
+      ['Bình nước',dataWater?.length > 0 ?  dataWater.map( i => i?.waterBottle?.type ? i?.waterBottle?.type : "") : ""].flat(),
+    ],
 
     types: {
 
-      Resident: "area",
-      Guest: "area",
+      Pipi: "area",
+      Pupu: "area",
     },
     colors: {
 
       // UpperBand: "#8A3FFC",
       // LowerBand: "#005D5D"
-      Resident: "#8A3FFC",
-      Guest: "#005D5D"
+      Pipi: "#8A3FFC",
+      Pupu: "#005D5D"
     }
   };
 
   const axis = {
     x: {
-      type: "timeseries",
-      localtime: true,
-      tick: {
-        format: "%d/%m/%Y"
-      },
-      padding: {
-        left: 0,
-        right: 0
-      },
-      label: {
-        text: "Selected timeframe",
-        position: "outer-center"
-      }
+      type: 'category', 
     },
     y: {
       padding: {
@@ -190,6 +193,7 @@ const General = memo(() => {
       type: 'OPProfile/GET_STUDENTS',
       payload: {
         class: e,
+        classStatus: 'HAS_CLASS'
       },
     });
   };
@@ -207,16 +211,34 @@ const General = memo(() => {
   };
 
   const onChangeData = () => {
-    const dataPipi = groupProperty.filter(i => i.code === 'PIPI' || i.code === 'PUPU');
-
+    const dataPipi = groupProperty.filter(i => i.code === 'PIPI' || i.code === 'PUPU');   
     dispatch({
       type: 'OPProfile/GET_DATA',
-      payload: { ...search, CriteriaPropertyIds: dataPipi.map((i) => (i.id)).join(',') },
+      payload: { ...search, CriteriaPropertyIds: dataPipi.map((i) => (i.id)) },
       callback(res) {
-        if (res.length > 0) {
+        if (res) {
           setFormCheck(true);
+          setPipi(res?.filter(i => i?.criteriaGroupProperty?.code === 'PIPI'));
+          setPupu(res?.filter(i => i?.criteriaGroupProperty?.code === 'PUPU'));
         }
       }
+    });
+    dispatch({
+      type: 'OPProfile/GET_DETAIL_STUDENT',
+      payload: search.StudentId,
+      callback(res) {
+        if (res) {
+          setCheckStudent(true);
+        }
+      }
+    });
+    dispatch({
+      type: 'OPProfile/GET_WATER',
+      payload: search,
+    });
+    dispatch({
+      type: 'OPProfile/GET_HEIGHT',
+      payload: search,
     });
   };
 
@@ -284,10 +306,10 @@ const General = memo(() => {
               <div className="col-lg-2 d-flex justify-content-end" style={{ marginTop: '30px' }}>
                 {
                   loadData ?
-                    <Button color="success" icon="report" className="ml-4" onClick={onChangeData} style={{width: 'auto'}}>
+                    <Button color="success" icon="report" className="ml-4" onClick={onChangeData} style={{ width: 'auto' }}>
                       Tải dữ liệu
                     </Button> :
-                    <Button color="success" icon="report" className="ml-4" disabled style={{width: 'auto'}}>
+                    <Button color="success" icon="report" className="ml-4" disabled style={{ width: 'auto' }}>
                       Tải dữ liệu
                     </Button>
                 }
@@ -298,34 +320,42 @@ const General = memo(() => {
         {
           formCheck ?
             <>
-              <div className={styles['card-container']}>
-                <div className={classnames(styles['profiles-container'], 'd-flex', 'mb30')}>
-                  <div className={styles['image-container']}>
-                    <img src="/images/image-default.png" alt="default" className={styles.image} />
-                  </div>
-                  <div className={styles['profiles-content']}>
-                    <h3 className={styles.title}>Nguyễn Thị Linh</h3>
-                    <div className={styles['profiles-info']}>
-                      <div className={styles['info-item']}>
-                        <p className={styles.label}>Năm sinh</p>
-                        <h4 className={styles.name}>22/04/2019 (32 tháng tuổi)</h4>
+              {
+                checkStudent ?
+                  <div className={styles['card-container']}>
+                    <div className={classnames(styles['profiles-container'], 'd-flex', 'mb30')}>
+                      <div className={styles['image-container']}>
+                        <AvatarTable
+                          fileImage={Helper.getPathAvatarJson(detailsStudent?.student?.fileImage)}
+                          className={styles.image}
+                          size={150}
+                        />
                       </div>
-                      <div className={styles['info-item']}>
-                        <p className={styles.label}>Cơ sở</p>
-                        <h4 className={styles.name}>Lake View</h4>
-                      </div>
-                      <div className={styles['info-item']}>
-                        <p className={styles.label}>Lớp</p>
-                        <h4 className={styles.name}>Presschool</h4>
-                      </div>
-                      <div className={styles['info-item']}>
-                        <p className={styles.label}>Ngày vào học</p>
-                        <h4 className={styles.name}>15/02/2020</h4>
+                      <div className={styles['profiles-content']}>
+                        <h3 className={styles.title}>{detailsStudent?.student?.fullName}</h3>
+                        <div className={styles['profiles-info']}>
+                          <div className={styles['info-item']}>
+                            <p className={styles.label}>Năm sinh</p>
+                            <h4 className={styles.name}>{Helper.getDate(detailsStudent?.student?.dayOfBirth)} ({detailsStudent?.student?.age} tháng tuổi)</h4>
+                          </div>
+                          <div className={styles['info-item']}>
+                            <p className={styles.label}>Cơ sở</p>
+                            <h4 className={styles.name}>{detailsStudent?.student?.class?.branch?.name}</h4>
+                          </div>
+                          <div className={styles['info-item']}>
+                            <p className={styles.label}>Lớp</p>
+                            <h4 className={styles.name}>{detailsStudent?.student?.class?.name}</h4>
+                          </div>
+                          <div className={styles['info-item']}>
+                            <p className={styles.label}>Ngày vào học</p>
+                            <h4 className={styles.name}>{Helper.getDate(detailsStudent?.student?.registerDate)}</h4>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                  : ""
+              }
               <div className='row'>
                 <div className='col-lg-6'>
                   <div className={classnames(styles['table-left'], 'card', 'p20')}>
@@ -334,7 +364,7 @@ const General = memo(() => {
                         <Text color="success" size="large-medium">
                           Sức khỏe y tế
                         </Text>
-                        <p className={styles.content}>Cập nhật 15/12/2021 - 10:15</p>
+                        <p className={styles.content}>Cập nhật {Helper.getDate(dataPipiPupu[0]?.criteriaGroupProperty?.lastModificationTime,variables.DATE_FORMAT.DATE_TIME )}</p>
                       </div>
                       <Button className={styles.btn}>
                         Chi tiết
@@ -345,14 +375,14 @@ const General = memo(() => {
                         <img src="/images/objectProfile/heigth.svg" alt="heigth" className={styles.image} />
                         <div className='pl15'>
                           <p className={styles.title}>Chiều cao</p>
-                          <h2 className={styles.number}>8</h2>
+                          <h2 className={styles.number}>{ JSON.stringify(dataHeight) !== '{}' ? dataHeight?.studentCriterias[0]?.criteriaGroupProperty?.orderIndex : 0} </h2>
                         </div>
                       </div>
                       <div className={classnames(styles['table-content'])}>
                         <img src="/images/objectProfile/weight.svg" alt="weight" className={styles.image} />
                         <div className='pl15'>
                           <p className={styles.title}>Cân nặng (kg)</p>
-                          <h2 className={styles.number}>40</h2>
+                          <h2 className={styles.number}>{JSON.stringify(dataHeight) !== '{}' ? dataHeight?.studentCriterias[1]?.criteriaGroupProperty?.orderIndex : 0}</h2>
                         </div>
                       </div>
                     </div>
@@ -379,7 +409,7 @@ const General = memo(() => {
                         <Text color="success" size="large-medium">
                           Pipi - pupu - uống nước
                         </Text>
-                        <p className={styles.content}>Cập nhật 15/12/2021 - 10:15</p>
+                        <p className={styles.content}>Cập nhập {Helper.getDate(dataPipiPupu[0]?.criteriaGroupProperty?.lastModificationTime,variables.DATE_FORMAT.DATE_TIME )}</p>
                       </div>
                       <Button className={styles.btn}>
                         Chi tiết
@@ -390,21 +420,21 @@ const General = memo(() => {
                         <img src="/images/objectProfile/pipi.svg" alt="pipi" className={styles.image} />
                         <div className='pl15'>
                           <p className={styles.title}>Số lần pipi</p>
-                          <h2 className={styles.number}>140</h2>
+                          <h2 className={styles.number}>{pipi?.length > 0 ? pipi[0]?.totalAmount : 0 }</h2>
                         </div>
                       </div>
                       <div className={classnames(styles['table-content'])}>
                         <img src="/images/objectProfile/pupu.svg" alt="pupu" className={styles.image} />
                         <div className='pl15'>
                           <p className={styles.title}>Số lần pupu</p>
-                          <h2 className={styles.number}>40</h2>
+                          <h2 className={styles.number}>{pupu?.length > 0 ? pipi[0]?.totalAmount : 0 }</h2>
                         </div>
                       </div>
                       <div className={classnames(styles['table-content'])}>
                         <img src="/images/objectProfile/water.svg" alt="water" className={styles.image} />
                         <div className='pl15'>
                           <p className={styles.title}>Bình nước</p>
-                          <h2 className={styles.number}>40</h2>
+                          <h2 className={styles.number}>{dataWater[dataWater?.length - 1]?.waterBottle?.type  ? dataWater[dataWater?.length - 1]?.waterBottle?.type : '0'}</h2>
                         </div>
                       </div>
                     </div>
