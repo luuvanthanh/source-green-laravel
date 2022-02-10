@@ -25,8 +25,6 @@ class CreateClassTypeRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'code' => 'required|unique:class_types|max:255',
-        ];
+        return [];
     }
 }
