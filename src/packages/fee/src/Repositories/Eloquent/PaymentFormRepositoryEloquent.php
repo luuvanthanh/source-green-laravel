@@ -65,6 +65,11 @@ class PaymentFormRepositoryEloquent extends CoreRepositoryEloquent implements Pa
             $this->model = $this->model->where('IsSemester', $attributes['isSemester']);
         }
 
+        //get payment from crm
+        if (!empty($attributes['paymentFormCrm'])) {
+            $this->model = $this->model->where('PaymentFormCrmId', null);
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentForm = $this->paginate($attributes['limit']);
         } else {
@@ -72,5 +77,14 @@ class PaymentFormRepositoryEloquent extends CoreRepositoryEloquent implements Pa
         }
 
         return $paymentForm;
+    }
+
+    public function updatePaymentFormCrm(array $attributes)
+    {
+        foreach ($attributes as $item) {
+            $schoolYear = PaymentForm::findOrfail($item['payment_form_clover_id']);
+
+            $schoolYear->update(['PaymentFormCrmId' => $item['id']]);
+        }
     }
 }
