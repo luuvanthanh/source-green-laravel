@@ -2,30 +2,28 @@
 
 namespace GGPHP\Fee\Jobs;
 
-use GGPHP\Fee\Services\ClassTypeCrmService;
+use GGPHP\Fee\Services\FeePolicieCrmService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class UpdateClassTypeCrmJob implements ShouldQueue
+class CreateFeePolicieCrmJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $classType;
+    protected $feePolicie;
     protected $token;
-    protected $classTypeId;
-    
-    public function __construct($classType, $classTypeId, $token)
+
+    public function __construct($feePolicie, $token)
     {
         $this->token = $token;
-        $this->classType = $classType;
-        $this->classTypeId = $classTypeId;
+        $this->feePolicie = $feePolicie;
     }
 
     public function handle()
     {
-        ClassTypeCrmService::update($this->classType, $this->classTypeId, $this->token);
+        FeePolicieCrmService::create($this->feePolicie, $this->token);
     }
 }

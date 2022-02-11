@@ -54,6 +54,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
     public function filterFeePolicie(array $attributes)
     {
+        if (!empty($attributes['feePolicieCrm'])) {
+            $this->model = $this->model->where('FeePolicieCrmId', null);
+        }
+
         if (!empty($attributes['limit'])) {
             $feePolicie = $this->paginate($attributes['limit']);
         } else {
@@ -516,5 +520,14 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         }
 
         return $totalWeekend;
+    }
+
+    public function updateFeePolicieCrm(array $attributes)
+    {
+        foreach ($attributes as $item) {
+            $schoolYear = FeePolicie::findOrfail($item['fee_policie_clover_id']);
+
+            $schoolYear->update(['FeePolicieCrmId' => $item['id']]);
+        }
     }
 }

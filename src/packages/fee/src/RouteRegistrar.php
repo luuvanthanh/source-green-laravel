@@ -68,6 +68,9 @@ class RouteRegistrar extends CoreRegistrar
 
             //update payment form from crm
             Route::post('payment-form-crm', 'PaymentFormController@paymentFormCrm');
+
+            //update fee policies from crm
+            Route::post('fee-policie-crm', 'FeePolicieController@feePolicieCrm');
         });
     }
 
