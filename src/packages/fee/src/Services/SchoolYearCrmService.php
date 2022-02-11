@@ -26,7 +26,13 @@ class SchoolYearCrmService
         $result = Http::withToken($token)->post(self::url(), $params);
 
         if ($result->failed()) {
-            throw new HttpException($result->status(), $result->body());
+            $message = 'Có lỗi từ api CRM';
+
+            if (isset(json_decode($result->body())->error) && isset(json_decode($result->body())->error->message)) {
+                $message = 'CRM: ' . json_decode($result->body())->error->message;
+            }
+
+            throw new HttpException($result->status(), $message);
         }
     }
 
@@ -44,7 +50,13 @@ class SchoolYearCrmService
         $result = Http::withToken($token)->put(self::url() . '/' . $id, $params);
 
         if ($result->failed()) {
-            throw new HttpException($result->status(), $result->body());
+            $message = 'Có lỗi từ api CRM';
+
+            if (isset(json_decode($result->body())->error) && isset(json_decode($result->body())->error->message)) {
+                $message = 'CRM: ' . json_decode($result->body())->error->message;
+            }
+
+            throw new HttpException($result->status(), $message);
         }
     }
 }
