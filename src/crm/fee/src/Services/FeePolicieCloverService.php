@@ -2,16 +2,17 @@
 
 namespace GGPHP\Crm\Fee\Services;
 
-use GGPHP\Crm\Fee\Models\Fee;
+use GGPHP\Crm\Fee\Models\FeePolicie;
+use GGPHP\Crm\Fee\Models\SchoolYear;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
-class FeeCloverService
+class FeePolicieCloverService
 {
     public static function result()
     {
-        $data = self::getFee();
+        $data = self::getFeePolicie();
         $result = self::processData($data);
         self::updateToClover($result);
     }
@@ -26,12 +27,12 @@ class FeeCloverService
         return env('URL_CLOVER');
     }
 
-    public static function getFee()
+    public static function getFeePolicie()
     {
-        $url = self::url() . '/api/v1/fees';
+        $url = self::url() . '/api/v1/fee-policies';
 
         $params = [
-            'feeCrmId' => true
+            'feePolicieCrm' => true
         ];
 
         $data = Http::withToken(self::getToken())->get($url, $params);
@@ -43,7 +44,7 @@ class FeeCloverService
                 $message = 'Clover: ' . json_decode($data->body())->error->message;
             }
 
-            throw new HttpException($data->status(), $message);
+            throw new HttpException($data->status(), $data->body());
         }
 
         $data = json_decode($data->body(), true);
@@ -60,15 +61,16 @@ class FeeCloverService
         $creates = [];
 
         foreach ($data as $items) {
-            $check = Fee::where('fee_clover_id', $items['id'])->first();
+            $check = FeePolicie::where('fee_policie_clover_id', $items['id'])->first();
+            $schoolYear = SchoolYear::where('school_year_clover_id', $items['attributes']['schoolYearId'])->first();
 
-            if (is_null($check)) {
+            if (is_null($check) && !is_null($schoolYear)) {
                 $creates[] = [
                     'id' => Str::uuid(4),
-                    'fee_clover_id' => $items['id'],
-                    'name' => $items['attributes']['name'],
-                    'code' => $items['attributes']['code'],
-                    'type' => $items['attributes']['type'],
+                    'fee_policie_clover_id' => $items['id'],
+                    'decision_date' => $items['attributes']['decisionDate'],
+                    'decision_number' => $items['attributes']['decisionNumber'],
+                    'school_year_id' => $schoolYear->id,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -76,7 +78,7 @@ class FeeCloverService
         }
 
         if (!empty($creates)) {
-            Fee::insert($creates);
+            FeePolicie::insert($creates);
         }
 
         return $creates;
@@ -85,7 +87,7 @@ class FeeCloverService
     public static function updateToClover($data)
     {
         if (!empty($data)) {
-            $url = self::url() . '/api/v1/fee-crm';
+            $url = self::url() . '/api/v1/fee-policie-crm';
 
             $result = Http::withToken(self::getToken())->post($url, $data);
 
@@ -99,5 +101,12 @@ class FeeCloverService
                 throw new HttpException($result->status(), $message);
             }
         }
+    }
+
+    public static function created($feePolicie)
+    {
+        $feePolicie['id'] = $feePolicie['fee_policie_clover_id'];
+        
+        Http::withToken(self::getToken())->put(self::url() . '/api/v1/fee-policies/' . $feePolicie['id'], $feePolicie);
     }
 }

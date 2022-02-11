@@ -3,25 +3,25 @@
 namespace GGPHP\Crm\Fee\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use GGPHP\Crm\Fee\Repositories\Contracts\FeeRepository;
+use GGPHP\Crm\Fee\Repositories\Contracts\FeePolicieRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class FeeController extends Controller
+class FeePolicieController extends Controller
 {
     /**
      * 
      * @var $employeeRepository
      */
-    protected $feeRepository;
+    protected $feePolicieRepository;
 
     /**
      * UserController constructor.
      * @param ReviewRepository $inOutHistoriesRepository
      */
-    public function __construct(FeeRepository $feeRepository)
+    public function __construct(FeePolicieRepository $feePolicieRepository)
     {
-        $this->feeRepository = $feeRepository;
+        $this->feePolicieRepository = $feePolicieRepository;
     }
 
     /**
@@ -32,9 +32,9 @@ class FeeController extends Controller
      */
     public function index(Request $request)
     {
-        $fee = $this->feeRepository->getFee($request->all());
+        $feePolicie = $this->feePolicieRepository->getFeePolicie($request->all());
 
-        return $this->success($fee, trans('lang::messages.common.getListSuccess'));
+        return $this->success($feePolicie, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -46,9 +46,9 @@ class FeeController extends Controller
     public function store(Request $request)
     {
         $attributes = $request->all();
-        $fee = $this->feeRepository->create($attributes);
+        $feePolicie = $this->feePolicieRepository->create($attributes);
 
-        return $this->success($fee, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success($feePolicie, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     /**
@@ -59,9 +59,9 @@ class FeeController extends Controller
      */
     public function show($id)
     {
-        $fee = $this->feeRepository->find($id);
+        $feePolicie = $this->feePolicieRepository->find($id);
 
-        return $this->success($fee, trans('lang::messages.common.getInfoSuccess'));
+        return $this->success($feePolicie, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**
@@ -75,14 +75,14 @@ class FeeController extends Controller
     {
         $credentials = $request->all();
 
-        $fee = $this->feeRepository->update($credentials, $id);
+        $feePolicie = $this->feePolicieRepository->update($credentials, $id);
 
-        return $this->success($fee, trans('lang::messages.common.modifySuccess'));
+        return $this->success($feePolicie, trans('lang::messages.common.modifySuccess'));
     }
 
-    public function getFeeClover()
+    public function getFeePolicieClover()
     {
-        $this->feeRepository->getFeeClover();
+        $this->feePolicieRepository->getFeePolicieClover();
 
         return $this->success([], trans('lang::messages.common.getListSuccess'));
     }

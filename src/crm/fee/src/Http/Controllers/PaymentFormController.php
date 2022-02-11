@@ -3,8 +3,6 @@
 namespace GGPHP\Crm\Fee\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use GGPHP\Crm\Fee\Http\Requests\CreateSchoolYearRequest;
-use GGPHP\Crm\Fee\Http\Requests\UpdateSchoolYearRequest;
 use GGPHP\Crm\Fee\Repositories\Contracts\PaymentFormRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -45,7 +43,7 @@ class PaymentFormController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateSchoolYearRequest $request)
+    public function store(Request $request)
     {
         $attributes = $request->all();
         $paymentForm = $this->paymentFormRepository->create($attributes);
@@ -73,7 +71,7 @@ class PaymentFormController extends Controller
      * @param  \App\news  $news
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateSchoolYearRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $credentials = $request->all();
 
