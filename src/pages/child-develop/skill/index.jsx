@@ -104,12 +104,14 @@ const Index = memo(() => {
     {
       title: 'Mã KN',
       key: 'code',
+      width: 200,
       className: 'min-width-200',
       render: (record) => <Text size="normal">{record.code}</Text>,
     },
     {
       title: 'Tên kỹ năng',
       key: 'name',
+      width: 200,
       className: 'min-width-200',
       render: (record) => <Text size="normal">{record.name}</Text>,
     },
@@ -156,7 +158,6 @@ const Index = memo(() => {
       key: 'action',
       className: 'min-width-80',
       width: 125,
-      fixed: 'right',
       render: (record) => (
         <div className={styles['list-button']}>
           <Button

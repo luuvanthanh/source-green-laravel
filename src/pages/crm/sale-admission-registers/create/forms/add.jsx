@@ -5,7 +5,6 @@ import moment from 'moment';
 import { connect, history, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'dva';
-import Loading from '@/components/CommonComponent/Loading';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -14,20 +13,18 @@ import FormItem from '@/components/CommonComponent/FormItem';
 
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
-  details: crmSaleAdmissionAdd.details,
   error: crmSaleAdmissionAdd.error,
   studentsLead: crmSaleAdmissionAdd.studentsLead,
   customerLead: crmSaleAdmissionAdd.customerLead,
   studentsId: crmSaleAdmissionAdd.studentsId,
 });
 const General = memo(
-  ({ loading: { effects }, error, customerLead, studentsLead, studentsId }) => {
+  ({ loading: { effects }, customerLead, studentsLead, studentsId }) => {
     const formRef = useRef();
     const mounted = useRef(false);
     const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD`];
     const dispatch = useDispatch();
-    const loading =
-      effects[`crmSaleAdmissionAdd/GET_DETAILS`];
+    
     useEffect(() => {
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_CUSTOMER_LEAD',
@@ -55,7 +52,6 @@ const General = memo(
         payload: {
           student_info_id,
         },
-        // callback: (response) => {
         if(response) {
           formRef.current.setFieldsValue({
             data: response.parsePayload.map((item) => ({
@@ -64,7 +60,6 @@ const General = memo(
             })),
           });
         }
-        // },
       });
     };
 
@@ -119,7 +114,6 @@ const General = memo(
           data: [{}],
         }}
       >
-        <Loading loading={loading} isError={error.isError} params={{ error }}>
           <Pane className="card p20">
             <Pane>
               <Heading type="form-title" style={{ marginBottom: 20 }}>
@@ -214,7 +208,6 @@ const General = memo(
               </Button>
             </Pane>
           </Pane>
-        </Loading>
       </Form>
     );
   },
@@ -222,7 +215,6 @@ const General = memo(
 
 General.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
   customerLead: PropTypes.arrayOf(PropTypes.any),
   studentsLead: PropTypes.arrayOf(PropTypes.any),
   studentsId: PropTypes.arrayOf(PropTypes.any),
@@ -230,7 +222,6 @@ General.propTypes = {
 
 General.defaultProps = {
   loading: {},
-  error: {},
   customerLead: [],
   studentsLead: [],
   studentsId: [],

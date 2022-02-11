@@ -160,9 +160,7 @@ export async function getLeftMenuProfile() {
     {
       title: 'Profile học sinh',
       key: 'Profile-children',
-      url: [
-        '/ho-so-doi-tuong/profile-hoc-sinh'
-      ],
+      url: ['/ho-so-doi-tuong/profile-hoc-sinh'],
       icon: 'icon icon-user',
       permission: [permissions.HSDT],
       pro: true,
@@ -303,23 +301,9 @@ export async function getLeftMenuProfile() {
           pro: true,
         },
         {
-          title: 'Báo cáo thâm niên công tác',
-          key: 'working-seniority',
-          url: ['/ho-so-doi-tuong/bao-cao/tham-nien-cong-tac'],
-          permission: [permissions.HSDT],
-          pro: true,
-        },
-        {
           title: 'Danh sách báo cáo học sinh nhập học chính thức',
           key: 'official-student',
           url: ['/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-hoc-chinh-thuc'],
-          permission: [permissions.HSDT],
-          pro: true,
-        },
-        {
-          title: 'Báo cáo danh sách nhân viên thôi việc',
-          key: 'employee-leave',
-          url: ['/ho-so-doi-tuong/bao-cao/nhan-vien-thoi-viec'],
           permission: [permissions.HSDT],
           pro: true,
         },
@@ -1679,10 +1663,22 @@ export async function getLeftMenuHRM() {
         {
           title: 'Báo cáo nhân viên đang nghỉ phép',
           key: 'employee-on-leave',
-          url: [
-            '/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep'
-          ],
+          url: ['/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep'],
           permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Báo cáo thâm niên công tác',
+          key: 'working-seniority',
+          url: ['/quan-ly-nhan-su/bao-cao/tham-nien-cong-tac'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Báo cáo danh sách nhân viên thôi việc',
+          key: 'employee-leave',
+          url: ['/quan-ly-nhan-su/bao-cao/nhan-vien-thoi-viec'],
+          permission: [permissions.HSDT],
           pro: true,
         },
       ],
@@ -2239,6 +2235,63 @@ export async function getLeftMenuCRM() {
           title: 'Đánh giá định kỳ',
           key: '',
           url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Chính sách phí',
+      key: 'fee-policy-crm',
+      icon: 'icon icon-list',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Loại lớp',
+          key: 'fee-policy-class',
+          url: [
+          '/crm/chinh-sach-phi/loai-lop',
+          '/crm/chinh-sach-phi/loai-lop/:id/chi-tiet'
+        ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Hình thức đóng phí',
+          key: 'fee-policy',
+          url: ['/crm/chinh-sachh-phi/hinh-thuc-dong-phi','/crm/chinh-sachh-phi/hinh-thuc-dong-phi/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Năm học',
+          key: 'fee-policy-year',
+          url: ['/crm/chinh-sach-phi/nam-hoc','/crm/chinh-sach-phi/nam-hoc/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Phí',
+          key: 'fee',
+          url: ['/crm/chinh-sach-phi/phi','/crm/chinh-sach-phi/phi/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Tiền đóng',
+          key: 'money',
+          url: ['/crm/chinh-sach-phi/tien-dong','/crm/chinh-sach-phi/tien-dong/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Tính phí học sinh mới',
+          key: 'fee-policy-new',
+          url: [
+            '/crm/chinh-sach-phi/tinh-phi-hoc-sinh-moi',
+            '/crm/chinh-sach-phi/tinh-phi-hoc-sinh-moi/tao-moi',
+            '/crm/chinh-sach-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+          ],
           permission: [permissions.CRM],
           pro: true,
         },

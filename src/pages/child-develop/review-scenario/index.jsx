@@ -224,7 +224,6 @@ class Index extends PureComponent {
         title: 'STT ',
         key: 'index',
         width: 80,
-        fixed: 'left',
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
@@ -273,7 +272,7 @@ class Index extends PureComponent {
                   use: !use,
                 };
                 this.props.dispatch({
-                  type: 'childDevelopReviewScenarioAdd/UPDATE',
+                  type: 'childDevelopReviewScenario/UPDATE_USE',
                   payload,
                   callback: (response) => {
                     if (response) {

@@ -316,13 +316,13 @@ class Index extends PureComponent {
         title: 'Sđt mẹ',
         key: 'mother?.fullName',
         width: 150,
-        render: (value, record) => <Text size="normal">{record?.mother?.fullName}</Text>,
+        render: (value, record) => <Text size="normal">{record?.mother?.phone}</Text>,
       },
       {
         title: 'Cơ sở',
         key: 'branch?.name',
         width: 150,
-        render: (value, record) => <Text size="normal">{record?.branch?.name}</Text>,
+        render: (value, record) => <Text size="normal">{record?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',
@@ -416,6 +416,7 @@ class Index extends PureComponent {
                     className="ant-form-item-row"
                     data={[{ id: null, name: 'Tất cả các năm ' }, ...yearsConvert]}
                     name="timetableSettingId"
+                    placeholder="Chọn Năm học"
                     onChange={(event) => this.onChangeSelect(event, 'timetableSettingId')}
                     type={variables.SELECT}
                     allowClear={false}

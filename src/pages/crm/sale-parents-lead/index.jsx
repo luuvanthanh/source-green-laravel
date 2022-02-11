@@ -328,7 +328,7 @@ class Index extends PureComponent {
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.file_image)}
-            fullName={record.full_name}
+            fullName={record?.full_name}
           />
         ),
       },
@@ -389,12 +389,12 @@ class Index extends PureComponent {
           <>
             <Select
               showArrow
-              defaultValue={record?.customerTag?.map((item) => item?.tag.id)}
+              defaultValue={record?.customerTag?.map((item) => item?.tag?.id)}
               mode="multiple"
               className={stylesModule['wrapper-tags']}
               onChange={(e) => this.onSelectColor(e, record)}
               tagRender={({ label, value, color_code, closable, onClose }) => {
-                const itemTag = tags.find(item => item.id === value);
+                const itemTag = tags.find(item => item?.id === value);
                 return (
                   <Tag
                     color={itemTag?.color_code || color_code}
@@ -411,7 +411,7 @@ class Index extends PureComponent {
                 <Option
                   value={item?.id}
                   key={index}
-                  style={{ backgroundColor: `${item.color_code}` }}
+                  style={{ backgroundColor: `${item?.color_code}` }}
                 >
                   {item?.name}
                 </Option>
@@ -434,7 +434,7 @@ class Index extends PureComponent {
           <div className={styles['list-button']}>
             <Button
               color="success"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>

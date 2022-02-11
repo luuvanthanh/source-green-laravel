@@ -17,7 +17,7 @@ const Index = memo(() => {
   const [
     { data, pagination, branches, error },
     loading,
-  ] = useSelector(({ loading: { effects }, OPWorkingSeniority }) => [OPWorkingSeniority, effects]);
+  ] = useSelector(({ loading: { effects }, HRMWorkingSeniority }) => [HRMWorkingSeniority, effects]);
 
   const formRef = React.createRef();
   const { query, pathname } = useLocation();
@@ -33,7 +33,7 @@ const Index = memo(() => {
 
   const onLoad = () => {
     dispatch({
-      type: 'OPWorkingSeniority/GET_DATA',
+      type: 'HRMWorkingSeniority/GET_DATA',
       payload: {
         ...search,
       },

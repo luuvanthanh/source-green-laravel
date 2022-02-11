@@ -32,3 +32,14 @@ export function getSkill() {
     },
   });
 }
+
+
+export function updateUse(data = {}) {
+  return request(`/v1/update-is-use/${data.id}`, {
+    method: 'PUT',
+    data: {
+      use: data.use,
+    },
+    parse: true,
+  });
+}

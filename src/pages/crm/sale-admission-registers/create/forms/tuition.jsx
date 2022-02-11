@@ -1,7 +1,6 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form, Table } from 'antd';
-import { isEmpty, get } from 'lodash';
-import { connect, history, withRouter } from 'umi';
+import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -9,54 +8,21 @@ import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 // import Table from '@/components/CommonComponent/Table';
-import Loading from '@/components/CommonComponent/Loading';
+// import Loading from '@/components/CommonComponent/Loading';
 import { Helper, variables } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
 // import variablesForm from '../../utils/variables';
 import stylesModule from '../../styles.module.scss';
 
-const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
+const mapStateToProps = ({ loading }) => ({
   loading,
-  data: crmSaleAdmissionAdd.data,
-  details: crmSaleAdmissionAdd.details,
-  error: crmSaleAdmissionAdd.error,
-  branches: crmSaleAdmissionAdd.branches,
-  classes: crmSaleAdmissionAdd.classes,
-  city: crmSaleAdmissionAdd.city,
-  district: crmSaleAdmissionAdd.district,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, data }) => {
+  ({ loading: { effects },  data }) => {
     const formRef = useRef();
     const mounted = useRef(false);
     const loadingSubmit = "";
     const loading = effects[``];
-
-    const onFinish = (values) => {
-      dispatch({
-        type: params.id ? 'crmSaleAdmissionAdd/UPDATE' : 'crmSaleAdmissionAdd/ADD',
-        payload: params.id
-          ? { ...details, ...values, id: params.id }
-          : { ...values, status: 'WORKING' },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    };
 
     useEffect(() => {
       mounted.current = true;
@@ -103,8 +69,8 @@ const General = memo(
 
     return (
       <>
-        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
+        <Form layout="vertical" ref={formRef} >
+          {/* <Loading loading={loading} isError={error.isError} params={{ error }}> */}
             <Pane className="card">
               <Pane >
                 <Pane className="p20">
@@ -115,11 +81,11 @@ const General = memo(
                 </Pane>
               </Pane>
             </Pane>
-          </Loading>
+          {/* </Loading> */}
         </Form>
         {/*  */}
-        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
+        <Form layout="vertical" ref={formRef} >
+          {/* <Loading loading={loading} isError={error.isError} params={{ error }}> */}
             <Pane className="card">
               <Pane className="border-bottom">
                 <Pane className="p20">
@@ -249,7 +215,7 @@ const General = memo(
                 </Button>
               </Pane>
             </Pane>
-          </Loading>
+          {/* </Loading> */}
         </Form>
       </>
     );
@@ -257,20 +223,14 @@ const General = memo(
 );
 
 General.propTypes = {
-  dispatch: PropTypes.func,
-  match: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
+  // error: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
-  match: {},
-  details: {},
-  dispatch: () => { },
   loading: {},
-  error: {},
+  // error: {},
   data: [],
 };
 
