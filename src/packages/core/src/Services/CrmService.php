@@ -10,8 +10,9 @@ class CrmService
     public static function createEmployee(array $attributes)
     {
         $url = env('CRM_URL') . '/api/v1/employees';
+        $token = request()->bearerToken();
 
-        $response = Http::post($url, $attributes);
+        $response = Http::withToken($token)->post($url, $attributes);
 
         if ($response->failed()) {
             $message = "Có lỗi từ api CRM";
@@ -27,8 +28,9 @@ class CrmService
     public static function updateEmployee(array $attributes, $id)
     {
         $url = env('CRM_URL') . '/api/v1/employees/' . $id;
+        $token = request()->bearerToken();
 
-        $response = Http::put($url, $attributes);
+        $response = Http::withToken($token)->put($url, $attributes);
 
         if ($response->failed()) {
             $message = "Có lỗi từ api CRM";
@@ -45,8 +47,9 @@ class CrmService
     public static function createBranch(array $attributes)
     {
         $url = env('CRM_URL') . '/api/v1/branches';
+        $token = request()->bearerToken();
 
-        $response = Http::post($url, $attributes);
+        $response = Http::withToken($token)->post($url, $attributes);
 
         if ($response->failed()) {
             $message = "Có lỗi từ api CRM";
@@ -62,8 +65,9 @@ class CrmService
     public static function updateBranch(array $attributes, $id)
     {
         $url = env('CRM_URL') . '/api/v1/branches/' . $id;
+        $token = request()->bearerToken();
 
-        $response = Http::put($url, $attributes);
+        $response = Http::withToken($token)->put($url, $attributes);
 
         if ($response->failed()) {
             $message = "Có lỗi từ api CRM";
@@ -78,8 +82,9 @@ class CrmService
     public static function deleteBranch($id)
     {
         $url = env('CRM_URL') . '/api/v1/branches/' . $id;
+        $token = request()->bearerToken();
 
-        $response = Http::delete($url);
+        $response = Http::withToken($token)->delete($url);
 
         if ($response->failed()) {
             $message = "Có lỗi từ api CRM";
