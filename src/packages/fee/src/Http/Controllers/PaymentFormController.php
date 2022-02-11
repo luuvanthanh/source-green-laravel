@@ -89,4 +89,11 @@ class PaymentFormController extends Controller
         $this->paymentFormRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    public function paymentFormCrm(Request $request)
+    {
+        $this->paymentFormRepository->updatePaymentFormCrm($request->all());
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
+    }
 }
