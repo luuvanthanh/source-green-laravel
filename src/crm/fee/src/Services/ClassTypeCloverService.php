@@ -37,7 +37,13 @@ class ClassTypeCloverService
         $data = Http::withToken(self::getToken())->get($url, $params);
 
         if ($data->failed()) {
-            throw new HttpException($data->status(), $data->body());
+            $message = 'Có lỗi từ api Clover';
+
+            if (isset(json_decode($data->body())->error) && isset(json_decode($data->body())->error->message)) {
+                $message = 'Clover: ' . json_decode($data->body())->error->message;
+            }
+
+            throw new HttpException($data->status(), $message);
         }
 
         $data = json_decode($data->body(), true);
@@ -86,7 +92,13 @@ class ClassTypeCloverService
             $result = Http::withToken(self::getToken())->post($url, $data);
 
             if ($result->failed()) {
-                throw new HttpException($result->status(), $result->body());
+                $message = 'Có lỗi từ api Clover';
+
+                if (isset(json_decode($result->body())->error) && isset(json_decode($result->body())->error->message)) {
+                    $message = 'Clover: ' . json_decode($result->body())->error->message;
+                }
+
+                throw new HttpException($result->status(), $message);
             }
         }
     }
