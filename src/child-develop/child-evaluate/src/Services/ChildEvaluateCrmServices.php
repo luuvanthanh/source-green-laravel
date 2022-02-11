@@ -11,9 +11,10 @@ class ChildEvaluateCrmServices
     public static function createChildEvaluate(array $attributes, $id)
     {
         $url = env('CRM_URL') . '/api/v1/child-evaluates';
+        $token = request()->bearerToken();
 
         $data = self::payloadCrm($attributes, $id);
-        $response = Http::post($url, $data);
+        $response = Http::withToken($token)->post($url, $data);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -56,9 +57,10 @@ class ChildEvaluateCrmServices
     public static function updateChildEvaluate(array $attributes, $id)
     {
         $url = env('CRM_URL') . '/api/v1/child-evaluates/' . $id;
+        $token = request()->bearerToken();
 
         $data = self::payloadCrm($attributes, $id);
-        $response = Http::put($url, $data);
+        $response = Http::withToken($token)->put($url, $data);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -75,12 +77,13 @@ class ChildEvaluateCrmServices
     public static function deleteChildEvaluate($id)
     {
         $url = env('CRM_URL') . '/api/v1/child-evaluates/' . $id;
+        $token = request()->bearerToken();
 
         $data = [
             'id' => $id,
         ];
 
-        $response = Http::delete($url, $data);
+        $response = Http::withToken($token)->delete($url, $data);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';

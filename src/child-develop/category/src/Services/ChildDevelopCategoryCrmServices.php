@@ -10,8 +10,9 @@ class ChildDevelopCategoryCrmServices
     public static function createCategorySkill(array $attributes)
     {
         $url = env('CRM_URL') . '/api/v1/category-skills';
+        $token = request()->bearerToken();
 
-        $response = Http::post($url, $attributes);
+        $response = Http::withToken($token)->post($url, $attributes);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -27,8 +28,9 @@ class ChildDevelopCategoryCrmServices
     public static function updateCategorySkill(array $attributes, $id)
     {
         $url = env('CRM_URL') . '/api/v1/category-skills/' . $id;
+        $token = request()->bearerToken();
 
-        $response = Http::put($url, $attributes);
+        $response = Http::withToken($token)->put($url, $attributes);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -45,8 +47,9 @@ class ChildDevelopCategoryCrmServices
     public static function deleteCategorySkill($paramId, $id)
     {
         $url = env('CRM_URL') . '/api/v1/category-skills/' . $id;
+        $token = request()->bearerToken();
 
-        $response = Http::delete($url, $paramId);
+        $response = Http::withToken($token)->delete($url, $paramId);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -63,8 +66,9 @@ class ChildDevelopCategoryCrmServices
     public static function createCategoryChildIssue(array $attributes)
     {
         $url = env('CRM_URL') . '/api/v1/category-child-issues';
+        $token = request()->bearerToken();
 
-        $response = Http::post($url, $attributes);
+        $response = Http::withToken($token)->post($url, $attributes);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -81,8 +85,9 @@ class ChildDevelopCategoryCrmServices
     public static function updateCategoryChildIssue(array $attributes, $id)
     {
         $url = env('CRM_URL') . '/api/v1/category-child-issues/' . $id;
+        $token = request()->bearerToken();
 
-        $response = Http::put($url, $attributes);
+        $response = Http::withToken($token)->put($url, $attributes);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -99,8 +104,9 @@ class ChildDevelopCategoryCrmServices
     public static function deleteCategoryChildIssue($id)
     {
         $url = env('CRM_URL') . '/api/v1/category-child-issues/' . $id;
+        $token = request()->bearerToken();
 
-        $response = Http::delete($url);
+        $response = Http::withToken($token)->delete($url);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -117,12 +123,12 @@ class ChildDevelopCategoryCrmServices
     public static function createRows($attributes)
     {
         $url = env('CRM_URL') . '/api/v1/category-question-parents';
-
+        $token = request()->bearerToken();
         $data = [
             'create_rows' => $attributes
         ];
 
-        $response = Http::post($url, $data);
+        $response = Http::withToken($token)->post($url, $data);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -138,12 +144,12 @@ class ChildDevelopCategoryCrmServices
     public static function updateRows($attributes)
     {
         $url = env('CRM_URL') . '/api/v1/category-question-parents';
-
+        $token = request()->bearerToken();
         $data = [
             'update_rows' => $attributes
         ];
 
-        $response = Http::post($url, $data);
+        $response = Http::withToken($token)->post($url, $data);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
@@ -159,8 +165,9 @@ class ChildDevelopCategoryCrmServices
     public static function deleteRows($attributes)
     {
         $url = env('CRM_URL') . '/api/v1/category-question-parents';
+        $token = request()->bearerToken();
 
-        $response = Http::post($url, $attributes);
+        $response = Http::withToken($token)->post($url, $attributes);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api CRM';
