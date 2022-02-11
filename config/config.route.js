@@ -607,6 +607,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
+          {
+            path: '/ho-so-doi-tuong/profile-hoc-sinh',
+            component: './object-profiles/profile',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
         ],
       },
       // OBJECT PROFILES

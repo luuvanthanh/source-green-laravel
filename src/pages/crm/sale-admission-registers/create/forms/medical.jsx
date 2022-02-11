@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Form, Input } from 'antd';
 import { useParams } from 'umi';
 import TableCus from '@/components/CommonComponent/Table';
@@ -21,6 +21,8 @@ const General = memo(() => {
   const formRef = useRef();
   const params = useParams();
   const dispatch = useDispatch();
+  const [formCheck, setFormCheck] = useState(false);
+
 
 
   useEffect(() => {
@@ -28,6 +30,11 @@ const General = memo(() => {
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_MEDICAL',
         payload: { admission_register_id: params.id },
+        callback(response) {
+          if (response && response.parsePayload.length > 0) {
+            setFormCheck(true);
+          }
+        }
       });
     }
   }, [params.id]);
@@ -96,7 +103,7 @@ const General = memo(() => {
       {/* <Loading loading={loading} isError={error.isError} params={{ error }}> */}
       <Pane className="card">
         {
-          medicalCheck ?
+          formCheck ?
             <>
               <Heading type="form-title" className="pl20 pt20">
                 Thông tin y tế

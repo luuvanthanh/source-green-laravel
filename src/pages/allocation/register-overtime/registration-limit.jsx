@@ -53,7 +53,7 @@ const Index = memo(() => {
         id: item?.id,
         name: `${item?.fromYear} - ${item?.toYear}`,
       }));
-console.log("yearr", yearsConvert)
+
     useEffect(() => {
         dispatch({
             type: 'registerOvertimeAdd/GET_DETAILS',
@@ -90,10 +90,10 @@ console.log("yearr", yearsConvert)
         const student = detailsLimit?.filter(item => item.timetableSettingId === value);
         const newDetails = {
             ...details,
-            RegisterBeforeDays: student[0] ? student[0]?.registerBeforeDays : '',
-            RegisterBeforeHours: student[0] ? student[0]?.registerBeforeHours : '',
-            CancelBeforeDays: student[0] ? student[0]?.cancelBeforeDays : '',
-            CancelBeforeHours: student[0] ? student[0]?.cancelBeforeHours : '',
+            RegisterBeforeDays: student[0] ? student[0]?.registerBeforeDays - 1 : '',
+            RegisterBeforeHours: student[0] ? student[0]?.registerBeforeHours  - 1 : '',
+            CancelBeforeDays: student[0] ? student[0]?.cancelBeforeDays - 1  : '',
+            CancelBeforeHours: student[0] ? student[0]?.cancelBeforeHours  - 1 : '',
             id: student[0]?.id || '',
         };
         setDetails(newDetails);
@@ -119,11 +119,11 @@ console.log("yearr", yearsConvert)
 
     const onFinish = (values) => {
         const payload = {
-            TimetableSettingId: values.year,
-            RegisterBeforeDays: values.RegisterBeforeDays,
-            RegisterBeforeHours: values.RegisterBeforeHours,
-            CancelBeforeDays: values.CancelBeforeDays,
-            CancelBeforeHours: values.CancelBeforeHours,
+            TimetableSettingId: values.year + 1,
+            RegisterBeforeDays: values.RegisterBeforeDays + 1,
+            RegisterBeforeHours: values.RegisterBeforeHours + 1,
+            CancelBeforeDays: values.CancelBeforeDays + 1,
+            CancelBeforeHours: values.CancelBeforeHours + 1,
             IsRegistrationConfig: true,
             id: details?.id
         };

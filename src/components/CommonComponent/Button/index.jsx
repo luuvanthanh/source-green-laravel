@@ -52,6 +52,7 @@ const ICON_BUTTON = {
   'arrow-right2': <span className="icon-arrow-right2" />,
   'arrow-left': <span className="icon-arrow-left" />,
   report: <span className="icon-report" />,
+  'cloud-upload' : <span className="icon-cloud-upload" />,
 };
 export default function ButtonCustom({
   children,

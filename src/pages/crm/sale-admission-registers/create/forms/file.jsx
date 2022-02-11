@@ -1,7 +1,6 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form, Radio } from 'antd';
-import { isEmpty, get } from 'lodash';
-import { connect, history, withRouter } from 'umi';
+import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -15,50 +14,43 @@ import stylesModule from '../../styles.module.scss';
 const dataTable = [
   {
     stt: '1',
-    full_name: 'test',
+    full_name: 'Đơn đăng ký nhập học',
+    status: 0
+  },
+  {
+    stt: '2',
+    full_name: 'Thông tin y tế',
+    status: 1
+  },
+  {
+    stt: '3',
+    full_name: 'Giấy đồng ý',
+    status: 1
+  },
+  {
+    stt: '4',
+    full_name: 'Hộ khẩu',
+    status: 0
+  },
+  {
+    stt: '5',
+    full_name: 'Khai sinh',
+    status: 0
+  },
+  {
+    stt: '6',
+    full_name: 'Form phỏng vấn',
+    status: 1
   }
 ];
-const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
+const mapStateToProps = ({ loading }) => ({
   loading,
-  data: crmSaleAdmissionAdd.data,
-  details: crmSaleAdmissionAdd.details,
-  error: crmSaleAdmissionAdd.error,
-  branches: crmSaleAdmissionAdd.branches,
-  classes: crmSaleAdmissionAdd.classes,
-  city: crmSaleAdmissionAdd.city,
-  district: crmSaleAdmissionAdd.district,
 });
-const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
+const General = memo(({ loading: { effects }, error }) => {
   const formRef = useRef();
   const mounted = useRef(false);
   const loadingSubmit = "";
   const loading = effects[``];
-
-  const onFinish = (values) => {
-    dispatch({
-      type: params.id ? 'crmSaleAdmissionAdd/UPDATE' : 'crmSaleAdmissionAdd/ADD',
-      payload: params.id
-        ? { ...details, ...values, id: params.id }
-        : { ...values, status: 'WORKING' },
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              formRef.current.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
-  };
 
   useEffect(() => {
     mounted.current = true;
@@ -89,9 +81,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         render: (record) => (
           <>
             <Radio.Group
+            value={record.status}
             >
-              <Radio value={record.full_name}>Đã nhận</Radio>
-              <Radio value={record.full_name}>Chưa nhận</Radio>
+              <Radio value={0} >Đã nhận</Radio>
+              <Radio value={1} >Chưa nhận</Radio>
             </Radio.Group>
           </>
         ),
@@ -108,13 +101,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         width: 100,
         fixed: 'right',
         render: () => (
-          <div className={styles['list-button']}>
-            <button
-              type="button"
-              className={styles['button-circle']}
-            >
-              <span className="icon-remove" />
-            </button>
+          <div className={stylesModule['list-button']}>
+              <Button  icon="plan" className={stylesModule.plan} />
+              <Button icon="remove" className={stylesModule.remove} />
           </div>
         ),
       },
@@ -123,7 +112,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   };
 
   return (
-    <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+    <Form layout="vertical" ref={formRef} >
       {/* <Pane className="card"> */}
       <Loading loading={loading} isError={error.isError} params={{ error }}>
         <Pane className="card">
@@ -163,21 +152,13 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
 });
 
 General.propTypes = {
-  dispatch: PropTypes.func,
-  match: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
-  match: {},
-  details: {},
-  dispatch: () => { },
   loading: {},
   error: {},
-  data: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));

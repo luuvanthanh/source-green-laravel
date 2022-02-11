@@ -1,3 +1,4 @@
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -18,6 +19,8 @@ export default {
     medical: [],
     categoryMedical: [],
     medicalCheck: {},
+    branches: [],
+    studentsId: [],
     childEvaluation: {},
     error: {
       isError: false,
@@ -46,6 +49,10 @@ export default {
     SET_STUDENTS_LEAD: (state, { payload }) => ({
       ...state,
       studentsLead: payload.parsePayload,
+    }),
+    SET_STUDENTS_ID: (state, { payload }) => ({
+      ...state,
+      studentsId: payload.parsePayload,
     }),
     SET_GET_PARENTS: (state, { payload }) => ({
       ...state,
@@ -93,6 +100,10 @@ export default {
       ...state,
       childEvaluation: payload?.parsePayload,
     }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
+    }),
   },
   effects: {
     *GET_DETAILS({ payload }, saga) {
@@ -133,12 +144,26 @@ export default {
         });
       }
     },
-    *GET_STUDENTS_LEAD({ payload, callback }, saga) {
+    *GET_STUDENTS_LEAD({ payload }, saga) {
       try {
         const response = yield saga.call(services.getStudentsLead, payload);
-        callback(response);
         yield saga.put({
           type: 'SET_STUDENTS_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STUDENTS_ID({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getStudentsId, payload);
+       console.log("res",response);
+        yield saga.put({
+          type: 'SET_STUDENTS_ID',
           payload: response,
         });
       } catch (error) {
@@ -295,12 +320,13 @@ export default {
         callback(null, error);
       }
     },
-    *GET_MEDICAL({ payload }, saga) {
+    *GET_MEDICAL({ payload, callback }, saga) {
       try {
         yield saga.put({
           type: 'INIT_STATE',
         });
         const response = yield saga.call(services.getMedical, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_MEDICAL',
           payload: response,
@@ -338,6 +364,20 @@ export default {
         const response = yield saga.call(services.getChildEvaluation, payload);
         yield saga.put({
           type: 'SET_CHILD_EVALUATION',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
           payload: response,
         });
       } catch (error) {

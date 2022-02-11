@@ -17,10 +17,11 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   error: crmSaleAdmissionAdd.error,
   employees: crmSaleAdmissionAdd.employees,
   testInputs: crmSaleAdmissionAdd.testInputs,
+  branches: crmSaleAdmissionAdd.branches,
 });
 
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, employees }) => {
+  ({ dispatch, loading: { effects }, match: { params }, employees, branches }) => {
     const formRef = useRef();
     const formSubmit = useRef();
 
@@ -76,6 +77,7 @@ const General = memo(
         const items = values.data.map((item) => ({
           employee_id: item?.employee_id,
           time_interview: item?.time_interview,
+          branch_id: item?.branch_id,
           date_interview: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
@@ -132,6 +134,10 @@ const General = memo(
     useEffect(() => {
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_EMPLOYEES',
+        payload: {},
+      });
+      dispatch({
+        type: 'crmSaleAdmissionAdd/GET_BRANCHES',
         payload: {},
       });
     }, []);
@@ -204,6 +210,16 @@ const General = memo(
                         {fields.map((field) => (
                           <Pane key={field.key}>
                             <Pane className="row">
+                              <Pane className="col-lg-4">
+                                <FormItem
+                                  options={['id', 'name']}
+                                  name={[field.name, 'branch_id']}
+                                  data={branches}
+                                  placeholder="Chọn"
+                                  type={variables.SELECT}
+                                  label="Cơ sở phỏng vấn trẻ"
+                                />
+                              </Pane>
                               <Pane className="col-lg-4">
                                 <FormItem
                                   options={['id', 'full_name']}
@@ -506,31 +522,42 @@ const General = memo(
                     >
                       <div>
                         <Pane className="row">
-                          <Pane className="col-lg-4">
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              options={['id', 'name']}
+                              name="branch_id"
+                              data={branches}
+                              style={{ width: '100%', display: 'block' }}
+                              placeholder="Chọn"
+                              type={variables.SELECT}
+                              label="Cơ sở phỏng vấn trẻ"
+                            />
+                          </Pane>
+                          <Pane className="col-lg-6">
                             <FormItem
                               options={['id', 'full_name']}
                               name="employee_id"
-                              style={{ width: '200px' }}
+                              style={{ width: '100%', display: 'block' }}
                               data={employees}
                               placeholder="Chọn"
                               type={variables.SELECT}
-                              label="giáo viên phỏng vấn trẻ"
+                              label="Giáo viên phỏng vấn trẻ"
                             />
                           </Pane>
 
-                          <Pane className="col-lg-4">
+                          <Pane className="col-lg-6">
                             <FormItem
                               name="date_interview"
                               label="Ngày phỏng vấn"
-                              style={{ width: '200px' }}
+                              style={{ width: '100%', display: 'block' }}
                               type={variables.DATE_PICKER}
                             />
                           </Pane>
 
-                          <Pane className="col-lg-4">
+                          <Pane className="col-lg-6">
                             <FormItem
                               label="Giờ phỏng vấn"
-                              style={{ width: '200px' }}
+                              style={{ width: '100%', display: 'block' }}
                               name="time_interview"
                               type={variables.TIME_PICKER}
                             />
@@ -557,6 +584,7 @@ General.propTypes = {
   // error: PropTypes.objectOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
   // testInputs: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -567,6 +595,7 @@ General.defaultProps = {
   // error: {},
   employees: [],
   // testInputs: [],
+  branches: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));
