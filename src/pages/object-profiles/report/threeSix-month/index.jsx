@@ -323,6 +323,7 @@ class Index extends PureComponent {
       `/students/export-to-excel/group-by-branch`,
       {
         IsMore: true,
+        StudiedMonths: 36,
         KeyWord: query?.KeyWord,
         Class: query?.Class,
         branchId: query?.branchId || defaultBranch?.id,
