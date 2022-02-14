@@ -155,7 +155,10 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
                 ChildEvaluateDetail::where('ChildEvaluateId', $childEvaluate->Id)->delete();
                 $this->storeDetail($childEvaluate->Id, $attributes['detail']);
             }
-            ChildEvaluateCrmServices::updateChildEvaluate($attributes, $childEvaluate->ChildEvaluateCrmId);
+
+            if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
+                ChildEvaluateCrmServices::updateChildEvaluate($attributes, $childEvaluate->ChildEvaluateCrmId);
+            }
 
             \DB::commit();
         } catch (\Throwable $th) {
@@ -184,5 +187,25 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         }
 
         return parent::all();
+    }
+
+    public function updateIsUse(array $attributes, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $childEvaluate = ChildEvaluate::findOrFail($id);
+            $childEvaluate->update($attributes);
+
+            if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
+                ChildEvaluateCrmServices::updateIsUse($attributes, $childEvaluate->ChildEvaluateCrmId);
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return parent::find($childEvaluate->Id);
     }
 }

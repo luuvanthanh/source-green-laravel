@@ -30,6 +30,8 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('child-evaluates', 'ChildEvaluateController');
+
+            \Route::put('update-is-use/{id}', 'ChildEvaluateController@updateIsUse');
         });
     }
 }

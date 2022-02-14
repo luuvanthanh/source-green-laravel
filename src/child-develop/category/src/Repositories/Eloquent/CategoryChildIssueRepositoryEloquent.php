@@ -110,15 +110,13 @@ class CategoryChildIssueRepositoryEloquent extends BaseRepository implements Cat
             $categoryChildIssue = CategoryChildIssue::find($id);
             $categoryChildIssue->update($attributes);
 
-            $categoryChildIssueCrmId = $categoryChildIssue->CategoryChildIssueCrmId;
-
-            if (!is_null($categoryChildIssueCrmId)) {
+            if (!is_null($categoryChildIssue->CategoryChildIssueCrmId)) {
                 $data = [
                     'id' => $categoryChildIssue->CategoryChildIssueCrmId,
                     'name' => $categoryChildIssue->Name,
                 ];
 
-                ChildDevelopCategoryCrmServices::updateCategoryChildIssue($data, $categoryChildIssueCrmId);
+                ChildDevelopCategoryCrmServices::updateCategoryChildIssue($data, $$categoryChildIssue->CategoryChildIssueCrmId);
             }
             \DB::commit();
         } catch (\Throwable $th) {
