@@ -19,7 +19,7 @@ class FeePolicie extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'SchoolYearId', 'DecisionNumber', 'DecisionDate',
+        'SchoolYearId', 'DecisionNumber', 'DecisionDate', 'FeePolicieCrmId'
     ];
 
     /**
