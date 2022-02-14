@@ -183,19 +183,19 @@ class Index extends PureComponent {
         title: 'Năm học',
         key: 'year',
         className: 'min-width-150',
-        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
+        render: (record) => `${record?.schoolYear?.year_from || ''} - ${record?.schoolYear?.year_to || ''}`
       },
       {
         title: 'Ngày quyết định',
         key: 'date',
         className: 'min-width-200',
-        render: (record) => record?.decisionDate || '',
+        render: (record) => record?.decision_date || '',
       },
       {
         title: 'Số quyết định',
         key: 'number',
         className: 'min-width-130',
-        render: (record) => record?.decisionNumber || ''
+        render: (record) => record?.decision_number || ''
       },
       {
         title: 'Thời gian hiệu lực',
@@ -212,7 +212,7 @@ class Index extends PureComponent {
           <div className={styles['list-button']}>
             <Button
               color="success"
-              onClick={() => history.push(`/chinh-sach-phi/tien-dong/${record?.id}/chi-tiet`)}
+              onClick={() => history.push(`/crm/chinh-sach-phi/tien-dong/${record?.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>

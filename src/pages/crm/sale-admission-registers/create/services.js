@@ -192,7 +192,12 @@ export function addTestInput(data = {}) {
 export function getTestInputs(params = {}) {
   return request(`/v1/test-inputs`, {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      include: Helper.convertIncludes([
+        'testInputDetail.testInputDetailChildren.childEvaluate,testInputDetail.testInputDetailChildren.childEvaluateDetail,testInputDetail.testInputDetailChildren.childEvaluateDetailChildren,testInputDetail.categorySkill,admissionRegister.studentInfo',
+      ]),
+    },
   });
 }
 

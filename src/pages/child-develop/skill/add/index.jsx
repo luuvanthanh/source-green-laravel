@@ -94,7 +94,8 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const payload = {
-      ...values,
+      name: values?.name,
+      use: values?.use ? values.use : false,
       id: params.id,
     };
     dispatch({

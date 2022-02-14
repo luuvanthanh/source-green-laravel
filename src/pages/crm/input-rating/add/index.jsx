@@ -114,6 +114,7 @@ const Index = memo(() => {
                               Tương tác xã hội
                             </h3>
                             <h3 className={stylesModule.description}>Nhận biết được việc làm đúng hoặc sai và có ý kiến cá nhân.</h3>
+                            
                           </Pane>
                           <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#FFE5B7' }}>
                             <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
