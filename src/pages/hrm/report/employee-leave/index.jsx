@@ -18,7 +18,7 @@ const Index = memo(() => {
   const [
     { data, pagination, branches, classes, error },
     loading,
-  ] = useSelector(({ loading: { effects }, OPEmployeeLeave }) => [OPEmployeeLeave, effects]);
+  ] = useSelector(({ loading: { effects }, HRMEmployeeLeave }) => [HRMEmployeeLeave, effects]);
 
   const formRef = React.createRef();
   const { query, pathname } = useLocation();
@@ -34,7 +34,7 @@ const Index = memo(() => {
 
   const onLoad = () => {
     dispatch({
-      type: 'OPEmployeeLeave/GET_DATA',
+      type: 'HRMEmployeeLeave/GET_DATA',
       payload: {
         ...search,
       },

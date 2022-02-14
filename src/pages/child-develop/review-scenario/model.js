@@ -73,6 +73,14 @@ export default {
         });
       }
     },
+    *UPDATE_USE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateUse, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

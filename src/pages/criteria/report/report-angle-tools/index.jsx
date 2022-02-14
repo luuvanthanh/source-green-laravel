@@ -54,7 +54,7 @@ class Index extends PureComponent {
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
-        KeyWord: query?.KeyWord,
+        studentName: query?.studentName,
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -651,7 +651,7 @@ class Index extends PureComponent {
             children: (
               <div className={stylesModule['table-name']}>
                 {value ?
-                  <Text size="normal">{value?.sensitivePeriod?.content}</Text> : ""
+                  <Text size="normal">{value?.sensitivePeriod?.explaination}</Text> : ""
                 }
               </div>
             ),
@@ -721,7 +721,7 @@ class Index extends PureComponent {
     Helper.exportExcelClover(
       `/curriculum-reviews/export-excel/group-by-branch`,
       {
-        KeyWord: query?.KeyWord,
+        studentName: query?.studentName,
         Class: query?.Class,
         ToolGroupId: query?.ToolGroupId,
         ToolDetailId: query?.ToolDetailId,
@@ -828,8 +828,8 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    name="KeyWord"
-                    onChange={(event) => this.onChange(event, 'KeyWord')}
+                    name="studentName"
+                    onChange={(event) => this.onChange(event, 'studentName')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />

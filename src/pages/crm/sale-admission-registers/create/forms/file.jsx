@@ -1,13 +1,14 @@
-import { memo, useRef, useEffect } from 'react';
-import { Form, Radio } from 'antd';
+import { memo, useRef, useEffect, useState } from 'react';
+import { Form, Radio, Upload, message, } from 'antd';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
+import { useDispatch } from 'dva';
+import { last, head, } from 'lodash';
 import Table from '@/components/CommonComponent/Table';
 import stylesModule from '../../styles.module.scss';
 
@@ -51,11 +52,42 @@ const General = memo(({ loading: { effects }, error }) => {
   const mounted = useRef(false);
   const loadingSubmit = "";
   const loading = effects[``];
+  const dispatch = useDispatch();
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
+
+  const onUpload = (file) => {
+    dispatch({
+      type: 'upload/UPLOAD',
+      payload: file,
+      callback: (response) => {
+        if (response) {
+          setFile([head(response.results)?.fileInfo.url, head(response.results)?.fileInfo.name]);
+        }
+      },
+    });
+  };
+
+  const props = {
+    beforeUpload() {
+      return null;
+    },
+    customRequest({ file }) {
+      const { name } = file;
+      const allowTypes = ['pdf', 'docx', 'xlsx'];
+      if (!allowTypes.includes(last(name.split('.')))) {
+        message.error('Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb');
+        return;
+      }
+      onUpload(file);
+    },
+    showUploadList: false,
+    fileList: [],
+  };
 
   const header = () => {
     const columns = [
@@ -81,7 +113,7 @@ const General = memo(({ loading: { effects }, error }) => {
         render: (record) => (
           <>
             <Radio.Group
-            value={record.status}
+              value={record.status}
             >
               <Radio value={0} >Đã nhận</Radio>
               <Radio value={1} >Chưa nhận</Radio>
@@ -94,6 +126,11 @@ const General = memo(({ loading: { effects }, error }) => {
         key: 'name',
         className: 'min-width-150',
         width: 150,
+        render: () => (
+          <>
+            {file ? file[1] : ""}
+          </>
+        ),
       },
       {
         title: 'Thao tác',
@@ -102,8 +139,10 @@ const General = memo(({ loading: { effects }, error }) => {
         fixed: 'right',
         render: () => (
           <div className={stylesModule['list-button']}>
-              <Button  icon="plan" className={stylesModule.plan} />
-              <Button icon="remove" className={stylesModule.remove} />
+            <Upload {...props} >
+              <Button icon="cloud-upload" className={stylesModule.plan} />
+            </Upload>
+            <Button icon="remove" className={stylesModule.remove} />
           </div>
         ),
       },

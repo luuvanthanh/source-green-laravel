@@ -1,5 +1,5 @@
 export default {
-  namespace: 'OPEmployeeLeave',
+  namespace: 'HRMEmployeeLeave',
   state: {
     data: [
       {

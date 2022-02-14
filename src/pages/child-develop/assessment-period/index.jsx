@@ -194,7 +194,6 @@ class Index extends PureComponent {
         key: 'index',
         width: 100,
         className: 'min-width-100',
-        fixed: 'left',
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
@@ -264,6 +263,7 @@ class Index extends PureComponent {
         key: 'action',
         width: 125,
         fixed: 'right',
+        className: 'min-width-125',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button

@@ -1,5 +1,5 @@
 export default {
-  namespace: 'OPWorkingSeniority',
+  namespace: 'HRMWorkingSeniority',
   state: {
     data: [
       {

@@ -152,7 +152,8 @@ export function getDistricts(params) {
   return request(`/v1/districts?${params.city_id}`, {
     method: 'GET',
     params: {
-      ...params,
+      // ...params,
+      city_id : params.city_id,
       orderBy: 'name',
     },
   });
@@ -388,7 +389,7 @@ export function getTownWards(params) {
   return request(`/v1/town-wards?${params.district_id}`, {
     method: 'GET',
     params: {
-      ...params,
+      district_id: params.district_id,
       orderBy: 'name',
     },
   });
