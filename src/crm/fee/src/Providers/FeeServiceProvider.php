@@ -3,10 +3,12 @@
 namespace GGPHP\Crm\Fee\Providers;
 
 use GGPHP\Crm\Fee\Repositories\Contracts\ClassTypeRepository;
+use GGPHP\Crm\Fee\Repositories\Contracts\FeePolicieRepository;
 use GGPHP\Crm\Fee\Repositories\Contracts\FeeRepository;
 use GGPHP\Crm\Fee\Repositories\Contracts\PaymentFormRepository;
 use GGPHP\Crm\Fee\Repositories\Contracts\SchoolYearRepository;
 use GGPHP\Crm\Fee\Repositories\Eloquent\ClassTypeRepositoryEloquent;
+use GGPHP\Crm\Fee\Repositories\Eloquent\FeePolicieRepositoryEloquent;
 use GGPHP\Crm\Fee\Repositories\Eloquent\FeeRepositoryEloquent;
 use GGPHP\Crm\Fee\Repositories\Eloquent\PaymentFormRepositoryEloquent;
 use GGPHP\Crm\Fee\Repositories\Eloquent\SchoolYearRepositoryEloquent;
@@ -37,5 +39,6 @@ class FeeServiceProvider extends ServiceProvider
         $this->app->bind(ClassTypeRepository::class, ClassTypeRepositoryEloquent::class);
         $this->app->bind(FeeRepository::class, FeeRepositoryEloquent::class);
         $this->app->bind(PaymentFormRepository::class, PaymentFormRepositoryEloquent::class);
+        $this->app->bind(FeePolicieRepository::class, FeePolicieRepositoryEloquent::class);
     }
 }

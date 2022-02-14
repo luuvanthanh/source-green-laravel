@@ -48,12 +48,12 @@ class PaymentFormRepositoryEloquent extends BaseRepository implements PaymentFor
     public function getPaymentForm(array $attributes)
     {
         if (!empty($attributes['limit'])) {
-            $fee = $this->paginate($attributes['limit']);
+            $paymentForm = $this->paginate($attributes['limit']);
         } else {
-            $fee = $this->get();
+            $paymentForm = $this->get();
         }
 
-        return $fee;
+        return $paymentForm;
     }
 
     public function getPaymentFormClover()

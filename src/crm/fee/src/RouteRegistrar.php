@@ -44,6 +44,8 @@ class RouteRegistrar extends CoreRegistrar
             Route::get('fees', 'FeeController@getFeeClover');
 
             Route::get('payment-forms', 'PaymentFormController@getPaymentFormClover');
+
+            Route::get('fee-policies', 'FeePolicieController@getFeePolicieClover');
         });
     }
 
@@ -67,6 +69,9 @@ class RouteRegistrar extends CoreRegistrar
 
             //payment form
             Route::resource('payment-forms', 'PaymentFormController')->except('delete');
+
+            //fee policies 
+            Route::resource('fee-policies', 'FeePolicieController')->except('delete');
         });
     }
 }

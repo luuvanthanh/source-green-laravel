@@ -54,7 +54,7 @@ class PaymentFormCloverService
     public static function processData($data)
     {
         if (empty($data['data'])) {
-            return null;
+            return [];
         }
         $data = $data['data'];
         $creates = [];
