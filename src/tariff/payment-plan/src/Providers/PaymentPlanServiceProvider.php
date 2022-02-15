@@ -1,12 +1,12 @@
 <?php
 
-namespace GGPHP\Tariff\ConfigContent\Providers;
+namespace GGPHP\Tariff\PaymentPlan\Providers;
 
-use GGPHP\Tariff\ConfigContent\Repositories\Contracts\ConfigContentRepository;
-use GGPHP\Tariff\ConfigContent\Repositories\Eloquent\ConfigContentRepositoryEloquent;
+use GGPHP\Tariff\PaymentPlan\Repositories\Contracts\PaymentPlanRepository;
+use GGPHP\Tariff\PaymentPlan\Repositories\Eloquent\PaymentPlanRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
-class ConfigContentServiceProvider extends ServiceProvider
+class PaymentPlanServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
@@ -27,6 +27,6 @@ class ConfigContentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(ConfigContentRepository::class, ConfigContentRepositoryEloquent::class);
+        $this->app->bind(PaymentPlanRepository::class, PaymentPlanRepositoryEloquent::class);
     }
 }

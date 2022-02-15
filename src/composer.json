@@ -111,7 +111,8 @@
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
             "GGPHP\\DocumentManagement\\": "packages/document-management/src",
             "GGPHP\\Tariff\\ConfigContent\\": "tariff/config-content/src",
-            "GGPHP\\ChildDevelop\\TestSemester\\": "child-develop/test-semester/src"
+            "GGPHP\\ChildDevelop\\TestSemester\\": "child-develop/test-semester/src",
+            "GGPHP\\Tariff\\PaymentPlan\\": "tariff/payment-plan/src"
         },
         "classmap": [
             "database/seeds",

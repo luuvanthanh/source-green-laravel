@@ -6,7 +6,7 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Tariff\ConfigContent\Models\ConfigContent;
 use GGPHP\Tariff\ConfigContent\Models\ConfigContentDetail;
 use GGPHP\Tariff\ConfigContent\Presenters\ConfigContentPresenter;
-use GGPHP\Tariff\ConfigContent\Repositories\ConfigContentRepository;
+use GGPHP\Tariff\ConfigContent\Repositories\Contracts\ConfigContentRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
