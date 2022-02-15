@@ -197,5 +197,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\ChildDevelop\TestSemester\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\Tariff\PaymentPlan\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });

@@ -4,7 +4,7 @@ namespace GGPHP\Tariff\ConfigContent\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Tariff\ConfigContent\Http\Requests\ConfigContentCreateRequest;
-use GGPHP\Tariff\ConfigContent\Repositories\ConfigContentRepository;
+use GGPHP\Tariff\ConfigContent\Repositories\Contracts\ConfigContentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

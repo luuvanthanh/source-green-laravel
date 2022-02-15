@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\Tariff\ConfigContent\Repositories\Contracts;
+namespace GGPHP\Tariff\PaymentPlan\Repositories\Contracts;
 
 use Prettus\Repository\Contracts\RepositoryInterface;
 
@@ -9,6 +9,6 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  *
  * @package namespace App\Repositories\Absent;
  */
-interface ConfigContentRepository extends RepositoryInterface
+interface PaymentPlanRepository extends RepositoryInterface
 {
 }

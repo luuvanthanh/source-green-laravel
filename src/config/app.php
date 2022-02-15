@@ -226,7 +226,8 @@ return [
         Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
         GGPHP\DocumentManagement\Providers\DocumentManagementServiceProvider::class,
         GGPHP\Tariff\ConfigContent\Providers\ConfigContentServiceProvider::class,
-        GGPHP\ChildDevelop\TestSemester\Providers\TestSemesterServiceProvider::class
+        GGPHP\ChildDevelop\TestSemester\Providers\TestSemesterServiceProvider::class,
+        GGPHP\Tariff\PaymentPlan\Providers\PaymentPlanServiceProvider::class,
     ],
 
     /*
