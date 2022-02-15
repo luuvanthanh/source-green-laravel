@@ -50,7 +50,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   }, [params.id]);
   return (
     <div style={{ padding: 20 }}>
-      <Helmet title="Tạo hồ sơ phụ huynh" />
+      <Helmet title="Chi tiết hồ sơ học sinh" />
       <Breadcrumbs className="pb20 pt0 pl0" last={params.id ? <>Cập nhập thông tin đăng ký nhập học - {details?.studentInfo?.full_name}</>  : 'thêm mới'} menu={menuLeftCRM} />
       {params.id ? (
         <div className="row">

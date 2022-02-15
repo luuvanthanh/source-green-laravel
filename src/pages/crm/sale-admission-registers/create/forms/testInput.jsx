@@ -24,7 +24,6 @@ const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, employees, branches }) => {
     const formRef = useRef();
     const formSubmit = useRef();
-
     const mounted = useRef(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [students, setStudents] = useState([]);
@@ -181,6 +180,113 @@ const General = memo(
       setIsModalVisible(false);
     };
 
+    const formCriteria = (item) => {
+      const a = _.groupBy(item?.testInputDetailChildren, 'childEvaluateDetail.id');
+      const entries = Object.entries(a);
+      return (
+        <>
+          {
+            entries?.map(i =>
+              <>
+                <Pane className="col-lg-12 pt20 pb20">
+                  <h3 className={stylesModule['container-title-criteria']}>
+                    Tiêu chí : {i?.[1]?.[0]?.childEvaluateDetail?.name_criteria}
+                  </h3>
+                  <h3 className={stylesModule['container-title']}>Hình thức tiếp cận</h3>
+                </Pane>
+                {
+                  i?.[1]?.map(k =>
+                    <Pane className="col-lg-12">
+                      <Pane className={stylesModule['wrapper-title']}>
+                        <div className={stylesModule.icon} />
+                        <h3 className={stylesModule.title}>{k?.childEvaluateDetailChildren?.content}</h3>
+                      </Pane>
+                    </Pane>
+                  )
+                }
+              </>
+            )
+          }
+        </>
+      );
+    };
+
+    const formLevel = (item) => {
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '0') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#D0E6FF' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 0-6 Tháng</h3>
+          </Pane>
+        );
+      }
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '1') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#D1D0FF' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 6-9 Tháng</h3>
+          </Pane>
+        );
+      }
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '2') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#FFD6B9' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 9-12 Tháng</h3>
+          </Pane>
+        );
+      }
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '3') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#E2FFD0' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 12-18 Tháng</h3>
+          </Pane>
+        );
+      }
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '4') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#D0FCFF' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 18-24 Tháng</h3>
+          </Pane>
+        );
+      }
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '5') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#F0D0FF' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 24-30 Tháng</h3>
+          </Pane>
+        );
+      }
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '6') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#FFE5B7' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 30-36 Tháng</h3>
+          </Pane>
+        );
+      }
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '7') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#C3FFD8' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 36-50 Tháng</h3>
+          </Pane>
+        );
+      }
+      if (item?.testInputDetailChildren[0]?.childEvaluate?.age === '8') {
+        return (
+          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#FFC4C4' }}>
+            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
+            <h3 className={stylesModule.tilteLogo}>Cấp độ 50-60 Tháng</h3>
+          </Pane>
+        );
+      }
+      return "";
+    };
+
     return (
       <>
         {students.length > 0 ? (
@@ -267,203 +373,50 @@ const General = memo(
             </Pane>
 
             <Pane className="card">
-              <Pane className={stylesModule['wrapper-testInput']}>
-                {/* <Heading type="form-title" style={{ marginBottom: 20 }}>
-                  Kết quả test đầu vào
-                </Heading>
+              {
+                students[0]?.testInputDetail.length > 0 ?
+                  <Pane className={stylesModule['wrapper-testInput']}>
+                    <Pane className={stylesModule['wrapper-card-main']}>
+                      <Pane className="d-flex justify-content-between pb15">
+                        <Heading type="form-sub-title">
+                          Thông tin test đầu vào
+                        </Heading>
+                        <div className={stylesModule.contentDay}>Thời gian đánh giá:
+                          <h3 className={stylesModule.time}>  {Helper.getDate(
+                            students[0]?.testInputDetail[0]?.updated_at,
+                            variables.DATE_FORMAT.DATE_TIME,
+                          )}</h3>
+                        </div>
+                      </Pane>
+                      {
+                        students[0]?.testInputDetail?.map(item =>
+                          <Pane className="row border-top">
+                            <Pane className={stylesModule['wrapper-container']}>
+                              <Pane className="col-lg-12" >
+                                <Pane className={stylesModule['wrapper-contentTop']}>
+                                  <img src="/images/mh.svg" alt="group" className={stylesModule.img} />
+                                  <Pane className="pl15">
+                                    <h3 className={stylesModule.title}>
+                                      {item?.categorySkill?.name}
+                                    </h3>
+                                  </Pane>
+                                  {formLevel(item)}
+                                </Pane>
+                              </Pane>
+                              {formCriteria(item)}
 
-                <Pane className="row">
-                  <Pane className="col-lg-12">
-                    <FormItem
-                      name="teacher_comment"
-                      placeholder="Nhập"
-                      label="Nhận xét và kết luận của giáo viên"
-                      type={variables.TEXTAREA}
-                    />
-                  </Pane>
-
-                  <Pane className="col-lg-12">
-                    <FormItem
-                      name="headmaster_comment"
-                      label="Ý kiến của hiệu trưởng cơ sở"
-                      type={variables.INPUT}
-                    />
-                  </Pane>
-                </Pane> */}
-                <Pane className={stylesModule['wrapper-card-main']}>
-                  <Pane className="d-flex justify-content-between pb15">
-                    <Heading type="form-sub-title">
-                      Thông tin test đầu vào
-                    </Heading>
-                    <div className={stylesModule.contentDay}>Thời gian đánh giá:
-                      <h3 className={stylesModule.time}> 10/11/2021, 10:15 </h3>
-                    </div>
-                  </Pane>
-                  <Pane className="row border-top">
-                    <Pane className={stylesModule['wrapper-container']}>
-                      <Pane className="col-lg-12" >
-                        <Pane className={stylesModule['wrapper-contentTop']}>
-                          <img src="/images/mh.svg" alt="group" className={stylesModule.img} />
-                          <Pane className="pl15">
-                            <h3 className={stylesModule.title}>
-                              Tương tác xã hội
-                            </h3>
-                            <h3 className={stylesModule.description}>Nhận biết được việc làm đúng hoặc sai và có ý kiến cá nhân.</h3>
+                            </Pane>
                           </Pane>
-                          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#FFE5B7' }}>
-                            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
-                            <h3 className={stylesModule.tilteLogo}>Cấp độ 30 – 36 tháng</h3>
-                          </Pane>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12 pt20 pb20">
-                        <h3 className={stylesModule['container-title']}>Hình thức tiếp cận</h3>
-                      </Pane>
-
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Khi bé có phản ứng mạnh về điều gì đó ba mẹ thường làm gì? Hãy chia sẻ cách ba mẹ đã tương tác với con khi con bộc lộ cảm xúc mạnh.</h3>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Khi bé có phản ứng mạnh về điều gì đó ba mẹ thường làm gì? Hãy chia sẻ cách ba mẹ đã tương tác với con khi con bộc lộ cảm xúc mạnh.</h3>
-                        </Pane>
-                      </Pane>
+                        )
+                      }
 
                     </Pane>
                   </Pane>
-
-                  <Pane className="row border-top">
-                    <Pane className={stylesModule['wrapper-container']}>
-                      <Pane className="col-lg-12" >
-                        <Pane className={stylesModule['wrapper-contentTop']}>
-                          <img src="/images/mh.svg" alt="group" className={stylesModule.img} />
-                          <Pane className="pl15">
-                            <h3 className={stylesModule.title}>
-                              Tự lập - tự phục vụ
-                            </h3>
-                            <h3 className={stylesModule.description}>Biết việc đánh răng - rửa mặt hàng ngày.</h3>
-                          </Pane>
-                          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#F0D0FF' }}>
-                            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
-                            <h3 className={stylesModule.tilteLogo}>Cấp độ 24 - 30 tháng</h3>
-                          </Pane>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12 pt20 pb20">
-                        <h3 className={stylesModule['container-title']}>Hình thức tiếp cận</h3>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Cho tương tác với bô giáo cụ đánh răng, quan sát quy trình em bé tự làm..</h3>
-                        </Pane>
-                      </Pane>
-                    </Pane>
-                  </Pane>
-
-                  <Pane className="row border-top">
-                    <Pane className={stylesModule['wrapper-container']}>
-                      <Pane className="col-lg-12" >
-                        <Pane className={stylesModule['wrapper-contentTop']}>
-                          <img src="/images/mh.svg" alt="group" className={stylesModule.img} />
-                          <Pane className="pl15">
-                            <h3 className={stylesModule.title}>
-                              Vận động thô
-                            </h3>
-                            <h3 className={stylesModule.description}>Đi hoặc chạy liên tục khoảng 10m theo hướng thẳng</h3>
-                          </Pane>
-                          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#C4FFD8' }}>
-                            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
-                            <h3 className={stylesModule.tilteLogo}>Cấp độ 36 - 50 tháng</h3>
-                          </Pane>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12 pt20 pb20">
-                        <h3 className={stylesModule['container-title']}>Hình thức tiếp cận</h3>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Chơi cùng con:
-                            Cô có một chiếc túi ( bên trong có chai , trong chai có nhiều đồ vật bất ngờ).
-                            Yêu cầu bé: con hãy cho tay vào và lấy 1 vật và khám phá nhé
-                            . Bên trong chai có một hạt đậu, bom bom, khối hình học
-                          </h3>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Chơi cùng con:
-                            Con hãy giúp cô mở nắp chai để xem bên trong có gì?
-                            Từ trò chơi này sẽ đưa ra đánh giá về kĩ năng vận động tinh của bé.
-                          </h3>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Thông qua giáo cụ: đóng mở nắp chai hướng bé để đánh giá vận động tinh.
-                          </h3>
-                        </Pane>
-                      </Pane>
-                    </Pane>
-                  </Pane>
-
-                  <Pane className="row border-top">
-                    <Pane className={stylesModule['wrapper-container']}>
-                      <Pane className="col-lg-12" >
-                        <Pane className={stylesModule['wrapper-contentTop']}>
-                          <img src="/images/mh.svg" alt="group" className={stylesModule.img} />
-                          <Pane className="pl15">
-                            <h3 className={stylesModule.title}>
-                              Ngôn ngữ
-                            </h3>
-                            <h3 className={stylesModule.description}>Nhận diện các kí hiệu, biểu tượng như nhà vệ sinh nam, nữ, cấm lửa, không vứt rác, không hút thuốc, tín hiệu nguy hiểm, tín hiệu giao thông</h3>
-                          </Pane>
-                          <Pane className={stylesModule["wrapper-containerLogo"]} style={{ backgroundColor: '#C4FFD8' }}>
-                            <img src="/images/capdo.svg" alt="group" className={stylesModule.logo} />
-                            <h3 className={stylesModule.tilteLogo}>Cấp độ 36 - 50 tháng</h3>
-                          </Pane>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12 pt20 pb20">
-                        <h3 className={stylesModule['container-title']}>Hình thức tiếp cận</h3>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Dùng photocard các kí hiệu, biểu tượng và hỏi bé về các hình ảnh đó.
-                          </h3>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Đặt câu hỏi:
-                            Cô chỉ vào photocard và hỏi, con có biết đây là hình gì không?
-                            Nếu bé không trả lời được thì khơi gợi để bé trả lời.
-                            Hỏi 1 số hình ảnh và đưa ra đánh giá về ngôn ngữ của bé
-
-                          </h3>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <Pane className={stylesModule['wrapper-title']}>
-                          <div className={stylesModule.icon} />
-                          <h3 className={stylesModule.title}>Thông qua giáo cụ: đóng mở nắp chai hướng bé để đánh giá vận động tinh.
-                          </h3>
-                        </Pane>
-                      </Pane>
-                    </Pane>
-                  </Pane>
-
-                </Pane>
-              </Pane>
+                  :
+                  <p className={stylesModule['wrapper-none']}>
+                    Chưa có thông tin test đầu vào
+                  </p>
+              }
             </Pane>
           </Form>
         ) : (
