@@ -7,12 +7,12 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import stylesModule from './styles.module.scss';
-
 
 let isMounted = true;
 /**
@@ -51,12 +51,12 @@ class Index extends PureComponent {
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
-        KeyWord: query?.KeyWord,
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         SearchDate: query.SearchDate ? moment(query.SearchDate) : "",
       },
+      dataIDSearch: [],
     };
     setIsMounted(true);
   }
@@ -202,6 +202,7 @@ class Index extends PureComponent {
     );
   };
 
+
   debouncedSearchDateRank = debounce((FromDate, ToDate) => {
     this.setStateData(
       (prevState) => ({
@@ -227,6 +228,7 @@ class Index extends PureComponent {
       moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
       moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
     );
+    this.setStateData({ dataIDSearch: e });
   };
 
   /**
@@ -254,60 +256,79 @@ class Index extends PureComponent {
       {
         title: 'Mã giáo viên',
         key: 'name',
-        width: 300,
-        className: 'min-width-300',
+        width: 200,
         render: (value, record) => {
-          if (record?.children) {
-            return (
-              <Text size="normal">
-                {record?.name}
-              </Text>
-            );
+          if (record?.branch) {
+            return <Text size="normal">{record?.branch?.name}</Text>;
           }
-          if (record?.children) {
-            return (
-              <Text size="normal">
-                {record?.name}
-              </Text>
-            );
+          if (record?.class?.name && record?.children) {
+            return <Text size="normal">{record?.class?.name}</Text>;
           }
-          return <Text size="normal">{record.code}</Text>;
+          return <Text size="normal">{record?.employee?.code}</Text>;
         },
       },
       {
-        title: 'Tên giáo viên',
+        title: 'Tiên giáo viên',
         key: 'birthDay',
         width: 250,
-        className: 'min-width-250',
-        render: (value, record) =>
-          <Text size="normal">{record?.nameTeacher}</Text>
+        render: (value, record) => <Text size="normal">{record?.employee?.fullName}</Text>
       },
       {
         title: 'Cơ sở',
-        key: 'birthDay',
+        key: 'addageress',
         width: 250,
-        className: 'min-width-250',
-        render: (value, record) => <Text size="normal"> {record?.branch}</Text>
+        render: (value, record) => {
+          if (record?.class && record?.children) {
+            return "";
+          }
+          return <Text size="normal">{record.class?.branch?.name}</Text>;
+        },
       },
       {
         title: 'Lớp',
-        key: 'birthDay',
         width: 250,
-        className: 'min-width-250',
-        render: (value, record) =>
-          <Text size="normal"> {record?.class}</Text>
+        key: 'addageress',
+        render: (value, record) => {
+          if (record?.class && record?.children) {
+            return "";
+          }
+          return <Text size="normal">{record.class?.name}</Text>;
+        },
       },
       {
         title: 'Ngày vào lớp',
+        key: 'date',
         width: 250,
-        className: 'min-width-250',
-        render: (record) => <Text size="normal">{record?.date}</Text>,
+        render: (value, record) =>
+          <Text size="normal">
+            {Helper.getDate(record.startDate, variables.DATE_FORMAT.DATE)}
+          </Text>
       },
     ];
     return columns;
   };
 
   handleCancel = () => this.setStateData({ visible: false });
+
+  onChangeExcel = () => {
+    const { dataIDSearch } = this.state;
+    const {
+      defaultBranch,
+      location: { query },
+    } = this.props;
+    Helper.exportExcelClover(
+      `/class-teachers/export-to-excel/group-by-branch`,
+      {
+        Class: query?.Class,
+        branchId: query?.branchId || defaultBranch?.id,
+        SearchDate: dataIDSearch ? (
+          moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+          moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
+        ) : "",
+      },
+      `Bangphancongxeplopgiaovien.xlsx`,
+    );
+  };
 
   render() {
     const {
@@ -329,14 +350,17 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Bảng phân công xếp lớp giáo viên</Text>
+            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+              Xuất Excel
+            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
                 branchId: search.branchId || null,
-                classId: search.classId || null,
-                SearchDate: search.SearchDate && moment(search.SearchDate) || null,
+                Class: search.Class || null,
+                SearchDate: (search.SearchDate && moment(search.SearchDate)) || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -344,10 +368,10 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="KeyWord"
-                    onChange={(event) => this.onChange(event, 'KeyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    type={variables.INPUT_SEARCH}
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                    allowClear={false}
                   />
                 </div>
                 {!defaultBranch?.id && (
@@ -375,17 +399,9 @@ class Index extends PureComponent {
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
-                    name="ClassId"
-                    onChange={(event) => this.onChangeSelect(event, 'ClassId')}
+                    name="Class"
+                    onChange={(event) => this.onChangeSelect(event, 'Class')}
                     type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="date"
-                    onChange={(event) => this.onChangeDate(event, 'date')}
-                    type={variables.RANGE_PICKER}
                     allowClear={false}
                   />
                 </div>
@@ -406,7 +422,7 @@ class Index extends PureComponent {
                   header: this.header(),
                   type: 'table',
                 }}
-                rowKey={(record) => record?.name || record?.id}
+                rowKey={(record) => record?.branch?.name || record?.id}
                 scroll={{ x: '100%' }}
               />
             </div>
