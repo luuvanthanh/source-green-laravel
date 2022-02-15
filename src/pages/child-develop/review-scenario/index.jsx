@@ -377,7 +377,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeSelect(event, 'age')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn kỹ năng"
+                    placeholder="Chọn độ tuổi"
                   />
                 </div>
                 <div className="col-lg-2">
@@ -387,7 +387,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeSelect(event, 'apply')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn kỹ năng"
+                    placeholder="Chọn loại áp dụng"
                   />
                 </div>
               </div>
