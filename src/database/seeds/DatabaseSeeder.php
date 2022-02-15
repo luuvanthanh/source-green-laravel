@@ -34,5 +34,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TravelAgenciesTableSeeder::class);
         $this->call(EventsTableSeeder::class);
         $this->call(SystemConfigsTableSeeder::class);
+        $this->call(ThirdPartyServicesTableSeeder::class);
+        $this->call(ApiSharesTableSeeder::class);
     }
 }

@@ -79,7 +79,9 @@
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
             "GGPHP\\Notification\\": "packages/notification/src/",
             "GGPHP\\SystemConfig\\": "packages/system-config/src/",
-            "GGPHP\\AiService\\": "packages/ai-service/src/"
+            "GGPHP\\AiService\\": "packages/ai-service/src/",
+            "GGPHP\\ThirdPartyService\\": "packages/third-party-service/src/",
+            "GGPHP\\ApiShare\\": "packages/api-share/src/"
         },
         "classmap": [
             "database/seeds",

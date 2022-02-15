@@ -159,7 +159,35 @@ class CameraController extends Controller
     {
         $camera = $this->cameraRepository->playback($request->all(), $id);
 
-        return $this->success($camera, trans('lang::messages.common.modifySuccess'));
+        return $this->success(['data' => $camera], trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * Play back
+     *
+     * @param  mixed $request
+     * @param  mixed $camera
+     * @return Response
+     */
+    public function exportVideo(CameraPlayBackRequest $request, $id)
+    {
+        $camera = $this->cameraRepository->exportVideo($request->all(), $id);
+
+        return $this->success(['data' => $camera], trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * Play back
+     *
+     * @param  mixed $request
+     * @param  mixed $camera
+     * @return Response
+     */
+    public function playbackStop(CameraPlayBackRequest $request, $id)
+    {
+        $camera = $this->cameraRepository->playbackStop($request->all(), $id);
+
+        return $this->success(['data' => $camera], trans('lang::messages.common.modifySuccess'));
     }
 
     /**

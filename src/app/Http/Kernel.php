@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'permission_for_role' => \GGPHP\RolePermission\Middlewares\PermissionForRoleMiddleware::class,
         'check_permission_view_project' => \GGPHP\Project\Middlewares\CheckPermissionViewProjectMiddleware::class,
         'check_permission_timekeeping_project' => \GGPHP\Timekeeping\Middlewares\CheckPermissionTimekeepingMiddleware::class,
+        'check_is_share_api' => \GGPHP\ApiShare\Middlewares\CheckIsShareApiMiddleware::class,
     ];
 }

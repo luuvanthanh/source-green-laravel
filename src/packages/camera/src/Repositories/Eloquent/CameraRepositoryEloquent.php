@@ -375,6 +375,37 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         // Check camera exist before update
         $camera = Camera::findOrFail($id);
 
+        $dataBackup = [
+            'server_id' => $camera->cameraServer->uuid,
+            'cam_id' => $camera->id,
+            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y h:m:s'),
+            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y h:m:s'),
+        ];
+
+        $result = VmsCoreServices::getPlayback($dataBackup);
+
+        return $result;
+    }
+
+    public function playbackStop($attributes, $id)
+    {
+        // Check camera exist before update
+        $camera = Camera::findOrFail($id);
+
+        $dataBackup = [
+            'server_id' => $camera->cameraServer->uuid,
+            'stream_name' => Carbon::parse($attributes['stream_name'])
+        ];
+
+        $result = VmsCoreServices::stopPlayback($dataBackup);
+
+        return $result;
+    }
+
+    public function exportVideo($attributes, $id)
+    {
+        // Check camera exist before update
+        $camera = Camera::findOrFail($id);
 
         $dataBackup = [
             'server_id' => $camera->cameraServer->uuid,
@@ -383,9 +414,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y h:m:s'),
         ];
 
-        $result = VmsCoreServices::backupVideo($dataBackup);
+        $result = VmsCoreServices::exportVideo($dataBackup);
 
-        return parent::find($id);
+        return $result;
     }
 
     public function cameraChangeLog($attributes)
