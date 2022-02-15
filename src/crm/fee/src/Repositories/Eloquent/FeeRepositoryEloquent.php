@@ -47,6 +47,17 @@ class FeeRepositoryEloquent extends BaseRepository implements FeeRepository
 
     public function getFee(array $attributes)
     {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('name', $attributes['key']);
+                $query->orWhereLike('code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->where('type', $attributes['type']);
+        }
+
         if (!empty($attributes['limit'])) {
             $fee = $this->paginate($attributes['limit']);
         } else {

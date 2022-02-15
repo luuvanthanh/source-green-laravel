@@ -47,6 +47,13 @@ class PaymentFormRepositoryEloquent extends BaseRepository implements PaymentFor
 
     public function getPaymentForm(array $attributes)
     {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('name', $attributes['key']);
+                $query->orWhereLike('code', $attributes['key']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentForm = $this->paginate($attributes['limit']);
         } else {

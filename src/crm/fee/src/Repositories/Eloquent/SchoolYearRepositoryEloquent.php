@@ -47,6 +47,14 @@ class SchoolYearRepositoryEloquent extends BaseRepository implements SchoolYearR
 
     public function getSchoolYear(array $attributes)
     {
+        if (!empty($attributes['from']) && !empty($attributes['to'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->where([['year_from', '>=', $attributes['from']], ['year_to', '<=', $attributes['to']]])
+                    ->orWhere([['year_from', '>', $attributes['from']], ['year_from', '<=', $attributes['to']]])
+                    ->orWhere([['year_to', '>=', $attributes['from']], ['year_to', '<', $attributes['to']]]);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $schoolYear = $this->paginate($attributes['limit']);
         } else {

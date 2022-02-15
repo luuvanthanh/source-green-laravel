@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Fee\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Fee\Models\FeePolicie;
 
 /**
  * Class CityTransformer.
@@ -28,7 +29,7 @@ class FeePolicieTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['schoolYear'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -41,5 +42,14 @@ class FeePolicieTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [];
+    }
+
+    public function includeSchoolYear(FeePolicie $feePolicie)
+    {
+        if ($feePolicie->loadCount('schoolYear')->school_year_count < 1) {
+            return null;
+        }
+
+        return $this->item($feePolicie->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }
