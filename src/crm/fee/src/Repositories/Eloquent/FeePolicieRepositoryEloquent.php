@@ -48,6 +48,11 @@ class FeePolicieRepositoryEloquent extends BaseRepository implements FeePolicieR
 
     public function getFeePolicie(array $attributes)
     {
+        if (!empty($attributes['from']) && !empty($attributes['to'])) {
+            $this->model = $this->model->whereYear('decision_date', '>=', $attributes['from'])
+                ->whereYear('decision_date', '<=', $attributes['to']);
+        }
+        
         if (!empty($attributes['limit'])) {
             $feePolicie = $this->paginate($attributes['limit']);
         } else {
