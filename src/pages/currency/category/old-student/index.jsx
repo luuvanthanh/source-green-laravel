@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty } from 'lodash';
+import { debounce, isEmpty, map } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -30,6 +30,8 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ currencyOldStudent, loading }) => ({
   data: currencyOldStudent.data,
+  year: currencyOldStudent.year,
+  dataClass: currencyOldStudent.dataClass,
   error: currencyOldStudent.error,
   pagination: currencyOldStudent.pagination,
   loading,
@@ -45,22 +47,63 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        nameStudent: query?.nameStudent,
         from: query?.from || null,
         to: query?.to || null,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+      },
+      categories: {
+        yearsConvert: [],
       },
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
-    this.onLoad();
+    this.props.dispatch({
+      type: 'schoolYear/GET_DATA',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
+    this.getStudents();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
     setIsMounted(false);
   }
+
+  /**
+ * Function load branches
+ */
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'currencyOldStudent/GET_YEAR',
+      payload: {},
+      callback: (res) => {
+        if (res) {
+          this.setStateData(({ categories }) => ({
+            categories: {
+              ...categories,
+              yearsConvert:
+                res?.parsePayload?.map((item) => ({
+                  id: item.id,
+                  name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+                })) || [],
+            },
+          }));
+        }
+      },
+    });
+    dispatch({
+      type: 'currencyOldStudent/GET_CLASS',
+      payload: {},
+    });
+  };
 
   /**
    * Set state properties
@@ -79,7 +122,7 @@ class Index extends PureComponent {
   /**
    * Function load data
    */
-  onLoad = () => {
+  getStudents = () => {
     const { search } = this.state;
     const {
       location: { pathname },
@@ -90,7 +133,7 @@ class Index extends PureComponent {
         ...search,
         orderBy: 'CreationTime',
         sortedBy: 'desc',
-        include: Helper.convertIncludes(['schoolYear']),
+        include: Helper.convertIncludes(['student.classStudent.class']),
       },
     });
     history.push({
@@ -100,33 +143,35 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          from: !isEmpty(value) ? moment(value[0]).format('YYYY') : null,
-          to: !isEmpty(value) ? moment(value[1]).format('YYYY') : null,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 300);
-
-  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChange = (value, type) => {
-    this.debouncedSearch(value, type);
-  };
+  onChange = debounce((value, type) => {
+    let { search: { from, to } } = this.state;
+    if (type === 'years') {
+      if (!isEmpty(value)) {
+        from = moment(value[0]).format('YYYY');
+        to = moment(value[1]).format('YYYY');
+      } else {
+        from = null;
+        to = null;
+      }
+    }
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          nameStudent: type === 'nameStudent' ? value : prevState.search.nameStudent,
+          from,
+          to,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.getStudents(),
+    );
+  }, 300);
 
   /**
    * Function set pagination
@@ -143,9 +188,38 @@ class Index extends PureComponent {
         },
       }),
       () => {
-        this.onLoad();
+        this.getStudents();
       },
     );
+  };
+
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearch = debounce((value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.getStudents(),
+    );
+  }, 300);
+  /**
+ * Function change select
+ * @param {object} e value of select
+ * @param {string} type key of object search
+ */
+
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
   };
 
   /**
@@ -166,64 +240,86 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'currencyOldStudent/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.getStudents();
+            }
+          },
+        });
+      },
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     const columns = [
       {
         title: 'Mã học sinh',
         key: 'code',
-        className: 'min-width-200',
-        render: (record) => record?.code || '',
+        className: 'min-width-150',
+        render: (record) => record?.student?.code || '',
       },
       {
         title: 'Tên học sinh',
-        key: 'name',
+        key: 'fullName',
         className: 'min-width-200',
-        render: (record) => record?.name || '',
+        render: (record) => record?.student?.fullName || '',
       },
       {
         title: 'Cơ sở',
-        key: 'basic',
+        key: 'branch',
         className: 'min-width-200',
-        render: (record) => record?.basic || '',
+        render: (record) => record?.student?.classStudent?.class?.branch?.name || '',
       },
       {
         title: 'Khối lớp',
-        key: 'Grade',
-        className: 'min-width-200',
-        render: (record) => record?.Grade || '',
+        key: 'grade',
+        className: 'min-width-150',
+        render: (record) => record?.student?.classStudent?.class?.classType?.name || '',
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: (record) => record?.class || '',
+        render: (record) => record?.student?.classStudent?.class?.name || '',
       },
       {
         title: 'Năm học',
-        key: 'year',
-        className: 'min-width-200',
-        render: (record) => record?.year || '',
+        key: 'schoolYear',
+        className: 'min-width-150',
+        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
       },
       {
         title: 'Chi tiết các loại phí',
-        key: 'detail',
-        className: 'min-width-130',
-        render: (record) => record?.detail || ''
+        key: 'tuition',
+        className: 'min-width-150',
+        render: (record) => !isEmpty(record?.tuition) ? map(record?.tuition, 'fee.name').join(', ') : '',
       },
       {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="success"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              onClick={() => history.push(`/bieu-phi/tinh-phi-hoc-sinh-cu/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
@@ -236,12 +332,15 @@ class Index extends PureComponent {
 
   render() {
     const {
+      match: { params },
       pagination,
       loading: { effects },
       data,
+      dataClass
     } = this.props;
-    const { search } = this.state;
+    const { search, categories: { yearsConvert } } = this.state;
     const loading = effects['currencyOldStudent/GET_DATA'];
+
     return (
       <>
         <Helmet title="Tính phí học sinh cũ" />
@@ -253,42 +352,44 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                years: (search?.from && search?.to) ? [moment(search.from), moment(search.to)] : null
+                years: (search?.from && search?.to) ? [moment(search?.from), moment(search?.to)] : null
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
-                    name="key"
+                    name="nameStudent"
+                    onChange={(event) => this.onChange(event?.target?.value, 'nameStudent')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
-                    data={[{ name: 'Tất cả năm học' },]}
-                    name="district"
+                    data={[{ id: null, name: 'Tất cả năm học' }, ...yearsConvert]}
+                    name="schoolYearId"
+                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
+                    placeholder="Chọn Năm học"
                     type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn năm học"
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
-                    data={[{ name: 'Tất cả lớp học' },]}
-                    name="district"
+                    data={[{ id: null, name: 'Tất cả lớp học' }, ...dataClass]}
+                    name="classId"
+                    placeholder="Chọn Lớp học"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    picker="year"
                     type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn lớp học"
                   />
                 </div>
               </div>
             </Form>
             <Table
               bordered
-              columns={this.header()}
+              columns={this.header(params)}
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
@@ -307,19 +408,23 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
+  dataClass: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
+  match: {},
   pagination: {},
   loading: {},
   dispatch: {},
   location: {},
   data: [],
+  dataClass: [],
 };
 
 export default Index;
