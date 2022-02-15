@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Twilio\Exceptions\RestException;
+use Twilio\Jwt\AccessToken;
+use Twilio\Jwt\Grants\SyncGrant;
 use Twilio\Rest\Client;
 
 class VoiceController extends Controller
@@ -57,5 +60,62 @@ class VoiceController extends Controller
         } catch (RestException $rest) {
             echo 'Error: ' . $rest->getMessage();
         }
+    }
+
+    public function incomingVoiceCalls(Request $request)
+    {
+        $data = [
+            'callSid' => $request->input('CallSid'),
+            'from' => $request->input('From'),
+            'to' => $request->input('To')
+        ];
+
+        $twilioClient = new Client(
+            config('services.twilio.account_sid'),
+            config('services.twilio.auth_token')
+        );
+
+        $twilioClient->sync->v1
+            ->services(config('services.twilio.service_sid'))
+            ->syncLists('twilio_incoming_voice_calls')
+            ->syncListItems
+            ->create($data);
+
+        $response = new VoiceResponse();
+
+        $response->say('Thanks for calling');
+
+        return $response;
+    }
+
+    public function generateToken(Request $request)
+    {
+        $identity = $request->query('username');
+
+        throw_if(
+            !$identity,
+            new Exception('Please Provide a Username query string')
+        );
+
+        // Create a grant identifying the Sync service instance for this app
+        $syncGrant = new SyncGrant();
+
+        $syncGrant->setServiceSid(config('services.twilio.serviceSid'));
+
+        /**
+         * Create an access token which we will sign and return to the client,
+         * containing the grant we just created and specifying his identity.
+         */
+        $token = new AccessToken(
+            config('services.twilio.accountSid'),
+            config('services.twilio.apiKey'),
+            config('services.twilio.apiSecret')
+        );
+
+        $token->addGrant($syncGrant);
+
+        $token->setIdentity($identity);
+
+        return response(['identity' => $identity, 'token' => $token->toJWT()]);
     }
 }
