@@ -41,7 +41,10 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      isUnlimited: false,
+      isDuration: false,
+    };
     setIsMounted(true);
   }
 
@@ -60,7 +63,7 @@ class Index extends PureComponent {
       type: 'typeOfContractsAdd/GET_PARAMATER_VALUES',
       payload: {
         ...params,
-        type: 'CONTRACT'
+        type: 'CONTRACT',
       },
     });
   }
@@ -73,10 +76,11 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
-        year: toString(details.year),
         month: toString(details.month),
         paramValue: details.parameterValues.map((item) => item.id),
       });
+      this.onSetUnLimited(details.isUnlimited);
+      this.onSetDuration(!details.isUnlimited);
     }
   }
 
@@ -97,6 +101,39 @@ class Index extends PureComponent {
     }
     this.setState(state, callback);
   };
+
+  onSetUnLimited = (isUnlimited) => {
+    this.setStateData({
+      isUnlimited,
+    });
+  };
+
+  onSetDuration = (isDuration) => {
+    this.setStateData({
+      isDuration,
+    });
+  }
+
+  onChangeUnLimited = (e) => {
+    this.setStateData({
+      isUnlimited: e.target.checked,
+    });
+    this.formRef.current.setFieldsValue({
+      month: 0,
+    });
+  };
+
+  onChangeMonth = (e) => {
+    if(e.target?.value){
+      this.setStateData({
+        isDuration: true
+      });
+    } else {
+      this.setStateData({
+        isDuration: false
+      });
+    }
+  }
 
   onFinish = (values) => {
     const {
@@ -138,6 +175,8 @@ class Index extends PureComponent {
       paramaterValues,
       match: { params },
     } = this.props;
+    const { isUnlimited, isDuration } = this.state;
+    
     const loadingSubmit = effects['typeOfContractsAdd/ADD'] || effects['typeOfContractsAdd/UPDATE'];
     const loading =
       effects['typeOfContractsAdd/GET_DETAILS'] ||
@@ -156,7 +195,11 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/loai-hop-dong' }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/loai-hop-dong' }}
+          >
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
@@ -194,27 +237,38 @@ class Index extends PureComponent {
                           id: 'HOP_DONG',
                           name: 'Hợp đồng',
                         },
+                        {
+                          id: 'THOI_VU',
+                          name: 'Thời vụ',
+                        },
                       ]}
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      label="SỐ NĂM"
-                      name="year"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
+                      className="checkbox-small"
+                      label="VÔ THỜI HẠN"
+                      name="isUnlimited"
+                      type={variables.CHECKBOX_FORM}
+                      valuePropName="checked"
+                      onChange={this.onChangeUnLimited}
+                      disabled={isDuration}
                     />
                   </div>
-                </div>
-                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       label="SỐ THÁNG"
                       name="month"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={
+                        !isUnlimited
+                          ? [variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]
+                          : []
+                      }
                       type={variables.INPUT}
+                      disabled={isUnlimited}
+                      onChange={this.onChangeMonth}
                     />
                   </div>
                   <div className="col-lg-6">

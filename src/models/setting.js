@@ -1,4 +1,5 @@
 import store from 'store';
+import * as categories from '@/services/categories';
 
 const STORED_SETTINGS = (storedSettings) => {
   const settings = {};
@@ -23,14 +24,19 @@ export default {
       isSquaredBorders: false,
       isFixedWidth: false,
       isMenuShadow: true,
-      isGreenTheme: false
+      isGreenTheme: false,
     }),
     background: localStorage.getItem('background') || 'images/bg.jpg',
+    categories: [],
   },
   reducers: {
     SET_SETTING_COLLAPSED: (state, action) => ({ ...state, ...action.payload }),
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
     SET_CHANGE_BACKGROUND: (state, { payload }) => ({ ...state, background: payload }),
+    SET_COUNT_CONTRACT: (state, { payload }) => ({
+      ...state,
+      categories: { data: payload.parsePayload },
+    }),
   },
   effects: {
     *CHANGE_SETTING({ payload: { setting, value } }, { put }) {
@@ -56,6 +62,30 @@ export default {
           [setting]: value,
         },
       });
+    },
+    *GET_COUNT_LABOURS_CONTRACT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getCountLaboursContract, payload);
+        callback(response.parsePayload);
+      } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_COUNT_PROBATIONARY_CONTRACT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getCountProbationaryContract, payload);
+        callback(response.parsePayload);
+      } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
   },
   subscriptions: {

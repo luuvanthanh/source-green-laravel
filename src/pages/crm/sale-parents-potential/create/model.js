@@ -17,11 +17,23 @@ export default {
     employees: [],
     branches: [],
     classes: [],
+    search: [],
     city: [],
     district: [],
     student: [],
     lead: [],
     parentLead: [],
+    relationships: [],
+    admission: [
+      {
+        full_name: " Cong Thanh",
+        birth_day: '26/06/1999',
+        age: "22",
+        time: "30/11/2021",
+        status: "",
+        
+      }
+    ]
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -80,6 +92,14 @@ export default {
     SET_PARENT_LEAD: (state, { payload }) => ({
       ...state,
       parentLead: payload.parsePayload,
+    }),
+    SET_SEARCH: (state, { payload }) => ({
+      ...state,
+      search: payload.parsePayload,
+    }),
+    SET_RELATIONSHIPS: (state, { payload }) => ({
+      ...state,
+      relationships: payload.parsePayload,
     }),
   },
   effects: {
@@ -216,6 +236,34 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_SEARCH({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSearch, payload);
+        yield saga.put({
+          type: 'SET_SEARCH',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_RELATIONSHIPS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRelationships, payload);
+        yield saga.put({
+          type: 'SET_RELATIONSHIPS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

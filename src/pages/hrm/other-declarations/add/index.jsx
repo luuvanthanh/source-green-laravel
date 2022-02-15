@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, InputNumber } from 'antd';
+import { Form, InputNumber, Tabs } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty, last, omit, differenceWith, size, head } from 'lodash';
@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import Table from '@/components/CommonComponent/Table';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
+const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -45,6 +46,9 @@ class Index extends PureComponent {
     this.state = {
       detail: [],
       paramaterValues: [],
+      detailContract: [],
+      paramaterValuesContract: [],
+      isContactSocialInsurance: false,
     };
     setIsMounted(true);
   }
@@ -84,14 +88,31 @@ class Index extends PureComponent {
             ).values(),
           ]
         : [];
+      const paramaterValuesContract = !isEmpty(head(details.changeContractParameter)?.detail)
+        ? [
+            ...new Map(
+              head(details.changeContractParameter)
+                ?.detail?.map((item) => item.id)
+                .map((item) => [item, item]),
+            ).values(),
+          ]
+        : [];
       this.formRef.current.setFieldsValue({
         ...details,
         time: details.time && moment(details.time),
         employeeId: details.otherDeclarationDetail.map((item) => item.employeeId),
         paramaterValues,
+        changeContract: {
+          paramaterValues: paramaterValuesContract,
+          employeeId: details.changeContractParameter.map((item) => item.employeeId),
+        },
       });
       this.onSetDetail(details.otherDeclarationDetail);
+      this.onSetDetailContract(details.changeContractParameter);
       this.onSetParamaterValues(head(details.otherDeclarationDetail));
+      if(head(details.changeContractParameter)){
+        this.onSetParamaterValuesContract(head(details.changeContractParameter));
+      }
     }
   }
 
@@ -123,6 +144,18 @@ class Index extends PureComponent {
     });
   };
 
+  onSetParamaterValuesContract = (item) => {
+    this.setStateData({
+      paramaterValuesContract: item.detail || [],
+    });
+  };
+
+  onSetDetailContract = (detailContract) => {
+    this.setStateData({
+      detailContract,
+    });
+  };
+
   onSetDetail = (detail) => {
     this.setStateData({
       detail,
@@ -134,7 +167,7 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    const { detail } = this.state;
+    const { detail, detailContract } = this.state;
     dispatch({
       type: params.id ? 'otherDeclarationsAdd/UPDATE' : 'otherDeclarationsAdd/ADD',
       payload: {
@@ -143,6 +176,11 @@ class Index extends PureComponent {
         time: moment(values.time).startOf('months'),
         detail: detail.map((item) => ({
           ...omit(item, 'employee'),
+          employeeId: item?.employee?.id,
+        })),
+        changeContract: detailContract.map((item) => ({
+          ...omit(item, 'employee'),
+          isSocialInsurance: true,
           employeeId: item?.employee?.id,
         })),
       },
@@ -191,6 +229,33 @@ class Index extends PureComponent {
     }
   };
 
+  onChangeEmployeeContract = (value) => {
+    const { detailContract, paramaterValuesContract } = this.state;
+    const { categories } = this.props;
+    if (size(value) < size(detailContract)) {
+      const diffirence = differenceWith(
+        detailContract.map((item) => item?.employee?.id),
+        value,
+      );
+      this.setStateData((prevState) => ({
+        detailContract: prevState.detailContract.filter(
+          (item) => item?.employee?.id !== last(diffirence),
+        ),
+      }));
+    } else {
+      const employee = categories.users.find((item) => item.id === last(value));
+      this.setStateData((prevState) => ({
+        detailContract: [
+          ...prevState.detailContract,
+          {
+            employee,
+            detail: paramaterValuesContract,
+          },
+        ],
+      }));
+    }
+  };
+
   onChangeParamater = (value) => {
     const { categories } = this.props;
     this.setStateData((prevState) => ({
@@ -208,6 +273,35 @@ class Index extends PureComponent {
           ? [
               ...value.map((item) => {
                 const itemParamaterValues = categories.paramaterValues.find(
+                  ({ id }) => id === item,
+                );
+                return itemParamaterValues;
+              }),
+            ]
+          : [],
+      })),
+    }));
+  };
+
+  onChangeParamaterContract = (value) => {
+    const { categories } = this.props;
+    this.setStateData((prevState) => ({
+      paramaterValuesContract: [
+        ...(value
+          ? value.map((item) => {
+              const itemParamaterValues = categories.paramaterContract.find(
+                ({ id }) => id === item,
+              );
+              return itemParamaterValues;
+            })
+          : []),
+      ],
+      detailContract: prevState.detailContract.map((item) => ({
+        ...item,
+        detail: value
+          ? [
+              ...value.map((item) => {
+                const itemParamaterValues = categories.paramaterContract.find(
                   ({ id }) => id === item,
                 );
                 return itemParamaterValues;
@@ -240,6 +334,28 @@ class Index extends PureComponent {
     }));
   };
 
+  onChangeNumberContract = (valueDefault, record, paramaterValue) => {
+    this.setStateData((prevState) => ({
+      detailContract: prevState.detailContract.map((item) => {
+        if (item?.employee?.id === record?.employee?.id) {
+          return {
+            ...item,
+            detail: item.detail.map((itemDetail) => {
+              if (itemDetail.id === paramaterValue.id) {
+                return {
+                  ...itemDetail,
+                  valueDefault,
+                };
+              }
+              return itemDetail;
+            }),
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
   onRemove = (record) => {
     const data = this.formRef.current.getFieldsValue();
     this.setStateData((prevState) => ({
@@ -249,6 +365,29 @@ class Index extends PureComponent {
       ...data,
       employeeId: data.employeeId.filter((item) => item !== record?.employee?.id),
     });
+  };
+
+  onRemoveContract = (record) => {
+    const data = this.formRef.current.getFieldsValue();
+    this.setStateData((prevState) => ({
+      detailContract: prevState.detailContract.filter(
+        (item) => item?.employee?.id !== record?.employee?.id,
+      ),
+    }));
+    this.formRef.current.setFieldsValue({
+      ...data,
+      changeContract: {
+        employeeId: data?.changeContract?.employeeId?.filter(
+          (item) => item !== record?.employee?.id,
+        ),
+      },
+    });
+  };
+
+  onChangeCheckbox = (value) => {
+    this.setStateData(() => ({
+      isContactSocialInsurance: value.target.checked,
+    }));
   };
 
   /**
@@ -302,6 +441,67 @@ class Index extends PureComponent {
     return [...columns.slice(0, 1), ...columnsMerge, ...columns.slice(1)];
   };
 
+  headerContact = () => {
+    const { paramaterValuesContract, isContactSocialInsurance } = this.state;
+    const columns = [
+      {
+        title: 'Nhân viên',
+        key: 'user',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
+          />
+        ),
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        fixed: 'right',
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button color="danger" icon="remove" onClick={() => this.onRemoveContract(record)} />
+          </div>
+        ),
+      },
+    ];
+
+    const columnsMerge = paramaterValuesContract?.map((item) => ({
+      title: item.name,
+      key: item.code,
+      className:
+        item.code === 'T_BHXH' ? 'min-width-80 d-flex justify-content-center' : 'min-width-200',
+      width: item.code === 'T_BHXH' ? 80 : 200,
+      render: (record) => {
+        const itemParamater = record?.detail?.find(({ id }) => id === item.id);
+        if (itemParamater?.code === 'T_BHXH') {
+          return (
+            <FormItem
+              type={variables.CHECKBOX_FORM}
+              onChange={(value) => this.onChangeCheckbox(value, record, item)}
+              valuePropName="checked"
+              checked={isContactSocialInsurance}
+            />
+          );
+        }
+        return (
+          <InputNumber
+            className={classnames('input-number', styles['input-number-container'])}
+            formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+            placeholder="Nhập"
+            value={itemParamater?.valueDefault || 0}
+            onChange={(value) => this.onChangeNumberContract(value, record, item)}
+          />
+        );
+      },
+    }));
+
+    return [...columns.slice(0, 1), ...columnsMerge, ...columns.slice(1)];
+  };
+
   render() {
     const {
       menuData,
@@ -309,7 +509,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { detail } = this.state;
+    const { detail, detailContract } = this.state;
     const loadingSubmit =
       effects['otherDeclarationsAdd/ADD'] || effects['otherDeclarationsAdd/UPDATE'];
     return (
@@ -332,7 +532,7 @@ class Index extends PureComponent {
               </Text>
 
               <div className="row">
-                <div className="col-lg-6">
+                <div className="col-lg-4">
                   <FormItem
                     label="Thời gian"
                     name="time"
@@ -340,7 +540,7 @@ class Index extends PureComponent {
                     type={variables.MONTH_PICKER}
                   />
                 </div>
-                <div className="col-lg-6">
+                <div className="col-lg-4">
                   <FormItem
                     label="Số công"
                     name="numberOfWorkdays"
@@ -348,21 +548,7 @@ class Index extends PureComponent {
                     type={variables.INPUT_COUNT}
                   />
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-lg-12">
-                  <FormItem
-                    data={Helper.convertSelectUsers(categories?.users)}
-                    label="Nhân viên"
-                    name="employeeId"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT_MUTILPLE}
-                    onChange={this.onChangeEmployee}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-lg-12">
+                <div className="col-lg-4">
                   <FormItem
                     label="Tính lương mùa dịch"
                     name="isDiseaseSalary"
@@ -371,33 +557,92 @@ class Index extends PureComponent {
                   />
                 </div>
               </div>
-              <div className="row">
-                <div className="col-lg-12">
-                  <FormItem
-                    data={categories?.paramaterValues}
-                    label="Khai báo"
-                    name="paramaterValues"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT_MUTILPLE}
-                    onChange={this.onChangeParamater}
+            </div>
+            <div className={classnames(styles['content-children'], 'mt20')}>
+              <Tabs defaultActiveKey="MONTH">
+                <TabPane tab="Tăng giảm theo tháng" key="MONTH">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <FormItem
+                        data={Helper.convertSelectUsers(categories?.users)}
+                        label="Nhân viên"
+                        name="employeeId"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT_MUTILPLE}
+                        onChange={this.onChangeEmployee}
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <FormItem
+                        data={categories?.paramaterValues}
+                        label="Khai báo"
+                        name="paramaterValues"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT_MUTILPLE}
+                        onChange={this.onChangeParamater}
+                      />
+                    </div>
+                  </div>
+                  <hr />
+                  <Table
+                    bordered
+                    columns={this.header()}
+                    dataSource={detail}
+                    isEmpty
+                    className="table-edit"
+                    pagination={false}
+                    params={{
+                      header: this.header(),
+                      type: 'table',
+                    }}
+                    rowKey={(record) => record?.employee?.id || record.id}
+                    scroll={{ x: '100%' }}
                   />
-                </div>
-              </div>
-              <hr />
-              <Table
-                bordered
-                columns={this.header()}
-                dataSource={detail}
-                isEmpty
-                className="table-edit"
-                pagination={false}
-                params={{
-                  header: this.header(),
-                  type: 'table',
-                }}
-                rowKey={(record) => record?.employee?.id || record.id}
-                scroll={{ x: '100%' }}
-              />
+                </TabPane>
+                <TabPane tab="Tăng giảm theo hợp đồng" key="CONTRACT">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <FormItem
+                        data={Helper.convertSelectUsers(categories?.users)}
+                        label="Nhân viên"
+                        name={['changeContract', 'employeeId']}
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT_MUTILPLE}
+                        onChange={this.onChangeEmployeeContract}
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <FormItem
+                        data={categories?.paramaterContract}
+                        label="Khai báo"
+                        name={['changeContract', 'paramaterValues']}
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT_MUTILPLE}
+                        onChange={this.onChangeParamaterContract}
+                      />
+                    </div>
+                  </div>
+                  <hr />
+                  <Table
+                    bordered
+                    columns={this.headerContact()}
+                    dataSource={detailContract}
+                    isEmpty
+                    className="table-edit"
+                    pagination={false}
+                    params={{
+                      header: this.headerContact(),
+                      type: 'table',
+                    }}
+                    rowKey={(record) => record?.employee?.id || record.id}
+                    scroll={{ x: '100%' }}
+                  />
+                </TabPane>
+              </Tabs>
             </div>
             <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
               <Button

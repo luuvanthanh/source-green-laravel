@@ -1,9 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
-import { DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -14,6 +12,9 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
+import Heading from '@/components/CommonComponent/Heading';
+import Table from '@/components/CommonComponent/Table';
 
 let isMounted = true;
 /**
@@ -32,11 +33,10 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ busRegistrationsAdd, loading, menu }) => ({
   dataStores: busRegistrationsAdd.dataStores,
-  loading: loading,
+  loading,
   error: busRegistrationsAdd.error,
   details: busRegistrationsAdd.details,
   categories: busRegistrationsAdd.categories,
-  absentTypes: busRegistrationsAdd.absentTypes,
   menuData: menu.menuLeftHRM,
 });
 
@@ -46,7 +46,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      detail: [],
+    };
     setIsMounted(true);
   }
 
@@ -73,10 +75,10 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (get(params, 'id')) {
+    if (params.id) {
       dispatch({
         type: 'busRegistrationsAdd/GET_DETAILS',
-        payload: get(params, 'id'),
+        payload: params.id,
       });
     }
     this.loadCategories();
@@ -87,10 +89,18 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details)) {
       this.formRef.current.setFieldsValue({
         ...details,
-        date: details.date && moment(details.date),
+        startDate: details.startDate && moment(details.startDate),
+        endDate: details.endDate && moment(details.endDate),
       });
+      this.onSetDetail(details.busRegistrationDetail || []);
     }
   }
+
+  onSetDetail = (detail) => {
+    this.setStateData({
+      detail,
+    });
+  };
 
   loadCategories = () => {
     const { dispatch } = this.props;
@@ -105,18 +115,22 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
+    const { detail } = this.state;
     dispatch({
       type: params.id ? 'busRegistrationsAdd/UPDATE' : 'busRegistrationsAdd/ADD',
       payload: {
         ...values,
-        date: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: values.date,
-            targetValue: '23:59:59',
+        detail: detail.map((item) => ({
+          ...item,
+          date: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: item.date,
+            }),
+            format: variables.DATE_FORMAT.DATE_AFTER,
+            isUTC: false,
           }),
-          isUTC: false,
-        }),
+        })),
         id: params.id,
       },
       callback: (response, error) => {
@@ -184,14 +198,66 @@ class Index extends PureComponent {
     }
   };
 
+  formUpdate = (value, values) => {
+    if (values.endDate && values.startDate && values.hourNumber) {
+      const dates = Helper.convertArrayDaysNotWeekends(values.startDate, values.endDate);
+      this.setStateData({
+        detail: dates.map((item, index) => ({ date: item, index, hours: values.hourNumber })),
+      });
+    }
+  };
+
+  onChangeHours = (hours, record) => {
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.map((item) => {
+        if (item.index === record.index) {
+          return {
+            ...item,
+            hours,
+          };
+        }
+        return item;
+      }),
+    }));
+    this.formRef.current.setFieldsValue({
+      hourNumber: hours
+    });
+  };
+
+  /**
+   * Function header table
+   */
+  header = () => [
+    {
+      title: 'Thời gian',
+      key: 'date',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Số giờ',
+      key: 'hours',
+      className: 'min-width-150',
+      render: (record) => (
+        <InputNumber
+          value={record.hours}
+          placeholder="Nhập"
+          style={{ width: '100%' }}
+          onChange={(event) => this.onChangeHours(event, record)}
+        />
+      ),
+    },
+  ];
+
   render() {
     const {
       error,
       menuData,
       categories,
-      absentTypes,
       loading: { effects },
     } = this.props;
+    const { detail } = this.state;
     const loading = effects['busRegistrationsAdd/GET_DETAILS'];
     const loadingSubmit =
       effects['busRegistrationsAdd/ADD'] || effects['busRegistrationsAdd/UPDATE'];
@@ -208,8 +274,13 @@ class Index extends PureComponent {
           colon={false}
           onFinish={this.onFinish}
           ref={this.formRef}
+          onValuesChange={this.formUpdate}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus' }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus' }}
+          >
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
@@ -227,15 +298,31 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <FormItem
-                      label="Ngày đăng ký"
-                      name="date"
+                      label="Ngày đăng ký từ"
+                      name="startDate"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
+                      disabledDate={(current) =>
+                        Helper.disabledDateFrom(current, this.formRef) ||
+                        Helper.disabledDateWeekeend(current)
+                      }
                     />
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
+                    <FormItem
+                      label="Đến ngày"
+                      name="endDate"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.DATE_PICKER}
+                      disabledDate={(current) =>
+                        Helper.disabledDateTo(current, this.formRef) ||
+                        Helper.disabledDateWeekeend(current)
+                      }
+                    />
+                  </div>
+                  <div className="col-lg-4">
                     <FormItem
                       label="Số giờ"
                       name="hourNumber"
@@ -254,6 +341,24 @@ class Index extends PureComponent {
                     />
                   </div>
                 </div>
+                <hr />
+                <Heading type="form-block-title" className="mb10">
+                  Chi tiết
+                </Heading>
+                <Table
+                  bordered
+                  columns={this.header()}
+                  dataSource={detail}
+                  isEmpty
+                  className="table-edit"
+                  pagination={false}
+                  params={{
+                    header: this.header(),
+                    type: 'table',
+                  }}
+                  rowKey={(record) => record.id || record.index}
+                  scroll={{ x: '100%' }}
+                />
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button
@@ -284,6 +389,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  menuData: [],
+  loading: {},
+  dispatch: {},
+  error: {},
+  details: {},
+  categories: {},
+};
 
 export default Index;

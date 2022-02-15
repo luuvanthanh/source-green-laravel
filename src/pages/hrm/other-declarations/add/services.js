@@ -27,6 +27,17 @@ export function getParamaterValues() {
     },
   });
 }
+export function getParamaterValuesTypeContract() {
+  return request(`/v1/paramater-values`, {
+    method: 'GET',
+    params: {
+      type: 'CONTRACT',
+      search: Helper.convertParamSearchConvert({
+        Type: 'CONTRACT',
+      }),
+    },
+  });
+}
 
 export function add(data = {}) {
   return request('/v1/other-declarations', {
@@ -66,7 +77,10 @@ export function details(data) {
   return request(`/v1/other-declarations/${data.id}`, {
     method: 'GET',
     params: {
-      include: 'otherDeclarationDetail.employee',
+      include: Helper.convertIncludes([
+        'otherDeclarationDetail.employee',
+        'changeContractParameter.employee',
+      ]),
     },
     parse: true,
   });

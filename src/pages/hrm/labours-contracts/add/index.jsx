@@ -49,6 +49,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       parameterValues: [],
+      typeContract: null,
     };
     setIsMounted(true);
   }
@@ -78,14 +79,17 @@ class Index extends PureComponent {
       details,
       match: { params },
     } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+    if (details !== prevProps.details && !isEmpty(details) && params?.id) {
+      this.setStateData({
+        typeContract: details?.typeOfContract?.code,
+      });
       this.formRef.current.setFieldsValue({
         ...details,
         contractDate: details.contractDate && moment(details.contractDate),
         contractFrom: details.contractFrom && moment(details.contractFrom),
         contractTo: details.contractTo && moment(details.contractTo),
       });
-      this.setparameterValues(
+      this.setParameterValues(
         details.parameterValues.map((item) => ({
           ...item,
           valueDefault: item.pivot.value,
@@ -109,7 +113,7 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  setparameterValues = (parameterValues) => {
+  setParameterValues = (parameterValues) => {
     this.setStateData({
       parameterValues: parameterValues.map((item, index) => ({ ...item, index })),
     });
@@ -132,28 +136,21 @@ class Index extends PureComponent {
   changeContract = (value) => {
     const { contractTypes } = this.props;
     const itemContract = contractTypes.find((item) => item.id === value);
-    if (itemContract) {
-      this.setStateData({
-        parameterValues: itemContract.parameterValues.map((item, index) => ({
-          index,
-          ...item,
-        })),
-      });
-      this.formRef.current.setFieldsValue({
-        month: toString(itemContract.month),
-        year: toString(itemContract.year),
-      });
-    }
+    this.setStateData({
+      disabledInput: true,
+      typeContract: itemContract?.code,
+    });
+    this.formRef.current.setFieldsValue({
+      month: itemContract?.code !== 'VTH' ? 0 : toString(itemContract.month),
+    });
   };
 
   formUpdate = (value, values) => {
-    const { month, year, contractFrom } = values;
+    const { month, contractFrom } = values;
 
     if (moment.isMoment(contractFrom)) {
       this.formRef?.current?.setFieldsValue({
-        contractTo: moment(contractFrom)
-          .add(month || 0, 'months')
-          .add(year || 0, 'years'),
+        contractTo: moment(contractFrom).add(month || 0, 'months'),
       });
     }
   };
@@ -332,7 +329,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { parameterValues } = this.state;
+    const { parameterValues, typeContract } = this.state;
     const loading =
       effects['laboursContractsAdd/GET_CATEGORIES'] ||
       effects['laboursContractsAdd/GET_DETAILS'] ||
@@ -403,22 +400,18 @@ class Index extends PureComponent {
                 </div>
 
                 <div className="row">
-                  <div className="col-lg-4">
-                    <FormItem
-                      label="Số năm hợp đồng"
-                      name="year"
-                      type={variables.INPUT_COUNT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </div>
-                  <div className="col-lg-4">
-                    <FormItem
-                      label="Số tháng hợp đồng"
-                      name="month"
-                      type={variables.INPUT_COUNT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </div>
+                  {typeContract !== 'VTH' && (
+                    <div className="col-lg-4">
+                      <FormItem
+                        label="Số tháng hợp đồng"
+                        name="month"
+                        type={variables.INPUT_COUNT}
+                        rules={[variables.RULES.EMPTY]}
+                        disabled={typeContract === 'VTH'}
+                      />
+                    </div>
+                  )}
+
                   <div className="col-lg-4">
                     <FormItem
                       data={categories.divisions}
@@ -439,15 +432,17 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>
-                  <div className="col-lg-4">
-                    <FormItem
-                      label="Thời hạn HĐ đến"
-                      name="contractTo"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                      disabled
-                    />
-                  </div>
+                  {typeContract !== 'VTH' && (
+                    <div className="col-lg-4">
+                      <FormItem
+                        label="Thời hạn HĐ đến"
+                        name="contractTo"
+                        type={variables.DATE_PICKER}
+                        rules={[variables.RULES.EMPTY]}
+                        disabled
+                      />
+                    </div>
+                  )}
                   <div className="col-lg-4">
                     <FormItem
                       data={categories.positions}
@@ -487,7 +482,7 @@ class Index extends PureComponent {
                   </div>
                   <div className="col-lg-12">
                     <FormItem
-                      label="Tham gia BHXH"
+                      label="Không tham gia BHXH"
                       name="isSocialInsurance"
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"

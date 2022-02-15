@@ -1,7 +1,9 @@
 // eslint-disable-next-line import/extensions
+import Cookies from 'universal-cookie';
 import { permissions } from '../../config/permissions';
 import animationImage from './animation.json';
 
+const cookies = new Cookies();
 export const feature = {
   FEATURES: [
     {
@@ -89,10 +91,10 @@ export const feature = {
       permission: [permissions.BEP],
     },
     {
-      title: 'Biếu phí',
+      title: 'Biểu phí',
       src: '/images/home/currency.svg',
       animation: animationImage.tariffs,
-      url: '/',
+      url: '/bieu-phi',
       permission: [permissions.BIEUPHI],
     },
     {
@@ -148,7 +150,22 @@ export const feature = {
       title: 'Camera AI',
       src: '/images/home/chip.svg',
       animation: animationImage.cameraAI,
-      url: URL_AI,
+      url: `${URL_AI}/verify-token?token=${cookies.get('access_token')}`,
+      target: true,
+      permission: [permissions.CAMERAAI],
+    },
+    {
+      title: 'Sự phát triển của trẻ',
+      src: '/images/home/spreadsheet.svg',
+      animation: animationImage.programStudy,
+      url: '/su-phat-trien-cua-tre',
+      permission: [permissions.CTH],
+    },
+    {
+      title: 'Chiến dịch Email',
+      src: '/images/home/emailMarketing.svg',
+      animation: animationImage.emailMarketting,
+      url: URL_EMAIL_MARKETING,
       target: true,
       permission: [permissions.CAMERAAI],
     },

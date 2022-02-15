@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,7 +12,6 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 let isMounted = true;
 /**
@@ -49,12 +48,12 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: query?.endDate
-          ? moment(query?.endDate)
-          : moment().startOf('month').add(24, 'days'),
         startDate: query?.startDate
           ? moment(query?.startDate)
-          : moment().startOf('month').subtract(1, 'months').add(25, 'days'),
+          : moment().startOf('month').subtract(1, 'months').add(24, 'days'),
+        endDate: query?.endDate
+          ? moment(query?.endDate)
+          : moment().startOf('month').add(1, 'days'),
       },
     };
     setIsMounted(true);
@@ -68,7 +67,7 @@ class Index extends PureComponent {
   componentWillUnmount() {
     setIsMounted(false);
   }
-
+ 
   /**
    * Set state properties
    * @param {object} data the data input
@@ -110,8 +109,8 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
-          startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDateSearch(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
+          startDate: Helper.getDateSearch(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -224,7 +223,6 @@ class Index extends PureComponent {
   header = () => {
     const {
       location: { pathname },
-      paramaterValues,
     } = this.props;
     const columns = [
       {
@@ -235,27 +233,11 @@ class Index extends PureComponent {
         render: (record) => Helper.getDate(record.time, variables.DATE_FORMAT.MONTH_FULL),
       },
       {
-        title: 'Giờ công',
+        title: 'Số công chuẩn',
         key: 'numberOfWorkdays',
         className: 'min-width-150',
         width: 150,
         render: (record) => record.numberOfWorkdays,
-      },
-      {
-        title: 'Họ và Tên',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => {
-          if (record.otherDeclarationDetail) {
-            return null;
-          }
-          return (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
-              fullName={get(record, 'employee.fullName')}
-            />
-          );
-        },
       },
       {
         key: 'action',
@@ -279,17 +261,8 @@ class Index extends PureComponent {
         },
       },
     ];
-    const columnsMerge = paramaterValues.map((item) => ({
-      title: item.name,
-      key: item.code,
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => {
-        const itemParamater = record?.detail?.find((itemDetail) => itemDetail.code === item.code);
-        return Helper.getPrice(itemParamater?.value);
-      },
-    }));
-    return [...columns.slice(0, 3), ...columnsMerge, ...columns.slice(3)];
+    
+    return columns;
   };
 
   render() {
@@ -338,7 +311,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    type={variables.MONTH_YEAR_PICKER}
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     allowClear={false}
                   />
@@ -347,7 +320,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
+                    type={variables.MONTH_YEAR_PICKER}
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     allowClear={false}
                   />
@@ -382,7 +355,6 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  paramaterValues: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -392,7 +364,6 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  paramaterValues: [],
 };
 
 export default Index;

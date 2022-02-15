@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import classnames from 'classnames';
 import { Form } from 'antd';
-import { debounce, isEmpty, isEqual, head } from 'lodash';
+import { debounce, isEmpty, isEqual } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -222,9 +222,8 @@ class Index extends PureComponent {
 
   onChangeTypes = (e, record) => {
     const { dispatch } = this.props;
-    const notificationModuleId = head(record.moduleTypeGroupByNames)?.notificationModule?.id;
     const payload = {
-      notificationModuleId,
+      notificationModuleId: record?.moduleId,
       notificationTypeIds: e,
     };
     dispatch({

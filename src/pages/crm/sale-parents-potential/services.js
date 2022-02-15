@@ -15,8 +15,12 @@ export function get(data = {}) {
         'city',
         'district',
         'search',
-        'reference.statusParentLead',
-        'studentInfo',
+        'reference.statusParentPotential',
+        'customerPotentialTag.tag',
+        'potentialStudentInfo',
+        'searchSource',
+        'employee',
+        'customerPotentialStatusCare.statusParentPotential',
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
     },
@@ -37,6 +41,60 @@ export function getDistricts(params) {
     method: 'GET',
     params: {
       ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function add(data = {}) {
+  return request(`/v1/move-customer-potentials`, {
+    method: 'POST',
+    data,
+    parse: true,
+  });
+}
+
+export function getTags() {
+  return request(`/v1/tags`, {
+    method: 'GET',
+    params: {
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getStatusLead() {
+  return request(`/v1/status-parent-leads`, {
+    method: 'GET',
+    params: {
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getEmployees() {
+  return request(`/v1/employees`, {
+    method: 'GET',
+    params: {
+      orderBy: 'full_name',
+    },
+  });
+}
+
+export function getSearch(params) {
+  return request(`/v1/search-sources`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getBranch() {
+  return request(`/v1/branches`, {
+    method: 'GET',
+    params: {
       orderBy: 'name',
     },
   });

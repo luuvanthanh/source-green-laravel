@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'dva';
-import { Table } from 'antd';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import Button from '@/components/CommonComponent/Button';
@@ -13,12 +12,16 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
 
-const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
+const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDleChangeText }) => {
   const dispatch = useDispatch();
   const { fees, paymentForm } = useSelector(({ fees, paymentMethod }) => ({
     fees: fees.data,
     paymentForm: paymentMethod.data,
   }));
+
+  const changeText=(e)=>{
+    hanDleChangeText(e);
+};
 
   useEffect(() => {
     dispatch({
@@ -37,6 +40,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
     });
   }, []);
 
+  
   const getMoney = async (details, tuition, name, value, index) => {
     const { schoolYearId, classTypeId, dayAdmission } = details;
     const { feeId, paymentFormId } = tuition[index];
@@ -96,9 +100,8 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
     if (error) {
       checkValidate(newTuition, 'tuition');
     }
-    return setTuition(newTuition);
+    return setTuition(newTuition) ;
   };
-
   const onChange = async (event, record, name) => {
     let value = event;
     if (name === 'content') {
@@ -112,7 +115,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
     const newTuition = [...tuition].filter((item) => item.id !== record.id);
     setTuition(newTuition);
   };
-
+ changeText(tuition);
   const columns = useMemo(() => [
     {
       title: 'Loại phí',
@@ -139,7 +142,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
     {
       title: 'Hình thức',
       key: 'format',
-      className: 'min-width-150',
+      className: 'min-width-200',
       render: (record) => (
         <>
           <FormItem
@@ -159,21 +162,10 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
       ),
     },
     {
-      title: () => (
-        <>
-          <span>Tiền </span>
-          <span className="underline">đ</span>
-        </>
-      ),
-      key: 'money',
-      className: 'min-width-120',
-      align: 'right',
-      render: (record) => Helper.getPrice(record?.money, 0, true),
-    },
-    {
       title: '',
       key: 'delete',
       with: 40,
+      align: 'center',
       render: (record) => (
         <DeleteOutlined
           className="btn-delete-table"
@@ -209,15 +201,6 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
         pagination={false}
         rowKey="id"
         scroll={{ x: '100%' }}
-        summary={(pageData) => (
-          <Table.Summary.Row>
-            <Table.Summary.Cell colSpan={2} />
-            <Table.Summary.Cell align="right">
-              <strong>{Helper.getPrice(Helper.summary(pageData, 'money'), 0, true)}</strong>
-            </Table.Summary.Cell>
-            <Table.Summary.Cell />
-          </Table.Summary.Row>
-        )}
       />
       {!!(details?.schoolYearId && details?.classTypeId && details?.dayAdmission) && (
         <Pane className="px20">

@@ -18,6 +18,9 @@ export function update(data = {}) {
 export function details(data) {
   return request(`/v1/labours-contracts/${data.id}`, {
     method: 'GET',
+    params: {
+      include: Helper.convertIncludes(['employee', 'typeOfContract', 'position', 'branch']),
+    },
   });
 }
 

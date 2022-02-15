@@ -12,6 +12,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import Button from '@/components/CommonComponent/Button';
 
 let isMounted = true;
 /**
@@ -53,6 +54,7 @@ class Index extends PureComponent {
         month: query?.month ? moment(query.month) : moment().startOf('months'),
       },
       isCollapsed: false,
+      loadingDownload: false,
     };
     setIsMounted(true);
   }
@@ -371,7 +373,7 @@ class Index extends PureComponent {
           ? 'min-width-50 thead-green text-primary'
           : 'min-width-150 thead-green text-primary',
         width: isCollapsed ? 50 : 150,
-        render: (record) => record?.isProbation && 'Có',
+        render: (record) => record?.isSocialInsurance && 'Có',
       },
       {
         title: 'Tổng thu nhập',
@@ -389,21 +391,44 @@ class Index extends PureComponent {
               key: 'name',
               className: 'thead-green',
               children:
-                data?.columnBasicSalaryAndAllowance?.map((item) => ({
-                  title: item.name,
-                  key: item.code,
-                  className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-                  width: isCollapsed ? 50 : 150,
-                  render: (record) => {
-                    if (record.basicSalaryAndAllowance) {
-                      const basic = record.basicSalaryAndAllowance.find(
-                        (itemBasic) => itemBasic.code === item.code,
-                      );
-                      return Helper.getPrice(basic?.value || 0);
-                    }
-                    return null;
-                  },
-                })) || [],
+                data?.columnBasicSalaryAndAllowance?.map((item) => {
+                  if (item.code === 'TI_LE_THU_VIEC') {
+                    return {
+                      title: item.name,
+                      key: item.code,
+                      className: isCollapsed
+                        ? 'min-width-50 thead-green'
+                        : 'min-width-150 thead-green',
+                      width: isCollapsed ? 50 : 150,
+                      render: (record) => {
+                        if (record.basicSalaryAndAllowance) {
+                          const basic = record.basicSalaryAndAllowance.find(
+                            (itemBasic) => itemBasic.code === item.code,
+                          );
+                          return basic?.value;
+                        }
+                        return null;
+                      },
+                    };
+                  }
+                  return {
+                    title: item.name,
+                    key: item.code,
+                    className: isCollapsed
+                      ? 'min-width-50 thead-green'
+                      : 'min-width-150 thead-green',
+                    width: isCollapsed ? 50 : 150,
+                    render: (record) => {
+                      if (record.basicSalaryAndAllowance) {
+                        const basic = record.basicSalaryAndAllowance.find(
+                          (itemBasic) => itemBasic.code === item.code,
+                        );
+                        return Helper.getPrice(basic?.value || 0);
+                      }
+                      return null;
+                    },
+                  };
+                }) || [],
             },
           ]
         : []),
@@ -451,14 +476,14 @@ class Index extends PureComponent {
             key: 'name',
             className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
             width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPercent(record.otTax),
+            render: (record) => Helper.getPrice(record.otTax),
           },
           {
             title: 'OT không tính thuế',
             key: 'name',
             className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
             width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPercent(record.otNoTax),
+            render: (record) => Helper.getPrice(record.otNoTax),
           },
         ],
       },
@@ -744,21 +769,23 @@ class Index extends PureComponent {
             (total, item) => total + item.actuallyReceived,
             0,
           ),
-          basicSalaryAndAllowance: data?.columnBasicSalaryAndAllowance.map((item) => {
-            let summary = 0;
-            data.payrollDetail.forEach((itemPage) => {
-              if (!isEmpty(itemPage.basicSalaryAndAllowance)) {
-                const basic = itemPage.basicSalaryAndAllowance.find(
-                  (itemBasic) => itemBasic.code === item.code,
-                );
-                if (basic) summary += toNumber(basic.value);
-              }
-            });
-            return {
-              ...item,
-              value: summary,
-            };
-          }),
+          basicSalaryAndAllowance: data?.columnBasicSalaryAndAllowance
+            .filter((item) => item.code !== 'TI_LE_THU_VIEC')
+            .map((item) => {
+              let summary = 0;
+              data.payrollDetail.forEach((itemPage) => {
+                if (!isEmpty(itemPage.basicSalaryAndAllowance)) {
+                  const basic = itemPage.basicSalaryAndAllowance.find(
+                    (itemBasic) => itemBasic.code === item.code,
+                  );
+                  if (basic) summary += toNumber(basic.value);
+                }
+              });
+              return {
+                ...item,
+                value: summary,
+              };
+            }),
           incurredAllowance: data?.columnIncurredAllowance.map((item) => {
             let summary = 0;
             data.payrollDetail.forEach((itemPage) => {
@@ -780,6 +807,23 @@ class Index extends PureComponent {
     return [];
   };
 
+  exportData = async (id) => {
+    const { search } = this.state;
+    this.setState({
+      loadingDownload: true,
+    });
+    await Helper.exportExcel(
+      `/v1/export-payrolls`,
+      {
+        id,
+      },
+      `BangLuong-${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+    );
+    this.setState({
+      loadingDownload: false,
+    });
+  };
+
   render() {
     const {
       data,
@@ -790,7 +834,7 @@ class Index extends PureComponent {
       branches,
       employees,
     } = this.props;
-    const { search, isCollapsed } = this.state;
+    const { search, isCollapsed, loadingDownload } = this.state;
     const loading = effects['salary/GET_DATA'];
     return (
       <>
@@ -855,6 +899,17 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
+                {data.id && (
+                  <div className="col-lg-3">
+                    <Button
+                      color="success"
+                      onClick={() => this.exportData(data.id)}
+                      loading={loadingDownload}
+                    >
+                      Xuất bảng lương
+                    </Button>
+                  </div>
+                )}
                 <div className="col-lg-12">
                   <FormItem
                     data={Helper.convertSelectUsers(employees)}

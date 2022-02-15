@@ -238,6 +238,13 @@ class Index extends PureComponent {
           ),
       },
       {
+        title: 'Ngày tạo',
+        key: 'creationTime',
+        className: 'min-width-180',
+        width: 180,
+        render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Nhân viên',
         key: 'fullName',
         className: 'min-width-220',
@@ -261,7 +268,7 @@ class Index extends PureComponent {
         key: 'date',
         width: 120,
         className: 'min-width-120',
-        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record?.startDate, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Số giờ',

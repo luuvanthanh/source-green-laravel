@@ -13,15 +13,6 @@ export default {
     }),
   },
   effects: {
-    *GET_BUSINESS_OBJECT_GROUP(_, saga) {
-      try {
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getStudents, payload);

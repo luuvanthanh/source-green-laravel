@@ -28,13 +28,13 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   classes: crmSaleLeadAdd.classes,
   city: crmSaleLeadAdd.city,
   district: crmSaleLeadAdd.district,
+  search: crmSaleLeadAdd.search,
+  townWards: crmSaleLeadAdd.townWards,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search, branches, townWards }) => {
     const formRef = useRef();
-    const [files, setFiles] = Helper.isJSON(details?.file_image)
-      ? useState(JSON.parse(details?.file_image))
-      : useState([]);
+    const [files, setFiles] = useState([]);
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
@@ -43,18 +43,58 @@ const General = memo(
       effects[`crmSaleLeadAdd/UPDATE`] ||
       effects[`crmSaleLeadAdd/UPDATE_STATUS`];
     const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
+
     useEffect(() => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_CITIES',
         payload: {},
       });
-      if(params.id){
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_SEARCH',
+        payload: {},
+      });
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_BRANCHES',
+        payload: {},
+      });
+    }, []);
+
+    useEffect(() => {
+      if (params.id) {
         dispatch({
-          type: 'crmSaleLeadAdd/GET_DISTRICTS',
-          payload: {},
+          type: 'crmSaleLeadAdd/GET_DETAILS',
+          payload: params,
         });
       }
     }, [params.id]);
+
+
+    useEffect(() => {
+      if (details.city_id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DISTRICTS',
+          payload: details,
+        });
+      }
+      if (details.district_id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
+          payload: details
+        });
+      }
+      if (details.town_ward_id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
+          payload: details
+        });
+      }
+      if (details.district_id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DISTRICTS',
+          payload: details,
+        });
+      }
+    }, [details.id]);
 
     const onChangeCity = (city_id) => {
       dispatch({
@@ -65,6 +105,23 @@ const General = memo(
       });
     };
 
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, [params.id]);
+
+    const onChangeDistricts = (district_id) => {
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
+        payload: {
+          district_id,
+        },
+      });
+    };
 
     /**
      * Function submit form modal
@@ -75,7 +132,7 @@ const General = memo(
         type: params.id ? 'crmSaleLeadAdd/UPDATE' : 'crmSaleLeadAdd/ADD',
         payload: params.id
           ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files) }
-          : { ...values, file_image: JSON.stringify(files), status: 'WORKING' },
+          : { ...values, file_image: JSON.stringify(files) },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -106,12 +163,7 @@ const General = memo(
         formRef.current.setFieldsValue({
           ...details,
           ...head(details.positionLevel),
-          startDate:
-            head(details.positionLevel)?.startDate &&
-            moment(head(details.positionLevel)?.startDate),
           birth_date: details.birth_date && moment(details.birth_date),
-          dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
-          dateOff: details.dateOff && moment(details.dateOff),
         });
         if (Helper.isJSON(details?.file_image)) {
           mountedSet(setFiles, JSON.parse(details?.file_image));
@@ -143,7 +195,7 @@ const General = memo(
                   </Form.Item>
                 </Pane>
               </Pane>
-              <Pane className="row" {...marginProps}>
+              <Pane className="row border-bottom" {...marginProps}>
                 <Pane className="col-lg-4">
                   <FormItem
                     name="full_name"
@@ -157,7 +209,6 @@ const General = memo(
                     name="birth_date"
                     label="Ngày sinh"
                     type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
                     disabledDate={(current) => current > moment()}
                   />
                 </Pane>
@@ -169,7 +220,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Giới tính"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -177,7 +227,7 @@ const General = memo(
                     name="email"
                     label="Email"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
+                    rules={[variables.RULES.EMAIL]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -196,12 +246,11 @@ const General = memo(
                     rules={[variables.RULES.PHONE]}
                   />
                 </Pane>
-                <Pane className="col-lg-4">
+                <Pane className="col-lg-12">
                   <FormItem
                     name="address"
                     label="Địa chỉ"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -212,7 +261,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Thuộc tỉnh thành"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                     onChange={onChangeCity}
                   />
                 </Pane>
@@ -224,7 +272,17 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Thuộc quận huyện"
-                    rules={[variables.RULES.EMPTY_INPUT]}
+                    onChange={onChangeDistricts}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    data={townWards}
+                    name="town_ward_id"
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Phường/Xã"
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -256,17 +314,39 @@ const General = memo(
                 <Pane className="col-lg-4">
                   <FormItem
                     options={['id', 'name']}
-                    name="facility_id"
-                    data={city}
+                    name="branch_id"
+                    data={branches}
                     placeholder="Chọn"
                     type={variables.SELECT}
-                    label="Thuộc tỉnh thành"
+                    label="Cơ sở quan tâm"
                   />
+                </Pane>
+                <Pane className="col-lg-4">
+                  {params.id ? <FormItem
+                    options={['id', 'name']}
+                    name="search_source_id"
+                    data={search}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Nguồn tìm kiếm"
+                    disabled
+                  /> : <FormItem
+                    options={['id', 'name']}
+                    name="search_source_id"
+                    data={search}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Nguồn tìm kiếm"
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />}
                 </Pane>
               </Pane>
             </Pane>
 
-            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+            <Pane className="p20 d-flex justify-content-between align-items-center ">
+              <p className="btn-delete" role="presentation" onClick={() => history.push('/crm/sale/ph-lead')}>
+                Hủy
+              </p>
               <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
                 Lưu
               </Button>
@@ -288,18 +368,22 @@ General.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
+  search: PropTypes.arrayOf(PropTypes.any),
+  townWards: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],
   classes: [],
   city: [],
   district: [],
+  search: [],
+  townWards: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));

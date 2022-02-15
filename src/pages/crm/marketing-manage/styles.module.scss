@@ -1,4 +1,4 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 .wrapper-modal {
   :global(.ant-modal-footer) {
     display: flex;
@@ -8,50 +8,50 @@
   }
 }
 
-.wrapper-modal-cancel{
+.wrapper-modal-cancel {
   font-family: Proxima Nova;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
   font-weight: 600;
-  color: #36383A;
+  color: #36383a;
   cursor: pointer;
   text-decoration-line: underline;
 }
 
 .model-body {
-    border-top: 1px solid #EAEAEA;
-    padding: 15px;
+  border-top: 1px solid #eaeaea;
+  padding: 15px;
 }
 
 .wrapper-btn {
-    display: flex;
-    justify-content: flex-end;
-    border-top: 1px solid #EAEAEA;
-    padding: 15px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #eaeaea;
+  padding: 15px;
 }
 
 .wrapper-btn-call {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 100% !important;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100% !important;
 }
 
 .wrapper-model-calendar {
-    :global(.ant-modal-header) {
-      border-radius: 12px 12px 0px 0px;
-    }
-    :global(.ant-modal-content) {
-      border-radius: 12px;
-    }
-    :global(.ant-modal-footer) {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+  :global(.ant-modal-header) {
+    border-radius: 12px 12px 0px 0px;
+  }
+  :global(.ant-modal-content) {
+    border-radius: 12px;
+  }
+  :global(.ant-modal-footer) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .model-calendar-details {
@@ -61,68 +61,68 @@
   font-size: 14px;
   line-height: 20px;
   font-weight: 700;
-  color: #27A600;
+  color: #27a600;
   cursor: pointer;
 }
 
 .wrapper-title-add {
-    display: flex;
-    font-family: Proxima Nova;
-    height: 32px;
-    padding-left: 10px;
-    align-items: center;
-    font-style: italic;
-    font-weight: normal;
-    font-size: 12px;
-    line-height: 22px;
-    font-weight: 400;
-    color: #36383A;
+  display: flex;
+  font-family: Proxima Nova;
+  height: 32px;
+  padding-left: 10px;
+  align-items: center;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #36383a;
 }
 
 .wrapper-btn-add {
-    color: #225CC5 !important;
-    border: 1px solid #C4CDD4 !important;
-    border-radius: 3px !important;
+  color: #225cc5 !important;
+  border: 1px solid #c4cdd4 !important;
+  border-radius: 3px !important;
 }
 
-.wrapper-step{
-    :global(.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle){
-      background-color: #C4C4C4;
-      border-radius: 50%;
-      color: #C4C4C4;
-    }
-    :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
-      background-color: #3BB54A;
-      color:$white;
-      border-radius: 50%;
-    } 
-    :global(.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
-      background-color: #3BB54A;
-      color:$white;
-      border-radius: 50%;
-    }
-    :global(.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after ){
-      background-color: #3BB54A;
-    }
-}
-  
-.wrapper-btn-student{
-    padding: 20px 0px; 
+.wrapper-step {
+  :global(.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle) {
+    background-color: #c4c4c4;
+    border-radius: 50%;
+    color: #c4c4c4;
+  }
+  :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle) {
+    background-color: #3bb54a;
+    color: $white;
+    border-radius: 50%;
+  }
+  :global(.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle) {
+    background-color: #3bb54a;
+    color: $white;
+    border-radius: 50%;
+  }
+  :global(.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after) {
+    background-color: #3bb54a;
+  }
 }
 
-.wrapper-modal-selection{
-    :global(.ant-modal-footer) {
-      display: flex !important;
-      justify-content: center;
-    }
-    Button{
-      margin: 15px;
-    }
+.wrapper-btn-student {
+  padding: 20px 0px;
+}
+
+.wrapper-modal-selection {
+  :global(.ant-modal-footer) {
+    display: flex !important;
+    justify-content: center;
+  }
+  Button {
+    margin: 15px;
+  }
 }
 
 .button-fb {
   font-size: 10px !important;
-  background-color: #1171D9 !important;
+  background-color: #1171d9 !important;
 }
 
 .button-Website {
@@ -133,6 +133,58 @@
   font-size: 10px !important;
 }
 
-.wrapper-posts{
+.wrapper-posts {
   cursor: pointer;
+}
+
+.wrapper {
+  position: relative;
+
+  .wrapper-login {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba($background-dark, 0.2);
+    z-index: 999;
+  }
+  .button-login {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    background-color: $background-primary;
+    border: 1px solid $border-primary;
+    height: 52px;
+    padding: 0 20px;
+    border-radius: 8px;
+    color: $text-white;
+    z-index: 9999;
+    font-family: "ProximaNovaBold";
+    outline: none;
+  }
+}
+
+.genneral-title-link {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.genneral-btn-link {
+  right: 20px;
+  margin-top: 10px;
+  background-color: green !important;
+  border: none !important; 
+}
+
+.genneral-btn-link:focus {
+  right: 20px;
+  margin-top: 10px;
+  color: black !important;
+  background-color: #FF0000 !important;
+  border: none !important; 
 }

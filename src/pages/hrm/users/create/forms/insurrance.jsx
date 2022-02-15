@@ -63,6 +63,23 @@ const Index = memo(() => {
     }
   };
 
+  /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+   const onRemove = (id) => {
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'HRMusersAdd/REMOVE_INSURRANCES',
+          payload: {
+            id,
+          },
+        });
+      },
+    });
+  };
+
   const save = () => {
     formRefModal.current.validateFields().then((values) => {
       dispatch({
@@ -98,23 +115,6 @@ const Index = memo(() => {
   };
 
   /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  const onRemove = (id) => {
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'HRMusersAdd/REMOVE',
-          payload: {
-            id,
-          },
-        });
-      },
-    });
-  };
-
-  /**
    * Function header table
    */
   const header = () => {
@@ -126,6 +126,13 @@ const Index = memo(() => {
         className: 'min-width-80',
         align: 'center',
         render: (text, record, index) => index + 1,
+      },
+      {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Số sổ bảo hiểm',

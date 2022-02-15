@@ -158,6 +158,14 @@ export async function getLeftMenuProfile() {
       pro: true,
     },
     {
+      title: 'Profile học sinh',
+      key: 'Profile-children',
+      url: ['/ho-so-doi-tuong/profile-hoc-sinh'],
+      icon: 'icon icon-user',
+      permission: [permissions.HSDT],
+      pro: true,
+    },
+    {
       title: 'Hồ sơ đã lưu trữ',
       key: 'stores',
       icon: 'icon icon-fileText',
@@ -204,6 +212,112 @@ export async function getLeftMenuProfile() {
             '/ho-so-doi-tuong/cau-hinh/lop-hoc/tao-moi',
             '/ho-so-doi-tuong/cau-hinh/lop-hoc/:id/chi-tiet',
           ],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Báo cáo',
+      key: 'report',
+      icon: 'icon icon-list',
+      permission: [permissions.HSDT],
+      children: [
+        {
+          title: 'Danh sách học sinh dưới 6 tháng đến thời điểm',
+          key: 'six-month',
+          url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-duoi-sau-thang-den-thoi-diem'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh dưới 12 tháng đến thời điểm',
+          key: 'twelve-month',
+          url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-duoi-muoi-hai-thang-den-thoi-diem'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh đủ 24 tháng đến ngày đầu tháng',
+          key: '24month',
+          url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-du-hai-bon-thang'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh đủ 36 tháng đến ngày đầu tháng',
+          key: '36month',
+          url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-du-ba-sau-thang'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh học trên 2 năm tính đến thời điểm',
+          key: '2year',
+          url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-tren-hai-nam'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh học trên 3 năm tính đến thời điểm',
+          key: '3year',
+          url: ['/ho-so-doi-tuong/bao-cao/danh-sach-hoc-sinh-hoc-tren-ba-nam'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh học trên 4 năm tính đến thời điểm',
+          key: '4year',
+          url: ['/ho-so-doi-tuong/bao-caodanh-sach-hoc-sinh-hoc-tren-bon-nam'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh học hè theo cơ sở / theo lớp của cơ sở hoặc tổng',
+          key: 'list-student-study-at-summer',
+          url: ['/ho-so-doi-tuong/bao-cao/hoc-he-theo-co-so-theo-lop-hoac-tong'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách học sinh theo năm học theo cơ sở hoặc tổng',
+          key: 'list-student-study-at-year',
+          url: ['/ho-so-doi-tuong/bao-cao/theo-nam-hoc-theo-co-so-hoac-tong'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Báo cáo quản trị học sinh theo cơ sở',
+          key: 'student-by-branch',
+          url: ['/ho-so-doi-tuong/bao-cao/quan-tri-hoc-sinh-theo-co-so'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách báo cáo học sinh nhập môn',
+          key: 'introductory-students',
+          url: ['/ho-so-doi-tuong/bao-cao/bao-cao-ho-so-nhap-mon'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách báo cáo học sinh nhập học chính thức',
+          key: 'official-student',
+          url: ['/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-hoc-chinh-thuc'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Danh sách báo cáo học sinh rút hồ sơ',
+          key: 'students-withdraw-their-records',
+          url: ['/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-rut-ho-so'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
+          title: 'Báo cáo thống kê số lượng học sinh nhập học chính thức theo năm',
+          key: 'official-student-by-year',
+          url: ['/ho-so-doi-tuong/bao-cao/thong-ke-luong-hoc-sinh-nhap-hoc-chinh-thuc-theo-nam'],
           permission: [permissions.HSDT],
           pro: true,
         },
@@ -465,6 +579,14 @@ export async function getLeftMenuConfiguration() {
       permission: [permissions.CAUHINH],
       pro: true,
     },
+    {
+      title: 'Cấu hình quy trình lớp học',
+      key: 'class-configuration',
+      url: ['/cau-hinh/cau-hinh-quy-trinh-lop-hoc'],
+      icon: 'icon icon-man',
+      permission: [permissions.CAUHINH],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuVehicel() {
@@ -649,6 +771,21 @@ export async function getLeftMenuCriteria() {
         },
       ],
     },
+    {
+      title: 'Báo cáo',
+      key: 'program-report',
+      icon: 'icon icon-list',
+      permission: [permissions.CTH],
+      children: [
+        {
+          title: 'Báo cáo quản trị HS - Học thuật theo từng góc giáo cụ',
+          key: 'program-report-angle-tools',
+          url: ['/chuong-trinh-hoc/bao-cao-quan-tri-hs/hoc-thuat-theo-tung-goc-giao-cu'],
+          permission: [permissions.CTH],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuChildren() {
@@ -709,6 +846,44 @@ export async function getLeftMenuAllocation() {
       permission: [permissions.PB],
       pro: true,
     },
+    {
+      title: 'Giáo viên phụ trách ngoài giờ',
+      key: 'extended-class',
+      url: ['/phan-bo/giao-vien-phu-trach-ngoai-gio'],
+      icon: 'icon icon-clock',
+      permission: [permissions.PB],
+      pro: true,
+    },
+    {
+      title: 'Cấu hình đăng ký ngoài giờ',
+      key: 'register-overtime',
+      url: ['/phan-bo/cau-hinh-dang-ky-ngoai-gio'],
+      icon: 'icon icon-setting',
+      permission: [permissions.PB],
+      pro: true,
+    },
+    {
+      title: 'Báo cáo',
+      key: 'allocation-report-able-to-up-class',
+      icon: 'icon icon-list',
+      permission: [permissions.PB],
+      children: [
+        {
+          title: 'Danh sách học sinh đủ tuổi chuyển lên lớp vào cuối tháng',
+          key: 'allocationReportAbleToUpClass',
+          url: ['/phan-bo/bao-cao/danh-sach-hoc-sinh-du-tuoi-chuyen-len-lop-vao-cuoi-thang'],
+          permission: [permissions.PB],
+          pro: true,
+        },
+        {
+          title: 'Bảng phân công xếp lớp giáo viên',
+          key: 'class-assignment',
+          url: ['/phan-bo/bao-cao/bang-phan-cong-xep-lop-giao-vien'],
+          permission: [permissions.PB],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuMedical() {
@@ -763,20 +938,68 @@ export async function getLeftMenuMedical() {
         },
       ],
     },
+    {
+      title: 'Danh mục sự cố',
+      key: 'list-trouble',
+      url: [
+        '/y-te/danh-muc-su-co',
+        '/y-te/danh-muc-su-co/tao-moi',
+        '/y-te/danh-muc-su-co/:id/chi-tiet',
+      ],
+      icon: 'icon icon-list',
+      permission: [permissions.YTE],
+      pro: true,
+    },
+    {
+      title: 'Danh sách học sinh bị sự cố',
+      key: 'student-problem',
+      url: ['/y-te/danh-sach-hoc-sinh-bi-su-co'],
+      icon: 'icon icon-list',
+      permission: [permissions.YTE],
+      pro: true,
+    },
+    {
+      title: 'Báo cáo tình hình sự cố của học sinh',
+      key: 'incident-situation',
+      url: ['/y-te/bao-cao-tinh-hinh-su-co-cua-hoc-sinh'],
+      icon: 'icon icon-list',
+      permission: [permissions.YTE],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuTimeTable() {
   return [
     {
-      title: 'Thời khóa biểu',
-      key: 'timetable',
-      url: ['/thoi-khoa-bieu', '/thoi-khoa-bieu/tao-moi', '/thoi-khoa-bieu/:id/chi-tiet'],
+      title: 'Thời khóa biểu tự động',
+      key: 'timetableAuto',
+      url: ['/thoi-khoa-bieu/tu-dong'],
       icon: 'icon icon-calendar1',
       permission: [permissions.TKB],
       pro: true,
     },
     {
-      title: 'Thời khóa biểu làm việc / sự kiện',
+      title: 'Thời khóa biểu trẻ',
+      key: 'timetableChildren',
+      url: [
+        '/thoi-khoa-bieu/thoi-khoa-bieu-tre',
+        '/thoi-khoa-bieu/thoi-khoa-bieu-tre/tao-moi',
+        '/thoi-khoa-bieu/thoi-khoa-bieu-tre/:id/chi-tiet',
+      ],
+      icon: 'icon icon-calendar1',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
+      title: 'Thống kê tiệm cận',
+      key: 'asymptotic',
+      url: ['/thoi-khoa-bieu/thong-ke-tiem-can'],
+      icon: 'icon icon-clock',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
+      title: 'Lịch làm việc / sự kiện',
       key: 'schedule',
       url: [
         '/thoi-khoa-bieu/lam-viec',
@@ -789,10 +1012,50 @@ export async function getLeftMenuTimeTable() {
       pro: true,
     },
     {
+      title: 'Cấu hình thời gian',
+      key: 'timetableConfig',
+      url: [
+        '/thoi-khoa-bieu/cau-hinh-thoi-gian',
+        '/thoi-khoa-bieu/cau-hinh-thoi-gian/tao-moi',
+        '/thoi-khoa-bieu/cau-hinh-thoi-gian/:id/chi-tiet',
+      ],
+      icon: 'icon icon-setting',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
+      title: 'Danh mục',
+      key: 'timetableList',
+      icon: 'icon icon-list',
+      permission: [permissions.TKB],
+      pro: true,
+      children: [
+        {
+          title: 'Nhóm hoạt động',
+          key: 'groupActivities',
+          url: [
+            '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong',
+            '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/tao-moi',
+            '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/:id/chi-tiet',
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Lịch sử',
       key: 'timetableHistory',
       url: ['/thoi-khoa-bieu/lich-su'],
       icon: 'icon icon-clock',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
+      title: 'Thống kê báo cáo',
+      key: 'timetableReport',
+      url: ['/thoi-khoa-bieu/thong-ke-bao-cao-phu-huynh-tham-gia-su-kien'],
+      icon: 'icon icon-report',
       permission: [permissions.TKB],
       pro: true,
     },
@@ -986,24 +1249,54 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
         },
         {
-          title: 'Hợp đồng thử việc',
-          key: 'probationary-contracts',
+          title: 'Quản lý công văn',
+          key: 'documentary',
           url: [
-            '/quan-ly-nhan-su/hop-dong-thu-viec',
-            '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
-            '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
+            '/quan-ly-nhan-su/quan-ly-cong-van',
+            '/quan-ly-nhan-su/quan-ly-cong-van/tao-moi',
+            '/quan-ly-nhan-su/quan-ly-cong-van/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
         },
         {
-          title: 'Hợp đồng lao động',
-          key: 'labours-contracts',
-          url: [
-            '/quan-ly-nhan-su/hop-dong-lao-dong',
-            '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
-            '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
-          ],
+          title: 'Hợp đồng',
+          key: 'contracts',
           permission: [permissions.HRM],
+          pro: true,
+          children: [
+            {
+              title: 'HĐ thử việc',
+              key: 'probationary-contracts',
+              url: [
+                '/quan-ly-nhan-su/hop-dong-thu-viec',
+                '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
+                '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+              pro: true,
+            },
+            {
+              title: 'HĐ lao động',
+              key: 'labours-contracts',
+              url: [
+                '/quan-ly-nhan-su/hop-dong-lao-dong',
+                '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
+                '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+              pro: true,
+            },
+            {
+              title: 'HĐ thời vụ',
+              key: 'seasonal-contracts',
+              url: [
+                '/quan-ly-nhan-su/hop-dong-thoi-vu',
+                '/quan-ly-nhan-su/hop-dong-thoi-vu/tao-moi',
+                '/quan-ly-nhan-su/hop-dong-thoi-vu/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+            },
+          ],
         },
         {
           title: 'Bảo hiểm xã hội',
@@ -1026,7 +1319,7 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
         },
         {
-          title: 'Thống kê con của nhân viên',
+          title: 'Thông tin quan hệ gia đình nhân viên',
           key: 'children',
           url: [
             '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien',
@@ -1361,6 +1654,35 @@ export async function getLeftMenuHRM() {
         },
       ],
     },
+    {
+      title: 'Báo cáo',
+      key: 'report',
+      icon: 'icon icon-list',
+      permission: [permissions.HRM],
+      children: [
+        {
+          title: 'Báo cáo nhân viên đang nghỉ phép',
+          key: 'employee-on-leave',
+          url: ['/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Báo cáo thâm niên công tác',
+          key: 'working-seniority',
+          url: ['/quan-ly-nhan-su/bao-cao/tham-nien-cong-tac'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Báo cáo danh sách nhân viên thôi việc',
+          key: 'employee-leave',
+          url: ['/quan-ly-nhan-su/bao-cao/nhan-vien-thoi-viec'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuFeePolicy() {
@@ -1390,6 +1712,13 @@ export async function getLeftMenuFeePolicy() {
           key: 'tuition-payment-schedule',
           url: ['/chinh-sach-phi/bao-cao/lich-nop-tien-hoc'],
           permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Báo cáo tiền hoàn phí',
+          key: 'refund-report',
+          url: ['/chinh-sach-phi/bao-cao/bao-cao-tien-hoan-phi'],
+          permission: [permissions.CHINHSACHPHI],
           pro: true,
         },
       ],
@@ -1448,6 +1777,42 @@ export async function getLeftMenuFeePolicy() {
       ],
       icon: 'icon icon-calculate',
       permission: [permissions.CHINHSACHPHI],
+    },
+    {
+      title: 'Hoàn phí HS nghỉ học',
+      key: 'refunds-absent',
+      icon: 'icon icon-coin-dollar',
+      url: [
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc',
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc/tao-moi',
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc/:id/chi-tiet',
+      ],
+      permission: [permissions.CHINHSACHPHI],
+      pro: true,
+    },
+    {
+      title: 'Hoàn phí HS tạm nghỉ',
+      key: 'refunds-takeABreak',
+      icon: 'icon icon-coin-dollar',
+      url: [
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi',
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi/tao-moi',
+        '/chinh-sach-phi/hoan-phi-hoc-sinh-tam-nghi/:id/chi-tiet',
+      ],
+      permission: [permissions.CHINHSACHPHI],
+      pro: true,
+    },
+    {
+      title: 'Cấu hình hoàn phí',
+      key: 'feePolicy-configuration',
+      icon: 'icon icon-setting',
+      url: [
+        '/chinh-sach-phi/cau-hinh-hoan-phi',
+        '/chinh-sach-phi/cau-hinh-hoan-phi/tao-moi',
+        '/chinh-sach-phi/cau-hinh-hoan-phi/:id/chi-tiet',
+      ],
+      permission: [permissions.HRM],
+      pro: true,
     },
   ];
 }
@@ -1657,12 +2022,56 @@ export async function getLeftMenuCRM() {
           pro: true,
         },
         {
+          title: 'Xã Phường',
+          key: 'townWards',
+          url: [
+            '/crm/danh-muc/xa-phuong',
+            '/crm/danh-muc/xa-phuong/tao-moi',
+            '/crm/danh-muc/xa-phuong/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
           title: 'Cơ sở',
           key: 'basis',
           url: [
             '/crm/danh-muc/co-so',
             '/crm/danh-muc/co-so/tao-moi',
             '/crm/danh-muc/co-so/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Đăng ký nhập học',
+          key: 'admission',
+          url: [
+            '/crm/danh-muc/dang-ky-nhap-hoc',
+            '/crm/danh-muc/dang-ky-nhap-hoc/tao-moi',
+            '/crm/danh-muc/dang-ky-nhap-hoc/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Mối quan hệ',
+          key: 'relationship',
+          url: [
+            '/crm/danh-muc/moi-quan-he',
+            '/crm/danh-muc/moi-quan-he/tao-moi',
+            '/crm/danh-muc/moi-quan-he/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Loại sự kiện',
+          key: 'event',
+          url: [
+            '/crm/danh-muc/loai-su-kien',
+            '/crm/danh-muc/loai-su-kien/tao-moi',
+            '/crm/danh-muc/loai-su-kien/:id/chi-tiet',
           ],
           permission: [permissions.CRM],
           pro: true,
@@ -1702,6 +2111,17 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
+        {
+          title: 'Đăng ký nhập học',
+          key: 'sale-admission',
+          url: [
+            '/crm/sale/dang-ky-nhap-hoc',
+            '/crm/sale/dang-ky-nhap-hoc/tao-moi',
+            '/crm/sale/dang-ky-nhap-hoc/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
       ],
     },
     {
@@ -1717,13 +2137,42 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
-        {
-          title: 'Zalo',
-          key: 'zalo',
-          url: ['/crm/chat/zalo'],
-          permission: [permissions.CRM],
-          pro: true,
-        },
+        // {
+        //   title: 'Zalo',
+        //   key: 'zalo',
+        //   url: ['/crm/chat/zalo'],
+        //   permission: [permissions.CRM],
+        //   pro: true,
+        // },
+        // {
+        //   title: 'Quản lý kịch bản chatbot',
+        //   key: 'chatbot',
+        //   children: [
+        //     {
+        //       title: 'Kịch bản chào mừng',
+        //       key: 'welcome-script',
+        //       url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-chao-mung'],
+        //       permission: [permissions.CRM],
+        //       pro: true,
+        //     },
+        //     {
+        //       title: 'Thiết lập từ khóa',
+        //       key: 'keyword-script',
+        //       url: ['/crm/chat/quan-ly-kich-ban-chatbot/thiet-lap-tu-khoa'],
+        //       permission: [permissions.CRM],
+        //       pro: true,
+        //     },
+        //     {
+        //       title: 'Kịch bản mặc định',
+        //       key: 'default-scenario',
+        //       url: ['/crm/chat/quan-ly-kich-ban-chatbot/kich-ban-mac-dinh'],
+        //       permission: [permissions.CRM],
+        //       pro: true,
+        //     },
+        //   ],
+        //   permission: [permissions.CRM],
+        //   pro: true,
+        // },
       ],
     },
     {
@@ -1757,6 +2206,270 @@ export async function getLeftMenuCRM() {
           pro: true,
         },
       ],
+    },
+    {
+      title: 'Đánh giá',
+      key: 'evaluate',
+      icon: 'icon icon-clipboard',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Đánh giá từ PH',
+          key: 'evaluate-parents',
+          url: [
+            '/crm/danh-gia/danh-gia-tu-phu-huynh',
+            '/crm/danh-gia/danh-gia-tu-phu-huynh/tao-moi',
+            '/crm/danh-gia/danh-gia-tu-phu-huynh/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Đánh giá đầu vào',
+          key: 'nput-rating',
+          url: ['/crm/danh-gia/danh-gia-dau-vao', '/crm/danh-gia/danh-gia-dau-vao/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Đánh giá định kỳ',
+          key: '',
+          url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Chính sách phí',
+      key: 'fee-policy-crm',
+      icon: 'icon icon-list',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Loại lớp',
+          key: 'fee-policy-class',
+          url: [
+          '/crm/chinh-sach-phi/loai-lop',
+          '/crm/chinh-sach-phi/loai-lop/:id/chi-tiet'
+        ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Hình thức đóng phí',
+          key: 'fee-policy',
+          url: ['/crm/chinh-sachh-phi/hinh-thuc-dong-phi','/crm/chinh-sachh-phi/hinh-thuc-dong-phi/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Năm học',
+          key: 'fee-policy-year',
+          url: ['/crm/chinh-sach-phi/nam-hoc','/crm/chinh-sach-phi/nam-hoc/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Phí',
+          key: 'fee',
+          url: ['/crm/chinh-sach-phi/phi','/crm/chinh-sach-phi/phi/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Tiền đóng',
+          key: 'money',
+          url: ['/crm/chinh-sach-phi/tien-dong','/crm/chinh-sach-phi/tien-dong/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Tính phí học sinh mới',
+          key: 'fee-policy-new',
+          url: [
+            '/crm/chinh-sach-phi/tinh-phi-hoc-sinh-moi',
+            '/crm/chinh-sach-phi/tinh-phi-hoc-sinh-moi/tao-moi',
+            '/crm/chinh-sach-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Cấu hình',
+      key: 'configurationCrm',
+      icon: 'icon icon-wrench',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Cảnh báo',
+          key: 'alert',
+          url: ['/crm/cau-hinh/canh-bao'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Khai báo y tế',
+          key: 'health-declaration',
+          url: ['/crm/cau-hinh/khai-bao-y-te'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Thông tin hồ sơ',
+          key: 'configuration-file',
+          url: ['/crm/cau-hinh/danh-sach-ho-so'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Kiểm tra đầu vào',
+          key: '',
+          url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+  ];
+}
+
+export async function getLeftMenuChildDevelop() {
+  return [
+    {
+      title: 'Theo dõi sự phát triển của trẻ',
+      key: 'monitor-childrens',
+      icon: 'icon icon-home',
+      permission: [],
+      url: ['/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre'],
+    },
+    {
+      title: 'Danh mục',
+      key: 'childsDevelop',
+      icon: 'icon icon-list',
+      permission: [],
+      children: [
+        {
+          title: 'Kỹ năng',
+          key: 'child-develop',
+          url: [
+            '/su-phat-trien-cua-tre/danh-muc/ky-nang',
+            '/su-phat-trien-cua-tre/danh-muc/ky-nang/tao-moi',
+            '/su-phat-trien-cua-tre/danh-muc/ky-nang/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Câu hỏi đánh giá của trẻ',
+          key: 'review-question',
+          url: ['/su-phat-trien-cua-tre/danh-muc/cau-hoi-danh-gia-cua-tre'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Vấn đề khó khăn của trẻ',
+          key: 'childrens-problems',
+          url: [
+            '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre',
+            '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/tao-moi',
+            '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Kì đánh giá',
+          key: 'assessment-period',
+          url: [
+            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia',
+            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/tao-moi',
+            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Cấu hình kịch bản đánh giá',
+      key: '/childrens-problems',
+      icon: 'icon icon-setting',
+      permission: [],
+      url: [
+        '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia',
+        '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/tao-moi',
+        '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/:id/chi-tiet',
+      ],
+    },
+  ];
+}
+
+export async function getLeftMenuCurrency() {
+  return [
+    {
+      title: 'Khai báo danh mục',
+      key: 'Currency',
+      icon: 'icon icon-list',
+      permission: [permissions.BIEUPHI],
+      children: [
+        {
+          title: 'Tính phí học sinh cũ',
+          key: 'old-student',
+          url: ['/bieu-phi/tinh-phi-hoc-sinh-cu', '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet'],
+          permission: [permissions.BIEUPHI],
+          pro: true,
+        },
+        {
+          title: 'Tính phí học sinh mới',
+          key: 'new-student',
+          url: ['/bieu-phi/tinh-phi-hoc-sinh-moi', '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet'],
+          permission: [permissions.BIEUPHI],
+          pro: true,
+        },
+        {
+          title: 'Kế hoạch đóng phí',
+          key: 'payment-plan',
+          url: [
+            '/bieu-phi/ke-hoach-dong-phi',
+            '/bieu-phi/ke-hoach-dong-phi/tao-moi',
+            '/bieu-phi/ke-hoach-dong-phi/:id/chi-tiet',
+          ],
+          permission: [permissions.BIEUPHI],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Báo cáo',
+      key: 'Report',
+      icon: 'icon icon-list',
+      permission: [permissions.BIEUPHI],
+      children: [
+        {
+          title: 'TH công nợ theo đối tượng',
+          key: 'debt',
+          url: ['/bieu-phi/bao-cao/cong-no-theo-doi-tuong'],
+          permission: [permissions.BIEUPHI],
+          pro: true,
+        },
+        {
+          title: 'TH thu - chi theo đối tượng',
+          key: 'revenue-expenditure',
+          url: ['/bieu-phi/bao-cao/thu-chi-theo-doi-tuong'],
+          permission: [permissions.BIEUPHI],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Cấu hình nội dung',
+      key: 'configuration',
+      icon: 'icon icon-list',
+      permission: [permissions.BIEUPHI],
+      url: ['/bieu-phi/cau-hinh-noi-dung'],
     },
   ];
 }

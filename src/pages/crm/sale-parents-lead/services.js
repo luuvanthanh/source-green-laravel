@@ -1,5 +1,5 @@
 import request from '@/utils/requestCrm';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
   return request('/v1/customer-leads', {
@@ -15,11 +15,11 @@ export function get(data = {}) {
         'city',
         'district',
         'search',
-        'reference.statusParentLead',
+        'statusCare.statusParentLead',
         'studentInfo',
         'employee',
-        'statusParentLead',
-        'customerTag.tag'
+        'customerTag.tag',
+        'searchSource',
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
     },
@@ -50,5 +50,61 @@ export function add(data = {}) {
     method: 'POST',
     data,
     parse: true,
+  });
+}
+
+export function getTags() {
+  return request(`/v1/tags`, {
+    method: 'GET',
+    params: {
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getStatusLead() {
+  return request(`/v1/status-parent-leads`, {
+    method: 'GET',
+    params: {
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getEmployees() {
+  return request(`/v1/employees`, {
+    method: 'GET',
+    params: {
+      orderBy: 'full_name',
+    },
+  });
+}
+
+export function getSearch(params) {
+  return request(`/v1/search-sources`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getBranch() {
+  return request(`/v1/branches`, {
+    method: 'GET',
+    params: {
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getTypes(params = {}) {
+  return request('/v1/tags', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
   });
 }

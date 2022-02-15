@@ -2,19 +2,20 @@ import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Upload, Modal } from 'antd';
 import { CloudUploadOutlined, EyeOutlined } from '@ant-design/icons';
 import { useDispatch } from 'dva';
+import PropTypes from "prop-types";
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 
 import { imageUploadProps } from '@/utils/upload';
-import styles from './styles.module.scss';
 import { isEmpty, get } from 'lodash';
+import styles from './styles.module.scss';
 
 const { beforeUpload, ...otherProps } = imageUploadProps;
 
 const ImageUpload = memo(({ callback, fileImage }) => {
-  const _mounted = useRef(false);
-  const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
+  const mounted = useRef(false);
+  const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
 
   const dispatch = useDispatch();
   const [image, setImage] = useState();
@@ -26,11 +27,11 @@ const ImageUpload = memo(({ callback, fileImage }) => {
       payload: file,
       callback: (res) => {
         if (!isEmpty(res.results)) {
-          _mountedSet(setImage, {
+          mountedSet(setImage, {
             path: get(res, 'results[0].fileInfo.url'),
             name: get(res, 'results[0].fileInfo.name'),
           });
-          callback && callback(get(res, 'results[0]'));
+          callback(get(res, 'results[0]'));
         }
       },
     });
@@ -39,22 +40,23 @@ const ImageUpload = memo(({ callback, fileImage }) => {
   const uploadProps = useMemo(
     () => ({
       ...otherProps,
-      beforeUpload: (file) => beforeUpload(file),
       customRequest({ file }) {
-        uploadAction(file);
+        if(beforeUpload(file)) uploadAction(file);
       },
     }),
     [uploadAction],
   );
 
   useEffect(() => {
-    _mounted.current = true;
-    return () => (_mounted.current = false);
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
   }, []);
 
   useEffect(() => {
     if (fileImage) {
-      _mountedSet(setImage, { path: fileImage });
+      mountedSet(setImage, { path: fileImage });
     }
   }, [fileImage]);
 
@@ -68,12 +70,12 @@ const ImageUpload = memo(({ callback, fileImage }) => {
         footer={null}
         onCancel={() => setShowFullPreview(false)}
       >
-        <img className={styles.fullImage} src={imageUrl} alt="upload-image" />
+        <img className={styles.fullImage} src={imageUrl} alt="upload-img" />
       </Modal>
       <Pane>
         {image?.path ? (
           <Pane className={styles.imageWrapper}>
-            <img className={styles.thumb} src={imageUrl} alt="upload-image-thumb" />
+            <img className={styles.thumb} src={imageUrl} alt="upload-img-thumb" />
 
             <Pane className={styles.actions}>
               <EyeOutlined className={styles.preview} onClick={() => setShowFullPreview(true)} />
@@ -95,3 +97,13 @@ const ImageUpload = memo(({ callback, fileImage }) => {
 });
 
 export default ImageUpload;
+
+ImageUpload.propTypes = {
+  callback: PropTypes.func,
+  fileImage: PropTypes.any,
+};
+
+ImageUpload.defaultProps = {
+  callback: () => {},
+  fileImage: "",
+};

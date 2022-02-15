@@ -12,6 +12,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
+import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -33,8 +34,12 @@ const mapStateToProps = ({ crmSaleParentsPotential, loading }) => ({
   error: crmSaleParentsPotential.error,
   pagination: crmSaleParentsPotential.pagination,
   branches: crmSaleParentsPotential.branches,
-  city: crmSaleParentsPotential.city,
   district: crmSaleParentsPotential.district,
+  tags: crmSaleParentsPotential.tags,
+  lead: crmSaleParentsPotential.lead,
+  employees: crmSaleParentsPotential.employees,
+  searchSource: crmSaleParentsPotential.searchSource,
+  branch: crmSaleParentsPotential.branch,
   loading,
 });
 @connect(mapStateToProps)
@@ -191,6 +196,26 @@ class Index extends PureComponent {
       type: 'crmSaleParentsPotential/GET_DISTRICTS',
       payload: {},
     });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_TAGS',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_STATUS_LEAD',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_EMPLOYEES',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_SEARCH',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_BRANCH',
+      payload: {},
+    });
   };
 
   /**
@@ -205,7 +230,6 @@ class Index extends PureComponent {
         title: 'STT ',
         key: 'index',
         width: 80,
-        fixed: 'left',
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
@@ -245,40 +269,63 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{get(record, 'district.name')}</Text>,
       },
       {
-        title: 'Cơ sở quan tâm',
-        key: 'facility',
-        width: 200,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
-      },
-      {
         title: 'Tháng tuổi',
         key: 'age',
         width: 100,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (value, record) => (
+          <div className='d-flex' >
+            {record.potentialStudentInfo.map((item, index) =>
+              <div size="normal" key={index} className='d-flex'>
+                {item.age_month}{index + 1 === record.potentialStudentInfo.length ? "" : ",  "}
+              </div>
+            )}
+          </div>
+        ),
       },
       {
-        title: 'Tình trạng Lead',
+        title: 'Tình trạng Tiềm năng',
         key: 'status',
-        width: 150,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        width: 170,
+        render: (record) => (
+          <>
+            {' '}
+            {record?.customerPotentialStatusCare
+              ?.map((item, index) => (
+                <Text size="normal" key={index} >
+                  {get(item, 'statusParentPotential.name')}
+                </Text>
+              ))
+              .pop()}{' '}
+          </>
+        ),
       },
       {
         title: 'Tag',
         key: 'tags',
         width: 250,
-        render: (record) => <Tag color="#27a600">{get(record, 'name')}</Tag>,
+        render: (record) => (
+          <>
+            {record?.customerPotentialTag?.map((item, index) => (
+              <div className={stylesModule['wrapper-tag']}>
+              <Tag size="normal" color="#27a600" key={index}  style={{ backgroundColor: `${item?.tag?.color_code}` }}>
+                {get(item, 'tag.name')}
+              </Tag>
+              </div>
+            ))}
+          </>
+        ),
       },
       {
         title: 'Nhân viên chăm sóc',
         key: 'staff',
         width: 250,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'employee.full_name')}</Text>,
       },
       {
         title: 'Nguồn tìm kiếm',
         key: 'search',
         width: 150,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'searchSource.name')}</Text>,
       },
       {
         key: 'action',
@@ -301,14 +348,17 @@ class Index extends PureComponent {
 
   render() {
     const {
-      city,
       district,
+      tags,
+      lead,
+      employees,
+      searchSource,
       match: { params },
       pagination,
+      branch,
       loading: { effects },
     } = this.props;
     const { search, dataSource } = this.state;
-
     const loading = effects['crmSaleParentsPotential/GET_DATA'];
     return (
       <>
@@ -326,80 +376,79 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={city}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'city_id')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn Tỉnh thành"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={district}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'district_id')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn Quận huyện"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="c"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn cơ sở"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="d"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn nguồn"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="e"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn tình trạng lead"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="f"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn nhân viên"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="f"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn tags"
-                  />
-                </div>
-              </div>
+              <div className="col-lg-6">
+                      <FormItem
+                        name="key"
+                        onChange={(event) => this.onChange(event, 'key')}
+                        placeholder="Nhập từ khóa"
+                        type={variables.INPUT_SEARCH}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={[{ name: 'Chọn tất cả Quận huyện' }, ...district,]}
+                        name="district"
+                        onChange={(event) => this.onChangeSelect(event, 'district_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn Quận huyện"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={[{ name: 'Chọn tất cả Cơ sở' }, ...branch,]}
+                        name="branch"
+                        onChange={(event) => this.onChangeSelect(event, 'branch_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn cơ sở"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={[{ name: 'Chọn tất cả Nguồn' }, ...searchSource,]}
+                        name="search"
+                        onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn nguồn"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={[{ name: 'Chọn tất cả Tình trạng lead' }, ...lead,]}
+                        name="lead"
+                        onChange={(event) => this.onChangeSelect(event, 'lead_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn tình trạng lead"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="full_name"
+                        data={[
+                          { id: 'null', full_name: 'Chưa có nhân viên chăm sóc' },
+                          ...employees,
+                        ]}
+                        onChange={(event) => this.onChangeSelect(event, 'employee_id')}
+                        type={variables.SELECT}
+                        options={['id', 'full_name']}
+                        allowClear={false}
+                        placeholder="Chọn nhân viên chăm sóc"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={[{ name: 'Chọn tất cả tags' }, ...tags,]}
+                        name="tags"
+                        type={variables.SELECT}
+                        onChange={(event) => this.onChangeSelect(event, 'tag_id')}
+                        allowClear={false}
+                        placeholder="Chọn tags"
+                      />
+                    </div>
+                  </div>
             </Form>
             <Table
               bordered={false}
@@ -427,8 +476,12 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  city: PropTypes.arrayOf(PropTypes.any),
+  branch: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
+  tags: PropTypes.arrayOf(PropTypes.any),
+  lead: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
+  searchSource: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -437,8 +490,12 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  city: [],
+  branch: [],
   district: [],
+  tags: [],
+  lead: [],
+  employees: [],
+  searchSource: [],
 };
 
 export default Index;

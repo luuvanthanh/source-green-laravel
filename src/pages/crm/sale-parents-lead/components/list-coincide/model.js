@@ -1,38 +1,12 @@
+import * as services from './services';
+
 export default {
   namespace: 'crmSaleCheckList',
   state: {
-    data: [
-      {
-        id: 1,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        email: 'a@gmail.com',
-        address: '52 Hoàng Diệu',
-        nameChildren: 'Nguyễn Anh Nhân',
-        birth: '12/12/2021',
-      },
-      {
-        id: 2,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        email: 'a@gmail.com',
-        nameChildren: 'Nguyễn Anh Nhân',
-        birth: '12/12/2021',
-      },
-    ],
-    branches: [
-      {
-        id: 1,
-        name: 'Nguyễn Văn Nam',
-      },
-      {
-        id: 2,
-        name: 'Nguyễn Văn',
-      },
-    ],
+    data: [],
+    dataCoincide: [],
+    city: [],
+    district: [],
     pagination: {
       total: 0,
     },
@@ -42,15 +16,14 @@ export default {
     },
   },
   reducers: {
-    INIT_STATE: (state) => ({
-      ...state,
-      isError: false,
-      data: [],
-    }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [], dataCoincide: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
-      pagination: payload.pagination,
+    }),
+    SET_DATA_COINCIDE: (state, { payload }) => ({
+      ...state,
+      dataCoincide: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -61,7 +34,85 @@ export default {
         },
       },
     }),
+    SET_CITIES: (state, { payload }) => ({
+      ...state,
+      city: payload.parsePayload,
+    }),
+    SET_DISTRICTS: (state, { payload }) => ({
+      ...state,
+      district: payload.parsePayload,
+    }),
   },
-  effects: {},
+  effects: {
+    *GET_DATA({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        callback(response);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA_COINCIDE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getCoincide, payload);
+        callback(response.parsePayload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_DISTRICTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDistricts, payload);
+        yield saga.put({
+          type: 'SET_DISTRICTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CITIES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCities, payload);
+        yield saga.put({
+          type: 'SET_CITIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.add, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_COINCIDE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addCoincide, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+  },
   subscriptions: {},
 };

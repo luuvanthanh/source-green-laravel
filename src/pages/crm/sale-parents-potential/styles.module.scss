@@ -1,4 +1,4 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 .wrapper-modal {
   :global(.ant-modal-footer) {
     display: flex;
@@ -6,10 +6,13 @@
     width: 100%;
     justify-content: space-between;
   }
+  :global(.ant-modal-body) {
+    padding: 0px 10px !important;
+  }
 }
 
-.button-cancel{
-  font-family:$base__font-family;
+.button-cancel {
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
@@ -20,42 +23,42 @@
 }
 
 .model-body {
-    border-top: 1px solid $border-line;
-    padding: 15px;
+  border-top: 1px solid $border-line;
+  padding: 15px;
 }
 
 .wrapper-btn {
-    display: flex;
-    justify-content: flex-end;
-    border-top: 1px solid $border-line;
-    padding: 15px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid $border-line;
+  padding: 15px;
 }
 
 .wrapper-btn-call {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 100% !important;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100% !important;
 }
 
 .wrapper-model-calendar {
-    :global(.ant-modal-header) {
-      border-radius: 12px 12px 0px 0px;
-    }
-    :global(.ant-modal-content) {
-      border-radius: 12px;
-    }
-    :global(.ant-modal-footer) {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+  :global(.ant-modal-header) {
+    border-radius: 12px 12px 0px 0px;
+  }
+  :global(.ant-modal-content) {
+    border-radius: 12px;
+  }
+  :global(.ant-modal-footer) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .model-calendar-details {
-  font-family:$base__font-family;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
@@ -66,56 +69,146 @@
 }
 
 .wrapper-title-add {
-    display: flex;
-    font-family:$base__font-family;
-    height: 32px;
-    padding-left: 10px;
-    align-items: center;
-    font-style: italic;
-    font-weight: normal;
-    font-size: 12px;
-    line-height: 22px;
-    font-weight: 400;
-    color: $text-form-label;
+  display: flex;
+  font-family: $base__font-family;
+  height: 32px;
+  padding-left: 10px;
+  align-items: center;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 22px;
+  font-weight: 400;
+  color: $text-form-label;
 }
 
 .wrapper-btn-add {
-    color: #225CC5 !important;
-    border: 1px solid #C4CDD4 !important;
-    border-radius: 3px !important;
+  color: #225cc5 !important;
+  border: 1px solid #c4cdd4 !important;
+  border-radius: 3px !important;
 }
 
-.wrapper-step{
-    :global(.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle){
-      background-color: #C4C4C4;
-      border-radius: 50%;
-      color: #C4C4C4;
-    }
-    :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
-      background-color: #3BB54A;
-      color:$white;
-      border-radius: 50%;
-    } 
-    :global(.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
-      background-color: #3BB54A;
-      color:$white;
-      border-radius: 50%;
-    }
-    :global(.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after ){
-      background-color: #3BB54A;
-    }
-}
-  
-.wrapper-btn-student{
-    padding: 20px 0px; 
+.wrapper-step {
+  :global(.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle) {
+    background-color: #c4c4c4;
+    border-radius: 50%;
+    color: #c4c4c4;
+  }
+  :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle) {
+    background-color: #3bb54a;
+    color: $white;
+    border-radius: 50%;
+  }
+  :global(.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle) {
+    background-color: #3bb54a;
+    color: $white;
+    border-radius: 50%;
+  }
+  :global(.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after) {
+    background-color: #3bb54a;
+  }
 }
 
-.wrapper-modal-selection{
-    :global(.ant-modal-footer) {
-      display: flex !important;
-      justify-content: center;
-    }
-    Button{
-      margin: 15px;
-    }
+.wrapper-btn-student {
+  padding: 20px 0px;
+}
+
+.wrapper-modal-selection {
+  :global(.ant-modal-footer) {
+    display: flex !important;
+    justify-content: center;
+  }
+  Button {
+    margin: 15px;
+  }
+}
+
+.wrapper-admission {
+  width: 100%;
+  height: auto;
+  padding: 20px;
+  .title {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 700;
+    color: #35373a;
+    margin-bottom: 5px;
+  }
+  .description {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: 22px;
+    font-weight: 400;
+    color: #3e4247;
+  }
+}
+
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3b5cad !important;
+    font-weight: 700;
+    color: white !important;
+  }
+}
+
+.wrapper-form {
+  .form-title {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #35373a;
+    padding: 0px !important;
+    padding-top: 10px !important;
+  }
+  .form-description {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 22px;
+    color: #000000;
+    margin-bottom: 10px;
+  }
+}
+
+.button-modal {
+  width: 100%;
+  text-align: center;
+}
+
+.button-delete {
+  font-family: $base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-form-label;
+  cursor: pointer;
+  color: #35373a;
+  text-decoration-line: underline;
+}
+
+.form-tes-title {
+  padding-top: 10px !important;
+  font-family: $base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #35373a;
+}
+
+.wrapper-tag {
+  :global(.ant-tag ){
+    margin: 5px !important;
+  }
 }

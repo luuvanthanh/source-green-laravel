@@ -82,7 +82,17 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo', 'city', 'district']),
+      include: Helper.convertIncludes([
+        'studentInfo',
+        'city',
+        'district',
+        'searchSource',
+        'statusCare.statusParentLead',
+        'employee',
+        'marketingProgram',
+        'customerTag.tag',
+        'ssoAccount',
+      ]),
     },
   });
 }
@@ -133,16 +143,17 @@ export function getCities() {
   return request(`/v1/citys`, {
     method: 'GET',
     params: {
-      orderBy: 'name',
+      orderBy: 'numerical_city',
     },
   });
 }
 
 export function getDistricts(params) {
-  return request(`/v1/districts`, {
+  return request(`/v1/districts?${params.city_id}`, {
     method: 'GET',
     params: {
-      ...params,
+      // ...params,
+      city_id : params.city_id,
       orderBy: 'name',
     },
   });
@@ -161,9 +172,13 @@ export function getStatusLead(params = {}) {
   });
 }
 
-export function getTags() {
+export function getTags(params) {
   return request(`/v1/tags`, {
     method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
   });
 }
 
@@ -254,7 +269,7 @@ export function removeEvents(id = {}) {
 }
 
 export function getEvents(params = {}) {
-  return request(`/v1/event-infos/${params.detailId}`, {
+  return request(`/v1/event-infos/${params}`, {
     method: 'GET',
   });
 }
@@ -323,5 +338,85 @@ export function getData(params = {}) {
         isUTC: false,
       }),
     },
+  });
+}
+
+export function getSearch(params) {
+  return request(`/v1/search-sources`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getBranches(params) {
+  return request(`/v1/branches`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getParentPotential() {
+  return request(`/v1/status-parent-potentials`, {
+    method: 'GET',
+  });
+}
+
+export function addPotential(data = {}) {
+  return request(`/v1/move-customer-potentials`, {
+    method: 'POST',
+    data,
+    parse: true,
+  });
+}
+
+export function getProgramInterest(params) {
+  return request(`/v1/marketing-programs`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getTownWards(params) {
+  return request(`/v1/town-wards?${params.district_id}`, {
+    method: 'GET',
+    params: {
+      district_id: params.district_id,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function addInterest(data = {}) {
+  return request('/v1/customer-lead-marketing-programs', {
+    method: 'POST',
+    data,
+  });
+}
+
+export function getRelationships() {
+  return request(`/v1/category-relationships`, {
+    method: 'GET',
+  });
+}
+
+export function getCategoryEvents() {
+  return request(`/v1/category-events`, {
+    method: 'GET',
+  });
+}
+
+export function addAccount(data = {}) {
+  return request('/v1/customer-lead-accounts', {
+    method: 'POST',
+    data,
   });
 }

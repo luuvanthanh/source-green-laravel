@@ -167,6 +167,8 @@ const General = memo(
       mountedSet(setFiles, (prev) => [...prev, file]);
     };
 
+    const disabledDate = (current) => current && current > moment().endOf('day').subtract(1, 'days');
+
     return (
       <Form layout="vertical" ref={formRef} onFinish={onFinish}>
         <Pane className="card">
@@ -219,6 +221,7 @@ const General = memo(
                     label="Ngày sinh"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={disabledDate}
                     onChange={onChaneDate}
                   />
                 </Pane>

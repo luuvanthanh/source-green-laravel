@@ -6,6 +6,11 @@ export default {
     data: [],
     city: [],
     district: [],
+    tags: [],
+    branch: [],
+    lead: [],
+    searchSource: [],
+    employees: [],
     pagination: {
       total: 0,
     },
@@ -37,6 +42,26 @@ export default {
     SET_DISTRICTS: (state, { payload }) => ({
       ...state,
       district: payload.parsePayload,
+    }),
+    SET_TAGS: (state, { payload }) => ({
+      ...state,
+      tags: payload.parsePayload,
+    }),
+    SET_STATUS_LEAD: (state, { payload }) => ({
+      ...state,
+      lead: payload.parsePayload,
+    }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
+    SET_SEARCH: (state, { payload }) => ({
+      ...state,
+      searchSource: payload.parsePayload,
+    }),
+    SET_BRANCH: (state, { payload }) => ({
+      ...state,
+      branch: payload.parsePayload,
     }),
   },
   effects: {
@@ -76,6 +101,84 @@ export default {
         const response = yield saga.call(services.getCities, payload);
         yield saga.put({
           type: 'SET_CITIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.add, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_TAGS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTags, payload);
+        yield saga.put({
+          type: 'SET_TAGS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STATUS_LEAD({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getStatusLead, payload);
+        yield saga.put({
+          type: 'SET_STATUS_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_SEARCH({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSearch, payload);
+        yield saga.put({
+          type: 'SET_SEARCH',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCH({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBranch, payload);
+        yield saga.put({
+          type: 'SET_BRANCH',
           payload: response,
         });
       } catch (error) {

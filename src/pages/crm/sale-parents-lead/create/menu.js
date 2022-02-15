@@ -18,7 +18,7 @@ export const menu = [{
   },
   {
     key: 'leadStatus',
-    label: 'Tình trạng chăm sóc',
+    label: 'Tình trạng chăm sóc lead',
   },
   {
     key: 'account',
@@ -49,7 +49,7 @@ export const menu = [{
     label: 'Lịch',
   },
   {
-    key: 'potential',
-    label: 'Tình trạng tiềm năng',
+    key: 'interest',
+    label: 'Chương trình quan tâm',
   },
 ];

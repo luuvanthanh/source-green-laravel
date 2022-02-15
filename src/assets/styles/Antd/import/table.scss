@@ -83,6 +83,7 @@
   .ant-table-content {
     table {
       width: 100% !important;
+      table-layout: unset !important;
     }
   }
   .ant-table-row-expand-icon {
@@ -301,5 +302,11 @@
     .parent {
       font-family: "ProximaNovaSemibold";
     }
+  }
+}
+
+.table-report {
+  .ant-table-row-level-0 {
+    background-color: #E6ECF8;;
   }
 }

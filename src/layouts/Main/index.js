@@ -114,20 +114,21 @@ const OBJECTS = {
     title: 'CRM',
     menu: 'menuLeftCRM',
   },
+  CHILD_DEVELOP: {
+    icon: '/images/home/spreadsheet.svg',
+    title: 'Sự phát triển của trẻ',
+    menu: 'menuLeftChildDevelop',
+  },
+  CURRENCY: {
+    icon: '/images/home/spreadsheet.svg',
+    title: 'Biểu phí',
+    menu: 'menuLeftCurrency',
+  },
 };
 
 @withRouter
 @connect(mapStateToProps)
 class MainLayout extends React.PureComponent {
-  constructor(props, context) {
-    super(props, context);
-    const {
-      location: { pathname },
-    } = props;
-    this.state = {
-      key: this.getKeyMenu(pathname),
-    };
-  }
 
   getKeyMenu = (pathname) => {
     let key = '';
@@ -188,6 +189,12 @@ class MainLayout extends React.PureComponent {
     if (/^\/crm(?=\/|$)/i.test(pathname)) {
       key = 'CRM';
     }
+    if (/^\/su-phat-trien-cua-tre(?=\/|$)/i.test(pathname)) {
+      key = 'CHILD_DEVELOP';
+    }
+    if (/^\/bieu-phi(?=\/|$)/i.test(pathname)) {
+      key = 'CURRENCY';
+    }
     return key;
   };
 
@@ -200,8 +207,9 @@ class MainLayout extends React.PureComponent {
       isMenuShadow,
       isMenuTop,
       menu,
+      location
     } = this.props;
-    const { key } = this.state;
+    const key = this.getKeyMenu(location.pathname);
     return (
       <Layout
         className={classnames({

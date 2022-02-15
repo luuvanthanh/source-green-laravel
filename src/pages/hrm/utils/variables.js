@@ -73,6 +73,7 @@ export const variables = {
   TYPE_CONSTRACT: {
     THU_VIEC: 'Thử việc',
     HOP_DONG: 'Hợp đồng',
+    THOI_VU: 'Thời vụ',
   },
   TYPE_ABSENTS_NAME: {
     ABSENT: 'Nghỉ phép  ',

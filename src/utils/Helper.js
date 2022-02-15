@@ -11,7 +11,7 @@ import {
   last,
   toNumber,
 } from 'lodash';
-import { notification, Modal } from 'antd';
+import { notification, Modal, Badge } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import Cookies from 'universal-cookie';
@@ -44,7 +44,24 @@ export default class Helpers {
     return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
+  static generateTimeline(slotInterval = 30, openTime, closeTime) {
+    const startTime = moment(openTime, 'H:mm');
+    const endTime = moment(closeTime, 'H:mm');
+    const allTimes = [];
+    while (startTime < endTime) {
+      allTimes.push({
+        // format 0:00 -> 23:59
+        startTime: startTime.format('H:mm'),
+        endTime: startTime.add(slotInterval, 'minutes').format('H:mm'),
+      });
+    }
+    return allTimes.map((item, index) => ({ id: index + 1, ...item }));
+  }
+
   static getPrice = (value, number = 0, unit = false) => {
+    if (Number(value) > 0 && Number(value) < 1) {
+      return value;
+    }
     if (value) {
       const dots = toString(value)?.split('.');
       if (size(dots) >= 2) {
@@ -618,6 +635,51 @@ export default class Helpers {
       });
   };
 
+  static exportExcelClover = async (
+    path,
+    paramSearch,
+    nameFile = 'total.xlsx',
+    prefix = API_URL,
+  ) => {
+    const params = {
+      ...pickBy(paramSearch, (value) => value),
+    };
+    const url = new URL(`${prefix}${path}`);
+    Object.keys(params).forEach((key) => {
+      if (params[key]) {
+        url.searchParams.append(key, params[key]);
+      }
+    });
+    await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${cookies.get('access_token')}`,
+      },
+    })
+      .then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          const data = nameFile;
+          response.blob().then((blob) => {
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = data;
+            link.click();
+          });
+        } else {
+          notification.error({
+            message: 'Thất bại',
+            description: 'Bạn đã tải excel không thành công',
+          });
+        }
+      })
+      .catch(() => {
+        notification.error({
+          message: 'Thất bại',
+          description: 'Bạn đã tải excel không thành công',
+        });
+      });
+  };
+
   static sttList(page, index, size = variables.PAGINATION.SIZE) {
     const num = (page - 1) * size + index + 1;
     return num;
@@ -652,6 +714,37 @@ export default class Helpers {
       day = day.clone().add(1, 'd');
     }
     return days.map((item) => moment(item));
+  };
+
+  static convertArrayDaysNotSunday = (start_date = moment(), end_date = moment()) => {
+    const days = [];
+    let day = moment(start_date);
+    while (day <= moment(end_date).endOf('days')) {
+      if (moment(day).day() !== 0) {
+        days.push(day.toDate());
+      }
+      day = day.clone().add(1, 'd');
+    }
+    return days.map((item) => moment(item));
+  };
+
+  static getDayOfWeek = (date = 0) => {
+    switch (toNumber(date)) {
+      case 1:
+        return 'T2';
+      case 2:
+        return 'T3';
+      case 3:
+        return 'T4';
+      case 4:
+        return 'T5';
+      case 5:
+        return 'T6';
+      case 6:
+        return 'T7';
+      default:
+        return 'CN';
+    }
   };
 
   static toFixed = (num) => {
@@ -690,11 +783,13 @@ export default class Helpers {
       .format(variables.DATE_FORMAT.TIME_FULL)}`;
 
   static getPathAvatarJson = (fileImage) => {
-    const allowTypes = ['jpeg', 'jpg', 'png'];
+    const allowTypes = ['jpeg', 'jpg', 'png', 'heic'];
     if (this.isJSON(fileImage)) {
       const files = JSON.parse(fileImage);
       if (!isEmpty(files) && isArray(files)) {
-        return head(files.filter((item) => allowTypes.includes(last(item.split('.')))));
+        return head(
+          files.filter((item) => allowTypes.includes(last(item.split('.')).toLowerCase())),
+        );
       }
       return null;
     }
@@ -739,7 +834,6 @@ export default class Helpers {
     return [];
   };
 
-
   static onSortDates = (data = [], key = 'created_at', sort = 'desc') => {
     if (!isEmpty(data)) {
       if (sort === 'asc') {
@@ -765,6 +859,28 @@ export default class Helpers {
         current < moment(data[yearKey]).startOf('year') ||
         current > moment(data[yearKey]).endOf('year')
       );
+    }
+    return null;
+  };
+
+  static disabledDateToHooks = (current, formRef, key = 'startDate') => {
+    if (formRef) {
+      const data = formRef.getFieldsValue();
+      if (data[key]) {
+        return current && current < moment(data[key]).startOf('day');
+      }
+      return null;
+    }
+    return null;
+  };
+
+  static disabledDateFromHooks = (current, formRef, key = 'endDate') => {
+    if (formRef) {
+      const data = formRef.getFieldsValue();
+      if (data[key]) {
+        return current && current >= moment(data[key]).startOf('day');
+      }
+      return null;
     }
     return null;
   };
@@ -1094,7 +1210,37 @@ export default class Helpers {
       return <Tag color="success">Đang hiệu lực</Tag>;
     }
     if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
-      return <Tag color="yellow">Gần hết hạn</Tag>;
+      return (
+        <Tag color="yellow">
+          <Badge status="error" />
+          Gần hết hạn
+        </Tag>
+      );
+    }
+    if (diffExpirationDate < 0) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
+    }
+    return '';
+  };
+
+  static getStatusProbationaryContracts = (contractFrom, contractTo) => {
+    const diffSignDate = moment(
+      moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDate = moment(
+      moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
+      return <Tag color="success">Đang hiệu lực</Tag>;
+    }
+    if (diffExpirationDate >= 0 && diffExpirationDate <= 7) {
+      return (
+        <Tag color="yellow">
+          <Badge status="error" />
+          Gần hết hạn
+        </Tag>
+      );
     }
     if (diffExpirationDate < 0) {
       return <Tag color="danger">Đã hết hạn</Tag>;
@@ -1111,4 +1257,22 @@ export default class Helpers {
     }
     return null;
   };
+
+  static getStatusTeacher = (value) => {
+    if (value === variables.STATUS_EXTENDED.NOT_DISTRIBUTION) {
+      return <Tag color="danger">variables.STATUS_EXTENDED_NAME.NOT_DISTRIBUTION</Tag>;
+    }
+    if (value === variables.STATUS_EXTENDED.CONFIRMED) {
+      return <Tag color="success">variables.STATUS_EXTENDED_NAME.CONFIRMED</Tag>;
+    }
+    return <Tag color="yellow">variables.STATUS_EXTENDED_NAME.WAITING</Tag>;
+  };
+
+  static unique = (items, key = 'name') => {
+    if (isEmpty(items)) return [];
+    return [...new Set(items.map((item) => item[key]))];
+  };
+
+  static objectToArray = (object, keyName = 'name') =>
+    Object.keys(object).map((key) => ({ id: key, [`${keyName}`]: object[key] }));
 }

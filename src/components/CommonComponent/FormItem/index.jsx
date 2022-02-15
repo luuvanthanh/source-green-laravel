@@ -215,6 +215,17 @@ const renderChildren = (
       value={value}
     />
   ),
+  monthYearPicker: (
+    <DatePicker
+      disabled={disabled}
+      allowClear={allowClear}
+      disabledDate={disabledDate}
+      format={variables.DATE_FORMAT.MONTH_YEAR}
+      onChange={onChange}
+      placeholder="tháng/năm"
+      value={value}
+    />
+  ),
   monthPicker: (
     <DatePicker
       disabled={disabled}
@@ -308,7 +319,7 @@ const renderChildren = (
     />
   ),
   checkbox: (
-    <Checkbox.Group onChange={onChange}>
+    <Checkbox.Group onChange={onChange} disabled={disabled}>
       {data.map((item, index) => (
         <Checkbox key={item.value || index} value={item.value}>
           {item.label}
@@ -319,7 +330,7 @@ const renderChildren = (
   checkboxSingle: (
     <Checkbox onChange={onChange} checked={checked} className={styles['checkbox--large']} />
   ),
-  checkboxform: <Checkbox className={styles['checkbox--large']} />,
+  checkboxform: <Checkbox className={styles['checkbox--large']} onChange={onChange}  disabled={disabled} />,
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? (

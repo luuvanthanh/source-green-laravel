@@ -15,4 +15,6 @@ services:
     - |
       service nginx restart
       tail -f /dev/null 2>&1
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=4096"
     restart: on-failure

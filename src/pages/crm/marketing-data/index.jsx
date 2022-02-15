@@ -364,6 +364,10 @@ class Index extends PureComponent {
     const { search, dataSource } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
+      getCheckboxProps: (record) => ({
+        disabled: record.status === 'MOVE',
+        name: record.status,
+      }),
     };
     const loading = effects['crmMarketingData/GET_DATA'];
     return (
@@ -414,7 +418,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={program}
+                    data={[{ name: 'Chọn tất cả Chương trình' }, ...program,]}
                     name="name"
                     onChange={(event) => this.onChangeSelect(event, 'marketing_program_id')}
                     type={variables.SELECT}
@@ -424,8 +428,8 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={searchs}
-                    name="name"
+                    data={[{ name: 'Chọn tất cả Nguồn' }, ...searchs,]}
+                    name="source"
                     onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
                     type={variables.SELECT}
                     allowClear={false}

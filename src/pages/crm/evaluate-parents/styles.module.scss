@@ -1,0 +1,89 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-card-img {
+    .wrapperImg {
+        width: 100px;
+        height: 100px;
+        margin-left: 10px;
+        object-fit: cover;
+    }
+}
+
+.wrapper-card-content {
+    padding-left: 10px;
+    .name {
+        font-family: $base__font-family;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 22px;
+        color: #3e4247;
+    }
+    .title {
+        font-family: $base__font-family;
+        font-style: normal;
+        font-weight: normal;
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 20px;
+        color: #35373a;
+    }
+}
+
+.wrapper-card-main {
+    .contentDay {
+        display: flex;
+        font-family: $base__font-family;
+        font-style: normal;
+        font-weight: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        color: #35373a;
+    }
+    .time {
+        font-family: $base__font-family;
+        font-style: normal;
+        font-weight: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        color: #3b5cad;
+    }
+}
+
+.wrapper-student {
+    width: 100%;
+    .title {
+        padding-top: 15px;
+        font-family: $base__font-family;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 13px;
+        line-height: 20px;
+        font-weight: 400;
+        color: #35373a;
+    }
+    .description {
+        border-block-end-style: none;
+        padding-bottom: 15px;
+        font-family: $base__font-family;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #36383a;
+        border-bottom: 1px dashed #EAEAEA;
+    }
+    .descriptions {
+        border-block-end-style: none;
+        padding-bottom: 15px;
+        font-family: $base__font-family;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #36383a;
+    }
+}

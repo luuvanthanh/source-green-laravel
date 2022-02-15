@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -365,6 +366,34 @@ class Index extends PureComponent {
     return null;
   };
 
+  exportData = () => {
+    Helper.exportExcel(
+      '/v1/export-excel-attendance',
+      {
+        startDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: this.state.search.startDate,
+            targetValue: '00:00:00',
+          }),
+          format: variables.DATE_AFTER,
+          isUTC: false,
+        }),
+        endDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: this.state.search.endDate,
+            targetValue: '23:59:59',
+          }),
+          format: variables.DATE_AFTER,
+          isUTC: false,
+        }),
+        excel: true,
+      },
+      'THDiemdanh.xlsx',
+    );
+  };
+
   /**
    * Function header table
    */
@@ -463,6 +492,9 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Tổng hợp điểm danh</Text>
+            <Button color="success" onClick={this.exportData} icon="export">
+              Tải bảng điểm danh tháng
+            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

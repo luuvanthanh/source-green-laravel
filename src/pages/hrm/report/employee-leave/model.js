@@ -1,0 +1,101 @@
+export default {
+  namespace: 'HRMEmployeeLeave',
+  state: {
+    data: [
+      {
+        key: 1,
+        code: 'Cơ sở',
+        name: 'Lake view',
+        children: [
+          {
+            key: 11,
+            code: 'Lớp',
+            name: 'Preschool',
+            children: [
+              {
+                key: 21,
+                code: 'NV0001',
+                name: 'Trần Thùy Linh',
+                position: 'CEO',
+                branch: 'Lake view',
+                division: 'CEO',
+                leave_date: '12/12/2021',
+                leave_num: 'TV0001',
+                end_salary_date: '10/12/2021',
+                reason: 'Thành lập công ty riêng',
+                note: 'Đồng ý',
+              },
+              {
+                key: 22,
+                code: 'NV0001',
+                name: 'Vũ Nhật Long',
+                position: 'IT',
+                branch: 'Lake view',
+                division: 'IT',
+                leave_date: '12/12/2021',
+                leave_num: 'TV0001',
+                end_salary_date: '10/12/2021',
+                reason: 'Nhảy việc',
+                note: 'Đồng ý',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        key: 2,
+        code: 'Cơ sở',
+        name: 'Lake view',
+        children: [
+          {
+            key: 22,
+            code: 'Lớp',
+            name: 'Preschool',
+            children: [
+              {
+                key: 31,
+                code: 'NV0001',
+                name: 'Trần Thùy Linh',
+                position: 'CEO',
+                branch: 'Lake view',
+                division: 'CEO',
+                leave_date: '12/12/2021',
+                leave_num: 'TV0001',
+                end_salary_date: '10/12/2021',
+                reason: 'Thành lập công ty riêng',
+                note: 'Đồng ý',
+              },
+              {
+                key: 32,
+                code: 'NV0001',
+                name: 'Vũ Nhật Long',
+                position: 'IT',
+                branch: 'Lake view',
+                division: 'IT',
+                leave_date: '12/12/2021',
+                leave_num: 'TV0001',
+                end_salary_date: '10/12/2021',
+                reason: 'Nhảy việc',
+                note: 'Đồng ý',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    pagination: {
+      total: 0,
+    },
+    error: {
+      isError: false,
+      data: {},
+    },
+    branches: [],
+    classes: [],
+  },
+  reducers: {
+    INIT_STATE: (state) => ({ ...state }),
+  },
+  effects: {},
+  subscriptions: {},
+};

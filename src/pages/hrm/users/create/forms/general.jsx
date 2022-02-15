@@ -11,6 +11,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
+import stylesModule from '../../styles.module.scss';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -130,7 +131,7 @@ const General = memo(() => {
           },
         });
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
@@ -256,8 +257,6 @@ const General = memo(() => {
                   rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                 />
               </div>
-            </div>
-            <div className="row" {...marginProps}>
               <div className="col-lg-4">
                 <FormItem
                   data={genders}
@@ -284,9 +283,6 @@ const General = memo(() => {
                   disabledDate={Helper.disabledDateFuture}
                 />
               </div>
-            </div>
-
-            <div className="row" {...marginProps}>
               <div className="col-lg-4">
                 <FormItem
                   name="placeOfIssueIdCard"
@@ -307,12 +303,22 @@ const General = memo(() => {
                     { value: false, label: 'Độc thân' },
                     { value: true, label: 'Đã kết hôn' },
                   ]}
+                  className={stylesModule['wrapper-radio']}
                   name="married"
                   label="Tình trạng hôn nhân"
                   type={variables.RADIO}
                 />
               </div>
+              <div className="col-lg-12">
+                <FormItem
+                  label="Mô tả chung"
+                  name="description"
+                  rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                  type={variables.TEXTAREA}
+                />
+              </div>
             </div>
+
           </div>
           <div style={{ padding: 20 }} className="pb-0 border-bottom">
             <div className="row" {...marginProps}>
@@ -368,6 +374,18 @@ const General = memo(() => {
                   />
                 </div>
               )}
+            </div>
+            <div className="row" {...marginProps}>
+              <div className="col-lg-4">
+                <FormItem
+                  name="bankNumberOfAccount"
+                  label="Số tài khoản ngân hàng"
+                  type={variables.INPUT}
+                />
+              </div>
+              <div className="col-lg-4">
+                <FormItem name="bankName" label="Tên ngân hàng" type={variables.INPUT} />
+              </div>
             </div>
           </div>
           <div className="d-flex justify-content-between" style={{ padding: 20 }}>

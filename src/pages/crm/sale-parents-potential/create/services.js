@@ -156,3 +156,19 @@ export function addStatusLead(data = {}) {
     data,
   });
 }
+
+export function getSearch(params) {
+  return request(`/v1/search-sources`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getRelationships() {
+  return request(`/v1/category-relationships`, {
+    method: 'GET',
+  });
+}

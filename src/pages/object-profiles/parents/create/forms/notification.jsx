@@ -22,12 +22,11 @@ const Curator = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, detailsAccount, error }) => {
     const formRef = useRef();
 
-    const loadingSubmit = effects[`OPParentsAdd/ADD`] || effects[`OPParentsAdd/UPDATE`];
+    const loadingSubmit = effects[`OPParentsAdd/UPDATE_NOTIFICATION_MODULE`];
     const loading =
       effects[`OPParentsAdd/GET_DETAILS`] ||
       effects[`OPParentsAdd/GET_EMPLOYEES`] ||
       effects['OPParentsAdd/GET_NOTIFICATION_MODULE'];
-    const [types, setTypes] = useState([]);
     const [dataSource, setDataSoure] = useState([]);
 
     /**
@@ -38,9 +37,9 @@ const Curator = memo(
       dispatch({
         type: 'OPParentsAdd/UPDATE_NOTIFICATION_MODULE',
         payload: dataSource.map((item) => ({
-          userId: detailsAccount.id,
-          notificationModuleId: item?.notificationModule?.id,
-          notificationTypeId: item?.notificationType?.id,
+          userId: detailsAccount?.user?.id,
+          notificationModuleId: item?.moduleId,
+          notificationTypeId: item?.usingType?.id,
         })),
         callback: (response, error) => {
           if (error) {
@@ -69,15 +68,6 @@ const Curator = memo(
           type: 'OPParentsAdd/GET_DETAILS',
           payload: params,
         });
-        dispatch({
-          type: 'OPParentsAdd/GET_NOTIFICATION_TYPES',
-          payload: params,
-          callback: (response) => {
-            if (response) {
-              setTypes(response.items);
-            }
-          },
-        });
       }
     }, [params.id]);
 
@@ -90,7 +80,7 @@ const Curator = memo(
           },
           callback: (response) => {
             if (response) {
-              setDataSoure(response);
+              setDataSoure(response?.notificationTypeGroupByModule || []);
             }
           },
         });
@@ -106,13 +96,15 @@ const Curator = memo(
     }, [details]);
 
     const onChangeTypes = (e, record) => {
-      const notificationType = types.find((item) => item.id === e);
+      const moduleTypeGroupByName = record?.moduleTypeGroupByNames?.find(
+        (item) => item?.notificationType?.id === e,
+      );
       setDataSoure((prev) =>
         prev.map((item) => {
-          if (item.id === record.id) {
+          if (item?.moduleId === record?.moduleId) {
             return {
               ...item,
-              notificationType,
+              usingType: moduleTypeGroupByName?.notificationType,
             };
           }
           return item;
@@ -136,7 +128,7 @@ const Curator = memo(
         title: 'Tên module',
         key: 'name',
         className: 'min-width-130',
-        render: (record) => record?.notificationModule?.name,
+        render: (record) => record?.name,
       },
       {
         title: 'Hình thức nhận',
@@ -144,9 +136,12 @@ const Curator = memo(
         className: 'min-width-200',
         render: (record) => (
           <Select
-            value={record?.notificationType?.id}
+            value={!isEmpty(record?.moduleTypeGroupByNames) && record?.usingType?.id}
             className="w-100"
-            dataSet={types}
+            dataSet={record?.moduleTypeGroupByNames?.map((item) => ({
+              id: item?.notificationType?.id,
+              name: item?.notificationType?.name,
+            }))}
             onChange={(e) => onChangeTypes(e, record)}
           />
         ),

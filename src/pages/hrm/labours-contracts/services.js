@@ -5,8 +5,7 @@ export function get(data = {}) {
   return request('/v1/labours-contracts', {
     method: 'GET',
     params: {
-      limit: data.limit,
-      page: data.page,
+      ...data,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
@@ -27,7 +26,6 @@ export function get(data = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes(['employee', 'typeOfContract', 'position', 'branch']),
-      fullName: data.fullName,
       employeeId: data.employeeId && data.employeeId.join(','),
       search: Helper.convertParamSearchConvert({
         type: data.type,

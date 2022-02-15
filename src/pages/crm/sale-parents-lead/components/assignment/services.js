@@ -1,14 +1,20 @@
 import request from '@/utils/requestCrm';
 
-export function get() {
-  return request(`/v1/customer-leads?is_null_employee=true`, {
+export function get(params) {
+  return request(`/v1/customer-leads`, {
     method: 'GET',
+    params : {
+      ...params
+    }
   });
 }
 
 export function getEmployees() {
   return request(`/v1/employees`, {
     method: 'GET',
+    params: {
+      orderBy: 'full_name',
+    },
   });
 }
 

@@ -68,6 +68,7 @@ const Index = memo(() => {
           head(record.decisionRewardDetails)?.timeApply &&
           moment(head(record.decisionRewardDetails)?.timeApply),
         decisionDate: record.decisionDate && moment(record.decisionDate),
+        type: record.type,
       });
     }
   };
@@ -131,6 +132,14 @@ const Index = memo(() => {
           payload: {
             id,
           },
+          callback: (response) => {
+            if (response) {
+              dispatch({
+                type: 'HRMusersAdd/GET_DECISION_REWARDS',
+                payload: params,
+              });
+            }
+          },
         });
       },
     });
@@ -151,6 +160,13 @@ const Index = memo(() => {
         width: 100,
         align: 'center',
         render: (text, record, index) => index + 1,
+      },
+      {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Số QĐ',
@@ -284,6 +300,7 @@ const Index = memo(() => {
             timeApply:
               head(objects.decisionRewardDetails)?.timeApply &&
               moment(head(objects.decisionRewardDetails)?.timeApply),
+            type: objects.type,
           }}
         >
           <Pane className="row">
@@ -330,8 +347,8 @@ const Index = memo(() => {
                 name="type"
                 type={variables.SELECT}
                 data={[
-                  { id: 'Kỷ luật', name: 'Kỷ luật' },
-                  { id: 'Khen thưởng', name: 'Khen thưởng' },
+                  { id: 'REWARD', name: 'Khen thưởng' },
+                  { id: 'DISCIPLINE', name: 'Kỷ luật' },
                 ]}
                 rules={[variables.RULES.EMPTY]}
               />

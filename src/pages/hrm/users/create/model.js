@@ -606,13 +606,14 @@ export default {
         callback(null, error);
       }
     },
-    *REMOVE_DECISION_REWARDS({ payload }, saga) {
+    *REMOVE_DECISION_REWARDS({ payload, callback }, saga) {
       try {
         yield saga.call(services.removeDecisionRewards, payload);
         yield saga.put({
           type: 'SET_REMOVE_DECISION_REWARDS',
           payload,
         });
+        callback(payload);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

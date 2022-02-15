@@ -33,6 +33,7 @@ const mapStateToProps = ({ probationaryContracts, loading }) => ({
   data: probationaryContracts.data,
   pagination: probationaryContracts.pagination,
   employees: probationaryContracts.employees,
+  categories: probationaryContracts.categories,
   loading,
 });
 @connect(mapStateToProps)
@@ -48,6 +49,10 @@ class Index extends PureComponent {
       search: {
         type: query?.type,
         fullName: query?.fullName,
+        branchId: query?.branchId,
+        positionId: query?.positionId,
+        status: query?.status,
+        typeOfContractId: query?.typeOfContractId,
         employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -85,13 +90,17 @@ class Index extends PureComponent {
       type: 'probationaryContracts/GET_EMPLOYEES',
       payload: {},
     });
+    dispatch({
+      type: 'probationaryContracts/GET_CATEGORIES',
+      payload: {},
+    });
   };
 
   /**
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -99,7 +108,6 @@ class Index extends PureComponent {
       type: 'probationaryContracts/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push(
@@ -225,6 +233,13 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
@@ -276,13 +291,6 @@ class Index extends PureComponent {
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Tỷ lệ lương',
-        key: 'contract_category',
-        dataIndex: 'salaryRatio',
-        className: 'min-width-150',
-        render: (value) => Helper.getPercent(value),
-      },
-      {
         title: 'Lương cơ bản',
         key: 'salary',
         className: 'min-width-150',
@@ -314,7 +322,10 @@ class Index extends PureComponent {
         width: 150,
         className: 'min-width-150',
         render: (record) =>
-          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo)),
+          Helper.getStatusProbationaryContracts(
+            moment(record?.contractFrom),
+            moment(record?.contractTo),
+          ),
       },
       {
         title: 'Thao tác',
@@ -362,6 +373,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
       location: { pathname },
+      categories,
     } = this.props;
     const { search } = this.state;
     const loading = effects['probationaryContracts/GET_DATA'];
@@ -385,18 +397,58 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                typeOfContractId: search.typeOfContractId || null,
+                branchId: search.branchId || null,
+                positionId: search.positionId || null,
+                status: search.status || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-12">
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả hợp đồng' }, ...categories.typeOfContracts]}
+                    name="typeOfContractId"
+                    onChange={(event) => this.onChangeSelect(event, 'typeOfContractId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả nơi làm việc' }, ...categories.branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả chức vụ' }, ...categories.positions]}
+                    name="positionId"
+                    onChange={(event) => this.onChangeSelect(event, 'positionId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
                   <FormItem
                     data={Helper.convertSelectUsers(employees)}
                     name="employeeId"
                     onChange={(event) => this.onChangeSelect(event, 'employeeId')}
                     type={variables.SELECT_MUTILPLE}
                     placeholder="Chọn tất cả"
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả trạng thái' }, ...variables.STATUS_CONTRACT]}
+                    name="status"
+                    onChange={(event) => this.onChangeSelect(event, 'status')}
+                    type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
               </div>
@@ -429,6 +481,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -439,6 +492,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   employees: [],
+  categories: {},
 };
 
 export default Index;

@@ -20,8 +20,8 @@ import SocialNetworkForm from './forms/social-network';
 import EventsForm from './forms/events';
 import TagsForm from './forms/tags';
 import CalendarForm from './forms/calendar';
-import PotentialForm from './forms/potential';
-
+import InterestForm from './forms/interest';
+ 
 import { menu, defaultKey } from './menu';
 
 const { Item: MenuItem } = Menu;
@@ -39,7 +39,7 @@ const forms = {
   events: <EventsForm />,
   tags: <TagsForm />,
   calendar: <CalendarForm />,
-  potential: <PotentialForm />,
+  interest : <InterestForm/>,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
@@ -61,7 +61,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
     <div style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ phụ huynh" />
       <Breadcrumbs
-        className="pb20 pt0"
+        className="pb20 pt0 pl0"
         last={`${params?.id ? 'Chi tiết' : 'Thêm mới'}`}
         menu={menuLeftCRM}
       />

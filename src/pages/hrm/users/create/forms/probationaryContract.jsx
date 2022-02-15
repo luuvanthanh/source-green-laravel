@@ -183,6 +183,13 @@ const Index = memo(() => {
   const columns = useMemo(
     () => [
       {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Số hợp đồng',
         key: 'contract_number',
         dataIndex: 'contractNumber',
@@ -221,13 +228,6 @@ const Index = memo(() => {
         dataIndex: 'contractTo',
         className: 'min-width-150',
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Tỷ lệ lương',
-        key: 'contract_category',
-        dataIndex: 'salaryRatio',
-        className: 'min-width-150',
-        render: (value) => Helper.getPercent(value),
       },
       {
         title: 'Lương cơ bản',
@@ -486,14 +486,6 @@ const Index = memo(() => {
           <Pane className="row">
             <Pane className="col-lg-4">
               <FormItem
-                label="Tỷ lệ lương thử việc"
-                name="salaryRatio"
-                type={variables.INPUT_COUNT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem
                 data={divisions}
                 label="Bộ phận"
                 name="divisionId"
@@ -539,6 +531,14 @@ const Index = memo(() => {
                 name="branchId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}
+              />
+            </Pane>
+            <Pane className="col-lg-12">
+              <FormItem
+                label="Không tham gia BHXH"
+                name="isSocialInsurance"
+                type={variables.CHECKBOX_FORM}
+                valuePropName="checked"
               />
             </Pane>
           </Pane>

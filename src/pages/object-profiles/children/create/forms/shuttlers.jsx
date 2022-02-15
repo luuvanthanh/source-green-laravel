@@ -43,6 +43,8 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
     const payload = {
       studentTransporter: values.studentTransporter.map((item, index) => ({
         ...item,
+        id: !isEmpty(item.id) ? item.id : null,
+        studentId: params.id,
         fileImage: fileImage[index],
       })),
       id: params.id,

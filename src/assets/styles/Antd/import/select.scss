@@ -1,11 +1,11 @@
 // Import mixins
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN SELECT */
 
 .ant-select {
-  font-family: "Nunito Sans", sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
 }
 
 .ant-select-dropdown {
@@ -39,5 +39,78 @@
   }
   .ant-select-selection-item-remove {
     color: $text-white;
+  }
+}
+
+.select-color {
+  .ant-select-selection-item {
+    margin-left: -11px;
+    padding-left: 11px !important;
+    padding-right: 11px;
+    margin-right: -11px;
+    color: rgba($color: #000000, $alpha: 1.0);
+  }
+  .ant-select-selection-item[title='#FF8D8D'] {
+    background-color: #ff8d8d;
+  }
+  .ant-select-selection-item[title='#FFA5AC'] {
+    background-color: #ffa5ac;
+  }
+  .ant-select-selection-item[title='#FFC0A5'] {
+    background-color: #ffc0a5;
+  }
+  .ant-select-selection-item[title='#FFCC97'] {
+    background-color: #ffcc97;
+  }
+  .ant-select-selection-item[title='#FFEE97'] {
+    background-color: #ffee97;
+  }
+  .ant-select-selection-item[title='#DEFF97'] {
+    background-color: #deff97;
+  }
+  .ant-select-selection-item[title='#ACFF97'] {
+    background-color: #acff97;
+  }
+  .ant-select-selection-item[title='#97FFBA'] {
+    background-color: #97ffba;
+  }
+  .ant-select-selection-item[title='#7FEBE5'] {
+    background-color: #7febe5;
+  }
+  .ant-select-selection-item[title='#8DC8FF'] {
+    background-color: #8dc8ff;
+  }
+  .ant-select-selection-item[title='#96ADFF'] {
+    background-color: #96adff;
+  }
+  .ant-select-selection-item[title='#A59DFF'] {
+    background-color: #a59dff;
+  }
+  .ant-select-selection-item[title='#D49DFF'] {
+    background-color: #d49dff;
+  }
+  .ant-select-selection-item[title='#FD9DFF'] {
+    background-color: #fd9dff;
+  }
+  .ant-select-selection-item[title='#FF9DDE'] {
+    background-color: #ff9dde;
+  }
+  .ant-select-selection-item[title='#FFFF00'] {
+    background-color: #ffff00;
+  }
+  .ant-select-selection-item[title='#7030A0'] {
+    background-color: #7030a0;
+  }
+  .ant-select-selection-item[title='#E9BDE0'] {
+    background-color: #e9bde0;
+  }
+  .ant-select-selection-item[title='#00B0F0'] {
+    background-color: #00b0f0;
+  }
+  .ant-select-selection-item[title='#FFD966'] {
+    background-color: #ffd966;
+  }
+  .ant-select-selection-item[title='#C6E0B4'] {
+    background-color: #c6e0b4;
   }
 }

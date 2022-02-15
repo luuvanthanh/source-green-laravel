@@ -577,7 +577,7 @@ class Index extends PureComponent {
       categories,
       loading: { effects },
       match: { params },
-      absentTypes
+      absentTypes,
     } = this.props;
     const { detail, type } = this.state;
     const loading =
@@ -601,7 +601,11 @@ class Index extends PureComponent {
           onValuesChange={this.formUpdate}
         >
           <div className={styles['content-form']}>
-            <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/don-di-cong-tac' }}>
+            <Loading
+              loading={loading}
+              isError={error.isError}
+              params={{ error, goBack: '/quan-ly-nhan-su/don-di-cong-tac' }}
+            >
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -656,7 +660,7 @@ class Index extends PureComponent {
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                     data={absentTypes || []}
+                      data={absentTypes || []}
                       label="Loại công"
                       name="absentTypeId"
                       rules={[variables.RULES.EMPTY]}
@@ -737,7 +741,7 @@ Index.defaultProps = {
   error: {},
   menuLeftSchedules: [],
   loading: {},
-  absentTypes: PropTypes.arrayOf(PropTypes.any),
+  absentTypes: [],
 };
 
 export default Index;

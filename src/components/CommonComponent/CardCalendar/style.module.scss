@@ -1,0 +1,113 @@
+@import "@/assets/styles/mixins.scss";
+
+.time-content {
+  width: 100%;
+  position: relative;
+}
+
+.time-title {
+  position: absolute;
+  bottom: -10px;
+  right: 0;
+}
+
+.lesson-content {
+  width: 100%;
+  padding: 5px;
+}
+
+.rmPadding {
+  border: none;
+}
+
+.dotStyle {
+  height: 9px;
+  width: 9px;
+  border-radius: 50%;
+}
+
+.dotList {
+  height: 9px;
+  width: 9px;
+  border-radius: 50%;
+  background: #27A600;
+  position: absolute;
+  top: 5px;
+  left: -5px;
+}
+
+.dotListTwo {
+  position: relative;
+
+  &::before {
+    content: '';
+    height: 9px;
+    width: 9px;
+    border-radius: 50%;
+    background: #27A600;
+    position: absolute;
+    left: -5px;
+    top: 5px;
+  }
+}
+
+.imgStyle {
+  width: 98px;
+  height: 75px;
+
+  & img {
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.listDay {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 10px;
+    height: 100%;
+    width: 2px;
+    background: #E1E5EF;
+  }
+}
+
+.card-month {
+  position: relative;
+
+  & button {
+    background: transparent;
+    padding: 0;
+    border: none;
+  }
+}
+
+.list {
+  background: #ffffff;
+  width: 300px;
+  position: absolute;
+  top: -50%;
+  left: 0;
+  z-index: 1;
+}
+
+.btnClose {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+  font-size: 1.5rem;
+  width: 25px;
+}
+
+.tag-content {
+  width: 100%;
+  height: 33px;
+  border: none;
+  color: $text-dark;
+  font-size: 14px;
+}

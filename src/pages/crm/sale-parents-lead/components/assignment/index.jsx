@@ -1,3 +1,4 @@
+import { memo, useEffect, useState } from 'react';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
@@ -8,19 +9,20 @@ import { variables } from '@/utils';
 import { Form, Modal } from 'antd';
 import { useDispatch } from 'dva';
 import { useLocation } from 'umi';
-import { memo, useEffect, useState } from 'react';
+import { size } from 'lodash';
 import stylesModule from '../../styles.module.scss';
 
-const Index = memo(() => {
+const Index = memo((props) => {
+  // eslint-disable-next-line react/prop-types
+  const { dataSource } = props;
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [data, setData] = useState([]);
   const [employeeAllotment, setEmployeeAllotment] = useState([]);
   const [dataUser, setDataUser] = useState([]);
-
+  const dataAssignment = dataSource;
   const [employeesId, setEmployeesId] = useState([]);
   const { query } = useLocation();
-
   const handleChangeEmployee = (val, record) => {
     const result = [...employeeAllotment];
     const orderItem = result.find((item) => item.customer_lead_id === record.id);
@@ -50,7 +52,7 @@ const Index = memo(() => {
     },
 
     {
-      title: 'Nhân viên xử lý',
+      title: 'Nhân viên chăm sóc',
       key: 'employee_id',
       dataIndex: 'employee_id',
       width: 180,
@@ -77,19 +79,27 @@ const Index = memo(() => {
         }
       },
     });
-    dispatch({
-      type: 'crmSaleAssignment/GET_DATA',
-      payload: {},
-      callback: (response) => {
-        if (response) setData(response.parsePayload);
-      },
-    });
+    const dataAssignment = dataSource;
+    const payload = {
+      customer_lead_id: dataAssignment
+        .filter((item) => item.isActive === true)
+        .map((item) => item.id)
+        .join(','),
+    };
+    if (dataAssignment.length > 0) {
+      dispatch({
+        type: 'crmSaleAssignment/GET_DATA',
+        payload,
+        callback: (response) => {
+          if (response) setData(response.parsePayload);
+        },
+      });
+    }
   };
 
   useEffect(() => {
     onLoad();
   }, []);
-
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
       return col;
@@ -117,19 +127,19 @@ const Index = memo(() => {
   const handleOk = () => {
     dispatch({
       type: 'crmSaleAssignment/ASSIGNMENT',
-      payload: employeeAllotment,
+      payload: employeeAllotment.map((item) => ({
+        ...item,
+        employee_info: dataUser.find(({ id }) => id === item.employee_id),
+      })),
       callback: (response) => {
         if (response) {
           onLoad();
           setIsModalVisible(false);
           dispatch({
-            type: 'orders/GET_DATA',
-            payload: {
+            type:  'crmSaleParentsLead/GET_DATA',
+            payload:{
               page: query?.page,
               limit: query?.limit,
-              status: query?.status,
-              key: query?.key,
-              employee_id: query?.employee_id,
             },
           });
         }
@@ -151,7 +161,7 @@ const Index = memo(() => {
       if (count < employeesId.length) {
         count += 1;
       } else {
-        count = 0;
+        count = 1;
         index = 0;
       }
       return {
@@ -172,16 +182,23 @@ const Index = memo(() => {
   return (
     <>
       <div>
-        <Button color="success" icon="list" className="ml-2" onClick={showModal}>
+        <Button
+          color="success"
+          icon="list"
+          className="ml-2"
+          onClick={showModal}
+          disabled={!size(dataAssignment.filter((item) => item.isActive))}
+        >
           Phân công
         </Button>
         <Modal
-          title="Phân công nhân viên Sale"
-          className={styles['wrapper-modal']}
+          title="Phân công nhân viên Sale chăm sóc"
+          className={stylesModule['wrapper-modal']}
           visible={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
           width={960}
+          centered
           footer={[
             <p
               key="back"

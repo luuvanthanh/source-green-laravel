@@ -6,7 +6,7 @@ import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
+// import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -159,18 +159,44 @@ class Index extends PureComponent {
     });
 
   /**
+  * Function remove items
+  * @param {uid} id id of items
+  */
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'crmSearch/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+    });
+  };
+
+
+
+  /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
+    // const {
+    //   location: { pathname },
+    // } = this.props;
     const columns = [
       {
         title: 'Mã nguồn',
         key: 'code',
-        className: 'max-width-150',
-        width: 150,
+        className: 'min-width-150',
+        width: 300,
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
@@ -179,21 +205,21 @@ class Index extends PureComponent {
         className: 'min-width-150',
         render: (record) => <Text size="normal">{record.name}</Text>,
       },
-      {
-        key: 'action',
-        width: 100,
-        fixed: 'right',
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="success"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            >
-              Chi tiết
-            </Button>
-          </div>
-        ),
-      },
+      // {
+      //   key: 'action',
+      //   width: 125,
+      //   fixed: 'right',
+      //   render: (record) => (
+      //     <div className={styles['list-button']}>
+      //       <Button
+      //         color="primary"
+      //         icon="edit"
+      //         onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+      //       />
+      //       <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+      //     </div>
+      //   ),
+      // },
     ];
     return columns;
   };
@@ -205,7 +231,7 @@ class Index extends PureComponent {
       match: { params },
       pagination,
       loading: { effects },
-      location: { pathname },
+      // location: { pathname },
     } = this.props;
 
     const { search } = this.state;
@@ -216,9 +242,9 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Nguồn tiềm kiếm</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            {/* <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
-            </Button>
+            </Button> */}
           </div>
           <div className={styles['block-table']}>
             <Form

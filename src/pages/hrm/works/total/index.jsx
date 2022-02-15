@@ -302,7 +302,7 @@ class Index extends PureComponent {
   };
 
   redirectHistory = (item, record, user, type = null) => {
-    if (type === 'F' || type === 'F/2') {
+    if (type === 'F' || type === 'F/2' || type === 'K') {
       return `/quan-ly-nhan-su/don-xin-phep?${Helper.convertParamSearchConvert(
         {
           startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),

@@ -1,0 +1,347 @@
+@import '@/assets/styles/mixins.scss';
+
+.ant-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 5px;
+}
+
+.block {
+  display: flex;
+}
+
+.schedules-custom {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.col-activites {
+  min-width: 200px;
+  max-width: 200px;
+}
+
+.col-block {
+  min-width: 150px;
+  padding: 0;
+
+  .header-row {
+    padding: 5px 10px;
+    text-align: center;
+    margin: 0px;
+    background-color: rgb(238, 240, 244);
+  }
+
+  .data-row {
+    position: relative;
+    padding: 5px 10px;
+    text-align: center;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    .dot-warning {
+      position: absolute;
+      right: 5px;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 100%;
+      background-color: $background-danger;
+    }
+  }
+
+  .no-data-row {
+    min-height: 32px !important;
+    box-sizing: unset;
+    @for $i from 0 through 10 {
+      $value: $i * 33;
+      $unit: 'px';
+      &.size-row-#{$i*1} {
+        min-height: #{$value}#{$unit} !important;
+      }
+    }
+  }
+
+  &:not(:first-child) .data-row {
+    cursor: pointer;
+  }
+
+  &:first-child {
+    .header-row {
+      border: 1px solid $border;
+    }
+
+    .cell {
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+      border-left: 1px solid $border;
+    }
+  }
+
+  &:not(:first-child) {
+    .header-row {
+      border-top: 1px solid $border;
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+    }
+
+    .cell {
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+    }
+  }
+}
+
+.col-time {
+  min-width: 120px;
+  max-width: 120px;
+  padding: 0;
+
+  .header-row {
+    padding: 5px 10px;
+    text-align: center;
+    margin: 0px;
+    background-color: rgb(238, 240, 244);
+  }
+
+  .data-row {
+    padding: 5px 10px;
+    text-align: center;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .no-data-row {
+    min-height: 32px !important;
+    box-sizing: unset;
+    @for $i from 0 through 10 {
+      $value: $i * 33;
+      $unit: 'px';
+      &.size-row-#{$i*1} {
+        min-height: #{$value}#{$unit} !important;
+      }
+    }
+  }
+
+  &:not(:first-child) .data-row {
+    cursor: pointer;
+  }
+
+  &:first-child {
+    .header-row {
+      border: 1px solid $border;
+    }
+
+    .cell {
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+      border-left: 1px solid $border;
+    }
+  }
+
+  &:not(:first-child) {
+    .header-row {
+      border-top: 1px solid $border;
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+    }
+
+    .cell {
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+    }
+  }
+}
+
+.wrapper-droppable {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.activiies-block {
+  margin-left: 20px;
+  width: calc(100% - 200px);
+}
+
+.block-table {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.time-table {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+
+  .col-lg-3,
+  .col-lg-2 {
+    padding: 0;
+
+    .header-row {
+      padding: 5px 10px;
+      text-align: center;
+      margin: 0px;
+      background-color: rgb(238, 240, 244);
+    }
+
+    .data-row {
+      padding: 5px 10px;
+      text-align: center;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .no-data-row {
+      min-height: 32px !important;
+      box-sizing: unset;
+      @for $i from 0 through 10 {
+        $value: $i * 33;
+        $unit: 'px';
+        &.size-row-#{$i*1} {
+          min-height: #{$value}#{$unit} !important;
+        }
+      }
+    }
+
+    &:not(:first-child) .data-row {
+      cursor: pointer;
+    }
+
+    &:first-child {
+      .header-row {
+        border: 1px solid $border;
+      }
+
+      .cell {
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+        border-left: 1px solid $border;
+      }
+    }
+
+    &:not(:first-child) {
+      .header-row {
+        border-top: 1px solid $border;
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+      }
+
+      .cell {
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+      }
+    }
+  }
+}
+
+.col-activiies {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+
+  .col-lg-3,
+  .col-lg-2 {
+    padding: 0;
+
+    .header-row {
+      padding: 5px 10px;
+      text-align: center;
+      margin: 0px;
+      background-color: rgb(238, 240, 244);
+    }
+
+    .data-row {
+      padding: 5px 10px;
+      text-align: center;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .no-data-row {
+      min-height: 32px !important;
+      box-sizing: unset;
+      @for $i from 0 through 10 {
+        $value: $i * 33;
+        $unit: 'px';
+        &.size-row-#{$i*1} {
+          min-height: #{$value}#{$unit} !important;
+        }
+      }
+    }
+
+    &:not(:first-child) .data-row {
+      cursor: pointer;
+    }
+
+    &:first-child {
+      .header-row {
+        border: 1px solid $border;
+      }
+
+      .cell {
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+        border-left: 1px solid $border;
+      }
+    }
+
+    &:not(:first-child) {
+      .header-row {
+        border-top: 1px solid $border;
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+      }
+
+      .cell {
+        border-right: 1px solid $border;
+        border-bottom: 1px solid $border;
+      }
+    }
+  }
+}
+
+@for $i from 0 through 10 {
+  $value: $i * 33;
+  $unit: 'px';
+  .size-row-#{$i*1} {
+    min-height: calc(#{$value}#{$unit} + 1px);
+  }
+}
+
+.row-drag {
+  transform: rotate(-10deg);
+}
+
+.form-timetable-disabled {
+  margin-bottom: 0;
+  .ant-input-disabled,
+  .ant-select-selector {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: $text-dark;
+    font-weight: bold;
+  }
+  .ant-select-selector {
+    color: $text-dark !important;
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .ant-form-item-label {
+    label {
+      &::after {
+        display: none;
+      }
+    }
+  }
+  .ant-select-arrow {
+    display: none;
+  }
+}
