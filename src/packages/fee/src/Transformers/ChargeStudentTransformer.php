@@ -46,5 +46,4 @@ class ChargeStudentTransformer extends BaseTransformer
 
         return $this->item($chargeStudent->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
-
 }

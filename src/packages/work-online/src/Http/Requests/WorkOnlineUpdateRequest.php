@@ -38,7 +38,7 @@ class WorkOnlineUpdateRequest extends FormRequest
     public function messages()
     {
         return [
-            'endDate.after_or_equal' => "Trường thời gian kết thúc phải là một ngày sau hoặc bằng thời gian bắt đầu.",
+            'endDate.after_or_equal' => 'Trường thời gian kết thúc phải là một ngày sau hoặc bằng thời gian bắt đầu.',
         ];
     }
 }

@@ -29,5 +29,4 @@ class AttendanceReasonTransformer extends BaseTransformer
     {
         return [];
     }
-
 }

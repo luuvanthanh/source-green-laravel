@@ -12,7 +12,5 @@ use GGPHP\Core\Transformers\BaseTransformer;
  */
 class TrainingMajorTransformer extends BaseTransformer
 {
-
     protected $availableIncludes = [];
-
 }

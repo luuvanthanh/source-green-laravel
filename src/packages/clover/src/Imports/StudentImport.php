@@ -80,6 +80,6 @@ class StudentImport implements ToModel
             ]);
         }
 
-        return;
+        return true;
     }
 }

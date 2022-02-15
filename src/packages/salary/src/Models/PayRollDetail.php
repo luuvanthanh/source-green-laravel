@@ -23,19 +23,17 @@ class PayRollDetail extends UuidModel
         'TotalIncome', 'KpiBonus', 'OtTax', 'OtNoTax', 'UnpaidLeave', 'TotalWork', 'TotalIncomeMonth', 'SocialInsuranceEmployee',
         'SocialInsuranceAdjustedEmployee', 'SocialInsuranceCompany', 'SocialInsuranceAdjustedCompany', 'HealthInsuranceEmployee', 'HealthInsuranceCompany',
         'UnemploymentInsuranceEmployee', 'UnemploymentInsuranceCompany', 'UnionDues', 'DependentPerson', 'Eeduce', 'Charity', 'TotalReduce', 'RentalIncome',
-        'PersonalIncomeTax', 'SocialInsurancePayment', 'Advance', 'ActuallyReceived', 'Note',
+        'PersonalIncomeTax', 'SocialInsurancePayment', 'Advance', 'ActuallyReceived', 'Note', 'SalaryByHour', 'OtWeekday', 'OtWeekend', 'OtHoliday'
     ];
 
-    protected $dateTimeFields = [
-    ];
+    protected $dateTimeFields = [];
 
     /**
      * The attributes that should be cast.
      *
      * @var array
      */
-    protected $casts = [
-    ];
+    protected $casts = [];
 
     /**
      *

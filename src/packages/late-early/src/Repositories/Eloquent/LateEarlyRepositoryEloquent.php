@@ -32,7 +32,8 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
         'CreationTime',
     ];
 
-    protected $employeeRepositoryEloquent, $timekeepingRepositoryEloquent;
+    protected $employeeRepositoryEloquent;
+    protected $timekeepingRepositoryEloquent;
 
     public function __construct(
         UserRepositoryEloquent $employeeRepositoryEloquent,
@@ -124,7 +125,6 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
             if (!empty($attributes['employeeId'])) {
                 $query->whereIn('EmployeeId', explode(',', $attributes['employeeId']));
             }
-
         })->with(['lateEarly' => function ($query) use ($attributes) {
             if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                 $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
@@ -133,7 +133,6 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
             if (!empty($attributes['employeeId'])) {
                 $query->whereIn('EmployeeId', explode(',', $attributes['employeeId']));
             }
-
         }]);
 
         if (!empty($attributes['limit'])) {
@@ -200,8 +199,8 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
 
                                 $configLateEarly = LateEarlyTimeConfig::where(
                                     [
-                                        ['FromTime', '<=', gmdate("H:i:s", ($timeLate))],
-                                        ['ToTime', '>=', gmdate("H:i:s", ($timeLate))],
+                                        ['FromTime', '<=', gmdate('H:i:s', ($timeLate))],
+                                        ['ToTime', '>=', gmdate('H:i:s', ($timeLate))],
                                     ]
                                 )->where('Type', $typeLate)->first();
 
@@ -209,7 +208,7 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
 
                                 $dataLate = [
                                     'TimeConfigType' => $configLateEarly->Id,
-                                    'Time' => gmdate("H:i:s", ($timeLate)),
+                                    'Time' => gmdate('H:i:s', ($timeLate)),
                                     'Date' => $date,
                                     'TimeViolation' => $timeAttendLate,
                                     'Status' => $statusLate,
@@ -247,8 +246,8 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
 
                                 $configLateEarly = LateEarlyTimeConfig::where(
                                     [
-                                        ['FromTime', '<=', gmdate("H:i:s", ($timeEarly))],
-                                        ['ToTime', '>=', gmdate("H:i:s", ($timeEarly))],
+                                        ['FromTime', '<=', gmdate('H:i:s', ($timeEarly))],
+                                        ['ToTime', '>=', gmdate('H:i:s', ($timeEarly))],
                                     ]
                                 )->where('Type', $typeEarly)->first();
 
@@ -256,7 +255,7 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
 
                                 $dataLate = [
                                     'TimeConfigType' => $configLateEarly->Id,
-                                    'Time' => gmdate("H:i:s", ($timeEarly)),
+                                    'Time' => gmdate('H:i:s', ($timeEarly)),
                                     'Date' => $date,
                                     'TimeViolation' => $timeAttendEarly,
                                     'Status' => $statusEarly,
@@ -280,7 +279,7 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
                         ->get();
 
                     if (count($timekeepingInvalid) > 0) {
-                        // TODO: kiem tra ton tai record Invalid
+                        // kiem tra ton tai record Invalid
                         $existInvalid = LateEarly::where('EmployeeId', $employee->Id)
                             ->where('Status', LateEarly::INVALID)
                             ->whereDate('Date', $date)
@@ -301,7 +300,7 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
             }
         }
 
-        return;
+        return true;
     }
 
     /**

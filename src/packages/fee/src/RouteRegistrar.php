@@ -20,6 +20,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forAccountant();
     }
 
     /**
@@ -55,6 +56,34 @@ class RouteRegistrar extends CoreRegistrar
 
             //charge-old-students
             Route::resource('charge-old-students', 'ChargeOldStudentController');
+
+            //update school-year from crm
+            Route::post('school-year-crm', 'SchoolYearController@schoolYearCrm');
+
+            //update class-type from crm
+            Route::post('class-type-crm', 'ClassTypeController@classTypeCrm');
+
+            //update fee from crm
+            Route::post('fee-crm', 'FeeController@feeCrm');
+
+            //update payment form from crm
+            Route::post('payment-form-crm', 'PaymentFormController@paymentFormCrm');
+
+            //update fee policies from crm
+            Route::post('fee-policie-crm', 'FeePolicieController@feePolicieCrm');
+        });
+    }
+
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forAccountant()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            //charge-old-students
+            Route::get('charge-old-students', 'ChargeOldStudentController@chargeOldStudent')->name('accountant.charge-old-students');
         });
     }
 }

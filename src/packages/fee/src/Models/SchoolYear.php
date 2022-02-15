@@ -19,11 +19,10 @@ class SchoolYear extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'YearFrom', 'YearTo', 'StartDate', 'EndDate', 'TotalMonth',
+        'YearFrom', 'YearTo', 'StartDate', 'EndDate', 'TotalMonth', 'SchoolYearCrmId'
     ];
 
     protected $dateTimeFields = [
-
         'StartDate',
         'EndDate',
     ];

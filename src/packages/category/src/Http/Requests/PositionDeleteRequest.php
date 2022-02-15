@@ -42,8 +42,7 @@ class PositionDeleteRequest extends FormRequest
                     $probationaryContract = ProbationaryContract::where('PositionId', $value)->first();
                     $transferDetail = TransferDetail::where('PositionId', $value)->first();
 
-                    if (
-                        !is_null($appointDetails) || !is_null($dismissedDetail) || !is_null($positionLevel) || !is_null($labourContract)
+                    if (!is_null($appointDetails) || !is_null($dismissedDetail) || !is_null($positionLevel) || !is_null($labourContract)
                         || !is_null($probationaryContract) || !is_null($transferDetail)
                     ) {
                         return $fail('Dữ liệu đang được sử dụng!');

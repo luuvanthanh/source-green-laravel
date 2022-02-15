@@ -48,5 +48,4 @@ class RevokeShift extends UuidModel
     {
         return $this->employee->timekeeping()->whereDate('AttendedAt', $this->DateViolation);
     }
-
 }

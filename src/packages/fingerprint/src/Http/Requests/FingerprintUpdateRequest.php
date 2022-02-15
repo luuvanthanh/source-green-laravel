@@ -24,9 +24,8 @@ class FingerprintUpdateRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
-            'status' => "sometimes|string|in:" . implode(',', [Fingerprint::ON, Fingerprint::OFF]),
+            'status' => 'sometimes|string|in:' . implode(',', [Fingerprint::ON, Fingerprint::OFF]),
         ];
     }
 }

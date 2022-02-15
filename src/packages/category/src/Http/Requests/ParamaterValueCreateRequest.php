@@ -26,10 +26,10 @@ class ParamaterValueCreateRequest extends FormRequest
         return [
             'name' => 'required|string|unique:ParameterValues,Name',
             'code' => 'required|string|unique:ParameterValues,Code',
-            "applyDate" => 'required',
-            "valueDefault" => 'required',
-            "note" => 'required',
-            "type" => 'required',
+            'applyDate' => 'required',
+            'valueDefault' => 'required',
+            'note' => 'required',
+            'type' => 'required',
         ];
     }
 }

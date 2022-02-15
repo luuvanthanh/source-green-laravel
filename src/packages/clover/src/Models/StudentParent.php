@@ -23,5 +23,4 @@ class StudentParent extends UuidModel
     protected $fillable = [
         'StudentId', 'ParentId', 'RelationType',
     ];
-
 }

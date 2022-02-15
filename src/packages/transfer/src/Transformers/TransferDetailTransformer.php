@@ -77,5 +77,4 @@ class TransferDetailTransformer extends BaseTransformer
 
         return $this->item($transferDetail->branch, new BranchTransformer, 'Branch');
     }
-
 }

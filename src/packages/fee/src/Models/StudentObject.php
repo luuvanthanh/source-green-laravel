@@ -21,5 +21,4 @@ class StudentObject extends UuidModel
     protected $fillable = [
         'Code', 'Name', 'Description', 'IsGrateful',
     ];
-
 }

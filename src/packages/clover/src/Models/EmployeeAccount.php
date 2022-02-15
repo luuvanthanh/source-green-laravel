@@ -21,5 +21,4 @@ class EmployeeAccount extends UuidModel
     protected $fillable = [
         'EmployeeId', 'AppUserId', 'UserName', 'CreatorId', 'FaceImageStatus',
     ];
-
 }

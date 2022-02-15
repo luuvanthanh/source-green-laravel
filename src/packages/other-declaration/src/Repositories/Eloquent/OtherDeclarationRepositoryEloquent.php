@@ -6,7 +6,7 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\OtherDeclaration\Models\OtherDeclaration;
 use GGPHP\OtherDeclaration\Presenters\OtherDeclarationPresenter;
 use GGPHP\OtherDeclaration\Repositories\Contracts\OtherDeclarationRepository;
-use GGPHP\OtherDeclaration\Services\OtherDeclarationDetailServices;
+use GGPHP\OtherDeclaration\Services\OtherDeclarationServices;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -88,7 +88,8 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
         try {
             $otherDeclaration = OtherDeclaration::create($attributes);
 
-            OtherDeclarationDetailServices::add($otherDeclaration->Id, $attributes['detail']);
+            OtherDeclarationServices::addDetail($otherDeclaration->Id, $attributes['detail']);
+            OtherDeclarationServices::addChangeContract($otherDeclaration->Id, $attributes['changeContract']);
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -107,9 +108,15 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
         try {
             $otherDeclaration->update($attributes);
 
-            $otherDeclaration->otherDeclarationDetail()->delete();
+            if (!empty($attributes['detail'])) {
+                $otherDeclaration->otherDeclarationDetail()->delete();
+                OtherDeclarationServices::addDetail($otherDeclaration->Id, $attributes['detail']);
+            }
 
-            OtherDeclarationDetailServices::add($otherDeclaration->Id, $attributes['detail']);
+            if (!empty($attributes['changeContract'])) {
+                $otherDeclaration->changeContractParameter()->delete();
+                OtherDeclarationServices::addChangeContract($otherDeclaration->Id, $attributes['changeContract']);
+            }
 
             \DB::commit();
         } catch (\Exception $e) {

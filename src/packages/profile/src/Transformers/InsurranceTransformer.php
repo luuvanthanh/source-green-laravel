@@ -43,5 +43,4 @@ class InsurranceTransformer extends BaseTransformer
 
         return $this->item($insurrance->employee, new UserTransformer, 'Employee');
     }
-
 }

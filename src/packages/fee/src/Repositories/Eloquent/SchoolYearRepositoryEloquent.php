@@ -4,9 +4,12 @@ namespace GGPHP\Fee\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Fee\Jobs\CreateSchoolYearCrmJob;
+use GGPHP\Fee\Jobs\UpdateSchoolYearCrmJob;
 use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\Fee\Presenters\SchoolYearPresenter;
 use GGPHP\Fee\Repositories\Contracts\SchoolYearRepository;
+use GGPHP\Fee\Services\SchoolYearCrmService;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -59,6 +62,10 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                     ->orWhere([['YearFrom', '>', $attributes['from']], ['YearFrom', '<=', $attributes['to']]])
                     ->orWhere([['YearTo', '>=', $attributes['from']], ['YearTo', '<', $attributes['to']]]);
             });
+        }
+
+        if (!empty($attributes['schoolYearCrmId'])) {
+            $this->model = $this->model->where('SchoolYearCrmId', null);
         }
 
         if (!empty($attributes['limit'])) {
@@ -153,6 +160,8 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
             throw new HttpException(500, $th->getMessage());
         }
 
+        dispatch(new CreateSchoolYearCrmJob($schoolYear->refresh(), request()->bearerToken()));
+
         return parent::parserResult($schoolYear);
     }
 
@@ -245,6 +254,8 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
             throw new HttpException(500, $th->getMessage());
         }
 
+        dispatch(new UpdateSchoolYearCrmJob($schoolYear->refresh(), $schoolYear->SchoolYearCrmId, request()->bearerToken()));
+
         return parent::find($id);
     }
 
@@ -273,5 +284,14 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
         }, $weeks);
 
         return $ranges;
+    }
+
+    public function updateSchoolYearCrm(array $attributes)
+    {
+        foreach ($attributes as $item) {
+            $schoolYear = SchoolYear::findOrfail($item['school_year_clover_id']);
+
+            $schoolYear->update(['SchoolYearCrmId' => $item['id']]);
+        }
     }
 }

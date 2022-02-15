@@ -16,9 +16,9 @@ class WorkDeclarationDetail extends UuidModel
     protected $fillable = ['WorkDeclarationId', 'ModelId', 'ModelType', 'Reason', 'Time', 'WorkNumber', 'Month', 'ShiftId', 'WorkDate'];
 
     const MODEL = [
-        "INVALID" => "GGPHP\WorkDeclaration\Models\WorkDeclaration",
-        "REVOKESHIFT" => "GGPHP\RevokeShift\Models\RevokeShift",
-        "DEFAULT" => "Default",
+        'INVALID' => 'GGPHP\WorkDeclaration\Models\WorkDeclaration',
+        'REVOKESHIFT' => 'GGPHP\RevokeShift\Models\RevokeShift',
+        'DEFAULT' => 'Default',
     ];
 
     protected $dateTimeFields = [

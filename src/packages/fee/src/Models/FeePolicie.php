@@ -19,7 +19,7 @@ class FeePolicie extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'SchoolYearId', 'DecisionNumber', 'DecisionDate',
+        'SchoolYearId', 'DecisionNumber', 'DecisionDate', 'FeePolicieCrmId'
     ];
 
     /**
@@ -65,5 +65,14 @@ class FeePolicie extends UuidModel
     public function schoolYear()
     {
         return $this->belongsTo(\GGPHP\Fee\Models\SchoolYear::class, 'SchoolYearId');
+    }
+
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function moneybus()
+    {
+        return $this->hasMany(\GGPHP\Fee\Models\MoneyBus::class, 'FeePoliceId');
     }
 }

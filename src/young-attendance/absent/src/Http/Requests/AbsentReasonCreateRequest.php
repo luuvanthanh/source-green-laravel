@@ -18,5 +18,4 @@ class AbsentReasonCreateRequest extends FormRequest
             'absentTypeId' => 'required|exists:AbsentTypeStudents,Id',
         ];
     }
-
 }

@@ -27,27 +27,48 @@ class CreatBusRegistrationRequest extends FormRequest
     {
         return [
             'employeeId' => 'required|exists:Employees,Id',
-            'date' => [
-                'required', 'date',
+            // 'date' => [
+            //     'required', 'date',
+            //     function ($attribute, $value, $fail) {
+
+            //         $accessWeekend = $this->checkWeekend($value);
+
+            //         if ($accessWeekend === false) {
+            //             return $fail('Không được đăng ký vào thứ 7, chủ nhật');
+            //         }
+
+            //         $accessSameHoliday = $this->checkSameHoliday($value);
+            //         if ($accessSameHoliday !== true) {
+            //             return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
+            //         }
+            //     },
+            // ],
+            'detail.*.date' => 'required',
+            'detail.*.hours' => 'required',
+            'detail' => [
+                'required',
                 function ($attribute, $value, $fail) {
+                    foreach ($value as $key => $item) {
+                        $accessWeekend = $this->checkWeekend($item['date']);
 
-                    $accessWeekend = $this->checkWeekend($value);
+                        if ($accessWeekend === false) {
+                            return $fail('Không được đăng ký vào thứ 7, chủ nhật');
+                        }
 
-                    if ($accessWeekend === false) {
-                        return $fail('Không được đăng ký vào thứ 7, chủ nhật');
+                        $accessSameHoliday = $this->checkSameHoliday($item['date']);
+                        if ($accessSameHoliday !== true) {
+                            return $fail('Không được đăng ký vào ngày lễ ' . $accessSameHoliday);
+                        }
                     }
 
-                    $accessSameHoliday = $this->checkSameHoliday($value);
-                    if ($accessSameHoliday !== true) {
-                        return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
-                    }
+                    return true;
                 },
             ],
             'hourNumber' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value < 0) {
-                        return $fail("Trường dữ liệu phải lớn hơn 0.");
+                        return $fail('Trường dữ liệu phải lớn hơn 0.');
                     }
                 },
             ],

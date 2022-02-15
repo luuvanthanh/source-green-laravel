@@ -60,7 +60,7 @@ class SalaryIncreaseTransformer extends BaseTransformer
         }
 
         return [
-            "parameterValues" => $parameterValues,
+            'parameterValues' => $parameterValues,
         ];
     }
 

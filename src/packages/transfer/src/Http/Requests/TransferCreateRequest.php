@@ -39,7 +39,7 @@ class TransferCreateRequest extends FormRequest
 
                     if (!is_null($tranfer)) {
                         $startDate = $tranfer->StartDate->format('d-m-Y');
-                        return $fail("Thời gian áp dụng phải lớn hơn ngày $startDate.");
+                        return $fail('Thời gian áp dụng phải lớn hơn ngày' . $startDate . '.');
                     }
                 },
             ],
@@ -50,12 +50,12 @@ class TransferCreateRequest extends FormRequest
             'data.*.employeeId' => [
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
-                    $employeeId = request()->employeeId;
-                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $now = Carbon::now();
+                    $labourContract = LabourContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $now->format('Y-m-d'))->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $now->format('Y-m-d'))->first();
 
                     if (is_null($labourContract)  && is_null($probationaryContract)) {
-                        return $fail("Chưa có hợp đồng không được tạo điều chuyển.");
+                        return $fail('Chưa có hợp đồng không được tạo điều chuyển.');
                     }
                 },
             ],
@@ -73,7 +73,7 @@ class TransferCreateRequest extends FormRequest
     public function messages()
     {
         return [
-            'decisionDate.after_or_equal' => "Trường phải là ngày hiện tại hoặc sau ngày hiện tại.",
+            'decisionDate.after_or_equal' => 'Trường phải là ngày hiện tại hoặc sau ngày hiện tại.',
         ];
     }
 }

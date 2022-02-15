@@ -45,7 +45,6 @@ class ClassesTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-
         return [];
     }
 

@@ -32,5 +32,4 @@ class GetShiftUserRequest extends FormRequest
             ],
         ];
     }
-
 }

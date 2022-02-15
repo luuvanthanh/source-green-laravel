@@ -37,7 +37,6 @@ class Attendance
                 $state = hexdec(substr($u[1], 56, 2));
                 $timestamp = Util::decodeTime(hexdec(Util::reverseHex(substr($u[1], 58, 8))));
                 $type = hexdec(Util::reverseHex(substr($u[1], 66, 2 )));
-				
                 $attendance[] = [
                     'uid' => $uid,
                     'id' => $id,

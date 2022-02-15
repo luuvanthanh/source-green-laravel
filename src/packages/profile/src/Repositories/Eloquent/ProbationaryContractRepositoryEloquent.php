@@ -88,7 +88,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                     break;
                 case 'GAN_HET_HAN':
                     $now = Carbon::now();
-                    $addMonth = Carbon::now()->addMonth();
+                    $addMonth = Carbon::now()->addWeeks();
 
                     $this->model = $this->model->where('ContractTo', '>=', $now->format('Y-m-d'))->where('ContractTo', '<=', $addMonth->format('Y-m-d'));
                     break;
@@ -110,6 +110,21 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
+        if (!empty($attributes['typeOfContractId'])) {
+            $typeOfContractId = explode(',', $attributes['typeOfContractId']);
+            $this->model = $this->model->whereIn('TypeOfContractId', $typeOfContractId);
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $this->model = $this->model->whereIn('BranchId', $branchId);
+        }
+
+        if (!empty($attributes['positionId'])) {
+            $positionId = explode(',', $attributes['positionId']);
+            $this->model = $this->model->whereIn('PositionId', $positionId);
         }
 
         if (!empty($attributes['fullName'])) {
@@ -299,7 +314,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'salaryRatio' => $labourContract->SalaryRatio ? $labourContract->SalaryRatio : '........',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
-            'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . " - " . $labourContract->division->Name : '........',
+            'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . ' - ' . $labourContract->division->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Address : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => number_format($salary),

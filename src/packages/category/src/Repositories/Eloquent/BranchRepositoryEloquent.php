@@ -6,7 +6,9 @@ use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Presenters\BranchPresenter;
 use GGPHP\Category\Repositories\Contracts\BranchRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Core\Services\CrmService;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class BranchRepositoryEloquent.
@@ -64,5 +66,78 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
         }
 
         return $branch;
+    }
+
+    public function create(array $attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $branch = Branch::create($attributes);
+
+            $data = [
+                'code' => $branch->Code,
+                'name' => $branch->Name,
+                'address' => $branch->Address,
+                'phone_number' => $branch->PhoneNumber,
+                'branch_id_hrm' => $branch->Id
+            ];
+
+            $branchCrm = CrmService::createBranch($data);
+
+            if (isset($branchCrm->data->id)) {
+                $branch->BranchIdCrm = $branchCrm->data->id;
+                $branch->update();
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return parent::parserResult($branch);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $branch = Branch::findOrFail($id);
+
+            $branch->update($attributes);
+
+            $data = [
+                'code' => $branch->Code,
+                'name' => $branch->Name,
+                'address' => $branch->Address,
+                'phone_number' => $branch->PhoneNumber,
+                'branch_id_hrm' => $branch->Id
+            ];
+            $branchIdCrm = $branch->BranchIdCrm;
+
+            $branchCrm = CrmService::updateBranch($data, $branchIdCrm);
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return parent::parserResult($branch);
+    }
+
+    public function delete($id)
+    {
+        \DB::beginTransaction();
+        try {
+            $branch = Branch::findOrFail($id);
+            $branchIdCrm = $branch->BranchIdCrm;
+            $branchCrm = CrmService::deleteBranch($branchIdCrm);
+            $branch->delete();
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+        return parent::all();
     }
 }

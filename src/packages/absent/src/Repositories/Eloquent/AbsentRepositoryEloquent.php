@@ -2,14 +2,21 @@
 
 namespace GGPHP\Absent\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Presenters\AbsentPresenter;
 use GGPHP\Absent\Repositories\Absent\AbsentRepository;
 use GGPHP\Absent\Services\AbsentDetailServices;
+use GGPHP\Category\Models\Branch;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\PositionLevel\Models\PositionLevel;
+use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
@@ -18,8 +25,8 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentRepository
 {
-    protected $employeeRepositoryEloquent, $excelExporterServices;
-
+    protected $employeeRepositoryEloquent;
+    protected $excelExporterServices;
     public function __construct(
         UserRepositoryEloquent $employeeRepositoryEloquent,
         Application $app
@@ -164,5 +171,107 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         return parent::find($id);
+    }
+
+    public function reportAbsent($attributes)
+    {
+        $result = [];
+        $employees = User::whereHas('positionLevel', function ($queryPositionLevel) use ($attributes) {
+            if (!empty($attributes['branchId'])) {
+                $queryPositionLevel->where('BranchId', $attributes['branchId']);
+            }
+            if (!empty($attributes['divisionId'])) {
+                $queryPositionLevel->where('DivisionId', $attributes['divisionId']);
+            }
+            $now = Carbon::now()->format('Y-m-d');
+            $queryPositionLevel->where(function ($q) use ($now) {
+                $q->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
+                    ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
+            });
+        })->whereHas('absent', function ($queryAbsent) use ($attributes) {
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $queryAbsent->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+            }
+        })->where(function ($queryEmployee) use ($attributes) {
+            if (!empty($attributes['employeeId'])) {
+                $queryEmployee->where('Id', $attributes['employeeId']);
+            }
+        })->with(['absent' => function ($queryAbsent) use ($attributes) {
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $queryAbsent->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+            }
+        }])->with(['positionLevel' => function ($queryPositionLevel) use ($attributes) {
+            if (!empty($attributes['branchId'])) {
+                $queryPositionLevel->where('BranchId', $attributes['branchId']);
+            }
+            if (!empty($attributes['divisionId'])) {
+                $queryPositionLevel->where('DivisionId', $attributes['divisionId']);
+            }
+
+            $now = Carbon::now()->format('Y-m-d');
+            $queryPositionLevel->where(function ($q2) use ($now) {
+                $q2->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
+                    ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
+            });
+        }])->get();
+        
+        foreach ($employees as $key => $employee) {
+            foreach ($employee->positionLevel as $key => $positionLevel) {
+                foreach ($employee->absent as $key => $absent) {
+                    $branchName =  $positionLevel->branch->Name;
+                    $divisionName = $positionLevel->division->Name;
+
+                    if (!array_key_exists($branchName, $result)) {
+                        $result[$branchName] =  [
+                            'branchName' => $branchName,
+                            'divisionName' => []
+                        ];
+                    }
+
+                    if (!array_key_exists($divisionName, $result[$branchName]['divisionName'])) {
+                        $result[$branchName]['divisionName'][$divisionName] =  [
+                            'divisionName' => $divisionName,
+                            'absent' => [],
+                        ];
+                    }
+                    $result[$branchName]['divisionName'][$divisionName]['absent'][] =  [
+                        'employeeCode' => $absent->employee->Code,
+                        'employeeName' => $absent->employee->FullName,
+                        'absentId'=> $absent->Id,
+                        'startDate' => $absent->StartDate->format('Y-m-d'),
+                        'endDate' => $absent->EndDate->format('Y-m-d'),
+                        'reason' => $absent->Reason
+                    ];
+                }
+            }
+        }
+
+        $limit = 2;
+        $page = 1;
+        if (!empty($attributes['limit'])) {
+            $limit = $attributes['limit'];
+        }
+
+        if (!empty($attributes['page'])) {
+            $page = $attributes['page'];
+        }
+
+        $result = $this->paginateCollection($result, $limit, $page);
+        return $result;
+    }
+
+    public function paginateCollection($items, $perPage = 2, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+
+        $result = new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+        $result->setPath(request()->url());
+
+        return $result;
     }
 }

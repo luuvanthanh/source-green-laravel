@@ -52,6 +52,9 @@ class RouteRegistrar extends CoreRegistrar
             ]);
 
             \Route::resource('health-insurances', 'HealthInsuranceController');
+
+            //seasonal-contracts
+            \Route::resource('seasonal-contracts', 'SeasonalContractController');
         });
     }
 }

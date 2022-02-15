@@ -12,5 +12,4 @@ use GGPHP\Core\Transformers\BaseTransformer;
 class AbsentDetailTransformer extends BaseTransformer
 {
     protected $availableIncludes = [];
-
 }

@@ -60,5 +60,4 @@ class WorkDeclarationDetailService
 
         return true;
     }
-
 }

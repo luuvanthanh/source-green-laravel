@@ -58,5 +58,4 @@ class PotentialStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
 
         return $paymentForm;
     }
-
 }

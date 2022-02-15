@@ -41,11 +41,20 @@ class CreatBusinessCardRequest extends FormRequest
 
                     if ($absentType->Type === AbsentType::BUSINESS_TRAVEL) {
 
-                        $accessAbsent = $this->checkDuplicateBusinessCard($value);
+                        $accessAbsent = $this->checkDuplicateBusinessCardBusinessTravel($value);
 
                         if (!is_null($accessAbsent)) {
                             $accessAbsent = Carbon::parse($accessAbsent)->format('d-m-Y');
-                            return $fail("Bạn đã có lịch đi công tác vào ngày " . $accessAbsent);
+                            return $fail('Bạn đã có lịch đi công tác vào ngày ' . $accessAbsent);
+                        }
+                    }
+                    
+                    if ($absentType->Type === AbsentType::GO_OUT) {
+
+                        $accessAbsent = $this->checkDuplicateBusinessCardGoOut($value);
+
+                        if (!is_null($accessAbsent)) {
+                            return $fail('Đơn đi ra ngoài vào thời gian ' . $accessAbsent . ' đã tồn tại');
                         }
                     }
 
@@ -53,7 +62,7 @@ class CreatBusinessCardRequest extends FormRequest
                         $accessSameHoliday = $this->checkSameHoliday($item);
 
                         if ($accessSameHoliday !== true) {
-                            return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
+                            return $fail('Không được đăng ký vào ngày lễ ' . $accessSameHoliday);
                         }
                     }
 
@@ -67,7 +76,7 @@ class CreatBusinessCardRequest extends FormRequest
      * @param $value
      * @return bool|string
      */
-    private function checkDuplicateBusinessCard($value)
+    private function checkDuplicateBusinessCardBusinessTravel($value)
     {
         $employeeId = request()->employeeId;
         foreach ($value as $item) {
@@ -83,6 +92,13 @@ class CreatBusinessCardRequest extends FormRequest
 
             switch ($count) {
                 case 1:
+                    if (($item['startTime'] <= $businessCardDetail[0]->StartTime && $item['endTime'] >= $businessCardDetail[0]->StartTime)
+                        || ($item['startTime'] >= $businessCardDetail[0]->StartTime && $item['endTime'] <= $businessCardDetail[0]->EndTime)
+                        || ($item['startTime'] <= $businessCardDetail[0]->EndTime && $item['endTime'] >= $businessCardDetail[0]->EndTime)
+                    ) {
+                        return $item['date'];
+                    }
+
                     if ($businessCardDetail[0]->IsFullDate) {
                         return $item['date'];
                     }
@@ -93,7 +109,35 @@ class CreatBusinessCardRequest extends FormRequest
                     break;
                 case 2:
                     return $item['date'];
-                    break;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $value
+     * @return bool|string
+     */
+    private function checkDuplicateBusinessCardGoOut($value)
+    {
+        $employeeId = request()->employeeId;
+        foreach ($value as $item) {
+            $businessCardDetails = BusinessCardDetail::where('Date', $item['date'])->whereHas('businessCard', function ($query) use ($employeeId) {
+                $query->whereHas('absentType', function ($query) {
+                    $query->where('Type', 'GO_OUT');
+                });
+
+                $query->where('EmployeeId', $employeeId);
+            })->get();
+
+            foreach ($businessCardDetails as $key => $businessCardDetail) {
+                if (($item['startTime'] <= $businessCardDetail->StartTime && $item['endTime'] >= $businessCardDetail->StartTime)
+                    || ($item['startTime'] >= $businessCardDetail->StartTime && $item['endTime'] <= $businessCardDetail->EndTime)
+                    || ($item['startTime'] <= $businessCardDetail->EndTime && $item['endTime'] >= $businessCardDetail->EndTime)
+                ) {
+                    return $item['startTime'] . ' - ' . $item['endTime'];
+                }
             }
         }
 

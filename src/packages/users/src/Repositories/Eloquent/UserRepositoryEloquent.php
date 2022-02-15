@@ -2,8 +2,11 @@
 
 namespace GGPHP\Users\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Core\Services\CrmService;
+use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
@@ -69,7 +72,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         if (!empty($attributes['hasClass'])) {
-            if ($attributes['hasClass'] == "true") {
+            if ($attributes['hasClass'] == 'true') {
                 $this->model = $this->model->whereHas('classTeacher');
             } else {
                 $this->model = $this->model->whereDoesnthave('classTeacher');
@@ -88,6 +91,16 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         $this->model = $this->model->tranferHistory($attributes);
 
+        if (!empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == 'true') {
+            $now = Carbon::now()->format('Y-m-d');
+
+            $this->model = $this->model->whereDoesntHave('labourContract', function ($query) use ($now) {
+                $query->where('ContractTo', '>', $now);
+            })->whereDoesntHave('probationaryContract', function ($query) use ($now) {
+                $query->where('ContractTo', '>', $now);
+            });
+        }
+
         if (empty($attributes['limit'])) {
             $users = $this->get();
         } else {
@@ -105,15 +118,44 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
             $data = [
                 'full_name' => $user->FullName,
-                'employee_id_hrm' => $user->Id
+                'employee_id_hrm' => $user->Id,
+                'file_image' => $user->FileImage
             ];
 
             $employeeCrm = CrmService::createEmployee($data);
-          
+
             if (isset($employeeCrm->data->id)) {
                 $user->EmployeeIdCrm = $employeeCrm->data->id;
                 $user->update();
             }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return parent::parserResult($user);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $user = User::findOrFail($id);
+
+            $user->update($attributes);
+
+            $data = [
+                'full_name' => $user->FullName,
+                'employee_id_hrm' => $user->Id,
+                'file_image' => $user->FileImage
+            ];
+            $employeeIdCrm = $user->EmployeeIdCrm;
+
+            if (!is_null($employeeIdCrm)) {
+                CrmService::updateEmployee($data, $employeeIdCrm);
+            }
+
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();

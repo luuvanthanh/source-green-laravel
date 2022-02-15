@@ -230,7 +230,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         $begin = new \DateTime($startDate);
         $end = new \DateTime($endDate);
-
         $intervalDate = \DateInterval::createFromDateString('1 day');
         $periodDate = new \DatePeriod($begin, $intervalDate, $end->modify('+1 day'));
 
@@ -239,30 +238,30 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
             if (!is_null($dateOff) && $date->format('Y-m-d') >= $dateOff) {
                 $responseTimeKeepingUser[] = [
-                    "date" => $date->format('Y-m-d'),
-                    "timekeepingReport" => 0,
-                    "type" => "NV",
+                    'date' => $date->format('Y-m-d'),
+                    'timekeepingReport' => 0,
+                    'type' => 'NV',
                 ];
-            } else if (!array_key_exists($date->format('Y-m-d'), (array) $employeeTimeWorkShift)) {
+            } elseif (!array_key_exists($date->format('Y-m-d'), (array) $employeeTimeWorkShift)) {
                 $responseTimeKeepingUser[] = [
-                    "date" => $date->format('Y-m-d'),
-                    "timekeepingReport" => 0,
-                    "type" => "KC",
+                    'date' => $date->format('Y-m-d'),
+                    'timekeepingReport' => 0,
+                    'type' => 'KC',
                 ];
-            } else if ($date <= $now && !array_key_exists($date->format('Y-m-d'), $timeKeepingByDate)) {
+            } elseif ($date <= $now && !array_key_exists($date->format('Y-m-d'), $timeKeepingByDate)) {
                 $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
                 if ($checkValue !== false) {
                     $responseTimeKeepingUser[$checkValue] = [
-                        "date" => $date->format('Y-m-d'),
-                        "timekeepingReport" => 0,
-                        "type" => "KXD",
+                        'date' => $date->format('Y-m-d'),
+                        'timekeepingReport' => 0,
+                        'type' => 'KXD',
                     ];
                 } else {
                     $responseTimeKeepingUser[] = [
-                        "date" => $date->format('Y-m-d'),
-                        "timekeepingReport" => 0,
-                        "type" => "KXD",
+                        'date' => $date->format('Y-m-d'),
+                        'timekeepingReport' => 0,
+                        'type' => 'KXD',
                     ];
                 }
             }
@@ -271,15 +270,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 if ($checkValue !== false) {
                     $responseTimeKeepingUser[$checkValue] = [
-                        "date" => $date->format('Y-m-d'),
-                        "timekeepingReport" => 0,
-                        "type" => "WK",
+                        'date' => $date->format('Y-m-d'),
+                        'timekeepingReport' => 0,
+                        'type' => 'WK',
                     ];
                 } else {
                     $responseTimeKeepingUser[] = [
-                        "date" => $date->format('Y-m-d'),
-                        "timekeepingReport" => 0,
-                        "type" => "WK",
+                        'date' => $date->format('Y-m-d'),
+                        'timekeepingReport' => 0,
+                        'type' => 'WK',
                     ];
                 }
             }
@@ -336,7 +335,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         'type' => $type,
                     ];
                     $responseTimeKeepingUser[] = $result;
-                } else if (!empty($workDeclarationByDate[$key])) {
+                } elseif (!empty($workDeclarationByDate[$key])) {
                     arraySortByColumn($workDeclarationByDate[$key], 'Time');
                     $checkIn = $workDeclarationByDate[$key][0]->Time;
                     $checkOut = end($workDeclarationByDate[$key])->Time;
@@ -426,7 +425,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 $checkValue = array_search($value->Date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
-                $type = $value->IsFullDate ? $code : $code . "/2";
+                $type = $value->IsFullDate ? $code : $code . '/2';
 
                 if ($isTimeKeeping) {
                     $timekeepingReport = $value->IsFullDate ? 1 : 0.5;
@@ -484,15 +483,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 if ($checkValue !== false) {
                     $responseTimeKeepingUser[$checkValue] = [
-                        "date" => $value->Date->format('Y-m-d'),
-                        "timekeepingReport" => $timekeepingReport,
-                        "type" => $type,
+                        'date' => $value->Date->format('Y-m-d'),
+                        'timekeepingReport' => $timekeepingReport,
+                        'type' => $type,
                     ];
                 } else {
                     $responseTimeKeepingUser[] = [
-                        "date" => $value->Date->format('Y-m-d'),
-                        "timekeepingReport" => $timekeepingReport,
-                        "type" => $type,
+                        'date' => $value->Date->format('Y-m-d'),
+                        'timekeepingReport' => $timekeepingReport,
+                        'type' => $type,
                     ];
                 }
             }
@@ -541,15 +540,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                         if ($checkValue !== false) {
                             $responseTimeKeepingUser[$checkValue] = [
-                                "date" => $date->format('Y-m-d'),
-                                "timekeepingReport" => $timekeepingReport,
-                                "type" => "L",
+                                'date' => $date->format('Y-m-d'),
+                                'timekeepingReport' => $timekeepingReport,
+                                'type' => 'L',
                             ];
                         } else {
                             $responseTimeKeepingUser[] = [
-                                "date" => $date->format('Y-m-d'),
-                                "timekeepingReport" => $timekeepingReport,
-                                "type" => "L",
+                                'date' => $date->format('Y-m-d'),
+                                'timekeepingReport' => $timekeepingReport,
+                                'type' => 'L',
                             ];
                         }
                     }
@@ -563,15 +562,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                     if ($checkValue !== false) {
                         $responseTimeKeepingUser[$checkValue] = [
-                            "date" => $date->format('Y-m-d'),
-                            "timekeepingReport" => 0,
-                            "type" => "TS",
+                            'date' => $date->format('Y-m-d'),
+                            'timekeepingReport' => 0,
+                            'type' => 'TS',
                         ];
                     } else {
                         $responseTimeKeepingUser[] = [
-                            "date" => $date->format('Y-m-d'),
-                            "timekeepingReport" => 0,
-                            "type" => "TS",
+                            'date' => $date->format('Y-m-d'),
+                            'timekeepingReport' => 0,
+                            'type' => 'TS',
                         ];
                     }
                 }
@@ -606,7 +605,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 $checkValue = array_search($value->Date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
-                $type = $value->IsFullDate ? $code : $code . "/2";
+                $type = $value->IsFullDate ? $code : $code . '/2';
                 if ($isTimeKeeping) {
                     $timekeepingReport = $value->IsFullDate ? 1 : 0.5;
                 } else {
@@ -660,15 +659,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 if ($checkValue !== false) {
                     $responseTimeKeepingUser[$checkValue] = [
-                        "date" => $value->Date->format('Y-m-d'),
-                        "timekeepingReport" => $timekeepingReport,
-                        "type" => $type,
+                        'date' => $value->Date->format('Y-m-d'),
+                        'timekeepingReport' => $timekeepingReport,
+                        'type' => $type,
                     ];
                 } else {
                     $responseTimeKeepingUser[] = [
-                        "date" => $value->Date->format('Y-m-d'),
-                        "timekeepingReport" => $timekeepingReport,
-                        "type" => $type,
+                        'date' => $value->Date->format('Y-m-d'),
+                        'timekeepingReport' => $timekeepingReport,
+                        'type' => $type,
                     ];
                 }
             }
@@ -962,16 +961,13 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $params['[[month]]'][] = array_values($month);
 
         $listMerge = [];
-        $listIndexValue = [];
         $listRowTs = [];
 
         $callbacks = [
             '[[month]]' => function (CallbackParam $param) use (&$listMerge) {
-                $sheet = $param->sheet;
                 $row_index = $param->row_index;
                 $col_index = $param->col_index;
                 $cell_coordinate = $param->coordinate;
-                $value = $param->param[$row_index][$col_index];
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
                 $mergeCoordinate[] = $cell_coordinate;
@@ -1000,13 +996,12 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 foreach ($mergeCoordinate as $key => $coordinate) {
                     if ($key % 2 != 0) {
-                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
                         $listMerge[] = $merge;
                     }
                 }
             },
             '[[values]]' => function (CallbackParam $param) use (&$listMerge, &$listRowTs) {
-
                 $sheet = $param->sheet;
                 $row_index = $param->row_index;
                 $col_index = $param->col_index;
@@ -1014,7 +1009,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $value = $param->param[$row_index][$col_index];
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
-                $listMergeValue = [];
 
                 if ($value == '') {
                     $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
@@ -1058,7 +1052,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                                     $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
 
                                     $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
-                                } else if ($param->param[$row_index][$i] == 'TS' && $valueBefor != 'TS') {
+                                } elseif ($param->param[$row_index][$i] == 'TS' && $valueBefor != 'TS') {
                                     $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
                                     $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
                                 }
@@ -1075,7 +1069,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                     foreach ($mergeCoordinate as $key => $coordinate) {
                         if ($key % 2 != 0) {
-                            $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                            $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
                             $listMerge[] = $merge;
                         }
                     }
@@ -1087,31 +1081,29 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $cell_coordinate = $param->coordinate;
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
                 $lastCol = 'AJ' . $currentRow;
-                $merge = $cell_coordinate . ":" . $lastCol;
+                $merge = $cell_coordinate . ':' . $lastCol;
 
                 $sheet->mergeCells($merge);
 
                 $sheet->getRowDimension($currentRow)->setRowHeight(80);
             },
             '{work}' => function (CallbackParam $param) use (&$listMerge) {
-                $sheet = $param->sheet;
                 $cell_coordinate = $param->coordinate;
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
             },
             '{sign}' => function (CallbackParam $param) use (&$listMerge) {
-                $sheet = $param->sheet;
                 $cell_coordinate = $param->coordinate;
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
             },

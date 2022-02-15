@@ -366,7 +366,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
         $schedule = Schedule::findOrFail($id);
         $startDate = $attributes['startDate'];
 
-        if (Carbon::parse($startDate)->format('Y-m-d') > $schedule->StartDate->format("Y-m-d")) {
+        if (Carbon::parse($startDate)->format('Y-m-d') > $schedule->StartDate->format('Y-m-d')) {
             $this->updateScheduleByStartDate($schedule, $startDate);
         } else {
             $schedule->delete();
@@ -379,7 +379,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
         })->where('ShiftId', $schedule->ShiftId)->where('EmployeeId', $schedule->EmployeeId)->get();
 
         foreach ($oldschedule as $value) {
-            if ($value->StartDate->format("Y-m-d") >= Carbon::parse($startDate)->format('Y-m-d')) {
+            if ($value->StartDate->format('Y-m-d') >= Carbon::parse($startDate)->format('Y-m-d')) {
                 $value->delete();
             } else {
                 $this->updateScheduleByStartDate($value, $startDate);

@@ -65,5 +65,4 @@ class StudentObjectRepositoryEloquent extends CoreRepositoryEloquent implements 
 
         return $studentObject;
     }
-
 }

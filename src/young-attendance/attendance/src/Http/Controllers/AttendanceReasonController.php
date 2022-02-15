@@ -112,5 +112,4 @@ class AttendanceReasonController extends Controller
 
         return $this->success($attendanceReasons, trans('lang::messages.common.getListSuccess'));
     }
-
 }

@@ -18,6 +18,12 @@ use GGPHP\Timekeeping\Repositories\Eloquent\TimekeepingRepositoryEloquent;
 use GGPHP\Users\Models\User;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use alhimik1986\PhpExcelTemplator\params\CallbackParam;
+use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
+use GGPHP\Category\Models\HolidayDetail;
+use GGPHP\WorkHour\Repositories\Eloquent\WorkHourRepositoryEloquent;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class PayrollRepositoryEloquent.
@@ -35,12 +41,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         ExcelExporterServices $excelExporterServices,
         TimekeepingRepositoryEloquent $timekeepingRepositoryEloquent,
         BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
+        WorkHourRepositoryEloquent $workHourRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
         $this->excelExporterServices = $excelExporterServices;
         $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
         $this->timekeepingRepositoryEloquent = $timekeepingRepositoryEloquent;
+        $this->workHourRepositoryEloquent = $workHourRepositoryEloquent;
     }
 
     /**
@@ -111,41 +119,89 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
 
         if (!is_null($otherDeclaration)) {
+            $holiday = [];
+            $holidayDetails = HolidayDetail::where(function ($q2) use ($startDate, $endDate) {
+                $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
+                    ->orWhere([['StartDate', '>=', $startDate], ['StartDate', '<=', $endDate]])
+                    ->orWhere([['EndDate', '>=', $startDate], ['EndDate', '<=', $endDate]]);
+            })->get();
+
+            if (!empty(count($holidayDetails))) {
+                foreach ($holidayDetails as $holidayDetail) {
+                    $begin = new \DateTime($holidayDetail->StartDate->format('Y-m-d'));
+                    $end = new \DateTime($holidayDetail->EndDate->format('Y-m-d'));
+                    $intervalDate = \DateInterval::createFromDateString('1 day');
+                    $periodDate = new \DatePeriod($begin, $intervalDate, $end->modify('+1 day'));
+
+                    foreach ($periodDate as $date) {
+                        if (!in_array($date->format('Y-m-d'), $holiday)) {
+                            $holiday[] = $date->format('Y-m-d');
+                        }
+                    }
+                }
+            }
+
             $numberOfWorkdays = $otherDeclaration->NumberOfWorkdays;
 
             foreach ($employees as &$employee) {
                 if ($otherDeclaration->IsDiseaseSalary) {
-                    $employee = $this->calculatorSalaryDisease($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
+                    $employee = $this->calculatorSalaryDisease($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance, $holiday);
                 } else {
-                    $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
+                    $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance, $holiday);
                 }
             }
+            \DB::beginTransaction();
 
-            $payroll->payrollDetail()->delete();
-            PayRollDetail::insert($dataInsert);
+            try {
+                $payroll->payrollDetail()->delete();
+                PayRollDetail::insert($dataInsert);
 
-            $payroll->update([
-                'columnBasicSalaryAndAllowance' => json_encode(array_values($columnBasicSalaryAndAllowance)),
-                'columnIncurredAllowance' => json_encode(array_values($columnIncurredAllowance)),
-            ]);
+                $payroll->update([
+                    'columnBasicSalaryAndAllowance' => json_encode(array_values($columnBasicSalaryAndAllowance)),
+                    'columnIncurredAllowance' => json_encode(array_values($columnIncurredAllowance)),
+                ]);
 
-            $payroll->update(['IsSalary' => true]);
+                $payroll->update(['IsSalary' => true]);
+
+                \DB::commit();
+            } catch (\Throwable $th) {
+                \DB::rollback();
+                throw new HttpException(500, $th->getMessage());
+            }
         }
 
         return parent::find($attributes['id']);
     }
 
-    public function calculatorSalary($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
+    public function calculatorSalary($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance, $holiday)
     {
+        $month = $payroll->Month;
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
         $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+        $isSocialInsurance = false;
 
         $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
             'startDate' => $startDate,
             'endDate' => $endDate,
         ])->totalWorks;
+        $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail->where('EmployeeId', $employee->Id)->first();
+
+        $overtime = $this->workHourRepositoryEloquent->calculatorWorkHourReport($employee, $holiday);
+
+        //Giờ OT ngày thường
+        $parameter['SO_GIO_LAM_THEM_NGAY_THUONG'] = $overtime->totalWorkWeekday;
+        $otWeekday = $overtime->totalWorkWeekday;
+
+        //Giờ OT cuối tuần
+        $parameter['SO_GIO_LAM_THEM_CUOI_TUAN'] =  $overtime->totalWorkWeekend;
+        $otWeekend = $overtime->totalWorkWeekend;
+
+        //Giờ OT ngày lễ
+        $parameter['SO_GIO_LAM_THEM_NGAY_LE'] = $overtime->totalWorkHoliday;
+        $otHoliday = $overtime->totalWorkHoliday;
+
         $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail->where('EmployeeId', $employee->Id)->first();
 
         $incurredAllowance = [];
@@ -209,10 +265,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $isProbation = false;
 
-        $contract = $employee->labourContract()->orderBy('CreationTime')->first();
+        $contract = $employee->labourContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
 
         if (is_null($contract)) {
-            $contract = $employee->probationaryContract()->orderBy('CreationTime')->first();
+            $contract = $employee->probationaryContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
             if (!is_null($contract)) {
                 $isProbation = true;
             }
@@ -220,6 +276,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $dateStartWork = null;
 
         if (!is_null($contract) && $totalWorks > 0) {
+            $isSocialInsurance = $contract->IsSocialInsurance;
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
             $parameterValues = $contract->parameterValues;
 
@@ -520,7 +577,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'DateStartWork' => $dateStartWork, // ngày bắt đầu làm việc
                 'IsProbation' => $isProbation, //thử việc
                 'IsMaternity' => $isMaternity, //Nghỉ không lương/Thai sản
-                'IsSocialInsurance' => false, //Không tham gia BHXH
+                'IsSocialInsurance' => $isSocialInsurance, //Không tham gia BHXH
                 'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
                 'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
                 'TotalIncome' => (int) $totalIncome, //TỔNG THU NHẬP
@@ -549,18 +606,38 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'Advance' => $advance, // tạm ứng
                 'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
                 'Note' => null, // ghi chú
+                'SalaryByHour' => $salaryByHour, // lương theo giờ,
+                'OtWeekday' => $otWeekday,
+                'OtWeekend' => $otWeekend,
+                'OtHoliday' => $otHoliday,
             ];
         }
 
         return true;
     }
 
-    public function calculatorSalaryDisease($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
+    public function calculatorSalaryDisease($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance, $holiday)
     {
+        $month = $payroll->Month;
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
         $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+        $isSocialInsurance = false;
+
+        $overtime = $this->workHourRepositoryEloquent->calculatorWorkHourReport($employee, $holiday);
+
+        //Giờ OT ngày thường
+        $parameter['SO_GIO_LAM_THEM_NGAY_THUONG'] = $overtime->totalWorkWeekday;
+        $otWeekday = $overtime->totalWorkWeekday;
+
+        //Giờ OT cuối tuần
+        $parameter['SO_GIO_LAM_THEM_CUOI_TUAN'] =  $overtime->totalWorkWeekend;
+        $otWeekend = $overtime->totalWorkWeekend;
+
+        //Giờ OT ngày lễ
+        $parameter['SO_GIO_LAM_THEM_NGAY_LE'] = $overtime->totalWorkHoliday;
+        $otHoliday = $overtime->totalWorkHoliday;
 
         $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
             'startDate' => $startDate,
@@ -614,10 +691,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $isProbation = false;
 
-        $contract = $employee->labourContract()->orderBy('CreationTime', 'DESC')->first();
+        $contract = $employee->labourContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
 
         if (is_null($contract)) {
-            $contract = $employee->probationaryContract()->orderBy('CreationTime', 'DESC')->first();
+            $contract = $employee->probationaryContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
             if (!is_null($contract)) {
                 $isProbation = true;
             }
@@ -627,6 +704,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         if (!is_null($maternityLeave)) {
             $isMaternity = true;
             if (!is_null($contract)) {
+                $isSocialInsurance = $contract->IsSocialInsurance;
                 $dateStartWork = $contract->ContractFrom->format('Y-m-d');
                 $parameterValues = $contract->parameterValues;
 
@@ -791,7 +869,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'DateStartWork' => $dateStartWork, // ngày bắt đầu làm việc
                     'IsProbation' => $isProbation, //thử việc
                     'IsMaternity' => $isMaternity, //Nghỉ không lương/Thai sản
-                    'IsSocialInsurance' => false, //Không tham gia BHXH
+                    'IsSocialInsurance' => $isSocialInsurance, //Không tham gia BHXH
                     'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
                     'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
                     'TotalIncome' => (int) $totalIncome, //TỔNG THU NHẬP
@@ -819,11 +897,16 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'SocialInsurancePayment' => $socialInsurancePayment, //Thanh toán từ BHXH
                     'Advance' => $advance, // tạm ứng
                     'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
-                    'Note' => null, // ghi chú
+                    'Note' => null, // ghi chú,
+                    'SalaryByHour' => $salaryByHour,
+                    'OtWeekday' => $otWeekday,
+                    'OtWeekend' => $otWeekend,
+                    'OtHoliday' => $otHoliday,
                 ];
             }
         } else {
             if (!is_null($contract) && $totalWorks > 0) {
+                $isSocialInsurance = $contract->IsSocialInsurance;
                 $dateStartWork = $contract->ContractFrom->format('Y-m-d');
                 $parameterValues = $contract->parameterValues;
 
@@ -1038,7 +1121,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'DateStartWork' => $dateStartWork, // ngày bắt đầu làm việc
                     'IsProbation' => $isProbation, //thử việc
                     'IsMaternity' => $isMaternity, //Nghỉ không lương/Thai sản
-                    'IsSocialInsurance' => false, //Không tham gia BHXH
+                    'IsSocialInsurance' => $isSocialInsurance, //Không tham gia BHXH
                     'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
                     'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
                     'TotalIncome' => (int) $totalIncome, //TỔNG THU NHẬP
@@ -1066,7 +1149,12 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'SocialInsurancePayment' => $socialInsurancePayment, //Thanh toán từ BHXH
                     'Advance' => $advance, // tạm ứng
                     'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
-                    'Note' => null, // ghi chú
+                    'Note' => null, // ghi chú,
+                    'SalaryByHour' => $salaryByHour,
+                    'OtWeekday' => $otWeekday,
+                    'OtWeekend' => $otWeekend,
+                    'OtHoliday' => $otHoliday,
+
                 ];
             }
         }
@@ -1154,18 +1242,1305 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
     public function exportPayroll(array $attributes)
     {
+        ini_set('max_execution_time', '300');
+        $payroll = Payroll::where('Id', $attributes['id'])->with(['payrollDetail' => function ($query) use ($attributes) {
+            $query->whereHas('employee', function ($q2) use ($attributes) {
+                $q2->tranferHistory($attributes);
 
-        $payroll = Payroll::findOrFail($attributes['id']);
+                if (!empty($attributes['fullName'])) {
+                    $q2->whereLike('FullName', $attributes['fullName']);
+                }
 
+                if (!empty($attributes['employeeId'])) {
+                    $employeeId = explode(',', $attributes['employeeId']);
+                    $q2->whereIn('Id', $employeeId);
+                }
+            });
+        }])->first();
         $params = [];
         $params['{month}'] = Carbon::parse($payroll->Month)->format('m.Y');
-        $params['{start_time}'] = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
-        $params['{end_time}'] = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+        $params['{start_time}'] = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('d-m-Y');
+        $params['{end_time}'] = Carbon::parse($payroll->Month)->setDay(25)->format('d-m-Y');
+        $now = Carbon::now();
+        $params['{date_sign}'] = $now->format('d');
+        $params['{month_sign}'] = $now->format('m');
+        $params['{year_sign}'] = $now->format('Y');
+
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
         $params['{number_of_work_days}'] = $otherDeclaration->NumberOfWorkdays;
 
+        //mức lương trần bhxh
+        $ceilingSalaryOfSocialInsurance = 0;
+        $paramaterValueCeilingSalaryOfSocialInsurance = ParamaterValue::where('Code', 'MUC_LUONG_TRAN_BHXH')->first();
+        if (!is_null($paramaterValueCeilingSalaryOfSocialInsurance)) {
+            $ceilingSalaryOfSocialInsurance = $paramaterValueCeilingSalaryOfSocialInsurance->ValueDefault;
+        }
+        $params['{ceiling_salary_of_social_insurance}'] = number_format($ceilingSalaryOfSocialInsurance);
 
-        return $this->excelExporterServices->export('salary_month', $params);
+        //mức lương trần bhtn
+        $unemploymentInsuranceCeilingSalary = 0;
+        $paramaterValueUnemploymentInsuranceCeilingSalary = ParamaterValue::where('Code', 'MUC_LUONG_TRAN_BHXH')->first();
+        if (!is_null($paramaterValueUnemploymentInsuranceCeilingSalary)) {
+            $unemploymentInsuranceCeilingSalary = $paramaterValueUnemploymentInsuranceCeilingSalary->ValueDefault;
+        }
+        $params['{unemployment_insurance_ceiling_salary}'] = number_format($unemploymentInsuranceCeilingSalary);
+
+        //giảm trừ bản thân
+        $reduceYourself = 0;
+        $paramaterValueReduceYourself = ParamaterValue::where('Code', 'GIAMTRU_BANTHAN')->first();
+        if (!is_null($paramaterValueReduceYourself)) {
+            $reduceYourself = $paramaterValueReduceYourself->ValueDefault;
+        }
+        $params['{reduce_yourself}'] = number_format($reduceYourself);
+
+        //giảm trừ bản thân phụ thuộc
+        $reduceDependentSelf = 0;
+        $paramaterValueReduceDependentSelf = ParamaterValue::where('Code', 'GIAMTRU_PHUTHUOC')->first();
+        if (!is_null($paramaterValueReduceDependentSelf)) {
+            $reduceDependentSelf = $paramaterValueReduceDependentSelf->ValueDefault;
+        }
+        $params['{reduce_dependent_self}'] = number_format($reduceDependentSelf);
+
+        //phụ cấp ăn trưa
+        $lunchAllowance = 0;
+        $paramaterValueLunchAllowance = ParamaterValue::where('Code', 'PC_AN_TRUA')->first();
+        if (!is_null($paramaterValueLunchAllowance)) {
+            $lunchAllowance = $paramaterValueLunchAllowance->ValueDefault;
+        }
+        $params['{lunch_allowance}'] = number_format($lunchAllowance);
+
+        //lương cơ bản và phụ cấp
+        $basicSalaryAllowance = [];
+        $bsa = [];
+        $totalBsa = [];
+        foreach (json_decode($payroll->ColumnBasicSalaryAndAllowance) as $basicSalaryAllowanceValue) {
+            $basicSalaryAllowance[] = $basicSalaryAllowanceValue->name;
+            $bsa[] = "Lương cơ bản + Phụ Cấp";
+
+            if (!array_key_exists($basicSalaryAllowanceValue->code, $totalBsa)) {
+                $totalBsa[$basicSalaryAllowanceValue->code] = 0;
+            }
+        }
+
+        $params['[[basic_salary_allowance]]'][] = $basicSalaryAllowance;
+        $params['[[bsa]]'][] = $bsa;
+
+        //phụ cấp phát sinh trong tháng
+        $columnIncurredAllowance = [];
+        $ai = [];
+        $totalAi = [];
+        if (!empty(json_decode($payroll->ColumnIncurredAllowance))) {
+
+            foreach (json_decode($payroll->ColumnIncurredAllowance) as $columnIncurredAllowanceValue) {
+                $columnIncurredAllowance[] = $columnIncurredAllowanceValue->name;
+                $ai[] = "Phụ cấp phát sinh trong tháng";
+
+                if (!array_key_exists($columnIncurredAllowanceValue->code, $totalAi)) {
+                    $totalAi[$columnIncurredAllowanceValue->code] = 0;
+                }
+            }
+        }
+
+        $params['[[allowances_incurred]]'][] = $columnIncurredAllowance;
+        $params['[[ai]]'][] = $ai;
+
+        //param edit merge column
+        $params['{from_to}'] = '';
+        $params['{c_kpi_bonus}'] = '';
+        $params['{c_ot}'] = '';
+        $params['{c_ot_tax}'] = '';
+        $params['{c_ot_no_tax}'] = '';
+        $params['{c_unpaid_leave}'] = '';
+        $params['{c_total_work}'] = '';
+        $params['{c_total_income_month}'] = '';
+        $params['{c_insurance_employee}'] = '';
+        $params['{c_social_insurance_employee}'] = '';
+        $params['{c_health_insurance_employee}'] = '';
+        $params['{c_unemployment_insurance_employee}'] = '';
+        $params['{c_social_insurance_adjusted_employee}'] = '';
+        $params['{c_insurance_company}'] = '';
+        $params['{c_social_insurance_company}'] = '';
+        $params['{c_health_insurance_company}'] = '';
+        $params['{c_unemployment_insurance_company}'] = '';
+        $params['{c_social_insurance_adjusted_company}'] = '';
+        $params['{c_union_dues}'] = '';
+        $params['{c_tax_calculation_parameter}'] = '';
+        $params['{c_dependent_person}'] = '';
+        $params['{c_eeduce}'] = '';
+        $params['{c_charity}'] = '';
+        $params['{c_dependent_total}'] = '';
+        $params['{c_rental_income}'] = '';
+        $params['{c_personal_income_tax}'] = '';
+        $params['{c_tax_free_payments}'] = '';
+        $params['{c_social_insurance_payment}'] = '';
+        $params['{c_advance}'] = '';
+        $params['{c_actually_received}'] = '';
+        $params['{c_note}'] = '';
+        $params['{c_month_sign_commitment}'] = Carbon::parse($payroll->Month)->format('m');;
+        $params['{c_probationary_note}'] = '';
+        $params['{c_salary_hours}'] = '';
+        $params['{c_merge_ot_empty}'] = '';
+        $params['{c_over_time}'] = '';
+        $params['{c_ot_tax_2}'] = '';
+        $params['{c_ot_no_tax_2}'] = '';
+        $params['{c_total_ot}'] = '';
+        $params['{c_empty_1}'] = '';
+        $params['{c_empty_2}'] = '';
+
+        //data total
+        $params['{total}'] = '';
+        $params['{total_total_income}'] = 0;
+        $params['{total_kpi_bonus}'] = 0;
+        $params['{total_ot_tax}'] = 0;
+        $params['{total_ot_no_tax}'] = 0;
+        $params['{total_unpaid_leave}'] = 0;
+        $params['{total_total_work}'] = 0;
+        $params['{total_total_income_month}'] = 0;
+        $params['{total_social_insurance_employee}'] = 0;
+        $params['{total_health_insurance_employee}'] = 0;
+        $params['{total_unemployment_insurance_employee}'] = 0;
+        $params['{total_social_insurance_adjusted_employee}'] = 0;
+        $params['{total_social_insurance_company}'] = 0;
+        $params['{total_health_insurance_company}'] = 0;
+        $params['{total_unemployment_insurance_company}'] = 0;
+        $params['{total_social_insurance_adjusted_company}'] = 0;
+        $params['{total_union_dues}'] = 0;
+        $params['{total_dependent_person}'] = 0;
+        $params['{total_eeduce}'] = 0;
+        $params['{total_charity}'] = 0;
+        $params['{total_dependent_total}'] = 0;
+        $params['{total_rental_income}'] = 0;
+        $params['{total_personal_income_tax}'] = 0;
+        $params['{total_social_insurance_payment}'] = 0;
+        $params['{total_advance}'] = 0;
+        $params['{total_actually_received}'] = 0;
+        $params['{total_note}'] = '';
+
+        $total_total_income = 0;
+        $total_ot_tax = 0;
+        $total_ot_no_tax = 0;
+        $total_total_work = 0;
+        $total_total_income_month = 0;
+        $total_social_insurance_employee = 0;
+        $total_health_insurance_employee = 0;
+        $total_unemployment_insurance_employee = 0;
+        $total_social_insurance_adjusted_employee = 0;
+        $total_social_insurance_company = 0;
+        $total_health_insurance_company = 0;
+        $total_unemployment_insurance_company = 0;
+        $total_social_insurance_adjusted_company = 0;
+        $total_union_dues = 0;
+        $total_dependent_person = 0;
+        $total_eeduce = 0;
+        $total_charity = 0;
+        $total_dependent_total = 0;
+        $total_rental_income = 0;
+        $total_personal_income_tax = 0;
+        $total_social_insurance_payment = 0;
+        $total_advance = 0;
+        $total_actually_received = 0;
+
+        //data employee
+        foreach ($payroll->payrollDetail as $key => $payrollDetail) {
+            $basicSalaryAllowanceEmployee = json_decode($payrollDetail->BasicSalaryAndAllowance);
+            $valueBasicSalaryAllowance = [];
+
+            foreach ($basicSalaryAllowance as $value) {
+
+                $keyBasicSalaryAllowance = array_search($value, array_column($basicSalaryAllowanceEmployee, 'name'));
+
+                if ($keyBasicSalaryAllowance) {
+                    $valueBasicSalaryAllowance[] = $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value;
+
+                    $totalBsa[$basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->code] += $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value;
+                } else {
+                    $valueBasicSalaryAllowance[] = 0;
+                };
+            }
+
+            $incurredAllowanceEmployee = json_decode($payrollDetail->IncurredAllowance);
+            $valueIncurredAllowance = [];
+            foreach ($columnIncurredAllowance as $value) {
+                $keyColumnIncurredAllowance = array_search($value, array_column($incurredAllowanceEmployee, 'name'));
+
+                if ($keyColumnIncurredAllowance) {
+                    $valueIncurredAllowance[] = $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value;
+
+                    $totalAi[$incurredAllowanceEmployee[$keyColumnIncurredAllowance]->code] += $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value;
+                } else {
+                    $valueIncurredAllowance[] = 0;
+                };
+            }
+
+            $otWeekday = !is_null($payrollDetail->OtWeekday) ? $payrollDetail->OtWeekday : 0;
+            $otWeekend = !is_null($payrollDetail->OtWeekend) ? $payrollDetail->OtWeekend : 0;
+            $otHoliday = !is_null($payrollDetail->OtHoliday) ? $payrollDetail->OtHoliday : 0;
+
+            //total
+            $total_total_income   += $payrollDetail->TotalIncome;
+            $total_ot_tax += $payrollDetail->OtTax;
+            $total_ot_no_tax += $payrollDetail->OtNoTax;
+            $total_total_work  += $payrollDetail->TotalWork;
+            $total_total_income_month += $payrollDetail->TotalIncomeMonth;
+            $total_social_insurance_employee += $payrollDetail->SocialInsuranceEmployee;
+            $total_health_insurance_employee += $payrollDetail->HealthInsuranceEmployee;
+            $total_unemployment_insurance_employee += $payrollDetail->UnemploymentInsuranceEmployee;
+            $total_social_insurance_adjusted_employee += $payrollDetail->SocialInsuranceAdjustedEmployee;
+            $total_social_insurance_company += $payrollDetail->SocialInsuranceCompany;
+            $total_health_insurance_company  += $payrollDetail->HealthInsuranceCompany;
+            $total_unemployment_insurance_company += $payrollDetail->UnemploymentInsuranceCompany;
+            $total_social_insurance_adjusted_company  += $payrollDetail->SocialInsuranceAdjustedCompany;
+            $total_union_dues  += $payrollDetail->UnionDues;
+            $total_dependent_person += $payrollDetail->DependentPerson;
+            $total_eeduce += $payrollDetail->Eeduce;
+            $total_charity += $payrollDetail->Charity;
+            $total_dependent_total += $payrollDetail->TotalReduce;
+            $total_rental_income += $payrollDetail->RentalIncome;
+            $total_personal_income_tax += $payrollDetail->PersonalIncomeTax;
+            $total_social_insurance_payment += $payrollDetail->SocialInsurancePayment;
+            $total_advance += $payrollDetail->Advance;
+            $total_actually_received += $payrollDetail->ActuallyReceived;
+            $params['[number]'][] = ++$key;
+            $params['[employee_code]'][] = $payrollDetail->employee->Code;
+            $params['[full_name]'][] = $payrollDetail->employee->FullName;
+            $params['[date_start_work]'][] = Carbon::parse($payrollDetail->DateStartWork)->format('d-m-Y');
+            $params['[probation]'][] = $payrollDetail->IsProbation ? 'Có' : '';
+            $params['[maternity]'][] = $payrollDetail->IsMaternity ? 'Có' : '';
+            $params['[is_social_insurance]'][] = $payrollDetail->IsSocialInsurance ? 'Có' : '';
+            $params['[total_income]'][] = number_format($payrollDetail->TotalIncome);
+            $params['[[value_basic_salary_allowance]]'][] = $valueBasicSalaryAllowance;
+            $params['[[value_allowances incurred]]'][] = $valueIncurredAllowance;
+            $params['[kpi_bonus]'][] = !is_null($payrollDetail->KpiBonus) ? number_format($payrollDetail->KpiBonus) : 0;
+            $params['[ot_tax]'][] = number_format($payrollDetail->OtTax);
+            $params['[ot_no_tax]'][] = number_format($payrollDetail->OtNoTax);
+            $params['[unpaid_leave]'][] = !is_null($payrollDetail->UnpaidLeave) ? number_format($payrollDetail->UnpaidLeave) : 0;
+            $params['[total_work]'][] = number_format($payrollDetail->TotalWork);
+            $params['[total_income_month]'][] = number_format($payrollDetail->TotalIncomeMonth);
+            $params['[social_insurance_employee]'][] = number_format($payrollDetail->SocialInsuranceEmployee);
+            $params['[health_insurance_employee]'][] = number_format($payrollDetail->HealthInsuranceEmployee);
+            $params['[unemployment_insurance_employee]'][] = number_format($payrollDetail->UnemploymentInsuranceEmployee);
+            $params['[social_insurance_adjusted_employee]'][] = number_format($payrollDetail->SocialInsuranceAdjustedEmployee);
+            $params['[social_insurance_company]'][] = number_format($payrollDetail->SocialInsuranceCompany);
+            $params['[health_insurance_company]'][] = number_format($payrollDetail->HealthInsuranceCompany);
+            $params['[unemployment_insurance_company]'][] = number_format($payrollDetail->UnemploymentInsuranceCompany);
+            $params['[social_insurance_adjusted_company]'][] = number_format($payrollDetail->SocialInsuranceAdjustedCompany);
+            $params['[union_dues]'][] = number_format($payrollDetail->UnionDues);
+            $params['[dependent_person]'][] = number_format($payrollDetail->DependentPerson);
+            $params['[eeduce]'][] = number_format($payrollDetail->Eeduce);
+            $params['[charity]'][] = number_format($payrollDetail->Charity);
+            $params['[dependent_total]'][] = number_format($payrollDetail->TotalReduce);
+            $params['[rental_income]'][] = number_format($payrollDetail->RentalIncome);
+            $params['[personal_income_tax]'][] = number_format($payrollDetail->PersonalIncomeTax);
+            $params['[social_insurance_payment]'][] = number_format($payrollDetail->SocialInsurancePayment);
+            $params['[advance]'][] = number_format($payrollDetail->Advance);
+            $params['[actually_received]'][] = number_format($payrollDetail->ActuallyReceived);
+            $params['[note]'][] = $payrollDetail->Note;
+            $params['[sign_commitment]'][] = "-";
+            $params['[probationary_period]'][] = "-";
+            $params['[salary_hours]'][] = number_format($payrollDetail->SalaryByHour);
+            $params['[ot_weekday]'][] = $otWeekday;
+            $params['[ot_weekend]'][] = $otWeekend;
+            $params['[ot_holiday]'][] = $otHoliday;
+            $params['[total_hour_ot]'][] = $otWeekday + $otWeekend + $otHoliday;
+            $params['[total_ot]'][] = number_format($payrollDetail->OtTax + $payrollDetail->OtNoTax);
+            $params['[empty_1]'][] = "";
+            $params['[empty_2]'][] = "";
+        }
+
+        $params['[[total_value_basic_salary_allowance]]'][] = array_values($totalBsa);
+        $params['[[total_value_allowances_incurred]]'][] = array_values($totalAi);
+        //total
+        $params['{total_total_income}'] = number_format($total_total_income);
+        $params['{total_ot_tax}'] = number_format($total_ot_tax);
+        $params['{total_ot_no_tax}'] = number_format($total_ot_no_tax);
+        $params['{total_total_work}'] = number_format($total_total_work);
+        $params['{total_total_income_month}'] = number_format($total_total_income_month);
+        $params['{total_social_insurance_employee}'] = number_format($total_social_insurance_employee);
+        $params['{total_health_insurance_employee}'] = number_format($total_health_insurance_employee);
+        $params['{total_unemployment_insurance_employee}'] = number_format($total_unemployment_insurance_employee);
+        $params['{total_social_insurance_adjusted_employee}'] = number_format($total_social_insurance_adjusted_employee);
+        $params['{total_social_insurance_company}'] = number_format($total_social_insurance_company);
+        $params['{total_health_insurance_company}'] = number_format($total_health_insurance_company);
+        $params['{total_unemployment_insurance_company}'] = number_format($total_unemployment_insurance_company);
+        $params['{total_social_insurance_adjusted_company}'] = number_format($total_social_insurance_adjusted_company);
+        $params['{total_union_dues}'] = number_format($total_union_dues);
+        $params['{total_dependent_person}'] = number_format($total_dependent_person);
+        $params['{total_eeduce}'] = number_format($total_eeduce);
+        $params['{total_charity}'] = number_format($total_charity);
+        $params['{total_dependent_total}'] = number_format($total_dependent_total);
+        $params['{total_rental_income}'] = number_format($total_rental_income);
+        $params['{total_personal_income_tax}'] = number_format($total_personal_income_tax);
+        $params['{total_social_insurance_payment}'] = number_format($total_social_insurance_payment);
+        $params['{total_advance}'] = number_format($total_advance);
+        $params['{total_actually_received}'] = number_format($total_actually_received);
+
+        $endColumnBasicSalaryAllowance = null;
+        $listMerge = [];
+        $callbacks = [
+            '{month}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 2);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+            },
+            '{from_to}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 2);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+            },
+            '{date_sign}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 2);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+            },
+            '[[bsa]]' => function (CallbackParam $param) use (&$listMerge, &$endColumnBasicSalaryAllowance) {
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                if ($col_index == 0) {
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                    for ($i = 0; $i < count($param->param[$row_index]); $i++) {
+                        $adjustedColumnIndex = $columnIndex + $i;
+                        if ($param->param[$row_index][$i] != $firstValue) {
+
+                            $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+
+                            $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                            $firstValue = $param->param[$row_index][$i];
+                        }
+
+                        if ($i == count($param->param[$row_index]) - 1) {
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                            $adjustedColumnAfter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex + 1);
+                            $endColumnBasicSalaryAllowance = $adjustedColumnAfter;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                        }
+                    }
+                }
+
+                foreach ($mergeCoordinate as $key => $coordinate) {
+                    if ($key % 2 != 0) {
+                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $listMerge[] = $merge;
+                    }
+                }
+            },
+            '[[basic_salary_allowance]]' => function (CallbackParam $param) use (&$listMerge) {
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                $nextRow = (int)$currentRow + 1;
+                $merge = $cell_coordinate . ":" . $currentColumn . $nextRow;
+                $listMerge[] = $merge;
+            },
+            '[[ai]]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('c5e0b3');
+
+                if ($col_index == 0) {
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                    for ($i = 0; $i < count($param->param[$row_index]); $i++) {
+                        $adjustedColumnIndex = $columnIndex + $i;
+                        if ($param->param[$row_index][$i] != $firstValue) {
+
+                            $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+
+                            $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                            $firstValue = $param->param[$row_index][$i];
+                        }
+
+                        if ($i == count($param->param[$row_index]) - 1) {
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                        }
+                    }
+                }
+
+                foreach ($mergeCoordinate as $key => $coordinate) {
+                    if ($key % 2 != 0) {
+                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $listMerge[] = $merge;
+                    }
+                }
+            },
+            '[[allowances_incurred]]' => function (CallbackParam $param) use (&$listMerge) {
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                $nextRow = (int)$currentRow + 1;
+                $merge = $cell_coordinate . ":" . $currentColumn . $nextRow;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('c5e0b3');
+            },
+            '{c_kpi_bonus}' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('fee598');
+                $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('f8191a'));
+            },
+            '{c_ot}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+            },
+            '{c_ot_tax}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+            },
+            '{c_ot_no_tax}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+            },
+            '{c_unpaid_leave}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('1465cc'));
+            },
+            '{c_total_work}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('1465cc'));
+            },
+            '{c_total_income_month}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('1465cc'));
+            },
+            '{c_insurance_employee}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 3);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('bdd6ee');
+            },
+            '{c_social_insurance_employee}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('bdd6ee');
+            },
+            '{c_health_insurance_employee}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('bdd6ee');
+            },
+            '{c_unemployment_insurance_employee}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('bdd6ee');
+            },
+            '{c_social_insurance_adjusted_employee}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('bdd6ee');
+            },
+            '{c_insurance_company}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 4);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_social_insurance_company}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_health_insurance_company}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_unemployment_insurance_company}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_social_insurance_adjusted_company}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_union_dues}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_tax_calculation_parameter}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 2);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_dependent_person}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_eeduce}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_charity}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_dependent_total}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_rental_income}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_personal_income_tax}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_tax_free_payments}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('fef2cb');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_social_insurance_payment}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('fef2cb');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_advance}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('fef2cb');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('f8191a'));
+            },
+            '{c_actually_received}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('1465cc'));
+            },
+            '{c_note}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('ccfecc');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_empty_1}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+            },
+            '{c_empty_2}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+            },
+            '{c_month_sign_commitment}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+            },
+            '{c_probationary_note}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+            },
+            '{c_salary_hours}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 2;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_merge_ot_empty}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 6);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+            },
+            '{c_over_time}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 3);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('deeaf6');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+
+                $nextRow = $currentRow + 1;
+                $a = [];
+                for ($i = 0; $i < 4; $i++) {
+                    $adjustedColumnIndex = $columnIndex + $i;
+                    $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                    $a[] = $adjustedColumn . $nextRow;
+                }
+
+                foreach ($a as $key => $value) {
+                    $sheet->getStyle($value)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('deeaf6');
+                    $sheet->getStyle($value)->getFont()->setBold(true);
+                    switch ($key) {
+                        case 0:
+                            $sheet->getCell($value)->setValue("Hrs 150%- ngày thường");
+                            break;
+                        case 1:
+                            $sheet->getCell($value)->setValue("Hrs 200%- cuối tuần");
+                            break;
+                        case 2:
+                            $sheet->getCell($value)->setValue("Hrs 300%- ngày lễ");
+                            break;
+                        case 3:
+                            $sheet->getCell($value)->setValue("Total OT\n(Hrs)");
+                            $sheet->getStyle($value)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('1d83e2'));
+                            break;
+                    }
+                }
+            },
+            '{c_ot_tax_2}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('deeaf6');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{c_ot_no_tax_2}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('deeaf6');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('1f8357'));
+            },
+            '{c_total_ot}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('deeaf6');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '[[value_basic_salary_allowance]]' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $value = $param->param[$row_index][$col_index];
+                $sheet = $param->sheet;
+                $floorValue = floor($value);
+
+                if (($value - $floorValue) > 0) {
+                    $sheet->getStyle($cell_coordinate)->getNumberFormat()
+                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_00);
+                }
+            },
+            '{total}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 2);
+                $merge = $cell_coordinate . ":" . $adjustedColumn . $currentRow;
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '{total_total_income}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+            },
+            '[[total_value_basic_salary_allowance]]' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '[[total_value_allowances_incurred]]' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_kpi_bonus}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_ot_tax}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_ot_no_tax}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_unpaid_leave}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_total_work}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_total_income_month}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_social_insurance_employee}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_health_insurance_employee}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_unemployment_insurance_employee}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_social_insurance_adjusted_employee}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_social_insurance_company}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_health_insurance_company}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_unemployment_insurance_company}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_social_insurance_adjusted_company}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_union_dues}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_dependent_person}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_eeduce}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_charity}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_dependent_total}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_rental_income}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_personal_income_tax}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_social_insurance_payment}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_advance}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_actually_received}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '{total_note}' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                    ->setARGB('dadada');
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
+            },
+            '[empty_1]' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+            },
+            '[empty_2]' => function (CallbackParam $param) {
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+            },
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge, &$endColumnBasicSalaryAllowance, $columnIncurredAllowance) {
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+
+                if (empty($columnIncurredAllowance)) {
+                    $sheet->removeColumn($endColumnBasicSalaryAllowance);
+                }
+            },
+
+        ];
+        // dd($params);
+        return $this->excelExporterServices->export('salary_month', $params, $callbacks, $events);
     }
 }

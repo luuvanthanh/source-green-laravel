@@ -12,12 +12,10 @@ use GGPHP\ShiftSchedule\Models\ScheduleException;
  */
 class ScheduleExceptionTransformer extends BaseTransformer
 {
-
     /**
      * List of resources possible to include
      *
      * @var array
      */
     protected $defaultIncludes = [];
-
 }

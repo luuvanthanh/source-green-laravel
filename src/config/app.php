@@ -220,7 +220,14 @@ return [
         GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
         GGPHP\Facebook\Providers\FacebookServiceProvider::class,
         GGPHP\Zalo\Providers\ZaloServiceProvider::class,
-        GGPHP\WorkOnline\Providers\WorkOnlineServiceProvider::class
+        GGPHP\WorkOnline\Providers\WorkOnlineServiceProvider::class,
+        GGPHP\ChildDevelop\Category\Providers\CategoryServiceProvider::class,
+        GGPHP\ChildDevelop\ChildEvaluate\Providers\ChildEvaluateServiceProvider::class,
+        Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
+        GGPHP\DocumentManagement\Providers\DocumentManagementServiceProvider::class,
+        GGPHP\Tariff\ConfigContent\Providers\ConfigContentServiceProvider::class,
+        GGPHP\ChildDevelop\TestSemester\Providers\TestSemesterServiceProvider::class,
+        GGPHP\Tariff\PaymentPlan\Providers\PaymentPlanServiceProvider::class,
     ],
 
     /*

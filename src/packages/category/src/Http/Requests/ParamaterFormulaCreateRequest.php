@@ -26,8 +26,8 @@ class ParamaterFormulaCreateRequest extends FormRequest
         return [
             'name' => 'required|string|unique:ParameterFormulas,Name',
             'code' => 'required|string|unique:ParameterFormulas,Code',
-            "applyDate" => 'required',
-            "recipe" => 'required',
+            'applyDate' => 'required',
+            'recipe' => 'required',
         ];
     }
 }

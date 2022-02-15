@@ -16,5 +16,4 @@ class ParameterTaxLog extends UuidModel
     protected $fillable = [
         'ParameterTaxId', 'EditEmployee', 'EditDate', 'From', 'To', 'Fax', 'ApplyDate',
     ];
-
 }

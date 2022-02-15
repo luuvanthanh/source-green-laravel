@@ -36,16 +36,16 @@ class DivisionShiftCreateRequest extends FormRequest
                     $shift = DivisionShift::where('DivisionId', $divisionId)->orderBy('CreationTime', 'DESC')->first();
 
                     if (!is_null($shift) && $value <= $shift->StartDate->format('Y-m-d')) {
-                        return $fail("Thời gian bắt đầu phải lớn hơn " . $shift->StartDate->format('d-m-Y'));
+                        return $fail('Thời gian bắt đầu phải lớn hơn ' . $shift->StartDate->format('d-m-Y'));
                     }
 
-                    // $now = Carbon::now();
-                    // $today = $now->toDateString();
-                    // $divisionShift = DivisionShift::where('DivisionId', $divisionId)->where('StartDate', '>', $today)->first();
+                    $now = Carbon::now();
+                    $today = $now->toDateString();
+                    $divisionShift = DivisionShift::where('DivisionId', $divisionId)->where('StartDate', '>', $today)->first();
 
-                    // if (!is_null($divisionShift)) {
-                    //     return $fail('Bạn đã tạo phân ca cho tương lai, vui lòng sửa hoặc xóa phân ca để tạo phân ca mới.');
-                    // }
+                    if (!is_null($divisionShift)) {
+                        return $fail('Bạn đã tạo phân ca cho tương lai, vui lòng sửa hoặc xóa phân ca để tạo phân ca mới.');
+                    }
                 },
             ],
             'endDate' => [
@@ -62,7 +62,7 @@ class DivisionShiftCreateRequest extends FormRequest
     public function messages()
     {
         return [
-            'startDate.after_or_equal' => "Trường phải là một ngày sau ngày hiện tại.",
+            'startDate.after_or_equal' => 'Trường phải là một ngày sau ngày hiện tại.',
         ];
     }
 }
