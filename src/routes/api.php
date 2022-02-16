@@ -23,6 +23,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Clover\RouteRegistrar::routes(function ($router) {
             $router->forAi();
         });
+
+        \GGPHP\InOutHistories\RouteRegistrar::routes(function ($router) {
+            $router->forAi();
+        });
     });
 
     Route::group(['prefix' => 'accountant', 'middleware' => []], function () {

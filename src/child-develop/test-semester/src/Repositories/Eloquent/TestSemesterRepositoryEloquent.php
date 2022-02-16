@@ -7,6 +7,7 @@ use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepositor
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetailChildren;
+use GGPHP\ChildDevelop\TestSemester\Services\StudentServices;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -106,6 +107,21 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
             if (!empty($attributes['status']) &&  $attributes['status'] == 3) {
                 $testSemester->testSemesterDetail()->delete();
+            } else {
+                switch ($attributes['status']) {
+                    case 0:
+                        $status = 'DONOT';
+                        break;
+                    case 1:
+                        $status = 'DOING';
+                        break;
+                    case 2:
+                        $status = 'DID';
+                        break;
+                    default:
+                        break;
+                }
+                StudentServices::updateSTudentStatus($status, $testSemester->StudentId);
             }
 
             \DB::commit();
