@@ -11,6 +11,9 @@ use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 use \GGPHP\Users\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 /**
  * Class ResignationDecisionRepositoryEloquent.
@@ -145,5 +148,106 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
         ];
 
         return $this->wordExporterServices->exportWord('resignation_decision', $params);
+    }
+
+    public function reportResignation($attributes)
+    {
+        $result = [];
+        $employees = User::whereHas('positionLevel', function ($queryPositionLevel) use ($attributes) {
+            if (!empty($attributes['branchId'])) {
+                $queryPositionLevel->where('BranchId', $attributes['branchId']);
+            }
+            if (!empty($attributes['divisionId'])) {
+                $queryPositionLevel->where('DivisionId', $attributes['divisionId']);
+            }
+            $now = Carbon::now()->format('Y-m-d');
+            $queryPositionLevel->where(function ($q) use ($now) {
+                $q->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
+                    ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
+            });
+        })->whereHas('resignationDecision', function ($queryAbsent) use ($attributes) {
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $queryAbsent->where('DecisionDate', '>=', $attributes['startDate'])->where('DecisionDate', '<=', $attributes['endDate']);
+            }
+        })->where(function ($queryEmployee) use ($attributes) {
+            if (!empty($attributes['employeeId'])) {
+                $queryEmployee->where('Id', $attributes['employeeId']);
+            }
+        })->with(['resignationDecision' => function ($queryAbsent) use ($attributes) {
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $queryAbsent->where('DecisionDate', '>=', $attributes['startDate'])->where('DecisionDate', '<=', $attributes['endDate']);
+            }
+        }])->with(['positionLevel' => function ($queryPositionLevel) use ($attributes) {
+            if (!empty($attributes['branchId'])) {
+                $queryPositionLevel->where('BranchId', $attributes['branchId']);
+            }
+            if (!empty($attributes['divisionId'])) {
+                $queryPositionLevel->where('DivisionId', $attributes['divisionId']);
+            }
+
+            $now = Carbon::now()->format('Y-m-d');
+            $queryPositionLevel->where(function ($q2) use ($now) {
+                $q2->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
+                    ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
+            });
+        }])->get();
+        foreach ($employees as $key => $employee) {
+            foreach ($employee->positionLevel as $key => $positionLevel) {
+                foreach ($employee->resignationDecision as $key => $resignationDecision) {
+                    $branchName =  $positionLevel->branch->Name;
+                    $divisionName = $positionLevel->division->Name;
+
+                    if (!array_key_exists($branchName, $result)) {
+                        $result[$branchName] =  [
+                            'branchName' => $branchName,
+                            'divisionName' => []
+                        ];
+                    }
+
+                    if (!array_key_exists($divisionName, $result[$branchName]['divisionName'])) {
+                        $result[$branchName]['divisionName'][$divisionName] =  [
+                            'divisionName' => $divisionName,
+                            'resignationDecision' => [],
+                        ];
+                    }
+                    $result[$branchName]['divisionName'][$divisionName]['resignationDecision'][] =  [
+                        'employeeCode' => $resignationDecision->employee->Code,
+                        'employeeName' => $resignationDecision->employee->FullName,
+                        'resignationDecisiontId' => $resignationDecision->Id,
+                        'division' => $divisionName,
+                        'branch' => $branchName,
+                        'decisionDate' => $resignationDecision->DecisionDate->format('Y-m-d'),
+                        'decisionNumber' => $resignationDecision->DecisionNumber,
+                        'timeApply' => $resignationDecision->TimeApply->format('Y-m-d'),
+                        'payEndDate' => $resignationDecision->PayEndDate->format('Y-m-d'),
+                        'reason' => $resignationDecision->Reason,
+                        'note' => $resignationDecision->Note
+                    ];
+                }
+            }
+        }
+        $limit = 2;
+        $page = 1;
+        if (!empty($attributes['limit'])) {
+            $limit = $attributes['limit'];
+        }
+
+        if (!empty($attributes['page'])) {
+            $page = $attributes['page'];
+        }
+
+        $result = $this->paginateCollection($result, $limit, $page);
+        return $result;
+    }
+
+    public function paginateCollection($items, $perPage = 2, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+
+        $result = new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+        $result->setPath(request()->url());
+
+        return $result;
     }
 }
