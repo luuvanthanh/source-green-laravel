@@ -138,6 +138,14 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             $this->model = $this->model->where('ContractDate', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))->where('ContractDate', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'));
         }
 
+        if (!empty($attributes['date'])) {
+            $this->model = $this->model->where('ContractFrom', '<=', $attributes['date']);
+        }
+
+        if (!empty($attributes['number_year_work']) && !empty($attributes['date'])) {
+            $this->model = $this->model->where('ContractFrom', '<=', Carbon::parse($attributes['date'])->subYear($attributes['number_year_work'])->format('Y-m-d'));
+        }
+
         if (!empty($attributes['limit'])) {
             $labourContract = $this->paginate($attributes['limit']);
         } else {

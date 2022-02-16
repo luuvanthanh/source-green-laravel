@@ -9,6 +9,8 @@ use GGPHP\Category\Transformers\TypeOfContractTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Users\Transformers\UserTransformer;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * Class LabourContractTransformer.
@@ -59,9 +61,20 @@ class LabourContractTransformer extends BaseTransformer
 
             $parameterValues[$key] = $value;
         }
+        $numberYearWork = null;
+        $numberMonthWork = null;
+        $date = request()->date;
+        if (!is_null($date)) {
+            $date = Carbon::parse($date);
+            $quantityWorking = $model->ContractFrom->diff($date);
+            $numberMonthWork = $quantityWorking->m;
+            $numberYearWork = $quantityWorking->y;
+        }
 
         return [
             'parameterValues' => $parameterValues,
+            'numberYearWork' => $numberYearWork,
+            'numberMonthWork' => $numberMonthWork,
         ];
     }
 
