@@ -146,12 +146,13 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
                         TestInputDetailChildren::create($value);
                     }
                 }
-                $testInput->status = TestInput::STATUS[$attributes['status']];
-                $testInput->update();
+            }
+            
+            $testInput->status = TestInput::STATUS[$attributes['status']];
+            $testInput->update();
 
-                if (TestInput::STATUS[$attributes['status']] == 3) {
-                    $testInput->testInputDetail()->delete();
-                }
+            if (TestInput::STATUS[$attributes['status']] == 3) {
+                $testInput->testInputDetail()->delete();
             }
 
             \DB::commit();
