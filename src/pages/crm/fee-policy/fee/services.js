@@ -6,6 +6,7 @@ export function get(params = {}) {
     params: {
       page: params.page,
       limit: params.limit,
+      key: params.key,
     },
   });
 }

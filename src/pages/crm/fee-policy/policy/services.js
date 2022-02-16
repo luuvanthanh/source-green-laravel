@@ -7,8 +7,10 @@ export function get(params = {}) {
     params: {
       page: params.page,
       limit: params.limit,
+      from: params.from,
+      to: params.to,
       include: Helper.convertIncludes([
-        'FeePolicie',
+        'schoolYear',
       ]),
     },
   });

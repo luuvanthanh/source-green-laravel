@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { useParams, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
@@ -14,22 +14,31 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import stylesModule from '../styles.module.scss';
 
 const General = memo(() => {
+  const {
+    loading: { effects },
+    yearsSchool,
+    branches,
+    classes,
+    details,
+  } = useSelector(({ loading, currencyPaymentPlanAdd }) => ({
+    loading,
+    details: currencyPaymentPlanAdd.details,
+    yearsSchool: currencyPaymentPlanAdd.yearsSchool,
+    classes: currencyPaymentPlanAdd.classes,
+    data: currencyPaymentPlanAdd.data,
+    branches: currencyPaymentPlanAdd.branches,
+  }));
+  const [{ menuLeftCurrency }] = useSelector(({ menu }) => [menu]);
+
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [
-    { menuLeftCurrency },
-    { details },
-    effects,
-  ] = useSelector(({ menu, currencyPaymentPlanAdd, loading: { effects } }) => [
-    menu,
-    currencyPaymentPlanAdd,
-    effects,
-  ]);
+
   const mounted = useRef(false);
   const loadingSubmit =
     effects['currencyPaymentPlanAdd/ADD'] || effects['currencyPaymentPlanAdd/UPDATE'];
 
   const params = useParams();
+  const [dataPayment, setDataPayment] = useState([]);
 
   const history = useHistory();
 
@@ -41,6 +50,18 @@ const General = memo(() => {
   useEffect(() => {
     form.setFieldsValue({
       data: [''],
+    });
+    dispatch({
+      type: 'currencyPaymentPlanAdd/GET_YEARS',
+      payload: params,
+    });
+    dispatch({
+      type: 'currencyPaymentPlanAdd/GET_BRANCHES',
+      payload: {},
+    });
+    dispatch({
+      type: 'currencyPaymentPlanAdd/GET_CLASSES',
+      payload: {},
     });
   }, []);
 
@@ -72,20 +93,24 @@ const General = memo(() => {
   }, [details]);
 
   const onFinish = (values) => {
-    const items = values.data.map((item) => ({
-      ...item,
-    }));
     dispatch({
-      type: params.id ? 'currencyPaymentPlanAdd/UPDATE' : 'currencyPaymentPlanAdd/ADD',
-      payload: {
-        ...details,
-        ...params,
-        name: values?.name,
-        symptoms: items,
-      },
+      type: 'currencyPaymentPlanAdd/GET_PAYMENT',
+      payload: values,
       callback: (response, error) => {
         if (response) {
-          history.goBack();
+          console.log('ress', response);
+          setDataPayment(response);
+          form.setFieldsValue({
+            data: response.map((item) => ({
+              fullName: item?.student?.fullName,
+              totalMoney: item?.totalMoney,
+              tuition: item?.tuition?.map((i) => ({
+                fee: i?.fee?.name,
+                money: i?.money,
+              })),
+            })),
+          });
+          console.log('F', form);
         }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -107,7 +132,7 @@ const General = memo(() => {
     <>
       <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftCurrency} />
       <Pane className="p20">
-        <Form layout="vertical" form={form} initialValues={{}} onFinish={onFinish}>
+        <Form layout="vertical" form={form} onFinish={onFinish}>
           <Pane>
             <Pane className="card">
               <Pane>
@@ -117,61 +142,66 @@ const General = memo(() => {
                   </Heading>
 
                   <Pane className="row">
-                    <div className="col-lg-3">
+                    <Pane className="col-lg-3">
                       <FormItem
                         className="mb-3"
                         label="Ngày kế hoạch"
-                        name="currencyOldStudentAddId"
+                        name="datePlan"
                         type={variables.DATE_PICKER}
-                        allowClear={false}
-                        rules={[variables.RULES.EMPTY]}
+                        // rules={[variables.RULES.EMPTY]}
                       />
-                    </div>
-                    <div className="col-lg-3">
+                    </Pane>
+                    <Pane className="col-lg-3">
                       <FormItem
-                        className="mb-3"
+                        className="mb-0"
                         label="Năm học"
-                        name="currencyOldStudentAddId"
+                        name="schoolYearId"
                         type={variables.SELECT}
                         placeholder="Chọn năm"
                         allowClear={false}
+                        data={yearsSchool?.map((item) => ({
+                          ...item,
+                          name: `${item?.yearFrom} - ${item?.yearTo}`,
+                        }))}
                         rules={[variables.RULES.EMPTY]}
+                        // onChange={(e) => loadTableFees(e, 'schoolYearId')}
                       />
-                    </div>
-                    <div className="col-lg-3">
+                    </Pane>
+                    <Pane className="col-lg-3">
                       <FormItem
                         className="mb-3"
                         label="Tháng tính phí"
-                        name="currencyOldStudentAddId"
-                        type={variables.SELECT}
+                        name="chargeMonth"
+                        type={variables.MONTH_PICKER}
                         placeholder="Chọn tháng"
                         allowClear={false}
                         rules={[variables.RULES.EMPTY]}
                       />
-                    </div>
-                    <div className="col-lg-3">
+                    </Pane>
+                    <Pane className="col-lg-3">
                       <FormItem
                         className="mb-3"
                         label="Cơ sở"
-                        name="currencyOldStudentAddId"
+                        data={branches}
+                        name="branchId"
                         type={variables.SELECT}
                         placeholder="Chọn cơ sở"
-                        allowClear={false}
                         rules={[variables.RULES.EMPTY]}
                       />
-                    </div>
-                    <div className="col-lg-3">
+                    </Pane>
+                    <Pane className="col-lg-3">
                       <FormItem
                         className="mb-0"
                         label="Lớp học"
-                        name="currencyOldStudentAddId"
+                        data={classes}
+                        name="classId"
                         type={variables.SELECT}
                         placeholder="Chọn lớp học"
                         allowClear={false}
                         rules={[variables.RULES.EMPTY]}
                       />
-                    </div>
-                    <div className="col-lg-3">
+                    </Pane>
+                    <Pane className="col-lg-3">
                       <FormItem
                         className="mb-0"
                         label="Loại lớp"
@@ -181,16 +211,12 @@ const General = memo(() => {
                         allowClear={false}
                         disabled
                       />
-                    </div>
-                    <div className='pt30 pl15'>
-                      <Button
-                        className="ml-auto px25"
-                        color="success"
-                        htmlType="submit"
-                      >
+                    </Pane>
+                    <Pane className="pt30 pl15">
+                      <Button className="ml-auto px25" color="success" htmlType="submit">
                         Tính phí
                       </Button>
-                    </div>
+                    </Pane>
                   </Pane>
                 </Pane>
               </Pane>
@@ -198,115 +224,108 @@ const General = memo(() => {
             <Pane className="card">
               <Pane className="p20">
                 <Heading type="form-title" className="mb20">
-                Thông tin tính phí
+                  Thông tin tính phí
                 </Heading>
-                <Pane className="row mt20">
-                  <Pane className="col-lg-12">
-                    <Pane>
-                      <div className={stylesModule['wrapper-table']}>
-                        <div className={stylesModule['card-heading']}>
-                          <div className={stylesModule.col}>
-                            <p className={stylesModule.norm}>Tên học sinh</p>
+                {dataPayment.length > 0 ? (
+                  <Pane className="row mt20">
+                    <Pane className="col-lg-12">
+                      <Pane>
+                        <div className={stylesModule['wrapper-table']}>
+                          <div className={stylesModule['card-heading']}>
+                            <div className={stylesModule.col}>
+                              <p className={stylesModule.norm}>Tên học sinh</p>
+                            </div>
+                            <div className={stylesModule.col}>
+                              <p className={stylesModule.norm}>Khoản phí</p>
+                            </div>
+                            <div className={stylesModule.col}>
+                              <p className={stylesModule.norm}>Tiền (đ)</p>
+                            </div>
+                            <div className={stylesModule.col}>
+                              <p className={stylesModule.norm}>Ghi chú</p>
+                            </div>
+                            {/* <div className={stylesModule.cols}>
+                     <p className={stylesModule.norm} />
+                   </div> */}
                           </div>
-                          <div className={stylesModule.col}>
-                            <p className={stylesModule.norm}>Khoản phí</p>
-                          </div>
-                          <div className={stylesModule.col}>
-                            <p className={stylesModule.norm}>Tiền (đ)</p>
-                          </div>
-                          <div className={stylesModule.col}>
-                            <p className={stylesModule.norm}>Ghi chú</p>
-                          </div>
-                          {/* <div className={stylesModule.cols}>
-                            <p className={stylesModule.norm} />
-                          </div> */}
-                        </div>
-                        <Form.List name="data">
-                          {(fields, { add, remove }) => (
-                            <>
-                              {fields.map((fieldItem, index) => (
-                                <Pane key={index} className="d-flex">
-                                  <div className={stylesModule['card-item']}>
-                                    <div className={classnames(stylesModule.col)}>
-                                      <FormItem
-                                        className={stylesModule.item}
-                                        fieldKey={[fieldItem.fieldKey, 'position']}
-                                        name={[fieldItem.name, 'position']}
-                                        type={variables.INPUT}
-                                        rules={[variables.RULES.EMPTY_INPUT]}
-                                      />
-                                    </div>
-                                    <div className={classnames(stylesModule.nol)}>
-                                      <Form.List name="datas">
-                                        {(fields, { add, remove }) => (
-                                          <>
-                                            {fields.map((fieldItem, index) => (
-                                              <Pane key={index} className="d-flex">
-                                                <div className={stylesModule['card-child']}>
-                                                  <div className={classnames(stylesModule.col)}>
-                                                    <FormItem
-                                                      className={stylesModule.item}
-                                                      fieldKey={[fieldItem.fieldKey, 'position']}
-                                                      name={[fieldItem.name, 'position']}
-                                                      type={variables.INPUT}
-                                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                                    />
+                          <Form.List name="data">
+                            {(fields) => (
+                              <>
+                                {fields.map((fieldItem, index) => (
+                                  <Pane key={index} className="d-flex">
+                                    <div className={stylesModule['card-item']}>
+                                      <div className={classnames(stylesModule.col)}>
+                                        <FormItem
+                                          className={stylesModule.item}
+                                          fieldKey={[fieldItem.fieldKey, 'fullName']}
+                                          name={[fieldItem.name, 'fullName']}
+                                          type={variables.INPUT}
+                                        />
+                                      </div>
+                                      <div className={classnames(stylesModule.nol)}>
+                                        <Form.List name={[fieldItem.name, 'tuition']}>
+                                          {(fields) => (
+                                            <>
+                                              {fields.map((fieldItemD, index) => (
+                                                <Pane key={index} className="d-flex">
+                                                  <div className={stylesModule['card-child']}>
+                                                    <div className={classnames(stylesModule.col)}>
+                                                      <FormItem
+                                                        className={stylesModule.item}
+                                                        fieldKey={[fieldItemD.fieldKey, 'fee']}
+                                                        name={[fieldItemD.name, 'fee']}
+                                                        type={variables.INPUT}
+                                                      />
+                                                    </div>
+                                                    <div className={classnames(stylesModule.col)}>
+                                                      <FormItem
+                                                        className={stylesModule.item}
+                                                        fieldKey={[fieldItemD.fieldKey, 'money']}
+                                                        name={[fieldItemD.name, 'money']}
+                                                        type={variables.INPUT}
+                                                      />
+                                                    </div>
                                                   </div>
-                                                  <div className={classnames(stylesModule.col)}>
-                                                    <FormItem
-                                                      className={stylesModule.item}
-                                                      fieldKey={[fieldItem.fieldKey, 'symptomName']}
-                                                      name={[fieldItem.name, 'symptomName']}
-                                                      type={variables.INPUT}
-                                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                                    />
-                                                  </div>
+                                                </Pane>
+                                              ))}
+                                              <div className={stylesModule['card-child']}>
+                                                <div className={classnames(stylesModule.col)}>
+                                                  <div className={stylesModule.item}>Tổng cộng</div>
                                                 </div>
-                                              </Pane>
-                                            ))}
-                                            <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer ">
-                                              <span
-                                                onClick={() => add()}
-                                                role="presentation"
-                                                className={stylesModule.add}
-                                              >
-                                                <span className="icon-plus-circle mr5" />
-                                                Thêm
-                                              </span>
-                                            </Pane>
-                                          </>
-                                        )}
-                                      </Form.List>
+                                                <div className={classnames(stylesModule.col)}>
+                                                  <FormItem
+                                                    className={stylesModule.item}
+                                                    fieldKey={[fieldItem.fieldKey, 'totalMoney']}
+                                                    name={[fieldItem.name, 'totalMoney']}
+                                                    type={variables.INPUT}
+                                                  />
+                                                </div>
+                                              </div>
+                                            </>
+                                          )}
+                                        </Form.List>
+                                      </div>
+                                      <div className={classnames(stylesModule.cols)}>
+                                        <FormItem
+                                          className={stylesModule.item}
+                                          fieldKey={[fieldItem.fieldKey, 'symptomName']}
+                                          name={[fieldItem.name, 'symptomName']}
+                                          type={variables.INPUT}
+                                        />
+                                      </div>
                                     </div>
-                                    <div className={classnames(stylesModule.cols)}>
-                                      <FormItem
-                                        className={stylesModule.item}
-                                        fieldKey={[fieldItem.fieldKey, 'symptomName']}
-                                        name={[fieldItem.name, 'symptomName']}
-                                        type={variables.INPUT}
-                                        rules={[variables.RULES.EMPTY_INPUT]}
-                                      />
-                                    </div>
-                                  </div>
-                                </Pane>
-                              ))}
-                              <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer ">
-                                <span
-                                  onClick={() => add()}
-                                  role="presentation"
-                                  className={stylesModule.add}
-                                >
-                                  <span className="icon-plus-circle mr5" />
-                                  Thêm
-                                </span>
-                              </Pane>
-                            </>
-                          )}
-                        </Form.List>
-                      </div>
+                                  </Pane>
+                                ))}
+                              </>
+                            )}
+                          </Form.List>
+                        </div>
+                      </Pane>
                     </Pane>
                   </Pane>
-                </Pane>
+                ) : (
+                  <div className={stylesModule['wrapper-table-none']}>Chưa có dữ liệu</div>
+                )}
                 <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
                   <p
                     className="btn-delete"
@@ -334,9 +353,5 @@ const General = memo(() => {
     </>
   );
 });
-
-General.propTypes = {};
-
-General.defaultProps = {};
 
 export default General;
