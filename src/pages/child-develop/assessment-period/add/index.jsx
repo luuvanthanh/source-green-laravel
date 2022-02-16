@@ -212,10 +212,10 @@ class Index extends PureComponent {
                     </Heading>
                     <Pane className="row mt20">
                       <Pane className="col-lg-6">
-                        <FormItem label="Mã kì đánh giá" name="code" type={variables.INPUT} placeholder={" "} disabled />
+                        <FormItem label="Mã kỳ đánh giá" name="code" type={variables.INPUT} placeholder={" "} disabled />
                       </Pane>
                       <Pane className="col-lg-12">
-                        <FormItem label="Tên kì đánh giá" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
+                        <FormItem label="Tên kỳ đánh giá" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
                       </Pane>
                       <Pane className="col-lg-6">
                         <FormItem
