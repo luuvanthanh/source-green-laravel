@@ -1,10 +1,36 @@
 import request from '@/utils/requestLavarel';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
+import moment from 'moment';
 
 export function add(data = {}) {
   return request('/v1/payment-plans', {
     method: 'POST',
-    data,
+    data: {
+       datePlan: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.datePlan,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      chargeMonth: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.chargeMonth,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      schoolYearId: data?.schoolYearId,
+      branchId: data?.branchId,
+      classId: data?.classId,
+      detail: data?.data?.map (i => 
+        ({
+          note: i.note,
+          studentId: i.studentId,
+        }))
+    },
   });
 }
 
@@ -32,13 +58,10 @@ export function getPayment(params = {}) {
   return request(`/v1/charge-old-students`, {
     method: 'GET',
     params: {
-        schoolYearId: params?.schoolYearId,
-        branchId: params?.branchId,
-        classId: params?.classId,
-        include: Helper.convertIncludes([
-            'tuition',
-            'student',
-          ]),
+      schoolYearId: params?.schoolYearId,
+      branchId: params?.branchId,
+      classId: params?.classId,
+      include: Helper.convertIncludes(['tuition', 'student']),
     },
   });
 }

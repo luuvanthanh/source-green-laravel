@@ -18,11 +18,13 @@ const General = memo(() => {
     loading: { effects },
     yearsSchool,
     branches,
+    payment,
     classes,
     details,
   } = useSelector(({ loading, currencyPaymentPlanAdd }) => ({
     loading,
     details: currencyPaymentPlanAdd.details,
+    payment : currencyPaymentPlanAdd.payment, 
     yearsSchool: currencyPaymentPlanAdd.yearsSchool,
     classes: currencyPaymentPlanAdd.classes,
     data: currencyPaymentPlanAdd.data,
@@ -31,6 +33,7 @@ const General = memo(() => {
   const [{ menuLeftCurrency }] = useSelector(({ menu }) => [menu]);
 
   const [form] = Form.useForm();
+  const [formData] = Form.useForm();
   const dispatch = useDispatch();
 
   const mounted = useRef(false);
@@ -98,19 +101,44 @@ const General = memo(() => {
       payload: values,
       callback: (response, error) => {
         if (response) {
-          console.log('ress', response);
+          console.log("res",response)
           setDataPayment(response);
           form.setFieldsValue({
             data: response.map((item) => ({
               fullName: item?.student?.fullName,
               totalMoney: item?.totalMoney,
+              studentId: item?.studentId,
               tuition: item?.tuition?.map((i) => ({
                 fee: i?.fee?.name,
                 money: i?.money,
               })),
             })),
           });
-          console.log('F', form);
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              form.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
+console.log("payment",payment);
+  const onSubmit = (values) => {
+    console.log('valse', values);
+    dispatch({
+      type: 'currencyPaymentPlanAdd/ADD',
+      payload: values ,
+      callback: (response, error) => {
+        if (response) {
+         
         }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -132,15 +160,14 @@ const General = memo(() => {
     <>
       <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftCurrency} />
       <Pane className="p20">
-        <Form layout="vertical" form={form} onFinish={onFinish}>
-          <Pane>
-            <Pane className="card">
-              <Pane>
-                <Pane className="card p20">
-                  <Heading type="form-title" className="mb10">
-                    Thông tin chung
-                  </Heading>
-
+        <Pane>
+          <Pane className="card">
+            <Pane>
+              <Pane className="card p20">
+                <Heading type="form-title" className="mb10">
+                  Thông tin chung
+                </Heading>
+                <Form layout="vertical" form={form} onFinish={onFinish}>
                   <Pane className="row">
                     <Pane className="col-lg-3">
                       <FormItem
@@ -218,15 +245,17 @@ const General = memo(() => {
                       </Button>
                     </Pane>
                   </Pane>
-                </Pane>
+                </Form>
               </Pane>
             </Pane>
-            <Pane className="card">
-              <Pane className="p20">
-                <Heading type="form-title" className="mb20">
-                  Thông tin tính phí
-                </Heading>
-                {dataPayment.length > 0 ? (
+          </Pane>
+          <Pane className="card">
+            <Pane className="p20">
+              <Heading type="form-title" className="mb20">
+                Thông tin tính phí
+              </Heading>
+              {dataPayment.length > 0 ? (
+                <Form layout="vertical" form={form} onFinish={onSubmit}>
                   <Pane className="row mt20">
                     <Pane className="col-lg-12">
                       <Pane>
@@ -282,34 +311,40 @@ const General = memo(() => {
                                                         className={stylesModule.item}
                                                         fieldKey={[fieldItemD.fieldKey, 'money']}
                                                         name={[fieldItemD.name, 'money']}
-                                                        type={variables.INPUT}
+                                                        type={variables.INPUT_NUMBER}
                                                       />
                                                     </div>
                                                   </div>
                                                 </Pane>
                                               ))}
-                                              <div className={stylesModule['card-child']}>
-                                                <div className={classnames(stylesModule.col)}>
-                                                  <div className={stylesModule.item}>Tổng cộng</div>
-                                                </div>
-                                                <div className={classnames(stylesModule.col)}>
-                                                  <FormItem
-                                                    className={stylesModule.item}
-                                                    fieldKey={[fieldItem.fieldKey, 'totalMoney']}
-                                                    name={[fieldItem.name, 'totalMoney']}
-                                                    type={variables.INPUT}
-                                                  />
-                                                </div>
-                                              </div>
                                             </>
                                           )}
                                         </Form.List>
+                                        <div className={stylesModule['card-child']}>
+                                          <div className={classnames(stylesModule.col)}>
+                                            <div
+                                              className={stylesModule.item}
+                                              style={{ color: 'black', fontWeight: '700' }}
+                                            >
+                                              Tổng cộng
+                                            </div>
+                                          </div>
+                                          <div className={classnames(stylesModule.col)}>
+                                            <FormItem
+                                              name={[fieldItem.name, 'totalMoney']}
+                                              type={variables.INPUT_NUMBER}
+                                            />
+                                          </div>
+                                        </div>
                                       </div>
-                                      <div className={classnames(stylesModule.cols)}>
+                                      <div
+                                        className={classnames(stylesModule.cols)}
+                                        style={{ width: '25%', height: '100px' }}
+                                      >
                                         <FormItem
                                           className={stylesModule.item}
-                                          fieldKey={[fieldItem.fieldKey, 'symptomName']}
-                                          name={[fieldItem.name, 'symptomName']}
+                                          fieldKey={[fieldItem.fieldKey, 'note']}
+                                          name={[fieldItem.name, 'note']}
                                           type={variables.INPUT}
                                         />
                                       </div>
@@ -323,32 +358,32 @@ const General = memo(() => {
                       </Pane>
                     </Pane>
                   </Pane>
-                ) : (
-                  <div className={stylesModule['wrapper-table-none']}>Chưa có dữ liệu</div>
-                )}
-                <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
-                  <p
-                    className="btn-delete"
-                    role="presentation"
-                    loading={loadingSubmit}
-                    onClick={() => history.goBack()}
-                  >
-                    Hủy
-                  </p>
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={loadingSubmit}
-                  >
-                    Lưu
-                  </Button>
-                </Pane>
-              </Pane>
+                  <Pane className=" pb20 d-flex justify-content-between align-items-center ">
+                    <p
+                      className="btn-delete"
+                      role="presentation"
+                      loading={loadingSubmit}
+                      onClick={() => history.goBack()}
+                    >
+                      Hủy
+                    </p>
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      htmlType="submit"
+                      size="large"
+                      loading={loadingSubmit}
+                    >
+                      Lưu
+                    </Button>
+                  </Pane>
+                </Form>
+              ) : (
+                <div className={stylesModule['wrapper-table-none']}>Chưa có dữ liệu</div>
+              )}
             </Pane>
           </Pane>
-        </Form>
+        </Pane>
       </Pane>
     </>
   );

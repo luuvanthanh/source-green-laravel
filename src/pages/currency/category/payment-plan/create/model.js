@@ -99,7 +99,6 @@ import * as services from './services';
       *GET_CLASSES({ payload }, saga) {
         try {
           const response = yield saga.call(categories.getClasses, payload);
-          console.log("res", response);
           yield saga.put({
             type: 'SET_CLASSES',
             payload: response,
