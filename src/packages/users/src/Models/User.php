@@ -12,6 +12,7 @@ use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
+use GGPHP\ResignationDecision\Models\ResignationDecision;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\WorkOnline\Models\WorkOnline;
 use Illuminate\Auth\Authenticatable;
@@ -335,5 +336,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function trainingSchool()
     {
         return $this->belongsTo(TrainingSchool::class, 'TrainingSchoolId');
+    }
+
+    public function resignationDecision()
+    {
+        return $this->hasMany(ResignationDecision::class, 'EmployeeId');
     }
 }
