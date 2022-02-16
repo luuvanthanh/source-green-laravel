@@ -72,6 +72,15 @@ class RouteRegistrar extends CoreRegistrar
 
             //fee policies 
             Route::resource('fee-policies', 'FeePolicieController')->except('delete');
+
+            //charge-studnet
+            Route::resource('charge-students', 'ChargeStudentController')->except('detete');
+
+            //tuition
+            Route::resource('tuitions', 'TuitionController')->only('index');
+
+            //money fee  policie
+            Route::post('money-fee-policie', 'ChargeStudentController@moneyFeePolicie');
         });
     }
 }
