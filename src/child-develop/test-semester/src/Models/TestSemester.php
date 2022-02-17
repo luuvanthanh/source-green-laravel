@@ -25,7 +25,7 @@ class TestSemester extends UuidModel
     const APPROVAL_STATUS = [
         'UNSENT' => 0,
         'UNQUALIFIED' => 1,
-        'APPROVED' => 2,
+        'APPROVAD' => 2,
     ];
 
     const TYPE = [
