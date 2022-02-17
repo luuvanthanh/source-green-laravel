@@ -13,7 +13,7 @@ class TestInput extends UuidModel
 
     protected $fillable = [
         'employee_id', 'date_interview', 'time_interview',
-        'strength', 'encourage', 'admission_register_id', 'status', 'type', 'class_type_id', 'approval_status', 'branch_id'
+        'strength', 'encourage', 'admission_register_id', 'status', 'type', 'class_type_id', 'approval_status', 'branch_id', 'time_age'
     ];
 
     const STATUS = [
