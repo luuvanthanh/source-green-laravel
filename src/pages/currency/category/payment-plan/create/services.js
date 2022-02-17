@@ -6,7 +6,52 @@ export function add(data = {}) {
   return request('/v1/payment-plans', {
     method: 'POST',
     data: {
-       datePlan: Helper.getDateTime({
+      datePlan: data?.datePlan ?  Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.datePlan,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }) : moment(),
+      chargeMonth: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.chargeMonth,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      classTypeId: data?.classTypeId,
+      schoolYearId: data?.schoolYearId,
+      branchId: data?.branchId,
+      classId: data?.classId,
+      detail: data?.data?.map((i) => ({
+        note: i.note,
+        chargeOldStudentId: i.studentId,
+      })),
+    },
+  });
+}
+
+export function details(params = {}) {
+  return request(`/v1/payment-plans/${params?.id}`, {
+    method: 'GET',
+    params: {
+      include: Helper.convertIncludes([
+        'paymentPlanDetail.chargeOldStudent.student',
+        'paymentPlanDetail.chargeOldStudent.tuition',
+        'paymentPlanDetail.chargeOldStudent.tuition,schoolYear,branch,classes,classType',
+      ]),
+    },
+  });
+}
+
+export function update(data = {}) {
+  return request(`/v1/payment-plans/${data?.id}`, {
+    method: 'PUT',
+    data: {
+      datePlan: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: data.datePlan,
@@ -25,25 +70,12 @@ export function add(data = {}) {
       schoolYearId: data?.schoolYearId,
       branchId: data?.branchId,
       classId: data?.classId,
-      detail: data?.data?.map (i => 
-        ({
-          note: i.note,
-          studentId: i.studentId,
-        }))
+      classTypeId: data?.classTypeId,
+      detail: data?.data?.map((i) => ({
+        note: i.note,
+        chargeOldStudentId: i.studentId,
+      })),
     },
-  });
-}
-
-export function details(data = {}) {
-  return request(`/v1/payment-plans/${data?.id}`, {
-    method: 'GET',
-  });
-}
-
-export function update(data = {}) {
-  return request(`/v1/payment-plans/${data?.id}`, {
-    method: 'PUT',
-    data,
   });
 }
 

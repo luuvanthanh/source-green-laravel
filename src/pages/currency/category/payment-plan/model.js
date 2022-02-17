@@ -94,6 +94,14 @@ import * as services from './services';
           });
         }
       },
+      *REMOVE({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.remove, payload.id);
+          callback(payload);
+        } catch (error) {
+          callback(null, error);
+        }
+      },
     },
     subscriptions: {},
   };

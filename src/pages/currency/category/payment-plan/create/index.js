@@ -2,14 +2,15 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { useParams, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { head, isEmpty, get } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import classnames from 'classnames';
+import { Helper } from '@/utils';
+import moment from 'moment';
 import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
-import styles from '@/assets/styles/Common/common.scss';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import stylesModule from '../styles.module.scss';
 
@@ -18,13 +19,11 @@ const General = memo(() => {
     loading: { effects },
     yearsSchool,
     branches,
-    payment,
     classes,
-    details,
   } = useSelector(({ loading, currencyPaymentPlanAdd }) => ({
     loading,
-    details: currencyPaymentPlanAdd.details,
-    payment : currencyPaymentPlanAdd.payment, 
+
+    payment: currencyPaymentPlanAdd.payment,
     yearsSchool: currencyPaymentPlanAdd.yearsSchool,
     classes: currencyPaymentPlanAdd.classes,
     data: currencyPaymentPlanAdd.data,
@@ -38,10 +37,19 @@ const General = memo(() => {
 
   const mounted = useRef(false);
   const loadingSubmit =
-    effects['currencyPaymentPlanAdd/ADD'] || effects['currencyPaymentPlanAdd/UPDATE'];
+    effects['currencyPaymentPlanAdd/ADD'] || effects['currencyPaymentPlanAdd/UPDATE'] || effects['currencyPaymentPlanAdd/GET_PAYMENT'] ;
 
   const params = useParams();
   const [dataPayment, setDataPayment] = useState([]);
+  const [dataType, setDataType] = useState([]);
+  const [dataSelect, setDataSelect] = useState([]);
+
+  const [details, setDetails] = useState({
+    datePlan: '',
+    startDate: '',
+    endDate: '',
+    chargeMonth: '',
+  });
 
   const history = useHistory();
 
@@ -62,9 +70,8 @@ const General = memo(() => {
       type: 'currencyPaymentPlanAdd/GET_BRANCHES',
       payload: {},
     });
-    dispatch({
-      type: 'currencyPaymentPlanAdd/GET_CLASSES',
-      payload: {},
+    formData.setFieldsValue({
+      datePlan: moment(),
     });
   }, []);
 
@@ -75,25 +82,44 @@ const General = memo(() => {
         payload: params,
         callback: (response) => {
           if (response) {
+            setDetails((prev) => ({
+              ...prev,
+              startDate: response?.schoolYear?.startDate
+                ? Helper.getDate(response?.schoolYear?.startDate, variables.DATE_FORMAT.DATE_VI)
+                : '',
+              endDate: response?.schoolYear?.endDate
+                ? Helper.getDate(response?.schoolYear?.endDate, variables.DATE_FORMAT.DATE_VI)
+                : '',
+            }));
+            formData.setFieldsValue({
+              datePlan: response?.datePlan && moment(response?.datePlan),
+              chargeMonth: response?.chargeMonth && moment(response?.chargeMonth),
+              schoolYearId: response?.schoolYearId,
+              branchId: response?.branchId,
+              classId: response?.classId,
+              classTypeId: response?.classType?.name,
+            });
             form.setFieldsValue({
-              data: response.symptoms.map((item) => ({
-                ...item,
+              data: response?.paymentPlanDetail?.map((item) => ({
+                fullName: item?.chargeOldStudent?.student?.fullName,
+                totalMoney: parseInt(item?.chargeOldStudent?.totalMoney, 10),
+                studentId: item?.chargeOldStudent?.id,
+                note: item?.note,
+                tuition: item?.chargeOldStudent?.tuition?.map((i) => ({
+                  fee: i?.fee?.name,
+                  money: parseInt(i?.money, 10),
+                })),
               })),
             });
           }
         },
       });
     }
+    dispatch({
+      type: 'currencyPaymentPlanAdd/GET_CLASSES',
+      payload : {},
+    });
   }, [params.id]);
-
-  useEffect(() => {
-    if (params.id) {
-      form.setFieldsValue({
-        ...details,
-        ...(head(details.positionLevel) || {}),
-      });
-    }
-  }, [details]);
 
   const onFinish = (values) => {
     dispatch({
@@ -101,16 +127,16 @@ const General = memo(() => {
       payload: values,
       callback: (response, error) => {
         if (response) {
-          console.log("res",response)
+          setDataSelect(values);
           setDataPayment(response);
           form.setFieldsValue({
             data: response.map((item) => ({
               fullName: item?.student?.fullName,
-              totalMoney: item?.totalMoney,
-              studentId: item?.studentId,
+              totalMoney: parseInt(item?.totalMoney, 10),
+              studentId: item?.id,
               tuition: item?.tuition?.map((i) => ({
                 fee: i?.fee?.name,
-                money: i?.money,
+                money: parseInt(i?.money, 10),
               })),
             })),
           });
@@ -130,15 +156,16 @@ const General = memo(() => {
       },
     });
   };
-console.log("payment",payment);
+
   const onSubmit = (values) => {
-    console.log('valse', values);
     dispatch({
-      type: 'currencyPaymentPlanAdd/ADD',
-      payload: values ,
+      type: params?.id ? 'currencyPaymentPlanAdd/UPDATE' : 'currencyPaymentPlanAdd/ADD',
+      payload: params?.id
+        ? { id: params.id, ...values, ...details, classTypeId: dataType[0]?.classType?.id }
+        : { ...values, ...dataSelect, classTypeId: dataType[0]?.classType?.id },
       callback: (response, error) => {
         if (response) {
-         
+          history.goBack();
         }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -156,6 +183,71 @@ console.log("payment",payment);
     });
   };
 
+  const onChangeClass = (e) => {
+    setDataType(classes.filter((i) => i.id === e));
+    form.setFieldsValue({
+      data: undefined,
+    });
+  };
+
+  useEffect(() => {
+    if (dataType.length > 0) {
+      formData.setFieldsValue({
+        classTypeId: dataType[0]?.classType?.name,
+      });
+    }
+  }, [dataType.length > 0]);
+
+  const changeYear = (value) => {
+    if (!value) {
+      setDetails((prev) => ({
+        ...prev,
+        startDate: '',
+        endDate: '',
+        schoolYearId: '',
+        dayAdmission: '',
+      }));
+      return;
+    }
+
+    const response = yearsSchool.find((item) => item.id === value);
+    if (response?.id) {
+      const newDetails = {
+        ...details,
+        startDate: response.startDate
+          ? Helper.getDate(response.startDate, variables.DATE_FORMAT.DATE_VI)
+          : '',
+        endDate: response.endDate
+          ? Helper.getDate(response.endDate, variables.DATE_FORMAT.DATE_VI)
+          : '',
+        schoolYearId: value,
+        dayAdmission: '',
+      };
+      setDetails(newDetails);
+    }
+  };
+
+  const changeDate = (e) => {
+    setDetails((prev) => ({
+      ...prev,
+      datePlan: e,
+    }));
+  };
+
+  const changeMonth = (e) => {
+    setDetails((prev) => ({
+      ...prev,
+      chargeMonth: e,
+    }));
+  };
+
+const onChangeBranch = (e) => {
+  dispatch({
+    type: 'currencyPaymentPlanAdd/GET_CLASSES',
+    payload: {branch : e},
+  });
+};
+
   return (
     <>
       <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftCurrency} />
@@ -167,7 +259,7 @@ console.log("payment",payment);
                 <Heading type="form-title" className="mb10">
                   Thông tin chung
                 </Heading>
-                <Form layout="vertical" form={form} onFinish={onFinish}>
+                <Form layout="vertical" form={formData} onFinish={onFinish}>
                   <Pane className="row">
                     <Pane className="col-lg-3">
                       <FormItem
@@ -175,26 +267,47 @@ console.log("payment",payment);
                         label="Ngày kế hoạch"
                         name="datePlan"
                         type={variables.DATE_PICKER}
-                        // rules={[variables.RULES.EMPTY]}
+                        onChange={changeDate}
                       />
                     </Pane>
-                    <Pane className="col-lg-3">
-                      <FormItem
-                        className="mb-0"
-                        label="Năm học"
-                        name="schoolYearId"
-                        type={variables.SELECT}
-                        placeholder="Chọn năm"
-                        allowClear={false}
-                        data={yearsSchool?.map((item) => ({
-                          ...item,
-                          name: `${item?.yearFrom} - ${item?.yearTo}`,
-                        }))}
-                        rules={[variables.RULES.EMPTY]}
-                        // onChange={(e) => loadTableFees(e, 'schoolYearId')}
-                      />
-                    </Pane>
-                    <Pane className="col-lg-3">
+                    {params?.id ? (
+                      <Pane className="col-lg-3">
+                        <FormItem
+                          className="mb-0"
+                          label="Năm học"
+                          name="schoolYearId"
+                          type={variables.SELECT}
+                          placeholder="Chọn năm"
+                          allowClear={false}
+                          data={yearsSchool?.map((item) => ({
+                            ...item,
+                            name: `${item?.yearFrom} - ${item?.yearTo}`,
+                          }))}
+                          rules={[variables.RULES.EMPTY]}
+                          disabled
+                        />
+                      </Pane>
+                    ) : (
+                      <Pane className="col-lg-3">
+                        <FormItem
+                          className="mb-0"
+                          label="Năm học"
+                          name="schoolYearId"
+                          type={variables.SELECT}
+                          placeholder="Chọn năm"
+                          allowClear={false}
+                          data={yearsSchool?.map((item) => ({
+                            ...item,
+                            name: `${item?.yearFrom} - ${item?.yearTo}`,
+                          }))}
+                          rules={[variables.RULES.EMPTY]}
+                          onChange={changeYear}
+                        />
+                      </Pane>
+                    )}
+                    {
+                      details?.startDate  ?
+                      <Pane className="col-lg-3">
                       <FormItem
                         className="mb-3"
                         label="Tháng tính phí"
@@ -203,36 +316,107 @@ console.log("payment",payment);
                         placeholder="Chọn tháng"
                         allowClear={false}
                         rules={[variables.RULES.EMPTY]}
+                        onChange={changeMonth}
+                        disabledDate={(current) =>
+                          (details?.startDate &&
+                            current <
+                              moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf(
+                                'day',
+                              )) ||
+                          (details?.endDate &&
+                            current >=
+                              moment(details?.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day'))
+                        }
                       />
                     </Pane>
+                    : 
                     <Pane className="col-lg-3">
-                      <FormItem
-                        className="mb-3"
-                        label="Cơ sở"
-                        data={branches}
-                        name="branchId"
-                        type={variables.SELECT}
-                        placeholder="Chọn cơ sở"
-                        rules={[variables.RULES.EMPTY]}
-                      />
-                    </Pane>
-                    <Pane className="col-lg-3">
-                      <FormItem
-                        className="mb-0"
-                        label="Lớp học"
-                        data={classes}
-                        name="classId"
-                        type={variables.SELECT}
-                        placeholder="Chọn lớp học"
-                        allowClear={false}
-                        rules={[variables.RULES.EMPTY]}
-                      />
-                    </Pane>
+                    <FormItem
+                      className="mb-3"
+                      label="Tháng tính phí"
+                      name="chargeMonth"
+                      type={variables.MONTH_PICKER}
+                      placeholder="Chọn tháng"
+                      allowClear={false}
+                      rules={[variables.RULES.EMPTY]}
+                      onChange={changeMonth}
+                      disabledDate={(current) =>
+                        (details?.startDate &&
+                          current <
+                            moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf(
+                              'day',
+                            )) ||
+                        (details?.endDate &&
+                          current >=
+                            moment(details?.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day'))
+                      }
+                      disabled
+                    />
+                  </Pane>
+                    }
+                    {params?.id ? (
+                      <>
+                        <Pane className="col-lg-3">
+                          <FormItem
+                            className="mb-3"
+                            label="Cơ sở"
+                            data={branches}
+                            name="branchId"
+                            type={variables.SELECT}
+                            placeholder="Chọn cơ sở"
+                            rules={[variables.RULES.EMPTY]}
+                            disabled
+                          />
+                        </Pane>
+                        <Pane className="col-lg-3">
+                          <FormItem
+                            className="mb-0"
+                            label="Lớp học"
+                            data={classes}
+                            name="classId"
+                            type={variables.SELECT}
+                            placeholder="Chọn lớp học"
+                            allowClear={false}
+                            rules={[variables.RULES.EMPTY]}
+                            onChange={(event) => onChangeClass(event, 'KeyWord')}
+                            disabled
+                          />
+                        </Pane>
+                      </>
+                    ) : (
+                      <>
+                        <Pane className="col-lg-3">
+                          <FormItem
+                            className="mb-3"
+                            label="Cơ sở"
+                            data={branches}
+                            name="branchId"
+                            type={variables.SELECT}
+                            placeholder="Chọn cơ sở"
+                            rules={[variables.RULES.EMPTY]}
+                            onChange={onChangeBranch}
+                          />
+                        </Pane>
+                        <Pane className="col-lg-3">
+                          <FormItem
+                            className="mb-0"
+                            label="Lớp học"
+                            data={classes}
+                            name="classId"
+                            type={variables.SELECT}
+                            placeholder="Chọn lớp học"
+                            allowClear={false}
+                            rules={[variables.RULES.EMPTY]}
+                            onChange={(event) => onChangeClass(event, 'KeyWord')}
+                          />
+                        </Pane>
+                      </>
+                    )}
                     <Pane className="col-lg-3">
                       <FormItem
                         className="mb-0"
                         label="Loại lớp"
-                        name="currencyOldStudentAddId"
+                        name="classTypeId"
                         type={variables.INPUT}
                         placeholder=" "
                         allowClear={false}
@@ -240,7 +424,7 @@ console.log("payment",payment);
                       />
                     </Pane>
                     <Pane className="pt30 pl15">
-                      <Button className="ml-auto px25" color="success" htmlType="submit">
+                      <Button className="ml-auto px25" color="success" htmlType="submit"  loading={loadingSubmit}>
                         Tính phí
                       </Button>
                     </Pane>
@@ -254,7 +438,7 @@ console.log("payment",payment);
               <Heading type="form-title" className="mb20">
                 Thông tin tính phí
               </Heading>
-              {dataPayment.length > 0 ? (
+              {dataPayment.length > 0 || params?.id ? (
                 <Form layout="vertical" form={form} onFinish={onSubmit}>
                   <Pane className="row mt20">
                     <Pane className="col-lg-12">
@@ -273,9 +457,6 @@ console.log("payment",payment);
                             <div className={stylesModule.col}>
                               <p className={stylesModule.norm}>Ghi chú</p>
                             </div>
-                            {/* <div className={stylesModule.cols}>
-                     <p className={stylesModule.norm} />
-                   </div> */}
                           </div>
                           <Form.List name="data">
                             {(fields) => (
@@ -321,7 +502,7 @@ console.log("payment",payment);
                                           )}
                                         </Form.List>
                                         <div className={stylesModule['card-child']}>
-                                          <div className={classnames(stylesModule.col)}>
+                                          <div className={classnames(stylesModule.colPayment)}>
                                             <div
                                               className={stylesModule.item}
                                               style={{ color: 'black', fontWeight: '700' }}
@@ -329,7 +510,7 @@ console.log("payment",payment);
                                               Tổng cộng
                                             </div>
                                           </div>
-                                          <div className={classnames(stylesModule.col)}>
+                                          <div className={classnames(stylesModule.colPayment)}>
                                             <FormItem
                                               name={[fieldItem.name, 'totalMoney']}
                                               type={variables.INPUT_NUMBER}
@@ -339,7 +520,7 @@ console.log("payment",payment);
                                       </div>
                                       <div
                                         className={classnames(stylesModule.cols)}
-                                        style={{ width: '25%', height: '100px' }}
+                                        style={{ width: '25%'}}
                                       >
                                         <FormItem
                                           className={stylesModule.item}
