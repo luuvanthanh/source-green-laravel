@@ -123,9 +123,9 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
                         'log_level' => $cameraServer->log_level
                     ],
                     'delete_old_file' => [
-                        'backup_video_day_passed' => $cameraServer->backup_video_day_passed,
-                        'clip_video_day_passed' => $cameraServer->clip_video_day_passed,
-                        'loggings_day_passed' => $cameraServer->loggings_day_passed,
+                        'backup_video_days_passed' => $cameraServer->backup_video_day_passed,
+                        'clip_video_days_passed' => $cameraServer->clip_video_day_passed,
+                        'logging_days_passed' => $cameraServer->loggings_day_passed,
                     ]
                 ]),
             ];
@@ -174,9 +174,9 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
                         'log_level' => (int) $cameraServer->log_level
                     ],
                     'delete_old_file' => [
-                        'backup_video_day_passed' => (int) $cameraServer->backup_video_day_passed,
-                        'clip_video_day_passed' => (int) $cameraServer->clip_video_day_passed,
-                        'loggings_day_passed' => (int) $cameraServer->loggings_day_passed,
+                        'backup_video_days_passed' => (int) $cameraServer->backup_video_day_passed,
+                        'clip_video_days_passed' => (int) $cameraServer->clip_video_day_passed,
+                        'logging_days_passed' => (int) $cameraServer->loggings_day_passed,
                     ]
                 ])
             ];

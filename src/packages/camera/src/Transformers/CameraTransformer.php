@@ -55,9 +55,14 @@ class CameraTransformer extends BaseTransformer
             }
         }
 
-        return [
-            'status' => $status,
-        ];
+        $attributes['status'] = $status;
+
+        if (request()->route()->getName() != 'cameras-share') {
+            $urlStream = env('MEDIA_URL') . '/live' . '/' . $model->id . '.flv';
+            $attributes['url_stream'] = $urlStream;
+        }
+
+        return $attributes;
     }
 
     /* @param Collection $collection

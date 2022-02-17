@@ -67,5 +67,6 @@ class RouteRegistrar extends CoreRegistrar
     public function forShare()
     {
         \Route::get('cameras', 'CameraController@index')->name('cameras-share');
+        \Route::get('cameras-stream', 'CameraController@index')->name('cameras-stream-share');
     }
 }
