@@ -24,4 +24,22 @@ class StudentServices
 
         return json_decode($response->body());
     }
+
+    public static function createStudentInfo($attributes)
+    {
+        $url = env('NET_URL') . '/api/students/';
+        $token = request()->bearerToken();
+
+        $response = Http::withToken($token)->post($url, $attributes);
+
+        if ($response->failed()) {
+            $message = 'Có lỗi từ api student';
+            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
+                $message = 'student: ' . json_decode($response->body())->error->message;
+            }
+            throw new HttpException(500, $message);
+        }
+
+        return json_decode($response->body());
+    }
 }

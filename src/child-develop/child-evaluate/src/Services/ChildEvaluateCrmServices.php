@@ -45,7 +45,7 @@ class ChildEvaluateCrmServices
 
         $data = [
             'category_skill_id' => $categorySkill->CategorySkillCrmId,
-            'age' => $attributes['ageCrm'],
+            'age' => $attributes['age'],
             'use' => $attributes['use'],
             'child_evaluate_clover_id' => $id,
             'detail' => $detail,

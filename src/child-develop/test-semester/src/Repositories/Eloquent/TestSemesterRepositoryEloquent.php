@@ -86,6 +86,27 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 $attributes['status'] = TestSemester::STATUS[$attributes['status']];
             }
 
+            if (!empty($attributes['status']) &&  $attributes['status'] == 3) {
+                $testSemester->testSemesterDetail()->delete();
+            } else {
+                if ($attributes['status'] != $testSemester['Status']) {
+                    switch ($attributes['status']) {
+                        case 0:
+                            $status = 'DONOT';
+                            break;
+                        case 1:
+                            $status = 'DOING';
+                            break;
+                        case 2:
+                            $status = 'DID';
+                            break;
+                        default:
+                            break;
+                    }
+                    StudentServices::updateSTudentStatus($status, $testSemester->StudentId);
+                }
+            }
+
             if (is_null($testSemester)) {
                 $testSemester = TestSemester::create($attributes);
             } else {
@@ -105,25 +126,6 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 }
             }
 
-            if (!empty($attributes['status']) &&  $attributes['status'] == 3) {
-                $testSemester->testSemesterDetail()->delete();
-            } else {
-                switch ($attributes['status']) {
-                    case 0:
-                        $status = 'DONOT';
-                        break;
-                    case 1:
-                        $status = 'DOING';
-                        break;
-                    case 2:
-                        $status = 'DID';
-                        break;
-                    default:
-                        break;
-                }
-                StudentServices::updateSTudentStatus($status, $testSemester->StudentId);
-            }
-
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -131,5 +133,35 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         return parent::find($testSemester->Id);
+    }
+
+    public function officialStudent(array $attributes)
+    {
+        $student = StudentServices::createStudentInfo($attributes['studentInfo']);
+
+        if (!empty($attributes['testInput'])) {
+            $attributes['testInput']['studentId'] = $student->student->id;
+            $attributes['testInput']['type'] = TestSemester::TYPE['TEST_INPUT'];
+            $attributes['testInput']['status'] = TestSemester::STATUS['FINISH'];
+            $attributes['testInput']['approvalStatus'] = TestSemester::APPROVAL_STATUS['APPROVAD'];
+            $testInput = TestSemester::create($attributes['testInput']);
+
+            if (!empty($attributes['testInput']['detail'])) {
+                foreach ($attributes['testInput']['detail'] as $value) {
+                    $value['testSemesterId'] = $testInput->Id;
+                    $value['status'] = TestSemesterDetail::STATUS['FINISH'];
+                    $valueDetail = TestSemesterDetail::create($value);
+
+                    if ($value['isCheck']) {
+                        foreach ($value['isCheck'] as $valueIsCheck) {
+                            $valueIsCheck['TestSemesterDetailId'] = $valueDetail->Id;
+                            TestSemesterDetailChildren::create($valueIsCheck);
+                        }
+                    }
+                }
+            }
+        }
+
+        return parent::parserResult($testInput);
     }
 }

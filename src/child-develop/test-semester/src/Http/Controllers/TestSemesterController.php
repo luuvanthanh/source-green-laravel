@@ -108,4 +108,17 @@ class TestSemesterController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function officialStudent(Request $request)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['approvalStatus'])) {
+            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
+        }
+
+        $testSemester = $this->testSemesterRepository->officialStudent($attributes);
+
+        return $this->success($testSemester, trans('lang::messages.common.createSuccess'));
+    }
 }
