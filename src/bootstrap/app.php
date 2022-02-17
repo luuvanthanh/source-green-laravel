@@ -41,6 +41,8 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+// $app->register(App\Providers\TwilioAccessTokenProvider::class);
+// $app->register(App\Providers\TwilioChatGrantProvider::class);
 /*
 |--------------------------------------------------------------------------
 | Return The Application

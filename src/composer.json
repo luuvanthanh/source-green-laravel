@@ -31,6 +31,7 @@
         "predis/predis": "^1.1",
         "prettus/l5-repository": "^2.6",
         "staudenmeir/eloquent-json-relations": "^1.1",
+        "twilio/sdk": "^6.28",
         "webpatser/laravel-uuid": "^4.0",
         "zaloplatform/zalo-php-sdk": "^2.0",
         "php-parallel-lint/php-parallel-lint": "^1.3",

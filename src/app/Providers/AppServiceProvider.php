@@ -14,6 +14,7 @@ use GGPHP\Crm\Fee\Observers\PaymentFormObserver;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
+use Twilio\Jwt\AccessToken;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,16 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        $this->app->bind(
+            AccessToken::class,
+            function ($app) {
+                $accountSid = config('services.twilio')['accountSid'];
+                $apiKey = config('services.twilio')['apiKey'];
+                $apiSecret = config('services.twilio')['apiSecret'];
+
+                return new AccessToken($accountSid, $apiKey, $apiSecret, 3600, 'identity');
+            }
+        );
     }
 
     /**
