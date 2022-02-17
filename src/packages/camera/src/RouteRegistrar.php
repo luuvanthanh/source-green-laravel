@@ -21,6 +21,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->forBread();
         $this->forVmsCore();
+        $this->forShare();
     }
 
     /**
@@ -36,7 +37,9 @@ class RouteRegistrar extends CoreRegistrar
         \Route::post('camera-collections', 'CameraCollectionController@store');
 
         // Camera playback
-        \Route::post('cameras/{id}/playback', 'CameraController@playback');
+        \Route::get('cameras/{id}/playback-get', 'CameraController@playback');
+        // Camera playback
+        \Route::post('cameras/{id}/playback-stop', 'CameraController@playbackStop');
 
         // Camera export video
         \Route::post('cameras/{id}/export', 'CameraController@exportVideo');
@@ -54,5 +57,15 @@ class RouteRegistrar extends CoreRegistrar
     public function forVmsCore()
     {
         \Route::put('cameras-change-log', 'CameraController@cameraChangeLog');
+    }
+
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forShare()
+    {
+        \Route::get('cameras', 'CameraController@index')->name('cameras-share');
     }
 }

@@ -121,8 +121,13 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
                         'clip_root_path' => $cameraServer->clip_root_path,
                         'log_root_path' => $cameraServer->log_root_path,
                         'log_level' => $cameraServer->log_level
+                    ],
+                    'delete_old_file' => [
+                        'backup_video_day_passed' => $cameraServer->backup_video_day_passed,
+                        'clip_video_day_passed' => $cameraServer->clip_video_day_passed,
+                        'loggings_day_passed' => $cameraServer->loggings_day_passed,
                     ]
-                ])
+                ]),
             ];
 
             VmsCoreServices::activatedVmsCore($dataActive);
@@ -167,6 +172,11 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
                         'clip_root_path' => $cameraServer->clip_root_path,
                         'log_root_path' => $cameraServer->log_root_path,
                         'log_level' => (int) $cameraServer->log_level
+                    ],
+                    'delete_old_file' => [
+                        'backup_video_day_passed' => (int) $cameraServer->backup_video_day_passed,
+                        'clip_video_day_passed' => (int) $cameraServer->clip_video_day_passed,
+                        'loggings_day_passed' => (int) $cameraServer->loggings_day_passed,
                     ]
                 ])
             ];

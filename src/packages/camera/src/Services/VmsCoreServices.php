@@ -92,11 +92,45 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function backupVideo(array $attributes)
+    public static function getPlayback(array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/get_backup_video';
+        $url = env('VMS_CORE_URL') . '/vms_core/get_backup_and_playback';
 
         $response = Http::asForm()->post($url, $attributes);
+
+        if ($response->failed()) {
+            $message = 'Có lỗi từ api vms-core';
+            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
+                $message = 'Vms-core: ' . json_decode($response->body())->error->message;
+            }
+            throw new HttpException(500, $message);
+        }
+
+        return json_decode($response->body());
+    }
+
+    public static function stopPlayback(array $attributes)
+    {
+        $url = env('VMS_CORE_URL') . '/vms_core/stop_playback';
+
+        $response = Http::asForm()->post($url, $attributes);
+
+        if ($response->failed()) {
+            $message = 'Có lỗi từ api vms-core';
+            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
+                $message = 'Vms-core: ' . json_decode($response->body())->error->message;
+            }
+            throw new HttpException(500, $message);
+        }
+
+        return json_decode($response->body());
+    }
+
+    public static function exportVideo(array $attributes)
+    {
+        $url = env('VMS_CORE_URL') . '/vms_core/download_backup_video';
+
+        $response = Http::asForm()->get($url, $attributes);
 
         if ($response->failed()) {
             $message = 'Có lỗi từ api vms-core';

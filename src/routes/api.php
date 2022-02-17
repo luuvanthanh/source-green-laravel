@@ -21,6 +21,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forGuest();
     });
 
+    \GGPHP\Storage\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     Route::group(['prefix' => 'ai'], function () {
         \GGPHP\TourGuide\RouteRegistrar::routes(function ($router) {
             $router->forAi();
@@ -42,8 +46,15 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
     });
 
-    \GGPHP\Storage\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
+    Route::group(['prefix' => 'share'], function () {
+        Route::group(['middleware' => ['check_is_share_api']], function () {
+            \GGPHP\TourGuide\RouteRegistrar::routes(function ($router) {
+                $router->forShare();
+            });
+            \GGPHP\Camera\RouteRegistrar::routes(function ($router) {
+                $router->forShare();
+            });
+        });
     });
 
     Route::group(['middleware' => ['auth:api']], function () {
@@ -82,5 +93,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Tourist\RouteRegistrar::routes();
         \GGPHP\Notification\RouteRegistrar::routes();
         \GGPHP\SystemConfig\RouteRegistrar::routes();
+        \GGPHP\ThirdPartyService\RouteRegistrar::routes();
+        \GGPHP\ApiShare\RouteRegistrar::routes();
     });
 });

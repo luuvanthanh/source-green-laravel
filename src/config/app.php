@@ -200,6 +200,8 @@ return [
         GGPHP\Notification\Providers\NotificationServiceProvider::class,
         GGPHP\SystemConfig\Providers\SystemConfigServiceProvider::class,
         GGPHP\AiService\Providers\AiServiceServiceProvider::class,
+        GGPHP\ThirdPartyService\Providers\ThirdPartyServiceServiceProvider::class,
+        GGPHP\ApiShare\Providers\ApiShareServiceProvider::class,
     ],
 
     /*

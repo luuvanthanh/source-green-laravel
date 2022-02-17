@@ -20,6 +20,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->forBread();
         $this->forAi();
+        $this->forShare();
     }
 
     /**
@@ -51,6 +52,19 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::get('objects', 'TourGuideController@index');
+        });
+    }
+
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forShare()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::get('tour-guides', 'TourGuideController@index')->name('tour-guides-share');
+            \Route::get('tour-guides-identification', 'TourGuideController@index')->name('tour-guides-identification-share');
         });
     }
 }

@@ -2,6 +2,10 @@
 
 namespace App\Traits;
 
+use Carbon\Carbon;
+use GGPHP\ApiShare\Models\AccessApi;
+use GGPHP\ApiShare\Models\ApiShare;
+
 trait ResponseTrait
 {
     /**
@@ -29,6 +33,19 @@ trait ResponseTrait
             'status' => $code,
             'title' => $message,
         ];
+
+        $routeName = request()->route()->getName();
+        $apiShare = ApiShare::where('name_route', $routeName)->first();
+
+        if (!is_null($apiShare)) {
+            $dataAccessApi = [
+                'api_share_id' => $apiShare->id,
+                'time' => Carbon::now()->format('Y-m-d H:i:s'),
+                'status' => $code,
+                'response' => json_encode($result)
+            ];
+            AccessApi::create($dataAccessApi);
+        }
 
         if ($isContainByDataString) {
             $result = ['data' => (object) $result];
