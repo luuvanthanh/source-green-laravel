@@ -28,10 +28,10 @@ const Index = memo(() => {
   const dispatch = useDispatch();
   const params = useParams();
 
-  const { loading, menuLeftFeePolicy, yearsSchool } = useSelector(
+  const { loading, menuLeftCRM, yearsSchool } = useSelector(
     ({ loading, menu, schoolYear }) => ({
       loading: loading.effects,
-      menuLeftFeePolicy: menu.menuLeftFeePolicy,
+      menuLeftCRM: menu.menuLeftCRM,
       yearsSchool: schoolYear.data,
     }),
   );
@@ -236,7 +236,7 @@ const Index = memo(() => {
       <Breadcrumbs
         className="pb0"
         last={params?.id ? 'Chi tiết' : 'Thêm mới'}
-        menu={menuLeftFeePolicy}
+        menu={menuLeftCRM}
       />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
         <Loading params={{ type: 'container', goBack: '/chinh-sach-phi/tien-dong' }}>

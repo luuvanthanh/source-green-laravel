@@ -116,7 +116,7 @@ const Index = memo(() => {
     dispatch({
       type: 'extendedClass/GET_WEEK',
       payload: {
-        date: moment().format('YYYY-MM-DD'),
+        date: moment().format(variables.DATE_FORMAT.DATE_AFTER),
       },
       callback: () => {},
     });

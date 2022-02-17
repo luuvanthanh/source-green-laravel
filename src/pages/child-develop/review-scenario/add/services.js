@@ -24,7 +24,7 @@ export function getData(params = {}) {
     params: {
       ...params,
       include: Helper.convertIncludes([
-        'childEvaluateDetail.childEvaluateDetailChildrent',
+        'childEvaluateDetail.childEvaluateDetailChildren',
         'childEvaluateDetailChildrent',
       ]),
     },

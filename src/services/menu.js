@@ -2381,7 +2381,7 @@ export async function getLeftMenuChildDevelop() {
           pro: true,
         },
         {
-          title: 'Kì đánh giá',
+          title: 'Kỳ đánh giá',
           key: 'assessment-period',
           url: [
             '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia',

@@ -9,6 +9,7 @@ export function get(params = {}) {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
       IsMore: 'false',
+      StudiedMonths: 6
     },
   });
 }

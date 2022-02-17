@@ -161,7 +161,6 @@ export default {
     *GET_STUDENTS_ID({ payload }, saga) {
       try {
         const response = yield saga.call(services.getStudentsId, payload);
-       console.log("res",response);
         yield saga.put({
           type: 'SET_STUDENTS_ID',
           payload: response,

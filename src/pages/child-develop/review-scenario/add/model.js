@@ -27,7 +27,7 @@ export default {
     }),
     SET_SKILL: (state, { payload }) => ({
       ...state,
-      skill: payload.parsePayload,
+      skill: payload.parsePayload.filter((i) => i.use === true),
     }),
   },
   effects: {

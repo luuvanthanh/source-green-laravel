@@ -10,7 +10,7 @@ export function get(params = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
-        'childEvaluateDetail.childEvaluateDetailChildrent',
+        'childEvaluateDetail.childEvaluateDetailChildren',
         'categorySkill'
       ]),
     },

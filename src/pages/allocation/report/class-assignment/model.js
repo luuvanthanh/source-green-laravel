@@ -1,202 +1,69 @@
-export default {
-  namespace: 'allocationClassAssignment',
-  state: {
-    data: [
-      {
-        key: 1,
-        name: 'Lake view city',
-        birthDay : 'Lake view',
-        month: '25',
-        children: [
-          {
-            key: 11,
-            name: 'Preschool 1',
-            age: 'Preschool 1',
-            month: '12',
-            children: [
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn Thị Anh Thư',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Trần Thùy Linh',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn Thị Minh Nguyệt',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Trần Phương Linh',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Trần Thùy Linh',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn VIệt Khoa',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn Trần Khả Doanh',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Đặng Ánh Dương',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn Gia Khang',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-            ],
-          },
-          {
-            key: 12,
-            name: 'Lớp',
-            children: [
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn Thị Anh Thư',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Trần Thùy Linh',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn Thị Minh Nguyệt',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Trần Phương Linh',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Trần Thùy Linh',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn VIệt Khoa',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn Trần Khả Doanh',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Đặng Ánh Dương',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-              {
-                key: 11,
-                nameTeacher: 'Nguyễn Gia Khang',
-                code : 'MS1',
-                date: '15/01/2021',
-                branch: 'Lake view city',
-                class: 'Preschool 1'
-              },
-            ],
-          },
-        ],
+import * as services from './services';
+
+  export default {
+    namespace: 'allocationClassAssignment',
+    state: {
+      data: [],
+      pagination: {
+        total: 0,
       },
-      {
-        key: 2,
-        name: 'Scenic Valley 2',
-        birthDay: 'Lake view',
-        children: [
-          {
-            key: 11,
-            name: 'Lớp',
-            age: 'Preschool 1',
-            month: '0',
-          },
-        ],
+      error: {
+        isError: false,
+        data: {},
       },
-    ],
-    pagination: {
-      total: 0,
+      branches: [],
+      classes: [],
     },
-    error: {
-      isError: false,
-      data: {},
+    reducers: {
+      INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+      SET_DATA: (state, { payload }) => ({
+        ...state,
+        data: payload.parsePayload.map((key) => ({
+         branch : (key?.branch || {}),
+         children:( 
+          key?.classTeacherGroupByClasses.map((item) => ({
+            class : item?.class,
+            id: item?.class?.id,
+            children: (
+              item?.classTeachers.map((i) => ({
+                ...i
+              }))
+            )
+          }))
+         )
+        })),
+        pagination: payload.pagination,
+      }),
+      SET_ERROR: (state, { payload }) => ({
+        ...state,
+        error: {
+          isError: true,
+          data: {
+            ...payload,
+          },
+        },
+      }),
     },
-    branches: [],
-    classes: [],
-  },
-  reducers: {
-    
-  },
-  effects: {
-   
-  },
-  subscriptions: {},
-};
+    effects: {
+      *GET_DATA({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.get, payload);
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: {
+              parsePayload: response,
+              pagination: {
+                total: response.totalCount,
+              },
+            },
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+    },
+    subscriptions: {},
+  };

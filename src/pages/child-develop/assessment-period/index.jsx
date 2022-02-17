@@ -205,7 +205,7 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'Tên kì đánh giá',
+        title: 'Tên kỳ đánh giá',
         key: 'name',
         width: 250,
         className: 'min-width-250',
@@ -292,10 +292,10 @@ class Index extends PureComponent {
     const loading = effects['childDevelopAssessmentPeriod/GET_DATA'];
     return (
       <>
-        <Helmet title="Kì đánh giá" />
+        <Helmet title="Kỳ đánh giá" />
         <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Kì đánh giá</Text>
+            <Text color="dark">Kỳ đánh giá</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

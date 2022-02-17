@@ -322,6 +322,7 @@ class Index extends PureComponent {
       {
         IsMore: 'false',
         KeyWord: query?.KeyWord,
+        StudiedMonths: 6,
         Class: query?.Class,
         branchId: query?.branchId || defaultBranch?.id,
         SearchDate: dataIDSearch

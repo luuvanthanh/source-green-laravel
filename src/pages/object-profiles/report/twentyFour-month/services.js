@@ -10,6 +10,7 @@ export function get(params = {}) {
       ...Helper.getPagination(params.page, params.limit),
       LimitStudiedMonths : 36,
       IsMore: true,
+      StudiedMonths: 24
     },
   });
 }

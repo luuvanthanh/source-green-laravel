@@ -315,6 +315,15 @@
   }
 }
 
+.wrapper-none {
+  padding: 20px;
+  width: 100%;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 22px;
+}
+
 .wrapper-testInput {
   padding: 20px;
 
@@ -394,14 +403,14 @@
       padding: 0px !important;
       color: #27a600;
     }
-    .description {
-      font-family: $base__font-family;
-      font-style: normal;
-      font-weight: 600;
-      font-size: 14px;
-      line-height: 20px;
-      color: #36383a;
-    }
+  }
+  .container-title-criteria {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    color: #3b5cad;
   }
 
   .wrapper-containerLogo {
@@ -477,29 +486,28 @@
 
 //MEDICAL
 
-
 .list-button {
   display: flex;
   .plan {
     width: 32px;
     height: 32px;
-    color: #27A600;
+    color: #27a600;
     border-radius: 50%;
-    border: 1px solid #C4CDD4;
+    border: 1px solid #c4cdd4;
   }
   .remove {
     margin: 0px 7px;
     width: 32px;
     height: 32px;
-    color: #7A7E84;
+    color: #7a7e84;
     border-radius: 50%;
-    border: 1px solid #C4CDD4;
+    border: 1px solid #c4cdd4;
   }
   .edit {
     width: 32px;
     height: 32px;
-    color: #27A600;
+    color: #27a600;
     border-radius: 50%;
-    border: 1px solid #C4CDD4;
+    border: 1px solid #c4cdd4;
   }
 }

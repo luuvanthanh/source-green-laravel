@@ -259,13 +259,13 @@ class Index extends PureComponent {
                       <List
                         className={stylesAllocation.list}
                         dataSource={teachers}
-                        renderItem={({ id, fullName, fileImage }, index) => (
+                        renderItem={({ id, fullName, fileImage, positionLevel }, index) => (
                           <List.Item key={id + index}>
                             <div className={stylesAllocation['group-info']}>
                               <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
                               <div className={stylesAllocation.info}>
                                 <h3 className={stylesAllocation.title}>{fullName}</h3>
-                                <p className={stylesAllocation.norm} />
+                                <p className={stylesAllocation.norm}>Chức vụ: {positionLevel}</p>
                               </div>
                             </div>
                           </List.Item>
