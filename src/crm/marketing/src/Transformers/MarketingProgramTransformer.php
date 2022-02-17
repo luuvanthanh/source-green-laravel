@@ -29,7 +29,7 @@ class MarketingProgramTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['article'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -44,13 +44,18 @@ class MarketingProgramTransformer extends BaseTransformer
         $status = null;
 
         foreach (MarketingProgram::STATUS as $key => $value) {
-            
+
             if ($value == $model->status) {
                 $status = $key;
             }
         }
         return [
-            'status' => $status, 
+            'status' => $status,
         ];
+    }
+
+    public function includeArticle(MarketingProgram $marketingProgram)
+    {
+        return $this->collection($marketingProgram->article, new ArticleTransformer, 'Article');
     }
 }

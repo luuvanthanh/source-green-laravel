@@ -100,6 +100,10 @@ class CustomerLeadController extends Controller
             $credentials['user_create_info'] = json_encode($credentials['user_create_info']);
         }
 
+        if (!empty($credentials['sex'])) {
+            $credentials['sex'] = CustomerLead::SEX[$credentials['sex']];
+        }
+
         $customerLead = $this->customerLeadRepository->update($credentials, $id);
 
         return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
@@ -135,5 +139,33 @@ class CustomerLeadController extends Controller
         $customerLead = $this->customerLeadRepository->mergeCustomerLead($attributes);
 
         return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function moveToCustomerPotential(Request $request)
+    {
+        $this->customerLeadRepository->moveToCustomerPotential($request->all());
+
+        return $this->success([], trans('lang::messages.common.movedSuccess'));
+    }
+
+    public function storeCareProgram(Request $request)
+    {
+        $customerLead = $this->customerLeadRepository->storeCareProgram($request->all());
+
+        return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function customerLeadAccount(Request $request)
+    {
+        $customerLead = $this->customerLeadRepository->customerLeadAccount($request->all());
+
+        return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function getCustomerLead($id)
+    {
+        $customerLead = $this->customerLeadRepository->findCustomerLead($id);
+
+        return $this->success($customerLead, trans('lang::messages.common.getInfoSuccess'));
     }
 }

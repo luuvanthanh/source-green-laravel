@@ -52,6 +52,10 @@ class StatusCareRepositoryEloquent extends BaseRepository implements StatusCareR
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $statusCare = $this->paginate($attributes['limit']);
         } else {

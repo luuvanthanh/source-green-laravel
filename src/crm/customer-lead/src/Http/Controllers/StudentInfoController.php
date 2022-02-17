@@ -52,4 +52,11 @@ class StudentInfoController extends Controller
 
         return $this->success($studentInfo, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
+
+    public function show($id)
+    {
+        $studentInfo = $this->studentInfoRepository->find($id);
+
+        return $this->success($studentInfo, trans('lang::messages.common.getInfoSuccess'));
+    }
 }

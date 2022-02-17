@@ -17,4 +17,9 @@ class TownWard extends UuidModel
     {
         return $this->belongsTo(District::class);
     }
+
+    public function customerLead()
+    {
+        return $this->hasMany(CustomerLead::class);
+    }
 }

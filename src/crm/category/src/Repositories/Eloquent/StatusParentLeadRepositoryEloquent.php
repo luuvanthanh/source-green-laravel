@@ -72,10 +72,10 @@ class StatusParentLeadRepositoryEloquent extends BaseRepository implements Statu
             $code = StatusParentLead::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = StatusParentLead::CODE . "1";
+                $attributes['code'] = StatusParentLead::CODE . 1;
             } else {
                 $getNumber = substr($code, 3) + 1;
-                $attributes['code'] = StatusParentLead::CODE . "$getNumber";
+                $attributes['code'] = StatusParentLead::CODE . $getNumber;
             }
             $parentLead = StatusParentLead::create($attributes);
 

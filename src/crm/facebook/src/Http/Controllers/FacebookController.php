@@ -4,11 +4,35 @@ namespace GGPHP\Crm\Facebook\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Crm\Facebook\Events\FacebookReceiveMessage;
+use GGPHP\Crm\Facebook\Models\Conversation;
+use GGPHP\Crm\Facebook\Models\Page;
+use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
+use GGPHP\Crm\Facebook\Repositories\Contracts\MessageRepository;
+use GGPHP\Crm\Facebook\Repositories\Contracts\PageRepository;
 use GGPHP\Crm\Facebook\Services\FacebookService;
+use GGPHP\Crm\Marketing\Models\PostFacebookInfo;
+use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
+use GGPHP\Crm\Marketing\Repositories\Eloquent\ArticleRepositoryEloquent;
 use Illuminate\Http\Request;
 
 class FacebookController extends Controller
 {
+
+    /**
+     * @var $employeeRepository
+     */
+    protected $messageRepository;
+    protected $articleRepository;
+    /**
+     * UserController constructor.
+     * @param StatusParentLeadRepository $inOutHistoriesRepository
+     */
+    public function __construct(MessageRepository $messageRepository, ArticleRepository $articleRepository)
+    {
+        $this->messageRepository = $messageRepository;
+        $this->articleRepository = $articleRepository;
+    }
+
     public function webhook(Request $request)
     {
         if (isset($request->hub_challenge)) {
@@ -16,7 +40,7 @@ class FacebookController extends Controller
             $hub_verify_token = $request->hub_verify_token;
         }
 
-        if ($hub_verify_token === env("VERIFY_TOKEN")) {
+        if ($hub_verify_token === env('VERIFY_TOKEN')) {
             return $challenge;
         }
     }
@@ -39,18 +63,73 @@ class FacebookController extends Controller
                     }
 
                     if (isset($messaging['message']) && !is_null($text)) {
-                        \Log::info('send');
+                        //\Log::info('send');
                         broadcast(new FacebookReceiveMessage([
                             'sender' => $messaging['sender']['id'],
                             'recipient' => $messaging['recipient']['id'],
                             'message' => $text,
                         ]));
                     }
+
+                    $messageId = null;
+                    if (isset($messaging['message']) && isset($messaging['message']['mid'])) {
+                        $messageId = $messaging['message']['mid'];
+                    }
+
+                    $attachment = null;
+                    if (isset($messaging['message']) && isset($messaging['message']['attachments'])) {
+                        $attachment = $messaging['message']['attachments'];
+                    }
+
+                    if (isset($messaging['message']) && !is_null($text) && !is_null($messageId)) {
+                        $attributes = [
+                            'from' => $messaging['sender']['id'],
+                            'to' => $messaging['recipient']['id'],
+                            'content' => $text,
+                            'message_id_facebook' => $messageId
+                        ];
+                        $this->messageRepository->checkCutomerConversationMessage($attributes);
+                    }
+                    if (isset($messaging['message']) && !is_null($attachment) && !is_null($messageId)) {
+                        foreach ($attachment as $key => $value) {
+                            $urlFile = $this->messageRepository->storeFileByUrl($value['payload']['url']);
+                            $attributes = [
+                                'from' => $messaging['sender']['id'],
+                                'to' => $messaging['recipient']['id'],
+                                'content' => $urlFile,
+                                'message_id_facebook' => $messageId
+                            ];
+                            $this->messageRepository->checkCutomerConversationMessage($attributes);
+                        }
+                    }
+                    if (!empty($messaging)) {
+                        $attributes = [
+                            'from' => $messaging['sender']['id'],
+                            'to' => $messaging['recipient']['id'],
+
+                        ];
+                        $statusSendMessage = $messaging;
+                        $this->messageRepository->statusSendMessage($attributes, $statusSendMessage);
+                    }
                 }
+                if (isset($entry['changes'])) {
+                    $changes = $entry['changes'][0];
+
+                    if (isset($changes['value']['post_id'])) {
+                        if ($changes['value']['item'] == 'video') {
+                            $postFacebookInfo = PostFacebookInfo::where('video_id', $changes['value']['video_id'])->first();
+                            $postFacebookInfo->facebook_post_id = $changes['value']['post_id'];
+                            $postFacebookInfo->update();
+                        }
+                    }
+                    $this->articleRepository->postFacebookInfo($changes);
+                }
+
+
                 break;
         }
 
-        return;
+        return $data;
     }
 
     /**
@@ -61,9 +140,13 @@ class FacebookController extends Controller
      */
     public function getPageFacebook(Request $request)
     {
-        $pages = FacebookService::listPages($request->all());
+        try {
+            $pages = FacebookService::listPages($request->all());
 
-        return $this->success(["data" => $pages->data], trans('lang::messages.common.getListSuccess'));
+            return $this->success(['data' => $pages], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -74,9 +157,13 @@ class FacebookController extends Controller
      */
     public function getPageTokenFacebook(Request $request)
     {
-        $pageToken = FacebookService::pageToken($request->all());
+        try {
+            $pageToken = FacebookService::pageToken($request->all());
 
-        return $this->success(["data" => $pageToken], trans('lang::messages.common.getListSuccess'));
+            return $this->success(['data' => $pageToken], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -87,9 +174,13 @@ class FacebookController extends Controller
      */
     public function getPageConversationFacebook(Request $request)
     {
-        $pageConversation = FacebookService::pageConversation($request->all());
+        try {
+            $pageConversation = FacebookService::pageConversation($request->all());
 
-        return $this->success(["data" => $pageConversation->data], trans('lang::messages.common.getListSuccess'));
+            return $this->success(['data' => $pageConversation], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -100,9 +191,13 @@ class FacebookController extends Controller
      */
     public function getPageConversationMessageFacebook(Request $request)
     {
-        $pageConversationMessage = FacebookService::pageConversationMessage($request->all());
+        try {
+            $pageConversationMessage = FacebookService::pageConversationMessage($request->all());
 
-        return $this->success(["data" => $pageConversationMessage->data], trans('lang::messages.common.getListSuccess'));
+            return $this->success(['data' => $pageConversationMessage], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -113,22 +208,34 @@ class FacebookController extends Controller
      */
     public function pageConversationSendMessageFacebook(Request $request)
     {
-        $mess = FacebookService::pageConversationSendMessage($request->all());
+        try {
+            $mess = FacebookService::pageConversationSendMessage($request->all());
 
-        return $this->success(["data" => $mess], trans('lang::messages.common.getListSuccess'));
+            return $this->success(['data' => $mess], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function publishPagePost(Request $request)
     {
-        $mess = FacebookService::publishPagePost($request->all());
+        try {
+            $mess = FacebookService::publishPagePost($request->all());
 
-        return $this->success(["data" => $mess], trans('lang::messages.common.getListSuccess'));
+            return $this->success(['data' => $mess], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function getPagePost(Request $request)
     {
-        $mess = FacebookService::getPagePost($request->all());
+        try {
+            $mess = FacebookService::getPagePost($request->all());
 
-        return $this->success((array) $mess, trans('lang::messages.common.getListSuccess'));
+            return $this->success((array) $mess, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 }

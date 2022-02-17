@@ -25,13 +25,28 @@ class CreateCustomerLeadRequest extends FormRequest
     {
         return [
             'full_name' => 'required|string',
-            'birth_date' => 'required|date_format:Y-m-d',
-            'sex' => 'required|string',
-            'email' => 'required|email',
-            'phone' => 'required',
-            'address' => 'required|string',
-            'city_id' => 'required|exists:citys,id',
-            'district_id' => 'required|exists:districts,id'
+            'birth_date' => 'date_format:Y-m-d',
+            'sex' => 'string',
+            'email' => 'email|unique:customer_leads,email',
+            'phone' => 'required|string|unique:customer_leads,phone',
+            'address' => 'string',
+            'city_id' => 'exists:citys,id',
+            'district_id' => 'exists:districts,id',
+            'town_ward_id' => 'exists:town_wards,id',
+            'search_source_id' => 'required|exists:search_sources,id'
+        ];
+    }
+
+    /**
+     * Get the validation messages that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'phone.unique' => 'Số điện thoại đã có trong cơ sở dữ liệu.',
+            'email.unique' => 'Email đã có trong cơ sở dữ liệu.'
         ];
     }
 }

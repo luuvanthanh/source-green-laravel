@@ -3,10 +3,15 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
+use GGPHP\Crm\Marketing\Transformers\MarketingProgramTransformer;
 use GGPHP\Crm\Province\Transformers\CityTransformer;
 use GGPHP\Crm\Province\Transformers\DistrictTransformer;
+use GGPHP\Crm\Province\Transformers\TownWardTransformer;
+use GGPHP\Crm\SsoAccount\Transformers\SsoAccountTransformer;
 
 /**
  * Class CityTransformer.
@@ -32,7 +37,11 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource'];
+    protected $availableIncludes = [
+        'eventInfo', 'customerTag', 'reference', 'studentInfo',
+        'city', 'district', 'searchSource', 'statusCare', 'employee',
+        'branch', 'townWard', 'marketingProgram', 'ssoAccount'
+    ];
 
     /**
      * Transform the CategoryDetail entity.
@@ -47,16 +56,18 @@ class CustomerLeadTransformer extends BaseTransformer
         $sex = null;
 
         foreach (CustomerLead::SEX as $key => $value) {
-            
-            if ($value == $model->sex) {
-                $sex = $key;
+            if (!is_null($model->sex)) {
+                if ($value == $model->sex) {
+                    $sex = $key;
+                }
             }
         }
 
         return [
+            'customer_lead_id' => $model->id,
             'sex' => $sex,
-            "employee_info" => json_decode($model->employee_info),
-            "user_create_info" => json_decode($model->user_create_info),
+            'employee_info' => json_decode($model->employee_info),
+            'user_create_info' => json_decode($model->user_create_info),
         ];
     }
 
@@ -67,6 +78,15 @@ class CustomerLeadTransformer extends BaseTransformer
         }
 
         return $this->item($customerLead->reference, new ReferenceTransformer, 'Reference');
+    }
+
+    public function includeSsoAccount(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->ssoAccount)) {
+            return;
+        }
+
+        return $this->item($customerLead->ssoAccount, new SsoAccountTransformer, 'SsoAccount');
     }
 
     public function includeEventInfo(CustomerLead $customerLead)
@@ -114,5 +134,37 @@ class CustomerLeadTransformer extends BaseTransformer
     public function includeStatusCare(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->statusCare, new StatusCareTransformer, 'StatusCare');
+    }
+
+    public function includeEmployee(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->employee)) {
+            return;
+        }
+
+        return $this->item($customerLead->employee, new EmployeeTransformer, 'Employee');
+    }
+
+    public function includeBranch(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->branch)) {
+            return;
+        }
+
+        return $this->item($customerLead->branch, new BranchTransformer, 'Branch');
+    }
+
+    public function includeTownWard(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->townWard)) {
+            return;
+        }
+
+        return $this->item($customerLead->townWard, new TownWardTransformer, 'TownWard');
+    }
+
+    public function includeMarketingProgram(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->marketingProgram, new MarketingProgramTransformer, 'MarketingProgram');
     }
 }

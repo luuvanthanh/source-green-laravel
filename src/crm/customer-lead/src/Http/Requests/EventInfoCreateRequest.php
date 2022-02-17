@@ -25,10 +25,10 @@ class EventInfoCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'date' => 'required|after_or_equal:today|date_format:Y-m-d H:i',
+            'date' => 'required|after_or_equal:today|date_format:Y-m-d',
             'location' => 'required|string',
-            'status' => 'required|string',
             'customer_lead_id' => 'required|exists:customer_leads,id',
+            'category_event_id' => 'required|exists:category_events,id'
         ];
     }
 }

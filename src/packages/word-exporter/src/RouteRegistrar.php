@@ -4,7 +4,7 @@ namespace GGPHP\ExcelExporter;
 
 use GGPHP\Core\RouteRegistrar as CoreRegistrar;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
-use GGPHP\ExcelExporter\Services\Requests\ExcelExporterRequest;
+use GGPHP\ExcelExporter\Services\Requests\WordExporterRequest;
 
 class RouteRegistrar extends CoreRegistrar
 {
@@ -32,7 +32,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::post('exporter/template-word', function (ExcelExporterRequest $request, ExcelExporterServices $excelExporterServices) {
+            \Route::post('exporter/template-word', function (WordExporterRequest $request, ExcelExporterServices $excelExporterServices) {
                 return $excelExporterServices->uploadTemplate($request);
             });
         });

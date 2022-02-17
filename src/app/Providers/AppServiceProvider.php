@@ -3,6 +3,14 @@
 namespace App\Providers;
 
 use CloudCreativity\LaravelJsonApi\LaravelJsonApi;
+use GGPHP\Crm\Fee\Models\ClassType;
+use GGPHP\Crm\Fee\Models\Fee;
+use GGPHP\Crm\Fee\Models\PaymentForm;
+use GGPHP\Crm\Fee\Models\SchoolYear;
+use GGPHP\Crm\Fee\Observers\ClassTypeObserver;
+use GGPHP\Crm\Fee\Observers\FeeObserver;
+use GGPHP\Crm\Fee\Observers\SchoolYearObserver;
+use GGPHP\Crm\Fee\Observers\PaymentFormObserver;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
@@ -39,6 +47,12 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         LaravelJsonApi::defaultApi('v1');
+
+        //Observer
+        SchoolYear::observe(SchoolYearObserver::class);
+        ClassType::observe(ClassTypeObserver::class);
+        Fee::observe(FeeObserver::class);
+        PaymentForm::observe(PaymentFormObserver::class);
 
         /**
          * Paginate a standard Laravel Collection.

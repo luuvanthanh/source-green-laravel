@@ -15,7 +15,7 @@ use GGPHP\Crm\Category\Repositories\Contracts\StatusParentPotentialRepository;
  */
 class StatusParentPotentialRepositoryEloquent extends BaseRepository implements StatusParentPotentialRepository
 {
-/**
+    /**
      * @var array
      */
     protected $fieldSearchable = [
@@ -49,7 +49,7 @@ class StatusParentPotentialRepositoryEloquent extends BaseRepository implements 
     public function getStatusParentPotential(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('name', 'like', '%' . $attributes['key'] . '%')->orWhere('code', 'like', '%' . $attributes['key'] . '%');
+            $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
         if (!empty($attributes['limit'])) {
@@ -69,10 +69,10 @@ class StatusParentPotentialRepositoryEloquent extends BaseRepository implements 
             $code = StatusParentPotential::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = StatusParentPotential::CODE . "1";
+                $attributes['code'] = StatusParentPotential::CODE . 1;
             } else {
                 $stt = substr($code, 3) + 1;
-                $attributes['code'] = StatusParentPotential::CODE . "$stt";
+                $attributes['code'] = StatusParentPotential::CODE . $stt;
             }
 
             $statusParentPotential = StatusParentPotential::create($attributes);

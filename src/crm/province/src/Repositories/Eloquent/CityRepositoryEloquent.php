@@ -8,7 +8,6 @@ use GGPHP\Crm\Province\Repositories\Contracts\CityRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
-
 /**
  * Class CityRepositoryEloquent.
  *
@@ -21,6 +20,7 @@ class CityRepositoryEloquent extends BaseRepository implements CityRepository
      */
     protected $fieldSearchable = [
         'created_at',
+        'numerical_city'
     ];
 
     /**
@@ -65,5 +65,18 @@ class CityRepositoryEloquent extends BaseRepository implements CityRepository
         }
 
         return $city;
+    }
+
+    public function sort(array $attributes)
+    {
+        $listId = explode(',', $attributes['id']);
+
+        foreach ($listId as $key => $value) {
+            $fisrtValue = City::find($value);
+            $fisrtValue->update(['numerical_city' => $key + 1]);
+        }
+
+        $result = City::orderBy('numerical_city')->get();
+        return parent::parserResult($result);
     }
 }

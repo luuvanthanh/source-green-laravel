@@ -169,6 +169,8 @@ return [
         /*
          * Application Service Providers...
          */
+        // ...
+        Orangehill\Iseed\IseedServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
@@ -183,8 +185,16 @@ return [
         GGPHP\Crm\Province\Providers\ProvinceServiceProvider::class,
         GGPHP\Crm\CustomerLead\Providers\CustomerLeadServiceProvider::class,
         GGPHP\Crm\Marketing\Providers\MarketingServiceProvider::class,
-        // App\Providers\TwilioAccessTokenProvider::class,
-        // App\Providers\TwilioChatGrantProvider::class,
+        GGPHP\Crm\CustomerPotential\Providers\CustomerPotentialServiceProvider::class,
+        GGPHP\Crm\Employee\Providers\EmployeeServiceProvider::class,
+        GGPHP\Crm\AdmissionRegister\Providers\AdmissionRegisterServiceProvider::class,
+        GGPHP\Crm\WebForm\Providers\WebFormCustomerServiceProvider::class,
+        GGPHP\Crm\Icon\Providers\IconServiceProvider::class,
+        GGPHP\Crm\Config\Providers\ConfigServiceProvider::class,
+        Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
+        GGPHP\Crm\ChildDevelop\Providers\ChildDevelopServiceProvider::class,
+        GGPHP\Crm\SsoAccount\Providers\SsoAccountServiceProvider::class,
+        GGPHP\Crm\Fee\Providers\FeeServiceProvider::class,
     ],
 
     /*
