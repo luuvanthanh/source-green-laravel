@@ -27,10 +27,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ newStudent, loading }) => ({
-  data: newStudent.data,
-  error: newStudent.error,
-  pagination: newStudent.pagination,
+const mapStateToProps = ({ CRMnewStudent, loading }) => ({
+  data: CRMnewStudent.data,
+  error: CRMnewStudent.error,
+  pagination: CRMnewStudent.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -83,12 +83,12 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'newStudent/GET_DATA',
+      type: 'CRMnewStudent/GET_DATA',
       payload: {
         ...search,
-        orderBy: 'CreationTime',
+        orderBy: 'created_at',
         sortedBy: 'desc',
-        include: Helper.convertIncludes(['schoolYear']),
+        include: Helper.convertIncludes(['studentInfo.parentInfo', 'parentInfo']),
       },
     });
     history.push({
@@ -244,7 +244,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               onClick={() =>
-                history.push(`/chinh-sach-phi/tinh-phi-hoc-sinh-moi/${record?.id}/chi-tiet`)
+                history.push(`/crm/chinh-sach-phi/tinh-phi-hoc-sinh-moi/${record?.id}/chi-tiet`)
               }
             >
               Chi tiết
@@ -264,8 +264,9 @@ class Index extends PureComponent {
       location: { pathname },
       data,
     } = this.props;
+    console.log("data", data);
     const { search } = this.state;
-    const loading = effects['newStudent/GET_DATA'];
+    const loading = effects['CRMnewStudent/GET_DATA'];
     return (
       <>
         <Helmet title="Tính phí học sinh mới" />

@@ -32,18 +32,18 @@ const radios = [
 
 const Index = memo(() => {
   const params = useParams();
-  const { loading, menuLeftFeePolicy, yearsSchool, classes, students } = useSelector(
-    ({ loading, menu, schoolYear, classType, newStudent }) => ({
+  const { loading, menuLeftCRM, yearsSchool, classes, students } = useSelector(
+    ({ loading, menu, CRMnewStudentAdd, newStudent }) => ({
       loading: loading.effects,
-      menuLeftFeePolicy: menu.menuLeftFeePolicy,
-      yearsSchool: schoolYear.data,
-      classes: classType.data,
-      students: newStudent.data,
+      menuLeftCRM: menu.menuLeftCRM,
+      yearsSchool: CRMnewStudentAdd.yearsSchool,
+      classes: CRMnewStudentAdd.classes,
+      students: CRMnewStudentAdd.students,
     }),
   );
   const [tab, setTab] = useState('tuition');
   const dispatch = useDispatch();
-
+console.log("yearsSchool",yearsSchool)
   const history = useHistory();
   const formRef = useRef();
   const type = formRef?.current?.getFieldValue('type');
@@ -56,21 +56,28 @@ const Index = memo(() => {
     tuition: false,
   });
   const [addFees, setAddFees] = useState(false);
-  const [disableDayAdmission, setDisableDayAdmission] = useState({
-    startDate: null,
-    endDate: null,
+  const [disableday_admission, setDisableday_admission] = useState({
+    start_date: null,
+    end_date: null,
   });
 
   useEffect(() => {
     dispatch({
-      type: 'schoolYear/GET_DATA',
+      type: 'CRMnewStudentAdd/GET_YEARS',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
     dispatch({
-      type: 'classType/GET_DATA',
+      type: 'CRMnewStudentAdd/GET_CLASS',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
+    dispatch({
+      type: 'CRMnewStudentAdd/GET_STUDENTS',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
@@ -78,30 +85,30 @@ const Index = memo(() => {
     });
     if (params.id) {
       dispatch({
-        type: 'newStudentAdd/GET_DETAILS',
+        type: 'CRMnewStudentAdd/GET_DETAILS',
         payload: {
           ...params,
         },
         callback: (res) => {
           if (res?.id) {
             setYearsDetail(res?.schoolYear?.changeParameter?.changeParameterDetail);
-            const rangeDate = Helper.getDateRank(
-              res?.schoolYear?.startDate,
-              res?.schoolYear?.endDate,
+            const range_date = Helper.getDateRank(
+              res?.schoolYear?.start_date,
+              res?.schoolYear?.end_date,
               variables.DATE_FORMAT.DATE_VI,
             );
             formRef.current.setFieldsValue({
               ...res,
-              rangeDate,
-              dateOfBirth: moment(res.dateOfBirth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-              dayAdmission: moment(res.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+              range_date,
+              date_of_birth: moment(res.date_of_birth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+              day_admission: moment(res.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
               type: 'newStudent',
             });
             setTuition(
               res?.tuition?.map((item) => ({
                 id: item.id,
-                feeId: item.feeId || '',
-                paymentFormId: item.paymentFormId || '',
+                fee_id: item.fee_id || '',
+                payment_form_id: item.payment_form_id || '',
                 money: item.money || 0,
               })),
             );
@@ -134,30 +141,31 @@ const Index = memo(() => {
     if (errorTuition) {
       return;
     }
+    const response = students.find((item) => item.id === values?.name_student);
     const payload = {
       ...values,
-      dateOfBirth: Helper.getDateTime({
+      date_of_birth: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: moment(values.dateOfBirth, variables.DATE_FORMAT.DATE_AFTER),
+          originValue: moment(values.date_of_birth, variables.DATE_FORMAT.DATE_AFTER),
         }),
         format: variables.DATE_FORMAT.DATE_TIME_UTC,
         isUTC: false,
       }),
-      dayAdmission: Helper.getDateTime({
+      day_admission:   Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: moment(values.dayAdmission, variables.DATE_FORMAT.DATE_AFTER),
+          originValue: values.day_admission,
         }),
-        format: variables.DATE_FORMAT.DATE_TIME_UTC,
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
       tuition,
       id: params?.id || undefined,
-      chargeStudentId: !params?.id && formRef.current.getFieldValue().id,
+      student_info_id: response?.student_info_id,
     };
     dispatch({
-      type: params?.id ? 'newStudentAdd/UPDATE' : 'newStudentAdd/ADD',
+      type: params?.id ? 'CRMnewStudentAdd/UPDATE' : 'CRMnewStudentAdd/ADD',
       payload,
       callback: (res) => {
         if (res) {
@@ -173,28 +181,28 @@ const Index = memo(() => {
     }
   };
 
-  const getMoney = (schoolYearId, classTypeId, dayAdmission, tuition) => {
+  const getMoney = (school_year_id, class_type_id, day_admission, tuition) => {
     if (_.isEmpty(tuition)) {
       return;
     }
     const newTuition = [...tuition]
-      .filter((obj) => obj?.paymentFormId && obj?.feeId)
+      .filter((obj) => obj?.payment_form_id && obj?.fee_id)
       .map((item) => ({
         id: item.id,
         money: item.money,
-        feeId: item.feeId,
-        paymentFormId: item.paymentFormId,
+        fee_id: item.fee_id,
+        payment_form_id: item.payment_form_id,
       }));
     dispatch({
       type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
       payload: {
         details: JSON.stringify(newTuition),
-        classTypeId,
-        schoolYearId,
-        dayAdmission: Helper.getDateTime({
+        class_type_id,
+        school_year_id,
+        day_admission: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
-            originValue: dayAdmission,
+            originValue: day_admission,
           }),
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
@@ -211,33 +219,33 @@ const Index = memo(() => {
 
   const loadTableFees = (value, name) => {
     const { getFieldsValue, setFieldsValue } = formRef?.current;
-    const { schoolYearId, classTypeId, dayAdmission } = getFieldsValue();
-    if (schoolYearId && classTypeId && dayAdmission) {
-      getMoney(schoolYearId, classTypeId, dayAdmission, tuition);
+    const { school_year_id, class_type_id, day_admission } = getFieldsValue();
+    if (school_year_id && class_type_id && day_admission) {
+      getMoney(school_year_id, class_type_id, day_admission, tuition);
       setAddFees(true);
     } else {
       setAddFees(false);
     }
-    if (name === 'schoolYearId') {
+    if (name === 'school_year_id') {
       setIdYear(value);
       const schoolYear = yearsSchool.find((item) => item.id === value);
-      setDisableDayAdmission((prev) => ({
+      setDisableday_admission((prev) => ({
         ...prev,
-        startDate: schoolYear.startDate || null,
-        endDate: schoolYear.endDate || null,
+        start_date: schoolYear.start_date || null,
+        end_date: schoolYear.end_date || null,
       }));
-      const rangeDate = Helper.getDateRank(
-        schoolYear?.startDate,
-        schoolYear?.endDate,
+      const range_date = Helper.getDateRank(
+        schoolYear?.start_date,
+        schoolYear?.end_date,
         variables.DATE_FORMAT.DATE_VI,
       );
-      setFieldsValue({ dayAdmission: '', rangeDate });
+      setFieldsValue({ day_admission: '', range_date });
     }
   };
 
   const getClassByAge = (age = 0) => {
     dispatch({
-      type: 'classType/GET_CLASS_BY_AGE',
+      type: 'CRMnewStudentAdd/GET_CLASS_BY_AGE',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.PAGE,
@@ -246,7 +254,7 @@ const Index = memo(() => {
       callback: (res) => {
         if (!_.isEmpty(res)) {
           formRef.current.setFieldsValue({
-            classTypeId: res[0].id,
+            class_type_id: res[0].id,
           });
           loadTableFees();
         }
@@ -254,7 +262,7 @@ const Index = memo(() => {
     });
   };
 
-  const changeDateOfBirth = (date) => {
+  const changeDate_of_birth = (date) => {
     if (!date) {
       return;
     }
@@ -274,7 +282,7 @@ const Index = memo(() => {
     });
     if (value === 'oldStudent') {
       dispatch({
-        type: 'newStudent/GET_DATA',
+        type: 'CRMnewStudentAdd/GET_DATA',
         payload: {
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.SIZEMAX,
@@ -290,23 +298,31 @@ const Index = memo(() => {
       return;
     }
     const response = students.find((item) => item.id === value);
+    const pather = response?.parentInfo?.find(i => i?.sex === "MALE");
+    const mother = response?.parentInfo?.find(i => i?.sex === "FEMALE");
+    console.log("pather",pather)
     if (response?.id) {
-      const rangeDate = Helper.getDateRank(
-        response?.schoolYear?.startDate,
-        response?.schoolYear?.endDate,
+      const range_date = Helper.getDateRank(
+        response?.schoolYear?.start_date,
+        response?.schoolYear?.end_date,
         variables.DATE_FORMAT.DATE_VI,
       );
       formRef.current.setFieldsValue({
         ...response,
-        rangeDate,
+        range_date,
         id: response.id,
-        dateOfBirth: moment(response.dateOfBirth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-        dayAdmission: moment(response.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        age: response.studentInfo?.age_month,
+        father_name: pather?.full_name,
+        father_phone_number: pather?.phone,
+        mother_name: mother?.full_name,
+        mother_phone_number: mother?.phone,
+        date_of_birth: moment(response.studentInfo.birth_date, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+       // day_admission: moment(response.studentInfo.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
         type,
       });
     }
-    if (response.age) {
-      getClassByAge(response?.age);
+    if (response.studentInfo.age_month) {
+      getClassByAge(response?.studentInfo.age_month);
     }
   };
 
@@ -334,28 +350,28 @@ const Index = memo(() => {
         />
       ),
     },
-    {
-      id: 'food',
-      name: 'DỰ KIẾN PHẢI THU',
-      component: (
-        <Expected
-          tuition={tuition}
-          idYear={idYear}
-          yearsSchool={yearsSchool}
-          setTuition={setTuition}
-          error={errorTable?.tuition}
-          checkValidate={checkValidate}
-          idRes={idRes}
-          YearsDetail={YearsDetail}
-        />
-      ),
-    },
+    // {
+    //   id: 'food',
+    //   name: 'DỰ KIẾN PHẢI THU',
+    //   component: (
+    //     <Expected
+    //       tuition={tuition}
+    //       idYear={idYear}
+    //       yearsSchool={yearsSchool}
+    //       setTuition={setTuition}
+    //       error={errorTable?.tuition}
+    //       checkValidate={checkValidate}
+    //       idRes={idRes}
+    //       YearsDetail={YearsDetail}
+    //     />
+    //   ),
+    // },
   ];
-
+console.log("students",students)
   return (
     <>
       <Helmet title={params?.id ? 'Chi tiết' : 'Thêm mới'} />
-      <Breadcrumbs last={`${params?.id ? 'Chi tiết' : 'Thêm mới'}`} menu={menuLeftFeePolicy} />
+      <Breadcrumbs last={`${params?.id ? 'Chi tiết' : 'Thêm mới'}`} menu={menuLeftCRM} />
       <Pane style={{ padding: 20, paddingBottom: 0, paddingTop: 0 }}>
         <Pane className="row justify-content-center">
           <Pane className="col-lg-12">
@@ -368,7 +384,7 @@ const Index = memo(() => {
             >
               <Pane className="card">
                 <Loading
-                  loading={loading['newStudentAdd/GET_DETAILS']}
+                  loading={loading['CRMnewStudentAdd/GET_DETAILS']}
                   params={{ type: 'container' }}
                 >
                   <Pane className="p20">
@@ -392,7 +408,7 @@ const Index = memo(() => {
                         {type === 'newStudent' ? (
                           <FormItem
                             label="Tên học sinh"
-                            name="nameStudent"
+                            name="name_student"
                             rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                             type={variables.INPUT}
                           />
@@ -400,13 +416,13 @@ const Index = memo(() => {
                           <FormItem
                             className="mb-0"
                             label="Tên học sinh"
-                            name="nameStudent"
+                            name="name_student"
                             type={variables.SELECT}
                             placeholder="Chọn học sinh"
                             allowClear={false}
                             data={students.map((item) => ({
                               ...item,
-                              name: item?.nameStudent || '-',
+                              name: item?.studentInfo?.full_name || '-',
                             }))}
                             rules={[variables.RULES.EMPTY]}
                             onChange={selectStudent}
@@ -417,26 +433,26 @@ const Index = memo(() => {
                         <FormItem
                           className="mb-0"
                           label="Năm học"
-                          name="schoolYearId"
+                          name="school_year_id"
                           type={variables.SELECT}
                           placeholder="Chọn năm"
                           allowClear={false}
                           data={yearsSchool.map((item) => ({
                             ...item,
-                            name: `${item?.yearFrom} - ${item?.yearTo}`,
+                            name: `${item?.year_from} - ${item?.year_to}`,
                           }))}
                           rules={[variables.RULES.EMPTY]}
-                          onChange={(e) => loadTableFees(e, 'schoolYearId')}
+                          onChange={(e) => loadTableFees(e, 'school_year_id')}
                         />
                       </div>
                       <div className="col-lg-3">
                         <FormItem
                           className={type === 'oldStudent' ? 'input-noborder' : ''}
                           label="Ngày sinh"
-                          name="dateOfBirth"
+                          name="date_of_birth"
                           type={variables.DATE_PICKER}
                           rules={[variables.RULES.EMPTY]}
-                          onChange={changeDateOfBirth}
+                          onChange={changeDate_of_birth}
                           allowClear={false}
                           disabledDate={(current) => current > moment().add(-1, 'day')}
                         />
@@ -455,7 +471,7 @@ const Index = memo(() => {
                         <FormItem
                           className="input-noborder"
                           label="Thời gian hiệu lực"
-                          name="rangeDate"
+                          name="range_date"
                           rules={[variables.RULES.EMPTY]}
                           type={variables.INPUT}
                           placeholder="Từ ngày - Đến ngày"
@@ -464,33 +480,36 @@ const Index = memo(() => {
                       <div className="col-lg-3">
                         <FormItem
                           label="Ngày nhập học"
-                          name="dayAdmission"
+                          name="day_admission"
                           type={variables.DATE_PICKER}
                           rules={[variables.RULES.EMPTY]}
                           allowClear={false}
                           onChange={loadTableFees}
                           disabledDate={(current) =>
-                            (disableDayAdmission?.startDate &&
-                              current < moment(disableDayAdmission?.startDate).startOf('day')) ||
-                            (disableDayAdmission?.endDate &&
-                              current >= moment(disableDayAdmission.endDate).endOf('day'))
+                            (disableday_admission?.start_date &&
+                              current < moment(disableday_admission?.start_date).startOf('day')) ||
+                            (disableday_admission?.end_date &&
+                              current >= moment(disableday_admission.end_date).endOf('day'))
                           }
                         />
                       </div>
                       <div className="col-lg-3">
                         <FormItem
                           label="Lớp học dự kiến"
-                          name="classTypeId"
+                          name="class_type_id"
                           data={classes}
                           type={variables.SELECT}
                           rules={[variables.RULES.EMPTY]}
                           onChange={loadTableFees}
                         />
                       </div>
-                      <div className="col-lg-3">
+                      {
+                        type === 'newStudent' ? 
+                       <>
+                       <div className="col-lg-3">
                         <FormItem
                           label="Họ tên Cha"
-                          name="fatherName"
+                          name="father_name"
                           rules={[variables.RULES.MAX_LENGTH_INPUT]}
                           type={variables.INPUT}
                         />
@@ -498,7 +517,7 @@ const Index = memo(() => {
                       <div className="col-lg-3">
                         <FormItem
                           label="SĐT Cha"
-                          name="fatherPhoneNumber"
+                          name="father_phone_number"
                           rules={[variables.RULES.PHONE]}
                           type={variables.INPUT}
                         />
@@ -506,7 +525,7 @@ const Index = memo(() => {
                       <div className="col-lg-3">
                         <FormItem
                           label="Họ tên Mẹ"
-                          name="motherName"
+                          name="mother_name"
                           rules={[variables.RULES.MAX_LENGTH_INPUT]}
                           type={variables.INPUT}
                         />
@@ -514,11 +533,51 @@ const Index = memo(() => {
                       <div className="col-lg-3">
                         <FormItem
                           label="SĐT Mẹ"
-                          name="motherPhoneNumber"
+                          name="mother_phone_number"
                           rules={[variables.RULES.PHONE]}
                           type={variables.INPUT}
                         />
                       </div>
+                       </> : 
+                       <>
+                       <div className="col-lg-3">
+                        <FormItem
+                        className="input-noborder"
+                        label="Họ tên Cha"
+                        name="father_name"
+                        type={variables.INPUT}
+                        placeholder="Họ và tên"
+                        />
+                      </div>
+                      <div className="col-lg-3">
+                        <FormItem
+                           className="input-noborder"
+                          label="SĐT Cha"
+                          name="father_phone_number"
+                          type={variables.INPUT}
+                          placeholder="Số điện thoại"
+                        />
+                      </div>
+                      <div className="col-lg-3">
+                        <FormItem
+                           className="input-noborder"
+                          label="Họ tên Mẹ"
+                          name="mother_name"
+                          type={variables.INPUT}
+                          placeholder="Họ và tên"
+                        />
+                      </div>
+                      <div className="col-lg-3">
+                        <FormItem
+                          className="input-noborder"
+                          label="SĐT Mẹ"
+                          name="mother_phone_number"
+                          type={variables.INPUT}
+                          placeholder="Số điện thoại"
+                        />
+                      </div>
+                       </>
+                      }
                     </div>
                   </Pane>
                 </Loading>
@@ -552,7 +611,7 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
-                  loading={loading['newStudentAdd/ADD'] || loading['newStudentAdd/UPDATE']}
+                  loading={loading['CRMnewStudentAdd/ADD'] || loading['CRMnewStudentAdd/UPDATE']}
                 >
                   Lưu
                 </Button>

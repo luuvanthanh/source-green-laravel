@@ -13,25 +13,26 @@ import { variables, Helper } from '@/utils';
 
 const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRef, hanDleChangeText }) => {
   const dispatch = useDispatch();
-  const { fees, paymentForm } = useSelector(({ fees, paymentMethod }) => ({
-    fees: fees.data,
-    paymentForm: paymentMethod.data,
+  const { fees, paymentForm , moneyFee} = useSelector(({ CRMnewStudentAdd, paymentMethod }) => ({
+    fees: CRMnewStudentAdd.fees,
+    moneyFee: CRMnewStudentAdd.moneyFee,
+    paymentForm: CRMnewStudentAdd.paymentForm,
   }));
 
   const changeText=(e)=>{
     hanDleChangeText(e);
   };
-  
+  console.log("CRMnewStudentAdd",moneyFee);
   useEffect(() => {
     dispatch({
-      type: 'fees/GET_DATA',
+      type: 'CRMnewStudentAdd/GET_FEES',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
     dispatch({
-      type: 'paymentMethod/GET_DATA',
+      type: 'CRMnewStudentAdd/GET_PAYMENT',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
@@ -41,27 +42,27 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
 
   const getMoney = async (formRef, tuition, name, value, index) => {
     const { getFieldsValue } = formRef?.current;
-    const { schoolYearId, classTypeId, dayAdmission } = getFieldsValue();
-    const { feeId, paymentFormId } = tuition[index];
+    const { school_year_id, class_type_id, day_admission } = getFieldsValue();
+    const { fee_id, payment_form_id } = tuition[index];
     const newTuition = [...tuition];
 
-    if (value && ((name === 'feeId' && paymentFormId) || (name === 'paymentFormId' && feeId))) {
+    if (value && ((name === 'fee_id' && payment_form_id) || (name === 'payment_form_id' && fee_id))) {
       const details = [
         {
           ...newTuition[index],
-          paymentFormId: name === 'paymentFormId' ? value : paymentFormId,
-          feeId: name === 'feeId' ? value : feeId,
-        },
+          payment_form_id: name === 'payment_form_id' ? value : payment_form_id,
+          fee_id: name === 'fee_id' ? value : fee_id,
+        }
       ];
       return dispatch({
-        type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
+        type: 'CRMnewStudentAdd/GET_MONEY_FEE_POLICIES',
         payload: {
-          classTypeId,
-          schoolYearId,
-          dayAdmission: Helper.getDateTime({
+          class_type_id,
+          school_year_id,
+          day_admission: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
-              originValue: dayAdmission,
+              originValue: day_admission,
             }),
             format: variables.DATE_FORMAT.DATE_AFTER,
             isUTC: false,
@@ -121,13 +122,13 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
             className="mb-0"
             type={variables.SELECT}
             placeholder="Chọn"
-            onChange={(e) => onChange(e, record, 'feeId')}
+            onChange={(e) => onChange(e, record, 'fee_id')}
             allowClear={false}
             data={fees}
-            value={record?.feeId}
+            value={record?.fee_id}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !record?.feeId && (
+          {error && !record?.fee_id && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
@@ -143,13 +144,13 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
             className="mb-0"
             type={variables.SELECT}
             placeholder="Chọn"
-            onChange={(e) => onChange(e, record, 'paymentFormId')}
+            onChange={(e) => onChange(e, record, 'payment_form_id')}
             allowClear={false}
             data={paymentForm}
-            value={record?.paymentFormId}
+            value={record?.payment_form_id}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !record?.paymentFormId && (
+          {error && !record?.payment_form_id && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
@@ -176,8 +177,8 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
       ...tuition,
       {
         id: uuidv4(),
-        feeId: null,
-        paymentFormId: null,
+        fee_id: null,
+        payment_form_id: null,
         money: 0,
       },
     ]);
