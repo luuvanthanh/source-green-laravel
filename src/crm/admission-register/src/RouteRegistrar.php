@@ -37,6 +37,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('profile-infos', 'ProfileInfoController');
             \Route::resource('child-evaluate-infos', 'ChildEvaluateInfoController');
             \Route::post('test-input-details', 'TestInputController@testInputDetail');
+            \Route::get('move-student-to-officials/{id}', 'TestInputController@moveStudentToOfficial');
         });
     }
 }
