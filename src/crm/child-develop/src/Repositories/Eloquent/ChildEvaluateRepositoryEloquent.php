@@ -9,6 +9,7 @@ use GGPHP\Crm\ChildDevelop\Presenters\ChildEvaluatePresenter;
 use GGPHP\Crm\ChildDevelop\Repositories\Contracts\ChildEvaluateRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -91,12 +92,20 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
     public function create(array $attributes)
     {
-        $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
-        $childEvaluate = ChildEvaluate::create($attributes);
+        \DB::beginTransaction();
+        try {
+            $childEvaluate = ChildEvaluate::create($attributes);
 
-        if (!empty($attributes['detail'])) {
-            $this->storeDetail($childEvaluate->id, $attributes['detail']);
+            if (!empty($attributes['detail'])) {
+                $this->storeDetail($childEvaluate->id, $attributes['detail']);
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
+
 
         return parent::find($childEvaluate->id);
     }
