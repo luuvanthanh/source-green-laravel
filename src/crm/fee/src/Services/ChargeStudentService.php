@@ -23,12 +23,11 @@ class ChargeStudentService
     {
         $url = self::url() . '/api/v1/money-fee-policies';
         $data = Http::withToken(self::getToken())->get($url, $params);
-
+        // dd($data->body());
         if ($data->failed()) {
             $message = 'Có lỗi từ api Clover';
-
-            if (isset(json_decode($data->body())->error) && isset(json_decode($data->body())->error->message)) {
-                $message = 'Clover: ' . json_decode($data->body())->error->message;
+            if (isset(json_decode($data->body())->errors) && isset(json_decode($data->body())->errors[0]->detail)) {
+                $message = 'Clover: ' . json_decode($data->body())->errors[0]->detail;
             }
 
             throw new HttpException($data->status(), $message);
