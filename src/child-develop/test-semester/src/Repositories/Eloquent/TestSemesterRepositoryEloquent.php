@@ -86,29 +86,26 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 $attributes['status'] = TestSemester::STATUS[$attributes['status']];
             }
 
-            if (!empty($attributes['status']) &&  $attributes['status'] == 3) {
-                $testSemester->testSemesterDetail()->delete();
-            } else {
-                if ($attributes['status'] != $testSemester['Status']) {
-                    switch ($attributes['status']) {
-                        case 0:
-                            $status = 'DONOT';
-                            break;
-                        case 1:
-                            $status = 'DOING';
-                            break;
-                        case 2:
-                            $status = 'DID';
-                            break;
-                        default:
-                            break;
-                    }
-                    StudentServices::updateSTudentStatus($status, $testSemester->StudentId);
+            if (!is_null($testSemester) && $attributes['status'] != $testSemester['Status']) {
+                switch ($attributes['status']) {
+                    case 1:
+                        StudentServices::updateSTudentStatus('DOING', $attributes['studentId']);
+                        break;
+                    case 2:
+                        StudentServices::updateSTudentStatus('DID', $attributes['studentId']);
+                        break;
+                    case 3:
+                        $testSemester->testSemesterDetail()->delete();
+                        StudentServices::updateSTudentStatus('DONOT', $attributes['studentId']);
+                        break;
+                    default:
+                        break;
                 }
             }
 
             if (is_null($testSemester)) {
                 $testSemester = TestSemester::create($attributes);
+                StudentServices::updateSTudentStatus('DOING', $attributes['studentId']);
             } else {
                 $testSemester->update($attributes);
             }
