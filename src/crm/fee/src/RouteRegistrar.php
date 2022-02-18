@@ -80,7 +80,7 @@ class RouteRegistrar extends CoreRegistrar
             Route::resource('tuitions', 'TuitionController')->only('index');
 
             //money fee  policie
-            Route::post('money-fee-policie', 'ChargeStudentController@moneyFeePolicie');
+            Route::get('money-fee-policies', 'ChargeStudentController@moneyFeePolicie');
         });
     }
 }

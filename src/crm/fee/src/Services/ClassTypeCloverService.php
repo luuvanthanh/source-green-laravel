@@ -94,8 +94,8 @@ class ClassTypeCloverService
             if ($result->failed()) {
                 $message = 'Có lỗi từ api Clover';
 
-                if (isset(json_decode($result->body())->error) && isset(json_decode($result->body())->error->message)) {
-                    $message = 'Clover: ' . json_decode($result->body())->error->message;
+                if (isset(json_decode($result->body())->errors) && isset(json_decode($result->body())->errors[0]->detail)) {
+                    $message = 'Clover: ' . json_decode($result->body())->errors[0]->detail;
                 }
 
                 throw new HttpException($result->status(), $message);
