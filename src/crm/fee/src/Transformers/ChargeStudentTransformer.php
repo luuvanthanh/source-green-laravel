@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Fee\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\AdmissionRegister\Transformers\AdmissionRegisterTransformer;
 use GGPHP\Crm\CustomerLead\Transformers\StudentInfoTransformer;
 use GGPHP\Crm\Fee\Models\ChargeStudent;
 
@@ -30,7 +31,7 @@ class ChargeStudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'tuition'];
+    protected $availableIncludes = ['studentInfo', 'tuition', 'admissionRegister'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -57,5 +58,14 @@ class ChargeStudentTransformer extends BaseTransformer
     public function includeTuition(ChargeStudent $chargeStudent)
     {
         return $this->collection($chargeStudent->tuition, new TuitionTransformer, 'Tuition');
+    }
+
+    public function includeAdmissionRegister(ChargeStudent $chargeStudent)
+    {
+        if ($chargeStudent->loadCount('admissionRegister')->admission_register_count < 1) {
+            return null;
+        }
+
+        return $this->item($chargeStudent->admissionRegister, new AdmissionRegisterTransformer, 'AdmissionRegister');
     }
 }

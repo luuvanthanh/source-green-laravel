@@ -130,9 +130,11 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
         $classType = ClassType::find($attributes['class_type_id']);
         $schoolYear = SchoolYear::find($attributes['school_year_id']);
 
-        foreach ($attributes['details'] as  $item) {
-            $fee = Fee::find($item['fee_id']);
-            $paymentForm = PaymentForm::find($item['payment_form_id']);
+        $details = json_decode($attributes['details'], true);
+
+        foreach ($details as  $item) {
+            $fee = Fee::findOrfail($item['fee_id']);
+            $paymentForm = PaymentForm::findOrfail($item['payment_form_id']);
             $params['details'][] = [
                 'id' => isset($item['id']) ? $item['id'] : null,
                 'feeId' => $fee->fee_clover_id,
