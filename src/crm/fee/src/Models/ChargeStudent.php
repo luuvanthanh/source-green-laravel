@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Fee\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 
 class ChargeStudent extends UuidModel
@@ -22,5 +23,10 @@ class ChargeStudent extends UuidModel
     public function tuition()
     {
         return $this->hasMany(Tuition::class);
+    }
+
+    public function admissionRegister()
+    {
+        return $this->belongsTo(AdmissionRegister::class, 'student_info_id', 'student_info_id');
     }
 }

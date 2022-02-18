@@ -27,10 +27,7 @@ class CalculatorTuitionRequest extends FormRequest
             'class_type_id' => 'required|uuid|exists:class_types,id',
             'school_year_id' => 'required|uuid|exists:school_years,id',
             'day_admission' => 'required|date|date_format:Y-m-d',
-            'details' => 'required|array',
-            'details.*.id' => 'required|uuid|distinct',
-            'details.*.fee_id' => 'required|uuid|exists:fees,id',
-            'details.*.payment_form_id' => 'required|uuid|exists:payment_forms,id',
+            'details' => 'required|string',
             'student' => 'required|in:new,old',
         ];
     }
