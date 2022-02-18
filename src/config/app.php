@@ -202,6 +202,7 @@ return [
         GGPHP\AiService\Providers\AiServiceServiceProvider::class,
         GGPHP\ThirdPartyService\Providers\ThirdPartyServiceServiceProvider::class,
         GGPHP\ApiShare\Providers\ApiShareServiceProvider::class,
+        GGPHP\NasConfig\Providers\NasConfigServiceProvider::class,
     ],
 
     /*

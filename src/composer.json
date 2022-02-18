@@ -81,7 +81,8 @@
             "GGPHP\\SystemConfig\\": "packages/system-config/src/",
             "GGPHP\\AiService\\": "packages/ai-service/src/",
             "GGPHP\\ThirdPartyService\\": "packages/third-party-service/src/",
-            "GGPHP\\ApiShare\\": "packages/api-share/src/"
+            "GGPHP\\ApiShare\\": "packages/api-share/src/",
+            "GGPHP\\NasConfig\\": "packages/nas-config/src/"
         },
         "classmap": [
             "database/seeds",
