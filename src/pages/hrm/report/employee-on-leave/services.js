@@ -23,7 +23,7 @@ export function getDivisions(_params = {}) {
 }
 
 export function getPositions(_params = {}) {
-  return request('/v1/positions', {
+  return request('/v1/employees', {
     method: 'GET',
     params: {
       limit: variables.PAGINATION.SIZEMAX,
