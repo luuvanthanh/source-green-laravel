@@ -118,7 +118,7 @@
   .card-child {
     display: flex;
     width: 100%;
-    border-bottom: 1px solid #eaeaea;
+    // border-bottom: 1px solid #eaeaea;
     .norm {
       font-weight: bold;
       font-size: 14px;
@@ -126,6 +126,15 @@
       color: #36383a;
     }
     .col {
+      width: 50%;
+      padding: 12px 20px;
+      border-bottom: 1px solid #eaeaea;
+      &:not(:first-child) {
+        border-left: 1px solid #eaeaea;
+        width: 50%;
+      }
+    }
+    .colPayment {
       width: 50%;
       padding: 12px 20px;
       &:not(:first-child) {
@@ -136,6 +145,7 @@
     .cols {
       width: 50%;
       padding: 12px 20px;
+      border-left: 1px solid #eaeaea;
       &:not(:first-child) {
         border-left: 1px solid #eaeaea;
         width: 50%;
@@ -182,23 +192,33 @@
   .plan {
     width: 32px;
     height: 32px;
-    color: #27A600;
+    color: #27a600;
     border-radius: 50%;
-    border: 1px solid #C4CDD4;
+    border: 1px solid #c4cdd4;
   }
   .remove {
     margin: 0px 7px;
     width: 32px;
     height: 32px;
-    color: #7A7E84;
+    color: #7a7e84;
     border-radius: 50%;
-    border: 1px solid #C4CDD4;
+    border: 1px solid #c4cdd4;
   }
   .edit {
     width: 32px;
     height: 32px;
-    color: #27A600;
+    color: #27a600;
     border-radius: 50%;
-    border: 1px solid #C4CDD4;
+    border: 1px solid #c4cdd4;
   }
+}
+
+.wrapper-table-none {
+  padding: 0px 20px 20px 10px;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 22px;
+  color: #3e4247;
+  font-weight: 400;
 }
