@@ -136,7 +136,6 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
     public function update(array $attributes, $id)
     {
-        $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
         $childEvaluate = ChildEvaluate::find($id);
         $childEvaluate->update($attributes);
 
