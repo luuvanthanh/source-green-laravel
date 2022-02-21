@@ -11,6 +11,9 @@ export function add(data = {}) {
 export function details(params = {}) {
   return request(`/v1/charge-students/${params?.id}`, {
     method: 'GET',
+    params: {
+      include: Helper.convertIncludes(['studentInfo.parentInfo', 'admissionRegister.parentInfo,classType,schoolYear,studentInfo', 'schoolYear', 'tuition.paymentForm,tuition.fee']),
+    }
   });
 }
 

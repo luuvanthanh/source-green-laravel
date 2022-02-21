@@ -90,7 +90,7 @@ export default {
         const response = yield saga.call(services.moneyFeePolicies, payload);
         if (response) {
           yield saga.put({
-            type: 'SET_DETAILS',
+            type: 'SET_MONEY_FEE_POLICIES',
             payload: response?.parsePayload,
           });
           callback(response?.parsePayload);

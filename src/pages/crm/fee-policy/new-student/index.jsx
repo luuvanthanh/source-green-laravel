@@ -88,7 +88,7 @@ class Index extends PureComponent {
         ...search,
         orderBy: 'created_at',
         sortedBy: 'desc',
-        include: Helper.convertIncludes(['studentInfo.parentInfo', 'parentInfo']),
+        include: Helper.convertIncludes(['studentInfo.parentInfo', 'admissionRegister.parentInfo,classType,schoolYear,studentInfo', 'schoolYear']),
       },
     });
     history.push({
@@ -171,68 +171,82 @@ class Index extends PureComponent {
         title: 'Năm học',
         key: 'schoolYear',
         className: 'min-width-150',
-        render: (record) =>
-          `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`,
+        render: (record) => `${record?.schoolYear?.year_from || ''} - ${record?.schoolYear?.year_to || ''}`
       },
       {
         title: 'Tên học sinh',
         key: 'nameStudent',
         className: 'min-width-200',
-        render: (record) => record?.nameStudent || '',
+        render: (record) => record?.studentInfo?.full_name || record?.name_student,
       },
       {
         title: 'Sinh ngày',
         key: 'dateOfBirth',
         className: 'min-width-200',
         render: (record) =>
-          record?.dateOfBirth
-            ? Helper.getDate(record?.dateOfBirth, variables.DATE_FORMAT.DATE_VI)
-            : '',
+          record?.studentInfo
+            ? Helper.getDate(record?.studentInfo?.birth_date, variables.DATE_FORMAT.DATE_VI) || " "
+            : Helper.getDate(record?.date_of_birth, variables.DATE_FORMAT.DATE_VI) || " ",
       },
       {
         title: 'Tháng tuổi',
         key: 'age',
         className: 'min-width-100',
-        render: (record) => record?.age || '',
+        render: (record) =>
+          record?.studentInfo
+            ? <>{record?.studentInfo?.age_month || "0"}</>
+            : <>{record?.age || "0"}</>,
       },
       {
         title: 'Ngày nhập học',
         key: 'dayAdmission',
         className: 'min-width-150',
         render: (record) =>
-          record?.dayAdmission
-            ? Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI)
+          record?.day_admission
+            ? Helper.getDate(record?.day_admission, variables.DATE_FORMAT.DATE_VI)
             : '',
       },
       {
         title: 'Họ tên cha',
         key: 'fatherName',
         className: 'min-width-150',
-        render: (record) => record?.fatherName || '',
+        render: (record) => {
+          const a = record?.admissionRegister?.parentInfo.find(i => i.sex === "MALE");
+          return <>{a?.full_name ? a?.full_name : record?.father_name}</>;
+        }
       },
       {
         title: 'SĐT cha',
         key: 'fatherPhoneNumber',
         className: 'min-width-150',
-        render: (record) => record?.fatherPhoneNumber || '',
+        render: (record) => {
+          const a = record?.admissionRegister?.parentInfo.find(i => i.sex === "MALE");
+          return <>{a?.phone ? a?.phone : record?.father_phone}</>;
+        }
       },
       {
         title: 'Họ tên mẹ',
         key: 'motherName',
         className: 'min-width-150',
-        render: (record) => record?.motherName || '',
+        render: (record) => {
+          const a = record?.admissionRegister?.parentInfo.find(i => i.sex === "FEMALE");
+          return <>{a?.full_name ? a?.full_name : record?.mother_name}</>;
+        }
       },
       {
         title: 'SĐT mẹ',
         key: 'motherPhoneNumber',
         className: 'min-width-150',
-        render: (record) => record?.motherPhoneNumber || '',
+        render: (record) => {
+          const a = record?.admissionRegister?.parentInfo.find(i => i.sex === "FEMALE");
+          return <>{a?.full_name ? a?.full_name : record?.mother_phone}</>;
+        }
       },
       {
         title: 'Tổng học phí đóng đ',
         key: 'totalMoney',
         className: 'min-width-200',
-        render: (record) => Helper.getPrice(record.totalMoney) || 0,
+        render: (record) => Helper.getPrice(record.total_money) || 0,
       },
       {
         key: 'action',
@@ -264,7 +278,6 @@ class Index extends PureComponent {
       location: { pathname },
       data,
     } = this.props;
-    console.log("data", data);
     const { search } = this.state;
     const loading = effects['CRMnewStudent/GET_DATA'];
     return (

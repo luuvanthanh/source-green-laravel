@@ -16,8 +16,6 @@ import { variables, Helper } from '@/utils';
 import Loading from '@/components/CommonComponent/Loading';
 import TypeFees from './typeFees';
 
-import Expected from './expected';
-
 const { TabPane } = Tabs;
 const radios = [
   {
@@ -32,10 +30,11 @@ const radios = [
 
 const Index = memo(() => {
   const params = useParams();
-  const { loading, menuLeftCRM, yearsSchool, classes, students } = useSelector(
-    ({ loading, menu, CRMnewStudentAdd, newStudent }) => ({
+  const { loading, menuLeftCRM, yearsSchool, classes, students, details } = useSelector(
+    ({ loading, menu, CRMnewStudentAdd }) => ({
       loading: loading.effects,
       menuLeftCRM: menu.menuLeftCRM,
+      details: CRMnewStudentAdd.details,
       yearsSchool: CRMnewStudentAdd.yearsSchool,
       classes: CRMnewStudentAdd.classes,
       students: CRMnewStudentAdd.students,
@@ -43,14 +42,10 @@ const Index = memo(() => {
   );
   const [tab, setTab] = useState('tuition');
   const dispatch = useDispatch();
-console.log("yearsSchool",yearsSchool)
   const history = useHistory();
   const formRef = useRef();
   const type = formRef?.current?.getFieldValue('type');
 
-  const [YearsDetail, setYearsDetail] = useState([]);
-  const [idRes, setIdRes] = useState();
-  const [idYear, setIdYear] = useState();
   const [tuition, setTuition] = useState([]);
   const [errorTable, setErrorTable] = useState({
     tuition: false,
@@ -91,17 +86,33 @@ console.log("yearsSchool",yearsSchool)
         },
         callback: (res) => {
           if (res?.id) {
-            setYearsDetail(res?.schoolYear?.changeParameter?.changeParameterDetail);
+            const pather = res?.admissionRegister?.parentInfo?.find(i => i.sex === "MALE");
+            const mother = res?.admissionRegister?.parentInfo?.find(i => i.sex === "FEMALE");
             const range_date = Helper.getDateRank(
               res?.schoolYear?.start_date,
               res?.schoolYear?.end_date,
               variables.DATE_FORMAT.DATE_VI,
             );
+            // if(res?.studentInfo){
+            //   formRef.current.setFieldsValue({
+            //     ...res,
+            //     range_date,
+            //     date_of_birth: moment(res.date_of_birth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+            //     day_admission: moment(res.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+            //     type: 'newStudent',
+            //   });
+            // }
             formRef.current.setFieldsValue({
               ...res,
               range_date,
-              date_of_birth: moment(res.date_of_birth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+              age: res?.studentInfo?.age_month || res?.age,
+              name_student: res?.studentInfo?.full_name || res?.name_student,
+              date_of_birth: moment(res?.studentInfo?.birth_date || res?.date_of_birth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
               day_admission: moment(res.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+              father_name: pather?.full_name || res?.father_name,
+              father_phone: pather?.phone || res?.father_phone,
+              mother_name: mother?.full_name || res?.mother_name,
+              mother_phone: mother?.phone || res?.mother_phone,
               type: 'newStudent',
             });
             setTuition(
@@ -152,7 +163,7 @@ console.log("yearsSchool",yearsSchool)
         format: variables.DATE_FORMAT.DATE_TIME_UTC,
         isUTC: false,
       }),
-      day_admission:   Helper.getDateTime({
+      day_admission: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: values.day_admission,
@@ -227,7 +238,6 @@ console.log("yearsSchool",yearsSchool)
       setAddFees(false);
     }
     if (name === 'school_year_id') {
-      setIdYear(value);
       const schoolYear = yearsSchool.find((item) => item.id === value);
       setDisableday_admission((prev) => ({
         ...prev,
@@ -300,7 +310,6 @@ console.log("yearsSchool",yearsSchool)
     const response = students.find((item) => item.id === value);
     const pather = response?.parentInfo?.find(i => i?.sex === "MALE");
     const mother = response?.parentInfo?.find(i => i?.sex === "FEMALE");
-    console.log("pather",pather)
     if (response?.id) {
       const range_date = Helper.getDateRank(
         response?.schoolYear?.start_date,
@@ -313,11 +322,11 @@ console.log("yearsSchool",yearsSchool)
         id: response.id,
         age: response.studentInfo?.age_month,
         father_name: pather?.full_name,
-        father_phone_number: pather?.phone,
+        father_phone: pather?.phone,
         mother_name: mother?.full_name,
-        mother_phone_number: mother?.phone,
+        mother_phone: mother?.phone,
         date_of_birth: moment(response.studentInfo.birth_date, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-       // day_admission: moment(response.studentInfo.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        // day_admission: moment(response.studentInfo.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
         type,
       });
     }
@@ -328,10 +337,6 @@ console.log("yearsSchool",yearsSchool)
 
   const changeTab = (key) => {
     setTab(key);
-  };
-
-  const hanDleChangeText = (childData) => {
-    setIdRes(childData);
   };
 
   const tabs = () => [
@@ -346,7 +351,6 @@ console.log("yearsSchool",yearsSchool)
           checkValidate={checkValidate}
           addFees={addFees}
           formRef={formRef}
-          hanDleChangeText={hanDleChangeText}
         />
       ),
     },
@@ -367,7 +371,7 @@ console.log("yearsSchool",yearsSchool)
     //   ),
     // },
   ];
-console.log("students",students)
+
   return (
     <>
       <Helmet title={params?.id ? 'Chi tiết' : 'Thêm mới'} />
@@ -405,29 +409,39 @@ console.log("students",students)
                   <Pane className="p20 border-top">
                     <div className="row">
                       <div className="col-lg-3">
-                        {type === 'newStudent' ? (
-                          <FormItem
-                            label="Tên học sinh"
+                        {
+                          details?.student_info_id ?
+                            <FormItem
+                            className="input-noborder"
+                            label="Họ tên học sinh"
                             name="name_student"
-                            rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                             type={variables.INPUT}
-                          />
-                        ) : (
-                          <FormItem
-                            className="mb-0"
-                            label="Tên học sinh"
-                            name="name_student"
-                            type={variables.SELECT}
-                            placeholder="Chọn học sinh"
-                            allowClear={false}
-                            data={students.map((item) => ({
-                              ...item,
-                              name: item?.studentInfo?.full_name || '-',
-                            }))}
-                            rules={[variables.RULES.EMPTY]}
-                            onChange={selectStudent}
-                          />
-                        )}
+                            placeholder="Họ và tên"
+                            /> :
+                            <>  {type === 'newStudent' ? (
+                              <FormItem
+                                label="Tên học sinh"
+                                name="name_student"
+                                rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                                type={variables.INPUT}
+                              />
+                            ) : (
+                              <FormItem
+                                className="mb-0"
+                                label="Tên học sinh"
+                                name="name_student"
+                                type={variables.SELECT}
+                                placeholder="Chọn học sinh"
+                                allowClear={false}
+                                data={students.map((item) => ({
+                                  ...item,
+                                  name: item?.studentInfo?.full_name || '-',
+                                }))}
+                                rules={[variables.RULES.EMPTY]}
+                                onChange={selectStudent}
+                              />
+                            )} </>
+                        }
                       </div>
                       <div className="col-lg-3">
                         <FormItem
@@ -447,7 +461,7 @@ console.log("students",students)
                       </div>
                       <div className="col-lg-3">
                         <FormItem
-                          className={type === 'oldStudent' ? 'input-noborder' : ''}
+                          className={type === 'oldStudent' ||  details?.student_info_id ? 'input-noborder' : ''}
                           label="Ngày sinh"
                           name="date_of_birth"
                           type={variables.DATE_PICKER}
@@ -504,79 +518,80 @@ console.log("students",students)
                         />
                       </div>
                       {
-                        type === 'newStudent' ? 
-                       <>
-                       <div className="col-lg-3">
-                        <FormItem
-                          label="Họ tên Cha"
-                          name="father_name"
-                          rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                          type={variables.INPUT}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          label="SĐT Cha"
-                          name="father_phone_number"
-                          rules={[variables.RULES.PHONE]}
-                          type={variables.INPUT}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          label="Họ tên Mẹ"
-                          name="mother_name"
-                          rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                          type={variables.INPUT}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          label="SĐT Mẹ"
-                          name="mother_phone_number"
-                          rules={[variables.RULES.PHONE]}
-                          type={variables.INPUT}
-                        />
-                      </div>
-                       </> : 
-                       <>
-                       <div className="col-lg-3">
-                        <FormItem
-                        className="input-noborder"
-                        label="Họ tên Cha"
-                        name="father_name"
-                        type={variables.INPUT}
-                        placeholder="Họ và tên"
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                           className="input-noborder"
-                          label="SĐT Cha"
-                          name="father_phone_number"
-                          type={variables.INPUT}
-                          placeholder="Số điện thoại"
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                           className="input-noborder"
-                          label="Họ tên Mẹ"
-                          name="mother_name"
-                          type={variables.INPUT}
-                          placeholder="Họ và tên"
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="input-noborder"
-                          label="SĐT Mẹ"
-                          name="mother_phone_number"
-                          type={variables.INPUT}
-                          placeholder="Số điện thoại"
-                        />
-                      </div>
-                       </>
+                        type !== 'newStudent' || details?.student_info_id ?
+
+                          <>
+                            <div className="col-lg-3">
+                              <FormItem
+                                className="input-noborder"
+                                label="Họ tên Cha"
+                                name="father_name"
+                                type={variables.INPUT}
+                                placeholder="Họ và tên"
+                              />
+                            </div>
+                            <div className="col-lg-3">
+                              <FormItem
+                                className="input-noborder"
+                                label="SĐT Cha"
+                                name="father_phone"
+                                type={variables.INPUT}
+                                placeholder="Số điện thoại"
+                              />
+                            </div>
+                            <div className="col-lg-3">
+                              <FormItem
+                                className="input-noborder"
+                                label="Họ tên Mẹ"
+                                name="mother_name"
+                                type={variables.INPUT}
+                                placeholder="Họ và tên"
+                              />
+                            </div>
+                            <div className="col-lg-3">
+                              <FormItem
+                                className="input-noborder"
+                                label="SĐT Mẹ"
+                                name="mother_phone"
+                                type={variables.INPUT}
+                                placeholder="Số điện thoại"
+                              />
+                            </div>
+                          </> :
+                          <>
+                            <div className="col-lg-3">
+                              <FormItem
+                                label="Họ tên Cha"
+                                name="father_name"
+                                rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                                type={variables.INPUT}
+                              />
+                            </div>
+                            <div className="col-lg-3">
+                              <FormItem
+                                label="SĐT Cha"
+                                name="father_phone"
+                                rules={[variables.RULES.PHONE]}
+                                type={variables.INPUT}
+                              />
+                            </div>
+                            <div className="col-lg-3">
+                              <FormItem
+                                label="Họ tên Mẹ"
+                                name="mother_name"
+                                rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                                type={variables.INPUT}
+                              />
+                            </div>
+                            <div className="col-lg-3">
+                              <FormItem
+                                label="SĐT Mẹ"
+                                name="mother_phone"
+                                rules={[variables.RULES.PHONE]}
+                                type={variables.INPUT}
+                              />
+                            </div>
+                          </>
                       }
                     </div>
                   </Pane>
