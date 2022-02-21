@@ -100,4 +100,13 @@ class CategorySkillController extends Controller
 
         return $this->success($categorySkill, trans('lang::messages.common.getListSuccess'));
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $credentials = $request->all();
+
+        $categorySkill = $this->categorySkillRepository->updateStatus($credentials, $id);
+
+        return $this->success($categorySkill, trans('lang::messages.common.modifySuccess'));
+    }
 }

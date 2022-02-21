@@ -95,4 +95,12 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
 
         return parent::parserResult($result);
     }
+
+    public function updateStatus(array $attributes, $id)
+    {
+        $categorySkill = CategorySkill::find($id);
+        $categorySkill->update($attributes);
+
+        return parent::find($id);
+    }
 }
