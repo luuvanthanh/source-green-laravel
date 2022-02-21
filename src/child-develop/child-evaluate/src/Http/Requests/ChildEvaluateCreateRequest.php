@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\ChildEvaluate\Http\Requests;
 
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ChildEvaluateCreateRequest extends FormRequest
@@ -25,7 +26,17 @@ class ChildEvaluateCreateRequest extends FormRequest
     {
         return [
             'categorySkillId' => 'required|exists:CategorySkills,Id',
-            'age' => 'required'
+            'age' => [
+                function ($attribute, $value, $fail) {
+                    $categoryChildIssue = ChildEvaluate::where('Age', $value)->where('CategorySkillId', request()->categorySkillId)->first();
+
+                    if (is_null($categoryChildIssue)) {
+                        return true;
+                    }
+
+                    return $fail('một kỹ năng và độ tuổi trùng nhau thì chỉ tạo được một lần');
+                },
+            ],
         ];
     }
 }
