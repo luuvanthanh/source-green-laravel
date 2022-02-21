@@ -50,3 +50,10 @@ export function updateStatus(data = {}) {
     parse: true,
   });
 }
+
+export function storeStudent(data = {}) {
+  return request(`/students/store-student/${data.id}`, {
+    method: 'PATCH',
+    data,
+  });
+}

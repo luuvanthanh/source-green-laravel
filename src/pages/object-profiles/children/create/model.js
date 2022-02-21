@@ -83,6 +83,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *STORE_STUDENT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.storeStudent, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *UPDATE_STATUS({ payload, callback }, saga) {
       try {
         yield saga.call(services.updateStatus, payload);

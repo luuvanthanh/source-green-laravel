@@ -122,7 +122,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   };
 
   return (
-    <Modal {...props} onCancel={cancelModal} title="Tải ảnh lên" width={700}>
+    <Modal {...props} onCancel={cancelModal} title="Tải ảnh lên" width={700} footer={null}>
       <Form
         layout="vertical"
         initialValues={{

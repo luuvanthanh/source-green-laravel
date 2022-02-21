@@ -31,6 +31,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
+const studentStatusArr = [
+  { id: 'REGISTED', name: 'Nhập học' },
+  { id: 'DISTRIBUTED', name: 'Nhập môn' },
+  { id: 'OFFICAL', name: 'Chính thức' },
+  { id: 'WITHDRAW_APPLICATION', name: 'Rút hồ sơ' },
+  { id: 'STOP_STUDYING', name: 'Ngưng học' },
+];
 const mapStateToProps = ({ OPchildren, loading, user }) => ({
   loading,
   data: OPchildren.data,
@@ -59,6 +66,7 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         classStatus: 'ALL',
         isStoreStaus: false,
+        studentStatus: query?.studentStatus,
       },
     };
     setIsMounted(true);
@@ -174,6 +182,10 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
+  onChangeStatus = (e, type) => {
     this.debouncedSearch(e, type);
   };
 
@@ -358,6 +370,7 @@ class Index extends PureComponent {
                 ...search,
                 branchId: search.branchId || null,
                 class: search.class || null,
+                studentStatus: search.studentStatus || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -402,6 +415,16 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}
                     placeholder="Chọn lớp"
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả trạng thái' }, ...studentStatusArr]}
+                    name="studentStatus"
+                    onChange={(event) => this.onChangeStatus(event, 'studentStatus')}
+                    type={variables.SELECT}
+                    placeholder="Chọn trạng thái"
                     allowClear={false}
                   />
                 </div>
