@@ -152,6 +152,9 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
         $params['student'] = $attributes['student'];
 
         $data = ChargeStudentService::moneyFeePolicie($params);
+
+        $attributes['details'] = json_decode($details, true);
+        
         foreach ($data['data'] as $key => $item) {
             $attributes['details'][$key]['money'] = $item['money'];
         }
