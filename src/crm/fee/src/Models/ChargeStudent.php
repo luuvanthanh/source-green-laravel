@@ -29,4 +29,16 @@ class ChargeStudent extends UuidModel
     {
         return $this->belongsTo(AdmissionRegister::class, 'student_info_id', 'student_info_id');
     }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class);
+    }
+
+    public function classType()
+    {
+        return $this->belongsTo(ClassType::class);
+    }
+
+    
 }

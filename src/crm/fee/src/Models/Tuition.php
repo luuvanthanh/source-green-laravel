@@ -16,4 +16,14 @@ class Tuition extends UuidModel
     {
         return $this->belongsTo(ChargeStudent::class);
     }
+
+    public function paymentForm()
+    {
+        return $this->belongsTo(PaymentForm::class);
+    }
+
+    public function fee()
+    {
+        return $this->belongsTo(Fee::class);
+    }
 }

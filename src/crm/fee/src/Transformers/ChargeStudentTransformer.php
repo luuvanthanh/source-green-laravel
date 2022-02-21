@@ -31,7 +31,7 @@ class ChargeStudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'tuition', 'admissionRegister'];
+    protected $availableIncludes = ['studentInfo', 'tuition', 'admissionRegister', 'schoolYear', 'classType'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -67,5 +67,22 @@ class ChargeStudentTransformer extends BaseTransformer
         }
 
         return $this->item($chargeStudent->admissionRegister, new AdmissionRegisterTransformer, 'AdmissionRegister');
+    }
+
+    public function includeSchoolYear(ChargeStudent $chargeStudent)
+    {
+        if ($chargeStudent->loadCount('schoolYear')->school_year_count < 1) {
+            return null;
+        }
+
+        return $this->item($chargeStudent->schoolYear, new SchoolYearTransformer, 'SchoolYear');
+    }
+    public function includeClassType(ChargeStudent $chargeStudent)
+    {
+        if ($chargeStudent->loadCount('classType')->class_type_count < 1) {
+            return null;
+        }
+
+        return $this->item($chargeStudent->classType, new ClassTypeTransformer, 'ClassType');
     }
 }

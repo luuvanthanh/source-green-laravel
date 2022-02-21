@@ -29,7 +29,7 @@ class TuitionTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['chargeStudent'];
+    protected $availableIncludes = ['chargeStudent', 'paymentForm', 'fee'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -51,5 +51,22 @@ class TuitionTransformer extends BaseTransformer
         }
 
         return $this->item($tuition->chargeStudent, new ChargeStudentTransformer, 'ChargeStudent');
+    }
+
+    public function includePaymentForm(Tuition $tuition)
+    {
+        if ($tuition->loadCount('paymentForm')->payment_form_count < 1) {
+            return null;
+        }
+
+        return $this->item($tuition->paymentForm, new PaymentFormTransformer, 'PaymentForm');
+    }
+    public function includeFee(Tuition $tuition)
+    {
+        if ($tuition->loadCount('fee')->fee_count < 1) {
+            return null;
+        }
+
+        return $this->item($tuition->fee, new FeeTransformer, 'Fee');
     }
 }
