@@ -177,6 +177,9 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
         $categorySkill = CategorySkill::find($id);
         $categorySkill->update($attributes);
 
+        if (!is_null($categorySkill->CategorySkillCrmId)) {
+            ChildDevelopCategoryCrmServices::UpdateStatusCategorySkill($attributes, $categorySkill->CategorySkillCrmId);
+        }
         return parent::find($id);
     }
 }
