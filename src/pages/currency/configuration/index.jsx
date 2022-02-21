@@ -2,11 +2,11 @@ import { memo, useRef, useState, useEffect } from 'react';
 import { Form } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useParams } from 'umi';
-import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import { head, isEmpty } from 'lodash';
 import Button from '@/components/CommonComponent/Button';
 import Text from '@/components/CommonComponent/Text';
 import Quill from '@/components/CommonComponent/Quill';
@@ -14,8 +14,17 @@ import { Helmet } from 'react-helmet';
 import csx from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables, Helper } from '@/utils';
+import { variables } from '@/utils';
 import stylesModule from './styles.module.scss';
+
+const dataTime = (n) => {
+    const allTime = [];
+    for (let i = 1; i < n + 1; i += 1) {
+        allTime.push({ name: `${i}` });
+    }
+
+    return allTime.map((i, id) => ({ id, ...i }));
+};
 
 const Students = memo(() => {
 
@@ -23,52 +32,92 @@ const Students = memo(() => {
     const dispatch = useDispatch();
     const [form] = Form.useForm();
 
+    const [content, setContent] = useState('');
     const mounted = useRef(false);
+    const mountedSet = (action, value) => mounted?.current && action(value);
     const [fileImage, setFileImage] = useState([null]);
 
-    const mountedSet = (setFunction, value) =>
-        !!mounted?.current && setFunction && setFunction(value);
+    // const mountedSet = (setFunction, value) =>
+    //     !!mounted?.current && setFunction && setFunction(value);
     const {
         loading: { effects },
-
-    } = useSelector(({ loading }) => ({
+    } = useSelector(({ loading, currencyConfiguration }) => ({
         loading,
-
+        currencyConfiguration,
+        details: currencyConfiguration.details,
     }));
-
     const [students, setStudents] = useState([]);
-    const loading = effects[`currencyConfiguration/GET_STUDENTS`];
-    const loadingSubmit = effects[`currencyConfiguration/ADD_STUDENTS`];
+    const loading = effects[`currencyConfiguration/GET_DATA`];
+    const loadingSubmit = effects[`currencyConfiguration/ADD`];
+
+
+    useEffect(() => {
+        dispatch({
+            type: 'currencyConfiguration/GET_DATA',
+            payload: params,
+            callback: (response) => {
+                if (response) {
+                    form.setFieldsValue({
+                        paymentTime: response?.parsePayload[0]?.paymentTime,
+                        detail: response?.parsePayload[0]?.configContentDetail?.map(i =>
+                            ({ ...i })
+                        ),
+                    });
+                    mountedSet(setContent, response?.parsePayload[0]?.content);
+                }
+            },
+        });
+    }, [params.id]);
+
+    const onFinish = (values) => {
+        dispatch({
+            type: 'currencyConfiguration/ADD',
+            payload: {
+                ...values,
+                content,
+            },
+            callback: (response, error) => {
+                if (response) {
+                    dispatch({
+                        type: 'currencyConfiguration/GET_DATA',
+                        payload: params,
+                        callback: (response) => {
+                            if (response) {
+                                form.setFieldsValue({
+                                    paymentTime: response?.parsePayload[0]?.paymentTime,
+                                    detail: response?.parsePayload[0]?.configContentDetail?.map(i =>
+                                        ({ ...i })
+                                    ),
+                                });
+                                mountedSet(setContent, response?.parsePayload[0]?.content);
+                            }
+                        },
+                    });
+                }
+                if (error) {
+                    if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                        error?.validationErrors.forEach((item) => {
+                            form.current.setFields([
+                                {
+                                    name: head(item.members),
+                                    errors: [item.message],
+                                },
+                            ]);
+                        });
+                    }
+                }
+            },
+        });
+    };
+
+    const onChangeEditor = (e) => {
+        mountedSet(setContent, e);
+    };
 
     useEffect(() => {
         mounted.current = true;
         return mounted.current;
     }, []);
-
-    useEffect(() => {
-        dispatch({
-            type: 'currencyConfiguration/GET_RELATIONSHIPS',
-            payload: {},
-        });
-        dispatch({
-            type: 'currencyConfiguration/GET_STUDENTS',
-            payload: {
-                customer_lead_id: params.id,
-            },
-            callback: () => {
-
-            },
-        });
-    }, [params.id]);
-
-    useEffect(() => {
-        if (!isEmpty(students)) {
-            mountedSet(
-                setFileImage,
-                students.map((item) => item.file_image || null),
-            );
-        }
-    }, [students]);
 
     return (
         <>
@@ -89,6 +138,7 @@ const Students = memo(() => {
                             ],
                         }}
                         form={form}
+                        onFinish={onFinish}
                     >
                         <Pane>
                             <Pane>
@@ -100,8 +150,8 @@ const Students = memo(() => {
                                         <div className={stylesModule['content-top']}>
                                             <h3 className={stylesModule.left}>Trước ngày</h3>
                                             <FormItem
-                                                options={['id', 'name']}
-                                                name="sex"
+                                                name="paymentTime"
+                                                data={dataTime(28)}
                                                 placeholder="Chọn"
                                                 type={variables.SELECT}
                                             />
@@ -112,7 +162,7 @@ const Students = memo(() => {
                                 <Pane className="card">
                                     <div className="row">
                                         <div className="col-lg-12">
-                                            <Form.List name="data">
+                                            <Form.List name="detail">
                                                 {(fields, { add, remove }) => (
                                                     <>
                                                         {fields.map((field, index) => (
@@ -132,8 +182,8 @@ const Students = memo(() => {
                                                                     <Pane className="col-lg-12">
                                                                         <FormItem
                                                                             label="Tên hình thức"
-                                                                            name={[field.name, 'full_name']}
-                                                                            fieldKey={[field.fieldKey, 'full_name']}
+                                                                            name={[field.name, 'formName']}
+                                                                            fieldKey={[field.fieldKey, 'formName']}
                                                                             type={variables.INPUT}
                                                                             rules={[
                                                                                 variables.RULES.EMPTY_INPUT,
@@ -142,12 +192,12 @@ const Students = memo(() => {
                                                                         />
                                                                     </Pane>
                                                                     <Pane className="col-lg-12">
-                                                                        <div className="ant-col ant-form-item-label">
-                                                                            <label>
-                                                                                <span>Nội dung</span>
-                                                                            </label>
-                                                                        </div>
-                                                                        <Quill />
+                                                                        <FormItem
+                                                                            label="Nội dung"
+                                                                            name={[field.name, 'content']}
+                                                                            fieldKey={[field.fieldKey, 'content']}
+                                                                            type={variables.TEXTAREA}
+                                                                        />
                                                                     </Pane>
                                                                 </Pane>
 
@@ -174,13 +224,6 @@ const Students = memo(() => {
                                                                         ...students,
                                                                         {
                                                                             id: uuidv4(),
-                                                                            birth_date: Helper.getDateTime({
-                                                                                value: Helper.setDate({
-                                                                                    ...variables.setDateData,
-                                                                                }),
-                                                                                format: variables.DATE_FORMAT.DATE_AFTER,
-                                                                                isUTC: false,
-                                                                            }),
                                                                         },
                                                                     ]);
                                                                     mountedSet(setFileImage, [...fileImage, null]);
@@ -206,7 +249,7 @@ const Students = memo(() => {
                                                     <span>Nội dung</span>
                                                 </label>
                                             </div>
-                                            <Quill />
+                                            <Quill onChange={onChangeEditor} value={content} />
                                         </div>
                                     </div>
                                 </Pane>
