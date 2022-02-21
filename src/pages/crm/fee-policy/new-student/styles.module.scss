@@ -2,17 +2,29 @@
 
 .table-footer {
   background-color: #fff1eb;
+  padding: 15px 5px;
   min-width: 150px;
 }
 .table-top {
   background-color: #eef0f4;
   color: #36383a;
+  padding: 15px 5px;
   font-weight: 700;
   font-size: 14px;
 }
 .table-content {
   color: #3e4247;
+  padding: 15px 5px;
   font-size: 13px;
   line-height: 22px;
   font-weight: 400;
+}
+
+.table th:last-child,
+.table td:last-child {
+  position: sticky;
+  padding-left: 15px;
+  background-color: white;
+  right: 0;
+  color: #373737;
 }
