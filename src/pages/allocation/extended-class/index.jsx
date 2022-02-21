@@ -113,21 +113,36 @@ const Index = memo(() => {
         },
       });
     }
+    dispatch({
+      type: 'extendedClass/GET_WEEK',
+      payload: {
+        date: moment().format(variables.DATE_FORMAT.DATE_AFTER),
+      },
+      callback: () => {},
+    });
   }, []);
 
   useEffect(() => {
     if (search.branchId) {
       dispatch({
-        type: 'categories/GET_TEACHERS',
-        payload: {
-          hasClass: 'false',
-          include: Helper.convertIncludes(['positionLevelNow']),
-          branchId: search.branchId,
-        },
+        type: 'allocationTeacherNoClass/GET_POSITIONS',
         callback: (response) => {
-          if (response) {
-            setTeachers(response.parsePayload || []);
-          }
+          const pos = response.parsePayload.find((item) => item.code === 'GV');
+
+          dispatch({
+            type: 'categories/GET_TEACHERS',
+            payload: {
+              hasClass: 'false',
+              include: Helper.convertIncludes(['positionLevelNow']),
+              branchId: search.branchId,
+              positionId: pos.id,
+            },
+            callback: (response) => {
+              if (response) {
+                setTeachers(response.parsePayload || []);
+              }
+            },
+          });
         },
       });
     }
@@ -751,9 +766,14 @@ const Index = memo(() => {
                                         <h4 className={stylesModule.schedule__children__title}>
                                           {item.name}
                                         </h4>
-                                        <p className={stylesModule.schedule__children__norm}>
-                                          {item.fromTime} - {item.toTime}
-                                        </p>
+                                        <div className="d-flex justify-content-between">
+                                          <p className={stylesModule.schedule__children__norm}>
+                                            {item.fromTime} - {item.toTime}
+                                          </p>
+                                          <p className={stylesModule.schedule__children__norm}>
+                                            {item?.class?.code}
+                                          </p>
+                                        </div>
                                         <p className={stylesModule.schedule__children__norm}>
                                           Học sinh: {size(item.extendedClassRegistrations)}
                                         </p>
