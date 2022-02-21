@@ -161,4 +161,17 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
         return parent::parserResult($testInput);
     }
+
+    public function update(array $attributes, $id)
+    {
+        $testSemester = TestSemester::find($id);
+        
+        if (!empty($attributes['approvalStatus'])) {
+            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
+        }
+
+        $testSemester->update($attributes);
+
+        return parent::find($id);
+    }
 }

@@ -34,7 +34,7 @@ class ChildEvaluateCreateRequest extends FormRequest
                         return true;
                     }
 
-                    return $fail('một kỹ năng và độ tuổi trùng nhau thì chỉ tạo được một lần');
+                    return $fail('Kỹ năng và độ tuổi trùng nhau thì chỉ tạo được một lần');
                 },
             ],
         ];
