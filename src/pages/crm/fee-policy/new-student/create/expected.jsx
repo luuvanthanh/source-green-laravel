@@ -104,14 +104,14 @@ const Index = memo(({ yearsSchool, idYear, idRes, YearsDetail }) => {
     return (
         <>
             <ScrollContainer hideScrollbars={false}>
-                <table className="table" id="table" >
+                <table className={stylesModule.table} id="table" >
                     <thead>
                         <tr>
                             <th scope="col" className={stylesModule['table-top']}>Tháng</th>
                             {fees.map(i => <th scope="col" className={stylesModule['table-top']}>{i.name}</th>)}
                             <th scope="col" className={stylesModule['table-top']} >Ngoài giờ(đ) </th>
                             <th scope="col" className={stylesModule['table-top']}>Giảm trừ(đ)</th>
-                            <th scope="col" className={stylesModule['table-top']}>Tổng tiền(đ)</th>
+                            <th scope="col" className={stylesModule['table-top']} style={{background: '#eef0f4'}}>Tổng tiền(đ)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -132,7 +132,7 @@ const Index = memo(({ yearsSchool, idYear, idRes, YearsDetail }) => {
                             )}
                             <td className={stylesModule['table-footer']} />
                             <td className={stylesModule['table-footer']} />
-                            <td className={stylesModule['table-footer']}>{total(data?.length + 1)}</td>
+                            <td className={stylesModule['table-footer']} style={{background: '#fff1eb'}}>{total(data?.length + 1)}</td>
                         </tr>
                     </tbody>
                 </table>

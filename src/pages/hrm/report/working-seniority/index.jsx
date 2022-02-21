@@ -1,4 +1,5 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { PureComponent } from 'react';
+import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
@@ -6,232 +7,422 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import { useHistory, useLocation } from 'umi';
-import { useDispatch, useSelector } from 'dva';
+import PropTypes from 'prop-types';
+import stylesModule from './styles.module.scss';
 
-const Index = memo(() => {
-  const [
-    { data, pagination, branches, error },
+
+const dataTime = (n) => {
+  const allTime = [];
+  for (let i = 0; i < n + 1; i += 1) {
+      allTime.push({ name: `${i} Năm` });
+  }
+
+  return allTime.map((i, id) => ({ id, ...i }));
+};
+
+let isMounted = true;
+/**
+ * Set isMounted
+ * @param {boolean} value
+ * @returns {boolean} value of isMounted
+ */
+const setIsMounted = (value = true) => {
+    isMounted = value;
+    return isMounted;
+};
+/**
+ * Get isMounted
+ * @returns {boolean} value of isMounted
+ */
+const getIsMounted = () => isMounted;
+const mapStateToProps = ({ medicalStudentProblem, loading, user, HRMWorkingSeniority }) => ({
     loading,
-  ] = useSelector(({ loading: { effects }, HRMWorkingSeniority }) => [HRMWorkingSeniority, effects]);
-
-  const formRef = React.createRef();
-  const { query, pathname } = useLocation();
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const [search, setSearch] = useState({
-    KeyWord: query?.KeyWord,
-    branchId: query?.branchId,
-    page: query?.page || variables.PAGINATION.PAGE,
-    limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    date: query.date ? moment(query.date) : moment(),
-  });
-
-  const onLoad = () => {
-    dispatch({
-      type: 'HRMWorkingSeniority/GET_DATA',
-      payload: {
-        ...search,
-      },
-    });
-    history.push(
-      `${pathname}?${Helper.convertParamSearchConvert(
-        {
-          ...search,
-          date: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
-        },
-        variables.QUERY_STRING,
-      )}`,
-    );
-  };
-
-  const loadCategories = () => {
-    if (search.branchId) {
-      dispatch({
-        type: 'medicalStudentProblem/GET_CLASSES',
-        payload: {
-          branch: search.branchId,
-        },
-      });
-    }
-    dispatch({
-      type: 'medicalStudentProblem/GET_BRACHES',
-      payload: {},
-    });
-  };
-
-  useEffect(() => {
-    onLoad();
-    loadCategories();
-  }, [search]);
-
-  const debouncedSearch = debounce((value, type) => {
-    setSearch((prev) => ({
-      ...prev.search,
-      [`${type}`]: value,
-      page: variables.PAGINATION.PAGE,
-      limit: variables.PAGINATION.PAGE_SIZE,
-    }));
-  }, 300);
-
-  const onChange = (e, type) => {
-    debouncedSearch(e.target.value, type);
-  };
-
-  const onChangeSelectBranch = (e, type) => {
-    debouncedSearch(e, type);
-    dispatch({
-      type: 'medicalStudentProblem/GET_CLASSES',
-      payload: {
-        branch: e,
-      },
-    });
-  };
-
-  const changePagination = ({ page, limit }) => {
-    setSearch((prev) => ({
-      ...prev.search,
-      page,
-      limit,
-    }));
-  };
-
-  const paginationFunction = (pagination) => {
-    Helper.paginationNet({
-      pagination,
-      query,
-      callback: (response) => {
-        changePagination(response);
-      },
-    });
-  };
-
-  const header = () => {
-    const columns = [
-      {
-        title: 'STT',
-        align: 'center',
-        render: (record) => <Text size="normal">{record?.key}</Text>,
-      },
-      {
-        title: 'Mã NV',
-        key: 'code',
-        render: (record) => <Text size="normal">{record?.code}</Text>,
-      },
-      {
-        title: 'Tên nhân viên',
-        key: 'name',
-        render: (record) => <Text size="normal">{record?.name}</Text>,
-      },
-      {
-        title: 'Chức vụ',
-        key: 'position',
-        render: (record) => <Text size="normal">{record?.position}</Text>,
-      },
-      {
-        title: 'Cơ sở',
-        key: 'division',
-        render: (record) => <Text size="normal">{record?.division}</Text>,
-      },
-      {
-        title: 'Thâm niên công tác',
-        children: [
-          {
-            title: 'Ngày bắt đầu làm việc',
-            key: 'start_date',
-            render: (record) => <Text size="normal">{record?.start_date}</Text>,
-          },
-          {
-            title: 'Số năm làm việc',
-            key: 'year_working',
-            render: (record) => <Text size="normal">{record?.year_working}</Text>,
-          },
-          {
-            title: 'Số tháng làm việc',
-            key: 'month_working',
-            render: (record) => <Text size="normal">{record?.month_working}</Text>,
-          },
-        ],
-      },
-    ];
-    return columns;
-  };
-
-  return (
-    <>
-      <Helmet title="Báo cáo thâm niên công tác" />
-      <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-        {/* FORM SEARCH */}
-        <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-          <Text color="dark">Báo cáo thâm niên công tác</Text>
-          <Button color="primary" icon="export" className="ml-2">
-            Tải danh sách
-          </Button>
-        </div>
-        <div className={classnames(styles['block-table'])}>
-          <Form
-            initialValues={{
-              ...search,
-              branchId: search.branchId || null,
-              classId: search.classId || null,
-              date: search.date && moment(search.date),
-            }}
-            layout="vertical"
-            ref={formRef}
-          >
-            <div className="row">
-              <div className="col-lg-3">
-                <FormItem
-                  name="KeyWord"
-                  onChange={(event) => onChange(event, 'KeyWord')}
-                  placeholder="Nhập từ khóa tìm kiếm"
-                  type={variables.INPUT_SEARCH}
-                />
-              </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
-                  name="branchId"
-                  onChange={(event) => onChangeSelectBranch(event, 'branchId')}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
-              <div className="col-lg-3">
-                <FormItem
-                  name="year_working"
-                  onChange={(event) => onChange(event, 'year_working')}
-                  placeholder="Số năm làm việc"
-                  type={variables.INPUT_SEARCH}
-                />
-              </div>
-            </div>
-          </Form>
-          <div>
-            <Table
-              columns={header()}
-              dataSource={data}
-              loading={loading['medicalStudentProblem/GET_DATA']}
-              error={error}
-              isError={error.isError}
-              bordered
-              pagination={paginationFunction(pagination)}
-              params={{
-                header: header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.key || record.id}
-              scroll={{ x: '100%' }}
-            />
-          </div>
-        </div>
-      </div>
-    </>
-  );
+    data: HRMWorkingSeniority.data,
+    divisions: HRMWorkingSeniority.divisions,
+    branches: HRMWorkingSeniority.branches,
+    positions: HRMWorkingSeniority.positions,
+    error: medicalStudentProblem.error,
+    defaultBranch: user.defaultBranch,
 });
+@connect(mapStateToProps)
+class Index extends PureComponent {
+    formRef = React.createRef();
+
+    constructor(props) {
+        super(props);
+        const {
+            defaultBranch,
+            location: { query },
+        } = props;
+        this.state = {
+            search: {
+                KeyWord: query?.KeyWord,
+                branchId: query?.branchId || defaultBranch?.id,
+                page: query?.page || "",
+                limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+                date: query.date ? moment(query.date) : moment().format(variables.DATE_FORMAT.DATE_AFTER),
+            },
+        };
+        setIsMounted(true);
+    }
+
+    componentDidMount() {
+        this.onLoad();
+        this.loadCategories();
+    }
+
+    componentWillUnmount() {
+        setIsMounted(false);
+    }
+
+    /**
+     * Set state properties
+     * @param {object} data the data input
+     * @param {function} callback the function which will be called after setState
+     * @returns {void} call this.setState to upSearchDate state
+     * @memberof setStateData
+     */
+    setStateData = (state, callback) => {
+        if (!getIsMounted()) {
+            return;
+        }
+        this.setState(state, callback);
+    };
+
+    /**
+     * Function load data
+     */
+    onLoad = () => {
+        const { search } = this.state;
+        const {
+            location: { pathname },
+        } = this.props;
+        this.props.dispatch({
+            type: 'HRMWorkingSeniority/GET_DATA',
+            payload: {
+                ...search,
+            },
+        });
+        history.push(
+            `${pathname}?${Helper.convertParamSearchConvert(
+                {
+                    ...search,
+                    date: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
+                },
+                variables.QUERY_STRING,
+            )}`,
+        );
+    };
+
+    /**
+     * Function load branches
+     */
+    loadCategories = () => {
+        const { dispatch } = this.props;
+        const { search } = this.state;
+        if (search.branchId) {
+            dispatch({
+                type: 'medicalStudentProblem/GET_CLASSES',
+                payload: {
+                    branch: search.branchId,
+                },
+            });
+        }
+        dispatch({
+            type: 'HRMWorkingSeniority/GET_BRANCHES',
+            payload: {},
+        });
+        dispatch({
+            type: 'HRMWorkingSeniority/GET_DIVISIONS',
+            payload: {},
+        });
+        dispatch({
+            type: 'HRMWorkingSeniority/GET_POSITIONS',
+            payload: {},
+        });
+    };
+
+    /**
+     * Function debounce search
+     * @param {string} value value of object search
+     * @param {string} type key of object search
+     */
+    debouncedSearch = debounce((value, type) => {
+        this.setStateData(
+            (prevState) => ({
+                search: {
+                    ...prevState.search,
+                    [`${type}`]: value,
+                    page: variables.PAGINATION.PAGE,
+                    limit: variables.PAGINATION.PAGE_SIZE,
+                },
+            }),
+            () => this.onLoad(),
+        );
+    }, 300);
+
+    /**
+     * Function change input
+     * @param {object} e event of input
+     * @param {string} type key of object search
+     */
+    onChange = (e, type) => {
+        this.debouncedSearch(e.target.value, type);
+    };
+
+    /**
+     * Function change select
+     * @param {object} e value of select
+     * @param {string} type key of object search
+     */
+    onChangeSelect = (e, type) => {
+        this.debouncedSearch(e, type);
+    };
+
+    /**
+     * Function change select
+     * @param {object} e value of select
+     * @param {string} type key of object search
+     */
+    onChangeSelectBranch = (e, type) => {
+        const { dispatch } = this.props;
+        this.debouncedSearch(e, type);
+        dispatch({
+            type: 'medicalStudentProblem/GET_CLASSES',
+            payload: {
+                branch: e,
+            },
+        });
+    };
+
+    /**
+     * Function set pagination
+     * @param {integer} page page of pagination
+     * @param {integer} size size of pagination
+     */
+    changePagination = ({ page, limit }) => {
+        this.setState(
+            (prevState) => ({
+                search: {
+                    ...prevState.search,
+                    page,
+                    limit,
+                },
+            }),
+            () => {
+                this.onLoad();
+            },
+        );
+    };
+
+    debouncedSearchDateRank = debounce((startDate, endDate) => {
+        this.setStateData(
+            (prevState) => ({
+                search: {
+                    ...prevState.search,
+                    startDate,
+                    endDate,
+                    page: variables.PAGINATION.PAGE,
+                    limit: variables.PAGINATION.PAGE_SIZE,
+                },
+            }),
+            () => this.onLoad(),
+        );
+    }, 200);
+
+    /**
+     * Function change input
+     * @param {object} e event of input
+     * @param {string} type key of object search
+     */
+    onChangeDate = (e , type) => {
+      this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    };
+
+    /**
+     * Function pagination of table
+     * @param {object} pagination value of pagination items
+     */
+    pagination = (pagination) => {
+        const {
+            location: { query },
+        } = this.props;
+        return Helper.paginationNet({
+            pagination,
+            query,
+            callback: (response) => {
+                this.changePagination(response);
+            },
+        });
+    };
+
+    /**
+     * Function header table
+     */
+    header = () => {
+        const { search } = this.state;
+        const columns = [
+          {
+            title: 'STT',
+            align: 'center',
+            render: (value, _, index) => <>{Helper.serialOrder(search?.page, index, search?.limit)}</>, 
+          },
+          {
+            title: 'Mã NV',
+            key: 'code',
+            render: (record) => <Text size="normal">{record?.employee?.code}</Text>,
+          },
+          {
+            title: 'Tên nhân viên',
+            key: 'name',
+            render: (record) =><Text size="normal">{record?.employee?.fullName}</Text>,
+          },
+          {
+            title: 'Chức vụ',
+            key: 'position',
+            render: (record) =><Text size="normal">{record?.position?.name}</Text>,
+          },
+          {
+            title: 'Cơ sở',
+            key: 'division',
+            render: (record) => <Text size="normal">{record?.branch?.name}</Text>,
+          },
+          {
+            title: 'Thâm niên công tác',
+            children: [
+              {
+                title: 'Ngày bắt đầu làm việc',
+                key: 'start_date',
+                render: (record) => Helper.getDate(record?.contractFrom, variables.DATE_FORMAT.DATE),
+              },
+              {
+                title: 'Số năm làm việc',
+                key: 'year_working',
+                render: (record) => <Text size="normal">{record?.numberYearWork}</Text>,
+              },
+              {
+                title: 'Số tháng làm việc',
+                key: 'month_working',
+                render: (record) => <Text size="normal">{record?.numberMonthWork}</Text>,
+              },
+            ],
+          },
+        ];
+        return columns;
+    };
+
+    handleCancel = () => this.setStateData({ visible: false });
+
+    render() {
+        const {
+            data,
+            error,
+            branches,
+            pagination,
+            match: { params },
+            loading: { effects },
+        } = this.props;
+        const { search, } = this.state;
+        const loading = effects['medicalStudentProblem/GET_DATA'];
+        return (
+            <>
+                <Helmet title="Báo cáo thâm niên công tác" />
+                <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+                    {/* FORM SEARCH */}
+                    <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+                        <Text color="dark">Báo cáo thâm niên công tác</Text>
+                    </div>
+                    <div className={classnames(styles['block-table'])}>
+                        <Form
+                            initialValues={{
+                                ...search,
+                                branchId: search.branchId || null,
+                                classId: search.classId || null,
+                                date: search.date && moment(search.date) || null,
+                            }}
+                            layout="vertical"
+                            ref={this.formRef}
+                        >
+                            <div className="row">
+                                <div className="col-lg-3">
+                                    <FormItem
+                                        name="date"
+                                        onChange={(event) => this.onChangeDate(event, 'date')}
+                                        type={variables.DATE_PICKER}
+                                        allowClear={false}
+                                    />
+                                </div>
+                                <div className="col-lg-3">
+                                    <FormItem
+                                        data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                                        name="branchId"
+                                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                                        type={variables.SELECT}
+                                        allowClear={false}
+                                    />
+                                </div>
+                                <div className="col-lg-3">
+                                    <FormItem
+                                        data={ dataTime(100)}
+                                        name="number_year_work"
+                                        placeholder="Chọn số năm làm việc"
+                                        onChange={(event) => this.onChangeSelect(event, 'number_year_work')}
+                                        type={variables.SELECT}
+                                    />
+                                </div>
+                            </div>
+                        </Form>
+                        <div className={stylesModule['wrapper-table']}>
+                            <Table
+                                columns={this.header(params)}
+                                dataSource={data}
+                                loading={loading}
+                                error={error}
+                                isError={error.isError}
+                                defaultExpandAllRows
+                                childrenColumnName="children"
+                                bordered
+                                pagination={this.pagination(pagination)}
+                                params={{
+                                    header: this.header(),
+                                    type: 'table',
+                                }}
+                                rowKey={(record) => record?.name || record?.id}
+                                scroll={{ x: '100%' }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </>
+        );
+    }
+}
+
+Index.propTypes = {
+    match: PropTypes.objectOf(PropTypes.any),
+    data: PropTypes.arrayOf(PropTypes.any),
+    pagination: PropTypes.objectOf(PropTypes.any),
+    loading: PropTypes.objectOf(PropTypes.any),
+    dispatch: PropTypes.objectOf(PropTypes.any),
+    location: PropTypes.objectOf(PropTypes.any),
+    branches: PropTypes.arrayOf(PropTypes.any),
+    error: PropTypes.objectOf(PropTypes.any),
+    defaultBranch: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+    match: {},
+    data: [],
+    pagination: {},
+    loading: {},
+    dispatch: {},
+    location: {},
+    branches: [],
+    error: {},
+    defaultBranch: {},
+};
 
 export default Index;

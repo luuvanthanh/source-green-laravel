@@ -44,7 +44,7 @@ const Index = memo(() => {
         payload: params.id ? {
           id: params.id,
           categorySkillId: values.categorySkillId ? values.categorySkillId : details.categorySkillId,
-          age: values.age ? values.age : details.age,
+          age: values.age ? Number( values.age) : Number(details.age),
           use:  values.use,
           detail: values.data.map((i) => ({
             nameCriteria: i?.nameCriteria,
@@ -59,7 +59,7 @@ const Index = memo(() => {
           :
           {
             categorySkillId: values.categorySkillId ? values.categorySkillId : false, 
-            age: values.age ? values.age : false,
+            age: values.age ? Number (values.age) : false,
             use:  values.use ? values.use  : false,
             detail: values.data.map((item) => ({
               nameCriteria: item?.nameCriteria,

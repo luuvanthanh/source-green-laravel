@@ -1,101 +1,127 @@
-export default {
-  namespace: 'HRMEmployeeLeave',
-  state: {
-    data: [
-      {
-        key: 1,
-        code: 'Cơ sở',
-        name: 'Lake view',
-        children: [
-          {
-            key: 11,
-            code: 'Lớp',
-            name: 'Preschool',
-            children: [
-              {
-                key: 21,
-                code: 'NV0001',
-                name: 'Trần Thùy Linh',
-                position: 'CEO',
-                branch: 'Lake view',
-                division: 'CEO',
-                leave_date: '12/12/2021',
-                leave_num: 'TV0001',
-                end_salary_date: '10/12/2021',
-                reason: 'Thành lập công ty riêng',
-                note: 'Đồng ý',
-              },
-              {
-                key: 22,
-                code: 'NV0001',
-                name: 'Vũ Nhật Long',
-                position: 'IT',
-                branch: 'Lake view',
-                division: 'IT',
-                leave_date: '12/12/2021',
-                leave_num: 'TV0001',
-                end_salary_date: '10/12/2021',
-                reason: 'Nhảy việc',
-                note: 'Đồng ý',
-              },
-            ],
-          },
-        ],
+import * as categories from '@/services/categories';
+  import * as services from './services';
+  
+  export default {
+    namespace: 'HRMEmployeeLeave',
+    state: {
+      data: [],
+      divisions: [],
+      positions: [],
+      pagination: {
+        total: 0,
       },
-      {
-        key: 2,
-        code: 'Cơ sở',
-        name: 'Lake view',
-        children: [
-          {
-            key: 22,
-            code: 'Lớp',
-            name: 'Preschool',
-            children: [
-              {
-                key: 31,
-                code: 'NV0001',
-                name: 'Trần Thùy Linh',
-                position: 'CEO',
-                branch: 'Lake view',
-                division: 'CEO',
-                leave_date: '12/12/2021',
-                leave_num: 'TV0001',
-                end_salary_date: '10/12/2021',
-                reason: 'Thành lập công ty riêng',
-                note: 'Đồng ý',
-              },
-              {
-                key: 32,
-                code: 'NV0001',
-                name: 'Vũ Nhật Long',
-                position: 'IT',
-                branch: 'Lake view',
-                division: 'IT',
-                leave_date: '12/12/2021',
-                leave_num: 'TV0001',
-                end_salary_date: '10/12/2021',
-                reason: 'Nhảy việc',
-                note: 'Đồng ý',
-              },
-            ],
-          },
-        ],
+      error: {
+        isError: false,
+        data: {},
       },
-    ],
-    pagination: {
-      total: 0,
+      branches: [],
+      classes: [],
     },
-    error: {
-      isError: false,
-      data: {},
+    reducers: {
+      INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+      SET_DATA: (state, { payload }) => ({
+        ...state,
+        data: Object.keys(payload.data).map((key) => ({
+          id: key,
+          name: key,
+          children:
+            payload?.data[key]?.divisionName &&
+            Object.keys(payload?.data[key]?.divisionName).map((keyParent) => ({
+              key: `${key}-${keyParent}`,
+              name: keyParent,
+              children:
+                payload?.data[key]?.divisionName[keyParent]?.resignationDecision &&
+                Object.keys(payload?.data[key]?.divisionName[keyParent]?.resignationDecision).map(
+                  (keyProduct) => ({
+                    key: `${key}-${keyParent}-${keyProduct}`,
+                    name: keyProduct,
+                    ...(payload?.data[key]?.divisionName[keyParent]?.resignationDecision[keyProduct] || {}),
+                  }),
+                ),
+            })),
+        })),
+        pagination: payload.pagination,
+      }),
+      SET_DIVISIONS: (state, { payload }) => ({
+        ...state,
+        divisions: payload.parsePayload,
+      }),
+      SET_POSITIONS: (state, { payload }) => ({
+        ...state,
+        positions: payload.parsePayload,
+      }),
+      SET_BRANCHES: (state, { payload }) => ({
+        ...state,
+        branches: payload.parsePayload,
+      }),
+      SET_ERROR: (state, { payload }) => ({
+        ...state,
+        error: {
+          isError: true,
+          data: {
+            ...payload,
+          },
+        },
+      }),
     },
-    branches: [],
-    classes: [],
-  },
-  reducers: {
-    INIT_STATE: (state) => ({ ...state }),
-  },
-  effects: {},
-  subscriptions: {},
-};
+    effects: {
+      *GET_DATA({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.get, payload);
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response.payload,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_DIVISIONS({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.getDivisions, payload);
+          yield saga.put({
+            type: 'SET_DIVISIONS',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_POSITIONS({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.getPositions, payload);
+          yield saga.put({
+            type: 'SET_POSITIONS',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_BRANCHES({ payload }, saga) {
+        try {
+          const response = yield saga.call(categories.getBranches, payload);
+          yield saga.put({
+            type: 'SET_BRANCHES',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+    },
+    subscriptions: {},
+  };
+  
