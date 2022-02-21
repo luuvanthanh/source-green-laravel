@@ -341,7 +341,6 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
     } = this.props;
-    console.log("data",data)
     const { search } = this.state;
     const loading = effects['childDevelopReviewScenario/GET_DATA'];
     return (
