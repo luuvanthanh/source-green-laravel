@@ -11,10 +11,15 @@ export const variables = {
     HANDLING_IMAGE: 'HANDLING_IMAGE',
     HANDLING_IMAGE_SUCCESSFUL: 'HANDLING_IMAGE_SUCCESSFUL',
     DELETED: 'DELETED',
-    SYSTEM_ERROR: 'SYSTEM_ERROR'
+    SYSTEM_ERROR: 'SYSTEM_ERROR',
+    DISTRIBUTED: 'DISTRIBUTED',
+    OFFICAL: 'OFFICAL',
+    WITHDRAW_APPLICATION: 'WITHDRAW_APPLICATION',
+    STOP_STUDYING: 'STOP_STUDYING',
   },
   STATUS_NAME: {
     REGIST: 'Đăng ký',
+    REGISTED: 'Nhập học',
     JOIN_CLASS: 'Đã xếp lớp',
     LEAVE_SCHOOL: 'Nghỉ học',
     STORE: 'Lưu trữ',
@@ -23,7 +28,11 @@ export const variables = {
     HANDLING_IMAGE: 'Đang xử lý',
     HANDLING_IMAGE_SUCCESSFUL: 'Đã đăng ký',
     DELETED: 'Đã hủy đăng ký',
-    SYSTEM_ERROR: 'Lỗi hệ thống'
+    SYSTEM_ERROR: 'Lỗi hệ thống',
+    DISTRIBUTED: 'Nhập môn',
+    OFFICAL: 'Chính thức',
+    WITHDRAW_APPLICATION: 'Rút hồ sơ',
+    STOP_STUDYING: 'Ngừng học',
   },
   TYPE_USER: {
     RANK: 'rank',
