@@ -29,9 +29,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicalStudentProblem, loading, user, OPListIntroductoryStudents }) => ({
+const mapStateToProps = ({ medicalStudentProblem, loading, user, OPStopStudying }) => ({
   loading,
-  data: OPListIntroductoryStudents.data,
+  data: OPStopStudying.data,
   error: medicalStudentProblem.error,
   classes: medicalStudentProblem.classes,
   branches: medicalStudentProblem.branches,
@@ -96,7 +96,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'OPListIntroductoryStudents/GET_DATA',
+      type: 'OPStopStudying/GET_DATA',
       payload: {
         ...search,
       },
@@ -373,7 +373,8 @@ class Index extends PureComponent {
       {
         KeyWord: query?.KeyWord,
         Class: query?.Class,
-        StudentStatus: 'REGISTED',
+        StudentStatus: 'STOP_STUDYING ',
+        IsStopStudying: 'false',
         branchId: query?.branchId || defaultBranch?.id,
         FromDate: dataIDSearch ? 
           moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
@@ -382,7 +383,7 @@ class Index extends PureComponent {
         moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
          : "",
       },
-      `Danhsachbaocaohocsinhnhapmon.xlsx`,
+      `Danhsachbaocaohocsinhnhaphocchinhthuc.xlsx`,
     );
   };
 
@@ -401,11 +402,11 @@ class Index extends PureComponent {
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách báo cáo học sinh nhập môn" />
+        <Helmet title="Danh sách báo cáo học sinh ngưng học" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách báo cáo học sinh nhập môn</Text>
+            <Text color="dark">Danh sách báo cáo học sinh ngưng học</Text>
             <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>

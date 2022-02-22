@@ -424,9 +424,16 @@ const onChangeBranch = (e) => {
                       />
                     </Pane>
                     <Pane className="pt30 pl15">
-                      <Button className="ml-auto px25" color="success" htmlType="submit"  loading={loadingSubmit}>
+                      {
+                        params?.id ? 
+                      <Button className="ml-auto px25" color="success" htmlType="submit"  loading={loadingSubmit}  disabled>
                         Tính phí
                       </Button>
+                        : 
+                        <Button className="ml-auto px25" color="success" htmlType="submit"  loading={loadingSubmit}>
+                        Tính phí
+                      </Button>
+                      }
                     </Pane>
                   </Pane>
                 </Form>

@@ -60,6 +60,7 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
       },
+      dataIDSearch: [],
     };
     setIsMounted(true);
   }
@@ -242,7 +243,8 @@ class Index extends PureComponent {
     this.debouncedSearchDateRank(
       moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
       moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
-    );
+      );
+      this.setStateData({ dataIDSearch: e });
   };
 
   /**
@@ -718,6 +720,7 @@ class Index extends PureComponent {
       defaultBranch,
       location: { query },
     } = this.props;
+    const { dataIDSearch } = this.state;
     Helper.exportExcelClover(
       `/curriculum-reviews/export-excel/group-by-branch`,
       {
@@ -726,6 +729,12 @@ class Index extends PureComponent {
         ToolGroupId: query?.ToolGroupId,
         ToolDetailId: query?.ToolDetailId,
         branchId: query?.branchId || defaultBranch?.id,
+        FromDate: dataIDSearch ? 
+          moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
+        : "",
+        ToDate: dataIDSearch ? 
+        moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
+         : "",
       },
       `Baocaoquantrihocsinhtheogocgiaocu.xlsx`,
     );

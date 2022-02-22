@@ -1,14 +1,17 @@
 export const variables = {
   STATUS: {
-    NO_VERIFYE: 'NO_VERIFYE',
-    APPLY: 'APPLY',
-    NOT_APPLY: 'NOT_APPLY',
-    VALID: 'VALID',
-    EXPIRE: 'EXPIRE',
+    REGISTED: 'REGISTED',
+    DISTRIBUTED: 'DISTRIBUTED',
+    OFFICAL: 'OFFICAL',
+    WITHDRAW_APPLICATION: 'WITHDRAW_APPLICATION',
+    STOP_STUDYING: 'STOP_STUDYING',
   },
   STATUS_NAME: {
-    APPLY: 'Học chính thức',
-    NOT_APPLY: 'nhập môn',
+    REGISTED: 'Nhập học',
+    DISTRIBUTED: 'Nhập môn',
+    OFFICAL: 'Chính thức',
+    WITHDRAW_APPLICATION: 'Rút hồ sơ',
+    STOP_STUDYING: 'Ngưng học',
   },
 };
 

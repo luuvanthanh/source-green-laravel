@@ -341,7 +341,7 @@ class Index extends PureComponent {
             children: (
               <div className={stylesModule['table-name']}>
                 {value?.children ?
-                  "" : <>{value?.position?.name}</>
+                  "" : <>{value?.division}</>
                 }
               </div>
             ),

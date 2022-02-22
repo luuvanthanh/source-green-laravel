@@ -1,7 +1,7 @@
 import * as services from './services';
 
     export default {
-      namespace: 'OPListOfficialStudent',
+      namespace: 'OPStopStudying',
       state: {
         data: [],
         pagination: {
