@@ -338,7 +338,7 @@ const Index = memo(() => {
               </Heading>
 
               <Pane className={classnames('row')}>
-                <Pane className="col-lg-2">
+                <Pane className="col-lg-3">
                   <FormItem
                     label="Từ năm"
                     name="year_from"
@@ -365,7 +365,7 @@ const Index = memo(() => {
                   />
                 </Pane>
 
-                <Pane className="col-lg-2">
+                <Pane className="col-lg-3">
                   <FormItem
                     label="Đến năm"
                     name="year_to"
@@ -407,7 +407,7 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
             </Pane>
-            <Pane className="card mb0">
+            {/* <Pane className="card mb0">
               <Heading type="form-title" className="p20 border-bottom">
                 Chi tiết
               </Heading>
@@ -426,7 +426,7 @@ const Index = memo(() => {
                   </TabPane>
                 ))}
               </Tabs>
-            </Pane>
+            </Pane> */}
             {/* <Pane className="p20 d-flex justify-content-between align-items-center">
               <Button
                 className="ml-auto px25"
