@@ -1,0 +1,166 @@
+<?php
+
+namespace GGPHP\Profile\Repositories\Eloquent;
+
+use Carbon\Carbon;
+use GGPHP\Category\Models\ParamaterValue;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
+use GGPHP\Profile\Models\SeasonalContract;
+use GGPHP\Profile\Presenters\SeasonalContractPresenter;
+use GGPHP\Profile\Repositories\Contracts\SeasonalContractRepository;
+use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
+use Prettus\Repository\Criteria\RequestCriteria;
+
+/**
+ * Class LabourContractRepositoryEloquent.
+ *
+ * @package namespace App\Repositories\Eloquent;
+ */
+class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implements SeasonalContractRepository
+{
+    protected $wordExporterServices;
+
+    /**
+     * @var array
+     */
+    protected $fieldSearchable = [
+        'Id',
+        'employee.FullName' => 'like',
+        'CreationTime',
+    ];
+
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        PositionLevelRepositoryEloquent $positionLevelRepository,
+        ScheduleRepositoryEloquent $scheduleRepositoryEloquent,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->positionLevelRepository = $positionLevelRepository;
+        $this->wordExporterServices = $wordExporterServices;
+        $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
+    }
+
+    /**
+     * Specify Model class name
+     *
+     * @return string
+     */
+    public function model()
+    {
+        return SeasonalContract::class;
+    }
+
+    /**
+     * Boot up the repository, pushing criteria
+     */
+    public function boot()
+    {
+        $this->pushCriteria(app(RequestCriteria::class));
+    }
+
+    /**
+     * Specify Presenter class name
+     *
+     * @return string
+     */
+    public function presenter()
+    {
+        return SeasonalContractPresenter::class;
+    }
+
+    public function getAll(array $attributes)
+    {
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
+        if (!empty($attributes['typeOfContractId'])) {
+            $typeOfContractId = explode(',', $attributes['typeOfContractId']);
+            $this->model = $this->model->whereIn('TypeOfContractId', $typeOfContractId);
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $this->model = $this->model->whereIn('BranchId', $branchId);
+        }
+
+        if (!empty($attributes['positionId'])) {
+            $positionId = explode(',', $attributes['positionId']);
+            $this->model = $this->model->whereIn('PositionId', $positionId);
+        }
+
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('ContractDate', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))->where('ContractDate', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'));
+        }
+
+        if (!empty($attributes['limit'])) {
+            $seasonalContract = $this->paginate($attributes['limit']);
+        } else {
+            $seasonalContract = $this->get();
+        }
+
+        return $seasonalContract;
+    }
+
+    public function create(array $attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $seasonalContract = SeasonalContract::create($attributes);
+            
+            foreach ($attributes['detail'] as $value) {
+                $seasonalContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return $this->parserResult($seasonalContract);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $seasonalContract = SeasonalContract::findOrFail($id);
+        \DB::beginTransaction();
+        try {
+            $seasonalContract->update($attributes);
+            $seasonalContract->parameterValues()->detach();
+
+            foreach ($attributes['detail'] as $value) {
+                $seasonalContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+        }
+
+        return $this->parserResult($seasonalContract);
+    }
+
+
+    public function delete($id)
+    {
+        $seasonalContract = SeasonalContract::findOrFail($id);
+
+        $seasonalContract->parameterValues()->detach();
+
+        return $seasonalContract->delete();
+    }
+}
