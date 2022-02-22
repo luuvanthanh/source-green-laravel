@@ -1,12 +1,14 @@
 import request from '@/utils/requestLavarel';
 import requestClover from '@/utils/request';
+import { Helper } from '@/utils';
 
 
 export function get(params = {}) {
   return request('/v1/charge-old-students', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
+      include: Helper.convertIncludes(['student.classStudent.class', 'schoolYear']),
     },
   });
 }

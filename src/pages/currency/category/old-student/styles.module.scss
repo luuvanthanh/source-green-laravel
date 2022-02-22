@@ -1,0 +1,33 @@
+@import "@/assets/styles/mixins.scss";
+
+.table-footer {
+  background-color: #fff1eb;
+  min-width: 150px;
+  padding: 15px;
+}
+.table-top {
+  background-color: #eef0f4;
+  color: #36383a;
+  padding: 15px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.table-content {
+  color: #3e4247;
+  font-size: 13px;
+  padding: 15px;
+  line-height: 22px;
+  font-weight: 400;
+}
+
+.table-responsive th:last-child,
+.table-responsive td:last-child {
+  position: sticky;
+  right: 0;
+  padding-left: 15px;
+  background-color: white;
+  color: #373737;
+}
+.table-responsive td {
+  white-space: nowrap;
+}

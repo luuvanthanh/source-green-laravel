@@ -30,17 +30,17 @@ const radios = [
 
 const Index = memo(() => {
   const params = useParams();
-  const { loading, menuLeftCRM, yearsSchool, classes, students, details } = useSelector(
+  const { loading, menuLeftCRM, yearsSchool, classes, students } = useSelector(
     ({ loading, menu, CRMnewStudentAdd }) => ({
       loading: loading.effects,
       menuLeftCRM: menu.menuLeftCRM,
-      details: CRMnewStudentAdd.details,
       yearsSchool: CRMnewStudentAdd.yearsSchool,
       classes: CRMnewStudentAdd.classes,
       students: CRMnewStudentAdd.students,
     }),
   );
   const [tab, setTab] = useState('tuition');
+  const [details, setDetails] = useState();
   const dispatch = useDispatch();
   const history = useHistory();
   const formRef = useRef();
@@ -93,6 +93,7 @@ const Index = memo(() => {
               res?.schoolYear?.end_date,
               variables.DATE_FORMAT.DATE_VI,
             );
+            setDetails(res);
             // if(res?.studentInfo){
             //   formRef.current.setFieldsValue({
             //     ...res,
