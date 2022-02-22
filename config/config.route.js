@@ -590,6 +590,12 @@ export default [
             authority: [permissions.HSDT],
           },
           {
+            path: '/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-ngung-hoc',
+            component: './object-profiles/report/stop-studying',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
             path: '/ho-so-doi-tuong/bao-cao/thong-ke-luong-hoc-sinh-nhap-hoc-chinh-thuc-theo-nam',
             component: './object-profiles/report/official-student-by-year',
             wrappers: ['@/wrappers/auth'],

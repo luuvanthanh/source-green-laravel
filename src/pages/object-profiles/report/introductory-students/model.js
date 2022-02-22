@@ -1,67 +1,56 @@
-  export default {
-    namespace: 'OPListIntroductoryStudents',
-    state: {
-      data: [
-        {
-          id: 1,
-          nameStudent: "Nguyễn Thị Lệ Đáng",
-          birthDayStudent: "20/10/1999",
-          age:"24",
-          sex:"Nữ",
-          nameParents:"Nguyễn Văn Đáng",
-          phoneParents:"0349624626",
-          nameM:"Nguyễn Thị Tâm",
-          phoneM:"302616562",
-          basic:"Scenic Valley 2",
-          class:"Preschool 1",
-          time:"06/12/2021",
-          status:"NOT_APPLY",
-        },
-        {
-          id: 2,
-          nameStudent: "Bùi Hoàng Quân",
-          birthDayStudent: "20/10/1999",
-          age:"24",
-          sex:"Nữ",
-          nameParents:"Bùi Ngọc Thy Nhân",
-          phoneParents:"0349624626",
-          nameM:"Nguyễn Thị Tâm",
-          phoneM:"302616562",
-          basic:"Scenic Valley 2",
-          class:"Preschool 1",
-          time:"06/12/2021",
-          status:"NOT_APPLY",
-        },
-        {
-          id: 3,
-          nameStudent: "Bùi Hoàng Quân",
-          birthDayStudent: "20/10/1999",
-          age:"24",
-          sex:"Nữ",
-          nameParents:"Đinh Minh An",
-          phoneParents:"0349624626",
-          nameM:"Nguyễn Thị Tâm",
-          phoneM:"302616562",
-          basic:"Scenic Valley 2",
-          class:"Preschool 1",
-          time:"06/12/2021",
-          status:"NOT_APPLY",
-        }
-      ],
-      city: [],
-      district: [],
-      pagination: {
-        total: 0,
-      },
+import * as services from './services';
+
+export default {
+  namespace: 'OPListIntroductoryStudents',
+  state: {
+    data: [],
+    pagination: {
+      total: 0,
+    },
+    error: {
+      isError: false,
+      data: {},
+    },
+    branches: [],
+    classes: [],
+  },
+  reducers: {
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    SET_DATA: (state, { payload }) => ({
+      ...state,
+      data: payload.parsePayload,
+      pagination: payload.pagination,
+    }),
+    SET_ERROR: (state, { payload }) => ({
+      ...state,
       error: {
-        isError: false,
-        data: {},
+        isError: true,
+        data: {
+          ...payload,
+        },
       },
+    }),
+  },
+  effects: {
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: {
+            parsePayload: response,
+            pagination: {
+              total: response.totalCount,
+            },
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
-    reducers: {
-    },
-    effects: {
-    },
-    subscriptions: {},
-  };
-  
+  },
+  subscriptions: {},
+};
