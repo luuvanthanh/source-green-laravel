@@ -198,11 +198,12 @@ return [
         GGPHP\Tourist\Providers\TouristServiceProvider::class,
         Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
         GGPHP\Notification\Providers\NotificationServiceProvider::class,
-        GGPHP\SystemConfig\Providers\SystemConfigServiceProvider::class,
+        GGPHP\EventConfig\Providers\EventConfigServiceProvider::class,
         GGPHP\AiService\Providers\AiServiceServiceProvider::class,
         GGPHP\ThirdPartyService\Providers\ThirdPartyServiceServiceProvider::class,
         GGPHP\ApiShare\Providers\ApiShareServiceProvider::class,
         GGPHP\NasConfig\Providers\NasConfigServiceProvider::class,
+        GGPHP\SystemConfig\Providers\SystemConfigServiceProvider::class,
     ],
 
     /*

@@ -38,18 +38,6 @@ class SystemConfigController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param  SystemConfig $systemConfig
-     * @return Response
-     */
-    public function show(Request $request, SystemConfig $systemConfig)
-    {
-        $systemConfig = $this->systemConfigRepository->parserResult($systemConfig);
-
-        return $this->success($systemConfig, trans('lang::messages.common.getInfoSuccess'));
-    }
-
-    /**
      *
      * @param SystemConfigCreateRequest $request
      *
@@ -81,18 +69,24 @@ class SystemConfigController extends Controller
         return $this->success($systemConfig, trans('lang::messages.common.modifySuccess'));
     }
 
-    /**
-     *
-     * @param SystemConfig $systemConfig
-     *
-     * @return Response
-     */
-    public function destroy($id)
+    public function updateReceiveEmail(Request $request)
     {
-        if ($this->systemConfigRepository->delete($id)) {
-            return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
-        }
+        $systemConfigs = $this->systemConfigRepository->updateReceiveEmail($request->all());
 
-        return response()->json(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        return $this->success($systemConfigs, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function onOffTeamplateEmail(Request $request, $id)
+    {
+        $this->systemConfigRepository->onOffTeamplateEmail($request->all(), $id);
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function updateTeamplateEmail(Request $request, $id)
+    {
+        $systemConfigs = $this->systemConfigRepository->updateTeamplateEmail($request->all(), $id);
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
     }
 }

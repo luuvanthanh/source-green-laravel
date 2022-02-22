@@ -136,17 +136,20 @@ trait ExceptionRenderTrait
             $data['errors'] = $errorResponses($e->validator->errors()->toArray());
         }
 
-        $routeName = request()->route()->getName();
-        $apiShare = ApiShare::where('name_route', $routeName)->first();
+        $routeName = request()->route();
 
-        if (!is_null($apiShare)) {
-            $dataAccessApi = [
-                'api_share_id' => $apiShare->id,
-                'time' => Carbon::now()->format('Y-m-d H:i:s'),
-                'status' => $data['status'],
-                'response' => json_encode($data)
-            ];
-            AccessApi::create($dataAccessApi);
+        if (!is_null($routeName)) {
+            $apiShare = ApiShare::where('name_route', $routeName->getName())->first();
+
+            if (!is_null($apiShare)) {
+                $dataAccessApi = [
+                    'api_share_id' => $apiShare->id,
+                    'time' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'status' => $data['status'],
+                    'response' => json_encode($data)
+                ];
+                AccessApi::create($dataAccessApi);
+            }
         }
 
         return response()->json($data, $data['status']);

@@ -36,5 +36,9 @@ class DatabaseSeeder extends Seeder
         $this->call(SystemConfigsTableSeeder::class);
         $this->call(ThirdPartyServicesTableSeeder::class);
         $this->call(ApiSharesTableSeeder::class);
+        $this->call(EmailVariableDefinitionsTableSeeder::class);
+        $this->call(EventConfigsTableSeeder::class);
+        $this->call(ListConfigTeamplateEmailTableSeeder::class);
+        $this->call(TeamplateEmailVariableTableSeeder::class);
     }
 }

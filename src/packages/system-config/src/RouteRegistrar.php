@@ -30,5 +30,11 @@ class RouteRegistrar extends CoreRegistrar
     {
         // SystemConfig
         \Route::resource('system-configs', 'SystemConfigController');
+
+
+        \Route::put('receive-email', 'SystemConfigController@updateReceiveEmail');
+
+        \Route::put('on-off-teamplate-email/{id}', 'SystemConfigController@onOffTeamplateEmail');
+        \Route::put('teamplate-emails/{id}', 'SystemConfigController@updateTeamplateEmail');
     }
 }
