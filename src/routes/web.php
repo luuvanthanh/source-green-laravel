@@ -24,6 +24,11 @@ Route::post(
     ['uses' => 'CallController@newCall', 'as' => 'new-call']
 );
 
-Route::get('/token', [VoiceController::class, 'generateToken']);
-Route::post('/incoming/voice/call', [VoiceController::class, 'incomingVoiceCalls']);
+Route::get('/token', 'VoiceController@generateToken');
+Route::post('/incoming/voice/call', 'VoiceController@incomingVoiceCalls');
 Route::view('/dashboard2', 'dashboard');
+
+Route::post('/call-fail', 'CallController@callFail')->name('call-fail');
+Route::post('/busy', 'CallController@busy')->name('busy');
+Route::post('/recording', 'VoiceController@recording');
+

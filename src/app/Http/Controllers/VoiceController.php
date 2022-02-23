@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\HistoryCall;
 use Illuminate\Http\Request;
 use Twilio\Exceptions\RestException;
 use Twilio\Jwt\AccessToken;
@@ -62,34 +63,9 @@ class VoiceController extends Controller
         }
     }
 
-    public function incomingVoiceCalls(Request $request)
-    {
-        $data = [
-            'callSid' => $request->input('CallSid'),
-            'from' => $request->input('From'),
-            'to' => $request->input('To')
-        ];
-
-        $twilioClient = new Client(
-            config('services.twilio.account_sid'),
-            config('services.twilio.auth_token')
-        );
-
-        $twilioClient->sync->v1
-            ->services(config('services.twilio.service_sid'))
-            ->syncLists('twilio_incoming_voice_calls')
-            ->syncListItems
-            ->create($data);
-
-        $response = new VoiceResponse();
-
-        $response->say('Thanks for calling');
-
-        return $response;
-    }
-
     public function generateToken(Request $request)
     {
+        \Log::info('generateToken', ['data' => $request->all()]);
         $identity = $request->query('username');
 
         throw_if(
@@ -117,5 +93,17 @@ class VoiceController extends Controller
         $token->setIdentity($identity);
 
         return response(['identity' => $identity, 'token' => $token->toJWT()]);
+    }
+
+    public function recording(Request $request)
+    {
+        \Log::info('recored', ['data' => $request->all()]);
+        $history = HistoryCall::where('call_sid', $request->CallSid)->first();
+
+        if (!is_null($history)) {
+            $history->update([
+                'record_link' => $request->RecordingUrl
+            ]);
+        }
     }
 }
