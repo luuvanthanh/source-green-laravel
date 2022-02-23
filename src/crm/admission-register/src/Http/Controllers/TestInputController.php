@@ -127,4 +127,11 @@ class TestInputController extends Controller
 
         return $this->success($testInput, trans('lang::messages.common.createSuccess'));
     }
+
+    public function moveStudentToOfficial($id)
+    {
+        $testInput = $this->testInputRepository->moveStudentToOfficial($id);
+
+        return $this->success(['data' => $testInput], trans('lang::messages.common.getInfoSuccess'));
+    }
 }

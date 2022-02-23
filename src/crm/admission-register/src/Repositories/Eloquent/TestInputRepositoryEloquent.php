@@ -2,12 +2,19 @@
 
 namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
+use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
 use GGPHP\Crm\AdmissionRegister\Models\TestInput;
 use GGPHP\Crm\AdmissionRegister\Models\TestInputDetail;
 use GGPHP\Crm\AdmissionRegister\Models\TestInputDetailChildren;
 use GGPHP\Crm\AdmissionRegister\Presenters\TestInputPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
+use GGPHP\Crm\AdmissionRegister\Services\StudentService;
+use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\StudentInfo;
+use GGPHP\Crm\Fee\Models\ClassType;
+use GGPHP\Crm\SsoAccount\Models\SsoAccount;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -147,7 +154,7 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
                     }
                 }
             }
-            
+
             $testInput->status = TestInput::STATUS[$attributes['status']];
             $testInput->update();
 
@@ -162,5 +169,146 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         }
 
         return parent::find($testInput->id);
+    }
+
+    public function moveStudentToOfficial($id)
+    {
+        $data = [];
+        $testInput = TestInput::find($id);
+        $admissionRegister = AdmissionRegister::find($testInput->admission_register_id);
+        $studentInfo = StudentInfo::find($admissionRegister->student_info_id);
+
+        switch ($studentInfo->sex) {
+            case 0:
+                $sex = 'FEMALE';
+                break;
+            case 1:
+                $sex = 'MALE';
+                break;
+            case 2:
+                $sex = 'OTHER';
+                break;
+            default:
+                break;
+        }
+
+        $birthday = Carbon::parse($studentInfo->birth_date);
+        $now = Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'));
+        $numberOfMonth = $birthday->diffInMonths($now);
+        $customerLead = CustomerLead::find($studentInfo->customer_lead_id);
+
+        switch ($customerLead->sex) {
+            case 0:
+                $sex = 'FEMALE';
+                break;
+            case 1:
+                $sex = 'MALE';
+                break;
+            case 2:
+                $sex = 'OTHER';
+                break;
+            default:
+                break;
+        }
+
+        $data['studentInfo']['FatherAccount'] = null;
+        $customerLeadAccount = SsoAccount::where('model_id', $customerLead->id)->first();
+
+        if (!is_null($customerLeadAccount)) {
+            $data['studentInfo']['FatherAccount'] = [
+                'AppUserId' => $customerLeadAccount->sso_user_id,
+                'UserName' => $customerLeadAccount->user_name,
+                'FaceImageStatus' => ''
+            ];
+        }
+
+        $data['studentInfo']['student'] = [
+            'code' => 'CrmStudent',
+            'cardNumber' => '',
+            'employeeUd' => null,
+            'fullName' => !empty($studentInfo->full_name) ? $studentInfo->full_name : '',
+            'sex' => $sex,
+            'dayOfBirth' => !empty($studentInfo->birth_date) ? $studentInfo->birth_date : '',
+            'age' => $numberOfMonth,
+            'address' => '',
+            'street' => '',
+            'city' => null,
+            'district' => null,
+            'ward' => null,
+            'classId' => null,
+            'studentCrmId' => $studentInfo->id,
+            'health' => '',
+            'registerDate' => Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d'),
+            'laborNumber' => '',
+            'startDate' => Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d'),
+            'status' => 'REGISTED',
+            'note' => !empty($admissionRegister->children_note) ? $admissionRegister->children_note : '',
+            'parentWish' => !empty($admissionRegister->parent_wish) ? $admissionRegister->parent_wish : '',
+            'source' => '',
+            'comments' => '',
+            'fileImage' => !empty($studentInfo->file_image) ? $studentInfo->file_image : '',
+        ];
+        $data['studentInfo']['fartherId'] = '00000000-0000-0000-0000-000000000000';
+        $data['studentInfo']['MotherId'] = '00000000-0000-0000-0000-000000000000';
+        $data['studentInfo']['father'] = [
+            'employeeId' => null,
+            'parentCrmId' => $customerLead->id,
+            'code' => $customerLead->code,
+            'fullName' => $customerLead->full_name,
+            'sex' => $sex,
+            'dayOfBirth' => !empty($customerLead->birth_date) ? $customerLead->birth_date : '',
+            'address' => !empty($customerLead->address) ? $customerLead->address : '',
+            'street' => null,
+            'city' => null,
+            'district' => null,
+            'ward' => null,
+            'phone' => $customerLead->phone,
+            'anotherPhone' => !empty($customerLead->other_phone) ? $customerLead->other_phone : '',
+            'email' => $customerLead->email,
+            'zalo' => null,
+            'faceBook' => null,
+            'instagram' => null,
+            'hobby' => null,
+            'referent' => null,
+            'source' => null,
+            'status' => 'REGISTED',
+            'jobTile' => null,
+            'fileImage' => !empty($testInput->file_image) ? $testInput->file_image : '',
+        ];
+        $data['studentInfo']['mother'] = null;
+        $data['studentInfo']['MotherAccount'] = null;
+
+        $data['testInput'] = [
+            'strength' => !empty($testInput->strength) ? $testInput->strength : '',
+            'encourage' => !empty($testInput->encourage) ? $testInput->encourage : '',
+            'timeAgeTestSemester' => !empty($testInput->time_age) ? $testInput->time_age : '',
+        ];
+        $data['testInput']['detail'] = [];
+        foreach ($testInput->testInputDetail as $value) {
+            foreach ($value->testInputDetailChildren as $valueChildren) {
+
+                if (!array_key_exists($value->id, $data['testInput']['detail'])) {
+                    $data['testInput']['detail'][$valueChildren->test_input_detail_id] = [
+                        'categorySkillId' => $value->category_skill_id,
+                        'isCheck' => [
+                            [
+                                'childEvaluateId' => $valueChildren->child_evaluate_id,
+                                'childEvaluateDetailId' => $valueChildren->child_evaluate_detail_id,
+                                'childEvaluateDetailChildrenId' => $valueChildren->child_evaluate_detail_children_id,
+                            ]
+                        ]
+                    ];
+                } else {
+                    $data['testInput']['detail'][$valueChildren->test_input_detail_id]['isCheck'][] = [
+                        'childEvaluateId' => $valueChildren->child_evaluate_id,
+                        'childEvaluateDetailId' => $valueChildren->child_evaluate_detail_id,
+                        'childEvaluateDetailChildrenId' => $valueChildren->child_evaluate_detail_children_id,
+                    ];
+                }
+            }
+        }
+        $result = StudentService::moveStudentToOfficial($data);
+
+        return $result;
     }
 }
