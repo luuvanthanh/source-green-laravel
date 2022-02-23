@@ -16,7 +16,7 @@ class ZaloController extends Controller
 
         $helper = $zalo->getRedirectLoginHelper();
 
-        $callBackUrl = 'https://fdbb-118-70-192-53.ngrok.io/api/v1/zalo/zalo-callback';
+        $callBackUrl = 'https://84dd-14-176-232-86.ngrok.io/api/v1/zalo/zalo-callback';
 
         $loginUrl = $helper->getLoginUrlByPage($callBackUrl); // This is login url
 
@@ -32,21 +32,25 @@ class ZaloController extends Controller
     {
         $data = $request->all();
 
-        switch ($data['event_name']) {
-            case 'user_send_text':
+        if (isset($data['event_name'])) {
+            switch ($data['event_name']) {
+                case 'user_send_text':
                     $messaging = $data['message']['text'];
                     \Log::info('send', $data);
                     \Log::info('send-zalo');
-                        broadcast(new ZaloReceiveMessage([
-                            'sender' => $data['sender']['id'],
-                            'recipient' => $data['recipient']['id'],
-                            'message' => $messaging,
-                        ]));
-                break;
-            default:
-                # code...
-                break;
+                    broadcast(new ZaloReceiveMessage([
+                        'sender' => $data['sender']['id'],
+                        'recipient' => $data['recipient']['id'],
+                        'message' => $messaging,
+                    ]));
+                    break;
+                default:
+                    # code...
+                    break;
+            }
         }
+
+        return $this->success([], trans('lang::messages.common.getListSuccess'));
     }
 
     public function zaloRedirect(Request $request)
@@ -56,36 +60,56 @@ class ZaloController extends Controller
 
     public function zaloFollower(Request $request)
     {
-        $zaloFollowers = ZaloService::listFollower($request->all());
+        try {
+            $zaloFollowers = ZaloService::listFollower($request->all());
 
-        return $this->success($zaloFollowers, trans('lang::messages.common.getListSuccess'));
+            return $this->success($zaloFollowers, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function zaloGetProfile(Request $request)
     {
-        $zaloProfile = ZaloService::zaloGetProfile($request->all());
+        try {
+            $zaloProfile = ZaloService::zaloGetProfile($request->all());
 
-        return $this->success($zaloProfile, trans('lang::messages.common.getListSuccess'));
+            return $this->success($zaloProfile, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function sendMessages(Request $request)
     {
-        $sendMessage = ZaloService::sendMessages($request->all());
+        try {
+            $sendMessage = ZaloService::sendMessages($request->all());
 
-        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+            return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function listRecentChat(Request $request)
     {
-        $sendMessage = ZaloService::listRecentChat($request->all());
+        try {
+            $sendMessage = ZaloService::listRecentChat($request->all());
 
-        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+            return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function getConversation(Request $request)
     {
-        $sendMessage = ZaloService::getConversation($request->all());
+        try {
+            $sendMessage = ZaloService::getConversation($request->all());
 
-        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+            return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 }

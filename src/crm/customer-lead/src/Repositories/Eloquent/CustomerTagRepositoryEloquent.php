@@ -47,6 +47,10 @@ class CustomerTagRepositoryEloquent extends BaseRepository implements CustomerTa
 
     public function getCustomerTag(array $attributes)
     {
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $customerTag = $this->paginate($attributes['limit']);
         } else {
@@ -59,13 +63,16 @@ class CustomerTagRepositoryEloquent extends BaseRepository implements CustomerTa
     public function create(array $attributes)
     {
         if (!empty($attributes['customer_tag'])) {
-            $customerTag = CustomerTag::where('customer_lead_id', $attributes['customer_lead_id'])->delete();
+            CustomerTag::where('customer_lead_id', $attributes['customer_lead_id'])->delete();
             foreach ($attributes['customer_tag'] as $value) {
                 $value['customer_lead_id'] = $attributes['customer_lead_id'];
                 $customerTag = CustomerTag::create($value);
             }
+        } else {
+            CustomerTag::where('customer_lead_id', $attributes['customer_lead_id'])->delete();
+            $customerTag = CustomerTag::where('customer_lead_id', $attributes['customer_lead_id'])->get();
         }
-    
+
         return parent::parserResult($customerTag);
     }
 }

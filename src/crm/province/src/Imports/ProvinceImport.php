@@ -19,29 +19,29 @@ class ProvinceImport implements ToModel
     {
         if (!is_null($row[0]) && !is_null($row[1]) && !is_null($row[2])) {
 
-            $city = City::updateOrCreate(["name" => trim($row[0])], [
-                "name" => trim($row[0]),
+            $city = City::updateOrCreate(['name' => trim($row[0])], [
+                'name' => trim($row[0]),
             ]);
 
             $district = District::updateOrCreate(
                 [
-                    "name" => trim($row[1]),
-                    "city_province_id" => $city->id
+                    'name' => trim($row[1]),
+                    'city_province_id' => $city->id
                 ],
                 [
-                    "name" => trim($row[1]),
-                    "city_province_id" =>  $city->id
+                    'name' => trim($row[1]),
+                    'city_province_id' =>  $city->id
                 ]
             );
 
             $townWard = TownWard::updateOrCreate(
                 [
-                    "name" => trim($row[2]),
-                    "district_id" => $district->id
+                    'name' => trim($row[2]),
+                    'district_id' => $district->id
                 ],
                 [
-                    "name" => trim($row[2]),
-                    "district_id" =>  $district->id
+                    'name' => trim($row[2]),
+                    'district_id' =>  $district->id
                 ]
             );
         }

@@ -56,6 +56,10 @@ class MarketingProgramRepositoryEloquent extends BaseRepository implements Marke
             $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
+        if (isset($attributes['status'])) {
+            $this->model = $this->model->where('status', $attributes['status']);
+        }
+
         if (!empty($attributes['limit'])) {
             $marketingProgram = $this->paginate($attributes['limit']);
         } else {
@@ -69,15 +73,19 @@ class MarketingProgramRepositoryEloquent extends BaseRepository implements Marke
     {
         \DB::beginTransaction();
         try {
+
             $code = MarketingProgram::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = MarketingProgram::CODE . "1";
+                $attributes['code'] = MarketingProgram::CODE . '1';
             } else {
                 $getNumber = substr($code, 2) + 1;
-                $attributes['code'] = MarketingProgram::CODE . "$getNumber";
+                $attributes['code'] = MarketingProgram::CODE . $getNumber;
             }
+
             $marketingProgram = MarketingProgram::create($attributes);
+            $marketingProgram->link_web_form = env('LINK_WEB_FORM') . $marketingProgram->id;
+            $marketingProgram->update();
 
             \DB::commit();
         } catch (\Throwable $th) {

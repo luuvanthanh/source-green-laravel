@@ -28,9 +28,9 @@ class UpdateSearchSourceRequest extends FormRequest
             'id' => 'required',
             'name' => [
                 function ($attribute, $value, $fail) {
-                    $parentLead = SearchSource::where('name', $value)->where('id', '!=', $this->id)->first();
+                    $searchSource = SearchSource::where('name', $value)->where('id', '!=', $this->id)->first();
 
-                    if (is_null($parentLead)) {
+                    if (is_null($searchSource)) {
                         return true;
                     }
 

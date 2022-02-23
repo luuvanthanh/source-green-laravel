@@ -2,10 +2,10 @@
 
 namespace GGPHP\Core\Http\Middleware;
 
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Response;
 use Closure;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Http;
 
 class AuthenticateSSO
 {
@@ -23,14 +23,15 @@ class AuthenticateSSO
             throw new AuthenticationException;
         }
 
-        $ssoUrl = env('SSO_URL') . '/api/user/me';;
-        $respone =  Http::withToken($bearerToken)->get("$ssoUrl");
+        $ssoUrl = env('SSO_URL') . '/api/user/check-token';
+        $respone =  Http::withToken($bearerToken)->get($ssoUrl);
 
         if ($respone->getStatusCode() == Response::HTTP_UNAUTHORIZED || $respone->getStatusCode() == Response::HTTP_INTERNAL_SERVER_ERROR) {
             throw new AuthenticationException;
         }
 
         $data = json_decode($respone->getBody()->getContents());
+        request()->permission = $data->permissionGrants;
 
         return $next($request);
     }

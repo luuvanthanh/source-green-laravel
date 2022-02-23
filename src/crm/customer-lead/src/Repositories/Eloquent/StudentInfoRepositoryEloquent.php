@@ -48,6 +48,14 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
 
     public function getStudentInfo(array $attributes)
     {
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
+        }
+
+        if (!empty($attributes['student_info_id'])) {
+            $this->model = $this->model->where('id', $attributes['student_info_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $studentInfo = $this->paginate($attributes['limit']);
         } else {
@@ -59,10 +67,8 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
 
     public function create(array $attributes)
     {
-
         if (!empty($attributes['createRows'])) {
             foreach ($attributes['createRows'] as $value) {
-                $value['relationship'] = StudentInfo::RELATIONSHIP[$value['relationship']];
                 $value['sex'] = StudentInfo::SEX[$value['sex']];
                 StudentInfo::create($value);
             }
@@ -71,7 +77,6 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
         if (!empty($attributes['updateRows'])) {
             foreach ($attributes['updateRows'] as $value) {
                 $updateStudentInfo = StudentInfo::find($value['id']);
-                $value['relationship'] = StudentInfo::RELATIONSHIP[$value['relationship']];
                 $value['sex'] = StudentInfo::SEX[$value['sex']];
                 $updateStudentInfo->update($value);
             }

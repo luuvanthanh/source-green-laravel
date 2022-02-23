@@ -24,7 +24,7 @@
         "laravel/ui": "^2.0",
         "league/fractal": "^0.19.2",
         "maatwebsite/excel": "^3.1",
-        "orangehill/iseed": "^2.6",
+        "orangehill/iseed": "^3.0",
         "php-http/curl-client": "^2.2",
         "phpoffice/phpword": "^0.18.1",
         "pimax/fb-messenger-php": "^2.0",
@@ -33,7 +33,9 @@
         "staudenmeir/eloquent-json-relations": "^1.1",
         "twilio/sdk": "^6.28",
         "webpatser/laravel-uuid": "^4.0",
-        "zaloplatform/zalo-php-sdk": "^2.0"
+        "zaloplatform/zalo-php-sdk": "^2.0",
+        "php-parallel-lint/php-parallel-lint": "^1.3",
+        "squizlabs/php_codesniffer": "^3.6"
     },
     "require-dev": {
         "cloudcreativity/json-api-testing": "^2.1",
@@ -69,7 +71,17 @@
             "GGPHP\\Crm\\Category\\": "crm/category/src/",
             "GGPHP\\Crm\\Province\\": "crm/province/src/",
             "GGPHP\\Crm\\CustomerLead\\": "crm/customer-lead/src/",
-            "GGPHP\\Crm\\Marketing\\": "crm/marketing/src"
+            "GGPHP\\Crm\\Marketing\\": "crm/marketing/src/",
+            "GGPHP\\Crm\\CustomerPotential\\": "crm/customer-potential/src/",
+            "GGPHP\\Crm\\Employee\\": "crm/employee/src",
+            "GGPHP\\Crm\\AdmissionRegister\\": "crm/admission-register/src",
+            "GGPHP\\Crm\\WebForm\\": "crm/web-form/src",
+            "GGPHP\\Crm\\Icon\\": "crm/icon/src",
+            "GGPHP\\Crm\\Config\\": "crm/config/src",
+            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
+            "GGPHP\\Crm\\ChildDevelop\\": "crm/child-develop/src",
+            "GGPHP\\Crm\\SsoAccount\\": "crm/sso-account/src",
+            "GGPHP\\Crm\\Fee\\": "crm/fee/src"
         },
         "classmap": [
             "database/seeds",

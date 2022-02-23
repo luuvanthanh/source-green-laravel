@@ -8,7 +8,6 @@ use GGPHP\Crm\Province\Repositories\Contracts\DistrictRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
-
 /**
  * Class DistrictRepositoryEloquent.
  *
@@ -58,8 +57,8 @@ class DistrictRepositoryEloquent extends BaseRepository implements DistrictRepos
             $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
-        if (!empty($attributes['city_province_id'])) {
-            $this->model = $this->model->where('city_province_id', $attributes['city_province_id']);
+        if (!empty($attributes['city_id'])) {
+            $this->model = $this->model->where('city_id', $attributes['city_id']);
         }
 
         if (!empty($attributes['limit'])) {

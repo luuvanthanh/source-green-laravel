@@ -30,7 +30,7 @@ class ReferenceTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['statusParentLead'];
+    protected $availableIncludes = ['statusParentLead','customerLead'];
 
     /**
      * Transform the User entity.
@@ -51,5 +51,14 @@ class ReferenceTransformer extends BaseTransformer
         }
 
         return $this->item($reference->statusParentLead, new StatusParentLeadTransformer, 'StatusParentLead');
+    }
+
+    public function includeCustomerLead(Reference $reference)
+    {   
+        if (empty($reference->customerLead)) {
+            return;
+        }
+
+        return $this->item($reference->customerLead, new CustomerLeadTransformer, 'CustomerLead');
     }
 }

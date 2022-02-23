@@ -2,7 +2,9 @@
 
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
+use Carbon\Carbon;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\CategoryRelationshipTransformer;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 
 /**
@@ -29,7 +31,7 @@ class StudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['customerLead', 'categoryRelationship'];
 
     /**
      * Transform the User entity.
@@ -40,27 +42,42 @@ class StudentInfoTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $relationship = null;
-
-        foreach (StudentInfo::RELATIONSHIP as $key => $value) {
-
-            if ($value == $model->relationship) {
-                $relationship = $key;
-            }
-        }
-
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+        $birthday = Carbon::parse($model->birth_date);
+        $today = Carbon::parse($now);
+        $numberOfMonth = $birthday->diffInMonths($today);
         $sex = null;
 
         foreach (StudentInfo::SEX as $key => $value) {
-            
-            if ($value == $model->sex) {
-                $sex = $key;
+
+            if (!is_null($model->sex)) {
+                if ($value == $model->sex) {
+                    $sex = $key;
+                }
             }
         }
 
         return [
-            'relationship' => $relationship,
             'sex' => $sex,
+            'age_month' => $numberOfMonth
         ];
+    }
+
+    public function includeCustomerLead(StudentInfo $studentInfo)
+    {
+        if (empty($studentInfo->customerLead)) {
+            return;
+        }
+
+        return $this->item($studentInfo->customerLead, new CustomerLeadTransformer, 'CustomerLead');
+    }
+
+    public function includeCategoryRelationship(StudentInfo $studentInfo)
+    {
+        if (empty($studentInfo->categoryRelationship)) {
+            return;
+        }
+
+        return $this->item($studentInfo->categoryRelationship, new CategoryRelationshipTransformer, 'CategoryRelationship');
     }
 }

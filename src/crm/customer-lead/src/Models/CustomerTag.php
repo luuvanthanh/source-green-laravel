@@ -2,7 +2,6 @@
 
 namespace GGPHP\Crm\CustomerLead\Models;
 
-
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\Category\Models\Tag;
 

@@ -33,7 +33,13 @@ class MarketingProgramController extends Controller
      */
     public function index(Request $request)
     {
-        $marketingProgram = $this->marketingProgramRepository->getAll($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = MarketingProgram::STATUS[$attributes['status']];
+        }
+
+        $marketingProgram = $this->marketingProgramRepository->getAll($attributes);
 
         return $this->success($marketingProgram, trans('lang::messages.common.getListSuccess'));
     }

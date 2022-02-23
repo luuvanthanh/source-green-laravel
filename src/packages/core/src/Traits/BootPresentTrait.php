@@ -5,7 +5,8 @@ namespace GGPHP\Core\Traits;
 use Illuminate\Support\Arr;
 use Prettus\Repository\Contracts\PresenterInterface;
 
-trait BootPresentTrait {
+trait BootPresentTrait
+{
 
     /**
      * @var PresenterInterface

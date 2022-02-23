@@ -79,6 +79,15 @@
                 socket.on('facebook.receive.message', (event, data) => {
                     console.log(data);
                 });
+                socket.on('facebook.message.receive', (event, data) => {
+                    console.log(data);
+                });
+                socket.on('facebook.synchronize.conversation', (event, data) => {
+                    console.log(data);
+                });
+                socket.on('facebook.status.send.message', (event, data) => {
+                    console.log(data);
+                });
                 socket.on('connect', () => {
                     console.log('Connected', socket.id);
                     socket.emit('subscribe', {

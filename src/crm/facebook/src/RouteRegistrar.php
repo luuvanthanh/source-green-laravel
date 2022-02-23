@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forGuest();
     }
 
     /**
@@ -30,8 +31,6 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::group(['prefix' => 'facebook'], function () {
-                \Route::get('webhook', 'FacebookController@webhook');
-                \Route::post('webhook', 'FacebookController@webhookPost');
                 \Route::get('pages', 'FacebookController@getPageFacebook');
                 \Route::get('pages/token', 'FacebookController@getPageTokenFacebook');
                 \Route::get('pages/conversations', 'FacebookController@getPageConversationFacebook');
@@ -40,6 +39,34 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::post('pages/post', 'FacebookController@publishPagePost');
                 \Route::get('pages/post', 'FacebookController@getPagePost');
 
+                \Route::post('pages/synchronize-conversations', 'ConversationController@synchronizeConversation');
+                \Route::post('pages/send-messages', 'PageController@pageSendMessage');
+                \Route::get('pages/get-conversations', 'ConversationController@index');
+                \Route::get('pages/get-messages', 'MessageController@index');
+                \Route::post('pages/seen-conversations', 'ConversationController@seenConversation');
+                \Route::post('pages/user-facebook-infos/add-leads', 'UserFacebookInfoController@addLead');
+                \Route::get('pages/user-facebook-infos', 'UserFacebookInfoController@index');
+                \Route::put('pages/user-facebook-infos/{id}', 'UserFacebookInfoController@update');
+                \Route::get('pages/user-facebook-info-tags', 'UserFacebookInfoTagController@index');
+                \Route::post('pages/user-facebook-info-tags', 'UserFacebookInfoTagController@store');
+
+                \Route::get('pages/get-pages', 'PageController@index');
+                \Route::get('pages/employee-facebooks', 'EmployeeFacebookController@index');
+                \Route::post('pages/employee-facebooks', 'EmployeeFacebookController@store');
+                \Route::post('pages/specify-conversations', 'UserFacebookInfoController@specifyConversation');
+                \Route::post('pages/delete-specify-conversations', 'UserFacebookInfoController@deleteSpecifyConversation');
+                \Route::post('pages/delete-all-employee-facebook', 'EmployeeFacebookController@destroyAllEmployeeFacebook');
+                \Route::post('pages/refresh-link-files', 'MessageController@refreshLinkFile');
+            });
+        });
+    }
+
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::group(['prefix' => 'facebook'], function () {
+                \Route::get('webhook', 'FacebookController@webhook');
+                \Route::post('webhook', 'FacebookController@webhookPost');
             });
         });
     }

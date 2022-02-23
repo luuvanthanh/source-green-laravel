@@ -15,28 +15,82 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1', 'middleware' => []], function () {
 
-    //facebook
-    \GGPHP\Crm\Facebook\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-    //zalo
-    \GGPHP\Crm\Zalo\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
-    \GGPHP\Crm\Category\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
-    \GGPHP\Crm\Province\RouteRegistrar::routes(function ($router) {
+    \GGPHP\Crm\WebForm\RouteRegistrar::routes(function ($router) {
         $router->forGuest();
     });
 
-    \GGPHP\Crm\CustomerLead\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
+    \GGPHP\Crm\Facebook\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
     });
 
-    \GGPHP\Crm\Marketing\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
+    Route::group(['prefix' => 'sso', 'middleware' => []], function () {
+        \GGPHP\Crm\CustomerLead\RouteRegistrar::routes(function ($router) {
+            $router->forSso();
+        });
+    });
+
+    Route::group(['middleware' => 'auth_sso'], function () {
+        //facebook
+        \GGPHP\Crm\Facebook\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+        //zalo
+        \GGPHP\Crm\Zalo\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\Category\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\Province\RouteRegistrar::routes(function ($router) {
+            $router->forGuest();
+        });
+
+        \GGPHP\Crm\CustomerLead\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\Marketing\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\CustomerPotential\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\Employee\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\AdmissionRegister\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\Icon\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\Config\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\ChildDevelop\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Crm\SsoAccount\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        Route::group(['prefix' => 'clover', 'middleware' => []], function () {
+            \GGPHP\Crm\Fee\RouteRegistrar::routes(function ($router) {
+                $router->forClover();
+            });
+        });
+
+        \GGPHP\Crm\Fee\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });
