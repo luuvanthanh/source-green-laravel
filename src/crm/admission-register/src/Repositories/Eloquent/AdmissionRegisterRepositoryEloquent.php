@@ -83,6 +83,12 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             });
         }
 
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->whereHas('studentInfo', function ($query) use ($attributes) {
+                $query->where('customer_lead_id', $attributes['customer_lead_id']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $admissionRegister = $this->paginate($attributes['limit']);
         } else {
