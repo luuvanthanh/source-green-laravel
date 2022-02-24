@@ -3,7 +3,7 @@
 use App\Http\Controllers\VoiceController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'call');
+Route::view('/', 'welcome');
 
 Route::post('/call', 'VoiceController@initiateCall')->name('initiate_call');
 
