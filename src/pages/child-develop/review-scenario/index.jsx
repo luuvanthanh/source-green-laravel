@@ -382,7 +382,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả độ tuổi' }, ...variablesModules.AGE,]}
+                    data={[{ name: 'Chọn tất cả độ tuổi' }, ...variablesModules.AGE_TABLE,]}
                     name="age"
                     onChange={(event) => this.onChangeSelect(event, 'age')}
                     type={variables.SELECT}
