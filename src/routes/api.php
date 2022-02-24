@@ -92,9 +92,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Report\RouteRegistrar::routes();
         \GGPHP\Tourist\RouteRegistrar::routes();
         \GGPHP\Notification\RouteRegistrar::routes();
-        \GGPHP\SystemConfig\RouteRegistrar::routes();
+        \GGPHP\EventConfig\RouteRegistrar::routes();
         \GGPHP\ThirdPartyService\RouteRegistrar::routes();
         \GGPHP\ApiShare\RouteRegistrar::routes();
         \GGPHP\NasConfig\RouteRegistrar::routes();
+        \GGPHP\SystemConfig\RouteRegistrar::routes();
     });
 });

@@ -78,11 +78,12 @@
             "GGPHP\\Tourist\\": "packages/tourist/src/",
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
             "GGPHP\\Notification\\": "packages/notification/src/",
-            "GGPHP\\SystemConfig\\": "packages/system-config/src/",
+            "GGPHP\\EventConfig\\": "packages/event-config/src/",
             "GGPHP\\AiService\\": "packages/ai-service/src/",
             "GGPHP\\ThirdPartyService\\": "packages/third-party-service/src/",
             "GGPHP\\ApiShare\\": "packages/api-share/src/",
-            "GGPHP\\NasConfig\\": "packages/nas-config/src/"
+            "GGPHP\\NasConfig\\": "packages/nas-config/src/",
+            "GGPHP\\SystemConfig\\": "packages/system-config/src/"
         },
         "classmap": [
             "database/seeds",

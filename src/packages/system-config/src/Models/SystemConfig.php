@@ -3,6 +3,7 @@
 namespace  GGPHP\SystemConfig\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Users\Models\User;
 
 class SystemConfig extends UuidModel
 {
@@ -13,11 +14,18 @@ class SystemConfig extends UuidModel
      *
      * @var array
      */
-    protected $fillable = ['config_event', 'config_count_tourist'];
+    protected $fillable = ['language', 'account_send_email'];
 
 
-    protected $casts = [
-        'config_event'  =>  'array',
-        'config_count_tourist'  =>  'array',
-    ];
+    protected $casts = [];
+
+    public function receiveEmail()
+    {
+        return $this->belongsToMany(User::class, 'system_config_receive_email', 'system_config_id', 'user_id');
+    }
+
+    public function teamplateEmail()
+    {
+        return $this->hasMany(TeamplateEmail::class);
+    }
 }
