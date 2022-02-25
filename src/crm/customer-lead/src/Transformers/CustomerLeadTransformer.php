@@ -40,7 +40,7 @@ class CustomerLeadTransformer extends BaseTransformer
     protected $availableIncludes = [
         'eventInfo', 'customerTag', 'reference', 'studentInfo',
         'city', 'district', 'searchSource', 'statusCare', 'employee',
-        'branch', 'townWard', 'marketingProgram', 'ssoAccount'
+        'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead'
     ];
 
     /**
@@ -166,5 +166,10 @@ class CustomerLeadTransformer extends BaseTransformer
     public function includeMarketingProgram(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->marketingProgram, new MarketingProgramTransformer, 'MarketingProgram');
+    }
+
+    public function includeStatusLead(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->statusLead, new StatusLeadTransformer, 'StatusLead');
     }
 }

@@ -49,6 +49,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('customer-lead-marketing-programs', 'CustomerLeadController@storeCareProgram');
 
             \Route::post('customer-lead-accounts', 'CustomerLeadController@customerLeadAccount');
+            \Route::resource('status-lead', 'StatusLeadController');
         });
     }
 
