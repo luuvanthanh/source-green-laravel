@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Transformers;
 
+use GGPHP\ChildDevelop\Category\Transformers\AssessmentPeriodTransformer;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
@@ -31,7 +32,7 @@ class TestSemesterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType'];
+    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType', 'assessmentPeriod'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -138,5 +139,14 @@ class TestSemesterTransformer extends BaseTransformer
         }
 
         return $this->item($testSemester->classType, new ClassTypeTransformer, 'ClassType');
+    }
+
+    public function includeAssessmentPeriod(TestSemester $testSemester)
+    {
+        if (empty($testSemester->assessmentPeriod)) {
+            return;
+        }
+
+        return $this->item($testSemester->assessmentPeriod, new AssessmentPeriodTransformer, 'AssessmentPeriod');
     }
 }
