@@ -4,14 +4,15 @@ namespace GGPHP\Camera\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use DB;
+use GGPHP\AiService\Models\AiService;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Camera\Presenters\CameraPresenter;
 use GGPHP\Camera\Repositories\Contracts\CameraCollectionRepository;
 use GGPHP\Camera\Repositories\Contracts\CameraRepository;
+use GGPHP\Camera\Services\AiApiServices;
 use GGPHP\Camera\Services\VmsCoreServices;
 use GGPHP\Notification\Services\NotificationService;
 use Illuminate\Container\Container as Application;
-use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -477,5 +478,94 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         }
 
         return parent::find($attributes['came_id']);
+    }
+
+    public function updateCameraAiService($attributes, $id)
+    {
+        $cameraService = CameraService::where('camera_id', $id)->where('ai_service_id', $attributes['ai_service_id'])->first();
+
+        DB::beginTransaction();
+        try {
+            $cameraService->update([
+                'is_on' => $attributes['is_on'],
+                'coordinates' => $attributes['coordinates']
+            ]);
+
+            $service = AiService::find($attributes['ai_service_id']);
+
+            $dataCameraService = [
+                'camID' => $id,
+                'no_service' => $service->number,
+                'xy' => json_encode($attributes['coordinates']),
+            ];
+
+            AiApiServices::updateCameraAiService($dataCameraService);
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return parent::find($id);
+    }
+
+    public function onOffAiService($attributes, $id)
+    {
+        $cameraService = CameraService::where('camera_id', $id)->where('ai_service_id', $attributes['ai_service_id'])->first();
+
+        DB::beginTransaction();
+        try {
+            if (is_null($cameraService)) {
+                $cameraService = CameraService::create([
+                    'camera_id' => $id,
+                    'ai_service_id' => $attributes['ai_service_id'],
+                    'is_on' => $attributes['is_on'],
+                    'coordinates' => [
+                        [
+                            'x' => 0.02,
+                            'y' => 0.02,
+                            'index' => 0
+                        ],
+                        [
+                            'x' => 0.02,
+                            'y' => 0.02,
+                            'index' => 1
+                        ],
+                        [
+                            'x' => 0.02,
+                            'y' => 0.02,
+                            'index' => 2
+                        ],
+                        [
+                            'x' => 0.02,
+                            'y' => 0.02,
+                            'index' => 3
+                        ]
+                    ]
+                ]);
+            } else {
+                $cameraService->update([
+                    'is_on' => $attributes['is_on']
+                ]);
+            }
+
+            $service = AiService::find($attributes['ai_service_id']);
+
+            $dataCameraService = [
+                'camID' => $id,
+                'no_service' => $service->number,
+                'on_flag' => $attributes['is_on'],
+            ];
+
+            AiApiServices::onOfServiceCamera($dataCameraService);
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return parent::find($id);
     }
 }

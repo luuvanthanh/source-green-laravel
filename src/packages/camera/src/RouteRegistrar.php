@@ -47,6 +47,9 @@ class RouteRegistrar extends CoreRegistrar
         \Route::put('cameras/{id}/on-off-record', 'CameraController@onOffRecord');
 
         \Route::put('cameras/{id}/on-off-stream', 'CameraController@onOffStream');
+
+        \Route::put('cameras/{id}/on-off-ai-service', 'CameraController@onOffAiService');
+        \Route::put('cameras/{id}/update-coordinates-ai-service', 'CameraController@updateCameraAiService');
     }
 
     /**
