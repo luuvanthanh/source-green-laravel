@@ -13,7 +13,9 @@ use GGPHP\Crm\CustomerLead\Repositories\Contracts\StudentInfoRepository;
 use GGPHP\Crm\CustomerLead\Repositories\Eloquent\CustomerTagRepositoryEloquent;
 use GGPHP\Crm\CustomerLead\Repositories\Eloquent\StudentInfoRepositoryEloquent;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\StatusCareRepository;
+use GGPHP\Crm\CustomerLead\Repositories\Contracts\StatusLeadRepository;
 use GGPHP\Crm\CustomerLead\Repositories\Eloquent\StatusCareRepositoryEloquent;
+use GGPHP\Crm\CustomerLead\Repositories\Eloquent\StatusLeadRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class CustomerLeadServiceProvider extends ServiceProvider
@@ -43,5 +45,6 @@ class CustomerLeadServiceProvider extends ServiceProvider
         $this->app->bind(CustomerTagRepository::class, CustomerTagRepositoryEloquent::class);
         $this->app->bind(StudentInfoRepository::class, StudentInfoRepositoryEloquent::class);
         $this->app->bind(StatusCareRepository::class, StatusCareRepositoryEloquent::class);
+        $this->app->bind(StatusLeadRepository::class, StatusLeadRepositoryEloquent::class);
     }
 }

@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\StatusLead;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use GGPHP\Crm\Facebook\Presenters\UserFacebookInfoPresenter;
@@ -99,6 +100,11 @@ class UserFacebookInfoRepositoryEloquent extends BaseRepository implements UserF
                 'search_source_id' => $searchSource->id
             ];
             $customerLead = CustomerLead::create($dataLead);
+            $dataStatusLead = [
+                'customer_lead_id' => $customerLead->id,
+                'status' => StatusLead::STATUS_LEAD['LEAD_NEW']
+            ];
+            StatusLead::create($dataStatusLead);
             foreach ($attributes['student_info'] as $key => $value) {
                 $value['customer_lead_id'] = $customerLead->id;
                 StudentInfo::create($value);

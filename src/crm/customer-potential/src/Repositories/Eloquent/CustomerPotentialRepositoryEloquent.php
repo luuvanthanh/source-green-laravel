@@ -53,6 +53,10 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['id'])) {
+            $this->model = $this->model->where('id', $attributes['id']);
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereLike('full_name', $attributes['key'])->orWhereLike('phone', $attributes['key']);
         }

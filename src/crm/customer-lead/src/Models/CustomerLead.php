@@ -107,4 +107,9 @@ class CustomerLead extends UuidModel
     {
         return $this->morphOne('GGPHP\Crm\SsoAccount\Models\SsoAccount', 'sso_accounts', 'model_type', 'model_id');
     }
+
+    public function statusLead()
+    {
+        return $this->hasMany(StatusLead::class);
+    }
 }
