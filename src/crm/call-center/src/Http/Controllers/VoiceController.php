@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace GGPHP\Crm\CallCenter\Http\Controllers;
 
 use Exception;
-use App\Models\HistoryCall;
+use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\Crm\CallCenter\Models\HistoryCall;
 use Illuminate\Http\Request;
 use Twilio\Exceptions\RestException;
 use Twilio\Jwt\AccessToken;
@@ -65,7 +66,6 @@ class VoiceController extends Controller
 
     public function generateToken(Request $request)
     {
-        \Log::info('generateToken', ['data' => $request->all()]);
         $identity = $request->query('username');
 
         throw_if(
@@ -97,7 +97,6 @@ class VoiceController extends Controller
 
     public function recording(Request $request)
     {
-        \Log::info('recored', ['data' => $request->all()]);
         $history = HistoryCall::where('call_sid', $request->CallSid)->first();
 
         if (!is_null($history)) {

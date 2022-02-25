@@ -17368,6 +17368,7 @@ function setupHandlers(device) {
   /* Callback for when Twilio Client receives a new incoming call */
 
   device.on('incoming', function (connection) {
+	  console.log(connection)
     updateCallStatus("Incoming support call"); // Set a callback to be executed when the connection is accepted
 
     connection.accept(function () {
@@ -17384,7 +17385,7 @@ function setupHandlers(device) {
 ;
 
 function setupClient() {
-  jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/token", {
+  jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/api/v1/token", {
     forPage: window.location.pathname,
     _token: jquery__WEBPACK_IMPORTED_MODULE_0___default()('meta[name="csrf-token"]').attr('content')
   }).done(function (data) {
@@ -17403,6 +17404,7 @@ function setupClient() {
 window.callCustomer = function (phoneNumber) {
   updateCallStatus("Calling " + phoneNumber + "...");
   var params = {
+	"customer_lead_id":"01d143ca-620a-440a-b993-32e90a017345",
     "phoneNumber": phoneNumber
   };
   device.connect(params);

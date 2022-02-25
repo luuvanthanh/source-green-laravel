@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace GGPHP\Crm\CallCenter\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Models\HistoryCall;
-use Aws\History;
+use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\Crm\CallCenter\Events\OutGoingCallEvent;
+use GGPHP\Crm\CallCenter\Events\RecevieCallEvent;
+use GGPHP\Crm\CallCenter\Models\HistoryCall;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Twilio\TwiML\VoiceResponse;
 
@@ -27,18 +26,26 @@ class CallController extends Controller
         $response = new VoiceResponse();
         $callerIdNumber = config('services.twilio.number');
 
-        $dial = $response->dial(null, ['callerId' => $callerIdNumber]);
+        $dial = $response->dial('', ['callerId' => $callerIdNumber]);
         $phoneNumberToDial = $request->input('phoneNumber');
 
         $dial->setRecord(true);
-        $dial->setRecordingStatusCallback('https://b8fd-171-225-185-92.ngrok.io/recording');
+        $dial->setRecordingStatusCallback(env('URL_CRM') . '/api/v1/recording');
         $dial->setRecordingStatusCallbackEvent('in-progress');
         $dial->setRecordingStatusCallbackMethod('POST');
 
         if (isset($phoneNumberToDial)) {
-            $dial->number($phoneNumberToDial);
+            $dial->number($phoneNumberToDial, [
+                'statusCallback' => env('URL_CRM') . '/api/v1/busy',
+                'statusCallbackEvent' => 'initiated ringing answered completed busy no-answer canceled in-progress',
+                'statusCallbackMethod' => 'POST'
+            ]);
         } else {
-            $dial->client('support_agent');
+            $dial->client('support_agent', [
+                'statusCallbackEvent' => 'initiated ringing answered completed busy no-answer canceled in-progress',
+                'statusCallback' => env('URL_CRM') . '/api/v1/busy',
+                'statusCallbackMethod' => 'POST'
+            ]);
         }
 
         return $response;
@@ -50,11 +57,18 @@ class CallController extends Controller
             $direction = 'Outging';
 
             $customerLeadId = $request->customer_lead_id;
+            $customerLead = CustomerLead::find($customerLeadId);
+
+            broadcast(new OutGoingCallEvent(['data' => $customerLead]));
         } else {
             $direction = 'Inbound';
 
-            $customerLead = CustomerLead::where('phone', 'like', $request->From)->first();
+            $phone = Str::substr($request->From, 4, 9);
+            $customerLead = CustomerLead::where('phone', 'like', '%' . $phone)->first();
+
             $customerLeadId = !is_null($customerLead) ? $customerLead->id : null;
+
+            broadcast(new RecevieCallEvent(['data' => $customerLead]));
         }
 
         $data = [
@@ -80,7 +94,7 @@ class CallController extends Controller
 
     public function busy(Request $request)
     {
-        $history = HistoryCall::where('call_sid', $request->CallSid)->first();
+        $history = HistoryCall::where('call_sid', $request->ParentCallSid)->first();
 
         if (!is_null($history)) {
             $history->update([

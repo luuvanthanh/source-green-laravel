@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace GGPHP\Crm\CallCenter\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
-use Illuminate\Database\Eloquent\Model;
 
 class HistoryCall extends UuidModel
 {
