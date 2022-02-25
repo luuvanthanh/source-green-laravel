@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\Category\Transformers\CategoryRelationshipTransformer;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
+use GGPHP\Crm\Fee\Transformers\ChargeStudentTransformer;
 
 /**
  * Class EventInfoTransformer.
@@ -31,7 +32,7 @@ class StudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['customerLead', 'categoryRelationship'];
+    protected $availableIncludes = ['customerLead', 'categoryRelationship', 'chargeStudent'];
 
     /**
      * Transform the User entity.
@@ -79,5 +80,10 @@ class StudentInfoTransformer extends BaseTransformer
         }
 
         return $this->item($studentInfo->categoryRelationship, new CategoryRelationshipTransformer, 'CategoryRelationship');
+    }
+
+    public function includeChargeStudent(StudentInfo $studentInfo)
+    {
+        return $this->collection($studentInfo->chargeStudent, new ChargeStudentTransformer, 'ChargeStudent');
     }
 }
