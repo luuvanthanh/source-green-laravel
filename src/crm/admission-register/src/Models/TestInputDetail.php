@@ -10,7 +10,7 @@ class TestInputDetail extends UuidModel
     protected $table = 'test_input_details';
 
     protected $fillable = [
-        'test_input_id', 'category_skill_id', 'status'
+        'test_input_id', 'category_skill_id', 'status', 'serial_number'
     ];
 
     const STATUS = [

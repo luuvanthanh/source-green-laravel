@@ -139,12 +139,22 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         try {
             $testInput = TestInput::where('admission_register_id', $attributes['admission_register_id'])->first();
 
+            if (is_null($testInput->time_age)) {
+                $studentInfo = AdmissionRegister::find($testInput->admission_register_id);
+                $dateOfBirth = $studentInfo->studentInfo->birth_date;
+                $birthday = Carbon::parse($dateOfBirth);
+                $today = Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'));
+                $numberOfMonth = $birthday->diffInMonths($today);
+                $testInput->time_age = $numberOfMonth;
+            }
+
             if (!empty($attributes['detail'])) {
 
                 TestInputDetail::where('category_skill_id', $attributes['detail']['category_skill_id'])->delete();
                 $attributes['detail']['test_input_id'] = $testInput->id;
                 $attributes['detail']['status'] = TestInputDetail::STATUS[$attributes['detail']['status']];
-
+                $attributes['detail']['serial_number'] = TestInputDetail::max('serial_number') + 1;
+                
                 if (!empty($attributes['detail']['is_check'])) {
 
                     $testInputDetail = TestInputDetail::create($attributes['detail']);

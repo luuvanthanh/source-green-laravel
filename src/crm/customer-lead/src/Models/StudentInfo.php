@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
 use GGPHP\Crm\Category\Models\CategoryRelationship;
 use GGPHP\Crm\Fee\Models\ChargeStudent;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -32,6 +33,11 @@ class StudentInfo extends UuidModel
     public function categoryRelationship()
     {
         return $this->belongsTo(CategoryRelationship::class);
+    }
+
+    public function admissionRegister()
+    {
+        return $this->hasMany(AdmissionRegister::class, 'student_info_id');
     }
 
     public function chargeStudent()
