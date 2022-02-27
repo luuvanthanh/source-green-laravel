@@ -1,0 +1,24 @@
+{
+    "name": "building/package",
+    "description": "building package posts laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "anh smith",
+            "email": "anhcdcn98@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GGPHP\\CallCenter\\": "crm/call-center/src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GGPHP\\Crm\\CallCenter\\Providers\\CallCenterServiceProvider"
+            ]
+        }
+    }
+}

@@ -50,6 +50,34 @@
 
     @yield('javascript')
 
+    <script src="{{env('SOCKET_URL')}}/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io("{{env('SOCKET_URL')}}", {
+            transports: ['websocket'],
+        });
+
+        socket.on('connect', () => {
+            console.log('Connected', socket.id);
+            socket.emit('subscribe', {
+                channel: 'recevie-call',
+            });
+        });
+
+        socket.on('recevie.call.event', (event, data) => {
+            console.log(data, event, 'goiden');
+        });
+
+        socket.on('connect', () => {
+            console.log('Connected', socket.id);
+            socket.emit('subscribe', {
+                channel: 'out-going-call',
+            });
+        });
+
+        socket.on('out.going.call.event', (event, data) => {
+            console.log(data, event, 'goidi');
+        });
+    </script>
     <script src="/js/manifest.js"></script>
     <script src="/js/browser-calls.js"></script>
 

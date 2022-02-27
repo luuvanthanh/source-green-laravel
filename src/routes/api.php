@@ -93,4 +93,8 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
             $router->forBread();
         });
     });
+
+    \GGPHP\Crm\CallCenter\RouteRegistrar::routes(function ($route) {
+        $route->forGuest();
+    });
 });

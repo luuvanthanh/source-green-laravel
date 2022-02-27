@@ -81,7 +81,8 @@
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
             "GGPHP\\Crm\\ChildDevelop\\": "crm/child-develop/src",
             "GGPHP\\Crm\\SsoAccount\\": "crm/sso-account/src",
-            "GGPHP\\Crm\\Fee\\": "crm/fee/src"
+            "GGPHP\\Crm\\Fee\\": "crm/fee/src",
+            "GGPHP\\Crm\\CallCenter\\": "crm/call-center/src"
         },
         "classmap": [
             "database/seeds",

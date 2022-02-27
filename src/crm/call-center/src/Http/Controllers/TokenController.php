@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace GGPHP\Crm\CallCenter\Http\Controllers;
 
+use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VoiceGrant;
 
 class TokenController extends Controller
 {
-
     public function __construct(AccessToken $accessToken)
     {
         $this->accessToken = $accessToken;
@@ -46,6 +44,7 @@ class TokenController extends Controller
 
         // render token to string
         $token = $this->accessToken->toJWT();
+        
         return response()->json(['token' => $token]);
     }
 }

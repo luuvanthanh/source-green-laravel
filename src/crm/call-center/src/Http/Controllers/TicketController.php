@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace GGPHP\Crm\CallCenter\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Ticket;
+use GGPHP\Core\Http\Controllers\Controller;
 
 class TicketController extends Controller
 {
