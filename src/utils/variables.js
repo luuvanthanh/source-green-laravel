@@ -15,6 +15,7 @@ export const variables = {
   CASCADER: 'cascader',
   TEXTAREA: 'textArea',
   RANGE_PICKER: 'rangePicker',
+  RANGE_DATETIME_PICKER: 'rangeDateTimePicker',
   TIME_RANGE: 'timeRange',
   TIME_PICKER: 'timePicker',
   TREE_SELECT: 'treeSelect',
@@ -250,6 +251,12 @@ export const variables = {
     '#FFD966',
     '#C6E0B4',
   ],
+  CHART: {
+    grid: {
+      focus: { show: false },
+      y: { show: true },
+    },
+  },
 };
 
 export default variables;
