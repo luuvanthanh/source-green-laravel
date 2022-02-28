@@ -201,4 +201,18 @@ class CameraController extends Controller
 
         return $this->success($response, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function updateCameraAiService(Request $request, $id)
+    {
+        $response = $this->cameraRepository->updateCameraAiService($request->all(), $id);
+
+        return $this->success($response, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function onOffAiService(Request $request, $id)
+    {
+        $response = $this->cameraRepository->onOffAiService($request->all(), $id);
+
+        return $this->success($response, trans('lang::messages.common.modifySuccess'));
+    }
 }

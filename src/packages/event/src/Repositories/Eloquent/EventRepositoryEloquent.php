@@ -5,12 +5,15 @@ namespace GGPHP\Event\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Category\Models\EventType;
+use GGPHP\Event\Jobs\SendEmailEventCreate;
 use GGPHP\Event\Models\Event;
 use GGPHP\Event\Models\EventHandle;
 use GGPHP\Event\Presenters\EventPresenter;
 use GGPHP\Event\Repositories\Contracts\EventRepository;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Notification\Services\NotificationService;
+use GGPHP\SystemConfig\Models\SystemConfig;
+use GGPHP\SystemConfig\Models\TeamplateEmail;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -162,6 +165,20 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         if (is_null($event)) {
             $event = $this->model()::create($attributes);
 
+            NotificationService::eventCreated(NotificationService::EVENT, $event);
+
+            $teamplateEmail = TeamplateEmail::where('code', $event->eventType->code)->first();
+
+            if (!is_null($teamplateEmail) && $teamplateEmail->is_on) {
+                $systemConfig = SystemConfig::first();
+
+                $receiveEmail = $systemConfig->receiveEmail;
+
+                foreach ($receiveEmail as  $user) {
+                    dispatch(new SendEmailEventCreate($event, $user, $teamplateEmail));
+                }
+            }
+
             if (!empty($attributes['image_path'])) {
                 $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
             }
@@ -169,8 +186,6 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             if (!empty($attributes['video_path'])) {
                 $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
             }
-
-            NotificationService::eventCreated(NotificationService::EVENT, $event);
         } else {
             $event->update($attributes);
 
