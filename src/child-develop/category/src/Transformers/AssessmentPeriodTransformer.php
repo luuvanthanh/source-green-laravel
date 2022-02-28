@@ -32,7 +32,7 @@ class AssessmentPeriodTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['classes', 'branch', 'schoolYear'];
+    protected $availableIncludes = ['classes', 'branch', 'schoolYear', 'nameAssessmentPeriod'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -63,5 +63,13 @@ class AssessmentPeriodTransformer extends BaseTransformer
             return;
         }
         return $this->item($assessmentPeriod->schoolYear, new SchoolYearTransformer, 'SchoolYear');
+    }
+
+    public function includeNameAssessmentPeriod(AssessmentPeriod $assessmentPeriod)
+    {
+        if (empty($assessmentPeriod->nameAssessmentPeriod)) {
+            return;
+        }
+        return $this->item($assessmentPeriod->nameAssessmentPeriod, new NameAssessmentPeriodTransformer, 'NameAssessmentPeriod');
     }
 }
