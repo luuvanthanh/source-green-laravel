@@ -121,4 +121,23 @@ class TestSemesterController extends Controller
 
         return $this->success($testSemester, trans('lang::messages.common.createSuccess'));
     }
+
+    public function testSemesterStudent(Request $request)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = TestSemester::STATUS[$value];
+            }
+
+            $attributes['status'] = $newStatus;
+        }
+
+        $testSemester = $this->testSemesterRepository->testSemesterStudent($attributes);
+
+        return $this->success($testSemester, trans('lang::messages.common.getListSuccess'));
+    }
 }
