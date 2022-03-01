@@ -1260,12 +1260,12 @@ export default class Helpers {
 
   static getStatusTeacher = (value) => {
     if (value === variables.STATUS_EXTENDED.NOT_DISTRIBUTION) {
-      return <Tag color="danger">variables.STATUS_EXTENDED_NAME.NOT_DISTRIBUTION</Tag>;
+      return <Tag color="danger">{variables.STATUS_EXTENDED_NAME.NOT_DISTRIBUTION}</Tag>;
     }
     if (value === variables.STATUS_EXTENDED.CONFIRMED) {
-      return <Tag color="success">variables.STATUS_EXTENDED_NAME.CONFIRMED</Tag>;
+      return <Tag color="success">{variables.STATUS_EXTENDED_NAME.CONFIRMED}</Tag>;
     }
-    return <Tag color="yellow">variables.STATUS_EXTENDED_NAME.WAITING</Tag>;
+    return <Tag color="yellow">{variables.STATUS_EXTENDED_NAME.WAITING}</Tag>;
   };
 
   static unique = (items, key = 'name') => {

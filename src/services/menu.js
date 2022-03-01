@@ -315,6 +315,13 @@ export async function getLeftMenuProfile() {
           pro: true,
         },
         {
+          title: 'Danh sách báo cáo học sinh ngưng học',
+          key: 'stop-students',
+          url: ['/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-ngung-hoc'],
+          permission: [permissions.HSDT],
+          pro: true,
+        },
+        {
           title: 'Báo cáo thống kê số lượng học sinh nhập học chính thức theo năm',
           key: 'official-student-by-year',
           url: ['/ho-so-doi-tuong/bao-cao/thong-ke-luong-hoc-sinh-nhap-hoc-chinh-thuc-theo-nam'],
@@ -1912,47 +1919,47 @@ export async function getLeftMenuPhysical() {
 
 export async function getLeftMenuCRM() {
   return [
-    {
-      title: 'Quản lý hệ thống',
-      key: 'manage',
-      icon: 'icon icon-setting',
-      permission: [permissions.CRM],
-      children: [
-        {
-          title: 'Người dùng',
-          key: 'manage-user',
-          url: [
-            '/crm/quan-ly-he-thong/nguoi-dung',
-            '/crm/quan-ly-he-thong/nguoi-dung/tao-moi',
-            '/crm/quan-ly-he-thong/nguoi-dung/:id/chi-tiet',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Vai trò',
-          key: 'manage-roles',
-          url: [
-            '/crm/quan-ly-he-thong/vai-tro',
-            '/crm/quan-ly-he-thong/vai-tro/tao-moi',
-            '/crm/quan-ly-he-thong/vai-tro/:id/chi-tiet',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Nhóm',
-          key: 'manage-group',
-          url: [
-            '/crm/quan-ly-he-thong/nhom',
-            '/crm/quan-ly-he-thong/nhom/tao-moi',
-            '/crm/quan-ly-he-thong/nhom/:id/chi-tiet',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-      ],
-    },
+    // {
+    //   title: 'Quản lý hệ thống',
+    //   key: 'manage',
+    //   icon: 'icon icon-setting',
+    //   permission: [permissions.CRM],
+    //   children: [
+    //     {
+    //       title: 'Người dùng',
+    //       key: 'manage-user',
+    //       url: [
+    //         '/crm/quan-ly-he-thong/nguoi-dung',
+    //         '/crm/quan-ly-he-thong/nguoi-dung/tao-moi',
+    //         '/crm/quan-ly-he-thong/nguoi-dung/:id/chi-tiet',
+    //       ],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Vai trò',
+    //       key: 'manage-roles',
+    //       url: [
+    //         '/crm/quan-ly-he-thong/vai-tro',
+    //         '/crm/quan-ly-he-thong/vai-tro/tao-moi',
+    //         '/crm/quan-ly-he-thong/vai-tro/:id/chi-tiet',
+    //       ],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Nhóm',
+    //       key: 'manage-group',
+    //       url: [
+    //         '/crm/quan-ly-he-thong/nhom',
+    //         '/crm/quan-ly-he-thong/nhom/tao-moi',
+    //         '/crm/quan-ly-he-thong/nhom/:id/chi-tiet',
+    //       ],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //   ],
+    // },
     {
       title: 'Danh mục',
       key: 'category',
@@ -2125,6 +2132,35 @@ export async function getLeftMenuCRM() {
       ],
     },
     {
+      title: 'Call center',
+      key: 'call-center',
+      icon: 'icon icon-phone1',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Lịch sử cuộc gọi',
+          key: 'history-call',
+          url: ['/crm/call-center/lich-su-cuoc-goi'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Quản lý lịch gọi',
+          key: 'management-call',
+          url: ['/crm/call-center/quan-ly-lich-goi'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Thống kê',
+          key: 'statistical-call',
+          url: ['/crm/call-center/thong-ke'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Chat',
       key: 'messages',
       icon: 'icon icon-bubble2',
@@ -2249,38 +2285,38 @@ export async function getLeftMenuCRM() {
         {
           title: 'Loại lớp',
           key: 'fee-policy-class',
-          url: [
-          '/crm/chinh-sach-phi/loai-lop',
-          '/crm/chinh-sach-phi/loai-lop/:id/chi-tiet'
-        ],
+          url: ['/crm/chinh-sach-phi/loai-lop', '/crm/chinh-sach-phi/loai-lop/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Hình thức đóng phí',
           key: 'fee-policy',
-          url: ['/crm/chinh-sachh-phi/hinh-thuc-dong-phi','/crm/chinh-sachh-phi/hinh-thuc-dong-phi/:id/chi-tiet'],
+          url: [
+            '/crm/chinh-sachh-phi/hinh-thuc-dong-phi',
+            '/crm/chinh-sachh-phi/hinh-thuc-dong-phi/:id/chi-tiet',
+          ],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Năm học',
           key: 'fee-policy-year',
-          url: ['/crm/chinh-sach-phi/nam-hoc','/crm/chinh-sach-phi/nam-hoc/:id/chi-tiet'],
+          url: ['/crm/chinh-sach-phi/nam-hoc', '/crm/chinh-sach-phi/nam-hoc/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Phí',
           key: 'fee',
-          url: ['/crm/chinh-sach-phi/phi','/crm/chinh-sach-phi/phi/:id/chi-tiet'],
+          url: ['/crm/chinh-sach-phi/phi', '/crm/chinh-sach-phi/phi/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Tiền đóng',
           key: 'money',
-          url: ['/crm/chinh-sach-phi/tien-dong','/crm/chinh-sach-phi/tien-dong/:id/chi-tiet'],
+          url: ['/crm/chinh-sach-phi/tien-dong', '/crm/chinh-sach-phi/tien-dong/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
@@ -2381,7 +2417,7 @@ export async function getLeftMenuChildDevelop() {
           pro: true,
         },
         {
-          title: 'Kì đánh giá',
+          title: 'Kỳ đánh giá',
           key: 'assessment-period',
           url: [
             '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia',

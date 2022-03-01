@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'dva';
+import { Table } from 'antd';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import Button from '@/components/CommonComponent/Button';
@@ -11,27 +12,24 @@ import TableCus from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 
-const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRef, hanDleChangeText }) => {
+const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRef }) => {
   const dispatch = useDispatch();
-  const { fees, paymentForm } = useSelector(({ fees, paymentMethod }) => ({
-    fees: fees.data,
-    paymentForm: paymentMethod.data,
+  const { fees, paymentForm } = useSelector(({ CRMnewStudentAdd }) => ({
+    fees: CRMnewStudentAdd.fees,
+    moneyFee: CRMnewStudentAdd.moneyFee,
+    paymentForm: CRMnewStudentAdd.paymentForm,
   }));
 
-  const changeText=(e)=>{
-    hanDleChangeText(e);
-  };
-  
   useEffect(() => {
     dispatch({
-      type: 'fees/GET_DATA',
+      type: 'CRMnewStudentAdd/GET_FEES',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
     dispatch({
-      type: 'paymentMethod/GET_DATA',
+      type: 'CRMnewStudentAdd/GET_PAYMENT',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
@@ -41,27 +39,27 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
 
   const getMoney = async (formRef, tuition, name, value, index) => {
     const { getFieldsValue } = formRef?.current;
-    const { schoolYearId, classTypeId, dayAdmission } = getFieldsValue();
-    const { feeId, paymentFormId } = tuition[index];
+    const { school_year_id, class_type_id, day_admission } = getFieldsValue();
+    const { fee_id, payment_form_id } = tuition[index];
     const newTuition = [...tuition];
 
-    if (value && ((name === 'feeId' && paymentFormId) || (name === 'paymentFormId' && feeId))) {
+    if (value && ((name === 'fee_id' && payment_form_id) || (name === 'payment_form_id' && fee_id))) {
       const details = [
         {
           ...newTuition[index],
-          paymentFormId: name === 'paymentFormId' ? value : paymentFormId,
-          feeId: name === 'feeId' ? value : feeId,
+          payment_form_id: name === 'payment_form_id' ? value : payment_form_id,
+          fee_id: name === 'fee_id' ? value : fee_id,
         },
       ];
       return dispatch({
-        type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
+        type: 'CRMnewStudentAdd/GET_MONEY_FEE_POLICIES',
         payload: {
-          classTypeId,
-          schoolYearId,
-          dayAdmission: Helper.getDateTime({
+          class_type_id,
+          school_year_id,
+          day_admission: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
-              originValue: dayAdmission,
+              originValue: day_admission,
             }),
             format: variables.DATE_FORMAT.DATE_AFTER,
             isUTC: false,
@@ -109,7 +107,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
     const newTuition = [...tuition].filter((item) => item.id !== record.id);
     setTuition(newTuition);
   };
-  changeText(tuition);
+
   const columns = useMemo(() => [
     {
       title: 'Loại phí',
@@ -121,13 +119,13 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
             className="mb-0"
             type={variables.SELECT}
             placeholder="Chọn"
-            onChange={(e) => onChange(e, record, 'feeId')}
+            onChange={(e) => onChange(e, record, 'fee_id')}
             allowClear={false}
             data={fees}
-            value={record?.feeId}
+            value={record?.fee_id}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !record?.feeId && (
+          {error && !record?.fee_id && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
@@ -136,30 +134,41 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
     {
       title: 'Hình thức',
       key: 'format',
-      className: 'min-width-200',
+      className: 'min-width-150',
       render: (record) => (
         <>
           <FormItem
             className="mb-0"
             type={variables.SELECT}
             placeholder="Chọn"
-            onChange={(e) => onChange(e, record, 'paymentFormId')}
+            onChange={(e) => onChange(e, record, 'payment_form_id')}
             allowClear={false}
             data={paymentForm}
-            value={record?.paymentFormId}
+            value={record?.payment_form_id}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !record?.paymentFormId && (
+          {error && !record?.payment_form_id && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
       ),
     },
     {
+      title: () => (
+        <>
+          <span>Tiền dự kiến </span>
+          <span className="underline">đ</span>
+        </>
+      ),
+      key: 'money',
+      className: 'min-width-120',
+      align: 'right',
+      render: (record) => <>{record?.money}</>,
+    },
+    {
       title: '',
       key: 'delete',
       with: 40,
-      align: 'center',
       render: (record) => (
         <DeleteOutlined
           className="btn-delete-table"
@@ -176,17 +185,16 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
       ...tuition,
       {
         id: uuidv4(),
-        feeId: null,
-        paymentFormId: null,
+        fee_id: null,
+        payment_form_id: null,
         money: 0,
       },
     ]);
   };
-
   return (
     <>
       <TableCus
-        className="table-edit mb20 w-100" 
+        className="table-edit content-vertical-top mb20"
         columns={columns}
         dataSource={tuition}
         loading={false}
@@ -196,6 +204,15 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
         pagination={false}
         rowKey="id"
         scroll={{ x: '100%' }}
+        summary={(pageData) => (
+          <Table.Summary.Row>
+            <Table.Summary.Cell colSpan={2} />
+            <Table.Summary.Cell align="right">
+              <strong>{Helper.getPrice(Helper.summary(pageData, 'money'), 0, true)}</strong>
+            </Table.Summary.Cell>
+            <Table.Summary.Cell />
+          </Table.Summary.Row>
+        )}
       />
       {addFees && (
         <Pane className="px20">

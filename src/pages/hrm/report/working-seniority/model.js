@@ -1,41 +1,108 @@
-export default {
-  namespace: 'HRMWorkingSeniority',
-  state: {
-    data: [
-      {
-        key: 1,
-        code: 'NV00001',
-        name: 'Đỗ Thị Huyền',
-        position: 'Trưởng phòng',
-        branch: 'Hội sở',
-        start_date: '31/12/2018',
-        year_working: 3,
-        month_working: 0,
+import * as categories from '@/services/categories';
+  import * as services from './services';
+  
+  export default {
+    namespace: 'HRMWorkingSeniority',
+    state: {
+      data: [],
+      divisions: [],
+      positions: [],
+      pagination: {
+        total: 0,
       },
-      {
-        key: 2,
-        code: 'NV00002',
-        name: 'Phạm Thị Loan',
-        position: 'Giáo viên',
-        branch: 'Lake View City',
-        start_date: '31/08/2020',
-        year_working: 1,
-        month_working: 4,
+      error: {
+        isError: false,
+        data: {},
       },
-    ],
-    pagination: {
-      total: 0,
+      branches: [],
+      classes: [],
     },
-    error: {
-      isError: false,
-      data: {},
+    reducers: {
+      INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+      SET_DATA: (state, { payload }) => ({
+        ...state,
+      data: payload,
+       }),
+      SET_DIVISIONS: (state, { payload }) => ({
+        ...state,
+        divisions: payload.parsePayload,
+      }),
+      SET_POSITIONS: (state, { payload }) => ({
+        ...state,
+        positions: payload.parsePayload,
+      }),
+      SET_BRANCHES: (state, { payload }) => ({
+        ...state,
+        branches: payload.parsePayload,
+      }),
+      SET_ERROR: (state, { payload }) => ({
+        ...state,
+        error: {
+          isError: true,
+          data: {
+            ...payload,
+          },
+        },
+      }),
     },
-    branches: [],
-    classes: [],
-  },
-  reducers: {
-    INIT_STATE: (state) => ({ ...state }),
-  },
-  effects: {},
-  subscriptions: {},
-};
+    effects: {
+      *GET_DATA({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.get, payload);
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response.parsePayload,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_DIVISIONS({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.getDivisions, payload);
+          yield saga.put({
+            type: 'SET_DIVISIONS',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_POSITIONS({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.getPositions, payload);
+          yield saga.put({
+            type: 'SET_POSITIONS',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_BRANCHES({ payload }, saga) {
+        try {
+          const response = yield saga.call(categories.getBranches, payload);
+          yield saga.put({
+            type: 'SET_BRANCHES',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+    },
+    subscriptions: {},
+  };
+  

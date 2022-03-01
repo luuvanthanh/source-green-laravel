@@ -32,10 +32,10 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ medicalStudentProblem, loading, user, HRMReportEmployeeOnLeave }) => ({
     loading,
     data: HRMReportEmployeeOnLeave.data,
+    divisions: HRMReportEmployeeOnLeave.divisions,
+    branches: HRMReportEmployeeOnLeave.branches,
+    positions: HRMReportEmployeeOnLeave.positions,
     error: medicalStudentProblem.error,
-    classes: medicalStudentProblem.classes,
-    branches: medicalStudentProblem.branches,
-    pagination: medicalStudentProblem.pagination,
     defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
@@ -49,7 +49,6 @@ class Index extends PureComponent {
             location: { query },
         } = props;
         this.state = {
-            defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
             search: {
                 KeyWord: query?.KeyWord,
                 branchId: query?.branchId || defaultBranch?.id,
@@ -124,7 +123,15 @@ class Index extends PureComponent {
             });
         }
         dispatch({
-            type: 'medicalStudentProblem/GET_BRACHES',
+            type: 'HRMReportEmployeeOnLeave/GET_BRANCHES',
+            payload: {},
+        });
+        dispatch({
+            type: 'HRMReportEmployeeOnLeave/GET_DIVISIONS',
+            payload: {},
+        });
+        dispatch({
+            type: 'HRMReportEmployeeOnLeave/GET_POSITIONS',
             payload: {},
         });
     };
@@ -202,13 +209,13 @@ class Index extends PureComponent {
         );
     };
 
-    debouncedSearchDateRank = debounce((FromDate, ToDate) => {
+    debouncedSearchDateRank = debounce((startDate, endDate) => {
         this.setStateData(
             (prevState) => ({
                 search: {
                     ...prevState.search,
-                    FromDate,
-                    ToDate,
+                    startDate,
+                    endDate,
                     page: variables.PAGINATION.PAGE,
                     limit: variables.PAGINATION.PAGE_SIZE,
                 },
@@ -286,7 +293,7 @@ class Index extends PureComponent {
                         children: (
                             <div className={stylesModule['table-name']}>
                                 {value?.children ?
-                                    "" : <>{value?.code}</>
+                                    "" : <>{value?.employeeCode}</>
                                 }
                             </div>
                         ),
@@ -310,7 +317,7 @@ class Index extends PureComponent {
                         children: (
                             <div className={stylesModule['table-name']}>
                                 {value?.children ?
-                                    "" : <>{value?.nameTeacher}</>
+                                    "" : <>{value?.employeeName}</>
                                 }
                             </div>
                         ),
@@ -339,7 +346,7 @@ class Index extends PureComponent {
                                 children: (
                                     <div className={stylesModule['table-name']}>
                                         {value?.children ?
-                                            "" : <>{value?.date}</>
+                                            "" : <>{value?.startDate}</>
                                         }
                                     </div>
                                 ),
@@ -363,7 +370,7 @@ class Index extends PureComponent {
                                 children: (
                                     <div className={stylesModule['table-name']}>
                                         {value?.children ?
-                                            "" : <>{value?.date}</>
+                                            "" : <>{value?.endDate}</>
                                         }
                                     </div>
                                 ),
@@ -388,7 +395,7 @@ class Index extends PureComponent {
                         children: (
                             <div className={stylesModule['table-name']}>
                                 {value?.children ?
-                                    "" : <>{value?.class}</>
+                                    "" : <>{value?.reason}</>
                                 }
                             </div>
                         ),
@@ -412,14 +419,14 @@ class Index extends PureComponent {
         const {
             data,
             error,
-            classes,
+            divisions,
             branches,
             pagination,
-            defaultBranch,
+            positions,
             match: { params },
             loading: { effects },
         } = this.props;
-        const { search, defaultBranchs } = this.state;
+        const { search, } = this.state;
         const loading = effects['medicalStudentProblem/GET_DATA'];
         return (
             <>
@@ -449,42 +456,32 @@ class Index extends PureComponent {
                                         allowClear={false}
                                     />
                                 </div>
-                                {!defaultBranch?.id && (
-                                    <div className="col-lg-3">
-                                        <FormItem
-                                            data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
-                                            name="branchId"
-                                            onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
-                                            type={variables.SELECT}
-                                            allowClear={false}
-                                        />
-                                    </div>
-                                )}
-                                {defaultBranch?.id && (
-                                    <div className="col-lg-3">
-                                        <FormItem
-                                            data={defaultBranchs}
-                                            name="branchId"
-                                            onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
-                                            type={variables.SELECT}
-                                            allowClear={false}
-                                        />
-                                    </div>
-                                )}
                                 <div className="col-lg-3">
                                     <FormItem
-                                        data={[{ id: null, name: 'Tất cả phòng ban' }, ...classes]}
-                                        name="ClassId"
-                                        onChange={(event) => this.onChangeSelect(event, 'ClassId')}
+                                        data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                                        name="branchId"
+                                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
                                         type={variables.SELECT}
                                         allowClear={false}
                                     />
                                 </div>
                                 <div className="col-lg-3">
                                     <FormItem
-                                        data={[{ id: null, name: 'Tất cả nhân viên' }, ...classes]}
-                                        name="ClassId"
-                                        onChange={(event) => this.onChangeSelect(event, 'ClassId')}
+                                        data={[{ id: null, name: 'Chọn tất cả bộ phận' }, ...divisions]}
+                                        name="divisionId"
+                                        placeholder="Chọn bộ phận"
+                                        onChange={(event) => this.onChangeSelect(event, 'divisionId')}
+                                        type={variables.SELECT}
+                                        allowClear={false}
+                                    />
+                                </div>
+                                <div className="col-lg-3">
+                                    <FormItem
+                                        data={[{ id: null, fullName: 'Chọn tất cả nhân viên' }, ...positions]}
+                                        name="employeeId"
+                                        options={['id', 'fullName']}
+                                        placeholder="Chọn nhân viên"
+                                        onChange={(event) => this.onChangeSelect(event, 'employeeId')}
                                         type={variables.SELECT}
                                         allowClear={false}
                                     />
@@ -526,7 +523,8 @@ Index.propTypes = {
     location: PropTypes.objectOf(PropTypes.any),
     branches: PropTypes.arrayOf(PropTypes.any),
     error: PropTypes.objectOf(PropTypes.any),
-    classes: PropTypes.arrayOf(PropTypes.any),
+    divisions: PropTypes.arrayOf(PropTypes.any),
+    positions: PropTypes.arrayOf(PropTypes.any),
     defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
@@ -539,7 +537,8 @@ Index.defaultProps = {
     location: {},
     branches: [],
     error: {},
-    classes: [],
+    divisions: [],
+    positions: [],
     defaultBranch: {},
 };
 

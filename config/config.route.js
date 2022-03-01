@@ -590,6 +590,12 @@ export default [
             authority: [permissions.HSDT],
           },
           {
+            path: '/ho-so-doi-tuong/bao-cao/bao-cao-hoc-sinh-ngung-hoc',
+            component: './object-profiles/report/stop-studying',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
             path: '/ho-so-doi-tuong/bao-cao/thong-ke-luong-hoc-sinh-nhap-hoc-chinh-thuc-theo-nam',
             component: './object-profiles/report/official-student-by-year',
             wrappers: ['@/wrappers/auth'],
@@ -3030,6 +3036,24 @@ export default [
           {
             path: '/crm/chinh-sach-phi/tien-dong/:id/chi-tiet',
             component: './crm/fee-policy/policy/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/call-center/lich-su-cuoc-goi',
+            component: './crm/call-center/history-call',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/call-center/quan-ly-lich-goi',
+            component: './crm/call-center/management-call',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/call-center/thong-ke',
+            component: './crm/call-center/statistical-call',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },

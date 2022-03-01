@@ -321,10 +321,12 @@ class Index extends PureComponent {
       {
         Class: query?.Class,
         branchId: query?.branchId || defaultBranch?.id,
-        SearchDate: dataIDSearch ? (
-          moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+        FromDate: dataIDSearch ?
+          moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
+          : "",
+        ToDate: dataIDSearch ?
           moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
-        ) : "",
+          : "",
       },
       `Bangphancongxeplopgiaovien.xlsx`,
     );

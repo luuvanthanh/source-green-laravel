@@ -94,6 +94,9 @@ const General = memo(() => {
         label: 'Số lần đi',
       },
       y2: {
+        padding: {
+          bottom: 0,
+        },
         show: true,
         label: 'Bình nước',
       },

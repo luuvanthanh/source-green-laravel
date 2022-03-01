@@ -34,7 +34,7 @@ const Index = memo(() => {
     effects,
   ]);
   //note
-  console.log("detailLead", detailLead);
+  // console.log("detailLead", detailLead);
   const [noteValue, setNoteValue] = useState([]);
   const [noteModal, setNoteModal] = useState(false);
   const [dayOfBirth, setDayOfBirth] = useState(null);
@@ -52,8 +52,8 @@ const Index = memo(() => {
   const [messageFile, setMessageFile] = useState(null);
   const [messageFinalFile, setMessageFinalFile] = useState(null);
   const [employees, setEmployees] = useState([]);
-  const [loadingMessage, setLoadingMessage] = useState(false);
-  const [loadingMessageUser, setLoadingMessageUser] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState(true);
+  const [loadingMessageUser, setLoadingMessageUser] = useState(true);
 
   const [searchParent, setSearchParent] = useState({
     page: 1,
@@ -62,7 +62,7 @@ const Index = memo(() => {
     hasMore: true,
     loading: false,
   });
-  console.log("usser", users)
+  // console.log("usser", users)
   const [searchUser, setSearchUser] = useState({
     page: 1,
     limit: 7,
@@ -70,7 +70,7 @@ const Index = memo(() => {
     hasMore: true,
     loading: false,
   });
- 
+
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
@@ -115,7 +115,7 @@ const Index = memo(() => {
       });
       dispatch({
         type: 'crmFBDevV1/GET_PAGESDB',
-        payload: {page_id_facebook: (pageCurrent.map(i => i.id).join(','))},
+        payload: { page_id_facebook: (pageCurrent.map(i => i.id).join(',')) },
         callback: (response) => {
           if (response) {
             setPage(response.data);
@@ -147,7 +147,7 @@ const Index = memo(() => {
             formRef.setFieldsValue({
               data: [""]
             });
-            console.log("responseresponse", response)
+            // console.log("responseresponse", response)
             setUsers(response?.parsePayload);
             setLoadingMessageUser(false);
             const firstUser = head(
@@ -175,7 +175,8 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (conversationCurrent?.id) {
-      // setLoadingMessage(true);
+      setLoadingMessage(true);
+      setLoadingMessageUser(true);
       mountedSet(setSearchParent, { ...searchParent, loading: true });
       dispatch({
         type: 'crmFBDevV1/GET_MESSAGES',
@@ -186,7 +187,6 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-
             mountedSet(setMessagers, response.data);
             setLoadingMessage(false);
             mountedSet(setSearchParent, { ...searchParent, total: response.meta.pagination.total });
@@ -201,18 +201,11 @@ const Index = memo(() => {
               payload: { conversation_id: conversationCurrent?.id, },
               callback: (response) => {
                 if (response) {
-                  const firstUser = head(
-                    response?.parsePayload?.map((item) => ({
-                      ...item,
-                    })),
-                  );
-                  setNoteValue(response?.parsePayload[0]?.userFacebookInfo?.note);
-                  setConversationCurrent(firstUser);
                   users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
-                  // users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
                 }
               },
             });
+            setLoadingMessageUser(false);
             if (conversationCurrent?.userFacebookInfo?.status === 'LEAD') {
               dispatch({
                 type: 'crmFBDevV1/GET_LEAD',
@@ -326,9 +319,8 @@ const Index = memo(() => {
       },
       ...prev,
     ]);
-
-    scrollbars.current.scrollToBottom();
     setMessage(undefined);
+    scrollbars.current.scrollToBottom();
     setFiles(undefined);
     setMessageFinalFile(messageFile);
     dispatch({
@@ -338,10 +330,10 @@ const Index = memo(() => {
         recipient_id: conversationCurrent?.userFacebookInfo?.user_id,
         page_id: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.id,
         message: e?.target?.value,
-        urls: JSON.stringify(file),
+        urls: files ?   JSON.stringify(files) :  JSON.stringify(file),
       },
-      callback: (response) => {
-        // setMessagers(messagers);
+      callback: () => {
+        setMessage(undefined);
       },
     });
   };
@@ -732,6 +724,8 @@ const Index = memo(() => {
   };
 
   const preventDefault = (e, page) => {
+    setLoadingMessageUser(true);
+    setLoadingMessage(true);
     setUsers(undefined);
     setMessagers([]);
     setNoteModal(false);
@@ -993,7 +987,7 @@ const Index = memo(() => {
           <div className={styles['user-container']}>
 
             <div>
-              {/* {loading['crmFBDevV1/GET_PAGES'] ||
+              {loading['crmFBDevV1/GET_PAGES'] ||
                 (loading['crmFBDevV1/GET_CONVERSATIONS'] && (
                   <>
                     <div className={classnames(styles['user-item'], {})} role="presentation">
@@ -1037,7 +1031,7 @@ const Index = memo(() => {
                       </div>
                     </div>
                   </>
-                ))} */}
+                ))}
               {/* {(!loading['crmFBDevV1/GET_PAGES'] || !loading['crmFBDevV1/GET_CONVERSATIONS']) && */}
               <Scrollbars
                 autoHide
@@ -1126,73 +1120,72 @@ const Index = memo(() => {
           <div className={styles['messager-container']}>
 
             <div>
-              
+
               {loadingMessage && (
                 <Scrollbars autoHide
-                autoHideTimeout={1000}
-                autoHideDuration={100}
-                autoHeight
-                autoHeightMax="calc(100vh - 320px)"
-                renderTrackHorizontal={(props) => (
-                  <div {...props} className="track-horizontal" style={{ display: 'none' }} />
-                )}
-                renderThumbHorizontal={(props) => (
-                  <div {...props} className="thumb-horizontal" style={{ display: 'none' }} />
-                )}
-                ref={scrollbars}>
-                <div className={styles['messager-group']}>
-                  <p className={styles.date}>Chủ nhật, 31/05/2021</p>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-send']}>
-                      <Skeleton.Input className="w-100" active size="default" />
+                  autoHideTimeout={1000}
+                  autoHideDuration={100}
+                  autoHeight
+                  autoHeightMax="calc(100vh - 320px)"
+                  renderTrackHorizontal={(props) => (
+                    <div {...props} className="track-horizontal" style={{ display: 'none' }} />
+                  )}
+                  renderThumbHorizontal={(props) => (
+                    <div {...props} className="thumb-horizontal" style={{ display: 'none' }} />
+                  )}
+                  ref={scrollbars}>
+                  <div className={styles['messager-group']}>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-send']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-recieve']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-send']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-recieve']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-send']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-recieve']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-send']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-recieve']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-send']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
+                    </div>
+                    <div className={styles['messager-item']}>
+                      <div className={styles['messager-recieve']}>
+                        <Skeleton.Input className="w-100" active size="default" />
+                      </div>
                     </div>
                   </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-recieve']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-send']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-recieve']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-send']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-recieve']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-send']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-recieve']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-send']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                  <div className={styles['messager-item']}>
-                    <div className={styles['messager-recieve']}>
-                      <Skeleton.Input className="w-100" active size="default" />
-                    </div>
-                  </div>
-                </div>
                 </Scrollbars>
               )}
 
@@ -1237,7 +1230,10 @@ const Index = memo(() => {
 
           </div>
           <div className={styles['messages-container']}>
-            <Upload {...props}>
+            <Upload {...props} 
+              callback={(file) => uploadFiles(file)}
+              removeFiles={(file) => mountedSet(setFiles, file)}
+              >
               <div className={styles['chat-icon']}>
                 <span className="icon-attachment" />
               </div>
@@ -1280,26 +1276,15 @@ const Index = memo(() => {
         {loadingMessageUser && (
           <div className={styles['info-container']}>
             <div className={styles['user-container']}>
-              <div className={styles['avatar-container']}>
-                <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} />
+              <div style={{ height: '100px', width: '100px' }}>
+                <Skeleton.Input className="w-100 h-100  rounded-circle" active size="default" />
               </div>
-              <div className={styles['user-info']}>
-                <p className={styles.norm}>{conversationCurrent?.userFacebookInfo?.user_name}</p>
-              </div>
-              <div className={styles['status-container']}>
-                <div className={styles['tags-container']}>
-                  <span>Chưa là khách hàng</span>
-                </div>
-                <Button color="success" className={styles['group-button']}>
-                  Thêm Lead
-                </Button>
+              <div style={{ height: '100px', width: '150px' }} className="d-flex align-items-center">
+                <Skeleton.Input className="w-100 pl10 pb10" active size="default" />
               </div>
             </div>
             <div className={styles['actions-container']}>
-              <Button color="white" icon="email-plus" />
-              <Button color="white" icon="phone-plus" />
-              <Button color="white" icon="calendar-plus" />
-              <Button color="white" icon="add-file-plus" />
+              <Skeleton.Input className="w-100" active size="default" />
             </div>
             <Scrollbars
               autoHide
@@ -1308,56 +1293,22 @@ const Index = memo(() => {
               autoHeight
               autoHeightMax="calc(100vh - 450px)"
             >
-              <div className={styles['contact-container']}>
-                <div className={styles['information-parents']}>
-                  <h3 className={styles.title}>Thông tin Chung</h3>
-                </div>
-                <div className={styles['information-students']}>
-                  <h3 className={styles.title}>Thông tin học sinh</h3>
-                </div>
-              </div>
-              <div className={styles['tags-container']}>
-                <h3 className={styles.title}>GẮN TAGS</h3>
-                <div >
-                  <Select
-                    showArrow
-                    value={conversationCurrent?.userFacebookInfo?.userFacebookInfoTag?.map((item) => item?.tag?.id)}
-                    mode="multiple"
-                    className={styles['wrapper-tags']}
-                    onChange={(e) => onSelectColor(e)}
-                    tagRender={({ label, value, color_code, closable, onClose }) => {
-                      const itemTag = tags.find(item => item.id === value);
-                      return (
-                        <Tag
-                          color={itemTag?.color_code || color_code}
-                          closable={closable}
-                          onClose={onClose}
-                          className={styles['tags-content']}
-                        >
-                          {label}
-                        </Tag>
-                      );
-                    }}
-                  >
-                    {tags.map((item, index) => (
-                      <Option
-                        value={item?.id}
-                        key={index}
-                        style={{ backgroundColor: `${item.color_code}` }}
-                      >
-                        {item?.name}
-                      </Option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
-              <div className={styles['note-container']}>
-                <div className={styles['note-heading']}>
-                  <h3 className={styles.title}>GHI CHÚ</h3>
-                  <span className="icon-write-plus" />
-                </div>
-                <Input.TextArea autoSize={{ minRows: 4, maxRows: 4 }} />
-              </div>
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
+              <Skeleton.Input className="w-100 p20" active size="default" />
             </Scrollbars>
           </div>
         )}

@@ -202,7 +202,7 @@ class Index extends PureComponent {
         key: 'effectiveTime',
         className: 'min-width-200',
         render: (record) => record?.schoolYear
-          ? `${Helper.getDate(record?.schoolYear.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record?.schoolYear.endDate, variables.DATE_FORMAT.DATE_VI)}` : ''
+          ? `${Helper.getDate(record?.schoolYear.start_date, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record?.schoolYear.end_date, variables.DATE_FORMAT.DATE_VI)}` : ''
       },
       {
         key: 'action',

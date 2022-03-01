@@ -112,6 +112,14 @@ export default {
         callback(null, error);
       }
     },
+    *GET_WEEK({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getWeeks, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
     *DRAG_AFTER({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);

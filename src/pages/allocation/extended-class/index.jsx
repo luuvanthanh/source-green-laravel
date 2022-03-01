@@ -37,6 +37,7 @@ const Index = memo(() => {
   const [generalInfo, setGeneralInfo] = useState({});
   const [listTeacher, setListTeacher] = useState([]);
   const [listStudent, setListStudent] = useState([]);
+  const [weekTitle, setWeekTitle] = useState('');
 
   const [{ classes, branches }, { defaultBranch }] = useSelector(({ extendedClass, user }) => [
     extendedClass,
@@ -113,21 +114,54 @@ const Index = memo(() => {
         },
       });
     }
+    dispatch({
+      type: 'extendedClass/GET_WEEK',
+      payload: {
+        date: moment(search.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
+      },
+      callback: (response) => {
+        if (response) {
+          setWeekTitle(response);
+        }
+      },
+    });
   }, []);
+
+  const handleChangeWeek = (val) => {
+    dispatch({
+      type: 'extendedClass/GET_WEEK',
+      payload: {
+        date: moment(val).format(variables.DATE_FORMAT.DATE_AFTER),
+      },
+      callback: (response) => {
+        if (response) {
+          setWeekTitle(response);
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     if (search.branchId) {
       dispatch({
-        type: 'categories/GET_TEACHERS',
-        payload: {
-          hasClass: 'false',
-          include: Helper.convertIncludes(['positionLevelNow']),
-          branchId: search.branchId,
-        },
+        type: 'allocationTeacherNoClass/GET_POSITIONS',
         callback: (response) => {
-          if (response) {
-            setTeachers(response.parsePayload || []);
-          }
+          const pos = response.parsePayload.find((item) => item.code === 'GV');
+
+          dispatch({
+            type: 'categories/GET_TEACHERS',
+            payload: {
+              hasClass: 'false',
+              include: Helper.convertIncludes(['positionLevelNow']),
+              branchId: search.branchId,
+              positionId: pos.id,
+            },
+            callback: (response) => {
+              if (response) {
+                setTeachers(response.parsePayload || []);
+              }
+            },
+          });
         },
       });
     }
@@ -651,30 +685,32 @@ const Index = memo(() => {
                     Hôm nay
                   </button>
                   <h4 className={stylesModule.time}>
-                    {moment(search.fromDate).format('[Tuần] WW - [Tháng] MM/YYYY')}
+                    {moment(weekTitle).format('[Tuần] WW - [Tháng] MM/YYYY')}
                   </h4>
                   <div className={stylesModule.header__next}>
                     <button
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
                         setSearch((prev) => ({
                           ...prev,
                           fromDate: moment(prev.fromDate).subtract(1, 'weeks'),
                           toDate: moment(prev.toDate).subtract(1, 'weeks'),
-                        }))
-                      }
+                        }));
+                        handleChangeWeek(moment(search.fromDate).subtract(1, 'weeks'));
+                      }}
                     >
                       <span className="icon-back" />
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
                         setSearch((prev) => ({
                           ...prev,
                           fromDate: moment(prev.fromDate).add(1, 'weeks'),
                           toDate: moment(prev.toDate).add(1, 'weeks'),
-                        }))
-                      }
+                        }));
+                        handleChangeWeek(moment(search.fromDate).add(1, 'weeks'));
+                      }}
                     >
                       <span className="icon-next" />
                     </button>
@@ -751,9 +787,14 @@ const Index = memo(() => {
                                         <h4 className={stylesModule.schedule__children__title}>
                                           {item.name}
                                         </h4>
-                                        <p className={stylesModule.schedule__children__norm}>
-                                          {item.fromTime} - {item.toTime}
-                                        </p>
+                                        <div className="d-flex justify-content-between">
+                                          <p className={stylesModule.schedule__children__norm}>
+                                            {item.fromTime} - {item.toTime}
+                                          </p>
+                                          <p className={stylesModule.schedule__children__norm}>
+                                            {item?.class?.code}
+                                          </p>
+                                        </div>
                                         <p className={stylesModule.schedule__children__norm}>
                                           Học sinh: {size(item.extendedClassRegistrations)}
                                         </p>

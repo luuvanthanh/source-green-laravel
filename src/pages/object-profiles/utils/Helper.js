@@ -6,6 +6,9 @@ export default class Helpers {
     if (type === variables.STATUS.REGIST) {
       return <Tag color="primary">{variables.STATUS_NAME.REGIST}</Tag>;
     }
+    if (type === variables.STATUS.REGISTED) {
+      return <Tag color="danger">{variables.STATUS_NAME.REGISTED}</Tag>;
+    }
     if (type === variables.STATUS.JOIN_CLASS) {
       return <Tag color="success">{variables.STATUS_NAME.JOIN_CLASS}</Tag>;
     }
@@ -14,6 +17,18 @@ export default class Helpers {
     }
     if (type === variables.STATUS.STORE) {
       return <Tag color="yellow">{variables.STATUS_NAME.STORE}</Tag>;
+    }
+    if (type === variables.STATUS.DISTRIBUTED) {
+      return <Tag color="yellow">{variables.STATUS_NAME.DISTRIBUTED}</Tag>;
+    }
+    if (type === variables.STATUS.OFFICAL) {
+      return <Tag color="success">{variables.STATUS_NAME.OFFICAL}</Tag>;
+    }
+    if (type === variables.STATUS.WITHDRAW_APPLICATION) {
+      return <Tag color="secondary">{variables.STATUS_NAME.WITHDRAW_APPLICATION}</Tag>;
+    }
+    if (type === variables.STATUS.STOP_STUDYING) {
+      return <Tag color="primary">{variables.STATUS_NAME.STOP_STUDYING}</Tag>;
     }
     return <Tag color="primary">{variables.STATUS_NAME.REGIST}</Tag>;
   };

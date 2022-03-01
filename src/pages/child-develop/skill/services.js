@@ -29,7 +29,7 @@ export function remove(id) {
 }
 
 export function update(data = {}) {
-  return request(`/v1/category-skills/${data.id}`, {
+  return request(`/v1/update-status-category-skill/${data.id}`, {
     method: 'PUT',
     data,
     parse: true,

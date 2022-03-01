@@ -97,3 +97,10 @@ export function editPopUp(data = {}) {
     data,
   });
 }
+
+export function getWeeks(params = {}) {
+  return request('/kitchen-menus/timetable-index', {
+    method: 'GET',
+    ...params,
+  });
+}
