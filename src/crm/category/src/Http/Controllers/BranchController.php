@@ -92,4 +92,11 @@ class BranchController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function syncBranch(Request $request)
+    {
+        $branch = $this->branchRepository->syncBranch($request->all());
+
+        return $this->success($branch, trans('lang::messages.common.modifySuccess'));
+    }
 }

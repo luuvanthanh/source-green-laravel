@@ -64,4 +64,31 @@ class BranchRepositoryEloquent extends BaseRepository implements BranchRepositor
 
         return $branch;
     }
+
+    public function syncBranch($attributes)
+    {
+        $branchId = [];
+        foreach ($attributes as $value) {
+            $data = [
+                'code' => $value['Code'],
+                'name' => $value['Name'],
+                'address' => $value['Address'],
+                'phone_number' => $value['PhoneNumber'],
+                'branch_id_hrm' => $value['BranchIdCrm']
+            ];
+            $branch = Branch::where('branch_id_hrm', $value['Id'])->first();
+
+            if (is_null($branch)) {
+                $branch = Branch::create($data);
+            } else {
+                $branch->update($data);
+            }
+
+            $branchId[] = $branch->id;
+        }
+
+        $branch = Branch::whereIn('id', $branchId)->get();
+
+        return $this->parserResult($branch);
+    }
 }

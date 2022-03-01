@@ -95,4 +95,11 @@ class EmployeeController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function syncEmployee(Request $request)
+    {
+        $employee = $this->employeeRepository->syncEmployee($request->all());
+
+        return $this->success($employee, trans('lang::messages.common.modifySuccess'));
+    }
 }
