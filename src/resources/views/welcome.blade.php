@@ -65,9 +65,9 @@
         </style>
     </head>
     <body>
-            <script src="https://socket-crm-dev.dn.greenglobal.vn/socket.io/socket.io.js"></script>
+            <script src="{{env('SOCKET_URL')}}/socket.io/socket.io.js"></script>
             <script>
-                const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
+                const socket = io("{{env('SOCKET_URL')}}", {
                     transports: ['websocket'],
                 });
                 socket.on('connect', () => {
