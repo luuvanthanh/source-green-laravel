@@ -64,4 +64,30 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
 
         return $employee;
     }
+
+    public function syncEmployee($attributes)
+    {
+        $employeeId = [];
+        foreach ($attributes as $value) {
+            $data = [
+                'full_name' => $value['FullName'],
+                'employee_id_hrm' => $value['Id'],
+                'file_image' => $value['FileImage']
+            ];
+
+            $employee = Employee::where('employee_id_hrm', $value['Id'])->first();
+
+            if (is_null($employee)) {
+                $employee = Employee::create($data);
+            } else {
+                $employee->update($data);
+            }
+
+            $employeeId[] = $employee->id;
+        }
+
+        $employee = Employee::whereIn('id', $employeeId)->get();
+        
+        return $this->parserResult($employee);
+    }
 }
