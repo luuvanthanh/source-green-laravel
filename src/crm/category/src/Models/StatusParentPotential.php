@@ -18,7 +18,7 @@ class StatusParentPotential extends UuidModel
     public $incrementing = false;
 
     public $fillable = [
-        'name', 'code'
+        'name', 'code', 'use', 'status_hard'
     ];
 
     public function customerPotentialStatusCare()

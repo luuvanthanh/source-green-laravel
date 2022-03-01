@@ -52,6 +52,14 @@ class StatusParentPotentialRepositoryEloquent extends BaseRepository implements 
             $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
+        if (!empty($attributes['status_hard']) && $attributes['status_hard'] == 'true') {
+            $this->model = $this->model->where('status_hard', true);
+        }
+
+        if (!empty($attributes['use']) && $attributes['use'] == 'true') {
+            $this->model = $this->model->where('use', true);
+        }
+
         if (!empty($attributes['limit'])) {
             $statusParentPotential = $this->paginate($attributes['limit']);
         } else {
