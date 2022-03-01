@@ -19,6 +19,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { variables, Helper } from '@/utils';
 import Text from '@/components/CommonComponent/Text';
 import * as _ from 'lodash';
+import moment from 'moment';
 
 const filter = (inputValue, path) =>
   path.some((option) => Helper.slugify(option?.name).indexOf(Helper.slugify(inputValue)) > -1);
@@ -204,6 +205,22 @@ const renderChildren = (
       picker={picker}
     />
   ),
+  rangeDateTimePicker: (
+    <DatePicker.RangePicker
+      disabledDate={disabledDate}
+      disabled={disabled}
+      showTime={{
+        hideDisabledOptions: true,
+        defaultValue: [moment('00:00', 'HH:mm'), moment('00:00', 'HH:mm')],
+      }}
+      format="DD-MM-YYYY HH:mm"
+      onChange={onChange}
+      placeholder={['ngày/tháng/năm', 'ngày/tháng/năm']}
+      value={value}
+      allowClear={allowClear}
+      picker={picker}
+    />
+  ),
   datePicker: (
     <DatePicker
       disabled={disabled}
@@ -330,7 +347,9 @@ const renderChildren = (
   checkboxSingle: (
     <Checkbox onChange={onChange} checked={checked} className={styles['checkbox--large']} />
   ),
-  checkboxform: <Checkbox className={styles['checkbox--large']} onChange={onChange}  disabled={disabled} />,
+  checkboxform: (
+    <Checkbox className={styles['checkbox--large']} onChange={onChange} disabled={disabled} />
+  ),
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? (

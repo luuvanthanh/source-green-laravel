@@ -3039,6 +3039,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+          {
+            path: '/crm/call-center/lich-su-cuoc-goi',
+            component: './crm/call-center/history-call',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/call-center/quan-ly-lich-goi',
+            component: './crm/call-center/management-call',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/call-center/thong-ke',
+            component: './crm/call-center/statistical-call',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
         ],
       },
       //WEBFORM

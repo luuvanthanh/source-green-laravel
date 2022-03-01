@@ -2132,6 +2132,35 @@ export async function getLeftMenuCRM() {
       ],
     },
     {
+      title: 'Call center',
+      key: 'call-center',
+      icon: 'icon icon-phone1',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Lịch sử cuộc gọi',
+          key: 'history-call',
+          url: ['/crm/call-center/lich-su-cuoc-goi'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Quản lý lịch gọi',
+          key: 'management-call',
+          url: ['/crm/call-center/quan-ly-lich-goi'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Thống kê',
+          key: 'statistical-call',
+          url: ['/crm/call-center/thong-ke'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Chat',
       key: 'messages',
       icon: 'icon icon-bubble2',
@@ -2256,38 +2285,38 @@ export async function getLeftMenuCRM() {
         {
           title: 'Loại lớp',
           key: 'fee-policy-class',
-          url: [
-          '/crm/chinh-sach-phi/loai-lop',
-          '/crm/chinh-sach-phi/loai-lop/:id/chi-tiet'
-        ],
+          url: ['/crm/chinh-sach-phi/loai-lop', '/crm/chinh-sach-phi/loai-lop/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Hình thức đóng phí',
           key: 'fee-policy',
-          url: ['/crm/chinh-sachh-phi/hinh-thuc-dong-phi','/crm/chinh-sachh-phi/hinh-thuc-dong-phi/:id/chi-tiet'],
+          url: [
+            '/crm/chinh-sachh-phi/hinh-thuc-dong-phi',
+            '/crm/chinh-sachh-phi/hinh-thuc-dong-phi/:id/chi-tiet',
+          ],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Năm học',
           key: 'fee-policy-year',
-          url: ['/crm/chinh-sach-phi/nam-hoc','/crm/chinh-sach-phi/nam-hoc/:id/chi-tiet'],
+          url: ['/crm/chinh-sach-phi/nam-hoc', '/crm/chinh-sach-phi/nam-hoc/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Phí',
           key: 'fee',
-          url: ['/crm/chinh-sach-phi/phi','/crm/chinh-sach-phi/phi/:id/chi-tiet'],
+          url: ['/crm/chinh-sach-phi/phi', '/crm/chinh-sach-phi/phi/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Tiền đóng',
           key: 'money',
-          url: ['/crm/chinh-sach-phi/tien-dong','/crm/chinh-sach-phi/tien-dong/:id/chi-tiet'],
+          url: ['/crm/chinh-sach-phi/tien-dong', '/crm/chinh-sach-phi/tien-dong/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
