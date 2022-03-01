@@ -23,6 +23,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Clover\RouteRegistrar::routes(function ($router) {
             $router->forAi();
         });
+
+        \GGPHP\InOutHistories\RouteRegistrar::routes(function ($router) {
+            $router->forAi();
+        });
     });
 
     Route::group(['prefix' => 'accountant', 'middleware' => []], function () {
@@ -200,6 +204,12 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
 
         \GGPHP\Tariff\PaymentPlan\RouteRegistrar::routes(function ($router) {
             $router->forBread();
+        });
+
+        Route::group(['prefix' => 'crm', 'middleware' => []], function () {
+            \GGPHP\ChildDevelop\TestSemester\RouteRegistrar::routes(function ($router) {
+                $router->forCrm();
+            });
         });
     });
 });

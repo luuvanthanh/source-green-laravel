@@ -109,4 +109,11 @@ class ResignationDecisionController extends Controller
 
         return $result;
     }
+
+    public function reportResignation(Request $request)
+    {
+        $resignationDecision = $this->resignationDecisionRepository->reportResignation($request->all());
+
+        return $this->success(['data' => $resignationDecision], trans('lang::messages.common.getListSuccess'));
+    }
 }

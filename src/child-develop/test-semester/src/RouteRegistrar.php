@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forCrm();
     }
 
     /**
@@ -30,6 +31,19 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('test-semesters', 'TestSemesterController');
+            \Route::get('test-semester-students','TestSemesterController@testSemesterStudent');
+        });
+    }
+
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forCrm()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::post('official-students', 'TestSemesterController@officialStudent');
         });
     }
 }

@@ -179,4 +179,22 @@ class ChildDevelopCategoryCrmServices
 
         return json_decode($response->body());
     }
+
+    public static function UpdateStatusCategorySkill($attributes, $id)
+    {
+        $url = env('CRM_URL') . '/api/v1/update-status-category-skills' . '/' . $id;
+        $token = request()->bearerToken();
+
+        $response = Http::withToken($token)->put($url, $attributes);
+
+        if ($response->failed()) {
+            $message = 'Có lỗi từ api CRM';
+            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
+                $message = 'CRM: ' . json_decode($response->body())->error->message;
+            }
+            throw new HttpException(500, $message);
+        }
+
+        return json_decode($response->body());
+    }
 }

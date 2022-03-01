@@ -42,7 +42,19 @@ class TestSemesterDetailTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $status = null;
+
+        foreach (TestSemesterDetail::STATUS as $key => $value) {
+            if (!is_null($model->Status)) {
+                if ($value == $model->Status) {
+                    $status = $key;
+                }
+            }
+        }
+
+        return [
+            'Status' => $status
+        ];
     }
 
     public function includeTestSemesterDetailChildren(TestSemesterDetail $testSemesterDetail)

@@ -51,6 +51,20 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['schoolYearId'])) {
+            $schoolYearId = explode(' ', $attributes['schoolYearId']);
+            $this->model = $this->model->whereIn('SchoolYearId', $schoolYearId);
+        }
+
+        if (!empty($attributes['chargeMonth'])) {
+            $this->model = $this->model->whereDate('ChargeMonth', $attributes['chargeMonth']);
+        }
+
+        if (!empty($attributes['classId'])) {
+            $classId = explode(' ', $attributes['classId']);
+            $this->model = $this->model->whereIn('ClassId', $classId);
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentPlan = $this->paginate($attributes['limit']);
         } else {
@@ -91,7 +105,7 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
 
             if (!empty($attributes['detail'])) {
                 $paymentPlan->paymentPlanDetail()->delete();
-                
+
                 foreach ($attributes['detail'] as $value) {
                     $value['PaymentPlanId'] = $paymentPlan->Id;
                     PaymentPlanDetail::create($value);

@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Transformers;
 
+use GGPHP\ChildDevelop\Category\Transformers\AssessmentPeriodTransformer;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
@@ -31,7 +32,7 @@ class TestSemesterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType'];
+    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType', 'assessmentPeriod'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -99,15 +100,15 @@ class TestSemesterTransformer extends BaseTransformer
             ];
         }
 
-        if (request()->is_summary_approvel_status && request()->is_summary_approvel_status == 'true') {
+        if (request()->is_summary_approval_status && request()->is_summary_approval_status == 'true') {
             $items = $this->getCurrentScope()->getResource()->getData();
             $approvelStatus = $items->groupBy('ApprovalStatus')->map->count()->toArray();
-            ksort($status);
+            ksort($approvelStatus);
             $unsent = isset($approvelStatus[0]) ? $approvelStatus[0] : 0;
             $unqulified = isset($approvelStatus[1]) ? $approvelStatus[1] : 0;
             $approved = isset($approvelStatus[2]) ? $approvelStatus[2] : 0;
 
-            $data['ApprovelStatus'] = [
+            $data['ApprovalStatus'] = [
                 'total_unsent' => $unsent,
                 'total_unqualified' => $unqulified,
                 'total_approved' => $approved,
@@ -138,5 +139,14 @@ class TestSemesterTransformer extends BaseTransformer
         }
 
         return $this->item($testSemester->classType, new ClassTypeTransformer, 'ClassType');
+    }
+
+    public function includeAssessmentPeriod(TestSemester $testSemester)
+    {
+        if (empty($testSemester->assessmentPeriod)) {
+            return;
+        }
+
+        return $this->item($testSemester->assessmentPeriod, new AssessmentPeriodTransformer, 'AssessmentPeriod');
     }
 }

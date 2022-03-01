@@ -12,7 +12,7 @@ class AssessmentPeriod extends UuidModel
     protected $table = 'AssessmentPeriods';
 
     protected $fillable = [
-        'Code', 'Name', 'SchoolYearId', 'StartDate', 'EndDate', 'Use'
+        'Code', 'Name', 'SchoolYearId', 'StartDate', 'EndDate', 'Use', 'NameAssessmentPeriodId'
     ];
 
     const CODE = 'KN';
@@ -30,5 +30,10 @@ class AssessmentPeriod extends UuidModel
     public function schoolYear()
     {
         return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
+    }
+
+    public function nameAssessmentPeriod()
+    {
+        return $this->belongsTo(NameAssessmentPeriod::class, 'NameAssessmentPeriodId');
     }
 }
