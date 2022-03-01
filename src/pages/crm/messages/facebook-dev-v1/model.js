@@ -22,6 +22,7 @@ export default {
     relationships: [],
     detailLead: [],
     employeeFB: [],
+    conversationsId: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -66,6 +67,10 @@ export default {
     SET_EMPLOYEE_FACEBOOK: (state, { payload }) => ({
       ...state,
       employeeFB: payload.parsePayload,
+    }),
+    SET_CONVERSATIONS_ID: (state, { payload }) => ({
+      ...state,
+      conversationsId: payload.parsePayload,
     }),
   },
   effects: {
@@ -216,6 +221,21 @@ export default {
         callback(null, error);
       }
     },
+    *GET_CONVERSATIONS_ID({ payload,callback }, saga) {
+      try {
+        const response = yield saga.call(services.getConversationsId, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_CONVERSATIONS_ID',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *UPDATE_NOTE({ payload, callback }, saga) {
       try {
         yield saga.call(services.updateNote, payload);
@@ -281,6 +301,14 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *DELETE_EMPLOYEE_FACEBOOK({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.DeleteEmployeeFb, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
       }
     },
   },

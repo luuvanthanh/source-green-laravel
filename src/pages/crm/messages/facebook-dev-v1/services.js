@@ -192,3 +192,12 @@ export function addEmployeeFB(data = {}) {
     data,
   });
 }
+
+export function DeleteEmployeeFb(data = {}) {
+  return requestCrm(`/v1/facebook/pages/delete-specify-conversations`, {
+    method: 'POST',
+    params: {
+      ...data,
+    },
+  });
+}
