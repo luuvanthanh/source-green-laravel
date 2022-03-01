@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\AdmissionRegister\Models;
 
+use Carbon\Carbon;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\Category\Models\StatusAdmissionRegister;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
@@ -61,5 +62,16 @@ class AdmissionRegister extends UuidModel
     public function childEvaluateInfo()
     {
         return $this->hasMany(ChildEvaluateInfo::class, 'admission_register_id');
+    }
+
+    public function studentByYearRegister()
+    {
+        $year = Carbon::parse($this->date_register)->year;
+
+        return $this->studentInfo()->with(['chargeStudent' => function ($query) use ($year) {
+            $query->whereHas('schoolYear', function ($query) use ($year) {
+                $query->where('year_from', $year);
+            });
+        }]);
     }
 }
