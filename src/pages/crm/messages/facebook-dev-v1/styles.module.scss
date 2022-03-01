@@ -171,7 +171,7 @@
         font-weight: normal;
         font-size: 13px;
         line-height: 18px;
-        color: #626568;
+        color: #626468;
         overflow: hidden;
         white-space: pre-wrap;
         text-overflow: ellipsis;
@@ -545,7 +545,7 @@
   // }
 
   .chat-container {
-    padding-left: 25px;
+    padding-left: 10px;
     width: calc(100% - 149px);
     position: relative;
     // margin-top: 20px;
@@ -625,6 +625,7 @@
       line-height: 20px;
       color: $text;
     }
+    
     .tags-container {
       font-size: 12px;
       line-height: 20px;
@@ -895,4 +896,30 @@
       }
     }
   }
+}
+
+:global(.ant-select-selector) {
+  padding-left: 0px !important;
+}
+
+
+.main-container-info {
+  max-height: 74px;
+  // :global(.ant-select-selection-item) {
+  //   padding: 0;
+  //   line-height: 18px !important;
+  //   height: 18px !important;
+  //   transition: all 0.3s;
+  // }
+}
+
+.btn-select-delete {
+  color: #ffffff;
+  border: none !important;
+  background-color: #626468;
+}
+.btn-select-delete:hover {
+  color: #ffffff;
+  border: none !important;
+  background-color: #626468;
 }

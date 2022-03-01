@@ -35,7 +35,7 @@ export function getConversations(params = {}) {
       show_conversation: 'true',
       orderBy: 'time',
       sortedBy: 'desc',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
+      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
     },
   });
 }
@@ -49,7 +49,7 @@ export function getConversationsCall(params = {}) {
       show_conversation: 'true',
       orderBy: 'time',
       sortedBy: 'desc',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
+      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
     },
   });
 }
@@ -128,7 +128,7 @@ export function getConversationsId(params = {}) {
       ...params,
       show_conversation: 'true',
       orderBy: 'created_at',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
+      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
     },
   });
 }
@@ -173,6 +173,31 @@ export function detailsLead(params = {}) {
         'customerTag.tag',
         'relationship',
       ]),
+    },
+  });
+}
+
+export function getEmployeeFB(params) {
+  return requestCrm(`/v1/facebook/pages/employee-facebooks`, {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function addEmployeeFB(data = {}) {
+  return requestCrm('/v1/facebook/pages/specify-conversations', {
+    method: 'POST',
+    data,
+  });
+}
+
+export function DeleteEmployeeFb(data = {}) {
+  return requestCrm(`/v1/facebook/pages/delete-specify-conversations`, {
+    method: 'POST',
+    params: {
+      ...data,
     },
   });
 }

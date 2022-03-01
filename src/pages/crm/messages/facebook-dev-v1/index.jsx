@@ -1,5 +1,5 @@
 import { memo, useEffect, useState, useRef } from 'react';
-import { Menu, Dropdown, Input, Skeleton, Tag, Select, Image, Upload, List, Form } from 'antd';
+import { Menu, Dropdown, Input, Skeleton, Tag, Select, Image, Upload, List, Form, Divider, Typography, Space } from 'antd';
 import { DownOutlined, SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -29,12 +29,13 @@ const Index = memo(() => {
 
   const [formRef] = Form.useForm();
   const dispatch = useDispatch();
-  const [{ user, pages, tags, relationships, detailLead }, loading] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
+  const [{ user, pages, tags, relationships, employeeFB, conversationsId }, loading] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
     crmFBDevV1,
     effects,
   ]);
   //note
-  // console.log("detailLead", detailLead);
+
+  const [detailLead, setDetailLead] = useState({});
   const [noteValue, setNoteValue] = useState([]);
   const [noteModal, setNoteModal] = useState(false);
   const [dayOfBirth, setDayOfBirth] = useState(null);
@@ -51,18 +52,20 @@ const Index = memo(() => {
   const [message, setMessage] = useState(null);
   const [messageFile, setMessageFile] = useState(null);
   const [messageFinalFile, setMessageFinalFile] = useState(null);
-  const [employees, setEmployees] = useState([]);
+  const [employees, setEmployees] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState(true);
   const [loadingMessageUser, setLoadingMessageUser] = useState(true);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [selectEmployee, setSelectEmployee] = useState(undefined);
 
   const [searchParent, setSearchParent] = useState({
     page: 1,
-    limit: 15,
+    limit: 10,
     total: 1,
     hasMore: true,
     loading: false,
   });
-  // console.log("usser", users)
+
   const [searchUser, setSearchUser] = useState({
     page: 1,
     limit: 7,
@@ -123,6 +126,10 @@ const Index = memo(() => {
           }
         },
       });
+      dispatch({
+        type: 'crmFBDevV1/GET_EMPLOYEE_FACEBOOK',
+        payload: {},
+      });
     }
   }, [pageCurrent.length]);
 
@@ -130,7 +137,6 @@ const Index = memo(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
-
   useEffect(() => {
     if (page.length > 0) {
       setLoadingMessageUser(true);
@@ -144,10 +150,11 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
+            setLoadingUser(false);
             formRef.setFieldsValue({
               data: [""]
             });
-            // console.log("responseresponse", response)
+            setSelectEmployee(response?.parsePayload);
             setUsers(response?.parsePayload);
             setLoadingMessageUser(false);
             const firstUser = head(
@@ -175,8 +182,21 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (conversationCurrent?.id) {
+      dispatch({
+        type: 'crmFBDevV1/GET_CONVERSATIONS_ID',
+        payload: { conversation_id: conversationCurrent?.id, },
+        callback: (response) => {
+          const firstUser = head(
+            response?.parsePayload?.map((item) => ({
+              ...item,
+            })),
+          );
+          setConversationCurrent(firstUser);
+        },
+      });
       setLoadingMessage(true);
       setLoadingMessageUser(true);
+      setDetailLead({});
       mountedSet(setSearchParent, { ...searchParent, loading: true });
       dispatch({
         type: 'crmFBDevV1/GET_MESSAGES',
@@ -187,11 +207,13 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            mountedSet(setMessagers, response.data);
             setLoadingMessage(false);
             mountedSet(setSearchParent, { ...searchParent, total: response.meta.pagination.total });
             if (response) {
-              setMessagers(response.data);
+              setMessagers((prev) =>
+                response.data.map(i =>
+                  i, ...prev),
+              );
               scrollbars.current.scrollToBottom();
               setTimeout(() => {
               }, 300);
@@ -201,6 +223,13 @@ const Index = memo(() => {
               payload: { conversation_id: conversationCurrent?.id, },
               callback: (response) => {
                 if (response) {
+                  // const firstUser = head(
+                  //   response?.parsePayload?.map((item) => ({
+                  //     ...item,
+                  //   })),
+                  // );
+                  setSelectEmployee(response?.parsePayload);
+                  setNoteValue(response?.parsePayload[0]?.userFacebookInfo?.note);
                   users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
                 }
               },
@@ -210,6 +239,11 @@ const Index = memo(() => {
               dispatch({
                 type: 'crmFBDevV1/GET_LEAD',
                 payload: conversationCurrent,
+                callback: (response) => {
+                  if (response) {
+                    setDetailLead(response?.parsePayload);
+                  }
+                },
               });
             }
           }
@@ -218,6 +252,41 @@ const Index = memo(() => {
     }
   }, [conversationCurrent?.id]);
 
+  const onPressEnter = (e) => {
+    setMessage(undefined);
+    if (e?.target?.value && e?.target?.value !== '' || file || files) {
+      setMessagers((prev) => [
+        {
+          id: uuidv4(),
+          attributes: {
+            from: pageCurrent,
+            content: e?.target?.value ? e?.target?.value : "Đang gửi file/ảnh",
+            created_at: undefined,
+          },
+          ulr: messageFile,
+        },
+        ...prev,
+      ]);
+    }
+    scrollbars.current.scrollToBottom();
+    mountedSet(setFiles, undefined);
+    mountedSet(setFile, undefined);
+    setMessageFinalFile(messageFile);
+    dispatch({
+      type: 'crmFBDevV1/SEND_MESSAGES',
+      payload: {
+        page_access_token: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.access_token,
+        recipient_id: conversationCurrent?.userFacebookInfo?.user_id,
+        page_id: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.id,
+        message: e?.target?.value,
+        urls: files?.length > 0 ? JSON.stringify(files) : JSON.stringify(file),
+      },
+      callback: () => {
+        mountedSet(setFiles, undefined);
+        mountedSet(setFile, undefined);
+      },
+    });
+  };
 
   useEffect(() => {
     const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
@@ -255,7 +324,6 @@ const Index = memo(() => {
             },
             callback: (response) => {
               if (response) {
-                mountedSet(setMessagers, response.data);
                 mountedSet(setSearchParent, { ...searchParent, total: response.meta.pagination.total });
                 if (response) {
                   setMessagers(response.data);
@@ -272,6 +340,11 @@ const Index = memo(() => {
                         dispatch({
                           type: 'crmFBDevV1/GET_LEAD',
                           payload: conversationCurrent,
+                          callback: (response) => {
+                            if (response) {
+                              setDetailLead(response?.parsePayload);
+                            }
+                          },
                         });
                       }
                       const firstUser = head(
@@ -294,49 +367,29 @@ const Index = memo(() => {
     return () => socket.close();
   }, [conversationCurrent?.id, user?.userID]);
 
-  const uploadFiles = (files) => {
-    mountedSet(setFiles, (prev) => [...prev, files]);
+  const uploadFiles = (a) => {
+    mountedSet(setFiles, (prev) => prev ? [...prev, a] : [a]);
   };
+
+  const uploadFile = (a) => {
+    mountedSet(setFile, (prev) => prev ? [...prev, a] : [a]);
+  };
+
   const onChangeConversation = (id) => {
     setNoteModal(false);
+    setEmployees(false);
+    setSelectEmployee(undefined);
     setConversationCurrent(users.find((item) => item.id === id));
     setSearchParent({
       page: 1,
-      limit: 15,
+      limit: 10,
       total: 0,
       hasMore: true,
       loading: false,
     });
   };
-  const onPressEnter = (e) => {
-    setMessagers((prev) => [
-      {
-        id: uuidv4(),
-        attributes: { content: e?.target?.value },
-        ulr: messageFile,
-        from: pageCurrent,
-        created_time: moment(),
-      },
-      ...prev,
-    ]);
-    setMessage(undefined);
-    scrollbars.current.scrollToBottom();
-    setFiles(undefined);
-    setMessageFinalFile(messageFile);
-    dispatch({
-      type: 'crmFBDevV1/SEND_MESSAGES',
-      payload: {
-        page_access_token: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.access_token,
-        recipient_id: conversationCurrent?.userFacebookInfo?.user_id,
-        page_id: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.id,
-        message: e?.target?.value,
-        urls: files ?   JSON.stringify(files) :  JSON.stringify(file),
-      },
-      callback: () => {
-        setMessage(undefined);
-      },
-    });
-  };
+
+
   const menu = (
     <Menu>
       {pages.map(({ name, id }) => (
@@ -378,7 +431,8 @@ const Index = memo(() => {
       payload: filex,
       callback: (response) => {
         if (response) {
-          setFile([...file, response?.results[0]?.fileInfo?.url]);
+          console.log("ress", response)
+          mountedSet(setFile, (prev) => prev ? [...prev, response?.results[0]?.fileInfo?.url] : [response?.results[0]?.fileInfo?.url]);
           setMessageFile([...file, response?.results[0]?.fileInfo?.url]);
         }
       },
@@ -390,7 +444,7 @@ const Index = memo(() => {
     customRequest({ file }) {
       onUploadFile(file);
     },
-    showUploadList: true,
+    showUploadList: (!!file),
   };
 
   const onStatus = (attributes, ulr) => {
@@ -411,7 +465,7 @@ const Index = memo(() => {
       return (
         <>
           {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
-            <div className={styles['messager-item']}>
+            <>
               <div className={styles['messager-sendImg']}>
                 <Image
                   width={200}
@@ -425,7 +479,7 @@ const Index = memo(() => {
                   {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
                 </p>
               </div>
-            </div>
+            </>
 
           )}
           {attributes?.from === conversationCurrent?.user_facebook_info_id && (
@@ -476,7 +530,7 @@ const Index = memo(() => {
       return (
         <>
           {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
-            <div className={styles['messager-item']}>
+            <>
               <div className={styles['messager-video']}>
                 <video controls width={300} className={styles.video} >
                   <source src={attributes?.content} />
@@ -487,7 +541,7 @@ const Index = memo(() => {
                   {Helper.getDate(attributes?.created_at, variables.DATE_FORMAT.HOUR)}
                 </p>
               </div>
-            </div>
+            </>
           )}
           {attributes?.from === conversationCurrent?.user_facebook_info_id && (
             <div className={styles['messager-recieve']}>
@@ -725,6 +779,7 @@ const Index = memo(() => {
 
   const preventDefault = (e, page) => {
     setLoadingMessageUser(true);
+    setLoadingUser(true);
     setLoadingMessage(true);
     setUsers(undefined);
     setMessagers([]);
@@ -738,7 +793,7 @@ const Index = memo(() => {
         if (response) {
           mountedSet(setSearchParent, ({
             page: 1,
-            limit: 15,
+            limit: 10,
             total: 0,
             hasMore: true,
             loading: false,
@@ -756,6 +811,7 @@ const Index = memo(() => {
             })),
           );
           setLoadingMessage(true);
+          setLoadingUser(false);
           // if (conversationCurrent?.userFacebookInfo?.status === 'LEAD') {
           //   dispatch({
           //     type: 'crmFBDevV1/GET_LEAD',
@@ -857,7 +913,7 @@ const Index = memo(() => {
   };
 
   const onFinish = (values) => {
-    const items = values.data.map((item, index) => ({
+    const items = values?.data?.map((item, index) => ({
       ...item,
       birth_date: Helper.getDateTime({
         value: Helper.setDate({
@@ -868,7 +924,7 @@ const Index = memo(() => {
         isUTC: false,
       }),
     }));
-    const payload = { ...values, student_info: items, user_facebook_info_id: conversationCurrent?.user_facebook_info_id };
+    const payload = { ...values, student_info: items?.length > 0 ? items : [], user_facebook_info_id: conversationCurrent?.user_facebook_info_id };
     dispatch({
       type: 'crmFBDevV1/ADD_LEAD',
       payload,
@@ -892,6 +948,11 @@ const Index = memo(() => {
                   dispatch({
                     type: 'crmFBDevV1/GET_LEAD',
                     payload: conversationCurrent,
+                    callback: (response) => {
+                      if (response) {
+                        setDetailLead(response?.parsePayload);
+                      }
+                    },
                   });
                 }
               }
@@ -914,6 +975,58 @@ const Index = memo(() => {
     });
   };
 
+
+  const onChangeEmployeeFb = (e) => {
+    dispatch({
+      type: 'crmFBDevV1/ADD_EMPLOYEE_FACEBOOK',
+      payload: { user_facebook_info_id: conversationCurrent?.userFacebookInfo?.id, employee_facebook_id: e },
+      callback: () => {
+        dispatch({
+          type: 'crmFBDevV1/GET_CONVERSATIONS_ID',
+          payload: { conversation_id: conversationCurrent?.id, },
+          callback: (response) => {
+            if (response) {
+              console.log('REDDD',response);
+              const firstUser = head(
+                response?.parsePayload?.map((item) => ({
+                  ...item,
+                })),
+              );
+              setConversationCurrent(firstUser);
+              setSelectEmployee(response?.parsePayload);
+            }
+          },
+        });
+      },
+    });
+  };
+
+  const onChangeDeleteEmployeeFb = () => {
+    setEmployees(true);
+    dispatch({
+      type: 'crmFBDevV1/DELETE_EMPLOYEE_FACEBOOK',
+      payload: { user_facebook_info_id: conversationCurrent?.userFacebookInfo?.id, employee_facebook_id: conversationsId[0]?.userFacebookInfo?.employeeFacebook?.id },
+      callback: () => {
+        dispatch({
+          type: 'crmFBDevV1/GET_CONVERSATIONS_ID',
+          payload: { conversation_id: conversationCurrent?.id, },
+          callback: (response) => {
+            if (response) {
+              const firstUser = head(
+                response?.parsePayload?.map((item) => ({
+                  ...item,
+                })),
+              );
+              setConversationCurrent(firstUser);
+              setSelectEmployee(response?.parsePayload);
+            }
+          },
+        });
+      },
+    });
+  };
+  console.log("conversationCurrent", conversationCurrent)
+  console.log("setSelectEmployee", conversationsId)
   return (
     <div className={styles.wrapper}>
       <div className={styles['heading-container']}>
@@ -987,8 +1100,8 @@ const Index = memo(() => {
           <div className={styles['user-container']}>
 
             <div>
-              {loading['crmFBDevV1/GET_PAGES'] ||
-                (loading['crmFBDevV1/GET_CONVERSATIONS'] && (
+              {loadingUser
+                && (
                   <>
                     <div className={classnames(styles['user-item'], {})} role="presentation">
                       <div className={styles['user-content']}>
@@ -1031,92 +1144,161 @@ const Index = memo(() => {
                       </div>
                     </div>
                   </>
-                ))}
-              {/* {(!loading['crmFBDevV1/GET_PAGES'] || !loading['crmFBDevV1/GET_CONVERSATIONS']) && */}
-              <Scrollbars
-                autoHide
-                autoHideTimeout={1000}
-                autoHideDuration={100}
-                autoHeight
-                autoHeightMax="calc(100vh - 300px)"
-              >
-                <InfiniteScroll
-                  hasMore={!searchUser.loading && searchUser.hasMore}
-                  initialLoad={searchUser.loading}
-                  loadMore={handleInfiniteOnLoadUser}
-                  pageStart={0}
-                  useWindow={false}
+                )}
+              {!loadingUser &&
+                <Scrollbars
+                  autoHide
+                  autoHideTimeout={1000}
+                  autoHideDuration={100}
+                  autoHeight
+                  autoHeightMax="calc(100vh - 300px)"
                 >
-                  {
-                    users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
-                      <div
-                        className={classnames(styles['user-item'], {
-                          [styles['user-item-active']]:
-                            userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
-                        })}
-                        key={id}
-                        role="presentation"
-                        onClick={() => onChangeConversation(id)}
-                      >
-                        <div className={styles['user-content']}>
-                          <div className={styles['avatar-container']}>
-                            <span
-                              className={classnames(styles.dot, { [styles.active]: can_reply })}
-                            />
-                            <img
-                              src={userFacebookInfo?.avatar}
-                              alt="facebook"
-                              className={styles.img}
-                            />
-                          </div>
-                          {noti_inbox === "SEEN" ?
-                            <>
-                              <div className={styles['user-info']}>
-                                <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
-                              </div>
-                              <p className={styles.time}>
-                                {time?.substr(-5, 5)}
-                              </p>
-                            </>
-                            :
-                            <>
-                              <div className={styles['user-info-notseen']}>
-                                <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                  <InfiniteScroll
+                    hasMore={!searchUser.loading && searchUser.hasMore}
+                    initialLoad={searchUser.loading}
+                    loadMore={handleInfiniteOnLoadUser}
+                    pageStart={0}
+                    useWindow={false}
+                  >
+                    {
+                      users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
+                        <div
+                          className={classnames(styles['user-item'], {
+                            [styles['user-item-active']]:
+                              userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
+                          })}
+                          key={id}
+                          role="presentation"
+                          onClick={() => onChangeConversation(id)}
+                        >
+                          <div className={styles['user-content']}>
+                            <div className={styles['avatar-container']}>
+                              <span
+                                className={classnames(styles.dot, { [styles.active]: can_reply })}
+                              />
+                              <img
+                                src={userFacebookInfo?.avatar}
+                                alt="facebook"
+                                className={styles.img}
+                              />
+                            </div>
+                            {noti_inbox === "SEEN" ?
+                              <>
+                                <div className={styles['user-info']}>
+                                  <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                  <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                </div>
                                 <p className={styles.time}>
                                   {time?.substr(-5, 5)}
                                 </p>
-                              </div>
-                            </>
-                          }
-                        </div>
-                        {userFacebookInfo?.userFacebookInfoTag.map((i, index) =>
-                          <div className='mt5' key={index}>
-                            <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
+                              </>
+                              :
+                              <>
+                                <div className={styles['user-info-notseen']}>
+                                  <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                  <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                  <p className={styles.time}>
+                                    {time?.substr(-5, 5)}
+                                  </p>
+                                </div>
+                              </>
+                            }
                           </div>
-                        )}
-                      </div>
-                    ))
-                  }
+                          {userFacebookInfo?.userFacebookInfoTag.map((i) =>
+                            <div className='mt5' key={i?.id}>
+                              <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    }
 
-                </InfiniteScroll>
-              </Scrollbars>
-              {/* } */}
+                  </InfiniteScroll>
+                </Scrollbars>
+              }
             </div>
           </div>
         </div>
         <div className={styles['main-container']}>
-          <div className={styles['main-container-info']}>
-            <div className={styles['avatar-container']}>
-              <span className={classnames(styles.dot, { [styles.active]: true })} />
-              <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} />
-            </div>
-            <div className={styles['user-info']}>
-              <h3 className={styles.title}>{conversationCurrent?.userFacebookInfo?.user_name}</h3>
-              <p className={styles.norm}>Chỉ định cuộc trò chuyện</p>
-            </div>
-          </div>
+          {
+            loadingUser &&
+            (
+              <div className={styles['main-container-info']}>
+                <div className={styles['avatar-container']}>
+                  <Skeleton.Input className="w-100 h-100  rounded-circle" active size="default" />
+                  {/* <span className={classnames(styles.dot, { [styles.active]: true })} />
+                  <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} /> */}
+                </div>
+                <div style={{ height: '22px', width: '150px' }} className="d-flex pl10 align-items-center">
+                  <Skeleton.Input className="w-100 h-100" active size="default" />
+                </div>
+              </div>
+            )
+          }
+          {
+            !loadingUser &&
+            (
+              <div className={styles['main-container-info']}>
+                <div className={styles['avatar-container']}>
+                  <span className={classnames(styles.dot, { [styles.active]: true })} />
+                  <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} />
+                </div>
+                <div className={styles['user-info']}>
+                  <h3 className={styles.title}>{conversationCurrent?.userFacebookInfo?.user_name}</h3>
+                  {conversationCurrent?.userFacebookInfo?.employee_facebook_id &&
+                     conversationsId[0]?.userFacebookInfo?.employee_facebook_id === conversationCurrent?.userFacebookInfo?.employee_facebook_id && (
+                      //  conversationsId[0]?.userFacebookInfo?.employee_facebook_id === conversationCurrent?.userFacebookInfo?.employee_facebook_id && conversationCurrent?.userFacebookInfo?.employee_facebook_id && (
+                      <Select
+                        size="small" className={styles.norm}
+                        defaultValue={conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name}
+                        bordered={false}
+                        onChange={(e) => onChangeEmployeeFb(e)}
+                        dropdownRender={menu => (
+                          <>
+                            {menu}
+                            <Divider style={{ margin: '8px 0' }} />
+                            <Space align="center" style={{ padding: '0 8px 4px' }}>
+                              <Button htmlType="submit" className={styles['btn-select-delete']} onClick={(e) => onChangeDeleteEmployeeFb(e)}>Bỏ chỉ định</Button>
+                            </Space>
+                          </>
+                        )}
+                      >
+                        {employeeFB?.map((i, index) =>
+                          <Option value={i?.id} key={index}>{i?.employee_fb_name}</Option>
+                        )}
+                      </Select>)
+                  }
+                  {
+                    !conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name && (
+                      <Select
+                        defaultValue="Chọn nhân viên"
+                        bordered={false}
+                        onChange={(e) => onChangeEmployeeFb(e)}
+                        dropdownRender={menu => (
+                          <>
+                            {
+                             conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name ?
+                                <>
+                                  {menu}
+                                  <Divider style={{ margin: '8px 0' }} />
+                                  <Space align="center" style={{ padding: '0 8px 4px' }}>
+                                    <Button htmlType="submit" className={styles['btn-select-delete']} onClick={(e) => onChangeDeleteEmployeeFb(e)}>Bỏ chỉ địnhss</Button>
+                                  </Space>
+                                </> : <> {menu} </>
+                            }
+                          </>
+                        )}
+                      >
+                        {employeeFB?.map((i, index) =>
+                          <Option value={i?.id} key={index}> {i?.employee_fb_name}</Option>
+                        )}
+                      </Select>
+                    )
+                  }
+                </div>
+              </div>
+            )
+          }
           <div className={styles['messager-container']}>
 
             <div>
@@ -1195,7 +1377,7 @@ const Index = memo(() => {
                     autoHideTimeout={1000}
                     autoHideDuration={100}
                     autoHeight
-                    autoHeightMax="calc(100vh - 320px)"
+                    autoHeightMax={files?.length > 0 ? "calc(100vh - 364px)" : "calc(100vh - 320px)"}
                     renderTrackHorizontal={(props) => (
                       <div {...props} className="track-horizontal" style={{ display: 'none' }} />
                     )}
@@ -1214,8 +1396,8 @@ const Index = memo(() => {
                       isReverse
                     >
 
-                      {messagers?.map(({ attributes, ulr }) => (
-                        <div className={styles['messager-item']} key={ulr} style={{ display: 'flex', flexDirection: 'column-reverse' }}>
+                      {messagers?.map(({ attributes, ulr }, index) => (
+                        <div className={styles['messager-item']} key={index} style={{ display: 'flex', flexDirection: 'column-reverse' }}>
                           <div className={styles['messager-item']} >
                             <div>{onStatus(attributes, ulr)}</div>
                           </div>
@@ -1230,10 +1412,9 @@ const Index = memo(() => {
 
           </div>
           <div className={styles['messages-container']}>
-            <Upload {...props} 
-              callback={(file) => uploadFiles(file)}
-              removeFiles={(file) => mountedSet(setFiles, file)}
-              >
+            <Upload {...props}
+              fileList={undefined}
+            >
               <div className={styles['chat-icon']}>
                 <span className="icon-attachment" />
               </div>
@@ -1245,27 +1426,20 @@ const Index = memo(() => {
             />
             <div className='d-flex'>
               <div className={styles['chat-container']}>
-                <Input.TextArea
-                  autoSize={{ minRows: 1, maxRows: 1 }}
+                <Input
+                  autosize={{ minRows: 1, maxRows: 1 }}
                   width={80}
                   placeholder="Nhập tin nhắn"
                   onPressEnter={onPressEnter}
                   className={styles.input}
                   value={message}
-                  onChange={(e) => setMessage(e?.target?.value)}
+                  onChange={(e) => setMessage(e.target.value)}
                 />
                 <div className={styles['group-icon']}>
                   {/* <span className="icon-attachment" /> */}
 
-                  <pane className="icon-smile" />
+                  {/* <p className="icon-smile" /> */}
                 </div>
-
-                {/* <MultipleImageUpload
-                      //  files={files}
-                      //   callback={(files) => uploadFiles(files)}
-                      // removeFiles={(files) => mountedSet(setFiles, files)}
-        setMessage> */}
-
               </div>
 
 
@@ -1449,6 +1623,7 @@ const Index = memo(() => {
                             options={['id', 'name']}
                             data={sex}
                             placeholder="Chọn"
+                            name='sex'
                             className={styles.norm}
                             type={variables.SELECT}
                             rules={[variables.RULES.EMPTY_INPUT]}
@@ -1583,7 +1758,8 @@ const Index = memo(() => {
                               ))}
 
                               <div className={styles['students-add']}>
-                                <pane
+                                <p
+                                  role="presentation"
                                   color="success"
                                   ghost
                                   className="icon-plus-circle"
@@ -1632,7 +1808,7 @@ const Index = memo(() => {
                       <Option
                         value={item?.id}
                         key={index}
-                        style={{ backgroundColor: `${item.color_code}` }}
+                        style={{ backgroundColor: `${item?.color_code}` }}
                       >
                         {item?.name}
                       </Option>
