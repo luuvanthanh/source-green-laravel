@@ -10,10 +10,12 @@ use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetailChildren;
 use GGPHP\ChildDevelop\TestSemester\Services\StudentServices;
 use GGPHP\Clover\Models\Student;
+use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Collection;
+use Illuminate\Container\Container as Application;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -28,6 +30,15 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
     protected $fieldSearchable = [
         'Id', 'CreationTime'
     ];
+
+
+    public function __construct(
+        StudentRepositoryEloquent $studentRepositoryEloquent,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->studentRepositoryEloquent = $studentRepositoryEloquent;
+    }
 
     /**
      * Specify Model class name
@@ -123,23 +134,6 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 $attributes['status'] = TestSemester::STATUS[$attributes['status']];
             }
 
-            if (!is_null($testSemester) && $attributes['status'] != $testSemester['Status']) {
-                switch ($attributes['status']) {
-                    case 1:
-                        StudentServices::updateSTudentStatus('DOING', $attributes['studentId']);
-                        break;
-                    case 2:
-                        StudentServices::updateSTudentStatus('DID', $attributes['studentId']);
-                        break;
-                    case 3:
-                        $testSemester->testSemesterDetail()->delete();
-                        StudentServices::updateSTudentStatus('DONOT', $attributes['studentId']);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
             if (is_null($testSemester)) {
 
                 $student = Student::where('Id', $attributes['studentId'])->first();
@@ -149,14 +143,18 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 $attributes['TimeAgeTestSemester'] = $numberOfMonth;
 
                 $testSemester = TestSemester::create($attributes);
-                StudentServices::updateSTudentStatus('DOING', $attributes['studentId']);
             } else {
                 $testSemester->update($attributes);
             }
 
             if (!empty($attributes['detail']['isCheck'])) {
 
-                TestSemesterDetail::where('CategorySkillId', $attributes['detail']['categorySkillId'])->delete();
+                $detail = $testSemester->testSemesterDetail->where('CategorySkillId', $attributes['detail']['categorySkillId'])->first();
+
+                if (!is_null($detail)) {
+                    $detail->delete();
+                }
+
                 $attributes['detail']['testSemesterId'] = $testSemester->Id;
                 $attributes['detail']['status'] = TestSemesterDetail::STATUS[$attributes['detail']['status']];
                 $attributes['detail']['serialNumber'] = TestSemesterDetail::max('SerialNumber') + 1;
@@ -165,6 +163,10 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                     $value['testSemesterDetailId'] = $testSemesterDetail->Id;
                     TestSemesterDetailChildren::create($value);
                 }
+            }
+
+            if (!empty($attributes['status']) && $attributes['status'] == 3) {
+                $testSemester->testSemesterDetail()->delete();
             }
 
             \DB::commit();
@@ -217,5 +219,53 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         $testSemester->update($attributes);
 
         return parent::find($id);
+    }
+
+    public function testSemesterStudent(array $attributes)
+    {
+        if (!empty($attributes['assessmentPeriodId']) && !empty($attributes['status']) && !empty($attributes['whereDoesntHave']) == 'true') {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('testSemester', function ($query) use ($attributes) {
+
+                if (!empty($attributes['assessmentPeriodId'])) {
+                    $query->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
+                }
+
+                if (!empty($attributes['status'])) {
+                    $query->whereIn('Status', $attributes['status']);
+                }
+
+                $query->orderBy('CreationTime', 'DESC');
+            });
+        }
+
+        if (!empty($attributes['assessmentPeriodId']) && !empty($attributes['status']) && !empty($attributes['whereHas']) == 'true') {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('testSemester', function ($query) use ($attributes) {
+
+                if (!empty($attributes['assessmentPeriodId'])) {
+                    $query->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
+                }
+
+                if (!empty($attributes['status'])) {
+                    $query->whereIn('Status', $attributes['status']);
+                }
+
+                $query->orderBy('CreationTime', 'DESC');
+            });
+        }
+
+        if (!empty($attributes['classId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($attributes) {
+                $arrayClass = explode(',', $attributes['classId']);
+                $query->whereIn('ClassId', $arrayClass);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
+        } else {
+            $student = $this->studentRepositoryEloquent->get();
+        }
+
+        return $student;
     }
 }
