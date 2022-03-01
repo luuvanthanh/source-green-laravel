@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\StatusParentPotentialsTableSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -17,5 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SearchSourcesTableSeeder::class);
         $this->call(CategoryIconsTableSeeder::class);
         $this->call(IconsTableSeeder::class);
+        $this->call(StatusParentPotentialsTableSeeder::class);
     }
 }
