@@ -9,7 +9,7 @@ class StudentService
 {
     public static function moveStudentToOfficial(array $attributes)
     {
-        $url = env('CLOVER_URL') . '/api/v1/crm/official-students';
+        $url = env('URL_CLOVER') . '/api/v1/crm/official-students';
         $token = request()->bearerToken();
 
         $response = Http::withToken($token)->post($url, $attributes);

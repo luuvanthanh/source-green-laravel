@@ -10,7 +10,7 @@ class CustomerPotentialStatusCare extends UuidModel
     protected $table = 'customer_potential_status_cares';
 
     protected $fillable = [
-        'user_update_id', 'user_update_info', 'status_parent_potential_id', 'customer_potential_id'
+        'user_update_id', 'user_update_info', 'status_parent_potential_id', 'customer_potential_id', 'status_hard'
     ];
 
     public function statusParentPotential()

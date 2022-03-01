@@ -150,11 +150,16 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
 
             if (!empty($attributes['detail'])) {
 
-                TestInputDetail::where('category_skill_id', $attributes['detail']['category_skill_id'])->delete();
+                $detail = $testInput->TestInputDetail->where('category_skill_id', $attributes['detail']['category_skill_id'])->first();
+
+                if (!is_null($detail)) {
+                    $detail->delete();
+                }
+
                 $attributes['detail']['test_input_id'] = $testInput->id;
                 $attributes['detail']['status'] = TestInputDetail::STATUS[$attributes['detail']['status']];
                 $attributes['detail']['serial_number'] = TestInputDetail::max('serial_number') + 1;
-                
+
                 if (!empty($attributes['detail']['is_check'])) {
 
                     $testInputDetail = TestInputDetail::create($attributes['detail']);
