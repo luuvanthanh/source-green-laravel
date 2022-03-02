@@ -1,6 +1,5 @@
 <?php
 
-use Database\Seeders\StatusParentPotentialsTableSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
