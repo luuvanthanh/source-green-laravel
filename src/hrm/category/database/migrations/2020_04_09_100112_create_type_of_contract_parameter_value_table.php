@@ -16,8 +16,8 @@ class CreateTypeOfContractParameterValueTable extends Migration
         Schema::create('TypeOfContractParameterValue', function (Blueprint $table) {
             $table->uuid('TypeOfContractId');
             $table->uuid('ParameterValueId');
-            $table->foreign('TypeOfContractId')->references('Id')->on('TypeOfContracts');
-            $table->foreign('ParameterValueId')->references('Id')->on('ParameterValues');
+            $table->foreign('TypeOfContractId')->references('Id')->on('TypeOfContracts')->onDelete('cascade');
+            $table->foreign('ParameterValueId')->references('Id')->on('ParameterValues')->onDelete('cascade');
         });
     }
 

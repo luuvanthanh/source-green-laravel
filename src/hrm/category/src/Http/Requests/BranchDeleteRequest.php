@@ -46,7 +46,7 @@ class BranchDeleteRequest extends FormRequest
                         || !is_null($probationaryContract) || !is_null($transferDetail) || !is_null($class)
                     ) {
                         return $fail('Dữ liệu đang được sử dụng!');
-                    }
+                    // }
                 },
             ],
         ];

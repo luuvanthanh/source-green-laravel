@@ -75,6 +75,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $salaryIncrease = SalaryIncrease::create($attributes);
+            
             $labourContract = LabourContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
 
             if (is_null($labourContract)) {
@@ -108,6 +109,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
 
             \DB::commit();
         } catch (\Exception $e) {
+            dd($e);
             \DB::rollback();
         }
 

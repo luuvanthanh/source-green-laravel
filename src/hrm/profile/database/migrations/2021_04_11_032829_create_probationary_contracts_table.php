@@ -22,7 +22,7 @@ class CreateProbationaryContractsTable extends Migration
             $table->foreign('TypeOfContractId')->references('Id')->on('TypeOfContracts');
             $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
-            $table->integer('SalaryRatio');
+            $table->integer('SalaryRatio')->nullable();
             $table->integer('Month');
             $table->uuid('DivisionId');
             $table->foreign('DivisionId')->references('Id')->on('Divisions');
@@ -34,6 +34,11 @@ class CreateProbationaryContractsTable extends Migration
             $table->string('WorkTime');
             $table->uuid('BranchId');
             $table->foreign('BranchId')->references('Id')->on('Branches');
+            $table->float('TotalAllowance')->nullable();
+            $table->float('BasicSalary')->nullable();
+            $table->boolean('IsSocialInsurance')->default(false);
+            $table->boolean('IsEffect')->default(true);
+            $table->string('File', 1000)->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

@@ -19,6 +19,7 @@ class CreateShiftsTable extends Migration
             $table->string('ShiftCode');
             $table->string('Description')->nullable();
             $table->string('Status');
+            $table->string('Name')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

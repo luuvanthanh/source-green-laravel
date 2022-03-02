@@ -31,7 +31,9 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::group(['middleware' => []], function () {
                 \Route::resource('training-schools', 'TrainingSchoolController');
+                \Route::resource('training-majors', 'TrainingMajorController');
                 \Route::resource('educational-levels', 'EducationalLevelController');
+                \Route::resource('degrees', 'DegreeController');
                 \Route::resource('paramater-values', 'ParamaterValueController');
                 \Route::resource('paramater-value-logs', 'ParamaterValueLogController');
                 \Route::resource('paramater-formulas', 'ParamaterFormulaController');
@@ -43,6 +45,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('divisions', 'DivisionController');
                 \Route::resource('positions', 'PositionController');
                 \Route::resource('holidays', 'HolidayController');
+                \Route::resource('blocks', 'BlockController');
             });
         });
     }

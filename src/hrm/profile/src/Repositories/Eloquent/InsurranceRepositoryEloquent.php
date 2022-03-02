@@ -85,4 +85,17 @@ class InsurranceRepositoryEloquent extends CoreRepositoryEloquent implements Ins
 
         return $insurrance;
     }
+
+    public function create(array $attributes)
+    {
+        $insurrance = Insurrance::where('EmployeeId', $attributes['employeeId'])->first();
+
+        if (is_null($insurrance) && !empty($attributes['insurranceNumber'])) {
+            $insurrance = Insurrance::create($attributes);
+        } else {
+            $insurrance->update($attributes);
+        }
+
+        return parent::parserResult($insurrance);
+    }
 }

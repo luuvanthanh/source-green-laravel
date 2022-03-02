@@ -19,7 +19,7 @@ class DecisionReward extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'DecisionNumber', 'DecisionDate', 'Reason', 'Type',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'Type', 'File'
     ];
 
     protected $dateTimeFields = [

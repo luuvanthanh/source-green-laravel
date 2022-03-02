@@ -21,7 +21,7 @@ class Branch extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Address', 'PhoneNumber', 'BranchIdCrm'
+        'Code', 'Name', 'Address', 'BranchIdCrm'
     ];
 
     /**

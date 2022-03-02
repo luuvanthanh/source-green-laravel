@@ -19,7 +19,7 @@ class ResignationDecision extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'TimeApply', 'PayEndDate', 'Note',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'TimeApply', 'PayEndDate', 'Note','File'
     ];
 
     protected $dateTimeFields = [

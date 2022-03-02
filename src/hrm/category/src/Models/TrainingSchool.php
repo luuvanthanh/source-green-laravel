@@ -12,8 +12,12 @@ class TrainingSchool extends UuidModel
      * Declare the table name
      */
     protected $table = 'TrainingSchools';
+    const CATEGORY = [
+        'SCHOOL_TRAINING' => 0,
+        'SCHOOL_PARTNER' => 1
+    ];
 
     protected $fillable = [
-        'Code', 'Name', 'Address',
+        'Code', 'Name', 'Address', 'Category'
     ];
 }

@@ -55,15 +55,16 @@ class TypeOfContractRepositoryEloquent extends CoreRepositoryEloquent implements
     {
         \DB::beginTransaction();
         try {
+            
             $typeOfContract = TypeOfContract::create($attributes);
-
+            
             $typeOfContract->parameterValues()->attach($attributes['paramValue']);
 
             // $typeOfContract->parameterFormulas()->attach($attributes['paramFormula']);
 
             \DB::commit();
         } catch (\Exception $e) {
-
+            
             \DB::rollback();
         }
 

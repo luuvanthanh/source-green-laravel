@@ -20,7 +20,7 @@ class Appoint extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'DecisionNumber', 'DecisionDate', 'Reason', 'FileImage', 'TimeApply',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'TimeApply','File'
     ];
 
     protected $dateTimeFields = [

@@ -2,6 +2,7 @@
 
 namespace GGPHP\ResignationDecision\Http\Requests;
 
+use GGPHP\ResignationDecision\Models\ResignationDecision;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ResignationDecisionUpdateRequest extends FormRequest
