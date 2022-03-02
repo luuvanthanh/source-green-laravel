@@ -140,4 +140,18 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
         }
         return parent::all();
     }
+
+    public function syncBranch()
+    {
+        $branchs = Branch::get();
+
+        $response = CrmService::syncBranch($branchs->toArray());
+
+        foreach ($response->data as $key => $value) {
+            $branch = Branch::where('Id', $value->attributes->branch_id_hrm)->first();
+            $branch->BranchIdCrm = $value->id;
+            $branch->update();
+        }
+        return $this->parserResult($branchs);
+    }
 }

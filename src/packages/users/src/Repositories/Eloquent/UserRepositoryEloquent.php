@@ -164,4 +164,18 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         return parent::parserResult($user);
     }
+
+    public function syncEmployee()
+    {
+        $employees = User::select('FullName', 'Id', 'FileImage')->get();
+
+        $response = CrmService::syncEmployee($employees->toArray());
+
+        foreach ($response->data as $key => $value) {
+            $employee = User::where('Id', $value->attributes->employee_id_hrm)->first();
+            $employee->EmployeeIdCrm = $value->id;
+            $employee->update();
+        }
+        return $this->parserResult($employees);
+    }
 }
