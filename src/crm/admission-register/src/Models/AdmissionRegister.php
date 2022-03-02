@@ -64,13 +64,13 @@ class AdmissionRegister extends UuidModel
         return $this->hasMany(ChildEvaluateInfo::class, 'admission_register_id');
     }
 
-    public function studentByYearRegister()
+    public function studentByChargeNow()
     {
-        $year = Carbon::parse($this->date_register)->year;
+        $date = now();
 
-        return $this->studentInfo()->with(['chargeStudent' => function ($query) use ($year) {
-            $query->whereHas('schoolYear', function ($query) use ($year) {
-                $query->where('year_from', $year);
+        return $this->studentInfo()->with(['chargeStudent' => function ($query) use ($date) {
+            $query->whereHas('schoolYear', function ($query) use ($date) {
+                $query->where([['start_date', '<', $date], ['end_date', '>', $date]]);
             });
         }]);
     }
