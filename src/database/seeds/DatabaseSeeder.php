@@ -25,12 +25,12 @@ class DatabaseSeeder extends Seeder
         $this->call(ShiftsTableSeeder::class);
         $this->call(ShiftDetailsTableSeeder::class);
         $this->call(ConfigsTableSeeder::class);
-        $this->call(TypeOfContractParameterValueTableSeeder::class);
+        // $this->call(TypeOfContractParameterValueTableSeeder::class);
         $this->call(AbsentTypesTableSeeder::class);
-        $this->call(ClassTypesTableSeeder::class);
-        $this->call(FeesTableSeeder::class);
-        $this->call(PaymentFormsTableSeeder::class);
-        $this->call(StudentObjectsTableSeeder::class);
+        // $this->call(ClassTypesTableSeeder::class);
+        // $this->call(FeesTableSeeder::class);
+        // $this->call(PaymentFormsTableSeeder::class);
+        // $this->call(StudentObjectsTableSeeder::class);
         $this->call(ParameterTaxsTableSeeder::class);
     }
 }

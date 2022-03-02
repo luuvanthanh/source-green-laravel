@@ -24,7 +24,7 @@ class AbsentUpdateRequest extends FormRequest
             'endDate' => 'date|date_format:Y-m-d|after_or_equal:startDate',
             'detail' => [
                 function ($attribute, $value, $fail) {
-
+                    
                     $accessAbsent = $this->checkDuplicateAbsent($value);
 
                     if (!is_null($accessAbsent)) {
@@ -35,7 +35,7 @@ class AbsentUpdateRequest extends FormRequest
                     $checkShift = $this->checkShift($value);
                     if (!is_null($checkShift)) {
                         $date = Carbon::parse($checkShift)->setTimezone('GMT+7')->format('d-m-Y');
-                        return $fail('Ngày' . $date . 'không có ca làm việc');
+                        return $fail('Ngày ' . $date . ' không có ca làm việc');
                     }
                     foreach ($value as $key => $item) {
 

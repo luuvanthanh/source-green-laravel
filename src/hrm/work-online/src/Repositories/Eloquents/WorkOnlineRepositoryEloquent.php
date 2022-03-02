@@ -10,6 +10,7 @@ use GGPHP\WorkOnline\Presenters\WorkOnlinePresenter;
 use GGPHP\WorkOnline\Repositories\Contracts\WorkOnlineRepository;
 use GGPHP\WorkOnline\Services\WorkOnlineDetailServices;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class WorkOnlineRepositoryEloquent.
@@ -106,6 +107,7 @@ class WorkOnlineRepositoryEloquent extends CoreRepositoryEloquent implements Wor
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::all();
@@ -125,6 +127,7 @@ class WorkOnlineRepositoryEloquent extends CoreRepositoryEloquent implements Wor
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::find($id);

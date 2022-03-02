@@ -21,7 +21,7 @@ class BranchesTableSeeder extends Seeder
                 'Code' => 'CS1',
                 'Name' => 'Cơ sở 1',
                 'Address' => null,
-                'PhoneNumber' => '0955555555',
+                // 'PhoneNumber' => '0955555555',
                 'CreationTime' => '2021-04-19 08:42:48',
                 'LastModificationTime' => '2021-04-19 08:42:48',
             ),
@@ -30,7 +30,7 @@ class BranchesTableSeeder extends Seeder
                 'Code' => 'CS2',
                 'Name' => 'Cơ sở 2',
                 'Address' => null,
-                'PhoneNumber' => '0955555555',
+                // 'PhoneNumber' => '0955555555',
                 'CreationTime' => '2021-04-19 08:42:56',
                 'LastModificationTime' => '2021-04-19 08:42:56',
             ),
@@ -39,11 +39,10 @@ class BranchesTableSeeder extends Seeder
                 'Code' => 'CS3',
                 'Name' => 'Cơ sở 3',
                 'Address' => null,
-                'PhoneNumber' => '0955555555',
+                // 'PhoneNumber' => '0955555555',
                 'CreationTime' => '2021-04-19 08:43:01',
                 'LastModificationTime' => '2021-04-19 08:43:01',
             ),
         ));
-
     }
 }

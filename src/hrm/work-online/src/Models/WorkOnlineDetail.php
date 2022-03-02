@@ -20,7 +20,7 @@ class WorkOnlineDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'StartTime', 'EndTime', 'TotalHour', 'WorkOnlineId', 'Date'
+        'StartTime', 'EndTime', 'TotalHour', 'WorkOnlineId', 'Date', 'ShiftCode', 'IsFullDate'
     ];
 
     /**

@@ -8,6 +8,7 @@ use GGPHP\BusinessCard\Repositories\Contracts\BusinessCardRepository;
 use GGPHP\BusinessCard\Services\BusinessCardDetailServices;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class BusinessCardRepositoryEloquent.
@@ -52,12 +53,9 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
 
     public function filterBusinessCard(array $attributes)
     {
-
-
         if (!empty($attributes['absentTypeId'])) {
             $this->model = $this->model->where('AbsentTypeId', $attributes['absentTypeId']);
         }
-
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
@@ -98,6 +96,7 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($businessCard->Id);
@@ -111,7 +110,7 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         try {
             $businessCard->update($attributes);
 
-            if(!empty($attributes['detail'])){
+            if (!empty($attributes['detail'])) {
                 $businessCard->businessCardDetail()->delete();
                 BusinessCardDetailServices::add($id, $attributes['detail']);
             }
@@ -119,6 +118,7 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($id);

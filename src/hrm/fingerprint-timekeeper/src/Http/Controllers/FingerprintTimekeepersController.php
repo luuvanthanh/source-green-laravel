@@ -39,8 +39,8 @@ class FingerprintTimekeeperController extends Controller
      */
     public function store(FingerprintTimekeeperCreateRequest $request)
     {
-        $a = $request->all();
-        $fingerprintTimekeeper = $this->fingerprintTimekeeperrepository->create($a);
+        $attributes = $request->all();
+        $fingerprintTimekeeper = $this->fingerprintTimekeeperrepository->create($attributes);
 
         return $this->success($fingerprintTimekeeper, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED, 'isShowData' => false]);
     }
@@ -66,16 +66,7 @@ class FingerprintTimekeeperController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $fingerprintTimekeeper = $this->fingerprintTimekeeperrepository->all();
-        } else {
-            $fingerprintTimekeeper = $this->fingerprintTimekeeperrepository->paginate($limit);
-        }
+        $fingerprintTimekeeper = $this->fingerprintTimekeeperrepository->getAll($request->all());
 
         return $this->success($fingerprintTimekeeper, trans('lang::messages.common.getListSuccess'));
     }
