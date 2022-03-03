@@ -72,6 +72,7 @@ const Index = memo(() => {
   const [notReply, setNotReply] = useState(false);
   const [checkPhone, setCheckPhone] = useState(false);
   const [checkNotPhone, setCheckNotPhone] = useState(false);
+  const [loadingMessageSearch, setLoadingMessageSearch] = useState(false);
 
 
   const [searchParent, setSearchParent] = useState({
@@ -1076,13 +1077,13 @@ const Index = memo(() => {
   };
 
   //SEARCH
-
+console.log("conversationCurrent",conversationCurrent);
   const onChangSearch = (e, types, check) => {
     setLoadingUser(true);
+    setMessagers([]);
     setLoadingMessage(true);
     setLoadingMessageUser(true);
-    console.log("types", types);
-    console.log("E  ", e);
+    setLoadingMessageSearch(false);
     const pageId = page?.find(i => i?.id === pageID[0]?.id);
     if (check) {
       setSearch(e);
@@ -1104,9 +1105,11 @@ const Index = memo(() => {
           [`${types === 'not_phone_number' ? types : ""}`]: `${types === 'not_phone_number' ? true : ""}`
         },
         callback: (response) => {
+          console.log('RESS',response);
           if (response) {
             if (response?.parsePayload.length <= 0) {
               setMessagers([]);
+              setLoadingMessageSearch(true);
             }
             setLoadingUser(false);
             setLoadingMessage(false);
@@ -1257,7 +1260,7 @@ const Index = memo(() => {
   };
 
   //SEARCH
-  console.log("CHECK", searchModal);
+
   return (
     <div className={styles.wrapper}>
       <div className={styles['heading-container']}>
@@ -1494,7 +1497,7 @@ const Index = memo(() => {
                   autoHideTimeout={1000}
                   autoHideDuration={100}
                   autoHeight
-                  autoHeightMax={searchModal === 'tags' ? "calc(100vh - 372px)" : "calc(100vh - 300px)"}
+                  autoHeightMax={searchModal === 'tags' ? "calc(100vh - 382px)" : "calc(100vh - 310px)"}
                 >
                   <InfiniteScroll
                     hasMore={!searchUser.loading && searchUser.hasMore}
@@ -1621,7 +1624,12 @@ const Index = memo(() => {
             )
           }
           {
-            !loadingUser &&
+           !loadingUser && messagers.length <= 0 && loadingMessageSearch && (
+              <div className={styles['main-container-info']} style={{height : '100%'}}/>
+            )
+          }
+          {
+            !loadingUser  && !loadingMessageSearch &&
             (
               <div className={styles['main-container-info']}>
                 <div className={styles['avatar-container']}>
@@ -1871,7 +1879,14 @@ const Index = memo(() => {
             </Scrollbars>
           </div>
         )}
-        {!loadingMessageUser && (
+        {
+           !loadingMessageUser &&  messagers.length <= 0 && (
+            <div className={styles['info-container']}>
+           
+          </div>
+            )
+        }
+        {!loadingMessageUser && messagers.length > 0 &&(
           <div className={styles['info-container']}>
             <div className={styles['user-container']}>
               <div className={styles['avatar-container']}>
