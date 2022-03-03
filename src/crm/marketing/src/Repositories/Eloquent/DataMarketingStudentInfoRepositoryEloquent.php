@@ -63,8 +63,7 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
     public function create(array $attributes)
     {
         if (!empty($attributes['create_rows'])) {
-            foreach ($attributes['create_rows'] as $value) {
-                $value['relationship'] = DataMarketingStudentInfo::RELATIONSHIP[$value['relationship']];
+            foreach ($attributes['create_rows'] as $value) {  
                 $value['sex'] = DataMarketingStudentInfo::SEX[$value['sex']];
                 DataMarketingStudentInfo::create($value);
             }
@@ -73,7 +72,6 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
         if (!empty($attributes['update_rows'])) {
             foreach ($attributes['update_rows'] as $value) {
                 $updateDataMarketingStudentInfo = DataMarketingStudentInfo::find($value['id']);
-                $value['relationship'] = DataMarketingStudentInfo::RELATIONSHIP[$value['relationship']];
                 $value['sex'] = DataMarketingStudentInfo::SEX[$value['sex']];
                 $updateDataMarketingStudentInfo->update($value);
             }

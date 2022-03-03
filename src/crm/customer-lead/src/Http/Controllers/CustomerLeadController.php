@@ -7,6 +7,7 @@ use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateEmployeeAssignmentRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\UpdateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\StatusLead;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -36,7 +37,12 @@ class CustomerLeadController extends Controller
      */
     public function index(Request $request)
     {
-        $customerLead = $this->customerLeadRepository->getCustomerLead($request->all());
+        $attributes = $request->all();
+        if (!empty($attributes['status_lead'])) {
+            $attributes['status_lead'] = StatusLead::STATUS_LEAD[$attributes['status_lead']];
+        }
+
+        $customerLead = $this->customerLeadRepository->getCustomerLead($attributes);
 
         return $this->success($customerLead, trans('lang::messages.common.getListSuccess'));
     }
@@ -165,6 +171,13 @@ class CustomerLeadController extends Controller
     public function getCustomerLead($id)
     {
         $customerLead = $this->customerLeadRepository->findCustomerLead($id);
+
+        return $this->success($customerLead, trans('lang::messages.common.getInfoSuccess'));
+    }
+
+    public function customerByPhone($phone)
+    {
+        $customerLead = $this->customerLeadRepository->customerByPhone($phone);
 
         return $this->success($customerLead, trans('lang::messages.common.getInfoSuccess'));
     }

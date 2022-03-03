@@ -68,36 +68,39 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
 
     public function pageSendMessage($attributes)
     {
-        $paths = null;
-        if (!empty($attributes['urls'])) {
-            $paths = json_decode($attributes['urls']);
-        }
-        if (!empty($paths)) {
-            foreach ($paths as $path) {
-                $url =  env('IMAGE_URL') . $path;
-                $name = substr($url, strrpos($url, '/') + 1);
-                $nameArr = explode('.', $name);
-                if ($nameArr[1] != 'jpg' & $nameArr[1] != 'png' & $nameArr[1] != 'jpeg' & $nameArr[1] != 'mp4') {
+        if (!empty($attributes['url_files'])) {
+            $data_url = [];
+            foreach ($attributes['url_files'] as $urlFile) {
+                $type = '';
+                $url =  env('IMAGE_URL') . $urlFile['url'];
+                if (pathinfo($url, PATHINFO_EXTENSION) == 'mp3') {
+                    $data_url[] = [
+                        'type' => 'audio',
+                        'url' => $url
+                    ];
+                } elseif (pathinfo($url, PATHINFO_EXTENSION) == 'mp4') {
+                    $data_url[] = [
+                        'type' => 'video',
+                        'url' => $url
+                    ];
+                } elseif (pathinfo($url, PATHINFO_EXTENSION) == 'jpg' || pathinfo($url, PATHINFO_EXTENSION) == 'png' || pathinfo($url, PATHINFO_EXTENSION) == 'jpeg') {
+                    $data_url[] = [
+                        'type' => 'image',
+                        'url' => $url
+                    ];
+                } else {
+                    $name = $urlFile['name'];
                     $contents = file_get_contents($url);
-                    $response = Http::get(env('IMAGE_URL') . '/api/files?fileIds=' . $nameArr[0]);
-                    $result = json_decode($response->body());
-                    $name = $result->results[0]->name;
                     Storage::disk('local')->put('public/files/' . $name, $contents);
                     $url = env('URL_CRM') . '/storage/files/' . $name;
-                }
-                $urls[] = $url;
-            }
-            $type = 'file';
-            foreach ($urls as $url) {
-                if (pathinfo($url, PATHINFO_EXTENSION) == 'jpg' || pathinfo($url, PATHINFO_EXTENSION) == 'png' || pathinfo($url, PATHINFO_EXTENSION) == 'jpeg') {
-                    $type = 'image';
-                    break;
-                } elseif (pathinfo($url, PATHINFO_EXTENSION) == 'mp4') {
-                    $type = 'video';
-                    break;
+                    $data_url[] = [
+                        'type' => 'file',
+                        'url' => $url
+                    ];
                 }
             }
-            $attributes['urls'] = $urls;
+
+            $attributes['urls'] = $data_url;
             $attributes['type'] = $type;
         }
 

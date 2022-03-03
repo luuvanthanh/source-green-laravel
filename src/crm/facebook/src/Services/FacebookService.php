@@ -211,7 +211,6 @@ class FacebookService
                 );
             }
             if (!empty($attributes['urls'])) {
-                $type = $attributes['type'];
                 foreach ($attributes['urls'] as $key => $url) {
                     $response = $fb->post(
                         '/me/messages',
@@ -221,10 +220,10 @@ class FacebookService
                             ],
                             'message' => [
                                 'attachment' => [
-                                    'type' => $type,
+                                    'type' => $url['type'],
                                     'payload' => [
                                         'is_reusable' => true,
-                                        'url' => $url
+                                        'url' => $url['url']
                                     ]
                                 ]
                             ]

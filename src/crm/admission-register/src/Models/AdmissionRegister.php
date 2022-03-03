@@ -15,7 +15,7 @@ class AdmissionRegister extends UuidModel
     protected $table = 'admission_registers';
 
     protected $fillable = [
-        'student_info_id', 'address', 'date_register', 'parent_wish', 'children_note', 'status_admission_register_id', 'branch_id', 'school_year_id', 'status', 'status_admission'
+        'student_info_id', 'address', 'date_register', 'parent_wish', 'children_note', 'status_admission_register_id', 'branch_id', 'school_year_id', 'status', 'student_clover_id',
     ];
 
     const STATUS_REGISTER = [
@@ -46,7 +46,14 @@ class AdmissionRegister extends UuidModel
 
     public function testInput()
     {
-        return $this->hasOne(TestInput::class);
+        return $this->hasOne(TestInput::class, 'admission_register_id');
+    }
+
+    public function forceDelete()
+    {
+        $this->testInput()->delete();
+
+        return parent::forceDelete();
     }
 
     public function medicalInfo()
@@ -64,13 +71,13 @@ class AdmissionRegister extends UuidModel
         return $this->hasMany(ChildEvaluateInfo::class, 'admission_register_id');
     }
 
-    public function studentByYearRegister()
+    public function studentByChargeNow()
     {
-        $year = Carbon::parse($this->date_register)->year;
+        $date = now();
 
-        return $this->studentInfo()->with(['chargeStudent' => function ($query) use ($year) {
-            $query->whereHas('schoolYear', function ($query) use ($year) {
-                $query->where('year_from', $year);
+        return $this->studentInfo()->with(['chargeStudent' => function ($query) use ($date) {
+            $query->whereHas('schoolYear', function ($query) use ($date) {
+                $query->where([['start_date', '<', $date], ['end_date', '>', $date]]);
             });
         }]);
     }

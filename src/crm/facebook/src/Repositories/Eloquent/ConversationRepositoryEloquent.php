@@ -98,7 +98,28 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         if (!empty($attributes['not_phone_number']) && $attributes['not_phone_number'] == 'true') {
             $this->model = $this->model->whereDoesntHave('message', function ($query) {
                 $query->where(function ($q) {
-                    $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone');
+                    $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')
+                        ->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')
+                        ->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone')->where(function ($q1) {
+                            $q1->whereLike('content', '086')->orWhereLike('content', '096')
+                                ->orWhereLike('content', '097')->orWhereLike('content', '098')
+                                ->orWhereLike('content', '032')->orWhereLike('content', '033')
+                                ->orWhereLike('content', '034')->orWhereLike('content', '035')
+                                ->orWhereLike('content', '036')->orWhereLike('content', '037')
+                                ->orWhereLike('content', '038')->orWhereLike('content', '039')
+                                ->orWhereLike('content', '088')->orWhereLike('content', '091')
+                                ->orWhereLike('content', '088')->orWhereLike('content', '091')
+                                ->orWhereLike('content', '094')->orWhereLike('content', '083')
+                                ->orWhereLike('content', '084')->orWhereLike('content', '085')
+                                ->orWhereLike('content', '081')->orWhereLike('content', '082')
+                                ->orWhereLike('content', '089')->orWhereLike('content', '090')
+                                ->orWhereLike('content', '093')->orWhereLike('content', '070')
+                                ->orWhereLike('content', '079')->orWhereLike('content', '077')
+                                ->orWhereLike('content', '076')->orWhereLike('content', '078')
+                                ->orWhereLike('content', '092')->orWhereLike('content', '056')
+                                ->orWhereLike('content', '058')->orWhereLike('content', '099')
+                                ->orWhereLike('content', '059');
+                        });
                 });
             });
         }
@@ -106,7 +127,28 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         if (!empty($attributes['not_phone_number']) && $attributes['not_phone_number'] == 'false') {
             $this->model = $this->model->whereHas('message', function ($query) {
                 $query->where(function ($q) {
-                    $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone');
+                    $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')
+                        ->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')
+                        ->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone')->where(function ($q1) {
+                            $q1->whereLike('content', '086')->orWhereLike('content', '096')
+                                ->orWhereLike('content', '097')->orWhereLike('content', '098')
+                                ->orWhereLike('content', '032')->orWhereLike('content', '033')
+                                ->orWhereLike('content', '034')->orWhereLike('content', '035')
+                                ->orWhereLike('content', '036')->orWhereLike('content', '037')
+                                ->orWhereLike('content', '038')->orWhereLike('content', '039')
+                                ->orWhereLike('content', '088')->orWhereLike('content', '091')
+                                ->orWhereLike('content', '088')->orWhereLike('content', '091')
+                                ->orWhereLike('content', '094')->orWhereLike('content', '083')
+                                ->orWhereLike('content', '084')->orWhereLike('content', '085')
+                                ->orWhereLike('content', '081')->orWhereLike('content', '082')
+                                ->orWhereLike('content', '089')->orWhereLike('content', '090')
+                                ->orWhereLike('content', '093')->orWhereLike('content', '070')
+                                ->orWhereLike('content', '079')->orWhereLike('content', '077')
+                                ->orWhereLike('content', '076')->orWhereLike('content', '078')
+                                ->orWhereLike('content', '092')->orWhereLike('content', '056')
+                                ->orWhereLike('content', '058')->orWhereLike('content', '099')
+                                ->orWhereLike('content', '059');
+                        });
                 });
             });
         }
@@ -145,12 +187,13 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
                     $conversationId = $conversation->id;
                     foreach ($conversation->senders as $value) {
                         $attributes['user_id'] = $value[0]->id;
-                        $url = FacebookService::getAvatarUser($attributes);
-                        $avatar = $this->storeAvatarUser($url, $value[0]->id);
+                        //tạm thời đóng lấy ảnh lại tránh bị lỗi khi không có quyền
+                        //$url = FacebookService::getAvatarUser($attributes);
+                        //$avatar = $this->storeAvatarUser($url, $value[0]->id);
                         $dataUserFacebookInfo = [
                             'user_id' => $value[0]->id,
                             'user_name' => $value[0]->name,
-                            'avatar' => $avatar
+                            //'avatar' => $avatar
                         ];
                         $dataPage = [
                             'page_id_facebook' => $value[1]->id,
@@ -162,7 +205,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
                             $userFacebookInfo = UserFacebookInfo::create($dataUserFacebookInfo);
                         } else {
                             $userFacebookInfo->update(['user_name' => $dataUserFacebookInfo['user_name']]);
-                            $userFacebookInfo->update(['avatar' => $dataUserFacebookInfo['avatar']]);
+                            //$userFacebookInfo->update(['avatar' => $dataUserFacebookInfo['avatar']]);
                         }
 
                         $page = Page::Where('page_id_facebook', $dataPage['page_id_facebook'])->first();

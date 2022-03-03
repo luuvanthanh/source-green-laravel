@@ -1,7 +1,5 @@
 <?php
 
-namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 
 class StatusParentPotentialsTableSeeder extends Seeder
@@ -25,8 +23,9 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'created_at' => '2021-10-06 04:59:11',
                 'updated_at' => '2021-10-06 04:59:11',
                 'deleted_at' => NULL,
-                'use' => true,
+                'use' => false,
                 'status_hard' => true,
+                'number' => 1
             ),
             1 =>
             array(
@@ -36,8 +35,9 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'created_at' => '2021-10-06 04:59:20',
                 'updated_at' => '2021-10-06 04:59:20',
                 'deleted_at' => NULL,
-                'use' => true,
+                'use' => false,
                 'status_hard' => true,
+                'number' => 2
             ),
             2 =>
             array(
@@ -47,8 +47,9 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'created_at' => '2021-10-06 04:59:30',
                 'updated_at' => '2021-10-22 03:01:25',
                 'deleted_at' => NULL,
-                'use' => false,
+                'use' => true,
                 'status_hard' => true,
+                'number' => 3
             ),
             3 =>
             array(
@@ -58,8 +59,9 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'created_at' => '2021-10-22 03:02:01',
                 'updated_at' => '2021-10-22 03:02:01',
                 'deleted_at' => NULL,
-                'use' => false,
+                'use' => true,
                 'status_hard' => true,
+                'number' => 4
             )
         ));
     }

@@ -7,6 +7,7 @@ use GGPHP\Crm\Marketing\Presenters\MarketingProgramPresenter;
 use GGPHP\Crm\Marketing\Repositories\Contracts\MarketingProgramRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -73,13 +74,13 @@ class MarketingProgramRepositoryEloquent extends BaseRepository implements Marke
     {
         \DB::beginTransaction();
         try {
-
-            $code = MarketingProgram::max('code');
+            $code = MarketingProgram::latest()->first();
 
             if (is_null($code)) {
                 $attributes['code'] = MarketingProgram::CODE . '1';
             } else {
-                $getNumber = substr($code, 2) + 1;
+                $columnCode = $code->code;
+                $getNumber = substr($columnCode, 2) + 1;
                 $attributes['code'] = MarketingProgram::CODE . $getNumber;
             }
 

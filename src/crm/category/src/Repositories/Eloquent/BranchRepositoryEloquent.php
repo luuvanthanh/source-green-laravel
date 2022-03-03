@@ -74,7 +74,7 @@ class BranchRepositoryEloquent extends BaseRepository implements BranchRepositor
                 'name' => $value['Name'],
                 'address' => $value['Address'],
                 'phone_number' => $value['PhoneNumber'],
-                'branch_id_hrm' => $value['BranchIdCrm']
+                'branch_id_hrm' => $value['Id']
             ];
             $branch = Branch::where('branch_id_hrm', $value['Id'])->first();
 

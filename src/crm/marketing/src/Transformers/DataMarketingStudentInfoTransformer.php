@@ -2,7 +2,9 @@
 
 namespace GGPHP\Crm\Marketing\Transformers;
 
+use Carbon\Carbon;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\CategoryRelationshipTransformer;
 use GGPHP\Crm\Marketing\Models\DataMarketingStudentInfo;
 
 /**
@@ -29,7 +31,7 @@ class DataMarketingStudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['categoryRelationship'];
 
     /**
      * Transform the User entity.
@@ -40,27 +42,32 @@ class DataMarketingStudentInfoTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $relationship = null;
-
-        foreach (DataMarketingStudentInfo::RELATIONSHIP as $key => $value) {
-
-            if ($value == $model->relationship) {
-                $relationship = $key;
-            }
-        }
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+        $birthday = Carbon::parse($model->birth_date);
+        $today = Carbon::parse($now);
+        $numberOfMonth = $birthday->diffInMonths($today);
 
         $sex = null;
 
         foreach (DataMarketingStudentInfo::SEX as $key => $value) {
-            
+
             if ($value == $model->sex) {
                 $sex = $key;
             }
         }
 
         return [
-            'relationship' => $relationship,
             'sex' => $sex,
+            'month_age' => $numberOfMonth
         ];
+    }
+
+    public function includeCategoryRelationship(DataMarketingStudentInfo $dataMarketingStudentInfo)
+    {
+        if (empty($dataMarketingStudentInfo->categoryRelationship)) {
+            return;
+        }
+
+        return $this->item($dataMarketingStudentInfo->categoryRelationship, new CategoryRelationshipTransformer, 'CategoryRelationship');
     }
 }

@@ -87,7 +87,7 @@ class UserFacebookInfoRepositoryEloquent extends BaseRepository implements UserF
                     $code = CustomerLead::CODE . $stt;
                 }
             }
-            $searchSource = SearchSource::whereLike('type', SearchSource::FANPAGE)->first();
+            $searchSource = SearchSource::where('type', SearchSource::FANPAGE)->first();
 
             $dataLead = [
                 'code' => $code,

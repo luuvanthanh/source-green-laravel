@@ -74,6 +74,8 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
     {
         DB::beginTransaction();
         try {
+            $attributes['status'] = $attributes['status'] ?? 'Chưa thanh toán';
+
             $chargeStudent = ChargeStudent::create($attributes);
 
             $totalMoney = 0;
@@ -103,7 +105,6 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
 
             $chargeStudent->update($attributes);
 
-            $totalMoney = 0;
             if (!empty($attributes['tuition'])) {
                 $chargeStudent->tuition()->delete();
 
@@ -112,9 +113,8 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
                 }
 
                 $totalMoney = array_sum(array_column($attributes['tuition'], 'money'));
+                $chargeStudent->update(['total_money' => $totalMoney]);
             }
-
-            $chargeStudent->update(['total_money' => $totalMoney]);
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -154,7 +154,7 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
         $data = ChargeStudentService::moneyFeePolicie($params);
 
         $attributes['details'] = json_decode($details, true);
-        
+
         foreach ($data['data'] as $key => $item) {
             $attributes['details'][$key]['money'] = $item['money'];
         }

@@ -95,6 +95,36 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
             $this->model = $this->model->where('employee_id', null);
         }
 
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
+        }
+
+        if (!empty($attributes['status_parent_potential_id'])) {
+            $this->model = $this->model->whereHas('customerPotentialStatusCare', function ($query) use ($attributes) {
+                $query->where(function ($query01) {
+                    $query01->select('status_parent_potential_id');
+                    $query01->from('customer_potential_status_cares');
+                    $query01->whereColumn('customer_potential_id', 'customer_potentials.id');
+                    $query01->orderBy('created_at', 'desc');
+                    $query01->limit(1);
+                }, $attributes['status_parent_potential_id']);
+            });
+        }
+
+        if (!empty($attributes['status_parent_lead_id'])) {
+            $this->model = $this->model->whereHas('customerLead', function ($query01) use ($attributes) {
+                $query01->whereHas('statusCare', function ($query02) use ($attributes) {
+                    $query02->where(function ($query03) {
+                        $query03->select('status_parent_lead_id');
+                        $query03->from('status_cares');
+                        $query03->whereColumn('customer_lead_id', 'customer_leads.id');
+                        $query03->orderBy('created_at', 'desc');
+                        $query03->limit(1);
+                    }, $attributes['status_parent_lead_id']);
+                });
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $customerPotential = $this->paginate($attributes['limit']);
         } else {

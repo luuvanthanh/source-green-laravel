@@ -37,6 +37,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('articles', 'ArticleController');
             \Route::post('move-leads', 'DataMarketingController@moveLead');
             \Route::post('post-article-facebooks', 'ArticleController@postArticleFacebook');
+            \Route::post('data-marketing-tags', 'DataMarketingController@createTag');
+            \Route::post('merge-data-marketings', 'DataMarketingController@mergeDataMarketing');
         });
     }
 }

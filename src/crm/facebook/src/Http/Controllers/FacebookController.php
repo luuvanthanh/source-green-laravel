@@ -62,14 +62,14 @@ class FacebookController extends Controller
                         $text = $messaging['message']['text'];
                     }
 
-                    if (isset($messaging['message']) && !is_null($text)) {
-                        //\Log::info('send');
-                        broadcast(new FacebookReceiveMessage([
-                            'sender' => $messaging['sender']['id'],
-                            'recipient' => $messaging['recipient']['id'],
-                            'message' => $text,
-                        ]));
-                    }
+                    // if (isset($messaging['message']) && !is_null($text)) {
+                    //     //\Log::info('send');
+                    //     broadcast(new FacebookReceiveMessage([
+                    //         'sender' => $messaging['sender']['id'],
+                    //         'recipient' => $messaging['recipient']['id'],
+                    //         'message' => $text,
+                    //     ]));
+                    // }
 
                     $messageId = null;
                     if (isset($messaging['message']) && isset($messaging['message']['mid'])) {

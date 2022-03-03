@@ -8,3 +8,5 @@ Route::get(
     '/dashboard',
     ['uses' => 'DashboardController@dashboard', 'as' => 'dashboard']
 );
+
+Route::view('cmc', 'cmc');

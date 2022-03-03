@@ -2,17 +2,16 @@
 
 namespace GGPHP\Crm\CallCenter\Transformers;
 
-use Aws\History;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Crm\CallCenter\Models\HistoryCall;
-use GGPHP\Crm\CustomerLead\Transformers\CustomerLeadTransformer;
+use GGPHP\Crm\CallCenter\Models\Extension;
+use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 
 /**
- * Class CallCenterTransformer.
+ * Class ExtensionTranformer.
  *
  * @package namespace App\Transformers;
  */
-class CallCenterTransformer extends BaseTransformer
+class ExtensionTranformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -31,7 +30,7 @@ class CallCenterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['customerLead'];
+    protected $availableIncludes = ['employee'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -43,15 +42,13 @@ class CallCenterTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'employee_count' => $model->employee_count
+        ];
     }
 
-    public function includeCustomerLead(HistoryCall $historyCall)
+    public function includeEmployee(Extension $extention)
     {
-        if ($historyCall->loadCount('customerLead')->customer_lead_count < 1) {
-            return null;
-        }
-
-        return $this->item($historyCall->customerLead, new CustomerLeadTransformer, 'CustomerLead');
+        return $this->collection($extention->employee, new EmployeeTransformer, 'Employee');
     }
 }

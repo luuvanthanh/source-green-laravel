@@ -2,8 +2,12 @@
 
 namespace GGPHP\Crm\CallCenter\Providers;
 
-use GGPHP\Crm\CallCenter\Repositories\Contracts\CallCenterRepository;
-use GGPHP\Crm\CallCenter\Repositories\Eloquent\CallCenterRepositoryEloquent;
+use GGPHP\Crm\CallCenter\Repositories\Contracts\ExtensionRepository;
+use GGPHP\Crm\CallCenter\Repositories\Contracts\HistoryCallRepository;
+use GGPHP\Crm\CallCenter\Repositories\Contracts\ManagerCallRepository;
+use GGPHP\Crm\CallCenter\Repositories\Eloquent\ExtensionRepositoryEloquent;
+use GGPHP\Crm\CallCenter\Repositories\Eloquent\HistoryCallRepositoryEloquent;
+use GGPHP\Crm\CallCenter\Repositories\Eloquent\ManagerCallRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class CallCenterServiceProvider extends ServiceProvider
@@ -27,6 +31,8 @@ class CallCenterServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(CallCenterRepository::class, CallCenterRepositoryEloquent::class);
+        $this->app->bind(HistoryCallRepository::class, HistoryCallRepositoryEloquent::class);
+        $this->app->bind(ManagerCallRepository::class, ManagerCallRepositoryEloquent::class);
+        $this->app->bind(ExtensionRepository::class, ExtensionRepositoryEloquent::class);
     }
 }
