@@ -7,6 +7,7 @@ import Settings from '@/components/LayoutComponents/Settings';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 import TopBar from '@/components/LayoutComponents/TopBar';
+import CallCenter from '@/pages/crm/call-center/pop-up';
 
 const mapStateToProps = ({ settings, menu }) => ({
   isBorderless: settings.isBorderless,
@@ -129,7 +130,6 @@ const OBJECTS = {
 @withRouter
 @connect(mapStateToProps)
 class MainLayout extends React.PureComponent {
-
   getKeyMenu = (pathname) => {
     let key = '';
     if (/^\/quan-ly-nhan-su(?=\/|$)/i.test(pathname)) {
@@ -207,7 +207,7 @@ class MainLayout extends React.PureComponent {
       isMenuShadow,
       isMenuTop,
       menu,
-      location
+      location,
     } = this.props;
     const key = this.getKeyMenu(location.pathname);
     return (
@@ -235,6 +235,7 @@ class MainLayout extends React.PureComponent {
             <TopBar />
           </Layout.Header>
           {children}
+          {key === 'CRM' && <CallCenter />}
         </Layout>
       </Layout>
     );

@@ -2147,7 +2147,7 @@ export async function getLeftMenuCRM() {
         {
           title: 'Quản lý lịch gọi',
           key: 'management-call',
-          url: ['/crm/call-center/quan-ly-lich-goi'],
+          url: ['/crm/call-center/quan-ly-lich-goi', '/crm/call-center/quan-ly-lich-goi/tao-moi'],
           permission: [permissions.CRM],
           pro: true,
         },
