@@ -3,6 +3,7 @@
 namespace GGPHP\Tourist\Repositories\Eloquent;
 
 use GGPHP\Camera\Models\Camera;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Tourist\Models\Tourist;
 use GGPHP\Tourist\Presenters\TouristPresenter;
 use GGPHP\Tourist\Repositories\Contracts\TouristRepository;
@@ -57,7 +58,7 @@ class TouristRepositoryEloquent extends BaseRepository implements TouristReposit
      *
      * @param array $attributes
      */
-    public function getTourists(array $attributes)
+    public function getTourists(array $attributes, $parse = true)
     {
         if (!empty($attributes['image_url'])) {
             $imageUrl = [];
@@ -89,6 +90,10 @@ class TouristRepositoryEloquent extends BaseRepository implements TouristReposit
 
         if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
             $this->model = $this->model->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+        }
+
+        if (!$parse) {
+            return $this->model->get();
         }
 
         if (empty($attributes['limit'])) {
@@ -137,5 +142,22 @@ class TouristRepositoryEloquent extends BaseRepository implements TouristReposit
         }
 
         return parent::find($tourist->id);
+    }
+
+    public function exportExcelTourists($attributes)
+    {
+        $tourists = $this->getTourists($attributes, false);
+
+        $params = [];
+
+        $key = 0;
+        foreach ($tourists as $key => $tourist) {
+            $params['[number]'][] = ++$key;
+            $params['[tourist_destination]'][] = $tourist->touristDestination->name;
+            $params['[time]'][] = $tourist->time->format('d-m-Y H:i:s');
+            $params['[camera]'][] = $$tourist->camera->name;
+        }
+
+        return  resolve(ExcelExporterServices::class)->export('tourist', $params);
     }
 }

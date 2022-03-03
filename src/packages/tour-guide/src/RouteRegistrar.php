@@ -40,6 +40,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('tour-guides-export-word/{id}', 'TourGuideController@exportWord');
 
             \Route::get('tour-guides-by-image', 'TourGuideController@tourGuidesByImage');
+
+            \Route::get('export-tour-guides-by-image', 'TourGuideController@exportExcelTourGuidesByImage');
         });
     }
 

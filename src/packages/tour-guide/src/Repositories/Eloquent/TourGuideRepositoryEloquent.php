@@ -200,7 +200,7 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $params['[expiration_date]'][] = !is_null($tourGuide->expiration_date) ?  Carbon::parse($tourGuide->expiration_date)->format('d-m-Y') : null;
         }
 
-        return  resolve(ExcelExporterServices::class)->export('hdvhp', $params);
+        return  resolve(ExcelExporterServices::class)->export(' ', $params);
     }
 
     public function exportExcelWithCountEvent($attributes)
@@ -256,7 +256,7 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         return $result;
     }
 
-    public function tourGuidesByImage($attributes)
+    public function tourGuidesByImage($attributes, $parse = true)
     {
         if (!empty($attributes['image_url'])) {
             $imageUrl = [];
@@ -299,6 +299,10 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             }
         }]);
 
+        if (!$parse) {
+            return $this->model->get();
+        }
+
         if (empty($attributes['limit'])) {
             $tourGuide = $this->all();
         } else {
@@ -306,5 +310,25 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         }
 
         return $tourGuide;
+    }
+
+    public function exportExcelTourGuidesByImage($attributes)
+    {
+        $tourGuides = $this->tourGuidesByImage($attributes, false);
+
+        $params = [];
+
+        $key = 0;
+        foreach ($tourGuides as $key => $tourGuide) {
+            foreach ($tourGuide->event as $keyEvent => $event) {
+                $params['[number]'][] = ++$key;
+                $params['[full_name]'][] = $tourGuide->full_name;
+                $params['[tourist_destination]'][] = $event->touristDestination->name;
+                $params['[time]'][] = $event->time->format('d-m-Y H:i:s');
+                $params['[camera]'][] = $$event->camera->name;
+            }
+        }
+
+        return  resolve(ExcelExporterServices::class)->export('object_image', $params);
     }
 }

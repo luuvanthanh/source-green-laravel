@@ -200,4 +200,21 @@ class TourGuideController extends Controller
 
         return $result;
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function exportExcelTourGuidesByImage(Request $request)
+    {
+        $result = $this->tourGuideRepository->exportExcelTourGuidesByImage($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
 }

@@ -95,4 +95,21 @@ class TouristController extends Controller
 
         return response()->json(null, Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function exportExcelTourists(Request $request)
+    {
+        $result = $this->tourGuideRepository->exportExcelTourists($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
 }

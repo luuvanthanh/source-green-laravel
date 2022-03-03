@@ -41,6 +41,12 @@ class ExcelExporterServices
         'rp_survey_form' => [
             'template' => 'rp_survey_form.xlsx',
         ],
+        'object_image' => [
+            'template' => 'object_image.xlsx',
+        ],
+        'tourist' => [
+            'template' => 'tourist.xlsx',
+        ],
     ];
 
     protected $disk;
