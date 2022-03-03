@@ -224,7 +224,7 @@ class Index extends PureComponent {
         width: 150,
         render: (value, record) => (
           <div className='d-flex' >
-            {record.studentInfo.age_month }
+            {record.studentInfo?.age_month }
           </div>
         ),
       },
@@ -232,7 +232,7 @@ class Index extends PureComponent {
         title: 'Thời gian đăng ký',
         key: 'time',
         width: 150,
-        render: (record) => Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record?.created_at, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Họ tên cha',
@@ -242,7 +242,7 @@ class Index extends PureComponent {
           <>
             {record?.parentInfo?.map((item, index) => (
               <Text size="normal" key={index}>
-                {item.sex === "MALE" ? item.full_name : ""}
+                {item?.sex === "MALE" ? item?.full_name : ""}
               </Text>
             ))}
           </>
@@ -256,7 +256,7 @@ class Index extends PureComponent {
           <>
             {record?.parentInfo?.map((item, index) => (
               <Text size="normal" key={index}>
-                {item.sex === "FEMALE" ? item.full_name : ""}
+                {item?.sex === "FEMALE" ? item?.full_name : ""}
               </Text>
             ))}
           </>
