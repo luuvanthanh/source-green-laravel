@@ -1556,3 +1556,30 @@
     font-weight: bold;
   }
 }
+
+.statistical-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: $background-primary !important;
+    color: $text-white;
+  }
+}
+
+.wrapper-modal-management-call {
+  :global(.ant-modal-footer) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.button-cancel-management-call {
+  font-family: $base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-form-label;
+  cursor: pointer;
+  text-decoration-line: underline;
+}

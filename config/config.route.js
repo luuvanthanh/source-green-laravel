@@ -3052,6 +3052,12 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/call-center/quan-ly-lich-goi/tao-moi',
+            component: './crm/call-center/management-call/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/call-center/thong-ke',
             component: './crm/call-center/statistical-call',
             wrappers: ['@/wrappers/auth'],
