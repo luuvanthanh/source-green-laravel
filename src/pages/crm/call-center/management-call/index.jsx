@@ -29,7 +29,7 @@ const Index = () => {
   const [
     { data, pagination },
     loading,
-  ] = useSelector(({ loading: { effects }, crmHistoryCall }) => [crmHistoryCall, effects]);
+  ] = useSelector(({ loading: { effects }, CRMHistoryCall }) => [CRMHistoryCall, effects]);
   const { query, pathname } = useLocation();
   const { params } = useRouteMatch();
   const history = useHistory();
@@ -43,7 +43,7 @@ const Index = () => {
 
   const onLoad = () => {
     dispatch({
-      type: 'crmHistoryCall/GET_DATASOURCE',
+      type: 'CRMHistoryCall/GET_DATASOURCE',
       payload: {
         ...search,
       },

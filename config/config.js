@@ -33,6 +33,7 @@ export default {
   targets: {
     ie: 11,
   },
+  scripts: [envKeys.URL_SOCKET],
   routes,
   theme: {
     // ...darkTheme,
