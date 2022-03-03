@@ -74,6 +74,10 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             $this->model = $this->model->whereIn('Status', $attributes['status']);
         }
 
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->whereIn('Type', $attributes['type']);
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
                 $q->whereLike('FullName', $attributes['key']);

@@ -44,6 +44,16 @@ class TestSemesterController extends Controller
             $attributes['status'] = array_values($newStatus);
         }
 
+        if (!empty($attributes['type'])) {
+            $type = explode(',', $attributes['type']);
+            $valueType = [];
+            foreach ($type as $value) {
+                $valueType[] = TestSemester::TYPE[$value];
+            }
+
+            $attributes['type'] = array_values($valueType);
+        }
+
         $testSemester = $this->testSemesterRepository->getAll($attributes);
 
         return $this->success($testSemester, trans('lang::messages.common.getListSuccess'));
