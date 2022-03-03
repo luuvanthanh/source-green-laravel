@@ -159,9 +159,10 @@ export function addLead(data = {}) {
 }
 
 export function detailsLead(params = {}) {
-  return requestCrm(`/v1/customer-leads/${params?.userFacebookInfo?.customer_lead_id}`, {
+  return requestCrm(`/v1/customer-leads`, {
     method: 'GET',
     params: {
+      id: params?.userFacebookInfo?.customer_lead_id,
       include: Helper.convertIncludes([
         'studentInfo.categoryRelationship',
         'city',

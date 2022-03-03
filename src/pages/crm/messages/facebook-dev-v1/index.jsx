@@ -1,10 +1,11 @@
 import { memo, useEffect, useState, useRef } from 'react';
-import { Menu, Dropdown, Input, Skeleton, Tag, Select, Image, Upload, List, Form, Divider, Typography, Space } from 'antd';
+import { Menu, Dropdown, Input, Skeleton, Tag, Select, Image, Upload, List, Form, Divider, Typography, Space, Checkbox } from 'antd';
 import { DownOutlined, SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useDispatch, useSelector } from 'dva';
+import Pane from '@/components/CommonComponent/Pane';
 import moment from 'moment';
 import { head, isEmpty } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -57,6 +58,21 @@ const Index = memo(() => {
   const [loadingMessageUser, setLoadingMessageUser] = useState(true);
   const [loadingUser, setLoadingUser] = useState(true);
   const [selectEmployee, setSelectEmployee] = useState(undefined);
+  const [search, setSearch] = useState(null);
+
+  //search
+  const [modalTag, setModalTag] = useState(false);
+  const [modalUser, setModalUser] = useState(false);
+  const [searchData, setSearchData] = useState(false);
+  const [searchE, setSearchE] = useState(false);
+  const [searchModal, setSearchModal] = useState(false);
+  const [checkbox, setCheckBox] = useState([]);
+  const [checkboxUser, setCheckBoxUser] = useState([]);
+  const [notiInbox, setNotiInbox] = useState(false);
+  const [notReply, setNotReply] = useState(false);
+  const [checkPhone, setCheckPhone] = useState(false);
+  const [checkNotPhone, setCheckNotPhone] = useState(false);
+
 
   const [searchParent, setSearchParent] = useState({
     page: 1,
@@ -126,12 +142,20 @@ const Index = memo(() => {
           }
         },
       });
-      dispatch({
-        type: 'crmFBDevV1/GET_EMPLOYEE_FACEBOOK',
-        payload: {},
-      });
     }
   }, [pageCurrent.length]);
+
+  useEffect(() => {
+    const pageId = page?.find(i => i?.id === pageID[0]?.id);
+    if (pageId) {
+      dispatch({
+        type: 'crmFBDevV1/GET_EMPLOYEE_FACEBOOK',
+        payload: {
+          page_id: pageId?.id,
+        },
+      });
+    }
+  }, [pageID]);
 
   useEffect(() => {
     mounted.current = true;
@@ -182,18 +206,18 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (conversationCurrent?.id) {
-      dispatch({
-        type: 'crmFBDevV1/GET_CONVERSATIONS_ID',
-        payload: { conversation_id: conversationCurrent?.id, },
-        callback: (response) => {
-          const firstUser = head(
-            response?.parsePayload?.map((item) => ({
-              ...item,
-            })),
-          );
-          setConversationCurrent(firstUser);
-        },
-      });
+      // dispatch({
+      //   type: 'crmFBDevV1/GET_CONVERSATIONS_ID',
+      //   payload: { conversation_id: conversationCurrent?.id, },
+      //   callback: (response) => {
+      //     const firstUser = head(
+      //       response?.parsePayload?.map((item) => ({
+      //         ...item,
+      //       })),
+      //     );
+      //     setConversationCurrent(firstUser);
+      //   },
+      // });
       setLoadingMessage(true);
       setLoadingMessageUser(true);
       setDetailLead({});
@@ -219,16 +243,17 @@ const Index = memo(() => {
               }, 300);
             }
             dispatch({
-              type: 'crmFBDevV1/GET_CONVERSATIONSID',
+              type: 'crmFBDevV1/GET_CONVERSATIONS_ID',
               payload: { conversation_id: conversationCurrent?.id, },
               callback: (response) => {
                 if (response) {
-                  // const firstUser = head(
-                  //   response?.parsePayload?.map((item) => ({
-                  //     ...item,
-                  //   })),
-                  // );
-                  setSelectEmployee(response?.parsePayload);
+                  const firstUser = head(
+                    response?.parsePayload?.map((item) => ({
+                      ...item,
+                    })),
+                  );
+                  // setConversationCurrent(firstUser);
+                  setSelectEmployee(firstUser);
                   setNoteValue(response?.parsePayload[0]?.userFacebookInfo?.note);
                   users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
                 }
@@ -241,7 +266,12 @@ const Index = memo(() => {
                 payload: conversationCurrent,
                 callback: (response) => {
                   if (response) {
-                    setDetailLead(response?.parsePayload);
+                    const firstUser = head(
+                      response?.parsePayload?.map((item) => ({
+                        ...item,
+                      })),
+                    );
+                    setDetailLead(firstUser);
                   }
                 },
               });
@@ -342,7 +372,12 @@ const Index = memo(() => {
                           payload: conversationCurrent,
                           callback: (response) => {
                             if (response) {
-                              setDetailLead(response?.parsePayload);
+                              const firstUser = head(
+                                response?.parsePayload?.map((item) => ({
+                                  ...item,
+                                })),
+                              );
+                              setDetailLead(firstUser);
                             }
                           },
                         });
@@ -778,6 +813,13 @@ const Index = memo(() => {
   };
 
   const preventDefault = (e, page) => {
+    setNotiInbox(false);
+    setNotReply(false);
+    setCheckPhone(false);
+    setCheckNotPhone(false);
+    setCheckBoxUser([]);
+    setCheckBox([]);
+
     setLoadingMessageUser(true);
     setLoadingUser(true);
     setLoadingMessage(true);
@@ -786,6 +828,7 @@ const Index = memo(() => {
     setNoteModal(false);
     setNoteValue();
     setConversationCurrent({});
+    setSelectEmployee({});
     dispatch({
       type: 'crmFBDevV1/GET_CONVERSATIONS',
       payload: { page_id_facebook: e },
@@ -804,6 +847,7 @@ const Index = memo(() => {
             })),
           );
           setConversationCurrent(firstUser);
+          setSelectEmployee(firstUser);
           setPageID(page?.filter(i => i?.attributes?.page_id_facebook === e));
           setUsers(
             response?.parsePayload?.map((item) => ({
@@ -950,7 +994,12 @@ const Index = memo(() => {
                     payload: conversationCurrent,
                     callback: (response) => {
                       if (response) {
-                        setDetailLead(response?.parsePayload);
+                        const firstUser = head(
+                          response?.parsePayload?.map((item) => ({
+                            ...item,
+                          })),
+                        );
+                        setDetailLead(firstUser);
                       }
                     },
                   });
@@ -986,14 +1035,14 @@ const Index = memo(() => {
           payload: { conversation_id: conversationCurrent?.id, },
           callback: (response) => {
             if (response) {
-              console.log('REDDD',response);
+              console.log('REDDD', response);
               const firstUser = head(
                 response?.parsePayload?.map((item) => ({
                   ...item,
                 })),
               );
               setConversationCurrent(firstUser);
-              setSelectEmployee(response?.parsePayload);
+              setSelectEmployee(firstUser);
             }
           },
         });
@@ -1018,15 +1067,197 @@ const Index = memo(() => {
                 })),
               );
               setConversationCurrent(firstUser);
-              setSelectEmployee(response?.parsePayload);
+              setSelectEmployee(firstUser);
             }
           },
         });
       },
     });
   };
-  console.log("conversationCurrent", conversationCurrent)
-  console.log("setSelectEmployee", conversationsId)
+
+  //SEARCH
+
+  const onChangSearch = (e, types, check) => {
+    setLoadingUser(true);
+    setLoadingMessage(true);
+    setLoadingMessageUser(true);
+    console.log("types", types);
+    console.log("E  ", e);
+    const pageId = page?.find(i => i?.id === pageID[0]?.id);
+    if (check) {
+      setSearch(e);
+    }
+    setSearchE(e);
+    if (e) {
+      dispatch({
+        type: 'crmFBDevV1/GET_CONVERSATIONS',
+        payload: {
+          page_id: pageId?.id,
+          ...searchUser,
+          page: searchUser.page,
+          [`${check === 'name_inbox' ? check : ""}`]: (`${check === 'name_inbox' ? search?.target?.value : ""}`),
+          [`${types === 'tag_id' ? types : ""}`]: `${types === 'tag_id' ? checkbox?.map(i => i?.id) : ""}`,
+          [`${types === 'employee_facebook_id' ? types : ""}`]: `${types === 'employee_facebook_id' ? e : ""}`,
+          [`${types === 'noti_inbox' ? types : ""}`]: `${types === 'noti_inbox' ? 'NOT_SEEN' : ""}`,
+          [`${types === 'not_reply' ? types : ""}`]: `${types === 'not_reply' ? true : ""}`,
+          [`${types === 'phone_number' ? 'not_phone_number' : ""}`]: `${types === 'phone_number' ? 'false' : ""}`,
+          [`${types === 'not_phone_number' ? types : ""}`]: `${types === 'not_phone_number' ? true : ""}`
+        },
+        callback: (response) => {
+          if (response) {
+            if (response?.parsePayload.length <= 0) {
+              setMessagers([]);
+            }
+            setLoadingUser(false);
+            setLoadingMessage(false);
+            setLoadingMessageUser(false);
+            setSearchData(false);
+            setLoadingUser(false);
+            formRef.setFieldsValue({
+              data: [""]
+            });
+            setSelectEmployee(response?.parsePayload);
+            setUsers(response?.parsePayload);
+            setLoadingMessageUser(false);
+            const firstUser = head(
+              response?.parsePayload?.map((item) => ({
+                ...item,
+              })),
+            );
+            setConversationCurrent(firstUser);
+            mountedSet(setSearchUser, { ...searchUser, total: response.meta.pagination.total });
+          }
+        },
+      });
+    }
+  };
+
+  useEffect(() => {
+    onChangSearch();
+  }, [searchE]);
+
+  const onChangeModal = () => {
+    setIsAction((prev) => !prev);
+    setSearchData(false);
+  };
+
+  const changeCheckboxEmployee = (id, name, color_code, types) => {
+    if (types === 'tags') {
+      const a = checkbox.find(i => i.id === id);
+      checkbox.splice(checkbox?.indexOf(a), a ? 1 : 0);
+      setCheckBox((prev) => (a ? [...prev] : [...prev, { id, name, color_code }]));
+    }
+    if (types === 'employee_facebook_id') {
+      setModalUser(false);
+      setCheckBoxUser([{ id, name }]);
+      return onChangSearch(id, types);
+    }
+  };
+
+  const changeCheckboxTag = (id, type) => {
+    const a = checkbox.find(i => i.id === id);
+    const b = checkboxUser.find(i => i.id === id);
+    checkbox.splice(checkbox?.indexOf(a), a ? 1 : 0);
+    setCheckBox((prev) => [...prev]);
+    checkboxUser.splice(checkboxUser?.indexOf(b), b ? 1 : 0);
+    setCheckBoxUser((prev) => [...prev]);
+    onChangSearch(checkbox, type);
+    if (type === 'tag_id') {
+      setSearch();
+    }
+    if (type === 'employee_facebook_id') {
+      setSearch();
+    }
+    setNotiInbox(false);
+    setNotReply(false);
+    setCheckPhone(false);
+    setCheckNotPhone(false);
+  };
+
+  const onChangeSearchModal = (type) => {
+    if (type === 'tags') {
+      setNotiInbox(false);
+      setNotReply(false);
+      setCheckPhone(false);
+      setCheckBoxUser([]);
+      setCheckNotPhone(false);
+      setSearchModal('tags');
+      setSearchData(true);
+      setModalTag(true);
+      setModalUser(false);
+    }
+    if (type === 'employee_facebook_id') {
+      setModalTag(false);
+      setModalUser(true);
+      setNotiInbox(false);
+      setNotReply(false);
+      setCheckPhone(false);
+      setCheckNotPhone(false);
+      setSearchModal('employee_facebook_id');
+      setCheckBox([]);
+      setSearchData(true);
+    }
+    if (type === 'noti_inbox') {
+      setSearchModal('noti_inbox');
+      setNotiInbox(true);
+      setNotReply(false);
+      setCheckPhone(false);
+      setCheckNotPhone(false);
+      setModalTag(false);
+      setModalUser(false);
+      setCheckBox([]);
+      setCheckBoxUser([]);
+      onChangSearch('noti_inbox', 'noti_inbox');
+      setSearchData(true);
+    }
+    if (type === 'not_reply') {
+      setNotiInbox(false);
+      setNotReply(true);
+      setCheckPhone(false);
+      setCheckNotPhone(false);
+      setModalTag(false);
+      setModalUser(false);
+      setSearchModal('not_reply');
+      setCheckBox([]);
+      setCheckBoxUser([]);
+      onChangSearch('not_reply', 'not_reply');
+      setSearchData(true);
+    }
+    if (type === 'phone_number') {
+      setNotiInbox(false);
+      setNotReply(false);
+      setCheckPhone(true);
+      setModalUser(false);
+      setCheckNotPhone(false);
+      setSearchModal('not_reply');
+      setCheckBox([]);
+      setCheckBoxUser([]);
+      onChangSearch('phone_number', 'phone_number');
+      setSearchData(true);
+    }
+    if (type === 'not_phone_number') {
+      setNotiInbox(false);
+      setNotReply(false);
+      setCheckPhone(false);
+      setCheckNotPhone(true);
+      setModalUser(false);
+      setModalTag(false);
+      setSearchModal('not_reply');
+      setCheckBox([]);
+      setCheckBoxUser([]);
+      onChangSearch('not_phone_number', 'not_phone_number');
+      setSearchData(true);
+    }
+  };
+
+  const onChangSearchBtn = () => {
+    setModalTag(false);
+    setSearchModal('tag_id');
+    onChangSearch(checkbox, 'tag_id');
+  };
+
+  //SEARCH
+  console.log("CHECK", searchModal);
   return (
     <div className={styles.wrapper}>
       <div className={styles['heading-container']}>
@@ -1067,7 +1298,10 @@ const Index = memo(() => {
             {!isAction && (
               <Input
                 placeholder="Nhập"
+                value={search?.target?.value}
                 prefix={<SearchOutlined />}
+                style={{height: '39px'}}
+                onChange={(e) => onChangSearch(e, searchModal, "name_inbox")}
                 className={styles.input}
                 suffix={
                   <span
@@ -1080,22 +1314,131 @@ const Index = memo(() => {
             )}
             {isAction && (
               <div className={styles['actions-container']}>
-                <span className={classnames(styles.icon, 'icon-price-tags')} />
-                <span className={classnames(styles.icon, 'icon-user')} />
-                <span className={classnames(styles.icon, 'icon-eye-blocked')} />
-                <span className={classnames(styles.icon, 'icon-undo2')} />
-                <span className={classnames(styles.icon, 'icon-phone1')} />
-                <span className={classnames(styles.icon, 'icon-phone-off')} />
+                <img
+                  src="/images/facebook/Tag.svg"
+                  alt="facebookTag"
+                  className={classnames(styles.icon)}
+                  onClick={() => onChangeSearchModal('tags')}
+                  role="presentation"
+                  style={{background : `${modalTag  ||  checkbox.length > 0?  "#F2F4F8" : ''}`}}
+                  />
+                 
+                <img
+
+                  src="/images/facebook/user.svg"
+                  alt="facebookTag"
+                  className={classnames(styles.icon)}
+                  onClick={() => onChangeSearchModal('employee_facebook_id')}
+                  role="presentation" 
+                  style={{background : `${modalUser || checkboxUser.length > 0?  "#F2F4F8" : ''}`}}
+                  />
+
+                <img
+                  src="/images/facebook/notSeen.svg"
+                  alt="facebookTag"
+                  className={classnames(styles.icon)}
+                  onClick={() => onChangeSearchModal('noti_inbox')}
+                  role="presentation" 
+                  style={{background : `${notiInbox ?  "#F2F4F8" : ''}`}}
+                  />
+
+                <img
+                  src="/images/facebook/notRep.svg"
+                  alt="facebookTag"
+                  className={classnames(styles.icon)}
+                  onClick={() => onChangeSearchModal('not_reply')}
+                  role="presentation" 
+                  style={{background : `${notReply ?  "#F2F4F8" : ''}`}}
+                  />
+
+                <img
+                  src="/images/facebook/phone.svg"
+                  alt="facebookTag"
+                  className={classnames(styles.icon)}
+                  onClick={() => onChangeSearchModal('phone_number')}
+                  role="presentation" 
+                  style={{background : `${checkPhone ?  "#F2F4F8" : ''}`}}
+                  />
+
+                <img
+                  src="/images/facebook/notPhone.svg"
+                  alt="facebookTag"
+                  className={classnames(styles.icon)}
+                  onClick={() => onChangeSearchModal('not_phone_number')}
+                  role="presentation" 
+                  style={{background : `${checkNotPhone ?  "#F2F4F8" : ''}`}}
+                  />
+
                 <span
                   className={classnames(styles.icon, 'icon-cancel')}
                   role="presentation"
-                  onClick={() => setIsAction((prev) => !prev)}
+                  onClick={() => onChangeModal()}
                 />
               </div>
             )}
           </div>
           <div className={styles['info-content']}>
-            <p className={styles.norm}>Gần đây</p>
+            {checkbox?.length > 0 && (checkbox?.map(i =>
+              <Tag
+                closable
+                color={i?.color_code}
+                className="m5"
+                onClose={() => changeCheckboxTag(i?.id, 'tag_id')}
+                key={i?.id}
+              >
+                {i?.name}
+              </Tag>))}
+            {checkboxUser?.length > 0 && (checkboxUser?.map(i =>
+              <Tag
+                closable
+                className="m5"
+                onClose={() => changeCheckboxTag(i?.id, 'employee_facebook_id')}
+                key={i?.id}
+              >
+                {i?.name}
+              </Tag>))}
+            {notiInbox && (
+              <Tag
+                closable
+                className="m5"
+                onClose={() => changeCheckboxTag("", '')}
+              >
+                Chưa đọc
+              </Tag>)}
+            {notReply && (
+              <Tag
+                closable
+                className="m5"
+                onClose={() => changeCheckboxTag("", '')}
+              >
+                Chưa phản hồi
+              </Tag>)}
+            {checkPhone && (
+              <Tag
+                closable
+                className="m5"
+                onClose={() => changeCheckboxTag("", '')}
+              >
+                Có số điện thoại
+              </Tag>)}
+            {checkNotPhone && (
+              <Tag
+                closable
+                className="m5"
+                onClose={() => changeCheckboxTag("", '')}
+              >
+                Chưa có số điện thoại
+              </Tag>)}
+            {searchModal === 'tags' && checkbox.length <= 0 && modalTag && (
+              <p className={styles.norm}>Chọn tag hiển thị</p>
+            )}
+            {searchModal === 'employee_facebook_id' && modalUser && (
+              <p className={styles.norm}>Nhân viên chỉ định</p>
+            )}
+            {
+              checkboxUser.length <= 0 && checkbox.length <= 0 && !notiInbox && !notReply && !checkNotPhone && !checkPhone && !modalTag && !modalUser &&
+              (<p className={styles.norm}>Gần đây</p>)
+            }
           </div>
           <div className={styles['user-container']}>
 
@@ -1151,7 +1494,7 @@ const Index = memo(() => {
                   autoHideTimeout={1000}
                   autoHideDuration={100}
                   autoHeight
-                  autoHeightMax="calc(100vh - 300px)"
+                  autoHeightMax={searchModal === 'tags' ? "calc(100vh - 372px)" : "calc(100vh - 300px)"}
                 >
                   <InfiniteScroll
                     hasMore={!searchUser.loading && searchUser.hasMore}
@@ -1160,61 +1503,103 @@ const Index = memo(() => {
                     pageStart={0}
                     useWindow={false}
                   >
+                    {searchModal === 'tags' && modalTag && (
+                      <>
+                        {tags?.map(({ id, name, color_code }) => (
+                          <div className={styles['search-tags']} key={id}>
+                            <Checkbox
+                              className="mr15"
+                              onChange={() => changeCheckboxEmployee(id, name, color_code, 'tags')}
+                            />
+                            <p style={{ background: `${color_code}` }} className={styles.title}>{name}</p>
+                          </div>
+                        ))}
+                      </>)}
+                    {searchModal === 'employee_facebook_id' && modalUser && (
+                      <>
+                        {employeeFB?.map(({ id, employee_fb_name, avatar }) => (
+                          <div className={styles['search-tags']} key={id} onClick={() => changeCheckboxEmployee(id, employee_fb_name, null, 'employee_facebook_id')} role="presentation">
+                            <img src={avatar}
+                              alt="facebook"
+                              className={styles.img} />
+                            <p className={styles.title}>{employee_fb_name}</p>
+                          </div>
+                        ))}
+                      </>)}
                     {
-                      users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
-                        <div
-                          className={classnames(styles['user-item'], {
-                            [styles['user-item-active']]:
-                              userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
-                          })}
-                          key={id}
-                          role="presentation"
-                          onClick={() => onChangeConversation(id)}
-                        >
-                          <div className={styles['user-content']}>
-                            <div className={styles['avatar-container']}>
-                              <span
-                                className={classnames(styles.dot, { [styles.active]: can_reply })}
-                              />
-                              <img
-                                src={userFacebookInfo?.avatar}
-                                alt="facebook"
-                                className={styles.img}
-                              />
-                            </div>
-                            {noti_inbox === "SEEN" ?
-                              <>
-                                <div className={styles['user-info']}>
-                                  <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                  <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
-                                </div>
-                                <p className={styles.time}>
-                                  {time?.substr(-5, 5)}
-                                </p>
-                              </>
-                              :
-                              <>
-                                <div className={styles['user-info-notseen']}>
-                                  <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                  <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                      !searchData && users.length > 0 && !modalTag && !modalUser && (
+                        users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
+                          <div
+                            className={classnames(styles['user-item'], {
+                              [styles['user-item-active']]:
+                                userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
+                            })}
+                            key={id}
+                            role="presentation"
+                            onClick={() => onChangeConversation(id)}
+                          >
+                            <div className={styles['user-content']}>
+                              <div className={styles['avatar-container']}>
+                                <span
+                                  className={classnames(styles.dot, { [styles.active]: can_reply })}
+                                />
+                                <img
+                                  src={userFacebookInfo?.avatar}
+                                  alt="facebook"
+                                  className={styles.img}
+                                />
+                              </div>
+                              {noti_inbox === "SEEN" ?
+                                <>
+                                  <div className={styles['user-info']}>
+                                    <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                    <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                  </div>
                                   <p className={styles.time}>
                                     {time?.substr(-5, 5)}
                                   </p>
-                                </div>
-                              </>
-                            }
-                          </div>
-                          {userFacebookInfo?.userFacebookInfoTag.map((i) =>
-                            <div className='mt5' key={i?.id}>
-                              <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
+                                </>
+                                :
+                                <>
+                                  <div className={styles['user-info-notseen']}>
+                                    <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                    <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                    <p className={styles.time}>
+                                      {time?.substr(-5, 5)}
+                                    </p>
+                                  </div>
+                                </>
+                              }
                             </div>
-                          )}
-                        </div>
-                      ))
+                            {userFacebookInfo?.userFacebookInfoTag.map((i) =>
+                              <div className='mt5' key={i?.id}>
+                                <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )
                     }
+                    {
+                      !searchData && users.length === 0 && !modalTag && (
+                        <div className={styles['search-user']}>
+                          Chưa có dữ liệu
+                        </div>
+                      )
+                    }
+
 
                   </InfiniteScroll>
                 </Scrollbars>
+              }
+
+              {
+                searchModal === 'tags' && modalTag &&
+                (<div className={styles['search-tags-btn']}>
+                  <Button color="success" htmlType="submit" onClick={() => onChangSearchBtn()} >
+                    Áp dụng
+                  </Button>
+                </div>)
               }
             </div>
           </div>
@@ -1245,8 +1630,8 @@ const Index = memo(() => {
                 </div>
                 <div className={styles['user-info']}>
                   <h3 className={styles.title}>{conversationCurrent?.userFacebookInfo?.user_name}</h3>
-                  {conversationCurrent?.userFacebookInfo?.employee_facebook_id &&
-                     conversationsId[0]?.userFacebookInfo?.employee_facebook_id === conversationCurrent?.userFacebookInfo?.employee_facebook_id && (
+                  {selectEmployee?.userFacebookInfo?.employee_facebook_id &&
+                    conversationsId[0]?.userFacebookInfo?.employee_facebook_id === selectEmployee?.userFacebookInfo?.employee_facebook_id && (
                       //  conversationsId[0]?.userFacebookInfo?.employee_facebook_id === conversationCurrent?.userFacebookInfo?.employee_facebook_id && conversationCurrent?.userFacebookInfo?.employee_facebook_id && (
                       <Select
                         size="small" className={styles.norm}
@@ -1277,12 +1662,12 @@ const Index = memo(() => {
                         dropdownRender={menu => (
                           <>
                             {
-                             conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name ?
+                              conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name ?
                                 <>
                                   {menu}
                                   <Divider style={{ margin: '8px 0' }} />
                                   <Space align="center" style={{ padding: '0 8px 4px' }}>
-                                    <Button htmlType="submit" className={styles['btn-select-delete']} onClick={(e) => onChangeDeleteEmployeeFb(e)}>Bỏ chỉ địnhss</Button>
+                                    <Button htmlType="submit" className={styles['btn-select-delete']} onClick={(e) => onChangeDeleteEmployeeFb(e)}>Bỏ chỉ định</Button>
                                   </Space>
                                 </> : <> {menu} </>
                             }
@@ -1622,7 +2007,7 @@ const Index = memo(() => {
                           <FormItem
                             options={['id', 'name']}
                             data={sex}
-                            placeholder="Chọn"
+                            placeholder=" Chọn"
                             name='sex'
                             className={styles.norm}
                             type={variables.SELECT}
