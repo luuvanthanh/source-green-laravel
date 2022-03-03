@@ -30,8 +30,8 @@ class UpdateChargeStudentRequest extends FormRequest
                 'uuid',
                 'exists:student_infos,id',
                 function ($attribute, $value, $fail) {
-                    $chargeStudent = ChargeStudent::where('school_year_id', $this->school_year_id)->where('student_info_id', $value)->first();
-
+                    $chargeStudent = ChargeStudent::where([['school_year_id', $this->school_year_id], ['student_info_id', $value]])
+                        ->where('id', '!=', $this->route('charge_student'))->first();
                     if (!is_null($chargeStudent)) {
                         return $fail('Học sinh chỉ có thể tạo được một lần cho một năm học.');
                     }

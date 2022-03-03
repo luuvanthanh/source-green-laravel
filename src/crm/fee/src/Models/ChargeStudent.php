@@ -12,7 +12,7 @@ class ChargeStudent extends UuidModel
 
     protected $fillable = [
         'day_admission', 'mother_phone', 'mother_name', 'father_phone', 'father_name', 'age',
-        'date_of_birth', 'name_student', 'student_info_id', 'school_year_id', 'class_type_id', 'total_money'
+        'date_of_birth', 'name_student', 'student_info_id', 'school_year_id', 'class_type_id', 'total_money','status'
     ];
 
     public function studentInfo()
