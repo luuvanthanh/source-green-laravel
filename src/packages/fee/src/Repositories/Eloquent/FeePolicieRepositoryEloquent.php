@@ -251,7 +251,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                     $remainingWeek = 1;
                 }
 
-                $monthAdmission = Carbon::parse($dayAdmission)->setDay(1);
+                $monthAdmission = Carbon::parse($dayAdmission)->floorMonth();
                 $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
                 $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
 
@@ -284,7 +284,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
                                         $monthStart = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                                             ->where('PaymentFormId', $detail->paymentFormId)->orderBy('StartDate')->first();
-                                        $monthStudied = $monthAdmission->diffInMonths($monthStart->StartDate) + 1;
+                                        $monthStudied = $monthAdmission->diffInMonths(Carbon::parse($monthStart->StartDate)->floorMonth()) + 1;
 
                                         // tháng học kỳ 1
                                         $monthsemester1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
@@ -313,7 +313,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
                                         $monthStart = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                                             ->where('PaymentFormId', $detail->paymentFormId)->orderBy('StartDate')->first();
-                                        $monthStudied = $monthAdmission->diffInMonths($monthStart->StartDate) + 1;
+                                        $monthStudied = $monthAdmission->diffInMonths(Carbon::parse($monthStart->StartDate)->floorMonth()) + 1;
 
                                         // tháng học kỳ 2
                                         $monthsemester2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
@@ -331,7 +331,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         }
                                         break;
                                     case 'NAM':
-                                        $monthStart = Carbon::parse($schooleYear->StartDate)->setDay(1);
+                                        $monthStart = Carbon::parse($schooleYear->StartDate)->floorMonth();
                                         $monthStudied = $monthAdmission->diffInMonths($monthStart) + 1;
 
                                         if ($totalMonth > 0 && $totalWeekStudyInMonth > 0) {
