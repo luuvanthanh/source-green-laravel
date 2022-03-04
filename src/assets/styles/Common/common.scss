@@ -1516,3 +1516,70 @@
   border: 1px dashed $border-lighten;
   align-items: center;
 }
+
+.list-checkbox-form {
+  flex-direction: row-reverse !important;
+  margin-right: 20px !important;
+
+  :global(.ant-form-item-control) {
+    margin-right: 5px !important;
+  }
+}
+
+.c3-chart {
+  :global(.c3-axis.c3-axis-x .tick) {
+    opacity: 0 !important;
+  }
+}
+
+.cols-5 {
+  width: 20%;
+  max-width: 20%;
+
+  .box-count {
+    background-color: $background-white;
+    margin: 0 15px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .box-title {
+    font-size: 12px;
+    line-height: 20px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .box-number {
+    font-size: 30px;
+    line-height: 40px;
+    font-weight: bold;
+  }
+}
+
+.statistical-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: $background-primary !important;
+    color: $text-white;
+  }
+}
+
+.wrapper-modal-management-call {
+  :global(.ant-modal-footer) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.button-cancel-management-call {
+  font-family: $base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-form-label;
+  cursor: pointer;
+  text-decoration-line: underline;
+}

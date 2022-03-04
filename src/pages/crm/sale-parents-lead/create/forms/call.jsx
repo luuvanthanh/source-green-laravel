@@ -152,7 +152,7 @@ const General = memo(() => {
                   columns={header()}
                   dataSource={data}
                   pagination={false}
-                  className="table-edit"
+                  className="table-normal"
                   isEmpty
                   params={{
                     header: header(),

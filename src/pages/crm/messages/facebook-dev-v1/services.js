@@ -168,6 +168,7 @@ export function detailsLead(params = {}) {
         'city',
         'district',
         'searchSource',
+        'statusLead',
         'statusCare.statusParentLead',
         'employee',
         'marketingProgram',

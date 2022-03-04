@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useDispatch, useSelector } from 'dva';
+import { useLocation, history } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import moment from 'moment';
 import { head, isEmpty } from 'lodash';
@@ -36,7 +37,7 @@ const Index = memo(() => {
   ]);
   //note
 
-  const [detailLead, setDetailLead] = useState({});
+  const [detailLead, setDetailLead] = useState(undefined);
   const [noteValue, setNoteValue] = useState([]);
   const [noteModal, setNoteModal] = useState(false);
   const [dayOfBirth, setDayOfBirth] = useState(null);
@@ -73,6 +74,7 @@ const Index = memo(() => {
   const [checkPhone, setCheckPhone] = useState(false);
   const [checkNotPhone, setCheckNotPhone] = useState(false);
 
+  const { pathname } = useLocation();
 
   const [searchParent, setSearchParent] = useState({
     page: 1,
@@ -206,21 +208,9 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (conversationCurrent?.id) {
-      // dispatch({
-      //   type: 'crmFBDevV1/GET_CONVERSATIONS_ID',
-      //   payload: { conversation_id: conversationCurrent?.id, },
-      //   callback: (response) => {
-      //     const firstUser = head(
-      //       response?.parsePayload?.map((item) => ({
-      //         ...item,
-      //       })),
-      //     );
-      //     setConversationCurrent(firstUser);
-      //   },
-      // });
       setLoadingMessage(true);
       setLoadingMessageUser(true);
-      setDetailLead({});
+      setDetailLead(undefined);
       mountedSet(setSearchParent, { ...searchParent, loading: true });
       dispatch({
         type: 'crmFBDevV1/GET_MESSAGES',
@@ -260,6 +250,9 @@ const Index = memo(() => {
               },
             });
             setLoadingMessageUser(false);
+            if (conversationCurrent?.userFacebookInfo?.status !== 'LEAD') {
+              setDetailLead({});
+            }
             if (conversationCurrent?.userFacebookInfo?.status === 'LEAD') {
               dispatch({
                 type: 'crmFBDevV1/GET_LEAD',
@@ -302,6 +295,8 @@ const Index = memo(() => {
     mountedSet(setFiles, undefined);
     mountedSet(setFile, undefined);
     setMessageFinalFile(messageFile);
+    const setFile = files.map(i => [{ ulr: i }]);
+    const dataFile = setFile.concat(file);
     dispatch({
       type: 'crmFBDevV1/SEND_MESSAGES',
       payload: {
@@ -310,6 +305,7 @@ const Index = memo(() => {
         page_id: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.id,
         message: e?.target?.value,
         urls: files?.length > 0 ? JSON.stringify(files) : JSON.stringify(file),
+        url_files: dataFile?.map(i => i)
       },
       callback: () => {
         mountedSet(setFiles, undefined);
@@ -327,6 +323,17 @@ const Index = memo(() => {
         channel: 'facebook',
       });
     });
+    socket.on('facebook.synchronize.conversation', (event, data) => {
+      console.log("abc", data);
+      if (data) {
+        dispatch({
+          type: 'crmFBDevV1/ADD_CONVERSATIONS',
+          payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
+          callback: () => { }
+        });
+      }
+    });
+
 
     if (conversationCurrent?.id) {
       socket.on('facebook.message.receive', (event, data) => {
@@ -402,8 +409,10 @@ const Index = memo(() => {
     return () => socket.close();
   }, [conversationCurrent?.id, user?.userID]);
 
-  const uploadFiles = (a) => {
-    mountedSet(setFiles, (prev) => prev ? [...prev, a] : [a]);
+  const uploadFiles = (ulr) => {
+    console.log("FLIES", ulr);
+
+    mountedSet(setFiles, (prev) => prev ? [...prev, ulr] : [ulr]);
   };
 
   const uploadFile = (a) => {
@@ -467,8 +476,8 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           console.log("ress", response)
-          mountedSet(setFile, (prev) => prev ? [...prev, response?.results[0]?.fileInfo?.url] : [response?.results[0]?.fileInfo?.url]);
-          setMessageFile([...file, response?.results[0]?.fileInfo?.url]);
+          mountedSet(setFile, (prev) => prev ? [...prev, { ulr: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }] : [{ ulr: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }]);
+          setMessageFile([...file, { ulr: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }]);
         }
       },
     });
@@ -1049,7 +1058,6 @@ const Index = memo(() => {
       },
     });
   };
-
   const onChangeDeleteEmployeeFb = () => {
     setEmployees(true);
     dispatch({
@@ -1105,7 +1113,7 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            if (response?.parsePayload.length <= 0) {
+            if (response?.parsePayload.length <= 0 || !response?.parsePayload) {
               setMessagers([]);
             }
             setLoadingUser(false);
@@ -1229,7 +1237,7 @@ const Index = memo(() => {
       setCheckPhone(true);
       setModalUser(false);
       setCheckNotPhone(false);
-      setSearchModal('not_reply');
+      setSearchModal('phone_number');
       setCheckBox([]);
       setCheckBoxUser([]);
       onChangSearch('phone_number', 'phone_number');
@@ -1242,7 +1250,7 @@ const Index = memo(() => {
       setCheckNotPhone(true);
       setModalUser(false);
       setModalTag(false);
-      setSearchModal('not_reply');
+      setSearchModal('not_phone_number');
       setCheckBox([]);
       setCheckBoxUser([]);
       onChangSearch('not_phone_number', 'not_phone_number');
@@ -1257,7 +1265,49 @@ const Index = memo(() => {
   };
 
   //SEARCH
-  console.log("CHECK", searchModal);
+
+
+  //STATUS LEAD
+  const onStatusLead = () => {
+    if (detailLead?.statusLead?.length) {
+      return (
+        <>
+          {
+            detailLead?.statusLead[(detailLead?.statusLead?.length - 1)]?.status === 'LEAD_NEW' && (
+               <div className={styles['tags-container']} style={{backgroundColor : '#E1F5E2', color: '#27A600'}}>
+                <span> Lead mới</span>
+              </div>
+            )
+          }
+          {
+            detailLead?.statusLead[(detailLead?.statusLead?.length - 1)]?.status === 'POTENTIAL' && (
+               <div className={styles['tags-container']} style={{backgroundColor : '#F3F7FF', color: '#0075CA'}}>
+              <span>Có tiềm năng</span>
+            </div>)
+          }
+          {
+            detailLead?.statusLead[(detailLead?.statusLead?.length - 1)]?.status === 'NOT_POTENTIAL' && (
+               <div className={styles['tags-container']} style={{backgroundColor : 'rgb(255 224 224 / 75%)', color: 'rgb(255 0 0)'}}>
+              <span>Không tiềm năng</span>
+            </div>)
+          }
+          {
+            !detailLead?.statusLead[(detailLead?.statusLead?.length - 1)]?.status && (
+              <div className={styles['tags-container']} style={{backgroundColor : '#FFEFDB', color: '#FF8300'}}>
+              <span>Chưa là khách hàng</span>
+            </div>)
+          }
+        </>);
+    }
+    if (JSON.stringify(detailLead) === '{}' && conversationCurrent) {
+      return (<div className={styles['tags-container']}>
+        <span>Chưa là khách hàng</span>
+      </div>);
+    }
+    return "";
+  };
+  //STATUS LEAD
+console.log("paa",pathname)
   return (
     <div className={styles.wrapper}>
       <div className={styles['heading-container']}>
@@ -1300,7 +1350,7 @@ const Index = memo(() => {
                 placeholder="Nhập"
                 value={search?.target?.value}
                 prefix={<SearchOutlined />}
-                style={{height: '39px'}}
+                style={{ height: '39px' }}
                 onChange={(e) => onChangSearch(e, searchModal, "name_inbox")}
                 className={styles.input}
                 suffix={
@@ -1320,54 +1370,54 @@ const Index = memo(() => {
                   className={classnames(styles.icon)}
                   onClick={() => onChangeSearchModal('tags')}
                   role="presentation"
-                  style={{background : `${modalTag  ||  checkbox.length > 0?  "#F2F4F8" : ''}`}}
-                  />
-                 
+                  style={{ background: `${modalTag || checkbox.length > 0 ? "#F2F4F8" : ''}` }}
+                />
+
                 <img
 
                   src="/images/facebook/user.svg"
                   alt="facebookTag"
                   className={classnames(styles.icon)}
                   onClick={() => onChangeSearchModal('employee_facebook_id')}
-                  role="presentation" 
-                  style={{background : `${modalUser || checkboxUser.length > 0?  "#F2F4F8" : ''}`}}
-                  />
+                  role="presentation"
+                  style={{ background: `${modalUser || checkboxUser.length > 0 ? "#F2F4F8" : ''}` }}
+                />
 
                 <img
                   src="/images/facebook/notSeen.svg"
                   alt="facebookTag"
                   className={classnames(styles.icon)}
                   onClick={() => onChangeSearchModal('noti_inbox')}
-                  role="presentation" 
-                  style={{background : `${notiInbox ?  "#F2F4F8" : ''}`}}
-                  />
+                  role="presentation"
+                  style={{ background: `${notiInbox ? "#F2F4F8" : ''}` }}
+                />
 
                 <img
                   src="/images/facebook/notRep.svg"
                   alt="facebookTag"
                   className={classnames(styles.icon)}
                   onClick={() => onChangeSearchModal('not_reply')}
-                  role="presentation" 
-                  style={{background : `${notReply ?  "#F2F4F8" : ''}`}}
-                  />
+                  role="presentation"
+                  style={{ background: `${notReply ? "#F2F4F8" : ''}` }}
+                />
 
                 <img
                   src="/images/facebook/phone.svg"
                   alt="facebookTag"
                   className={classnames(styles.icon)}
                   onClick={() => onChangeSearchModal('phone_number')}
-                  role="presentation" 
-                  style={{background : `${checkPhone ?  "#F2F4F8" : ''}`}}
-                  />
+                  role="presentation"
+                  style={{ background: `${checkPhone ? "#F2F4F8" : ''}` }}
+                />
 
                 <img
                   src="/images/facebook/notPhone.svg"
                   alt="facebookTag"
                   className={classnames(styles.icon)}
                   onClick={() => onChangeSearchModal('not_phone_number')}
-                  role="presentation" 
-                  style={{background : `${checkNotPhone ?  "#F2F4F8" : ''}`}}
-                  />
+                  role="presentation"
+                  style={{ background: `${checkNotPhone ? "#F2F4F8" : ''}` }}
+                />
 
                 <span
                   className={classnames(styles.icon, 'icon-cancel')}
@@ -1621,7 +1671,12 @@ const Index = memo(() => {
             )
           }
           {
-            !loadingUser &&
+            !loadingUser && !conversationCurrent && (
+              <div className={styles['main-container-info']} style={{ height: '100%' }} />
+            )
+          }
+          {
+            !loadingUser && conversationCurrent &&
             (
               <div className={styles['main-container-info']}>
                 <div className={styles['avatar-container']}>
@@ -1871,7 +1926,12 @@ const Index = memo(() => {
             </Scrollbars>
           </div>
         )}
-        {!loadingMessageUser && (
+        {
+          !loadingMessageUser && !conversationCurrent && (
+            <div className={styles['info-container']} />
+          )
+        }
+        {!loadingMessageUser && conversationCurrent && (
           <div className={styles['info-container']}>
             <div className={styles['user-container']}>
               <div className={styles['avatar-container']}>
@@ -1884,20 +1944,7 @@ const Index = memo(() => {
                     : conversationCurrent?.userFacebookInfo?.user_name}</p>
                 </div>
                 <div className={styles['status-container']}>
-                  <div className={styles['tags-container']}>
-                    {
-                      conversationCurrent?.userFacebookInfo?.status === 'LEAD' ?
-                        <span>{detailLead?.statusCare
-                          ?.map((item, index) => (
-                            <div key={index}>
-                              {item?.statusParentLead?.name}
-                            </div>
-                          ))
-                          .pop()}</span>
-                        :
-                        <span>Chưa là khách hàng</span>
-                    }
-                  </div>
+                  {onStatusLead()}
                 </div>
               </div>
             </div>

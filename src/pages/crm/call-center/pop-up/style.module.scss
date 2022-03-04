@@ -1,0 +1,102 @@
+@import '@/assets/styles/mixins.scss';
+
+.logo-call {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: $background-primary;
+  color: $text-white;
+  border-radius: 50%;
+  z-index: 99999;
+  cursor: pointer;
+  animation: blur 1s infinite linear;
+
+  :global(img) {
+    width: 50%;
+  }
+}
+
+@keyframes blur {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(112, 161, 255, 1);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+.call-center-modal,
+.phone-simulator {
+  :global(.ant-modal-content > button) {
+    display: none;
+  }
+}
+
+.phone-simulator {
+  :global(.ant-modal-body) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.show-input {
+  text-align: center;
+  height: 100px !important;
+  font-size: 30px;
+  font-weight: bold;
+  color: $text-primary;
+  margin-bottom: 20px;
+  line-height: 100px;
+  cursor: pointer;
+}
+
+.digits {
+  justify-content: space-between;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+
+  :global(button) {
+    width: 30%;
+    max-width: 30%;
+    height: 60px;
+    font-size: 30px;
+    font-weight: bold;
+    border: none;
+    margin-bottom: 10px;
+
+    &:last-child {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+.phone-call {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: $background-success;
+  color: $text-white;
+  border-radius: 50%;
+  z-index: 99999;
+  cursor: pointer;
+
+  :global(img) {
+    width: 50%;
+  }
+}

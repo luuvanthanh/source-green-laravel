@@ -19,6 +19,12 @@ import stylesModule from '../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
 
+const genders = [
+  { id: 'LEAD_NEW', name: 'Lead mới' },
+  { id: 'POTENTIAL', name: 'Có tiềm năng' },
+  { id: 'NOT_POTENTIAL', name: 'Không tiềm năng' },
+];
+
 const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   loading,
   details: crmSaleLeadAdd.details,
@@ -36,6 +42,8 @@ const General = memo(
 
     const mounted = useRef(false);
     const [visible, setVisible] = useState(false);
+    const [checkStatus, setCheckStatus] = useState(false);
+    const [checkStatusBtn, setCheckStatusBtn] = useState(false);
 
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
@@ -90,6 +98,8 @@ const General = memo(
           payload: { statusPotential: values.statusPotential, id: params.id },
           callback: (response, error) => {
             if (response) {
+              setCheckStatusBtn(true);
+              setCheckStatus(false);
               mountedSet(setVisible, false);
             }
             if (error) {
@@ -113,7 +123,16 @@ const General = memo(
       dispatch({
         type: 'crmSaleLeadAdd/ADD_STATUS_LEAD',
         payload: {
-          ...values,
+          status_parent_lead_id: values?.status_parent_lead_id,
+          customer_lead_id: params.id,
+        },
+        callback: () => {
+        },
+      });
+      dispatch({
+        type: 'crmSaleLeadAdd/ADD_STATUS',
+        payload: {
+          status: values?.status,
           customer_lead_id: params.id,
         },
         callback: (response, error) => {
@@ -158,6 +177,82 @@ const General = memo(
       }
     }, [details]);
 
+    useEffect(() => {
+      if (details?.statusCare?.length - 1 || (details?.statusLead?.length - 1)) {
+        formRef?.current.setFieldsValue({
+          status_parent_lead_id: details?.statusCare[(details?.statusCare?.length - 1)]?.status_parent_lead_id,
+          status: details?.statusLead[(details?.statusLead?.length - 1)]?.status,
+        });
+        if (details?.statusLead[(details?.statusLead?.length - 1)]?.status === 'POTENTIAL') {
+          setCheckStatus(true);
+          setCheckStatusBtn(true);
+        } else {
+          setCheckStatus(false);
+          setCheckStatusBtn(true);
+        }
+      }
+    }, [details]);
+
+    const onStatus = (id) => {
+      if (id === "POTENTIAL") {
+        setCheckStatus(true);
+        setCheckStatusBtn(false);
+      } else {
+        setCheckStatusBtn(true);
+        setCheckStatus(false);
+      }
+    };
+
+    /**
+       * Function header table
+       */
+    const headerPopup = () => {
+      const columns = [
+        {
+          title: 'STT',
+          key: 'index',
+          lassName: 'min-width-100',
+          width: 80,
+          render: (text, record, index) => <Text size="normal">{index + 1}</Text>,
+        },
+        {
+          title: 'Họ và tên',
+          key: 'name',
+          width: 150,
+          lassName: 'min-width-100',
+          render: (record) => <Text size="normal">{record?.full_name}</Text>,
+        },
+        {
+          title: 'Ngày sinh',
+          key: 'birthDay',
+          width: 150,
+          lassName: 'min-width-100',
+          render: (record) => Helper.getDate(record.birth_date, variables.DATE_FORMAT.DATE)
+        },
+        {
+          title: 'Tuổi (tháng)',
+          key: 'age',
+          width: 150,
+          lassName: 'min-width-100',
+          render: (record) => <Text size="normal">{record?.age_month}</Text>,
+        },
+        {
+          title: 'Giới tính',
+          key: 'sex',
+          width: 100,
+          lassName: 'min-width-100',
+          render: (record) => <Text size="normal">{record?.sex}</Text>,
+        },
+        {
+          title: 'Mối quan hệ',
+          key: 'categoryRelationship',
+          width: 150,
+          lassName: 'min-width-100',
+          render: (record) => <Text size="normal">{get(record, 'categoryRelationship.name')}</Text>,
+        },
+      ];
+      return columns;
+    };
 
     const header = () => {
       const columns = [
@@ -173,7 +268,11 @@ const General = memo(
           title: 'Tên tình trạng chăm sóc',
           key: 'statusParent',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">{get(record, 'statusParentLead.name')}</Text>,
+          render: (record) => <Text size="normal">
+            {record?.status === 'LEAD_NEW' ? 'Lead mới' : ""}
+            {record?.status === 'POTENTIAL' ? 'Có tiềm năng' : ""}
+            {record?.status === 'NOT_POTENTIAL' ? 'Không tiềm năng' : ""}
+          </Text>,
         },
         {
           title: 'Người cập nhật',
@@ -195,7 +294,7 @@ const General = memo(
               </Heading>
               <Pane className="row mt20">
                 <Pane className="col-lg-12">
-                  <span className={styles['assignment-title']}>Tình trạng chăm sóc</span>
+                  <span className={styles['assignment-title']}>Tình trạng phân loại PH lead</span>
                 </Pane>
                 <Pane className="col-lg-4 mt10">
                   <FormItem
@@ -207,11 +306,33 @@ const General = memo(
                     rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
-                <Pane className={styles[('order-assignment-btn', 'col-lg-3')]}>
-                  <Button color="success" ghost icon="next" onClick={handleOk} className="mt10">
-                    Tạo tiềm năng
-                  </Button>
+                <Pane className="col-lg-12">
+                  <span className={styles['assignment-title']}>Tình trạng phụ huynh lead</span>
                 </Pane>
+                <Pane className="col-lg-4 mt10">
+                  <FormItem
+                    options={['id', 'name']}
+                    name="status"
+                    data={genders}
+                    placeholder="Chọn"
+                    onChange={onStatus}
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
+                {
+                  checkStatus ?
+                    <Pane className={styles[('order-assignment-btn', 'col-lg-3')]}>
+                      <Button color="success" ghost icon="next" onClick={handleOk} className="mt10">
+                        Tạo tiềm năng
+                      </Button>
+                    </Pane> :
+                    <Pane className={styles[('order-assignment-btn', 'col-lg-3')]}>
+                      <Button color="success" icon="next" disabled className="mt10">
+                        Tạo tiềm năng
+                      </Button>
+                    </Pane>
+                }
                 <Modal
                   visible={visible}
                   title="Tạo tiềm năng"
@@ -284,7 +405,29 @@ const General = memo(
                                 disabled
                               />
                             </Pane>
-
+                            <Pane className="col-lg-12">
+                              <Heading type="form-title" style={{ marginBottom: 20 }}>
+                                Thông tin học sinh
+                              </Heading>
+                            </Pane>
+                            <Pane className="col-lg-12 pb20">
+                              <div className={stylesModule['wrapper-table']}>
+                                <Table
+                                  columns={headerPopup()}
+                                  dataSource={details?.studentInfo}
+                                  pagination={false}
+                                  className="table-normal"
+                                  isEmpty
+                                  params={{
+                                    header: header(),
+                                    type: 'table',
+                                  }}
+                                  bordered
+                                  rowKey={(record) => record.id}
+                                  scroll={{ x: '100%' }}
+                                />
+                              </div>
+                            </Pane>
                             <Pane className="col-lg-6">
                               <FormItem
                                 options={['id', 'name']}
@@ -301,19 +444,35 @@ const General = memo(
                       </Loading>
                     </Pane>
                   </Form>
+
+
                 </Modal>
 
               </Pane>
-              <div className={stylesModule['wrapper-btn']}>
-                <Button
-                  color="success"
-                  size="normal"
-                  htmlType="submit"
-                  loading={loadingSubmit}
-                >
-                  Lưu
-                </Button>
-              </div>
+              {
+                checkStatusBtn && !checkStatus ?
+                  <div className={stylesModule['wrapper-btn']}>
+                    <Button
+                      color="success"
+                      size="normal"
+                      htmlType="submit"
+                      loading={loadingSubmit}
+                    >
+                      Lưu
+                    </Button>
+                  </div> :
+                  <div className={stylesModule['wrapper-btn']}>
+                    <Button
+                      color="success"
+                      size="normal"
+                      htmlType="submit"
+                      loading={loadingSubmit}
+                      disabled
+                    >
+                      Lưu
+                    </Button>
+                  </div>
+              }
             </div>
 
           </div>
@@ -329,7 +488,7 @@ const General = memo(
                       columns={header()}
                       dataSource={lead}
                       pagination={false}
-                      className="table-edit"
+                      className="table-normal"
                       isEmpty
                       params={{
                         header: header(),
