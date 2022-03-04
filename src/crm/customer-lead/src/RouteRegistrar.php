@@ -20,6 +20,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->forBread();
         $this->forSso();
+        $this->forGuest();
     }
 
     /**
@@ -31,7 +32,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('event-infos', 'EventInfoController');
-            \Route::resource('customer-leads', 'CustomerLeadController');
+            \Route::resource('customer-leads', 'CustomerLeadController')->only('store', 'update', 'destroy', 'show');
             \Route::resource('references', 'ReferenceController');
             \Route::resource('customer-tags', 'CustomerTagController');
             \Route::resource('student-infos', 'StudentInfoController');
@@ -57,6 +58,13 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::get('customer-lead-by-user-id/{id}', 'CustomerLeadController@getCustomerLead');
+        });
+    }
+
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::resource('customer-leads', 'CustomerLeadController')->only('index');
         });
     }
 }
