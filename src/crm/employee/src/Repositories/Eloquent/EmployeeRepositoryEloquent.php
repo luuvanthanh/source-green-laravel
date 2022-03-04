@@ -52,6 +52,10 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['employee_id_hrm'])) {
+            $this->model = $this->model->where('employee_id_hrm', $attributes['employee_id_hrm']);
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereLike('full_name', $attributes['key']);
         }
@@ -87,7 +91,7 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
         }
 
         $employee = Employee::whereIn('id', $employeeId)->get();
-        
+
         return $this->parserResult($employee);
     }
 }

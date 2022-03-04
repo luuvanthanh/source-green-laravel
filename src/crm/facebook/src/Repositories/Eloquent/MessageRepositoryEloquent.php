@@ -192,7 +192,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
         $conversation->update($dataConversation);
 
-        //\Log::info("khach hang moi");
+        \Log::info("khach hang moi");
         broadcast(new FacebookSynchronizeConversation([
             'synchronize_conversation' => 'synchronizeConversation'
         ]));
@@ -227,6 +227,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             $pageId = $page->id;
         }
         $conversation = Conversation::where('page_id', $pageId)->where('user_facebook_info_id', $userFacebookInfoId)->first();
+
 
         if (isset($statusSendMessage['delivery'])) {
             broadcast(new FacebookStatusSendMessage([
