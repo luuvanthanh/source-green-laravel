@@ -127,9 +127,9 @@ class TestSemesterController extends Controller
             $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
         }
 
-        $testSemester = $this->testSemesterRepository->officialStudent($attributes);
+        $this->testSemesterRepository->officialStudent($attributes);
 
-        return $this->success($testSemester, trans('lang::messages.common.createSuccess'));
+        return $this->success([], trans('lang::messages.common.createSuccess'));
     }
 
     public function testSemesterStudent(Request $request)

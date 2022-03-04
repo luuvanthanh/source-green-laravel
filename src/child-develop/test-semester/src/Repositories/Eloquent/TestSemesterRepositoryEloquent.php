@@ -209,7 +209,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             }
         }
 
-        return parent::parserResult($testInput);
+        return true;
     }
 
     public function update(array $attributes, $id)
