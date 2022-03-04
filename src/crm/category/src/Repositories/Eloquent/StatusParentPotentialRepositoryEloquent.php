@@ -56,8 +56,12 @@ class StatusParentPotentialRepositoryEloquent extends BaseRepository implements 
             $this->model = $this->model->where('status_hard', true);
         }
 
-        if (!empty($attributes['use']) && $attributes['use'] == 'true') {
-            $this->model = $this->model->where('use', true);
+        if (!empty($attributes['use']) && $attributes['use'] == 'false') {
+            $this->model = $this->model->where('use', false);
+        }
+
+        if (!empty($attributes['status_hard']) && $attributes['status_hard'] == 'true' && !empty($attributes['use']) && $attributes['use'] == 'false') {
+            $this->model = $this->model->where('status_hard', true)->where('use', false);
         }
 
         if (!empty($attributes['limit'])) {
