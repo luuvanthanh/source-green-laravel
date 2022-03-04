@@ -97,4 +97,8 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Crm\CallCenter\RouteRegistrar::routes(function ($route) {
         $route->forGuest();
     });
+
+    \GGPHP\Crm\CustomerLead\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
 });
