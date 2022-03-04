@@ -23,7 +23,7 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'created_at' => '2021-10-06 04:59:11',
                 'updated_at' => '2021-10-06 04:59:11',
                 'deleted_at' => NULL,
-                'use' => true,
+                'use' => false,
                 'status_hard' => true,
             ),
             1 =>
@@ -34,7 +34,7 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'created_at' => '2021-10-06 04:59:20',
                 'updated_at' => '2021-10-06 04:59:20',
                 'deleted_at' => NULL,
-                'use' => true,
+                'use' => false,
                 'status_hard' => true,
             ),
             2 =>
@@ -45,7 +45,7 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'created_at' => '2021-10-06 04:59:30',
                 'updated_at' => '2021-10-22 03:01:25',
                 'deleted_at' => NULL,
-                'use' => false,
+                'use' => true,
                 'status_hard' => true,
             ),
             3 =>
@@ -56,7 +56,7 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'created_at' => '2021-10-22 03:02:01',
                 'updated_at' => '2021-10-22 03:02:01',
                 'deleted_at' => NULL,
-                'use' => false,
+                'use' => true,
                 'status_hard' => true,
             )
         ));
