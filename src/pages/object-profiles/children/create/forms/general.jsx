@@ -179,7 +179,7 @@ const General = memo(
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
           registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
           branchId: details?.student?.class?.branchId,
-          status: variablesModules.STATUS_NAME[details?.student?.status],
+          status: details?.student?.status,
         });
         mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
         if (details?.student?.class?.branchId) {
@@ -309,7 +309,13 @@ const General = memo(
                     />
                   </Pane>
                   <Pane className="col-lg-4">
-                    <FormItem name="status" label="Trạng thái" type={variables.INPUT} disabled />
+                    <FormItem
+                      name="status"
+                      label="Trạng thái"
+                      type={variables.SELECT}
+                      data={Helper.objectToArray(variablesModules.STATUS_OBJECT_PROFILE_LABEL)}
+                      disabled
+                    />
                   </Pane>
                 </Pane>
 
