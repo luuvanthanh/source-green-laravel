@@ -290,6 +290,7 @@ const Index = memo(() => {
                                                               fieldKey={[fieldItem.fieldKey, 'content']}
                                                               name={[fieldItem.name, 'content']}
                                                               type={variables.TEXTAREA}
+                                                              rules={[variables.RULES.EMPTY_INPUT]}
                                                             />
                                                           </div>
                                                           <div className={classnames(stylesModule.col)}>

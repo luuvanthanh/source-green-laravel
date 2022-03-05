@@ -83,10 +83,11 @@ export function details(params = {}) {
     params: {
       ...params,
       include: Helper.convertIncludes([
-        'studentInfo',
+        'studentInfo.categoryRelationship',
         'city',
         'district',
         'searchSource',
+        'statusLead',
         'statusCare.statusParentLead',
         'employee',
         'marketingProgram',
@@ -160,7 +161,7 @@ export function getDistricts(params) {
 }
 
 export function getStatusLead(params = {}) {
-  return request('/v1/status-cares', {
+  return request('/v1/status-lead', {
     method: 'GET',
     params: {
       ...params,
@@ -190,6 +191,13 @@ export function getParentLead() {
 
 export function addStatusLead(data = {}) {
   return request('/v1/status-cares', {
+    method: 'POST',
+    data,
+  });
+}
+
+export function addStatus(data = {}) {
+  return request('/v1/status-lead', {
     method: 'POST',
     data,
   });

@@ -153,7 +153,7 @@ export default {
     }),
     SET_PARENT_POTENTIAL: (state, { payload }) => ({
       ...state,
-      parentPotential: payload.parsePayload,
+      parentPotential: payload.parsePayload.filter( i => i?.status_hard === true && i?.use === false),
     }),
     SET_PROGRAM_INTEREST: (state, { payload }) => ({
       ...state,
@@ -343,6 +343,14 @@ export default {
     *ADD_STATUS_LEAD({ payload, callback }, saga) {
       try {
         yield saga.call(services.addStatusLead, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_STATUS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addStatus, payload);
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
