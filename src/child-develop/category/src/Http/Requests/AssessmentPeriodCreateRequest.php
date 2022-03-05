@@ -24,7 +24,6 @@ class AssessmentPeriodCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'nameAssessmentPeriodId' => 'required|exists:NameAssessmentPeriods,Id',
             'schoolYearId' => 'required',
             'startDate' => 'required|date_format:Y-m-d',
             'endDate' => 'required|date_format:Y-m-d',
