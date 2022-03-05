@@ -641,12 +641,11 @@
       line-height: 20px;
       border-radius: 30px;
       background-color: #ffefdb;
-      color: #ff8300;
       padding: 3px 10px;
       margin-top: 2px;
       &.yellow {
         background-color: #ffefdb;
-        color: #ff8300;
+        // color: #ff8300;
       }
       &.success {
         background-color: rgba($color: $background-success, $alpha: 0.3);
