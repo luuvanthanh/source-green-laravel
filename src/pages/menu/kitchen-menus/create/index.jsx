@@ -142,8 +142,8 @@ const Index = memo(() => {
                 timeline: [],
               })),
             }));
-            setFromDate(response.fromDate);
-            setToDate(response.toDate);
+            setFromDate(moment(values.month).startOf('months'));
+            setToDate(moment(values.month).endOf('months'));
             setWeeksKitchen(weeks);
           }
         },
