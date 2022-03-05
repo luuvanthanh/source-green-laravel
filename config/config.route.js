@@ -2497,7 +2497,7 @@ export default [
         routes: [
           {
             path: '/crm',
-            redirect: '/crm/quan-ly-he-thong/nguoi-dung',
+            redirect: '/crm/sale/ph-lead',
           },
           {
             path: '/crm/quan-ly-he-thong/nguoi-dung',

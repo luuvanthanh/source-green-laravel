@@ -85,7 +85,7 @@ const Index = memo(() => {
 
   const [searchUser, setSearchUser] = useState({
     page: 1,
-    limit: 7,
+    limit: 10,
     total: 1,
     hasMore: true,
     loading: false,
@@ -285,7 +285,7 @@ const Index = memo(() => {
             content: e?.target?.value ? e?.target?.value : "Đang gửi file/ảnh",
             created_at: undefined,
           },
-          ulr: messageFile,
+          url: messageFile,
         },
         ...prev,
       ]);
@@ -294,8 +294,8 @@ const Index = memo(() => {
     mountedSet(setFiles, undefined);
     mountedSet(setFile, undefined);
     setMessageFinalFile(messageFile);
-    const setFile = files.map(i => [{ ulr: i }]);
-    const dataFile = setFile.concat(file);
+    const setFilea = files?.map(i => ({ url: i }));
+    const dataFile = setFilea?.concat(file );
     dispatch({
       type: 'crmFBDevV1/SEND_MESSAGES',
       payload: {
@@ -303,8 +303,8 @@ const Index = memo(() => {
         recipient_id: conversationCurrent?.userFacebookInfo?.user_id,
         page_id: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.id,
         message: e?.target?.value,
-        urls: files?.length > 0 ? JSON.stringify(files) : JSON.stringify(file),
-        url_files: dataFile?.map(i => i)
+        // urls: files?.length > 0 ? JSON.stringify(files) : JSON.stringify(file),
+        url_files: files && file ? dataFile?.map(i => i) : (files && !file ? setFilea?.map(i => i) : (!files && file ? file?.map(i => i) : "")) ,
       },
       callback: () => {
         mountedSet(setFiles, undefined);
@@ -409,10 +409,9 @@ const Index = memo(() => {
     return () => socket.close();
   }, [conversationCurrent?.id, user?.userID]);
 
-  const uploadFiles = (ulr) => {
-    console.log("FLIES", ulr);
+  const uploadFiles = (url) => {
 
-    mountedSet(setFiles, (prev) => prev ? [...prev, ulr] : [ulr]);
+    mountedSet(setFiles, (prev) => prev ? [...prev, url] : [url]);
   };
 
   const uploadFile = (a) => {
@@ -426,7 +425,7 @@ const Index = memo(() => {
     setConversationCurrent(users.find((item) => item.id === id));
     setSearchParent({
       page: 1,
-      limit: 10,
+      limit: 15,
       total: 0,
       hasMore: true,
       loading: false,
@@ -476,8 +475,8 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           console.log("ress", response)
-          mountedSet(setFile, (prev) => prev ? [...prev, { ulr: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }] : [{ ulr: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }]);
-          setMessageFile([...file, { ulr: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }]);
+          mountedSet(setFile, (prev) => prev ? [...prev, { url: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }] : [{ url: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }]);
+          setMessageFile([...file, { url: response?.results[0]?.fileInfo?.url, name: response?.results[0]?.fileInfo?.name }]);
         }
       },
     });
@@ -491,12 +490,12 @@ const Index = memo(() => {
     showUploadList: (!!file),
   };
 
-  const onStatus = (attributes, ulr) => {
+  const onStatus = (attributes, url) => {
     const check = attributes?.content?.substr(-4, 4);
     const checkHttp = attributes?.content?.lastIndexOf("https://");
     const checkAudio = attributes?.content?.lastIndexOf("audioclip");
 
-    const a = ulr?.map(i => i?.substring(i.length, i.length - 4));
+    const a = url?.map(i => i?.substring(i.length, i.length - 4));
     const b = (messageFile?.map(i => `https://erp-clover-file.demo.greenglobal.com.vn${i}`));
     //const arrFile = a?.join();
     // const checkfile = (arrFile?.indexOf(".npg, jpeg") !== -1);
@@ -1831,10 +1830,10 @@ console.log("paa",pathname)
                       isReverse
                     >
 
-                      {messagers?.map(({ attributes, ulr }, index) => (
+                      {messagers?.map(({ attributes, url }, index) => (
                         <div className={styles['messager-item']} key={index} style={{ display: 'flex', flexDirection: 'column-reverse' }}>
                           <div className={styles['messager-item']} >
-                            <div>{onStatus(attributes, ulr)}</div>
+                            <div>{onStatus(attributes, url)}</div>
                           </div>
                         </div>
                       ))}
