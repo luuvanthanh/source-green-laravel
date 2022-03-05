@@ -37,7 +37,6 @@ const Index = memo(() => {
   const [generalInfo, setGeneralInfo] = useState({});
   const [listTeacher, setListTeacher] = useState([]);
   const [listStudent, setListStudent] = useState([]);
-  const [weekTitle, setWeekTitle] = useState('');
 
   const [{ classes, branches }, { defaultBranch }] = useSelector(({ extendedClass, user }) => [
     extendedClass,
@@ -119,11 +118,7 @@ const Index = memo(() => {
       payload: {
         date: moment(search.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
       },
-      callback: (response) => {
-        if (response) {
-          setWeekTitle(response);
-        }
-      },
+      callback: () => {},
     });
   }, []);
 
@@ -133,11 +128,7 @@ const Index = memo(() => {
       payload: {
         date: moment(val).format(variables.DATE_FORMAT.DATE_AFTER),
       },
-      callback: (response) => {
-        if (response) {
-          setWeekTitle(response);
-        }
-      },
+      callback: () => {},
     });
   };
 
@@ -183,6 +174,9 @@ const Index = memo(() => {
   }, [teachers, searchText]);
 
   const formatData = useMemo(() => {
+    if (!items && isEmpty(items)) {
+      return [];
+    }
     const completed = items
       .map((item) => ({
         ...item,
@@ -305,8 +299,8 @@ const Index = memo(() => {
       }`,
       branchId: value.class?.branchId,
       classId: value.class?.id,
-      branch: value.class?.branch.name,
-      class: value.class?.name,
+      branch: value.class?.branch.name || value?.branch?.name,
+      class: value.class?.name || 'Lớp ngoài giờ',
       totalStudents: value.totalStudents,
       status: value.status,
     };
@@ -511,7 +505,6 @@ const Index = memo(() => {
                 disabled
               />
             </div>
-
             <div className="col-lg-4">
               <FormItem
                 className="flex-column form-timetable-disabled"
@@ -691,7 +684,7 @@ const Index = memo(() => {
                     Hôm nay
                   </button>
                   <h4 className={stylesModule.time}>
-                    {moment(weekTitle).format('[Tuần] WW - [Tháng] MM/YYYY')}
+                    {moment(search.fromDate).format('[Tuần] WW - [Tháng] MM/YYYY')}
                   </h4>
                   <div className={stylesModule.header__next}>
                     <button
