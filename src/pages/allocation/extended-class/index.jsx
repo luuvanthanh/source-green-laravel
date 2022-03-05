@@ -449,10 +449,16 @@ const Index = memo(() => {
         key: 'time',
         className: 'min-width-150',
         width: 150,
-        render: (record) =>
-          `${moment(record.fromDate).format(variables.DATE_FORMAT.HOUR)} : ${moment(
-            record.toDate,
-          ).format(variables.DATE_FORMAT.HOUR)}`,
+        render: (record) => {
+          const schedules = record.extendedClassSchedules.find(
+            (item) =>
+              item.dayOfWeek === variables.DAY_OF_WEEKS[moment(generalInfo.date).format('d')],
+          );
+          if (!schedules) {
+            return null;
+          }
+          return [schedules.fromTime, schedules.toTime].join(' : ');
+        },
       },
     ];
 
