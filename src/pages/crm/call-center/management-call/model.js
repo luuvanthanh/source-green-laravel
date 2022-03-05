@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'crmManagementCall',
+  namespace: 'CRMManagementCall',
   state: {
     data: [],
     city: [],

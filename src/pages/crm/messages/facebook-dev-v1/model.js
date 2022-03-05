@@ -14,9 +14,11 @@ export default {
     },
     user: {},
     pages: [],
-    users : [],
+    users: [],
     relationships: [],
     detailLead: [],
+    employeeFB: [],
+    conversationsId: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -32,7 +34,6 @@ export default {
     SET_PAGES: (state, { payload }) => ({
       ...state,
       pages: payload.data,
-
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -59,6 +60,14 @@ export default {
       ...state,
       detailLead: payload.parsePayload,
     }),
+    SET_EMPLOYEE_FACEBOOK: (state, { payload }) => ({
+      ...state,
+      employeeFB: payload.parsePayload,
+    }),
+    SET_CONVERSATIONS_ID: (state, { payload }) => ({
+      ...state,
+      conversationsId: payload.parsePayload,
+    }),
   },
   effects: {
     *GET_USER({ payload }, { put }) {
@@ -70,7 +79,7 @@ export default {
       } catch (error) {
         yield put({
           type: 'SET_ERROR',
-        }); 
+        });
       }
     },
     *GET_PAGES({ payload, callback }, saga) {
@@ -147,7 +156,7 @@ export default {
     },
     *ADD_CONVERSATIONS({ payload, callback }, saga) {
       try {
-         yield saga.call(services.addConversations, payload);
+        yield saga.call(services.addConversations, payload);
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
@@ -208,6 +217,21 @@ export default {
         callback(null, error);
       }
     },
+    *GET_CONVERSATIONS_ID({ payload,callback }, saga) {
+      try {
+        const response = yield saga.call(services.getConversationsId, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_CONVERSATIONS_ID',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *UPDATE_NOTE({ payload, callback }, saga) {
       try {
         yield saga.call(services.updateNote, payload);
@@ -238,9 +262,10 @@ export default {
         callback(null, error?.data?.error);
       }
     },
-    *GET_LEAD({ payload }, saga) {
+    *GET_LEAD({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.detailsLead, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_LEAD',
           payload: response,
@@ -250,6 +275,36 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_EMPLOYEE_FACEBOOK({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getEmployeeFB, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEE_FACEBOOK',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_EMPLOYEE_FACEBOOK({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addEmployeeFB, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *DELETE_EMPLOYEE_FACEBOOK({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.DeleteEmployeeFb, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
       }
     },
   },

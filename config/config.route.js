@@ -2497,7 +2497,7 @@ export default [
         routes: [
           {
             path: '/crm',
-            redirect: '/crm/quan-ly-he-thong/nguoi-dung',
+            redirect: '/crm/sale/ph-lead',
           },
           {
             path: '/crm/quan-ly-he-thong/nguoi-dung',
@@ -3048,6 +3048,12 @@ export default [
           {
             path: '/crm/call-center/quan-ly-lich-goi',
             component: './crm/call-center/management-call',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/call-center/quan-ly-lich-goi/tao-moi',
+            component: './crm/call-center/management-call/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },

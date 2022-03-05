@@ -2147,7 +2147,7 @@ export async function getLeftMenuCRM() {
         {
           title: 'Quản lý lịch gọi',
           key: 'management-call',
-          url: ['/crm/call-center/quan-ly-lich-goi'],
+          url: ['/crm/call-center/quan-ly-lich-goi', '/crm/call-center/quan-ly-lich-goi/tao-moi'],
           permission: [permissions.CRM],
           pro: true,
         },
@@ -2243,39 +2243,39 @@ export async function getLeftMenuCRM() {
         },
       ],
     },
-    {
-      title: 'Đánh giá',
-      key: 'evaluate',
-      icon: 'icon icon-clipboard',
-      permission: [permissions.CRM],
-      children: [
-        {
-          title: 'Đánh giá từ PH',
-          key: 'evaluate-parents',
-          url: [
-            '/crm/danh-gia/danh-gia-tu-phu-huynh',
-            '/crm/danh-gia/danh-gia-tu-phu-huynh/tao-moi',
-            '/crm/danh-gia/danh-gia-tu-phu-huynh/:id/chi-tiet',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Đánh giá đầu vào',
-          key: 'nput-rating',
-          url: ['/crm/danh-gia/danh-gia-dau-vao', '/crm/danh-gia/danh-gia-dau-vao/:id/chi-tiet'],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Đánh giá định kỳ',
-          key: '',
-          url: [],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-      ],
-    },
+    // {
+    //   title: 'Đánh giá',
+    //   key: 'evaluate',
+    //   icon: 'icon icon-clipboard',
+    //   permission: [permissions.CRM],
+    //   children: [
+    //     {
+    //       title: 'Đánh giá từ PH',
+    //       key: 'evaluate-parents',
+    //       url: [
+    //         '/crm/danh-gia/danh-gia-tu-phu-huynh',
+    //         '/crm/danh-gia/danh-gia-tu-phu-huynh/tao-moi',
+    //         '/crm/danh-gia/danh-gia-tu-phu-huynh/:id/chi-tiet',
+    //       ],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Đánh giá đầu vào',
+    //       key: 'nput-rating',
+    //       url: ['/crm/danh-gia/danh-gia-dau-vao', '/crm/danh-gia/danh-gia-dau-vao/:id/chi-tiet'],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Đánh giá định kỳ',
+    //       key: '',
+    //       url: [],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //   ],
+    // },
     {
       title: 'Chính sách phí',
       key: 'fee-policy-crm',
@@ -2339,13 +2339,13 @@ export async function getLeftMenuCRM() {
       icon: 'icon icon-wrench',
       permission: [permissions.CRM],
       children: [
-        {
-          title: 'Cảnh báo',
-          key: 'alert',
-          url: ['/crm/cau-hinh/canh-bao'],
-          permission: [permissions.CRM],
-          pro: true,
-        },
+        // {
+        //   title: 'Cảnh báo',
+        //   key: 'alert',
+        //   url: ['/crm/cau-hinh/canh-bao'],
+        //   permission: [permissions.CRM],
+        //   pro: true,
+        // },
         {
           title: 'Khai báo y tế',
           key: 'health-declaration',
@@ -2360,13 +2360,13 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
-        {
-          title: 'Kiểm tra đầu vào',
-          key: '',
-          url: [],
-          permission: [permissions.CRM],
-          pro: true,
-        },
+        // {
+        //   title: 'Kiểm tra đầu vào',
+        //   key: '',
+        //   url: [],
+        //   permission: [permissions.CRM],
+        //   pro: true,
+        // },
       ],
     },
   ];
