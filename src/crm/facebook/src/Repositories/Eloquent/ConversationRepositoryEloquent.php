@@ -98,7 +98,28 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         if (!empty($attributes['not_phone_number']) && $attributes['not_phone_number'] == 'true') {
             $this->model = $this->model->whereDoesntHave('message', function ($query) {
                 $query->where(function ($q) {
-                    $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone');
+                    $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')
+                        ->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')
+                        ->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone');
+                })->where(function ($q1) {
+                    $q1->whereLike('content', '086')->orWhereLike('content', '096')
+                        ->orWhereLike('content', '097')->orWhereLike('content', '098')
+                        ->orWhereLike('content', '032')->orWhereLike('content', '033')
+                        ->orWhereLike('content', '034')->orWhereLike('content', '035')
+                        ->orWhereLike('content', '036')->orWhereLike('content', '037')
+                        ->orWhereLike('content', '038')->orWhereLike('content', '039')
+                        ->orWhereLike('content', '088')->orWhereLike('content', '091')
+                        ->orWhereLike('content', '088')->orWhereLike('content', '091')
+                        ->orWhereLike('content', '094')->orWhereLike('content', '083')
+                        ->orWhereLike('content', '084')->orWhereLike('content', '085')
+                        ->orWhereLike('content', '081')->orWhereLike('content', '082')
+                        ->orWhereLike('content', '089')->orWhereLike('content', '090')
+                        ->orWhereLike('content', '093')->orWhereLike('content', '070')
+                        ->orWhereLike('content', '079')->orWhereLike('content', '077')
+                        ->orWhereLike('content', '076')->orWhereLike('content', '078')
+                        ->orWhereLike('content', '092')->orWhereLike('content', '056')
+                        ->orWhereLike('content', '058')->orWhereLike('content', '099')
+                        ->orWhereLike('content', '059');
                 });
             });
         }
@@ -107,6 +128,25 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
             $this->model = $this->model->whereHas('message', function ($query) {
                 $query->where(function ($q) {
                     $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone');
+                })->where(function ($q1) {
+                    $q1->whereLike('content', '086')->orWhereLike('content', '096')
+                        ->orWhereLike('content', '097')->orWhereLike('content', '098')
+                        ->orWhereLike('content', '032')->orWhereLike('content', '033')
+                        ->orWhereLike('content', '034')->orWhereLike('content', '035')
+                        ->orWhereLike('content', '036')->orWhereLike('content', '037')
+                        ->orWhereLike('content', '038')->orWhereLike('content', '039')
+                        ->orWhereLike('content', '088')->orWhereLike('content', '091')
+                        ->orWhereLike('content', '088')->orWhereLike('content', '091')
+                        ->orWhereLike('content', '094')->orWhereLike('content', '083')
+                        ->orWhereLike('content', '084')->orWhereLike('content', '085')
+                        ->orWhereLike('content', '081')->orWhereLike('content', '082')
+                        ->orWhereLike('content', '089')->orWhereLike('content', '090')
+                        ->orWhereLike('content', '093')->orWhereLike('content', '070')
+                        ->orWhereLike('content', '079')->orWhereLike('content', '077')
+                        ->orWhereLike('content', '076')->orWhereLike('content', '078')
+                        ->orWhereLike('content', '092')->orWhereLike('content', '056')
+                        ->orWhereLike('content', '058')->orWhereLike('content', '099')
+                        ->orWhereLike('content', '059');
                 });
             });
         }
