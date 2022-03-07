@@ -19,6 +19,7 @@ export default {
     detailLead: [],
     employeeFB: [],
     conversationsId: [],
+    detailPotential: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -67,6 +68,10 @@ export default {
     SET_CONVERSATIONS_ID: (state, { payload }) => ({
       ...state,
       conversationsId: payload.parsePayload,
+    }),
+    SET_POTENTIAL: (state, { payload }) => ({
+      ...state,
+      detailPotential: payload.parsePayload,
     }),
   },
   effects: {
@@ -226,6 +231,7 @@ export default {
           payload: response,
         });
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -271,6 +277,7 @@ export default {
           payload: response,
         });
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -305,6 +312,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_POTENTIAL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getPotential, payload);
+        yield saga.put({
+          type: 'SET_POTENTIAL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

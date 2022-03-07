@@ -15,6 +15,7 @@ export function get(data = {}) {
         'city',
         'district',
         'search',
+        'statusLead',
         'statusCare.statusParentLead',
         'studentInfo',
         'employee',

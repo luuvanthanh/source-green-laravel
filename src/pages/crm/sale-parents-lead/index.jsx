@@ -365,6 +365,25 @@ class Index extends PureComponent {
         render: (record) => (
           <>
             {' '}
+            {record?.statusLead
+              ?.map((item, index) => (
+                <Text size="normal" key={index}>
+                  {item?.status === 'LEAD_NEW' ? 'Lead mới' : ""}
+                  {item?.status === 'POTENTIAL' ? 'Tiềm năng' : ""}
+                  {item?.status === 'NOT_POTENTIAL' ? 'Không tiềm năng' : ""}
+                </Text>
+              ))
+              .pop()}{' '}
+          </>
+        ),
+      },
+      {
+        title: 'Phân loại PH',
+        key: 'status',
+        width: 150,
+        render: (record) => (
+          <>
+            {' '}
             {record?.statusCare
               ?.map((item, index) => (
                 <Text size="normal" key={index}>
