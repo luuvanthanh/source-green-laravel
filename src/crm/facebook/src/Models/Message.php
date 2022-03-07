@@ -9,8 +9,13 @@ class Message extends UuidModel
 
     protected $table = 'messages';
 
+    const STATUS_SEND_MESSAGE = [
+        'SEND' => 0,
+        'RECEIVED' => 1,
+        'READ' => 2
+    ];
     protected $fillable = [
-        'content', 'message_id_facebook', 'from', 'to', 'conversation_id'
+        'content', 'message_id_facebook', 'from', 'to', 'conversation_id', 'status_send_message', 'watermark'
     ];
 
     public function conversation()

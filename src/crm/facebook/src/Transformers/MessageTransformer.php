@@ -40,7 +40,16 @@ class MessageTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $status_send_message = null;
+
+        foreach (Message::STATUS_SEND_MESSAGE as $key => $value) {
+            if ($value == $model->status_send_message) {
+                $status_send_message = $key;
+            }
+        }
+        return [
+            'status_send_message' => $status_send_message
+        ];
     }
 
     public function includeConversation(Message $message)

@@ -192,7 +192,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
         $conversation->update($dataConversation);
 
-        \Log::info("khach hang moi");
+        //\Log::info("khach hang moi");
         broadcast(new FacebookSynchronizeConversation([
             'synchronize_conversation' => 'synchronizeConversation'
         ]));
@@ -213,7 +213,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
     public function statusSendMessage($attributes, $statusSendMessage)
     {
-        \Log::info($attributes);
+
         $page = Page::where('page_id_facebook', $attributes['from'])->first();
         \Log::info($page);
         if (!is_null($page)) {
@@ -234,19 +234,21 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                 'status_send_message' => 'received',
                 'conversation_id' => $conversation->id
             ]));
+            \Log::info(['tran thai tin nhan' => $statusSendMessage['delivery']['watermark']]);
+            $message = Message::where('message_id_facebook', $statusSendMessage['delivery']['mids'][0])->first();
+            $message->watermark = $statusSendMessage['delivery']['watermark'];
+            $message->status_send_message = Message::STATUS_SEND_MESSAGE['RECEIVED'];
+            $message->update();
             $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['RECEIVED']]);
         } elseif (isset($statusSendMessage['read'])) {
             broadcast(new FacebookStatusSendMessage([
                 'status_send_message' => 'read',
                 'conversation_id' => $conversation->id
             ]));
+            $message = Message::where('watermark', $statusSendMessage['read']['watermark'])->first();
+            $message->status_send_message = Message::STATUS_SEND_MESSAGE['READ'];
+            $message->update();
             $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['READ']]);
-        } else {
-            broadcast(new FacebookStatusSendMessage([
-                'status_send_message' => 'send',
-                'conversation_id' => $conversation->id
-            ]));
-            $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['SEND']]);
         }
     }
 

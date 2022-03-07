@@ -145,12 +145,13 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
                     $conversationId = $conversation->id;
                     foreach ($conversation->senders as $value) {
                         $attributes['user_id'] = $value[0]->id;
-                        $url = FacebookService::getAvatarUser($attributes);
-                        $avatar = $this->storeAvatarUser($url, $value[0]->id);
+                        //tạm thời đóng lấy ảnh lại tránh bị lỗi khi không có quyền
+                        //$url = FacebookService::getAvatarUser($attributes);
+                        //$avatar = $this->storeAvatarUser($url, $value[0]->id);
                         $dataUserFacebookInfo = [
                             'user_id' => $value[0]->id,
                             'user_name' => $value[0]->name,
-                            'avatar' => $avatar
+                            //'avatar' => $avatar
                         ];
                         $dataPage = [
                             'page_id_facebook' => $value[1]->id,
@@ -162,7 +163,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
                             $userFacebookInfo = UserFacebookInfo::create($dataUserFacebookInfo);
                         } else {
                             $userFacebookInfo->update(['user_name' => $dataUserFacebookInfo['user_name']]);
-                            $userFacebookInfo->update(['avatar' => $dataUserFacebookInfo['avatar']]);
+                            //$userFacebookInfo->update(['avatar' => $dataUserFacebookInfo['avatar']]);
                         }
 
                         $page = Page::Where('page_id_facebook', $dataPage['page_id_facebook'])->first();
