@@ -81,6 +81,11 @@ EOD;
                         $text =  'Phát hiện Hành vi hướng dẫn tại ' . $nameTouristDestination . '   📢';
                         break;
                 }
+                break;
+            case 'SURVEYFORM':
+                $model = $this->model;
+                $text = 'Khảo sát' . $model->survey->name . 'tại' . $model->survey->touristDestination->name . 'vừa nhận được một lượt trả lời mới.';
+                break;
         }
 
         return $text;
@@ -120,12 +125,19 @@ EOD;
             ];
         }
 
-        $eventType =  $this->model->eventType->code;
+        switch ($this->type) {
+            case 'EVENT':
+                $eventType =  $this->model->eventType->code;
+                break;
+            case 'SURVEYFORM':
+                $eventType = null;
+                break;
+        }
 
         $data = [
             'message' => $this->getMessage($notifiable),
             'image' => $image,
-            'model_id' => $this->model->id,
+            'model_id' => $this->model->survey->id,
             'event_type' => $eventType,
             'type' => $this->type,
             'created_at' => $this->model->created_at->timezone(config('app.timezone'))->format('c'),

@@ -70,7 +70,7 @@ class SurveyFormTransformer extends BaseTransformer
      * Include SurveyFormResult
      * @param SurveyForm $SurveyForm
      */
-    public function includeSurveyForm(SurveyForm $surveyForm)
+    public function includeSurveyFormResult(SurveyForm $surveyForm)
     {
         return $this->collection($surveyForm->results, new SurveyFormResultTransformer, 'SurveyFormResult');
     }
