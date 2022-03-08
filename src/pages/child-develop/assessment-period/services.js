@@ -12,6 +12,7 @@ export function get(params = {}) {
       include: Helper.convertIncludes([
         'classes',
         'branch',
+        'nameAssessmentPeriod',
         'schoolYear'
       ]),
     },
