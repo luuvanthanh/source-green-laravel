@@ -27,6 +27,6 @@ class CreateCollaboratorContractParameterValueTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('collaborator_contract_parameter_value');
+        Schema::dropIfExists('CollaboratorContractParameterValue');
     }
 }
