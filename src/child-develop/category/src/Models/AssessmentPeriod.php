@@ -12,7 +12,7 @@ class AssessmentPeriod extends UuidModel
     protected $table = 'AssessmentPeriods';
 
     protected $fillable = [
-        'Code', 'Name', 'SchoolYearId', 'StartDate', 'EndDate', 'Use', 'NameAssessmentPeriodId'
+        'Code', 'Name', 'SchoolYearId', 'StartDate', 'EndDate', 'Use', 'NameAssessmentPeriodId', 'Introduction', 'Periodic'
     ];
 
     const CODE = 'KN';
