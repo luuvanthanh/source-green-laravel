@@ -95,6 +95,10 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
             $this->model = $this->model->where('employee_id', null);
         }
 
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $customerPotential = $this->paginate($attributes['limit']);
         } else {
