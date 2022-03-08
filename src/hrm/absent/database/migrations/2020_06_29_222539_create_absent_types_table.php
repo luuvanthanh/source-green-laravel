@@ -19,6 +19,8 @@ class CreateAbsentTypesTable extends Migration
             $table->string('Name');
             $table->string('Status');
             $table->string('Type');
+            $table->string('Code')->nullable();
+            $table->boolean('IsTimeKeeping')->default(true);
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

@@ -11,7 +11,7 @@ class AbsentReason extends UuidModel
     protected $table = 'AbsentReasons';
 
     protected $fillable = [
-        'Name', 'AbsentTypeId', 'Status',
+        'Name', 'AbsentTypeId'
     ];
 
     /**

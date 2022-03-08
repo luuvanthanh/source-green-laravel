@@ -44,4 +44,19 @@ class FingerprintTimekeeperRepositoryEloquent extends CoreRepositoryEloquent imp
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+
+    public function getAll(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('Name', $attributes['key']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $fingerPrintTimeKeeper = $this->paginate($attributes['limit']);
+        } else {
+            $fingerPrintTimeKeeper = $this->get();
+        }
+
+        return $fingerPrintTimeKeeper;
+    }
 }

@@ -27,10 +27,9 @@ class CreatBusinessCardRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
             'employeeId' => 'required|exists:Employees,Id',
-            'absentTypeId' => 'required',
+            'absentTypeId' => 'required|exists:AbsentTypes,Id',
             'startDate' => 'required',
             'endDate' => 'required',
             'detail' => [
@@ -48,7 +47,7 @@ class CreatBusinessCardRequest extends FormRequest
                             return $fail('Bạn đã có lịch đi công tác vào ngày ' . $accessAbsent);
                         }
                     }
-                    
+
                     if ($absentType->Type === AbsentType::GO_OUT) {
 
                         $accessAbsent = $this->checkDuplicateBusinessCardGoOut($value);

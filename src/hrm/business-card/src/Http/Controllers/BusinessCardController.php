@@ -47,6 +47,7 @@ class BusinessCardController extends Controller
     public function store(CreatBusinessCardRequest $request)
     {
         $businessCards = $this->businessCardRepository->create($request->all());
+
         return $this->success($businessCards, trans('lang::messages.common.createSuccess'));
     }
 

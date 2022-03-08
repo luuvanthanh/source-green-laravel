@@ -21,7 +21,6 @@ class CreateWorkOnlinesTable extends Migration
             $table->uuid('AbsentTypeId');
             $table->string('Reason');
             $table->uuid('EmployeeId');
-            $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

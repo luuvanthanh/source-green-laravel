@@ -19,7 +19,6 @@ class CreateBusinessCardsTable extends Migration
             $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->uuid('AbsentTypeId');
-            $table->foreign('AbsentTypeId')->references('Id')->on('AbsentTypes');
             $table->date('StartDate')->nullable();
             $table->date('EndDate')->nullable();
             $table->string('Reason')->nullable();

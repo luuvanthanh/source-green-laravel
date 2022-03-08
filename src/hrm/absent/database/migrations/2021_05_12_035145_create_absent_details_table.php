@@ -23,6 +23,7 @@ class CreateAbsentDetailsTable extends Migration
             $table->string('ShiftCode')->nullable();
             $table->time('StartTime')->nullable();
             $table->time('EndTime')->nullable();
+            $table->uuid('ShiftId')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

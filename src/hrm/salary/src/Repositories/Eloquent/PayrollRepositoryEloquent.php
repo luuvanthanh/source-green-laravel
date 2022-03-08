@@ -40,13 +40,13 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
     public function __construct(
         ExcelExporterServices $excelExporterServices,
         TimekeepingRepositoryEloquent $timekeepingRepositoryEloquent,
-        BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
+        // BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
         WorkHourRepositoryEloquent $workHourRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
         $this->excelExporterServices = $excelExporterServices;
-        $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
+        // $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
         $this->timekeepingRepositoryEloquent = $timekeepingRepositoryEloquent;
         $this->workHourRepositoryEloquent = $workHourRepositoryEloquent;
     }
@@ -1301,7 +1301,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $reduceDependentSelf = $paramaterValueReduceDependentSelf->ValueDefault;
         }
         $params['{reduce_dependent_self}'] = number_format($reduceDependentSelf);
-
+        
         //phụ cấp ăn trưa
         $lunchAllowance = 0;
         $paramaterValueLunchAllowance = ParamaterValue::where('Code', 'PC_AN_TRUA')->first();
