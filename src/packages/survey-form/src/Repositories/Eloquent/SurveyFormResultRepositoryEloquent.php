@@ -2,6 +2,7 @@
 
 namespace GGPHP\SurveyForm\Repositories\Eloquent;
 
+use GGPHP\Notification\Services\NotificationService;
 use GGPHP\SurveyForm\Models\SurveyFormResult;
 use GGPHP\SurveyForm\Presenters\SurveyFormResultPresenter;
 use GGPHP\SurveyForm\Repositories\Contracts\SurveyFormResultRepository;
@@ -68,5 +69,14 @@ class SurveyFormResultRepositoryEloquent extends BaseRepository implements Surve
         }
 
         return $result;
+    }
+
+    public function create($attributes)
+    {
+        $surveyForm = $this->model()::create($attributes);
+
+        NotificationService::surveyFormCreated('SURVEYFORM', $surveyForm);
+
+        return parent::find($surveyForm->id);
     }
 }

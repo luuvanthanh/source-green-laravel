@@ -3,6 +3,7 @@
 namespace GGPHP\Notification\Services;
 
 use GGPHP\Notification\Notification\CameraUpdate;
+use GGPHP\Notification\Notification\CountNumberOfTourist;
 use GGPHP\Notification\Notification\ModelCreated;
 use GGPHP\Users\Models\User;
 
@@ -30,10 +31,34 @@ class NotificationService
      * @param $attributes
      * @return bool
      */
+    public static function surveyFormCreated($type, $model)
+    {
+        $recipients = User::whereHas('players')->get();
+        $sendData = new ModelCreated($type, $model);
+
+        \Notification::send($recipients, $sendData);
+    }
+
+    /**
+     * @param $attributes
+     * @return bool
+     */
     public static function updateCamera($type, $model)
     {
         $recipients = User::whereHas('players')->get();
         $sendData = new CameraUpdate($type, $model);
+
+        \Notification::send($recipients, $sendData);
+    }
+
+    /**
+     * @param $attributes
+     * @return bool
+     */
+    public static function countNumberOfTourist($model, $numberWarning)
+    {
+        $recipients = User::whereHas('players')->get();
+        $sendData = new CountNumberOfTourist(null, $model, $numberWarning);
 
         \Notification::send($recipients, $sendData);
     }

@@ -18,7 +18,7 @@ class BaseNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($type, $model = null)
+    public function __construct($type = null, $model = null)
     {
         $this->type = $type;
         $this->model = $model;
