@@ -35,7 +35,7 @@ class DivisionController extends Controller
     {
         $division = $this->divisionRepository->create($request->all());
 
-        return $this->success([], trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED, 'isShowData' => false]);
+        return $this->success($division, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED, 'isShowData' => false]);
     }
 
     /**
@@ -77,7 +77,7 @@ class DivisionController extends Controller
     {
         $division = $this->divisionRepository->update($request->all(), $id);
 
-        return $this->success([], trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+        return $this->success($division, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }
 
     /**

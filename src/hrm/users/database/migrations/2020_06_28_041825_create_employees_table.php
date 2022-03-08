@@ -20,7 +20,7 @@ class CreateEmployeesTable extends Migration
             $table->primary('Id');
             $table->string('FullName')->nullable();
             $table->date('DateOfBirth')->nullable();
-            $table->date('PlaceOfBirth')->nullable();
+            $table->string('PlaceOfBirth')->nullable();
             $table->string('Email')->nullable();
             $table->string('PhoneNumber')->nullable();
             $table->string('Code');
@@ -36,7 +36,7 @@ class CreateEmployeesTable extends Migration
             $table->uuid('TrainingSchoolId')->nullable();
             $table->foreign('TrainingSchoolId')->references('Id')->on('TrainingSchools');
             $table->date('DateOff')->nullable();
-            $table->date('Address')->nullable();
+            $table->string('Address')->nullable();
             $table->uuid('EducationalLevelId')->nullable();
             $table->foreign('EducationalLevelId')->references('Id')->on('EducationalLevels');
             $table->date('WorkDate')->nullable();
@@ -51,6 +51,14 @@ class CreateEmployeesTable extends Migration
             $table->date('MaternityLeaveTo')->nullable();
             $table->integer('Status')->nullable();
             $table->integer('Category')->default(0);
+            $table->string('FileImage', 1000)->nullable();
+            $table->boolean('Married', 1000)->nullable();
+            $table->uuid('EmployeeIdCrm')->nullable();
+            $table->string('Description', '10000')->nullable();
+            $table->uuid('DegreeId')->nullable();
+            $table->foreign('DegreeId')->references('Id')->on('Degrees');
+            $table->uuid('TrainingMajorId')->nullable();
+            $table->foreign('TrainingMajorId')->references('Id')->on('TrainingMajors');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

@@ -55,6 +55,8 @@ class RouteRegistrar extends CoreRegistrar
 
             //seasonal-contracts
             \Route::resource('seasonal-contracts', 'SeasonalContractController');
+
+            \Route::resource('collaborator-contracts', 'CollaboratorContractController');
         });
     }
 }

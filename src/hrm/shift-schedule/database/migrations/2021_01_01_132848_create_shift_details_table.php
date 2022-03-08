@@ -20,6 +20,10 @@ class CreateShiftDetailsTable extends Migration
             $table->time('EndTime');
             $table->uuid('ShiftId');
             $table->foreign('ShiftId')->references('Id')->on('Shifts')->onDelete('cascade');
+            $table->string('Name')->nullable();
+            $table->string('Code')->nullable();
+            $table->time('AfterStart')->nullable();
+            $table->time('BeforeEnd')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

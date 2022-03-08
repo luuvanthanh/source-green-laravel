@@ -21,6 +21,8 @@ class CreateChangeContractParametersTable extends Migration
             $table->foreign('OtherDeclarationId')->references('Id')->on('OtherDeclarations')->onDelete('cascade');
             $table->boolean('IsSocialInsurance')->default(false);
             $table->json('Detail')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 

@@ -115,19 +115,19 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         \DB::beginTransaction();
         try {
             $user = User::create($attributes);
-
+            
             $data = [
                 'full_name' => $user->FullName,
                 'employee_id_hrm' => $user->Id,
                 'file_image' => $user->FileImage
             ];
 
-            $employeeCrm = CrmService::createEmployee($data);
+            // $employeeCrm = CrmService::createEmployee($data);
 
-            if (isset($employeeCrm->data->id)) {
-                $user->EmployeeIdCrm = $employeeCrm->data->id;
-                $user->update();
-            }
+            // if (isset($employeeCrm->data->id)) {
+            //     $user->EmployeeIdCrm = $employeeCrm->data->id;
+            //     $user->update();
+            // }
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -145,16 +145,16 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
             $user->update($attributes);
 
-            $data = [
-                'full_name' => $user->FullName,
-                'employee_id_hrm' => $user->Id,
-                'file_image' => $user->FileImage
-            ];
-            $employeeIdCrm = $user->EmployeeIdCrm;
+            // $data = [
+            //     'full_name' => $user->FullName,
+            //     'employee_id_hrm' => $user->Id,
+            //     'file_image' => $user->FileImage
+            // ];
+            // $employeeIdCrm = $user->EmployeeIdCrm;
 
-            if (!is_null($employeeIdCrm)) {
-                CrmService::updateEmployee($data, $employeeIdCrm);
-            }
+            // if (!is_null($employeeIdCrm)) {
+            //     CrmService::updateEmployee($data, $employeeIdCrm);
+            // }
 
             \DB::commit();
         } catch (\Throwable $th) {

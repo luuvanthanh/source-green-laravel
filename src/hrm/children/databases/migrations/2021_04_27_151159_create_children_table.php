@@ -13,7 +13,7 @@ class CreateChildrenTable extends Migration
      */
     public function up()
     {
-        Schema::create('Children', function (Blueprint $table) {
+        Schema::create('Childrens', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->uuid('EmployeeId');
@@ -22,6 +22,12 @@ class CreateChildrenTable extends Migration
             $table->date('Birthday');
             $table->string('Status')->default('ON');
             $table->string('Gender')->nullable();
+            $table->string('Relationship')->nullable();
+            $table->boolean('IsDependentPerson')->default(false);
+            $table->string('TaxCode')->nullable();
+            $table->date('DedectionTimeFrom')->nullable();
+            $table->date('DedectionTimeTo')->nullable();
+            $table->string('FileImage', 1000)->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

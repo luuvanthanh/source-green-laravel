@@ -62,11 +62,20 @@ class UserTransformer extends BaseTransformer
             }
         }
 
+        $category = null;
+
+        foreach (User::CATEGORY as $key => $value) {
+            if ($value == $model->Category) {
+                $category = $key;
+            }
+        }
+
         $attributes = [
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'totalWorks' => $model->totalWorks,
             'responseInvalid' => $model->responseInvalid,
             'Status' => $status,
+            'Category' => $category,
             'workHourSummary' => $model->workHourSummary,
             'totalWorkHourSummary' => $model->totalWorkHourSummary,
             'totalWorkWeekday' => $model->totalWorkWeekday,

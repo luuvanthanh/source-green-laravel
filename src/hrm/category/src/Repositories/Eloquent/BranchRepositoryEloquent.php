@@ -82,12 +82,12 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
                 'branch_id_hrm' => $branch->Id
             ];
 
-            $branchCrm = CrmService::createBranch($data);
+            //$branchCrm = CrmService::createBranch($data);
 
-            if (isset($branchCrm->data->id)) {
-                $branch->BranchIdCrm = $branchCrm->data->id;
-                $branch->update();
-            }
+            // if (isset($branchCrm->data->id)) {
+            //     $branch->BranchIdCrm = $branchCrm->data->id;
+            //     $branch->update();
+            // }
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -112,9 +112,9 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
                 'phone_number' => $branch->PhoneNumber,
                 'branch_id_hrm' => $branch->Id
             ];
-            $branchIdCrm = $branch->BranchIdCrm;
+            // $branchIdCrm = $branch->BranchIdCrm;
 
-            $branchCrm = CrmService::updateBranch($data, $branchIdCrm);
+            // $branchCrm = CrmService::updateBranch($data, $branchIdCrm);
 
             \DB::commit();
         } catch (\Throwable $th) {
@@ -130,8 +130,8 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
         \DB::beginTransaction();
         try {
             $branch = Branch::findOrFail($id);
-            $branchIdCrm = $branch->BranchIdCrm;
-            $branchCrm = CrmService::deleteBranch($branchIdCrm);
+            // $branchIdCrm = $branch->BranchIdCrm;
+            // $branchCrm = CrmService::deleteBranch($branchIdCrm);
             $branch->delete();
             \DB::commit();
         } catch (\Throwable $th) {

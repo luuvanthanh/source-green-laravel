@@ -19,7 +19,7 @@ class CreateParameterFormulaLogsTable extends Migration
             $table->uuid('ParameterFormulaId');
             $table->foreign('ParameterFormulaId')->references('Id')->on('ParameterFormulas');
             $table->uuid('EditEmployee');
-            $table->foreign('EditEmployee')->references('Id')->on('Employees')->onDelete('SET NULL');
+            //$table->foreign('EditEmployee')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('EditDate');
             $table->date('ApplyDate')->nullable();
             $table->string('Name');

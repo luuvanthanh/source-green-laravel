@@ -19,7 +19,7 @@ class DecisionSuspend extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'From', 'To', 'Note', 'TimeApply',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'From', 'To', 'Note', 'TimeApply', 'File'
     ];
 
     protected $dateTimeFields = [
