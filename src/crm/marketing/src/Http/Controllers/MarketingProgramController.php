@@ -52,20 +52,14 @@ class MarketingProgramController extends Controller
      */
     public function store(CreateMarketingProgramRequest $request)
     {
-        try {
-            $credentials = $request->all();
+        $credentials = $request->all();
 
-            if (!empty($credentials['status'])) {
-                $credentials['status'] = MarketingProgram::STATUS[$credentials['status']];
-            }
-
-            $marketingProgram = $this->marketingProgramRepository->create($credentials);
-
-            return $this->success($marketingProgram, trans('lang::messages.common.createSuccess'));
-        } catch (\Throwable $th) {
-
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        if (!empty($credentials['status'])) {
+            $credentials['status'] = MarketingProgram::STATUS[$credentials['status']];
         }
+        $marketingProgram = $this->marketingProgramRepository->create($credentials);
+
+        return $this->success($marketingProgram, trans('lang::messages.common.createSuccess'));
     }
 
     /**
