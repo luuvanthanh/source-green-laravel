@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Switch, Tag } from 'antd';
+import { Form } from 'antd';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -10,7 +10,6 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -27,10 +26,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ childDevelopAssessmentPeriod, loading }) => ({
-  data: childDevelopAssessmentPeriod.data,
-  error: childDevelopAssessmentPeriod.error,
-  pagination: childDevelopAssessmentPeriod.pagination,
+const mapStateToProps = ({ childDevelopNameChildProblems, loading }) => ({
+  data: childDevelopNameChildProblems.data,
+  error: childDevelopNameChildProblems.error,
+  pagination: childDevelopNameChildProblems.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -83,7 +82,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'childDevelopAssessmentPeriod/GET_DATA',
+      type: 'childDevelopNameChildProblems/GET_DATA',
       payload: {
         ...search,
       },
@@ -168,7 +167,7 @@ class Index extends PureComponent {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'childDevelopAssessmentPeriod/REMOVE',
+          type: 'childDevelopNameChildProblems/REMOVE',
           payload: {
             id,
           },
@@ -193,89 +192,20 @@ class Index extends PureComponent {
       {
         title: 'STT ',
         key: 'index',
-        width: 100,
-        className: 'min-width-100',
+        width: 80,
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
-        title: 'Mã kì',
-        key: 'code',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.code}</Text>,
-      },
-      {
-        title: 'Tên kỳ đánh giá',
+        title: 'Tên vấn đề khó khăn',
         key: 'name',
-        width: 250,
-        className: 'min-width-250',
-        render: (record) => <Text size="normal">{record?.nameAssessmentPeriod?.name}</Text>,
-      },
-      {
-        title: 'Năm học',
-        key: 'date',
-        width: 150,
+        width: 300,
         className: 'min-width-150',
-        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
-      },
-      {
-        title: 'Thời gian đánh giá',
-        key: 'time',
-        width: 250,
-        className: 'min-width-250',
-        render: (record) => record?.schoolYear
-          ? `${Helper.getDate(record?.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record?.endDate, variables.DATE_FORMAT.DATE_VI)}` : ''
-      },
-      {
-        title: 'Loại đánh giá',
-        key: 'Rating-Type',
-        width: 150,
-        className: 'min-width-150',
-        render: (record) => (
-          <div className={stylesModule['wrapper-tag']}>
-            {record?.periodic ? <Tag size="normal" >Đánh giá định kì</Tag> : ""}
-            {record?.introduction ? <Tag size="normal" >Đánh giá nhập môn</Tag> : ""}
-          </div>
-        )
-      },
-      {
-        title: 'Sử dụng',
-        dataIndex: 'use',
-        width: 150,
-        className: 'min-width-150',
-        render: (use, record) => (
-          <div
-            role="presentation"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <Switch
-              defaultChecked={use}
-              onChange={() => {
-                const payload = {
-                  id: record?.id,
-                  use: !use,
-                };
-                this.props.dispatch({
-                  type: 'childDevelopAssessmentPeriodAdd/UPDATE',
-                  payload,
-                  callback: (response) => {
-                    if (response) {
-                      this.onLoad();
-                    }
-                  },
-                });
-              }}
-            />
-          </div>
-        ),
+        render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
         key: 'action',
         width: 125,
-        fixed: 'right',
         className: 'min-width-125',
         render: (record) => (
           <div className={styles['list-button']}>
@@ -301,14 +231,15 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
     } = this.props;
+
     const { search } = this.state;
-    const loading = effects['childDevelopAssessmentPeriod/GET_DATA'];
+    const loading = effects['childDevelopNameChildProblems/GET_DATA'];
     return (
       <>
-        <Helmet title="Cấu hình kì đánh giá" />
+        <Helmet title="Tên kì đánh giá" />
         <div className='pl20 pr20 pb20'>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Cấu hình kì đánh giá</Text>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4 pt0">
+            <Text color="dark">Tên kì đánh giá</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
@@ -322,7 +253,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-5">
                   <FormItem
                     name="key"
                     onChange={(event) => this.onChange(event, 'key')}

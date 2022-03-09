@@ -2417,12 +2417,23 @@ export async function getLeftMenuChildDevelop() {
           pro: true,
         },
         {
-          title: 'Kỳ đánh giá',
+          title: 'Tên kì đánh giá',
+          key: 'name-childrens-problems',
+          url: [
+            '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia',
+            '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/tao-moi',
+            '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Cấu hình kì đánh giá',
           key: 'assessment-period',
           url: [
-            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia',
-            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/tao-moi',
-            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/:id/chi-tiet',
+            '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia',
+            '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/tao-moi',
+            '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/:id/chi-tiet',
           ],
           permission: [],
           pro: true,

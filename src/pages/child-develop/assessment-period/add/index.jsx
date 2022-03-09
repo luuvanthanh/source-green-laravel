@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, DatePicker } from 'antd';
+import { Form, DatePicker, Radio } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import { isEmpty, omit, last, head } from 'lodash';
 
@@ -13,7 +13,11 @@ import { variables, Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 import stylesModule from '../styles.module.scss';
+import variablesModules from '../utils/variables';
 
+
+const { Item: FormItemAntd } = Form;
+const { Group: RadioGroup } = Radio;
 let isMounted = true;
 /**
  * Set isMounted
@@ -35,6 +39,7 @@ const mapStateToProps = ({ menu, loading, childDevelopAssessmentPeriodAdd }) => 
   details: childDevelopAssessmentPeriodAdd.details,
   error: childDevelopAssessmentPeriodAdd.error,
   schoolYear: childDevelopAssessmentPeriodAdd.schoolYear,
+  problems: childDevelopAssessmentPeriodAdd.problems,
   branches: childDevelopAssessmentPeriodAdd.branches,
   dataClass: childDevelopAssessmentPeriodAdd.dataClass,
 });
@@ -45,7 +50,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      type: (variablesModules.TYPE.PERIODIC),
+    };
     setIsMounted(true);
   }
 
@@ -82,6 +89,10 @@ class Index extends PureComponent {
       type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
       payload: {},
     });
+    dispatch({
+      type: 'childDevelopAssessmentPeriodAdd/GET_PROBLEMS',
+      payload: {},
+    });
   };
 
 
@@ -109,6 +120,11 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && params.id) {
+      this.setStateData({
+        type: details?.periodic
+          ? variablesModules.TYPE.PERIODIC
+          : variablesModules.TYPE.INTRODUCTION,
+      });
       this.formRef.current.setFieldsValue({
         ...details,
         branchId: details.branch.map((i) => i.id),
@@ -141,6 +157,7 @@ class Index extends PureComponent {
   };
 
   onFinish = (values) => {
+    const { type } = this.state;
     const {
       dispatch,
       match: { params },
@@ -155,6 +172,8 @@ class Index extends PureComponent {
         Helper.getDate(last(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
       ...values,
       id: params.id,
+      periodic: type === 'PERIODIC' ? true : "",
+      introduction: type === 'INTRODUCTION' ? true : "",
     };
     dispatch({
       type: params.id ? 'childDevelopAssessmentPeriodAdd/UPDATE' : 'childDevelopAssessmentPeriodAdd/ADD',
@@ -179,18 +198,23 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeType = (event) => {
+    this.setStateData({ type: event.target.value });
+  };
+
   render() {
     const {
 
       menuData,
       dataClass,
       schoolYear,
+      problems,
       branches,
       loading: { effects },
       match: { params },
     } = this.props;
+    const { type } = this.state;
     const loadingSubmit = effects['childDevelopAssessmentPeriodAdd/ADD'] || effects['childDevelopAssessmentPeriodAdd/UPDATE'];
-
     return (
       <>
         <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuData} />
@@ -211,11 +235,27 @@ class Index extends PureComponent {
                       Thông tin thêm mới
                     </Heading>
                     <Pane className="row mt20">
+                      <Pane className="col-lg-12">
+                        <FormItemAntd >
+                          <RadioGroup
+                            options={variablesModules.TYPES}
+                            value={type}
+                            onChange={this.onChangeType}
+                          />
+                        </FormItemAntd>
+                      </Pane>
                       <Pane className="col-lg-6">
                         <FormItem label="Mã kỳ đánh giá" name="code" type={variables.INPUT} placeholder={" "} disabled />
                       </Pane>
-                      <Pane className="col-lg-12">
-                        <FormItem label="Tên kỳ đánh giá" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          name="nameAssessmentPeriodId"
+                          data={problems}
+                          placeholder="Chọn"
+                          type={variables.SELECT}
+                          label="Tên kỳ đánh giá"
+                          rules={[variables.RULES.EMPTY_INPUT]}
+                        />
                       </Pane>
                       <Pane className="col-lg-6">
                         <FormItem
@@ -304,6 +344,7 @@ Index.propTypes = {
   schoolYear: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   dataClass: PropTypes.arrayOf(PropTypes.any),
+  problems: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -315,6 +356,7 @@ Index.defaultProps = {
   schoolYear: [],
   branches: [],
   dataClass: [],
+  problems: [],
 };
 
 export default Index;
