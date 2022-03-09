@@ -47,7 +47,7 @@ class AppointCreateRequest extends FormRequest
             'data.*.employeeId' => [
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
-                    $employeeId = request()->employeeId;
+                    $employeeId = $value;
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
 
