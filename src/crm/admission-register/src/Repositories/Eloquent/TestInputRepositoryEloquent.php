@@ -191,109 +191,8 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         $data = [];
         $testInput = TestInput::find($id);
         $admissionRegister = AdmissionRegister::find($testInput->admission_register_id);
-        $studentInfo = StudentInfo::find($admissionRegister->student_info_id);
-
-        switch ($studentInfo->sex) {
-            case 0:
-                $sex = 'FEMALE';
-                break;
-            case 1:
-                $sex = 'MALE';
-                break;
-            case 2:
-                $sex = 'OTHER';
-                break;
-            default:
-                break;
-        }
-
-        $birthday = Carbon::parse($studentInfo->birth_date);
-        $now = Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'));
-        $numberOfMonth = $birthday->diffInMonths($now);
-        $customerLead = CustomerLead::find($studentInfo->customer_lead_id);
-
-        switch ($customerLead->sex) {
-            case 0:
-                $sex = 'FEMALE';
-                break;
-            case 1:
-                $sex = 'MALE';
-                break;
-            case 2:
-                $sex = 'OTHER';
-                break;
-            default:
-                break;
-        }
-
-        $data['studentInfo']['FatherAccount'] = null;
-        $customerLeadAccount = SsoAccount::where('model_id', $customerLead->id)->first();
-
-        if (!is_null($customerLeadAccount)) {
-            $data['studentInfo']['FatherAccount'] = [
-                'AppUserId' => $customerLeadAccount->sso_user_id,
-                'UserName' => $customerLeadAccount->user_name,
-                'FaceImageStatus' => ''
-            ];
-        }
-
-        $data['studentInfo']['student'] = [
-            'code' => 'CrmStudent',
-            'cardNumber' => '',
-            'employeeUd' => null,
-            'fullName' => !empty($studentInfo->full_name) ? $studentInfo->full_name : '',
-            'sex' => $sex,
-            'dayOfBirth' => !empty($studentInfo->birth_date) ? $studentInfo->birth_date : '',
-            'age' => $numberOfMonth,
-            'address' => '',
-            'street' => '',
-            'city' => null,
-            'district' => null,
-            'ward' => null,
-            'classId' => null,
-            'studentCrmId' => $studentInfo->id,
-            'health' => '',
-            'registerDate' => Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d'),
-            'laborNumber' => '',
-            'startDate' => Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d'),
-            'status' => 'REGISTED',
-            'note' => !empty($admissionRegister->children_note) ? $admissionRegister->children_note : '',
-            'parentWish' => !empty($admissionRegister->parent_wish) ? $admissionRegister->parent_wish : '',
-            'source' => '',
-            'comments' => '',
-            'fileImage' => !empty($studentInfo->file_image) ? $studentInfo->file_image : '',
-        ];
-        $data['studentInfo']['fartherId'] = '00000000-0000-0000-0000-000000000000';
-        $data['studentInfo']['MotherId'] = '00000000-0000-0000-0000-000000000000';
-        $data['studentInfo']['father'] = [
-            'employeeId' => null,
-            'parentCrmId' => $customerLead->id,
-            'code' => $customerLead->code,
-            'fullName' => $customerLead->full_name,
-            'sex' => $sex,
-            'dayOfBirth' => !empty($customerLead->birth_date) ? $customerLead->birth_date : '',
-            'address' => !empty($customerLead->address) ? $customerLead->address : '',
-            'street' => null,
-            'city' => null,
-            'district' => null,
-            'ward' => null,
-            'phone' => $customerLead->phone,
-            'anotherPhone' => !empty($customerLead->other_phone) ? $customerLead->other_phone : '',
-            'email' => $customerLead->email,
-            'zalo' => null,
-            'faceBook' => null,
-            'instagram' => null,
-            'hobby' => null,
-            'referent' => null,
-            'source' => null,
-            'status' => 'REGISTED',
-            'jobTile' => null,
-            'fileImage' => !empty($testInput->file_image) ? $testInput->file_image : '',
-        ];
-        $data['studentInfo']['mother'] = null;
-        $data['studentInfo']['MotherAccount'] = null;
-
         $data['testInput'] = [
+            'studentId' => $admissionRegister->student_clover_id,
             'strength' => !empty($testInput->strength) ? $testInput->strength : '',
             'encourage' => !empty($testInput->encourage) ? $testInput->encourage : '',
             'timeAgeTestSemester' => !empty($testInput->time_age) ? $testInput->time_age : '',
@@ -304,20 +203,20 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
 
                 if (!array_key_exists($value->id, $data['testInput']['detail'])) {
                     $data['testInput']['detail'][$valueChildren->test_input_detail_id] = [
-                        'categorySkillId' => $value->category_skill_id,
+                        'categorySkillId' => $value->categorySkill->category_skill_clover_id,
                         'isCheck' => [
                             [
-                                'childEvaluateId' => $valueChildren->child_evaluate_id,
-                                'childEvaluateDetailId' => $valueChildren->child_evaluate_detail_id,
-                                'childEvaluateDetailChildrenId' => $valueChildren->child_evaluate_detail_children_id,
+                                'childEvaluateId' => $valueChildren->childEvaluate->child_evaluate_clover_id,
+                                'childEvaluateDetailId' => $valueChildren->childEvaluateDetail->child_evaluate_detail_clover_id,
+                                'childEvaluateDetailChildrenId' => $valueChildren->childEvaluateDetailChildren->child_evaluate_detail_children_clover_id,
                             ]
                         ]
                     ];
                 } else {
                     $data['testInput']['detail'][$valueChildren->test_input_detail_id]['isCheck'][] = [
-                        'childEvaluateId' => $valueChildren->child_evaluate_id,
-                        'childEvaluateDetailId' => $valueChildren->child_evaluate_detail_id,
-                        'childEvaluateDetailChildrenId' => $valueChildren->child_evaluate_detail_children_id,
+                        'childEvaluateId' => $valueChildren->childEvaluate->child_evaluate_clover_id,
+                        'childEvaluateDetailId' => $valueChildren->childEvaluateDetail->child_evaluate_detail_clover_id,
+                        'childEvaluateDetailChildrenId' => $valueChildren->childEvaluateDetailChildren->child_evaluate_detail_children_clover_id,
                     ];
                 }
             }

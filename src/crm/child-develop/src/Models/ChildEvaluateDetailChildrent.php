@@ -9,7 +9,7 @@ class ChildEvaluateDetailChildrent extends UuidModel
     protected $table = 'child_evaluate_detail_childrens';
 
     protected $fillable = [
-        'content', 'use', 'child_evaluate_detail_id'
+        'content', 'use', 'child_evaluate_detail_id', 'child_evaluate_detail_children_clover_id'
     ];
 
     public function childEvaluateDetail()

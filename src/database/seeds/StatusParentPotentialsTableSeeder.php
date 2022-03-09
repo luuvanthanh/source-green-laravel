@@ -25,6 +25,7 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'use' => false,
                 'status_hard' => true,
+                'number' => 1
             ),
             1 =>
             array(
@@ -36,6 +37,7 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'use' => false,
                 'status_hard' => true,
+                'number' => 2
             ),
             2 =>
             array(
@@ -47,6 +49,7 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'use' => true,
                 'status_hard' => true,
+                'number' => 3
             ),
             3 =>
             array(
@@ -58,6 +61,7 @@ class StatusParentPotentialsTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'use' => true,
                 'status_hard' => true,
+                'number' => 4
             )
         ));
     }

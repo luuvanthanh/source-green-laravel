@@ -18,7 +18,7 @@ class StatusParentPotential extends UuidModel
     public $incrementing = false;
 
     public $fillable = [
-        'name', 'code', 'use', 'status_hard'
+        'name', 'code', 'use', 'status_hard', 'number'
     ];
 
     public function customerPotentialStatusCare()
@@ -29,5 +29,13 @@ class StatusParentPotential extends UuidModel
     public function customerPotentialReference()
     {
         return $this->hasMany(CustomerPotentialReference::class);
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->number = $model->max('number') + 1;
+        });
     }
 }
