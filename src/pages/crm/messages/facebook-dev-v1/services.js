@@ -1,7 +1,6 @@
 import request from '@/utils/request';
 import requestCrm from '@/utils/requestCrm';
 import { Helper } from '@/utils';
-import { omit } from 'lodash';
 
 export function get(data = {}) {
   return request('/v1/districts', {
@@ -200,6 +199,15 @@ export function DeleteEmployeeFb(data = {}) {
     method: 'POST',
     params: {
       ...data,
+    },
+  });
+}
+
+export function getPotential(data = {}) {
+  return requestCrm(`/v1/customer-potentials`, {
+    method: 'GET',
+    params: {
+      customer_lead_id: data,
     },
   });
 }

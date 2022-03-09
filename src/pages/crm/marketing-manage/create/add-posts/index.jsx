@@ -222,7 +222,7 @@ const General = memo(
                           role="presentation"
                           loading={loadingSubmit}
                           onClick={() => history.goBack()}
-                        >git 
+                        >
                           Hủy
                         </p>
                       )}
