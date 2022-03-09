@@ -184,10 +184,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
     public function officialStudent(array $attributes)
     {
-        $student = StudentServices::createStudentInfo($attributes['studentInfo']);
-
         if (!empty($attributes['testInput'])) {
-            $attributes['testInput']['studentId'] = $student->student->id;
             $attributes['testInput']['type'] = TestSemester::TYPE['TEST_INPUT'];
             $attributes['testInput']['status'] = TestSemester::STATUS['FINISH'];
             $attributes['testInput']['approvalStatus'] = TestSemester::APPROVAL_STATUS['APPROVAD'];
@@ -209,7 +206,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             }
         }
 
-        return true;
+        return parent::find($testInput->Id);
     }
 
     public function update(array $attributes, $id)
