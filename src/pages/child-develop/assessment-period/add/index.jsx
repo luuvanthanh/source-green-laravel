@@ -172,8 +172,8 @@ class Index extends PureComponent {
         Helper.getDate(last(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
       ...values,
       id: params.id,
-      periodic: type === 'PERIODIC' ? true : "",
-      introduction: type === 'INTRODUCTION' ? true : "",
+      periodic: type === 'PERIODIC' ? true : 'false',
+      introduction: type === 'INTRODUCTION' ? true : 'false',
     };
     dispatch({
       type: params.id ? 'childDevelopAssessmentPeriodAdd/UPDATE' : 'childDevelopAssessmentPeriodAdd/ADD',

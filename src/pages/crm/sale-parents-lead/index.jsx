@@ -655,12 +655,12 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={[{ name: 'Chọn tất cả Tình trạng lead' }, ...lead,]}
+                        data={[{ name: 'Chọn tất cả phân loại PH' }, ...lead,]}
                         name="lead"
                         onChange={(event) => this.onChangeSelect(event, 'lead_id')}
                         type={variables.SELECT}
                         allowClear={false}
-                        placeholder="Chọn tình trạng lead"
+                        placeholder="Chọn phân loại PH"
                       />
                     </div>
                     <div className="col-lg-3">

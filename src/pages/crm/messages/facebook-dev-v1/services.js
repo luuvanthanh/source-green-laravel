@@ -211,3 +211,11 @@ export function getPotential(data = {}) {
     },
   });
 }
+
+export function getToket(params = {}) {
+  return request('/v12.0/oauth/access_token', {
+    prefix: ULR_FB,
+    method: 'GET',
+    params,
+  });
+}
