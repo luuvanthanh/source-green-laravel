@@ -114,7 +114,8 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             }
 
             if (!is_null($customerLead)) {
-                $this->createStudent($attributes, $admissionRegister, $customerLead->id);
+                $studentClover = $this->createStudent($attributes, $admissionRegister, $customerLead->id);
+                $admissionRegister->update(['student_clover_id' => $studentClover->student->id]);
             }
 
             \DB::commit();
