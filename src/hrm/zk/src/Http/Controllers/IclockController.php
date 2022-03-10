@@ -204,7 +204,7 @@ class IclockController extends Controller
                 continue;
             }
             foreach ($haystack as $str) {
-                if (preg_match('/^{$str}/i', $value, $m)) {
+                if (preg_match("/^{$str}/i", $value, $m)) {
                     $stringAttributes = trim(str_replace($str, '', $value));
                     switch ($m[0]) {
                         case $haystack['employee']:
