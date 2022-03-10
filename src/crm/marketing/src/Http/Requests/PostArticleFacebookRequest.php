@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Marketing\Http\Requests;
 
 use GGPHP\Crm\Marketing\Models\Article;
+use GGPHP\Crm\Marketing\Models\MarketingProgram;
 use GGPHP\Crm\Marketing\Models\PostFacebookInfo;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -29,13 +30,20 @@ class PostArticleFacebookRequest extends FormRequest
             'article_id' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $article = PostFacebookInfo::where('article_id', $value)->first();
+                    $marketingProgram = MarketingProgram::whereHas('article', function ($query) use ($value) {
+                        $query->where('id', $value);
+                    })->first();
 
-                    if (is_null($article)) {
-                        return true;
+                    $article = PostFacebookInfo::where('article_id', $value)->first();
+                    
+                    if ($marketingProgram->status == MarketingProgram::STATUS['NOT_APPLY']) {
+                        return $fail('Chương trình chưa được áp dụng, không thể đăng bài viết');
+                    }
+                    if (!is_null($article)) {
+                        return $fail('Bài viết này đã được đăng lên facebook rồi, vui lòng chọn bài viết khác');
                     }
 
-                    return $fail('Bài viết này đã được đăng lên facebook rồi, vui lòng chọn bài viết khác');
+                    return true;
                 },
             ],
         ];
