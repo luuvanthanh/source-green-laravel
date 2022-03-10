@@ -101,24 +101,9 @@ const Index = memo(() => {
   useEffect(() => {
     if (user?.userID) {
       dispatch({
-        type: 'crmFBDevV1/GET_USER_TOKEN',
-        payload: {
-          grant_type: 'fb_exchange_token',
-          client_id: APP_ID_FB,
-          client_secret: 'd827d02fc195957d13fa305815c501bf',
-          fb_exchange_token: user?.accessToken,
-          access_token: user?.accessToken,
-        }
-      });
-    }
-  }, [user?.userID]);
-
-  useEffect(() => {
-    if (token?.access_token) {
-      dispatch({
         type: 'crmFBDevV1/GET_PAGES',
         payload: {
-          user_access_token: token?.access_token,
+          user_access_token: user?.accessToken,
           user_id: user?.userID,
         },
         callback: (response) => {
@@ -128,7 +113,7 @@ const Index = memo(() => {
         },
       });
     }
-  }, [token?.access_token]);
+  }, [user?.userID]);
 
   useEffect(() => {
     if (pageCurrent.length > 0) {
