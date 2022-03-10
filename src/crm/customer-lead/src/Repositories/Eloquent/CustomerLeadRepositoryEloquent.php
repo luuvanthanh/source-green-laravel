@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\CustomerTag;
+use GGPHP\Crm\CustomerLead\Models\StatusLead;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Presenters\CustomerLeadPresenter;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
@@ -213,7 +214,10 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
                 $attributes['code'] = CustomerLead::CODE . $stt;
             }
         }
+        
+        $attributes['manual_create'] = true;
         $customerLead = CustomerLead::create($attributes);
+        $customerLead->statusLead()->create(['status' => StatusLead::STATUS_LEAD['LEAD_NEW']]);
 
         return $this->parserResult($customerLead);
     }
