@@ -122,7 +122,7 @@ const Index = memo(() => {
         if (response) {
           setData((prev) =>
             prev.map((item) =>
-              item.id === record.id
+              item.test === record.test && item.id === record.id 
                 ? {
                   ...item,
                   file_image: head(response.results)?.fileInfo?.url,
@@ -239,7 +239,7 @@ const Index = memo(() => {
       ),
     },
   ];
-
+  
   return (
     <>
       <Helmet title="Cấu hình quy trình lớp học" />

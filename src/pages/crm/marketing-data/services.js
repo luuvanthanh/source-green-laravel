@@ -52,21 +52,19 @@ export function add(data = {}) {
   });
 }
 
-export function getSearch(params) {
+export function getSearch() {
   return request(`/v1/search-sources`, {
     method: 'GET',
-    params: {
-      ...params,
+    params: {  
       orderBy: 'name',
     },
   });
 }
 
-export function getProgram(params) {
+export function getProgram() {
   return request(`/v1/marketing-programs`, {
     method: 'GET',
     params: {
-      ...params,
       orderBy: 'name',
     },
   });

@@ -18,7 +18,7 @@ const marginProps = { style: { marginBottom: 12 } };
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
@@ -29,7 +29,7 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   students: crmSaleAdmissionAdd.students,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, students }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details }) => {
     const formRef = useRef();
     const [files, setFiles] = useState([]);
     const mounted = useRef(false);
@@ -90,7 +90,7 @@ const General = memo(
         formRef.current.setFieldsValue({
           ...details,
           ...head(details.positionLevel),
-          birth_date: get(students, 'studentInfo.birth_date') && moment(get(students, 'studentInfo.birth_date')),
+          birth_date: get(details, 'studentInfo.birth_date') && moment(get(details, 'studentInfo.birth_date')),
         });
       }
       mountedSet(setFiles, details?.studentInfo?.file_image);
@@ -103,83 +103,82 @@ const General = memo(
       );
     };
     return (
-      <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-        <Pane className="card">
+      <Pane className={stylesModule['disabled-container']}>
+        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+          <Pane className="card">
 
-          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-            <Heading type="form-title" style={{ marginBottom: 20 }}>
-              Thông tin học sinh
-            </Heading>
+            <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+              <Heading type="form-title" style={{ marginBottom: 20 }}>
+                Thông tin học sinh
+              </Heading>
 
-            <Pane className="row">
-              <Pane className="col">
-                <Form.Item name="file_image" label="Hình ảnh học sinh">
-                  {
-                    details?.studentInfo?.file_image ?
-                      <ImageUpload
-                        callback={(files) => uploadFiles(files)}
-                        fileImage={files}
-                      />
-                      :
-                      < Avatar shape="square" size={100} icon={<UserOutlined />} />
-                  }
-                </Form.Item>
-              </Pane>
-            </Pane>
-            <Pane className={stylesModule['wrapper-student']}>
-              <Pane className="row" {...marginProps}>
-                <Pane className="col-lg-4">
-                  <Form.Item>
-
-                    <FormItem
-                      value={get(details, 'studentInfo.full_name')}
-                      label="Họ và tên"
-                      type={variables.INPUT}
-                      disabled
-                      rules={[variables.RULES.EMPTY]}
-                    />
+              <Pane className="row">
+                <Pane className="col">
+                  <Form.Item name="file_image" label="Hình ảnh học sinh">
+                    {
+                      details?.studentInfo?.file_image ?
+                        <ImageUpload
+                          callback={(files) => uploadFiles(files)}
+                          fileImage={files}
+                        />
+                        :
+                        < Avatar shape="square" size={100} icon={<UserOutlined />} />
+                    }
                   </Form.Item>
                 </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem
-                    value={get(details, 'studentInfo.birth_date')}
-                    label="Ngày sinh"
-                    type={variables.INPUT}
-                    format={variables.DATE_FORMAT.DATE_TIME}
-                    rules={[variables.RULES.EMPTY]}
-                    disabled
-                    disabledDate={(current) => current > moment()}
-                  />
-                </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem
-                    value={get(details, 'studentInfo.age_month')}
-                    label="Tuổi (tháng)"
-                    type={variables.INPUT}
-                    disabled
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                  />
-                </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem
-                    value={get(details, 'studentInfo.sex')}
-                    options={['id', 'name']}
-                    data={genders}
-                    placeholder="Chọn"
-                    type={variables.SELECT}
-                    disabled
-                    label="Giới tính"
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                  />
-                </Pane>
-                <Pane className="col-lg-8">
-                  <FormItem
-                    name="address"
-                    label="Địa chỉ"
-                    type={variables.INPUT}
-                  />
-                </Pane>
-                {/* <Pane className="col-lg-4">
+              </Pane>
+              <Pane className={stylesModule['wrapper-student']}>
+                <Pane className="row" {...marginProps}>
+                  <Pane className="col-lg-4">
+                    <Form.Item>
+
+                      <FormItem
+                        value={get(details, 'studentInfo.full_name')}
+                        label="Họ và tên"
+                        type={variables.INPUT}
+                        disabled
+                        rules={[variables.RULES.EMPTY]}
+                      />
+                    </Form.Item>
+                  </Pane>
+                  <Pane className="col-lg-4">
+                    <FormItem
+                      name="birth_date"
+                      label="Ngày sinh"
+                      type={variables.DATE_PICKER}
+                      disabledDate={(current) => current > moment()}
+                      disabled
+                    />
+                  </Pane>
+                  <Pane className="col-lg-4">
+                    <FormItem
+                      value={get(details, 'studentInfo.age_month')}
+                      label="Tuổi (tháng)"
+                      type={variables.INPUT}
+                      disabled
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
+                  </Pane>
+                  <Pane className="col-lg-4">
+                    <FormItem
+                      value={get(details, 'studentInfo.sex')}
+                      options={['id', 'name']}
+                      data={genders}
+                      placeholder="Chọn"
+                      type={variables.SELECT}
+                      disabled
+                      label="Giới tính"
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
+                  </Pane>
+                  <Pane className="col-lg-8">
+                    <FormItem
+                      name="address"
+                      label="Địa chỉ"
+                      type={variables.INPUT}
+                    />
+                  </Pane>
+                  {/* <Pane className="col-lg-4">
                 <FormItem
                   options={['id', 'name']}
                   name=""
@@ -206,18 +205,20 @@ const General = memo(
                   label="Năm"
                 />
               </Pane> */}
+                </Pane>
               </Pane>
             </Pane>
-          </Pane>
 
-          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-            <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
-              Lưu
-            </Button>
-          </Pane>
+            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+              <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                Lưu
+              </Button>
+            </Pane>
 
-        </Pane>
-      </Form>
+          </Pane>
+        </Form>
+
+      </Pane>
     );
   },
 );

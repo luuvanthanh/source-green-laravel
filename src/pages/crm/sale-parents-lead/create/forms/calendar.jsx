@@ -92,7 +92,6 @@ const Index = memo(() => {
     setModal({ visible: true, details });
     setData({ details });
   };
-
   const redirectDetails = (key) => {
     if (!data?.details?.publicId) {
       return;
@@ -331,6 +330,7 @@ const Index = memo(() => {
             slotMinTime="04:00"
             slotMaxTime="20:00"
             editable
+            initialView="dayGridMonth"
             fixedWeekCount={false}
             showNonCurrentDates
             locales={allLocales}

@@ -35,12 +35,14 @@ const Index = memo(() => {
 
   const responseFacebook = (response) => {
     console.log('response', response);
+    console.log('user',user);
     dispatch({
       type: 'crmMarketingManageAdd/GET_USER',
       payload: response,
     });
     if(response){
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(response));
+      sessionStorage.setItem('user', JSON.stringify(response));
     }
   };
 

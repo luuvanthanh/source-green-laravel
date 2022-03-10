@@ -18,7 +18,7 @@ const marginProps = { style: { marginBottom: 12 } };
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   loading,
@@ -122,7 +122,6 @@ const General = memo(
         },
       });
     };
-
     /**
      * Function submit form modal
      * @param {object} values values of form
@@ -220,6 +219,7 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Giới tính"
+                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -322,14 +322,13 @@ const General = memo(
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  {params.id ? <FormItem
+                  {details?.manual_create  ? <FormItem
                     options={['id', 'name']}
                     name="search_source_id"
                     data={search}
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Nguồn tìm kiếm"
-                    disabled
                   /> : <FormItem
                     options={['id', 'name']}
                     name="search_source_id"
@@ -338,6 +337,7 @@ const General = memo(
                     type={variables.SELECT}
                     label="Nguồn tìm kiếm"
                     rules={[variables.RULES.EMPTY_INPUT]}
+                    disabled
                   />}
                 </Pane>
               </Pane>

@@ -12,11 +12,12 @@ import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import { Helper } from '@/utils';
+import stylesModule from '../../styles.module.scss';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
@@ -40,7 +41,7 @@ const General = memo(
       effects[`crmSaleAdmissionAdd/ADD_PARENTS`];
 
     const [files, setFiles] = useState({});
-
+    const [status, setStatus] = useState(false);
 
     useEffect(() => {
       dispatch({
@@ -161,7 +162,7 @@ const General = memo(
     };
 
     return (
-      <Pane>
+      <Pane className={stylesModule['disabled-container']}>
         <Pane>
           <Form
             layout="vertical"
@@ -189,6 +190,7 @@ const General = memo(
                               const data = formRef?.current?.getFieldsValue();
                               const itemData = data?.data?.find((item, indexWater) => indexWater === index);
                               file = parents.find((item) => item.id === itemData?.id);
+                              setStatus(file?.status !== undefined ? file?.status : true);
                               return (
                                 <>
                                   {file?.status === false ?
@@ -202,7 +204,6 @@ const General = memo(
                                       <Heading type="form-block-title" style={{ marginBottom: 12 }}>
                                         {file?.sex === "MALE" ? 'THÔNG TIN CHA' : ""}
                                         {file?.sex === "FEMALE" ? 'THÔNG TIN MẸ' : ""}
-                                        {file?.sex === "OTHER" ? 'THÔNG TIN KHÁC' : ""}
                                       </Heading>
 
                                       <Pane className="row">
@@ -222,6 +223,7 @@ const General = memo(
                                             name={[field.name, 'full_name']}
                                             fieldKey={[field.fieldKey, 'full_name']}
                                             type={variables.INPUT}
+                                            placeholder=" "
                                             disabled
                                           />
                                         </Pane>
@@ -231,6 +233,7 @@ const General = memo(
                                             label="Ngày sinh"
                                             fieldKey={[field.fieldKey, 'birth_date']}
                                             type={variables.DATE_PICKER}
+                                            placeholder=" "
                                             disabled
                                           />
                                         </Pane>
@@ -241,9 +244,9 @@ const General = memo(
                                             options={['id', 'name']}
                                             name={[field.name, 'sex']}
                                             data={genders}
-                                            placeholder="Chọn"
                                             type={variables.SELECT}
                                             label="Giới tính"
+                                            placeholder=" "
                                             disabled
                                           />
                                         </Pane>
@@ -252,6 +255,7 @@ const General = memo(
                                             name={[field.name, 'email']}
                                             label="Email"
                                             type={variables.INPUT}
+                                            placeholder=" "
                                             disabled
                                           />
                                         </Pane>
@@ -259,6 +263,7 @@ const General = memo(
                                           <FormItem
                                             name={[field.name, 'phone']}
                                             label="Số điện thoại"
+                                            placeholder=" "
                                             type={variables.INPUT}
                                             disabled
                                           />
@@ -267,6 +272,7 @@ const General = memo(
                                           <FormItem
                                             name={[field.name, 'other_phone']}
                                             label="Số điện thoại Khác"
+                                            placeholder=" "
                                             type={variables.INPUT}
                                             rules={[variables.RULES.PHONE]}
                                             disabled
@@ -276,6 +282,7 @@ const General = memo(
                                           <FormItem
                                             name={[field.name, 'address']}
                                             label="Địa chỉ"
+                                            placeholder=" "
                                             type={variables.INPUT}
                                             disabled
                                           />
@@ -285,7 +292,7 @@ const General = memo(
                                             options={['id', 'name']}
                                             name={[field.name, 'city_id']}
                                             data={city}
-                                            placeholder="Chọn"
+                                            placeholder=" "
                                             type={variables.SELECT}
                                             label="Thuộc tỉnh thành"
                                             disabled
@@ -296,35 +303,35 @@ const General = memo(
                                             options={['id', 'name']}
                                             name={[field.name, 'district_id']}
                                             data={district}
-                                            placeholder="Chọn"
+                                            placeholder=" "
                                             type={variables.SELECT}
                                             label="Thuộc quận huyện"
                                             disabled
                                           />
                                         </Pane>
                                         <Pane className="col-lg-4">
-                                          <FormItem name={[field.name, 'facebook']} label="Facebook" type={variables.INPUT} disabled />
+                                          <FormItem name={[field.name, 'facebook']} placeholder=" " label="Facebook" type={variables.INPUT} disabled />
                                         </Pane>
                                         <Pane className="col-lg-4">
-                                          <FormItem name={[field.name, 'zalo']} label="Zalo" type={variables.INPUT} disabled />
+                                          <FormItem name={[field.name, 'zalo']} placeholder=" " label="Zalo" type={variables.INPUT} disabled />
                                         </Pane>
                                         <Pane className="col-lg-4">
-                                          <FormItem name={[field.name, 'skype']} label="Skype" type={variables.INPUT} disabled />
+                                          <FormItem name={[field.name, 'skype']} placeholder=" " label="Skype" type={variables.INPUT} disabled />
                                         </Pane>
                                         <Pane className="col-lg-4">
-                                          <FormItem name={[field.name, 'instagram']} label="Instagram" type={variables.INPUT} disabled />
+                                          <FormItem name={[field.name, 'instagram']} placeholder=" " label="Instagram" type={variables.INPUT} disabled />
                                         </Pane>
                                         <Pane className="col-lg-4">
-                                          <FormItem name={[field.name, 'name_company']} label="Tên công ty" type={variables.INPUT} disabled />
+                                          <FormItem name={[field.name, 'name_company']} placeholder=" " label="Tên công ty" type={variables.INPUT} disabled />
                                         </Pane>
                                         <Pane className="col-lg-4">
-                                          <FormItem name={[field.name, 'address_company']} label="Địa chỉ công ty" type={variables.INPUT} disabled />
+                                          <FormItem name={[field.name, 'address_company']} placeholder=" " label="Địa chỉ công ty" type={variables.INPUT} disabled />
                                         </Pane>
                                         <Pane className="col-lg-4">
-                                          <FormItem name={[field.name, 'phone_company']} label="Số điện thoại" type={variables.INPUT} disabled />
+                                          <FormItem name={[field.name, 'phone_company']} placeholder=" " label="Số điện thoại" type={variables.INPUT} disabled />
                                         </Pane>
                                         <Pane className="col-lg-4">
-                                          <FormItem name={[field.name, 'career']} label="Nghề nghiệp " type={variables.INPUT} disabled />
+                                          <FormItem name={[field.name, 'career']} placeholder=" " label="Nghề nghiệp " type={variables.INPUT} disabled />
                                         </Pane>
 
                                       </Pane>
@@ -340,8 +347,14 @@ const General = memo(
                                         <Heading type="form-block-title" style={{ marginBottom: 12 }}>
                                           {file?.sex === "MALE" ? 'THÔNG TIN CHA' : ""}
                                           {file?.sex === "FEMALE" ? 'THÔNG TIN MẸ' : ""}
-                                          {file?.sex === "OTHER" ? 'THÔNG TIN KHÁC' : ""}
                                         </Heading>
+                                        {
+                                          file?.sex ?
+                                            " " :
+                                            <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+                                              {details?.parentInfo?.find(i => i?.sex === 'MALE') !== undefined ? 'THÔNG TIN MẸ' : 'THÔNG TIN CHA'}
+                                            </Heading>
+                                        }
 
                                         <Pane className="row">
                                           <Pane className="col">
@@ -482,19 +495,20 @@ const General = memo(
 
                               );
                             })}
-                            { fields.length < 2 ?
-                            <Pane className="pl20 pb20" >
-                              <Button
-                                color="success"
-                                ghost
-                                icon="plus"
-                                onClick={() => {
-                                  add();
-                                }}
-                              >
-                                Thêm thông tin
-                              </Button>
-                            </Pane> : ""
+                            {!status ?
+                              <Pane className="pl20 pb20" >
+                                <Button
+                                  color="success"
+                                  ghost
+                                  icon="plus"
+                                  onClick={() => {
+                                    add();
+                                    setStatus(true);
+                                  }}
+                                >
+                                  Thêm thông tin
+                                </Button>
+                              </Pane> : ""
                             }
                           </>
                         )}

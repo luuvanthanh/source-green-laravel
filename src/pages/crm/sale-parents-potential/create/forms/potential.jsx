@@ -7,7 +7,6 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import { variables, Helper } from '@/utils';
 import { CheckCircleOutlined } from '@ant-design/icons';
-import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -24,9 +23,9 @@ const General = memo(() => {
     parentLead,
     details,
     lead,
-    error,
+    user,
     loading: { effects },
-  } = useSelector(({ loading, crmSaleParentsPotentialAdd }) => ({
+  } = useSelector(({ loading, crmSaleParentsPotentialAdd, user }) => ({
     loading,
     lead: crmSaleParentsPotentialAdd.lead,
     error: crmSaleParentsPotentialAdd.error,
@@ -34,6 +33,7 @@ const General = memo(() => {
     parentLead: crmSaleParentsPotentialAdd.parentLead,
     detailsLead: crmSaleParentsPotentialAdd.detailsLead,
     data: crmSaleParentsPotentialAdd.data,
+    user: user.user,
   }));
 
   const loadingSubmit = effects[`crmSaleParentsPotentialAdd/ADD_STATUS_LEAD`];
@@ -45,6 +45,8 @@ const General = memo(() => {
       payload: {
         ...values,
         customer_potential_id: params.id,
+        user_update_id: user?.id,
+        user_update_info: user,
       },
       callback: (response, error) => {
         if (response) {
@@ -122,7 +124,7 @@ const General = memo(() => {
         key: 'name',
         className: 'max-width-150',
         width: 150,
-        render: (record) => get(record, 'name'),
+        render: (record) => <Text size="normal">{record?.user_update_info?.name}</Text>,
       },
     ];
     return columns;
@@ -131,7 +133,7 @@ const General = memo(() => {
   return (
     <Form layout="vertical" initialValues={{ data: [{}] }} ref={formRef} onFinish={onFinish}>
       <div className="card">
-        <Loading loading={loading} isError={error.isError} params={{ error }}>
+        <>
           <div style={{ padding: 20 }} className="pb-0 border-bottom">
             <Heading type="form-title" style={{ marginBottom: 20 }}>
               Tình trạng tiềm năng
@@ -140,12 +142,12 @@ const General = memo(() => {
               <Pane className="col-lg-12 ">
                 <Steps
                   labelPlacement="vertical"
-                  current={lead[0]?.statusParentPotential?.number - 1} 
+                  current={lead[0]?.statusParentPotential?.number - 1}
                   size="small"
                   className={stylesModule['wrapper-step']}
                 >
-                  {parentLead.map((items) => (
-                    <Step title={items.name} icon={<CheckCircleOutlined />} />
+                  {parentLead.map((items, index) => (
+                    <Step title={items.name} icon={<CheckCircleOutlined />} key={index} />
                   ))}
                 </Steps>
               </Pane>
@@ -174,7 +176,7 @@ const General = memo(() => {
               </Button>
             </div>
           </div>
-        </Loading>
+        </>
       </div>
       <div className="card">
         <div style={{ padding: 20 }} className="pb-0 border-bottom">

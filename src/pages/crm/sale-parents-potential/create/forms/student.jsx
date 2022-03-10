@@ -1,24 +1,25 @@
 import { memo, useRef, useState, useEffect } from 'react';
-import { Form } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Form, Avatar } from 'antd';
+// import { DeleteOutlined } from '@ant-design/icons';
 import { useParams } from 'umi';
 import { head, isEmpty } from 'lodash';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import Button from '@/components/CommonComponent/Button';
+// import Button from '@/components/CommonComponent/Button';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Text from '@/components/CommonComponent/Text';
+import { UserOutlined } from '@ant-design/icons';
 import csx from 'classnames';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const Students = memo(() => {
 
@@ -28,12 +29,12 @@ const Students = memo(() => {
 
   const mounted = useRef(false);
   const [fileImage, setFileImage] = useState([null]);
-  const [dayOfBirth, setDayOfBirth] = useState(null);
+  // const [dayOfBirth, setDayOfBirth] = useState(null);
 
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
   const {
-    loading: { effects },
+    // loading: { effects },
     student,
     relationships,
   } = useSelector(({ loading, crmSaleParentsPotentialAdd }) => ({
@@ -46,9 +47,9 @@ const Students = memo(() => {
   }));
 
   const [students, setStudents] = useState([]);
-  const loading = effects[`crmSaleParentsPotentialAdd/GET_STUDENTS`];
-  const loadingSubmit = effects[`crmSaleParentsPotentialAdd/ADD_STUDENTS`];
-  const [deleteRows, setDeleteRows] = useState([]);
+  // const loading = effects[`crmSaleParentsPotentialAdd/GET_STUDENTS`];
+  // const loadingSubmit = effects[`crmSaleParentsPotentialAdd/ADD_STUDENTS`];
+  // const [deleteRows, setDeleteRows] = useState([]);
 
   const onSetImage = (file, position) => {
     mountedSet(
@@ -74,7 +75,7 @@ const Students = memo(() => {
     const payload = {
       createRows: items.filter((item) => !item.id),
       updateRows: items.filter((item) => item.id),
-      deleteRows,
+      // deleteRows,
     };
     dispatch({
       type: 'crmSaleParentsPotentialAdd/ADD_STUDENTS',
@@ -114,13 +115,13 @@ const Students = memo(() => {
       callback: (response) => {
         if (response) {
           setStudents(response.parsePayload);
-          setDayOfBirth(moment(response.parsePayload.map((item) => ({
-            birth_date: moment(item.birth_date),
-          }))));
+          // setDayOfBirth(moment(response.parsePayload.map((item) => ({
+          //   birth_date: moment(item.birth_date),
+          // }))));
           form.setFieldsValue({
             data: response.parsePayload.map((item) => ({
               ...item,
-              birth_date: moment(item.birth_date),
+              birth_date: item.birth_date ?  moment(item?.birth_date) : "",
             })),
           });
         }
@@ -137,9 +138,9 @@ const Students = memo(() => {
     }
   }, [students]);
 
-  const onChaneDate = (e) => {
-    mountedSet(setDayOfBirth, e);
-  };
+  // const onChaneDate = (e) => {
+  //   mountedSet(setDayOfBirth, e);
+  // };
 
   return (
     <>
@@ -164,7 +165,8 @@ const Students = memo(() => {
                   <div className="row">
                     <div className="col-lg-12">
                       <Form.List name="data">
-                        {(fields, { add, remove }) => (
+                        {/* {(fields, { add, remove }) => ( */}
+                        {(fields,) => (
                           <>
                             {fields.map((field, index) => {
                               let file = {};
@@ -187,12 +189,16 @@ const Students = memo(() => {
                                   <Pane className="row">
                                     <Pane className="col-lg-4">
                                       <Form.Item name={[field.key, 'file_image']} label="Hình ảnh">
-                                        <ImageUpload
-                                          callback={(res) => {
-                                            onSetImage(res.fileInfo.url, index);
-                                          }}
-                                          fileImage={fileImage[index]}
-                                        />
+                                        {
+                                          file?.file_image ?
+                                            <ImageUpload
+                                              callback={(res) => {
+                                                onSetImage(res.fileInfo.url, index);
+                                              }}
+                                              fileImage={fileImage[index]}
+                                            /> :
+                                            < Avatar shape="square" size={100} icon={<UserOutlined />} />
+                                        }
                                       </Form.Item>
                                     </Pane>
                                   </Pane>
@@ -216,22 +222,15 @@ const Students = memo(() => {
                                         label="Ngày sinh"
                                         fieldKey={[field.fieldKey, 'birth_date']}
                                         type={variables.DATE_PICKER}
-                                        onChange={onChaneDate}
+                                      //  onChange={onChaneDate}
                                       />
                                     </Pane>
                                     <Pane className="col-lg-4">
-                                      {
-                                        file?.age_month ?
-                                          <Form.Item label="Tuổi (tháng)" >
-                                            <Text size="normal">
-                                              {file?.age_month}
-                                            </Text>
-                                          </Form.Item>
-                                          : <Form.Item label="Tuổi (tháng)" name={[field.name, 'age_month']}>
-                                            {dayOfBirth &&
-                                              moment().diff(moment(dayOfBirth), 'month')}
-                                          </Form.Item >
-                                      }
+                                      <Form.Item label="Tuổi (tháng)" >
+                                        <Text size="normal">
+                                          {file?.age_month}
+                                        </Text>
+                                      </Form.Item>
                                     </Pane>
                                     <Pane className="col-lg-4">
                                       <FormItem
@@ -255,7 +254,7 @@ const Students = memo(() => {
                                     </Pane>
                                   </Pane>
 
-                                  {fields.length > 0 && (
+                                  {/* {fields.length > 0 && (
                                     <DeleteOutlined
                                       className="position-absolute"
                                       style={{ top: 20, right: 20 }}
@@ -267,12 +266,12 @@ const Students = memo(() => {
                                         remove(index);
                                       }}
                                     />
-                                  )}
+                                  )} */}
                                 </Pane>
                               );
                             })}
 
-                            <Pane style={{ padding: 20 }} className="border-bottom">
+                            {/* <Pane style={{ padding: 20 }} className="border-bottom">
                               <Button
                                 color="success"
                                 ghost
@@ -297,14 +296,14 @@ const Students = memo(() => {
                               >
                                 Thêm học sinh
                               </Button>
-                            </Pane>
+                            </Pane> */}
                           </>
                         )}
                       </Form.List>
                     </div>
                   </div>
                 </Pane>
-                <Pane className="d-flex justify-content-between align-items-center mb20">
+                {/* <Pane className="d-flex justify-content-between align-items-center mb20">
                   <Button
                     className="ml-auto px25"
                     color="success"
@@ -314,7 +313,7 @@ const Students = memo(() => {
                   >
                     Lưu
                   </Button>
-                </Pane>
+                </Pane> */}
               </Pane>
             </Pane>
           </Form>

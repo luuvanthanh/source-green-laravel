@@ -2554,19 +2554,19 @@ export default [
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/danh-muc/ph-lead',
+            path: '/crm/danh-muc/phan-loai-PH',
             component: './crm/parents-lead',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/danh-muc/ph-lead/tao-moi',
+            path: '/crm/danh-muc/phan-loai-PH/tao-moi',
             component: './crm/parents-lead/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/danh-muc/ph-lead/:id/chi-tiet',
+            path: '/crm/danh-muc/phan-loai-PH/:id/chi-tiet',
             component: './crm/parents-lead/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
