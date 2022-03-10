@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTypeTeachersTable extends Migration
+class CreateRatingLevelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,13 @@ class CreateTypeTeachersTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TypeTeachers', function (Blueprint $table) {
+        Schema::create('evaluate-teacher.RatingLevels', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Code');
             $table->string('Name');
-            $table->string('DescriptionJob')->nullable();
-            $table->uuid('TypeOfContractId');
-            $table->string('Policy')->nullable();
-            $table->string('WorkExperience')->nullable();
-            $table->uuid('RatingLevelFrom');
-            $table->uuid('RatingLevelTo')->nullable();
+            $table->text('Description')->nullable();
+            $table->string('Type')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });
@@ -36,6 +32,6 @@ class CreateTypeTeachersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TypeTeachers');
+        Schema::dropIfExists('evaluate-teacher.RatingLevels');
     }
 }

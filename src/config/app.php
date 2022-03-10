@@ -210,6 +210,7 @@ return [
         GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
         GGPHP\WorkOnline\Providers\WorkOnlineServiceProvider::class,
         Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
+        GGPHP\EvaluateTeacher\Category\Providers\CategoryServiceProvider::class,
     ],
 
     /*
