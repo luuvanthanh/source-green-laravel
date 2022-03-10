@@ -32,6 +32,9 @@ class RouteRegistrar extends CoreRegistrar
         \Route::post('oauth/token', 'AccessTokenController@issueToken')->name('login');
         \Route::post('password/forgot/request', 'ForgotPasswordController@getResetToken');
         \Route::post('password/forgot/reset', 'ResetPasswordController@reset');
+
+        \Route::get('login/egov', 'AuthController@egovLogin');
+        \Route::get('callback/egov', 'AuthController@egovLoginCallback');
     }
 
     /**

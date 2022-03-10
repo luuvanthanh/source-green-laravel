@@ -11,6 +11,8 @@ use Response;
 
 class AuthController extends Controller
 {
+
+
     /**
      * @var UserRepository
      */
@@ -120,5 +122,19 @@ class AuthController extends Controller
     {
         $user = $this->userRepository->find(Auth::id());
         return $this->success($user, trans('lang::messages.common.getInfoSuccess'));
+    }
+
+    public function egovLogin(Request $request)
+    {
+        $cas = app('cas');
+        $cas->authenticate();
+    }
+
+    public function egovLoginCallback()
+    {
+        $cas = app('cas');
+        $cas->checkAuthentication();
+
+        dd($cas);
     }
 }
