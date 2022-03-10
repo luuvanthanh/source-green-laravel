@@ -131,5 +131,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\WorkOnline\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        GGPHP\EvaluateTeacher\Category\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });
