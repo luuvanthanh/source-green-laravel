@@ -16,7 +16,7 @@ const General = memo(() => {
   const {
     loading: { effects },
     detailsReferences,
-    parentLead,
+    // parentLead,
   } = useSelector(({ loading, crmSaleLeadAdd }) => ({
     loading,
     detailsReferences: crmSaleLeadAdd.detailsReferences,
@@ -144,7 +144,7 @@ const General = memo(() => {
                               rules={[variables.RULES.EMPTY_INPUT]}
                             />
                           </Pane>
-                          <Pane className="col-lg-4">
+                          {/* <Pane className="col-lg-4">
                             <FormItem
                               label="Tình trạng"
                               data={parentLead}
@@ -152,7 +152,7 @@ const General = memo(() => {
                               name="status_parent_lead_id"
                               type={variables.SELECT}
                             />
-                          </Pane>
+                          </Pane> */}
                         </Pane>
                       </Pane>
                     </div>

@@ -22,6 +22,7 @@ const General = memo(() => {
   const mounted = useRef(false);
   const {
     parentLead,
+    details,
     lead,
     error,
     loading: { effects },
@@ -91,6 +92,15 @@ const General = memo(() => {
     return mounted.current;
   }, []);
 
+
+  useEffect(() => {
+    if (details?.customerPotentialStatusCare?.length > 0) {
+      formRef.current.setFieldsValue({
+        status_parent_potential_id: details?.customerPotentialStatusCare[(details?.customerPotentialStatusCare?.length - 1)]?.status_parent_potential_id,
+      });
+    }
+  }, [details]);
+
   const header = () => {
     const columns = [
       {
@@ -117,6 +127,7 @@ const General = memo(() => {
     ];
     return columns;
   };
+
   return (
     <Form layout="vertical" initialValues={{ data: [{}] }} ref={formRef} onFinish={onFinish}>
       <div className="card">
@@ -129,7 +140,7 @@ const General = memo(() => {
               <Pane className="col-lg-12 ">
                 <Steps
                   labelPlacement="vertical"
-                  current={lead.length-1}
+                  current={lead[0]?.statusParentPotential?.number - 1} 
                   size="small"
                   className={stylesModule['wrapper-step']}
                 >
@@ -144,7 +155,7 @@ const General = memo(() => {
                 <FormItem
                   options={['id', 'name']}
                   name="status_parent_potential_id"
-                  data={parentLead}
+                  data={parentLead.filter(i => i?.use === false)}
                   placeholder="Chọn"
                   label="Tình trạng chăm sóc của phụ huynh tiềm năng"
                   type={variables.SELECT}
@@ -172,21 +183,21 @@ const General = memo(() => {
           </Heading>
           <div className="row">
             <Pane className="col-lg-12">
-            <div className={stylesModule['wrapper-table']}>
-              <Table
-                columns={header()}
-                dataSource={lead}
-                pagination={false}
-                className="table-edit"
-                isEmpty
-                params={{
-                  header: header(),
-                  type: 'table',
-                }}
-                bordered={false}
-                rowKey={(record) => record.id}
-                scroll={{ x: '100%' }}
-              />
+              <div className={stylesModule['wrapper-table']}>
+                <Table
+                  columns={header()}
+                  dataSource={lead}
+                  pagination={false}
+                  className="table-edit"
+                  isEmpty
+                  params={{
+                    header: header(),
+                    type: 'table',
+                  }}
+                  bordered={false}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: '100%' }}
+                />
               </div>
             </Pane>
           </div>

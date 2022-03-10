@@ -262,7 +262,11 @@ const General = memo(
           key: 'sex',
           width: 100,
           lassName: 'min-width-100',
-          render: (record) => <Text size="normal">{record?.sex}</Text>,
+          render: (record) => <Text size="normal">
+            {record?.sex === 'MALE' ? "Nam" : ""}
+            {record?.sex === 'FEMALE' ? "Nữ" : ""}
+            {record?.sex === 'OTHER' ? "Khác" : ""}
+            </Text>,
         },
         {
           title: 'Mối quan hệ',

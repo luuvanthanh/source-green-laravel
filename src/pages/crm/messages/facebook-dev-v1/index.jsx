@@ -1,5 +1,5 @@
 import { memo, useEffect, useState, useRef } from 'react';
-import {  Input, Skeleton, Tag, Select, Image, Upload, Form, Divider, Space, Checkbox } from 'antd';
+import { Input, Skeleton, Tag, Select, Image, Upload, Form, Divider, Space, Checkbox } from 'antd';
 import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -28,7 +28,7 @@ const Index = memo(() => {
 
   const [formRef] = Form.useForm();
   const dispatch = useDispatch();
-  const [{ user, tags, relationships, employeeFB, conversationsId }] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
+  const [{ user, tags, relationships, employeeFB, conversationsId ,token}] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
     crmFBDevV1,
     effects,
   ]);
@@ -99,11 +99,26 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    if (user.userID) {
+    if (user?.userID) {
+      dispatch({
+        type: 'crmFBDevV1/GET_USER_TOKEN',
+        payload: {
+          grant_type: 'fb_exchange_token',
+          client_id: APP_ID_FB,
+          client_secret: 'd827d02fc195957d13fa305815c501bf',
+          fb_exchange_token: user?.accessToken,
+          access_token: user?.accessToken,
+        }
+      });
+    }
+  }, [user?.userID]);
+
+  useEffect(() => {
+    if (token?.access_token) {
       dispatch({
         type: 'crmFBDevV1/GET_PAGES',
         payload: {
-          user_access_token: user?.accessToken,
+          user_access_token: token?.access_token,
           user_id: user?.userID,
         },
         callback: (response) => {
@@ -113,7 +128,7 @@ const Index = memo(() => {
         },
       });
     }
-  }, [user.userID]);
+  }, [token?.access_token]);
 
   useEffect(() => {
     if (pageCurrent.length > 0) {
@@ -326,6 +341,7 @@ const Index = memo(() => {
     });
 
     socket.on('facebook.synchronize.conversation', (event, data) => {
+      console.log("data", data);
       if (data) {
         dispatch({
           type: 'crmFBDevV1/ADD_CONVERSATIONS',
@@ -388,7 +404,7 @@ const Index = memo(() => {
 
     if (conversationCurrent?.id) {
       socket.on('facebook.message.receive', (event, data) => {
-        if (event) {
+        if (data) {
           dispatch({
             type: 'crmFBDevV1/GET_CONVERSATIONSCALL',
             payload: {},
@@ -398,9 +414,9 @@ const Index = memo(() => {
                   users.splice(users.findIndex(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to), 1);
                   users.unshift(response?.parsePayload?.find(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to));
                 }
-                // if ((users.findIndex(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to)) === - 1) {
-                //   users.unshift(response?.parsePayload?.find(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to));
-                // }
+                if ((users.findIndex(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to)) === - 1) {
+                  users.unshift(response?.parsePayload.find(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to));
+                }
               }
             },
           });
@@ -836,7 +852,7 @@ const Index = memo(() => {
       </>
     );
   };
-
+  console.log("conversationCurrent", conversationCurrent)
   const onSnippet = (attributes, from, to, name) => {
 
     const check = attributes?.substr(-4, 4);
@@ -906,7 +922,13 @@ const Index = memo(() => {
     setCheckNotPhone(false);
     setCheckBoxUser([]);
     setCheckBox([]);
-
+    mountedSet(setSearchUser, {
+      page: 1,
+      limit: 10,
+      total: 1,
+      hasMore: true,
+      loading: false,
+    });
     setLoadingMessageUser(true);
     setLoadingUser(true);
     setLoadingMessage(true);
@@ -1214,7 +1236,13 @@ const Index = memo(() => {
               })),
             );
             setConversationCurrent(firstUser);
-            mountedSet(setSearchUser, { ...searchUser, total: response.pagination.total });
+            mountedSet(setSearchUser, {
+              page: 1,
+              limit: 10,
+              hasMore: true,
+              loading: false,
+              total: response.pagination.total
+            });
           }
         },
       });
@@ -1386,9 +1414,10 @@ const Index = memo(() => {
     return "";
   };
   //STATUS LEAD
-
-
-
+  const deleteNote = () => {
+    setNoteModal(false);
+    setNoteValue(conversationCurrent?.userFacebookInfo?.note);
+  };
   //STATUS LEAD
   return (
     <div className={styles.wrapper}>
@@ -2074,18 +2103,18 @@ const Index = memo(() => {
                 </div>
               </div>
             </div>
-            <div className={styles['actions-container']}>
+            {/* <div className={styles['actions-container']}>
               <Button color="white" icon="email-plus" />
               <Button color="white" icon="phone-plus" />
               <Button color="white" icon="calendar-plus" />
               <Button color="white" icon="add-file-plus" />
-            </div>
+            </div> */}
             <Scrollbars
               autoHide
               autoHideTimeout={1000}
               autoHideDuration={100}
               autoHeight
-              autoHeightMax="calc(100vh - 350px)"
+              autoHeightMax="calc(100vh - 300px)"
             >
               {
                 conversationCurrent?.userFacebookInfo?.status === 'LEAD' && conversationCurrent?.userFacebookInfo?.customer_lead_id === detailLead?.id ?
@@ -2404,7 +2433,7 @@ const Index = memo(() => {
                           <p
                             className="btn-delete mr10"
                             role="presentation"
-                            onClick={() => setNoteModal(false)}
+                            onClick={() => deleteNote(false)}
                           >
                             Hủy
                           </p>

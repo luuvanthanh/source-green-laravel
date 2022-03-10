@@ -8,7 +8,7 @@ export const variables = {
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Đang diễn ra',
-    VERIFIED: 'đã diễn ra',
+    VERIFIED: 'Đã diễn ra',
     PENDING: 'Sắp diễn ra',
   },
   STATUS_SHIFT: {

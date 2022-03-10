@@ -20,6 +20,7 @@ export default {
     employeeFB: [],
     conversationsId: [],
     detailPotential: [],
+    token: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -73,6 +74,10 @@ export default {
       ...state,
       detailPotential: payload.parsePayload,
     }),
+    SET_USER_TOKEN: (state, { payload }) => ({
+      ...state,
+      token: payload,
+    }),
   },
   effects: {
     *GET_USER({ payload }, { put }) {
@@ -84,6 +89,22 @@ export default {
       } catch (error) {
         yield put({
           type: 'SET_ERROR',
+        });
+      }
+    },
+    *GET_USER_TOKEN({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getToket, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_USER_TOKEN',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
         });
       }
     },
