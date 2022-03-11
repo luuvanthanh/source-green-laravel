@@ -19,6 +19,8 @@ export default {
     detailLead: [],
     employeeFB: [],
     conversationsId: [],
+    detailPotential: [],
+    token: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -68,6 +70,14 @@ export default {
       ...state,
       conversationsId: payload.parsePayload,
     }),
+    SET_POTENTIAL: (state, { payload }) => ({
+      ...state,
+      detailPotential: payload.parsePayload,
+    }),
+    SET_USER_TOKEN: (state, { payload }) => ({
+      ...state,
+      token: payload,
+    }),
   },
   effects: {
     *GET_USER({ payload }, { put }) {
@@ -79,6 +89,22 @@ export default {
       } catch (error) {
         yield put({
           type: 'SET_ERROR',
+        });
+      }
+    },
+    *GET_USER_TOKEN({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getToket, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_USER_TOKEN',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
         });
       }
     },
@@ -226,6 +252,7 @@ export default {
           payload: response,
         });
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -271,6 +298,7 @@ export default {
           payload: response,
         });
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -305,6 +333,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_POTENTIAL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getPotential, payload);
+        yield saga.put({
+          type: 'SET_POTENTIAL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

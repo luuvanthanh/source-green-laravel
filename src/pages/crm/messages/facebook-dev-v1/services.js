@@ -1,7 +1,6 @@
 import request from '@/utils/request';
 import requestCrm from '@/utils/requestCrm';
 import { Helper } from '@/utils';
-import { omit } from 'lodash';
 
 export function get(data = {}) {
   return request('/v1/districts', {
@@ -201,5 +200,22 @@ export function DeleteEmployeeFb(data = {}) {
     params: {
       ...data,
     },
+  });
+}
+
+export function getPotential(data = {}) {
+  return requestCrm(`/v1/customer-potentials`, {
+    method: 'GET',
+    params: {
+      customer_lead_id: data,
+    },
+  });
+}
+
+export function getToket(params = {}) {
+  return request('/v12.0/oauth/access_token', {
+    prefix: ULR_FB,
+    method: 'GET',
+    params,
   });
 }

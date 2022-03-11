@@ -365,6 +365,25 @@ class Index extends PureComponent {
         render: (record) => (
           <>
             {' '}
+            {record?.statusLead
+              ?.map((item, index) => (
+                <Text size="normal" key={index}>
+                  {item?.status === 'LEAD_NEW' ? 'Lead mới' : ""}
+                  {item?.status === 'POTENTIAL' ? 'Tiềm năng' : ""}
+                  {item?.status === 'NOT_POTENTIAL' ? 'Không tiềm năng' : ""}
+                </Text>
+              ))
+              .pop()}{' '}
+          </>
+        ),
+      },
+      {
+        title: 'Phân loại PH',
+        key: 'status',
+        width: 150,
+        render: (record) => (
+          <>
+            {' '}
             {record?.statusCare
               ?.map((item, index) => (
                 <Text size="normal" key={index}>
@@ -636,12 +655,12 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={[{ name: 'Chọn tất cả Tình trạng lead' }, ...lead,]}
+                        data={[{ name: 'Chọn tất cả phân loại PH' }, ...lead,]}
                         name="lead"
                         onChange={(event) => this.onChangeSelect(event, 'lead_id')}
                         type={variables.SELECT}
                         allowClear={false}
-                        placeholder="Chọn tình trạng lead"
+                        placeholder="Chọn phân loại PH"
                       />
                     </div>
                     <div className="col-lg-3">

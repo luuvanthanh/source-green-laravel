@@ -153,6 +153,7 @@ export const feature = {
       url: `${URL_AI}/verify-token?token=${cookies.get('access_token')}`,
       target: true,
       permission: [permissions.CAMERAAI],
+      key: 'AI',
     },
     {
       title: 'Sự phát triển của trẻ',

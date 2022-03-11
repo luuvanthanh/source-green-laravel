@@ -91,7 +91,7 @@ export default {
     }),
     SET_PARENT_LEAD: (state, { payload }) => ({
       ...state,
-      parentLead: payload.parsePayload,
+      parentLead: payload.parsePayload.filter(i => i.status_hard),
     }),
     SET_SEARCH: (state, { payload }) => ({
       ...state,

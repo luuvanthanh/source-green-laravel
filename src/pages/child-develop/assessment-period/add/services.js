@@ -64,3 +64,10 @@ export function getClass(params) {
     },
   });
 }
+
+export function getProblems(params) {
+  return request('/v1/name-assessment-periods', {
+    method: 'GET',
+    params,
+  });
+}

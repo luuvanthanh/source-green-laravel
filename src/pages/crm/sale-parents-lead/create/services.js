@@ -193,6 +193,7 @@ export function addStatusLead(data = {}) {
   return request('/v1/status-cares', {
     method: 'POST',
     data,
+    cancelNotification: true,
   });
 }
 
@@ -200,6 +201,7 @@ export function addStatus(data = {}) {
   return request('/v1/status-lead', {
     method: 'POST',
     data,
+    cancelNotification: true,
   });
 }
 

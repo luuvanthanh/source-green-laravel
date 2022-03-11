@@ -37,8 +37,8 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
 });
 const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, error, parentLead, lead, parentPotential }) => {
-    const formRef = useRef();
-    const formPotential = useRef();
+    const [formRef] = Form.useForm();
+    const [formPotential] = Form.useForm();
 
     const mounted = useRef(false);
     const [visible, setVisible] = useState(false);
@@ -70,16 +70,37 @@ const General = memo(
       });
     }, [params.id]);
 
-    const handleOk = () => {
-      mountedSet(setVisible, true);
+
+    useEffect(() => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_DETAILS',
         payload: params,
       });
+    }, []);
+
+    useEffect(() => {
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
+        payload: {
+          customer_lead_id: params.id,
+        },
+      });
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_PARENT_LEAD',
+        payload: {},
+      });
+    }, [params.id]);
+
+    const showModal = () => {
+      mountedSet(setVisible, true);
       dispatch({
         type: 'crmSaleLeadAdd/GET_PARENT_POTENTIAL',
         payload: {},
       });
+    };
+
+    const handleOk = () => {
+      mountedSet(setVisible, true);
     };
 
     const cancelModal = () => {
@@ -92,7 +113,7 @@ const General = memo(
      * @param {object} values values of form
      */
     const onPotential = () => {
-      formPotential.current.validateFields().then((values) => {
+      formPotential.validateFields().then((values) => {
         dispatch({
           type: "crmSaleLeadAdd/ADD_POTENTIAL",
           payload: { statusPotential: values.statusPotential, id: params.id },
@@ -105,7 +126,7 @@ const General = memo(
             if (error) {
               if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
                 error.data.errors.forEach((item) => {
-                  formRef.current.setFields([
+                  formRef.setFields([
                     {
                       name: get(item, 'source.pointer'),
                       errors: [get(item, 'detail')],
@@ -167,8 +188,8 @@ const General = memo(
     }, []);
 
     useEffect(() => {
-      if (visible) {
-        formPotential.current.setFieldsValue({
+      if (details) {
+        formPotential.setFieldsValue({
           ...details,
           ...head(details.positionLevel),
           birth_date: details.birth_date && moment(details.birth_date),
@@ -179,7 +200,7 @@ const General = memo(
 
     useEffect(() => {
       if (details?.statusCare?.length - 1 || (details?.statusLead?.length - 1)) {
-        formRef?.current.setFieldsValue({
+        formRef?.setFieldsValue({
           status_parent_lead_id: details?.statusCare[(details?.statusCare?.length - 1)]?.status_parent_lead_id,
           status: details?.statusLead[(details?.statusLead?.length - 1)]?.status,
         });
@@ -241,7 +262,11 @@ const General = memo(
           key: 'sex',
           width: 100,
           lassName: 'min-width-100',
-          render: (record) => <Text size="normal">{record?.sex}</Text>,
+          render: (record) => <Text size="normal">
+            {record?.sex === 'MALE' ? "Nam" : ""}
+            {record?.sex === 'FEMALE' ? "Nữ" : ""}
+            {record?.sex === 'OTHER' ? "Khác" : ""}
+            </Text>,
         },
         {
           title: 'Mối quan hệ',
@@ -286,7 +311,7 @@ const General = memo(
     };
     return (
       <>
-        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+        <Form layout="vertical" form={formRef} onFinish={onFinish}>
           <div className="card">
             <div style={{ padding: 20 }} className="pb-0 border-bottom">
               <Heading type="form-title" style={{ marginBottom: 20 }}>
@@ -323,7 +348,7 @@ const General = memo(
                 {
                   checkStatus ?
                     <Pane className={styles[('order-assignment-btn', 'col-lg-3')]}>
-                      <Button color="success" ghost icon="next" onClick={handleOk} className="mt10">
+                      <Button color="success" ghost icon="next"  onClick={showModal} className="mt10">
                         Tạo tiềm năng
                       </Button>
                     </Pane> :
@@ -367,7 +392,7 @@ const General = memo(
                   }
                 >
 
-                  <Form layout="vertical" ref={formPotential}>
+                  <Form layout="vertical" form={formPotential}>
                     <Pane className="card">
                       <Loading loading={loading} isError={error.isError} params={{ error }}>
                         <Pane style={{ padding: 20 }} className="pb-0">

@@ -3121,19 +3121,19 @@ export default [
             authority: [],
           },
           {
-            path: '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia',
+            path: '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia',
             component: './child-develop/assessment-period',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
           {
-            path: '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/tao-moi',
+            path: '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/tao-moi',
             component: './child-develop/assessment-period/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
           {
-            path: '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/:id/chi-tiet',
+            path: '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/:id/chi-tiet',
             component: './child-develop/assessment-period/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
@@ -3159,6 +3159,24 @@ export default [
           {
             path: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
             component: './child-develop/report',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path:  '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia',
+            component: './child-develop/name-childrens-problems',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/tao-moi',
+            component: './child-develop/name-childrens-problems/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/:id/chi-tiet',
+            component: './child-develop/name-childrens-problems/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

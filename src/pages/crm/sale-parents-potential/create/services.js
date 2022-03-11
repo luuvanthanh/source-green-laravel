@@ -81,7 +81,7 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo', 'city', 'district']),
+      include: Helper.convertIncludes(['studentInfo', 'city', 'district','customerPotentialStatusCare.statusParentPotential']),
     },
   });
 }

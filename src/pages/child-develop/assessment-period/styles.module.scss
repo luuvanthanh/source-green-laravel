@@ -17,3 +17,9 @@
     top: 2px;
   }
 }
+
+.wrapper-tag {
+  :global(.ant-tag ){
+    margin: 5px !important;
+  }
+}
