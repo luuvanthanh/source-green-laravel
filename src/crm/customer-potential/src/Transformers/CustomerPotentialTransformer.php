@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerPotential\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
+use GGPHP\Crm\CustomerLead\Transformers\CustomerLeadTransformer;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
@@ -38,7 +39,7 @@ class CustomerPotentialTransformer extends BaseTransformer
     protected $availableIncludes = [
         'potentialStudentInfo', 'city', 'district', 'customerPotentialTag',
         'customerPotentialEventInfo', 'customerPotentialStatusCare',
-        'customerPotentialReference', 'employee', 'searchSource', 'branch'
+        'customerPotentialReference', 'employee', 'searchSource', 'branch', 'customerLead'
     ];
 
     /**
@@ -124,5 +125,14 @@ class CustomerPotentialTransformer extends BaseTransformer
         }
 
         return $this->item($customerPotential->townWard, new TownWardTransformer, 'TownWard');
+    }
+
+    public function includeCustomerLead(CustomerPotential $customerPotential)
+    {
+        if (empty($customerPotential->customerLead)) {
+            return;
+        }
+
+        return $this->item($customerPotential->customerLead, new CustomerLeadTransformer, 'CustomerLead');
     }
 }

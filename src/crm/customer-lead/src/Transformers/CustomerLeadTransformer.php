@@ -6,6 +6,7 @@ use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerPotential\Transformers\CustomerPotentialTransformer;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 use GGPHP\Crm\Marketing\Transformers\MarketingProgramTransformer;
 use GGPHP\Crm\Province\Transformers\CityTransformer;
@@ -40,7 +41,7 @@ class CustomerLeadTransformer extends BaseTransformer
     protected $availableIncludes = [
         'eventInfo', 'customerTag', 'reference', 'studentInfo',
         'city', 'district', 'searchSource', 'statusCare', 'employee',
-        'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead'
+        'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead', 'customerPotential'
     ];
 
     /**
@@ -171,5 +172,10 @@ class CustomerLeadTransformer extends BaseTransformer
     public function includeStatusLead(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->statusLead, new StatusLeadTransformer, 'StatusLead');
+    }
+
+    public function includeCustomerPotential(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->customerPotential, new CustomerPotentialTransformer, 'CustomerPotential');
     }
 }

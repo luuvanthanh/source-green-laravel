@@ -2,6 +2,8 @@
 
 namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 
+use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
+use GGPHP\Crm\AdmissionRegister\Models\TestInput;
 use GGPHP\Crm\CustomerLead\Models\EventInfo;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Presenters\StudentInfoPresenter;
@@ -83,6 +85,7 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
         }
 
         if (!empty($attributes['deleteRows'])) {
+            AdmissionRegister::whereIn('student_info_id', $attributes['deleteRows'])->forceDelete();
             StudentInfo::whereIn('id', $attributes['deleteRows'])->delete();
         }
 

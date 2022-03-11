@@ -35,7 +35,7 @@ class CustomerPotential extends UuidModel
 
     public function customerLead()
     {
-        return $this->belongsTo(CustomerLead::class);
+        return $this->belongsTo(CustomerLead::class, 'customer_lead_id');
     }
 
     public function potentialStudentInfo()
