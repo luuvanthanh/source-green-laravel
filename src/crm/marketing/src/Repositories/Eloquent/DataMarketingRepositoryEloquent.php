@@ -97,6 +97,16 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 $attributes['code'] = DataMarketing::CODE . $stt;
             }
         }
+        $attributes['status'] = DataMarketing::STATUS['NOT_MOVE'];
+        $userId = $attributes['value']['from']['id'];
+        $dataMarketing = DataMarketing::where('user_facebook_id', $userId)->first();
+
+        if (is_null($dataMarketing)) {
+            if (isset($attributes['value']['from']['name'])) {
+                $attributes['user_facebook_id'] = $userId;
+                $attributes['full_name'] = $attributes['value']['from']['name'];
+            }
+        }
         $dataMarketing = DataMarketing::create($attributes);
 
         return $this->parserResult($dataMarketing);
@@ -174,5 +184,34 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         $dataMarketing->delete();
 
         return null;
+    }
+
+    public function syncDataAuto(array $attributes)
+    {
+        $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
+        $data_marketing_code = DataMarketing::max('code');
+
+        if (is_null($data_marketing_code)) {
+            $attributes['code'] = DataMarketing::CODE . $now . '01';
+        } else {
+
+            if (substr($data_marketing_code, 2, 8)  != $now) {
+                $attributes['code'] = DataMarketing::CODE . $now . '01';
+            } else {
+                $stt = substr($data_marketing_code, 2) + 1;
+                $attributes['code'] = DataMarketing::CODE . $stt;
+            }
+        }
+        $attributes['status'] = DataMarketing::STATUS['NOT_MOVE'];
+        $userId = $attributes['value']['from']['id'];
+        $dataMarketing = DataMarketing::where('user_facebook_id', $userId)->first();
+
+        if (is_null($dataMarketing)) {
+            if (isset($attributes['value']['from']['name'])) {
+                $attributes['user_facebook_id'] = $userId;
+                $attributes['full_name'] = $attributes['value']['from']['name'];
+                $dataMarketing = DataMarketing::create($attributes);
+            }
+        }
     }
 }

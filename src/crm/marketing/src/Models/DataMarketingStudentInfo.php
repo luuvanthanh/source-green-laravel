@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Marketing\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\CategoryRelationship;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DataMarketingStudentInfo extends UuidModel
@@ -24,7 +25,11 @@ class DataMarketingStudentInfo extends UuidModel
 
     protected $fillable = [
         'full_name', 'birth_date', 'sex', 'month_age',
-        'data_marketing_id', 'file_image', 'relationship'
+        'data_marketing_id', 'file_image', 'relationship', 'category_relationship_id'
     ];
 
+    public function categoryRelationship()
+    {
+        return $this->belongsTo(CategoryRelationship::class);
+    }
 }

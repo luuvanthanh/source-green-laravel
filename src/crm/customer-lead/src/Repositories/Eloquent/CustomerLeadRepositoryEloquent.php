@@ -165,7 +165,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (!empty($attributes['status_type_lead'])) {
             $this->model = $this->model->whereHas('statusCare', function ($query) use ($attributes) {
-                $query->where('id', $attributes['status_type_lead']);
+                $query->where('status_parent_lead_id', $attributes['status_type_lead']);
             });
         }
 

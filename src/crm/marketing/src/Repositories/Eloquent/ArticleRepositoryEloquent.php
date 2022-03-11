@@ -9,6 +9,7 @@ use GGPHP\Crm\Marketing\Presenters\ArticlePresenter;
 use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Container\Container as Application;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -17,6 +18,14 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class ArticleRepositoryEloquent extends BaseRepository implements ArticleRepository
 {
+
+    public function __construct(
+        DataMarketingRepositoryEloquent $dataMarketingRepositoryEloquent,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->dataMarketingRepositoryEloquent = $dataMarketingRepositoryEloquent;
+    }
     /**
      * @var array
      */
@@ -155,6 +164,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             }
 
             FacebookService::createUserFacebookInfo($attributes);
+            $this->dataMarketingRepositoryEloquent->syncDataAuto($attributes);
         }
     }
 
