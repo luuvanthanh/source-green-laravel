@@ -18,7 +18,7 @@ const marginProps = { style: { marginBottom: 12 } };
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const mapStateToProps = ({ loading, crmMarketingDataAdd }) => ({
   loading,

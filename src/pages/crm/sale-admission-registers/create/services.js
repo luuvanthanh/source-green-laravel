@@ -52,7 +52,12 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo,childEvaluateInfo.childDescription.childIssue', 'parentInfo']),
+      include: Helper.convertIncludes([
+        'studentInfo,childEvaluateInfo.childDescription.childIssue',
+         'parentInfo',
+         'studentByChargeNow.chargeStudent.tuition.fee,studentByChargeNow.chargeStudent.classType,studentByChargeNow.chargeStudent.schoolYear', 
+         'studentInfo.chargeStudent.tuition.fee,studentInfo.chargeStudent.tuition.paymentForm,studentInfo.chargeStudent.classType,studentInfo.chargeStudent.schoolYear',
+        ]),
     },
   });
 }

@@ -142,6 +142,7 @@ class Index extends PureComponent {
   render() {
     const {
       error,
+      details,
       menuData,
       loading: { effects },
       match: { params },
@@ -183,9 +184,9 @@ class Index extends PureComponent {
                           className="btn-delete"
                           role="presentation"
                           loading={loadingSubmit}
-                          onClick={() => this.cancel(params.id)}
+                          onClick={() => history.goBack()}
                         >
-                          Xóa
+                          Hủy
                         </p>
                       ) : (
                         <p
@@ -197,15 +198,19 @@ class Index extends PureComponent {
                           Hủy
                         </p>
                       )}
-                      <Button
-                        className="ml-auto px25"
-                        color="success"
-                        htmlType="submit"
-                        size="large"
-                        loading={loadingSubmit}
-                      >
-                        Lưu
-                      </Button>
+                      {
+                        !details?.status_hard ?
+                          <Button
+                            className="ml-auto px25"
+                            color="success"
+                            htmlType="submit"
+                            size="large"
+                            loading={loadingSubmit}
+                          >
+                            Lưu
+                          </Button>
+                          : ""
+                      }
                     </Pane>
                   </Pane>
                 </Pane>

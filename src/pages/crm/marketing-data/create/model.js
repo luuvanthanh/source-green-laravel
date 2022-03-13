@@ -18,6 +18,7 @@ export default {
     data: [],
     program: [],
     programs: [],
+    relationships: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -77,6 +78,10 @@ export default {
       ...state,
       programs:
         payload?.parsePayload?.marketingProgram?.map((item, index) => ({ ...item, index })) || [],
+    }),
+    SET_RELATIONSHIPS: (state, { payload }) => ({
+      ...state,
+      relationships: payload.parsePayload,
     }),
   },
   effects: {
@@ -232,6 +237,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_RELATIONSHIPS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRelationships, payload);
+        yield saga.put({
+          type: 'SET_RELATIONSHIPS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

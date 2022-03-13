@@ -511,3 +511,39 @@
     border: 1px solid #c4cdd4;
   }
 }
+
+.general-detail {
+  font-family: $base__font-family;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: #35373a;
+  margin-bottom: 20px;
+}
+
+.wrapper-table {
+  :global(.ant-table-summary) {
+    background-color: #fff1eb !important;
+  }
+}
+
+.disabled-container {
+  :global(.ant-input[disabled]) {
+    color: #3e4247 !important;
+    background-color: #eef0f4 !important;
+    opacity: 1 !important;
+  }
+  :global(.ant-picker.ant-picker-disabled) {
+    color: #3e4247 !important;
+    background-color: #eef0f4 !important;
+  }
+  :global(.ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+    color: #3e4247 !important;
+    background-color: #eef0f4 !important;
+  }
+  :global(.ant-select-arrow) {
+    color: #eef0f4 !important;
+}
+}

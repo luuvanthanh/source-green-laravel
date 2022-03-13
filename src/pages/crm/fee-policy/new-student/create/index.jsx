@@ -153,7 +153,7 @@ const Index = memo(() => {
     if (errorTuition) {
       return;
     }
-    const response = students.find((item) => item.id === values?.name_student);
+    const response = students.find((item) => item.id === values?.name_student );
     const payload = {
       ...values,
       date_of_birth: Helper.getDateTime({
@@ -174,7 +174,7 @@ const Index = memo(() => {
       }),
       tuition,
       id: params?.id || undefined,
-      student_info_id: response?.student_info_id,
+      student_info_id: response?.student_info_id || details?.student_info_id,
     };
     dispatch({
       type: params?.id ? 'CRMnewStudentAdd/UPDATE' : 'CRMnewStudentAdd/ADD',
@@ -205,28 +205,28 @@ const Index = memo(() => {
         fee_id: item.fee_id,
         payment_form_id: item.payment_form_id,
       }));
-    dispatch({
-      type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
-      payload: {
-        details: JSON.stringify(newTuition),
-        class_type_id,
-        school_year_id,
-        day_admission: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: day_admission,
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
-        student: 'new',
-      },
-      callback: (res) => {
-        if (!_.isEmpty(res)) {
-          setTuition(res);
-        }
-      },
-    });
+    // dispatch({
+    //   type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
+    //   payload: {
+    //     details: JSON.stringify(newTuition),
+    //     class_type_id,
+    //     school_year_id,
+    //     day_admission: Helper.getDateTime({
+    //       value: Helper.setDate({
+    //         ...variables.setDateData,
+    //         originValue: day_admission,
+    //       }),
+    //       format: variables.DATE_FORMAT.DATE_AFTER,
+    //       isUTC: false,
+    //     }),
+    //     student: 'new',
+    //   },
+    //   callback: (res) => {
+    //     if (!_.isEmpty(res)) {
+    //       setTuition(res);
+    //     }
+    //   },
+    // });
   };
 
   const loadTableFees = (value, name) => {

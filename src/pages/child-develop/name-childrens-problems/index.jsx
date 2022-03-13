@@ -197,7 +197,7 @@ class Index extends PureComponent {
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
-        title: 'Tên vấn đề khó khăn',
+        title: 'Tên kì đánh giá',
         key: 'name',
         width: 300,
         className: 'min-width-150',
