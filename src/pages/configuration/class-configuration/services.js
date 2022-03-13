@@ -17,6 +17,11 @@ export function remove(id = {}) {
 export function getDetails(data) {
   return request('/v1/class-arrangements', {
     method: 'GET',
-    data,
+    params: {
+      ...data,
+      orderBy: 'created_at',
+      sortedBy: 'asc',
+      searchJoin: 'and',
+    },
   });
 }

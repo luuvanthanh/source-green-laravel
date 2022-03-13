@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import Button from '@/components/CommonComponent/Button';
+// import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -18,7 +18,7 @@ const marginProps = { style: { marginBottom: 12 } };
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const mapStateToProps = ({ loading, crmSaleParentsPotentialAdd }) => ({
   loading,
@@ -39,10 +39,10 @@ const General = memo(
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
-    const loadingSubmit =
-      effects[`crmSaleParentsPotentialAdd/ADD`] ||
-      effects[`crmSaleParentsPotentialAdd/UPDATE`] ||
-      effects[`crmSaleParentsPotentialAdd/UPDATE_STATUS`];
+    // const loadingSubmit =
+    //   effects[`crmSaleParentsPotentialAdd/ADD`] ||
+    //   effects[`crmSaleParentsPotentialAdd/UPDATE`] ||
+    //   effects[`crmSaleParentsPotentialAdd/UPDATE_STATUS`];
     const loading = effects[`crmSaleParentsPotentialAdd/GET_DETAILS`];
     useEffect(() => {
       dispatch({
@@ -283,11 +283,17 @@ const General = memo(
               </Pane>
             </Pane>
 
-            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+            <Pane className="p20 d-flex justify-content-between align-items-center ">
+              <p className="btn-delete" role="presentation" onClick={() => history.push('/crm/sale/ph-tiem-nang')}>
+                Hủy
+              </p>
+            </Pane>
+
+            {/* <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
               <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
                 Lưu
               </Button>
-            </Pane>
+            </Pane> */}
           </Loading>
         </Pane>
       </Form>
@@ -311,7 +317,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],

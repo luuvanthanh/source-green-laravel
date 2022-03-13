@@ -500,6 +500,14 @@ const General = memo(() => {
                                 customer_lead_id: params.id,
                             },
                         });
+                        formRef.current.setFieldsValue({
+                            date:  undefined,
+                            time:  undefined,
+                            name: undefined,
+                            category_event_id:  undefined,
+                            location:  undefined
+                        });
+                        mountedSet(setDescription, "");
                     }
                     if (error) {
                         if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {

@@ -20,7 +20,7 @@ import styles from './styles.module.scss';
 const sex = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const { Option } = Select;
 const Index = memo(() => {
@@ -2316,7 +2316,7 @@ const Index = memo(() => {
                                       <div className={styles['contact-item']}>
                                         <p className={styles.label}>Tháng tuổi</p>
                                         {
-                                          file?.age_month ?
+                                         file?.age_month >= 0 ?
                                             <Form.Item >
                                               <Text size="normal" className={styles.norm}>
                                                 {file?.age_month}

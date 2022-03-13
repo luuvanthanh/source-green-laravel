@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Breadcrumb, Form, Input } from 'antd';
+import { Breadcrumb, Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 // import Quill from '@/components/CommonComponent/Quill';
@@ -26,7 +26,7 @@ const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
 const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, error }) => {
     const formRef = useRef();
-    const [content, setContent] = useState('');
+    // const [content, setContent] = useState('');
     // const user = JSON.parse(localStorage.getItem('user'));
     const [files, setFiles] = useState([]);
     const mounted = useRef(false);
@@ -41,7 +41,7 @@ const General = memo(
           payload: params,
           callback: (response) => {
             if (response) {
-              mountedSet(setContent, response.parsePayload.content);
+              // mountedSet(setContent, response.parsePayload.content);
             }
           },
         });
@@ -59,18 +59,16 @@ const General = memo(
           : 'crmMarketingManageAdd/ADD_POSTS',
         payload: params.detailId
           ? {
-              ...detailsAddPost,
-              ...values,
-              content,
-              marketing_program_id: params.id,
-              file_image: JSON.stringify(files),
-            }
+            ...detailsAddPost,
+            ...values,
+            marketing_program_id: params.id,
+            file_image: JSON.stringify(files),
+          }
           : {
-              ...values,
-              content,
-              file_image: JSON.stringify(files),
-              marketing_program_id: params.id,
-            },
+            ...values,
+            file_image: JSON.stringify(files),
+            marketing_program_id: params.id,
+          },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -95,26 +93,26 @@ const General = memo(
       mounted.current = true;
       return mounted.current;
     }, []);
-      const cancel = () => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        return Helper.confirmAction({
-          callback: () => {
-            dispatch({
-              type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
-              payload: {
-                 id : detailsAddPost.id,
-                 page_access_token: user?.accessToken,
-              },
-              callback: (response) => {
-                if (response) {
-                  history.goBack();
-                }
-              },
-            });
-          },
-        });
-      };
-
+    const cancel = () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      return Helper.confirmAction({
+        callback: () => {
+          dispatch({
+            type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
+            payload: {
+              id: detailsAddPost.id,
+              page_access_token: user?.accessToken,
+            },
+            callback: (response) => {
+              if (response) {
+                history.goBack();
+              }
+            },
+          });
+        },
+      });
+    };
+console.log("user",JSON?.parse(sessionStorage?.getItem('user')));
     useEffect(() => {
       if (params.detailId) {
         formRef.current.setFieldsValue({
@@ -131,9 +129,10 @@ const General = memo(
     const uploadFiles = (file) => {
       mountedSet(setFiles, (prev) => [...prev, file]);
     };
-    const onChangeEditor = (value) => {
-      mountedSet(setContent, value);
-    };
+    // const onChangeEditor = (value) => {
+    //   mountedSet(setContent, value);
+    // };
+    
     return (
       <>
         <Pane style={{ margin: 20 }}>
@@ -182,16 +181,12 @@ const General = memo(
                       <Quill onChange={onChangeEditor} value={content} />
                     </Pane> */}
                     <Pane className="col-lg-12 mb15">
-                      <Pane className="ant-col ant-form-item-label">
-                        <label>
-                          <span>Nội dung</span>
-                        </label>
-                      </Pane>
-                      <Input.TextArea
-                        value={content}
-                        autoSize={{ minRows: 15, maxRows: 15 }}
+                      <FormItem
+                        name="content"
+                        label="Nội dung"
                         placeholder="Nhập"
-                        onChange={(e) => onChangeEditor(e.target.value)}
+                        type={variables.TEXTAREA}
+                        rules={[variables.RULES.EMPTY_INPUT]}
                       />
                     </Pane>
                     <Pane className="col-lg-12">
@@ -207,25 +202,25 @@ const General = memo(
                 </Pane>
 
                 <Pane className="p20 d-flex justify-content-between align-items-center ">
-                {params.detailId ? (
-                        <p
-                          className="btn-delete"
-                          role="presentation"
-                          loading={loadingSubmit}
-                          onClick={() => cancel()}
-                        >
-                          Xóa
-                        </p>
-                      ) : (
-                        <p
-                          className="btn-delete"
-                          role="presentation"
-                          loading={loadingSubmit}
-                          onClick={() => history.goBack()}
-                        >
-                          Hủy
-                        </p>
-                      )}
+                  {params.detailId ? (
+                    <p
+                      className="btn-delete"
+                      role="presentation"
+                      loading={loadingSubmit}
+                      onClick={() => cancel()}
+                    >
+                      Xóa
+                    </p>
+                  ) : (
+                    <p
+                      className="btn-delete"
+                      role="presentation"
+                      loading={loadingSubmit}
+                      onClick={() => history.goBack()}
+                    >
+                      Hủy
+                    </p>
+                  )}
                   <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
                     Lưu
                   </Button>
@@ -255,7 +250,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   detailsAddPost: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],

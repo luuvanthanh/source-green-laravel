@@ -25,7 +25,7 @@ const genders = [
   { id: 'NOT_POTENTIAL', name: 'Không tiềm năng' },
 ];
 
-const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
+const mapStateToProps = ({ loading, crmSaleLeadAdd, user }) => ({
   loading,
   details: crmSaleLeadAdd.details,
   error: crmSaleLeadAdd.error,
@@ -34,9 +34,10 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   parentLead: crmSaleLeadAdd.parentLead,
   lead: crmSaleLeadAdd.lead,
   parentPotential: crmSaleLeadAdd.parentPotential,
+  user: user.user,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, parentLead, lead, parentPotential }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, parentLead, lead, parentPotential, user }) => {
     const [formRef] = Form.useForm();
     const [formPotential] = Form.useForm();
 
@@ -44,6 +45,8 @@ const General = memo(
     const [visible, setVisible] = useState(false);
     const [checkStatus, setCheckStatus] = useState(false);
     const [checkStatusBtn, setCheckStatusBtn] = useState(false);
+
+    const checkLead = lead.filter(i => i?.status === 'POTENTIAL');
 
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
@@ -107,7 +110,6 @@ const General = memo(
       mountedSet(setVisible, false);
     };
 
-
     /**
      * Function submit form modal
      * @param {object} values values of form
@@ -141,20 +143,24 @@ const General = memo(
     };
 
     const onFinish = (values) => {
-      dispatch({
-        type: 'crmSaleLeadAdd/ADD_STATUS_LEAD',
-        payload: {
-          status_parent_lead_id: values?.status_parent_lead_id,
-          customer_lead_id: params.id,
-        },
-        callback: () => {
-        },
-      });
+      if (values?.status_parent_lead_id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/ADD_STATUS_LEAD',
+          payload: {
+            status_parent_lead_id: values?.status_parent_lead_id,
+            customer_lead_id: params.id,
+          },
+          callback: () => {
+          },
+        });
+      }
       dispatch({
         type: 'crmSaleLeadAdd/ADD_STATUS',
         payload: {
           status: values?.status,
           customer_lead_id: params.id,
+          user_update_id: user?.id,
+          user_update_info: user,
         },
         callback: (response, error) => {
           if (response) {
@@ -204,7 +210,7 @@ const General = memo(
           status_parent_lead_id: details?.statusCare[(details?.statusCare?.length - 1)]?.status_parent_lead_id,
           status: details?.statusLead[(details?.statusLead?.length - 1)]?.status,
         });
-        if (details?.statusLead[(details?.statusLead?.length - 1)]?.status === 'POTENTIAL') {
+        if (details?.statusLead[(details?.statusLead?.length - 1)]?.status === 'POTENTIAL' && checkLead.length <= 0) {
           setCheckStatus(true);
           setCheckStatusBtn(true);
         } else {
@@ -215,7 +221,7 @@ const General = memo(
     }, [details]);
 
     const onStatus = (id) => {
-      if (id === "POTENTIAL") {
+      if (id === "POTENTIAL" && checkLead.length <= 0) {
         setCheckStatus(true);
         setCheckStatusBtn(false);
       } else {
@@ -266,7 +272,7 @@ const General = memo(
             {record?.sex === 'MALE' ? "Nam" : ""}
             {record?.sex === 'FEMALE' ? "Nữ" : ""}
             {record?.sex === 'OTHER' ? "Khác" : ""}
-            </Text>,
+          </Text>,
         },
         {
           title: 'Mối quan hệ',
@@ -304,7 +310,7 @@ const General = memo(
           key: 'name',
           className: 'max-width-150',
           width: 150,
-          render: (record) => get(record, 'name'),
+          render: (record) => <Text size="normal">{record?.user_update_info?.name}</Text>,
         },
       ];
       return columns;
@@ -328,7 +334,6 @@ const General = memo(
                     data={parentLead}
                     placeholder="Chọn"
                     type={variables.SELECT}
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-12">
@@ -346,9 +351,9 @@ const General = memo(
                   />
                 </Pane>
                 {
-                  checkStatus ?
+                  checkStatus && checkLead.length <= 0 ?
                     <Pane className={styles[('order-assignment-btn', 'col-lg-3')]}>
-                      <Button color="success" ghost icon="next"  onClick={showModal} className="mt10">
+                      <Button color="success" ghost icon="next" onClick={showModal} className="mt10">
                         Tạo tiềm năng
                       </Button>
                     </Pane> :
@@ -545,6 +550,7 @@ General.propTypes = {
   parentLead: PropTypes.arrayOf(PropTypes.any),
   lead: PropTypes.arrayOf(PropTypes.any),
   parentPotential: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -558,6 +564,7 @@ General.defaultProps = {
   parentLead: [],
   lead: [],
   parentPotential: [],
+  user: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));

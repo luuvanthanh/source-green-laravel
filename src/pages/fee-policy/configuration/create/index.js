@@ -22,7 +22,7 @@ import { variables, Helper } from '@/utils';
 const select = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const Index = memo(() => {
   const formRef = useRef();

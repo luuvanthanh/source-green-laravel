@@ -18,7 +18,7 @@ import { variables, Helper } from '@/utils';
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const Students = memo(() => {
 
@@ -221,7 +221,7 @@ const Students = memo(() => {
                                     </Pane>
                                     <Pane className="col-lg-4">
                                       {
-                                        file?.age_month ?
+                                        file?.age_month >= 0  ?
                                           <Form.Item label="Tuổi (tháng)" >
                                             <Text size="normal">
                                               {file?.age_month}

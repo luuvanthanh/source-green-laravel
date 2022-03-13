@@ -1967,12 +1967,12 @@ export async function getLeftMenuCRM() {
       permission: [permissions.CRM],
       children: [
         {
-          title: 'Tình trạng PH Lead',
+          title: 'Phân loại PH',
           key: 'lead',
           url: [
-            '/crm/danh-muc/ph-lead',
-            '/crm/danh-muc/ph-lead/tao-moi',
-            '/crm/danh-muc/ph-lead/:id/chi-tiet',
+            '/crm/danh-muc/phan-loai-PH',
+            '/crm/danh-muc/phan-loai-PH/tao-moi',
+            '/crm/danh-muc/phan-loai-PH/:id/chi-tiet',
           ],
           permission: [permissions.CRM],
           pro: true,
