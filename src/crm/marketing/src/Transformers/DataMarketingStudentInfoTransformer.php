@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Marketing\Transformers;
 
+use Carbon\Carbon;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\Category\Transformers\CategoryRelationshipTransformer;
 use GGPHP\Crm\Marketing\Models\DataMarketingStudentInfo;
