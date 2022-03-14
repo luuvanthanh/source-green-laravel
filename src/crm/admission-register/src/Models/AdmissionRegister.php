@@ -46,7 +46,14 @@ class AdmissionRegister extends UuidModel
 
     public function testInput()
     {
-        return $this->hasOne(TestInput::class);
+        return $this->hasOne(TestInput::class, 'admission_register_id');
+    }
+
+    public function forceDelete()
+    {
+        $this->testInput()->delete();
+
+        return parent::forceDelete();
     }
 
     public function medicalInfo()

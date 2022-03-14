@@ -26,7 +26,7 @@ class CreateCustomerLeadRequest extends FormRequest
         return [
             'full_name' => 'required|string',
             'birth_date' => 'date_format:Y-m-d',
-            'sex' => 'string',
+            'sex' => 'required|string',
             'email' => 'email|unique:customer_leads,email',
             'phone' => 'required|string|unique:customer_leads,phone',
             'address' => 'string',

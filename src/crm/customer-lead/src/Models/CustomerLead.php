@@ -77,7 +77,7 @@ class CustomerLead extends UuidModel
 
     public function customerPotential()
     {
-        return $this->hasMany(CustomerPotential::class);
+        return $this->hasMany(CustomerPotential::class, 'customer_lead_id');
     }
 
     public function employee()

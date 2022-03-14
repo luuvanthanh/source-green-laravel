@@ -9,7 +9,9 @@ use GGPHP\Crm\AdmissionRegister\Presenters\AdmissionRegisterPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\AdmissionRegisterRepository;
 use GGPHP\Crm\AdmissionRegister\Services\ParentInfoService;
 use GGPHP\Crm\AdmissionRegister\Services\StudentService;
+use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -106,6 +108,14 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         \DB::beginTransaction();
         try {
             $admissionRegister = AdmissionRegister::create($attributes);
+            
+            $customerPotential = CustomerPotential::where('customer_lead_id', $attributes['customer_lead_id'])->first();
+
+            if (!is_null($customerPotential)) {
+                $statusParentPotential = StatusParentPotential::where('number', 3)->first();
+                $customerPotential->customerPotentialStatusCare()->create(['status_parent_potential_id' => $statusParentPotential->id]);
+            }
+
             $customerLead = CustomerLead::where('id', $attributes['customer_lead_id'])->first();
             ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
 

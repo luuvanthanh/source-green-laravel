@@ -11,8 +11,10 @@ use GGPHP\Crm\AdmissionRegister\Models\TestInputDetailChildren;
 use GGPHP\Crm\AdmissionRegister\Presenters\TestInputPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
 use GGPHP\Crm\AdmissionRegister\Services\StudentService;
+use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\Fee\Models\ClassType;
 use GGPHP\Crm\SsoAccount\Models\SsoAccount;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -124,13 +126,21 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
 
         if (is_null($testInput)) {
             $testInput = TestInput::create($attributes);
+            $admissionRegister = AdmissionRegister::find($attributes['admission_register_id']);
+            $customerLeadId = $admissionRegister->studentInfo->customer_lead_id;
+            $customerPotential = CustomerPotential::where('customer_lead_id', $customerLeadId)->first();
+
+            if (!is_null($customerPotential)) {
+                $statusParentPotential = StatusParentPotential::where('number', 4)->first();
+                $customerPotential->customerPotentialStatusCare()->create(['status_parent_potential_id' => $statusParentPotential->id]);
+            }
         }
 
         if (!is_null($testInput)) {
             $testInput->update($attributes);
         }
 
-        return parent::all();
+        return parent::find($testInput->id);
     }
 
     public function testInputDetail(array $attributes)

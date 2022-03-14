@@ -99,6 +99,20 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
             $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
         }
 
+        if (!empty($attributes['status_parent_potential_id'])) {
+            $this->model = $this->model->whereHas('customerPotentialStatusCare', function ($query) use ($attributes) {
+                $query->where('status_parent_potential_id', $attributes['status_parent_potential_id']);
+            });
+        }
+
+        if (!empty($attributes['status_parent_lead_id'])) {
+            $this->model = $this->model->whereHas('customerLead', function ($query01) use ($attributes) {
+                $query01->whereHas('statusCare', function ($query02) use ($attributes) {
+                    $query02->where('status_parent_lead_id', $attributes['status_parent_lead_id']);
+                });
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $customerPotential = $this->paginate($attributes['limit']);
         } else {
