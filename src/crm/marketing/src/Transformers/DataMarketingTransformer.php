@@ -33,7 +33,7 @@ class DataMarketingTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource','marketingProgram','studentInfo'];
+    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource', 'marketingProgram', 'studentInfo'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -48,9 +48,10 @@ class DataMarketingTransformer extends BaseTransformer
         $sex = null;
 
         foreach (DataMarketing::SEX as $key => $value) {
-
-            if ($value == $model->sex) {
-                $sex = $key;
+            if (!is_null($model->sex)) {
+                if ($value == $model->sex) {
+                    $sex = $key;
+                }
             }
         }
 

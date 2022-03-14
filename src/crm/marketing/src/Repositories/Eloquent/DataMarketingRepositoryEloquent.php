@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\StatusLead;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
 use GGPHP\Crm\Marketing\Models\DataMarketingProgram;
