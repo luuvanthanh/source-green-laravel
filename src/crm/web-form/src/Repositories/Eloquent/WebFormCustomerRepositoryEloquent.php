@@ -84,13 +84,18 @@ class WebFormCustomerRepositoryEloquent extends BaseRepository implements WebFor
             }
 
             if (strpos($attributes['url'], 'fbclid') !== false) {
-                $searchSource = SearchSource::whereLike('type', SearchSource::FANPAGE)->first();
+                $searchSource = SearchSource::where('type', SearchSource::FANPAGE)->first();
                 $attributes['search_source_id'] = $searchSource->id;
             } elseif (strpos($attributes['url'], 'utm_source=zalo') !== false) {
                 $searchSource = SearchSource::whereLike('type', SearchSource::ZALO)->first();
                 $attributes['search_source_id'] = $searchSource->id;
             }
             $customerLead = CustomerLead::create($attributes);
+            $dataStatusLead = [
+                'customer_lead_id' => $customerLead->id,
+                'status' => StatusLead::STATUS_LEAD['LEAD_NEW']
+            ];
+            StatusLead::create($dataStatusLead);
             $customerLead->marketingProgram()->attach($attributes['marketing_program_id']);
             foreach ($attributes['web_form_childrens'] as $value) {
                 $value['customer_lead_id'] = $customerLead->id;

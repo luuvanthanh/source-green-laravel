@@ -19,4 +19,9 @@ class Article extends UuidModel
     {
         return $this->belongsTo(MarketingProgram::class);
     }
+
+    public function postFacebookInfo()
+    {
+        return $this->hasOne(PostFacebookInfo::class);
+    }
 }

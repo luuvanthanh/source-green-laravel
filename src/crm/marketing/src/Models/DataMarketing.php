@@ -31,7 +31,7 @@ class DataMarketing extends UuidModel
         'code', 'full_name', 'birth_date', 'sex', 'email', 'phone', 'other_phone',
         'address', 'city_id', 'district_id', 'facility_id', 'user_create_id', 'user_create_info', 'search_source_id',
         'facebook', 'zalo', 'instagram', 'skype', 'name_company', 'address_company',
-        'phone_company', 'career', 'file_image', 'status'
+        'phone_company', 'career', 'file_image', 'status', 'town_ward_id', 'user_facebook_id'
     ];
 
     public function city()

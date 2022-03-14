@@ -3,11 +3,13 @@
 namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
 use GGPHP\Crm\Marketing\Models\DataMarketingProgram;
 use GGPHP\Crm\Marketing\Models\DataMarketingStudentInfo;
+use GGPHP\Crm\Marketing\Models\MarketingProgram;
 use GGPHP\Crm\Marketing\Presenters\DataMarketingPresenter;
 use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -97,6 +99,16 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 $attributes['code'] = DataMarketing::CODE . $stt;
             }
         }
+        $attributes['status'] = DataMarketing::STATUS['NOT_MOVE'];
+        $userId = $attributes['value']['from']['id'];
+        $dataMarketing = DataMarketing::where('user_facebook_id', $userId)->first();
+
+        if (is_null($dataMarketing)) {
+            if (isset($attributes['value']['from']['name'])) {
+                $attributes['user_facebook_id'] = $userId;
+                $attributes['full_name'] = $attributes['value']['from']['name'];
+            }
+        }
         $dataMarketing = DataMarketing::create($attributes);
 
         return $this->parserResult($dataMarketing);
@@ -147,6 +159,11 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 'file_image' => $value->file_image
             ];
             $CustomerLead = CustomerLead::create($data);
+            $dataStatusLead = [
+                'customer_lead_id' => $CustomerLead->id,
+                'status' => StatusLead::STATUS_LEAD['LEAD_NEW']
+            ];
+            StatusLead::create($dataStatusLead);
             $value->status = DataMarketing::STATUS['MOVE'];
             $value->update();
             $studentInfo = DataMarketingStudentInfo::where('data_marketing_id', $value->id)->get();
@@ -174,5 +191,55 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         $dataMarketing->delete();
 
         return null;
+    }
+
+    public function syncDataAuto(array $attributes)
+    {
+        $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
+        $data_marketing_code = DataMarketing::max('code');
+
+        if (is_null($data_marketing_code)) {
+            $attributes['code'] = DataMarketing::CODE . $now . '01';
+        } else {
+
+            if (substr($data_marketing_code, 2, 8)  != $now) {
+                $attributes['code'] = DataMarketing::CODE . $now . '01';
+            } else {
+                $stt = substr($data_marketing_code, 2) + 1;
+                $attributes['code'] = DataMarketing::CODE . $stt;
+            }
+        }
+        $attributes['status'] = DataMarketing::STATUS['NOT_MOVE'];
+        $userId = $attributes['value']['from']['id'];
+        $dataMarketing = DataMarketing::where('user_facebook_id', $userId)->first();
+
+        if (is_null($dataMarketing)) {
+            if (isset($attributes['value']['from']['name'])) {
+                $searchSource = SearchSource::where('type', SearchSource::FANPAGE)->first();
+                $attributes['search_source_id'] = $searchSource->id;
+                $attributes['user_facebook_id'] = $userId;
+                $attributes['full_name'] = $attributes['value']['from']['name'];
+                $dataMarketing = DataMarketing::create($attributes);
+                $marketingProgram = MarketingProgram::whereHas('article', function ($query) use ($attributes) {
+                    $query->whereHas('postFacebookInfo', function ($q) use ($attributes) {
+                        $q->where('facebook_post_id', $attributes['value']['post_id']);
+                    });
+                })->first();
+                $dataMarketingProgram = DataMarketingProgram::where('data_marketing_id', $dataMarketing->id)->where('marketing_program_id', $marketingProgram->id)->first();
+                if (is_null($dataMarketingProgram)) {
+                    $dataMarketing->marketingProgram()->attach($marketingProgram->id);
+                }
+            }
+        } else {
+            $marketingProgram = MarketingProgram::whereHas('article', function ($query) use ($attributes) {
+                $query->whereHas('postFacebookInfo', function ($q) use ($attributes) {
+                    $q->where('facebook_post_id', $attributes['value']['post_id']);
+                });
+            })->first();
+            $dataMarketingProgram = DataMarketingProgram::where('data_marketing_id', $dataMarketing->id)->where('marketing_program_id', $marketingProgram->id)->first();
+            if (is_null($dataMarketingProgram)) {
+                $dataMarketing->marketingProgram()->attach($marketingProgram->id);
+            }
+        }
     }
 }
