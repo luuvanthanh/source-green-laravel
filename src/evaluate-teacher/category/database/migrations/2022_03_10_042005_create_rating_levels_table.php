@@ -19,6 +19,7 @@ class CreateRatingLevelsTable extends Migration
             $table->string('Code');
             $table->string('Name');
             $table->text('Description');
+            $table->integer('Number')->default(1);
             $table->string('Type')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();

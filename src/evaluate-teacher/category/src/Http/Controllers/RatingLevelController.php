@@ -20,7 +20,7 @@ class RatingLevelController extends Controller
 
     /**
      * UserController constructor.
-     * @param RatingLevelRepository $absentRepository
+     * @param RatingLevelRepository $ratingLevelRepository
      */
     public function __construct(RatingLevelRepository $ratingLevelRepository)
     {
@@ -92,5 +92,12 @@ class RatingLevelController extends Controller
         $this->ratingLevelRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    public function sortRatingLevel(Request $request)
+    {
+        $sortRatingLevel = $this->ratingLevelRepository->sort($request->all());
+
+        return $this->success($sortRatingLevel, trans('lang::messages.common.getListSuccess'));
     }
 }

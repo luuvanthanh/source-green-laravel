@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Branch extends UuidModel
 {
-    use SoftDeletes;
     public $incrementing = false;
 
     /**

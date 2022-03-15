@@ -19,7 +19,6 @@ class CreateParamaterTaxLogsTable extends Migration
             $table->uuid('ParameterTaxId');
             $table->foreign('ParameterTaxId')->references('Id')->on('ParameterTaxs')->onDelete('cascade');
             $table->uuid('EditEmployee');
-            //$table->foreign('EditEmployee')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('EditDate');
             $table->integer('From')->nullable();
             $table->integer('To')->nullable();
@@ -27,6 +26,7 @@ class CreateParamaterTaxLogsTable extends Migration
             $table->date('ApplyDate');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0)->nullable();
         });
     }
 

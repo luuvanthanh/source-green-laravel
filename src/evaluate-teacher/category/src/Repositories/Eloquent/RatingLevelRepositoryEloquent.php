@@ -7,9 +7,6 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\EvaluateTeacher\Category\Contracts\RatingLevelRepository;
 use GGPHP\EvaluateTeacher\Category\Models\RatingLevel;
 use GGPHP\EvaluateTeacher\Category\Presenters\RatingLevelPresenter;
-use GGPHP\PositionLevel\Models\PositionLevel;
-use GGPHP\PositionLevel\Presenters\PositionLevelPresenter;
-use GGPHP\Users\Models\User;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -25,7 +22,6 @@ class RatingLevelRepositoryEloquent extends CoreRepositoryEloquent implements Ra
      */
     protected $fieldSearchable = [
         'Id',
-        'EmployeeId',
         'CreationTime',
     ];
 
@@ -70,5 +66,18 @@ class RatingLevelRepositoryEloquent extends CoreRepositoryEloquent implements Ra
         }
 
         return $ratingLevel;
+    }
+
+    public function sort(array $attributes)
+    {
+        $listId = explode(',', $attributes['id']);
+
+        foreach ($listId as $key => $value) {
+            $fisrtValue = RatingLevel::find($value);
+            $fisrtValue->update(['Number' => $key + 1]);
+        }
+
+        $result = RatingLevel::orderBy('Number')->get();
+        return parent::parserResult($result);
     }
 }
