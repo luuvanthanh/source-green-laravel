@@ -237,9 +237,9 @@ export function addEvents(data = {}) {
       time: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: data.time,
+          originValue: data.date,
+          targetValue: Helper.getDate(data.time, variables.DATE_FORMAT.TIME_FULL),
         }),
-        format: variables.DATE_FORMAT.HOUR,
         isUTC: false,
       }),
     },
@@ -251,20 +251,20 @@ export function updateEvents(data = {}) {
     method: 'PUT',
     data: {
       ...data,
+      time: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.date,
+          targetValue: Helper.getDate(data.time,  variables.DATE_FORMAT.TIME_FULL),
+        }),
+    
+      }),
       date: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: data.date,
         }),
         format: variables.DATE_FORMAT.DATE_AFTER,
-        isUTC: false,
-      }),
-      time: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: data.time,
-        }),
-        format: variables.DATE_FORMAT.HOUR,
         isUTC: false,
       }),
     },
@@ -288,6 +288,9 @@ export function Events(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+      searchJoin: 'and',
       time: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,

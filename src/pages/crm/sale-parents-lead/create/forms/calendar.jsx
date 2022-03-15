@@ -52,7 +52,7 @@ const Index = memo(() => {
     if (!isEmpty(items)) {
       let array = [];
       items.forEach((item) => {
-        const durations = moment(item.time);
+        const durations = moment(item.time).diff(moment(item.time), 'seconds');
         array = [
           ...array,
           {
@@ -61,8 +61,9 @@ const Index = memo(() => {
             rrule: {
               freq: 'weekly',
               interval: 1,
-              dtstart: Helper.joinDateTime(item.date),
-              until: Helper.joinDateTime(item.date),
+              dtstart: Helper.joinDateTime(item.time,item.time),
+              until: Helper.joinDateTime(item.time,item.time),
+              
             },
             duration: moment.utc(durations * 1000).format(variables.DATE_FORMAT.TIME_FULL),
           },
@@ -92,11 +93,12 @@ const Index = memo(() => {
     setModal({ visible: true, details });
     setData({ details });
   };
-  const redirectDetails = (key) => {
+  const redirectDetails = () => {
     if (!data?.details?.publicId) {
       return;
     }
-    history.push(`${pathname}/${data?.details?.publicId}/${key}`);
+    sessionStorage.setItem('check', JSON.stringify({modal: true, id : data?.details?.publicId}));
+    history.push(`${pathname}?type=events`);
   };
 
   return (
@@ -128,8 +130,7 @@ const Index = memo(() => {
                 <span>Thời gian</span>
               </div>
               <p className="mb0 font-weight-bold">
-                {Helper.getDate(data?.details?.date, variables.DATE_FORMAT.DATE_AFTER)},{' '}
-                {data?.details?.time}
+                {Helper.getDate(data?.details.time, variables.DATE_FORMAT.DATE_TIME)}
               </p>
             </div>
             <div className="col-lg-6 mb15">
