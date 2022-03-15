@@ -135,11 +135,11 @@
     line-height: 20px;
     font-weight: 700;
     color: #35373a;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
   }
   .description {
     font-family: $base__font-family;
-    font-style: normal;
+    font-style: italic;
     font-weight: normal;
     font-size: 13px;
     line-height: 22px;
@@ -208,7 +208,159 @@
 }
 
 .wrapper-tag {
-  :global(.ant-tag ){
+  :global(.ant-tag) {
     margin: 5px !important;
+  }
+}
+
+.wrapper-testInput {
+  padding: 20px;
+  width: 100%;
+  .wrapper-card-img {
+    .wrapperImg {
+      width: 100px;
+      height: 100px;
+      margin-left: 10px;
+      object-fit: cover;
+    }
+  }
+
+  .wrapper-card-content {
+    padding-left: 10px;
+    .name {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 22px;
+      color: #3e4247;
+    }
+    .title {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: normal;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 20px;
+      color: #35373a;
+    }
+  }
+
+  .wrapper-card-main {
+    .contentDay {
+      display: flex;
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #35373a;
+    }
+    .time {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #3b5cad;
+      margin-left: 5px;
+    }
+  }
+
+  .wrapper-container {
+    width: 100%;
+    padding-top: 15px;
+  }
+
+  .wrapper-contentTop {
+    display: flex;
+    width: 100%;
+    .img {
+      width: 25px;
+      height: 36px;
+      object-fit: cover;
+    }
+    .title {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: 700;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 24px;
+      padding: 0px !important;
+      color: #27a600;
+    }
+  }
+  .container-title-criteria {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    color: #3b5cad;
+  }
+
+  .wrapper-containerLogo {
+    position: absolute;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 2px;
+    .logo {
+      object-fit: cover !important;
+    }
+    .tilteLogo {
+      font-family: $base__font-family;
+      margin-left: 5px;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 20px;
+      color: #3e4247;
+    }
+  }
+
+  .container-title {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .wrapper-title {
+    display: flex;
+    padding: 15px 0px;
+    border-top: 1px dashed #eaeaea;
+    .icon {
+      display: flex;
+      align-self: center;
+      width: 10px;
+      min-height: 10px;
+      min-width: 10px;
+      height: 10px;
+      border: 2px solid #3b5cad;
+      border-radius: 50%;
+    }
+    .title {
+      width: calc(100% -50px);
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+      color: #36383a;
+      padding-left: 15px;
+    }
+  }
+}
+
+.wrapper-table {
+  :global(.ant-table-summary) {
+    background-color: #fff1eb !important;
   }
 }

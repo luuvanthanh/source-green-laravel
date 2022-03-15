@@ -24,8 +24,4 @@ export const menu = [{
     key: 'tuition',
     label: 'Thông tin học phí HS',
   },
-  {
-    key: 'endow',
-    label: 'Thông tin ưu đãi PH',
-  },
 ];

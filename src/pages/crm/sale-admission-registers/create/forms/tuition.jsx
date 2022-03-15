@@ -78,7 +78,7 @@ const General = memo(
       ];
       return columns;
     };
-
+console.log("details",details)
     return (
       <>
         {

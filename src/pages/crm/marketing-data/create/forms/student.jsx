@@ -243,13 +243,13 @@ const Students = memo(() => {
                                     </Pane>
                                     <Pane className="col-lg-4">
                                       {
-                                        file?.age_month >= 0 ?
+                                        file?.month_age >= 0 ?
                                           <Form.Item label="Tuổi (tháng)" >
                                             <Text size="normal">
-                                              {file?.age_month}
+                                              {file?.month_age}
                                             </Text>
                                           </Form.Item>
-                                          : <Form.Item label="Tuổi (tháng)" name={[field.name, 'age_month']}>
+                                          : <Form.Item label="Tuổi (tháng)" name={[field.name, 'month_age']}>
                                             {dayOfBirth &&
                                               moment().diff(moment(dayOfBirth), 'month')}
                                           </Form.Item >
