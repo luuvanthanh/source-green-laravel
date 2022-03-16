@@ -35,10 +35,10 @@ export const feature = {
       permission: [permissions.TD],
     },
     {
-      title: 'Ghi nhận',
+      title: 'Hình ảnh',
       src: '/images/home/movies.svg',
       animation: animationImage.record,
-      url: '/ghi-nhan/danh-sach',
+      url: '/hinh-anh/danh-sach',
       permission: [permissions.HA],
     },
     {

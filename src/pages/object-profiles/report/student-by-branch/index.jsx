@@ -301,7 +301,7 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Thời gian nghỉ phép',
+        title: 'Tên phụ huynh',
         width: 300,
         key: 'number',
         children: [

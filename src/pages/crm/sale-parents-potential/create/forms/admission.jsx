@@ -175,7 +175,7 @@ const General = memo(() => {
                                                 <label className={stylesModule['form-title']}>Thời gian đăng ký nhập học</label>
                                             </div>
                                             <Text size="normal" className={stylesModule['form-description']}>
-                                                {dataDetails?.admissionRegister[0]?.date_register}
+                                                {Helper.getDate(dataDetails?.admissionRegister[0]?.date_register, variables.DATE_FORMAT.DATE)}
                                             </Text>
                                         </div>
                                         <div className="col-lg-12 border-bottom" >
