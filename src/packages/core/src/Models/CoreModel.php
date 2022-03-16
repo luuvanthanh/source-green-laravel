@@ -6,6 +6,7 @@ use GGPHP\Core\Contracts\Presentable;
 use GGPHP\Core\Traits\BootPresentTrait;
 use GGPHP\Core\Traits\CastDatetimeFormatTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CoreModel extends Model implements Presentable
 {
@@ -14,7 +15,8 @@ class CoreModel extends Model implements Presentable
     const DELETED_AT = 'DeletedAt';
 
     use CastDatetimeFormatTrait, BootPresentTrait;
-
+    use SoftDeletes;
+    
     public function scopeWhereLike($query, $key, $value)
     {
         $value = mb_strtoupper($this->convert_vi_to_en($value));

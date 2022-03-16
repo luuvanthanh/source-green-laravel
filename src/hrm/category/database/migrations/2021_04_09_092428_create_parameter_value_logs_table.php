@@ -19,12 +19,12 @@ class CreateParameterValueLogsTable extends Migration
             $table->uuid('ParameterValueId');
             $table->foreign('ParameterValueId')->references('Id')->on('ParameterValues');
             $table->uuid('EditEmployee');
-            //$table->foreign('EditEmployee')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('EditDate');
             $table->string('ValueDefault')->nullable();
             $table->date('ApplyDate')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0)->nullable();
         });
     }
 

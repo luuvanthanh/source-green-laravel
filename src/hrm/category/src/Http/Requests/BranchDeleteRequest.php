@@ -44,7 +44,7 @@ class BranchDeleteRequest extends FormRequest
 
                     if (
                         !is_null($appointDetails) || !is_null($dismissedDetail) || !is_null($positionLevel) || !is_null($labourContract)
-                        || !is_null($probationaryContract) || !is_null($transferDetail))
+                        || !is_null($probationaryContract) || !is_null($transferDetail)
                     ) {
                         return $fail('Dữ liệu đang được sử dụng!');
                     }
