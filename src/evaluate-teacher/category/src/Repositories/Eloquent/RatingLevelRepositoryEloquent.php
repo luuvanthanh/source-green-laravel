@@ -71,4 +71,11 @@ class RatingLevelRepositoryEloquent extends CoreRepositoryEloquent implements Ra
 
         return $ratingLevel;
     }
+
+    public function create(array $attributes)
+    {
+        $ratingLevel = RatingLevel::create($attributes);
+
+        return parent::find($ratingLevel->Id);
+    }
 }
