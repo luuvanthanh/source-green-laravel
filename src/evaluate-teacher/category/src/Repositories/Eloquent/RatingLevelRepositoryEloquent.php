@@ -76,8 +76,8 @@ class RatingLevelRepositoryEloquent extends CoreRepositoryEloquent implements Ra
             $fisrtValue = RatingLevel::find($value);
             $fisrtValue->update(['Number' => $key + 1]);
         }
-
         $result = RatingLevel::orderBy('Number')->get();
+
         return parent::parserResult($result);
     }
 }
