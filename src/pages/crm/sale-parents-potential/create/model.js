@@ -24,16 +24,6 @@ export default {
     lead: [],
     parentLead: [],
     relationships: [],
-    admission: [
-      {
-        full_name: " Cong Thanh",
-        birth_day: '26/06/1999',
-        age: "22",
-        time: "30/11/2021",
-        status: "",
-        
-      }
-    ]
   },
   reducers: {
     INIT_STATE: (state) => ({

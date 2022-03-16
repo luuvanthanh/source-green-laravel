@@ -257,6 +257,12 @@ class Index extends PureComponent {
         render: (record) => record?.phone,
       },
       {
+        title: 'Cơ sở quan tâm',
+        key: 'phone',
+        width: 150,
+        // render: (record) => <Text size="normal">{get(record, 'branch.name')}</Text>,
+      },
+      {
         title: 'Quận',
         key: 'district',
         width: 150,
@@ -439,12 +445,12 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả tình trạng Lead', id: null }, ...potential,]}
+                    data={[{ name: 'Chọn tất cả tình trạng tiềm năng', id: null }, ...potential,]}
                     name="status_parent_potential_id"
                     onChange={(event) => this.onChangeSelect(event, 'status_parent_potential_id')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn tình trạng Lead"
+                    placeholder="Chọn tình trạng tiềm năng"
                   />
                 </div>
                 <div className="col-lg-3">

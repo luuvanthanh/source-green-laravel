@@ -46,7 +46,7 @@ export function getWater(params = {}) {
 export function getHeight(params = {}) {
   return request(`/student-criterias/statistic-by-physical/${params.StudentId}`, {
     method: 'GET',
-    params : {},
+    params,
   });
 }
 

@@ -13,7 +13,7 @@ import StudentForm from './forms/student';
 import PotentialForm from './forms/potential';
 import AdmissionForm from './forms/admission';
 import TestInput from './forms/test-input';
-// import TuitionForm from './forms/tuition';
+ import TuitionForm from './forms/tuition';
 // import EndowForm from './forms/endow';
 
 import { menu, defaultKey } from './menu';
@@ -26,7 +26,7 @@ const forms = {
   potential: <PotentialForm />,
   admission: <AdmissionForm />,
   testInput: <TestInput />,
-  // tuition: <TuitionForm />,
+  tuition: <TuitionForm />,
   // endow: <EndowForm />,
 };
 
