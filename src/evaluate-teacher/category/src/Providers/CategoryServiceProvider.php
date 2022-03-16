@@ -8,6 +8,8 @@ use GGPHP\EvaluateTeacher\Category\Contracts\RatingLevelRepository;
 use GGPHP\EvaluateTeacher\Category\Contracts\SkillGroupRepository;
 use GGPHP\EvaluateTeacher\Category\Eloquent\RatingLevelRepositoryEloquent;
 use GGPHP\EvaluateTeacher\Category\Eloquent\SkillGroupRepositoryEloquent;
+use GGPHP\EvaluateTeacher\Category\Repositories\Contracts\EvaluateStepRepository;
+use GGPHP\EvaluateTeacher\Category\Repositories\Eloquent\EvaluateStepRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class CategoryServiceProvider extends ServiceProvider
@@ -34,5 +36,6 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(TypeTeacherRepository::class, TypeTeacherRepositoryEloquent::class);
         $this->app->bind(RatingLevelRepository::class, RatingLevelRepositoryEloquent::class);
         $this->app->bind(SkillGroupRepository::class, SkillGroupRepositoryEloquent::class);
+        $this->app->bind(EvaluateStepRepository::class, EvaluateStepRepositoryEloquent::class);
     }
 }
