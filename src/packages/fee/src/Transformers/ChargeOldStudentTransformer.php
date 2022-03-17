@@ -57,6 +57,7 @@ class ChargeOldStudentTransformer extends BaseTransformer
             foreach ($tuition as $key => $value) {
                 $paymentForm = $value->paymentForm;
                 $applyDate = Carbon::parse($value->ApplyDate)->format('Y-m');
+                $feeTuiTion = Fee::find($value['feeId']);
 
                 switch ($paymentForm->Code) {
                     case 'NAM':
@@ -76,15 +77,43 @@ class ChargeOldStudentTransformer extends BaseTransformer
                         break;
                     case 'THANG':
                         if ($applyDate <= $month->format('Y-m')) {
-                            $fee[] = [
-                                'fee_id' => $value->FeeId,
-                                'fee_name' => $value->fee->Name,
-                                'money' => $value->Money
-                            ];
+                            if ($applyDate ==  $month->format('Y-m')) {
+                                $fee[] = [
+                                    'fee_id' => $feeTuiTion->Id,
+                                    'fee_name' => $feeTuiTion->Name,
+                                    'money' => $value['money']
+                                ];
+                            } else {
+                                switch ($feeTuiTion->Type) {
+                                    case 'TIENAN':
+                                        $timetable = $model->schooleYear->timetable->where('Month', 'Tháng ' . $month->format('m') . '/' . $month->format('Y'))->where('Week', 1)->first();
+                                        $dayAdmission = $timetable->StartDate;
+                                        $endMonth = Carbon::parse($timetable->EndDate)->endOfMonth();
+                                        $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
+
+                                        $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
+
+                                        $result = ($daysLeftInMonth - $totalDayWeekend) * $value['moneyMonth'];
+
+                                        $fee[] = [
+                                            'fee_id' => $feeTuiTion->Id,
+                                            'fee_name' => $feeTuiTion->Name,
+                                            'money' => $result
+                                        ];
+                                        break;
+                                    default:
+                                        $fee[] = [
+                                            'fee_id' => $feeTuiTion->Id,
+                                            'fee_name' => $feeTuiTion->Name,
+                                            'money' => $value['moneyMonth']
+                                        ];
+                                        break;
+                                }
+                            }
                         } else {
                             $fee[] = [
-                                'fee_id' => $value->FeeId,
-                                'fee_name' => $value->fee->Name,
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
                                 'money' => 0
                             ];
                         }
@@ -176,5 +205,24 @@ class ChargeOldStudentTransformer extends BaseTransformer
         }
 
         return $this->item($chargeOldStudent->student, new StudentTransformer, 'Student');
+    }
+
+    public function countWeekend($startDate, $endDate)
+    {
+
+        $start = new \DateTime($startDate);
+        $end = new \DateTime($endDate . '23:59');
+        $interval = new \DateInterval('P1D');
+        $dateRange = new \DatePeriod($start, $interval, $end);
+
+        $totalWeekend = 0;
+        foreach ($dateRange as $date) {
+            $check = $date->format('l');
+            if ($check === 'Saturday' || $check === 'Sunday') {
+                $totalWeekend += 1;
+            }
+        }
+
+        return $totalWeekend;
     }
 }
