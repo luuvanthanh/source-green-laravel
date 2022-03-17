@@ -305,10 +305,10 @@ class Index extends PureComponent {
     const loading = effects['crmMarketingManage/GET_DATA'];
     return (
       <>
-        <Helmet title="Quản lý chương trình" />
+        <Helmet title="Quản lý chiến dịch marketing" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Quản lý chương trình</Text>
+            <Text color="dark">Quản lý chiến dịch marketing</Text>
             <div className="d-flex ">
               <Button
                 color="success"

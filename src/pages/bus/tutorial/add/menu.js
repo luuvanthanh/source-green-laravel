@@ -11,7 +11,7 @@ export const menu = [
   },
   {
     key: 'nannies',
-    label: 'Thông tin bảo mẫu',
+    label: 'Thông tin nhân sự chăm sóc trẻ',
   },
   {
     key: 'busRouteDrivers',

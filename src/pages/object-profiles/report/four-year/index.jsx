@@ -243,7 +243,7 @@ class Index extends PureComponent {
           if (record?.branch) {
             return <Text size="normal">Cơ sở</Text>;
           }
-          if (record?.class?.name || record?.total) {
+          if (record?.class?.name && record?.total >= 0) {
             return <Text size="normal">Lớp</Text>;
           }
           return <Text size="normal">{record?.fullName}</Text>;
@@ -285,7 +285,7 @@ class Index extends PureComponent {
         },
       },
       {
-        title: 'Số tháng học của bé tại trường	',
+        title: 'Số năm học tại trường',
         key: 'month',
         render: (value, record) => {
           if (record?.branch) {
@@ -295,14 +295,14 @@ class Index extends PureComponent {
               </Text>
             );
           }
-          if (record?.class?.name || record?.total) {
+          if (record?.class?.name && record?.total >= 0) {
             return (
               <Text size="normal" style={{ color: 'red' }}>
                 {record.total}
               </Text>
             );
           }
-          return <Text size="normal">{record.studiedMonth}</Text>;
+          return <Text size="normal">{record.studiedYears}</Text>;
         },
       },
     ];
@@ -329,7 +329,7 @@ class Index extends PureComponent {
           ? Helper.getDate(dataIDSearch, variables.DATE_FORMAT.DATE)
           : moment().format('YYYY-MM-DD'),
       },
-      `Danhsachhocsinhhoctren2nam.xlsx`,
+      `Danhsachhocsinhhoctren4nam.xlsx`,
     );
   };
 

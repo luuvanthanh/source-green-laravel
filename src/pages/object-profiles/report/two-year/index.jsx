@@ -285,7 +285,7 @@ class Index extends PureComponent {
         },
       },
       {
-        title: 'Số tháng học của bé tại trường	',
+        title: 'Số năm học tại trường	',
         key: 'month',
         render: (value, record) => {
           if (record?.branch) {
@@ -302,7 +302,7 @@ class Index extends PureComponent {
               </Text>
             );
           }
-          return <Text size="normal">{record.studiedMonth}</Text>;
+          return <Text size="normal">{record?.studiedYears}</Text>;
         },
       },
     ];

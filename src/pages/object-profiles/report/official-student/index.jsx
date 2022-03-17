@@ -205,13 +205,13 @@ class Index extends PureComponent {
     );
   };
 
-  debouncedSearchDateRank = debounce((FromDate, ToDate) => {
+  debouncedSearchDateRank = debounce((From, To) => {
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          FromDate,
-          ToDate,
+          From,
+          To,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
@@ -375,10 +375,10 @@ class Index extends PureComponent {
         Class: query?.Class,
         StudentStatus: 'OFFICAL',
         branchId: query?.branchId || defaultBranch?.id,
-        FromDate: dataIDSearch ? 
+        From: dataIDSearch ? 
           moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
         : "",
-        ToDate: dataIDSearch ? 
+        To: dataIDSearch ? 
         moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
          : "",
       },

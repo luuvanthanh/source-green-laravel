@@ -45,6 +45,8 @@ const General = memo(
     const [visible, setVisible] = useState(false);
     const [checkStatus, setCheckStatus] = useState(false);
     const [checkStatusBtn, setCheckStatusBtn] = useState(false);
+    const [checkSelect, setCheckSelect] = useState(true);
+    const [checkPost, setCheckPost] = useState(true);
 
     const checkLead = lead.filter(i => i?.status === 'POTENTIAL');
 
@@ -121,6 +123,7 @@ const General = memo(
           payload: { statusPotential: values.statusPotential, id: params.id },
           callback: (response, error) => {
             if (response) {
+              setCheckSelect(true);
               setCheckStatusBtn(true);
               setCheckStatus(false);
               mountedSet(setVisible, false);
@@ -154,37 +157,39 @@ const General = memo(
           },
         });
       }
-      dispatch({
-        type: 'crmSaleLeadAdd/ADD_STATUS',
-        payload: {
-          status: values?.status,
-          customer_lead_id: params.id,
-          user_update_id: user?.id,
-          user_update_info: user,
-        },
-        callback: (response, error) => {
-          if (response) {
-            dispatch({
-              type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
-              payload: {
-                customer_lead_id: params.id,
-              },
-            });
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
+      if(checkPost){
+        dispatch({
+          type: 'crmSaleLeadAdd/ADD_STATUS',
+          payload: {
+            status: values?.status,
+            customer_lead_id: params.id,
+            user_update_id: user?.id,
+            user_update_info: user,
+          },
+          callback: (response, error) => {
+            if (response) {
+              dispatch({
+                type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
+                payload: {
+                  customer_lead_id: params.id,
+                },
               });
             }
-          }
-        },
-      });
+            if (error) {
+              if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                error.data.errors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: get(item, 'source.pointer'),
+                      errors: [get(item, 'detail')],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+        }
     };
 
 
@@ -213,9 +218,17 @@ const General = memo(
         if (details?.statusLead[(details?.statusLead?.length - 1)]?.status === 'POTENTIAL' && checkLead.length <= 0) {
           setCheckStatus(true);
           setCheckStatusBtn(true);
-        } else {
+          setCheckSelect(true);
+        } 
+        if (details?.statusLead[(details?.statusLead?.length - 1)]?.status === 'POTENTIAL') {
+          setCheckSelect(true);
           setCheckStatus(false);
           setCheckStatusBtn(true);
+          setCheckPost(false);
+        }else {
+          setCheckStatus(false);
+          setCheckStatusBtn(true);
+          setCheckSelect(false);
         }
       }
     }, [details]);
@@ -224,7 +237,9 @@ const General = memo(
       if (id === "POTENTIAL" && checkLead.length <= 0) {
         setCheckStatus(true);
         setCheckStatusBtn(false);
+        setCheckSelect(true);
       } else {
+        setCheckSelect(false);
         setCheckStatusBtn(true);
         setCheckStatus(false);
       }
@@ -340,15 +355,28 @@ const General = memo(
                   <span className={styles['assignment-title']}>Tình trạng phụ huynh lead</span>
                 </Pane>
                 <Pane className="col-lg-4 mt10">
-                  <FormItem
-                    options={['id', 'name']}
-                    name="status"
-                    data={genders}
-                    placeholder="Chọn"
-                    onChange={onStatus}
-                    type={variables.SELECT}
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                  />
+                  {
+                    checkSelect ?
+                      <FormItem
+                        options={['id', 'name']}
+                        name="status"
+                        data={genders}
+                        placeholder="Chọn"
+                        onChange={onStatus}
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY_INPUT]}
+                        disabled
+                      /> :
+                      <FormItem
+                        options={['id', 'name']}
+                        name="status"
+                        data={genders}
+                        placeholder="Chọn"
+                        onChange={onStatus}
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY_INPUT]}
+                      />
+                  }
                 </Pane>
                 {
                   checkStatus && checkLead.length <= 0 ?

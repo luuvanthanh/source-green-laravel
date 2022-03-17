@@ -155,7 +155,7 @@ class Index extends PureComponent {
         <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
           <div className="card">
             <div style={{ padding: 20 }} className="pb-0 border-bottom">
-              <Heading type="form-title">Thông tin bảo mẫu</Heading>
+              <Heading type="form-title">Thông tin nhân sự chăm sóc trẻ</Heading>
               <Form.List name="busRouteNannies">
                 {(fields, { add, remove }) => (
                   <div>
@@ -173,7 +173,7 @@ class Index extends PureComponent {
                         {fields.map((field, index) => (
                           <div key={index}>
                             <div className="d-flex justify-content-between align-items-center pr10">
-                              <Heading type="form-block-title">BẢO MẪU {index + 1}</Heading>
+                              <Heading type="form-block-title">NHÂN SỰ CHĂM SÓC TRẺ {index + 1}</Heading>
                               {fields?.length > 1 && (
                                 <button
                                   type="button"
@@ -202,7 +202,7 @@ class Index extends PureComponent {
                               <div className="col-lg-12">
                                 <FormItem
                                   data={Helper.convertSelectUsers(employees)}
-                                  label="Bảo mẫu"
+                                  label="Nhân sự chăm sóc trẻ"
                                   fieldKey={[field.fieldKey, 'nannyId']}
                                   name={[field.name, 'nannyId']}
                                   type={variables.SELECT}
@@ -229,7 +229,7 @@ class Index extends PureComponent {
                         }
                       }}
                     >
-                      <span className="icon-plus-circle" /> THÊM BẢO MẪU
+                      <span className="icon-plus-circle" /> THÊM NHÂN SỰ CHĂM SÓC TRẺ
                     </p>
                   </div>
                 )}

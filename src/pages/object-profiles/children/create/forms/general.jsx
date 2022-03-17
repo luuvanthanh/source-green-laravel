@@ -209,7 +209,7 @@ const General = memo(
           visible={visibleModal}
           title={
             (modalType === type.WITHDRAW_APPLICATION && 'Thông tin rút hồ sơ') ||
-            (modalType === type.STOP_STUDYING && 'Thông tin ngưng học') ||
+            (modalType === type.STOP_STUDYING && 'Thông tin bảo lưu') ||
             (modalType === type.STOP_DISTRIBUTED && 'Thông tin kết thúc nhập môn')
           }
           onOk={save}
@@ -246,7 +246,7 @@ const General = memo(
                   <FormItem
                     label={
                       (modalType === type.WITHDRAW_APPLICATION && 'Lý do rút hồ sơ') ||
-                      (modalType === type.STOP_STUDYING && 'Lý do ngưng học')
+                      (modalType === type.STOP_STUDYING && 'Lý do bảo lưu')
                     }
                     name="reason"
                     type={variables.INPUT}
@@ -258,7 +258,7 @@ const General = memo(
                 <FormItem
                   label={
                     (modalType === type.WITHDRAW_APPLICATION && 'Ngày rút hồ sơ') ||
-                    (modalType === type.STOP_STUDYING && 'Ngày ngưng học') ||
+                    (modalType === type.STOP_STUDYING && 'Ngày bảo lưu') ||
                     (modalType === type.STOP_DISTRIBUTED && 'Ngày kết thúc nhập môn')
                   }
                   name="date"
@@ -409,7 +409,7 @@ const General = memo(
                           className="mr-3"
                           onClick={() => handleModalForm(type.STOP_STUDYING)}
                         >
-                          Ngưng học
+                          Bảo lưu
                         </Button>
                         {details?.student?.status !== variablesModules.STATUS.OFFICAL && (
                           <Button
