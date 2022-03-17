@@ -96,7 +96,7 @@ const Index = memo(() => {
               : { ...omit(menuItem, 'originId'), id: menuItem.originId }),
           })) || undefined,
         name: item.menuMealDetails ? item.name : undefined,
-        id: item.originId,
+        id: item?.isAdd ? undefined : (item.id || item.originId),
       })),
     };
     dispatch({

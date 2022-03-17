@@ -38,14 +38,10 @@ const General = memo(() => {
 
 
     const today = new Date();
-    const c = new Date(today.toLocaleDateString());
-    const dateHistory = new Date(eventDetails.date);
-    const timeHistory = `${eventDetails.time}`;
-    const date = `${today.getDate() < 10 ? `${`0${today.getDate()}`}` : today.getDate()}-0${today.getMonth() + 1}-${today.getFullYear()}`;
-    const time = `${today.getHours() < 10 ? `${`0${today.getHours()}:${today.getMinutes()}`}` : `${today.getHours()}:${today.getMinutes()}`}`;
-    const miliToday = c.getTime();
+    const dateHistory = new Date(eventDetails.time);
+    const miliToday = today.getTime();
     const miliDateHistory = dateHistory.getTime();
-    const dateYear = `${Helper.getDate(eventDetails.date, variables.DATE_FORMAT.DATE)}`;
+
 
     const [description, setDescription] = useState('');
     const [result, setResult] = useState('');
@@ -87,6 +83,30 @@ const General = memo(() => {
                 customer_lead_id: params.id,
             },
         });
+        const dataSession = JSON.parse(sessionStorage.getItem('check'));
+        if (dataSession?.modal) {
+            setModal(dataSession?.modal);
+            setObjects({ id: dataSession?.id });
+            if (objects) {
+                dispatch({
+                    type: 'crmSaleLeadAdd/GET_EVENTS',
+                    payload: dataSession?.id,
+                    callback: (response) => {
+                        if (response) {
+                            mountedSet(setDescription, response.parsePayload.description);
+                            mountedSet(setResult, response.parsePayload.result);
+                        }
+                    },
+                });
+                dispatch({
+                    type: 'crmSaleLeadAdd/EVENTS',
+                    payload: {
+                        customer_lead_id: params.id,
+                    },
+                });
+            }
+        }
+        sessionStorage.removeItem('check');
     }, []);
 
     useEffect(() => {
@@ -153,25 +173,9 @@ const General = memo(() => {
     // time < timeHistory && 
     const onStatus = () => {
         if (miliToday < miliDateHistory) {
-            if (time > timeHistory && date === dateYear) {
-                return (
-                    <>
-                        {HelperModules.tagStatus("PAST_EVENTS")}
-                    </>
-                );
-            }
-            return (
-                <>
-                    {HelperModules.tagStatus("COMING_EVENTS")}
-                </>
-            );
-
+            return HelperModules.tagStatus("COMING_EVENTS");
         }
-        return (
-            <>
-                {HelperModules.tagStatus("PAST_EVENTS")}
-            </>
-        );
+        return HelperModules.tagStatus("PAST_EVENTS");
     };
 
 
@@ -338,72 +342,21 @@ const General = memo(() => {
 
     const onForm = () => {
         if (miliToday < miliDateHistory) {
-            if (time < timeHistory && miliToday > miliDateHistory) {
-                return (
-                    <>
-                        {onFormTrue()}
-                        {onFormfalse()}
-                    </>
-                );
-            }
-            return (
-                <>
-                    {onFormTrue()}
-                </>
-            );
-
-        } if (miliToday > miliDateHistory) {
-            if (time < timeHistory && date === dateYear) {
-                return (
-                    <>
-                        {onFormTrue()}
-                    </>
-                );
-            }
-            return (
-                <>
-                    {onFormfalse()}
-                </>
-            );
+            return onFormTrue();
         }
-        return (
-            <>
-                {onFormfalse()}
-            </>
-        );
+        return onFormfalse();
     };
     // 
 
-    const onStatusTable = (a, e) => {
-        const today = new Date();
-        const c = new Date(today.toLocaleDateString());
-        const dateHistory = new Date(a);
-        const timeHistory = `${e}`;
-        const date = `${today.getDate() < 10 ? `${`0${today.getDate()}`}` : today.getDate()}-0${today.getMonth() + 1}-${today.getFullYear()}`;
-        const time = `${today.getHours() < 10 ? `${`0${today.getHours()}:0${today.getMinutes()}`}` : `${today.getHours()}:${today.getMinutes()}`}`;
-        const miliToday = c.getTime();
-        const miliDateHistory = dateHistory.getTime();
-        const dateYear = `${Helper.getDate(a, variables.DATE_FORMAT.DATE)}`;
+    const onStatusTable = (date, time) => {
+        const dateTime = new Date();
+        const timeHistory = new Date(time);
+        const miliToday = dateTime.getTime();
+        const miliDateHistory = timeHistory.getTime();
         if (miliToday < miliDateHistory) {
-            if (time > timeHistory && date === dateYear) {
-                return (
-                    <>
-                        {HelperModules.tagStatus("PAST_EVENTS")}
-                    </>
-                );
-            }
-            return (
-                <>
-                    {HelperModules.tagStatus("COMING_EVENTS")}
-                </>
-            );
-
+            return HelperModules.tagStatus("COMING_EVENTS");
         }
-        return (
-            <>
-                {HelperModules.tagStatus("PAST_EVENTS")}
-            </>
-        );
+        return HelperModules.tagStatus("PAST_EVENTS");
     };
 
     const header = () => {
@@ -415,7 +368,7 @@ const General = memo(() => {
                 width: 200,
                 render: (record) => (
                     <Text size="normal">
-                        {Helper.getDate(record.date)}, {record.time}
+                        {Helper.getDate(record.time, variables.DATE_FORMAT.DATE_TIME)}
                     </Text>
                 ),
             },
@@ -478,7 +431,7 @@ const General = memo(() => {
                 ...head(eventDetails.positionLevel),
                 date: eventDetails.date && moment(eventDetails.date),
                 created_at: eventDetails.created_at && moment(eventDetails.created_at),
-                time: eventDetails.time && moment(eventDetails.time, variables.DATE_FORMAT.HOUR),
+                time: eventDetails.time && moment(eventDetails.time),
             });
         }
     }, [eventDetails]);
@@ -501,11 +454,11 @@ const General = memo(() => {
                             },
                         });
                         formRef.current.setFieldsValue({
-                            date:  undefined,
-                            time:  undefined,
+                            date: undefined,
+                            time: undefined,
                             name: undefined,
-                            category_event_id:  undefined,
-                            location:  undefined
+                            category_event_id: undefined,
+                            location: undefined
                         });
                         mountedSet(setDescription, "");
                     }
@@ -544,25 +497,6 @@ const General = memo(() => {
                                 Thông tin sự kiện
                             </Heading>
                             <>
-                                {/* <Breadcrumb separator=">" className={stylesModule['wrapper-breadcrumb']}>
-                                    <Breadcrumb.Item>
-                                    <Link to="/crm/sale/ph-lead" className={stylesModule.details}>
-                                        Phụ huynh lead
-                                    </Link>
-                                    </Breadcrumb.Item>
-                                    <Breadcrumb.Item>
-                                    <Link
-                                        to={`/crm/sale/ph-lead/${params.id}/chi-tiet?type=events`}
-                                        className={stylesModule.details}
-                                    >
-                                        Chi tiết
-                                    </Link>
-                                    </Breadcrumb.Item>
-                                    <Breadcrumb.Item className={stylesModule.detailsEnd}>
-                                    {params.detailId ? 'Chi tiết sự kiện' : 'Thêm thông tin sự kiện'}
-                                    </Breadcrumb.Item>
-                                </Breadcrumb> */}
-
                                 <Button
                                     color="success"
                                     icon="plus"

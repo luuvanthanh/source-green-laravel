@@ -94,9 +94,8 @@ const General = memo(() => {
     return mounted.current;
   }, []);
 
-
   useEffect(() => {
-    if (details?.customerPotentialStatusCare?.length > 0) {
+    if (details?.customerPotentialStatusCare?.filter(i => i?.statusParentPotential?.number === 3).length <= 0 && details?.customerPotentialStatusCare?.filter(i => i?.statusParentPotential?.number === 4) <= 0) {
       formRef.current.setFieldsValue({
         status_parent_potential_id: details?.customerPotentialStatusCare[(details?.customerPotentialStatusCare?.length - 1)]?.status_parent_potential_id,
       });
@@ -153,27 +152,51 @@ const General = memo(() => {
               </Pane>
             </div>
             <div className="row">
-              <Pane className="col-lg-6">
-                <FormItem
-                  options={['id', 'name']}
-                  name="status_parent_potential_id"
-                  data={parentLead.filter(i => i?.use === false)}
-                  placeholder="Chọn"
-                  label="Tình trạng chăm sóc của phụ huynh tiềm năng"
-                  type={variables.SELECT}
-                  rules={[variables.RULES.EMPTY_INPUT]}
-                />
-              </Pane>
+              {
+                lead[0]?.statusParentPotential?.number === 3 || lead[0]?.statusParentPotential?.number  === 4 ?
+                  <Pane className="col-lg-6">
+                    <FormItem
+                      options={['id', 'name']}
+                      name="status_parent_potential_id"
+                      data={parentLead.filter(i => i?.use === false)}
+                      placeholder="Chọn"
+                      label="Tình trạng chăm sóc của phụ huynh tiềm năng"
+                      type={variables.SELECT}
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                      disabled
+                    />
+                  </Pane>
+                  :
+                  <Pane className="col-lg-6">
+                    <FormItem
+                      options={['id', 'name']}
+                      name="status_parent_potential_id"
+                      data={parentLead.filter(i => i?.use === false)}
+                      placeholder="Chọn"
+                      label="Tình trạng chăm sóc của phụ huynh tiềm năng"
+                      type={variables.SELECT}
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
+                  </Pane>
+              }
             </div>
             <div className={stylesModule['wrapper-btn']}>
-              <Button
-                color="success"
-                size="normal"
-                htmlType="submit"
-                loading={loadingSubmit || loading}
-              >
-                Lưu
-              </Button>
+              {
+                lead[0]?.statusParentPotential?.number === 3 || lead[0]?.statusParentPotential?.number  === 4 ?
+                  <Button
+                  color="success"  className="ml-4" disabled
+                  >
+                    Lưu
+                  </Button>:
+                  <Button
+                    color="success"
+                    size="normal"
+                    htmlType="submit"
+                    loading={loadingSubmit || loading}
+                  >
+                    Lưu
+                  </Button> 
+              }
             </div>
           </div>
         </>

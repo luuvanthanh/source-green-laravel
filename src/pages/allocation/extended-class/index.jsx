@@ -65,7 +65,7 @@ const Index = memo(() => {
         ...search,
       },
       callback: (response) => {
-        if (response) {
+        if (response?.length > 0) {
           setItems(response);
         }
       },
@@ -873,7 +873,6 @@ const Index = memo(() => {
                                 isEmptyDayOfWeek: task.isEmptyDayOfWeek,
                               }));
                               const sizeMax = getSizeMax(value?.timetableDetailByClassAndActivy);
-
                               return (
                                 <Droppable key={index} droppableId={key}>
                                   {(provided, snapshot) => (

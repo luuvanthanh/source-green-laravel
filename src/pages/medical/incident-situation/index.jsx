@@ -259,14 +259,14 @@ class Index extends PureComponent {
         width: 300,
         className: 'min-width-300',
         render: (value, record) => {
-          if (record?.branch) {
+          if (record?.branch?.name && record?.children) {
             return (
               <Text size="normal">
                 {record?.branch?.name}
               </Text>
             );
           }
-          if (record?.class?.name) {
+          if (record?.class?.name && record?.children) {
             return (
               <Text size="normal">
                 {record?.class?.name}

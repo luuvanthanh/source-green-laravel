@@ -375,6 +375,7 @@
       font-weight: normal;
       font-weight: 400;
       font-size: 14px;
+      margin-left: 5px;
       line-height: 20px;
       color: #3b5cad;
     }
@@ -451,6 +452,8 @@
       align-self: center;
       width: 10px;
       height: 10px;
+      min-height: 10px;
+      min-width: 10px;
       border: 2px solid #3b5cad;
       border-radius: 50%;
     }
@@ -538,12 +541,19 @@
   :global(.ant-picker.ant-picker-disabled) {
     color: #3e4247 !important;
     background-color: #eef0f4 !important;
+    opacity: 1 !important;
   }
   :global(.ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
     color: #3e4247 !important;
     background-color: #eef0f4 !important;
+    opacity: 1 !important;
   }
   :global(.ant-select-arrow) {
     color: #eef0f4 !important;
-}
+    opacity: 1 !important;
+  }
+  :global(.ant-picker-input > input[disabled]) {
+    color: #3e4247 !important;
+    opacity: 1 !important;
+  }
 }

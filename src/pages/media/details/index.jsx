@@ -56,13 +56,13 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Chi tiết ghi nhận" />
-      <Breadcrumbs last="Chi tiết ghi nhận" menu={menuLeftMedia} />
+      <Helmet title="Chi tiết hình ảnh" />
+      <Breadcrumbs last="Chi tiết hình ảnh" menu={menuLeftMedia} />
       <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
         <Loading
           loading={loading['mediaDetails/GET_DETAILS']}
           isError={error.isError}
-          params={{ error, type: 'container', goBack: '/ghi-nhan' }}
+          params={{ error, type: 'container', goBack: '/hinh-anh' }}
         >
           <Pane className="card">
             <Pane className="border-bottom" style={{ padding: 20 }}>
@@ -74,7 +74,7 @@ const Index = memo(() => {
                   {Helper.getDate(details, variables.DATE_FORMAT.DATE_TIME)}
                 </Heading>
                 <p className={styles['text-delete']} role="presentation" onClick={remove}>
-                  Xóa ghi nhận
+                  Xóa hình ảnh
                 </p>
               </Pane>
               <Pane style={{ marginBottom: 20 }}>

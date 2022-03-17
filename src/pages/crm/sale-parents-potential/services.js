@@ -20,6 +20,7 @@ export function get(data = {}) {
         'potentialStudentInfo',
         'searchSource',
         'employee',
+        'customerLead.statusCare.statusParentLead',
         'customerPotentialStatusCare.statusParentPotential',
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
@@ -93,6 +94,15 @@ export function getSearch(params) {
 
 export function getBranch() {
   return request(`/v1/branches`, {
+    method: 'GET',
+    params: {
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getPotential() {
+  return request(`/v1/status-parent-potentials`, {
     method: 'GET',
     params: {
       orderBy: 'name',

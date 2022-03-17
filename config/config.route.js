@@ -2124,39 +2124,39 @@ export default [
       // NOTIFICATION
       // MEDIA
       {
-        path: '/ghi-nhan',
+        path: '/hinh-anh',
         component: './media/layout',
         routes: [
           {
-            path: '/ghi-nhan',
-            redirect: '/ghi-nhan/danh-sach',
+            path: '/hinh-anh',
+            redirect: '/hinh-anh/danh-sach',
           },
           {
-            path: '/ghi-nhan/danh-sach',
+            path: '/hinh-anh/danh-sach',
             component: './media/items',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HA],
           },
           {
-            path: '/ghi-nhan/:id/chi-tiet',
+            path: '/hinh-anh/:id/chi-tiet',
             component: './media/details',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HA],
           },
           {
-            path: '/ghi-nhan/dang-hinh',
+            path: '/hinh-anh/dang-hinh',
             component: './media/browser',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HA],
           },
           {
-            path: '/ghi-nhan/duyet-hinh',
+            path: '/hinh-anh/duyet-hinh',
             component: './media/browser/result',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HA],
           },
           {
-            path: '/ghi-nhan/cau-hinh',
+            path: '/hinh-anh/cau-hinh',
             component: './media/watermark',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HA],
@@ -2854,37 +2854,37 @@ export default [
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/tiep-thi/quan-ly-chuong-trinh',
+            path: '/crm/tiep-thi/quan-ly-chien-dich-marketing',
             component: './crm/marketing-manage',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/tiep-thi/quan-ly-chuong-trinh/tao-moi',
+            path: '/crm/tiep-thi/quan-ly-chien-dich-marketing/tao-moi',
             component: './crm/marketing-manage/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet',
+            path: '/crm/tiep-thi/quan-ly-chien-dich-marketing/:id/chi-tiet',
             component: './crm/marketing-manage/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/tiep-thi/quan-ly-chuong-trinh/tao-moi/them-bai-viet',
+            path: '/crm/tiep-thi/quan-ly-chien-dich-marketing/tao-moi/them-bai-viet',
             component: './crm/marketing-manage/create/add-posts',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet/them-bai-viet',
+            path: '/crm/tiep-thi/quan-ly-chien-dich-marketing/:id/chi-tiet/them-bai-viet',
             component: './crm/marketing-manage/create/add-posts',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet/:detailId/chi-tiet',
+            path: '/crm/tiep-thi/quan-ly-chien-dich-marketing/:id/chi-tiet/:detailId/chi-tiet',
             component: './crm/marketing-manage/create/add-posts',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],

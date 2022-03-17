@@ -201,7 +201,7 @@ console.log("user", user);
 
   return (
     <>
-      <div className={classnames('row', stylesModule.wrapper)}>
+      <div >
         <Form layout="vertical" ref={formRef} onFinish>
           <Pane className="card">
             <Pane style={{ padding: 20 }} className="pb-0">

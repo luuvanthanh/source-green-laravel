@@ -256,7 +256,7 @@ const Index = memo(() => {
                   className="mx-auto"
                   color="success"
                   size="large"
-                  onClick={() => history.push('/ghi-nhan/duyet-hinh')}
+                  onClick={() => history.push('/hinh-anh/duyet-hinh')}
                 >
                   Xem kết quả
                 </Button>

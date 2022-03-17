@@ -22,7 +22,7 @@ const mapStateToProps = ({ settings, menu }) => ({
 const OBJECTS = {
   MEDIA: {
     icon: '/images/home/movies.svg',
-    title: 'Ghi nhận',
+    title: 'Hình ảnh',
     menu: 'menuLeftMedia',
   },
   HRM: {
@@ -135,7 +135,7 @@ class MainLayout extends React.PureComponent {
     if (/^\/quan-ly-nhan-su(?=\/|$)/i.test(pathname)) {
       key = 'HRM';
     }
-    if (/^\/ghi-nhan(?=\/|$)/i.test(pathname)) {
+    if (/^\/hinh-anh(?=\/|$)/i.test(pathname)) {
       key = 'MEDIA';
     }
     if (/^\/suc-khoe(?=\/|$)/i.test(pathname)) {

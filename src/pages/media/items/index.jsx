@@ -112,7 +112,7 @@ const Index = memo(() => {
           <Button
             color="success"
             ghost
-            onClick={() => history.push(`/ghi-nhan/${record?.id}/chi-tiet`)}
+            onClick={() => history.push(`/hinh-anh/${record?.id}/chi-tiet`)}
           >
             Chi tiết
           </Button>
@@ -238,10 +238,10 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Danh sách ghi nhận" />
+      <Helmet title="Danh sách hình ảnh" />
       <Pane className="p20">
         <Pane className="d-flex mb20">
-          <Heading type="page-title">Danh sách ghi nhận</Heading>
+          <Heading type="page-title">Danh sách hình ảnh</Heading>
         </Pane>
 
         <Pane className="card">

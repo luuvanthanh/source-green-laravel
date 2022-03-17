@@ -138,13 +138,13 @@ console.log("user",JSON?.parse(sessionStorage?.getItem('user')));
         <Pane style={{ margin: 20 }}>
           <Breadcrumb separator=">" className={stylesModule['wrapper-breadcrumb']}>
             <Breadcrumb.Item>
-              <Link to="/crm/tiep-thi/quan-ly-chuong-trinh" className={stylesModule.details}>
-                Quản lý chương trình
+              <Link to="/crm/tiep-thi/quan-ly-chien-dich-marketing" className={stylesModule.details}>
+              Quản lý chiến dịch marketing
               </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
               <Link
-                to={`/crm/tiep-thi/quan-ly-chuong-trinh/${params.id}/chi-tiet?type=posts`}
+                to={`/crm/tiep-thi/quan-ly-chien-dich-marketing/${params.id}/chi-tiet?type=posts`}
                 className={stylesModule.details}
               >
                 Chi tiết

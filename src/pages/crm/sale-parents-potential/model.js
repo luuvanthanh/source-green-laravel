@@ -11,6 +11,7 @@ export default {
     lead: [],
     searchSource: [],
     employees: [],
+    potential: [],
     pagination: {
       total: 0,
     },
@@ -62,6 +63,10 @@ export default {
     SET_BRANCH: (state, { payload }) => ({
       ...state,
       branch: payload.parsePayload,
+    }),
+    SET_POTENTIAL: (state, { payload }) => ({
+      ...state,
+      potential: payload.parsePayload,
     }),
   },
   effects: {
@@ -179,6 +184,20 @@ export default {
         const response = yield saga.call(services.getBranch, payload);
         yield saga.put({
           type: 'SET_BRANCH',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_POTENTIAL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getPotential, payload);
+        yield saga.put({
+          type: 'SET_POTENTIAL',
           payload: response,
         });
       } catch (error) {

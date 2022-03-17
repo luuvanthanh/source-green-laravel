@@ -27,7 +27,7 @@ export default {
           total : item?.total,
           id: item?.class?.id,
           children: (
-            item?.students.map((i) => ({
+            item?.students?.map((i) => ({
               ...i
             }))
           )

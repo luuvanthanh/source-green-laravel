@@ -1,4 +1,3 @@
-import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -374,7 +373,7 @@ export default {
     },
     *GET_BRANCHES({ payload }, saga) {
       try {
-        const response = yield saga.call(categories.getBranches, payload);
+        const response = yield saga.call(services.getBranches, payload);
         yield saga.put({
           type: 'SET_BRANCHES',
           payload: response,

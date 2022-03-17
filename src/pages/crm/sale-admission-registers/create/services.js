@@ -272,3 +272,9 @@ export function getChildEvaluation(data = {}) {
     },
   });
 }
+
+export function getBranches() {
+  return request(`/v1/branches`, {
+    method: 'GET',
+  });
+}

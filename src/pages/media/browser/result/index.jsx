@@ -239,7 +239,7 @@ const Index = memo(() => {
       type: 'mediaResult/VALIDATE_ALL',
       payload: req,
       callback: () => {
-        history.push('/ghi-nhan/duyet-hinh');
+        history.push('/hinh-anh/duyet-hinh');
       },
     });
   };

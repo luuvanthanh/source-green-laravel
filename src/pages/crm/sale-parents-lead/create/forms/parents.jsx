@@ -322,13 +322,14 @@ const General = memo(
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  {details?.manual_create  ? <FormItem
+                  {details?.manual_create || !params?.id ? <FormItem
                     options={['id', 'name']}
                     name="search_source_id"
                     data={search}
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Nguồn tìm kiếm"
+                    rules={[variables.RULES.EMPTY_INPUT]}
                   /> : <FormItem
                     options={['id', 'name']}
                     name="search_source_id"

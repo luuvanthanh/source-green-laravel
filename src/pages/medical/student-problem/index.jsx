@@ -322,10 +322,16 @@ class Index extends PureComponent {
         render: (record) => HelperModules.tagStatus(record?.handleStatus),
       },
       {
-        title: 'Cách xử lý',
+        title: 'Tình trạng',
         width: 150,
         className: 'min-width-150',
         render: (record) => <Text size="normal">{record?.handleWay}</Text>,
+      },
+      {
+        title: 'Cách xử lý',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.employeeNote}</Text>,
       },
       {
         title: 'Người xử lý',
