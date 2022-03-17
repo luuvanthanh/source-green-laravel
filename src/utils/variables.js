@@ -151,7 +151,7 @@ export const variables = {
       name: 'Tháng',
     },
   ],
-  DAY_OF_WEEKS: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+  DAY_OF_WEEKS: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   DAY_OF_WEEKS_TEXT: {
     Monday: 'Thứ 2',
     Tuesday: 'Thứ 3',

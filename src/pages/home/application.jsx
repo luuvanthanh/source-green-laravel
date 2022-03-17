@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import Slider from 'react-slick';
 import { isEmpty } from 'lodash';
+import Cookies from 'universal-cookie';
 
 import { isValidCondition } from '@/utils/authority';
 import feature from '@/services/feature';
@@ -11,13 +12,20 @@ import ItemSlider from './itemSlider';
 
 import styles from './index.scss';
 
+const cookies = new Cookies();
 @connect(({ user, loading }) => ({ user, loading }))
 class Application extends PureComponent {
   constructor(props, context) {
     super(props, context);
     const { user } = props;
     this.state = {
-      data: feature.FEATURES.filter((menuItem) => {
+      data: feature.FEATURES.map((item) => ({
+        ...item,
+        url:
+          item.key === 'AI'
+            ? `${URL_AI}/verify-token?token=${cookies.get('access_token')}`
+            : item.url,
+      })).filter((menuItem) => {
         if (isEmpty(menuItem.permission)) {
           return true;
         }

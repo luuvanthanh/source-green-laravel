@@ -13,6 +13,7 @@ export default {
     },
     paramaterValues: [],
     paramaterFormulas: [],
+    problems: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -40,6 +41,10 @@ export default {
     SET_CLASS: (state, { payload }) => ({
       ...state,
       dataClass: payload.items,
+    }),
+    SET_PROBLEMS: (state, { payload }) => ({
+      ...state,
+      problems: payload.parsePayload,
     }),
   },
   effects: {
@@ -116,6 +121,20 @@ export default {
         const response = yield saga.call(services.getClass, payload);
         yield saga.put({
           type: 'SET_CLASS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PROBLEMS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getProblems, payload);
+        yield saga.put({
+          type: 'SET_PROBLEMS',
           payload: response,
         });
       } catch (error) {

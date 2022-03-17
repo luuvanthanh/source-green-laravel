@@ -165,7 +165,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 <FormItem name="content" label="Nội dung" type={variables.TEXTAREA} />
               </Pane>
               <Pane className="col-lg-12">
-                <FormItem name="note" label="ghi chú" type={variables.TEXTAREA} />
+                <FormItem name="note" label="Ghi chú" type={variables.TEXTAREA} />
               </Pane>
             </Pane>
           </Pane>

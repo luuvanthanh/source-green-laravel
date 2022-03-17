@@ -35,12 +35,14 @@ const Index = memo(() => {
 
   const responseFacebook = (response) => {
     console.log('response', response);
+    console.log('user',user);
     dispatch({
       type: 'crmMarketingManageAdd/GET_USER',
       payload: response,
     });
     if(response){
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(response));
+      sessionStorage.setItem('user', JSON.stringify(response));
     }
   };
 
@@ -199,7 +201,7 @@ console.log("user", user);
 
   return (
     <>
-      <div className={classnames('row', stylesModule.wrapper)}>
+      <div >
         <Form layout="vertical" ref={formRef} onFinish>
           <Pane className="card">
             <Pane style={{ padding: 20 }} className="pb-0">

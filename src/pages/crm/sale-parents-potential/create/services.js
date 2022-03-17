@@ -81,7 +81,17 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo', 'city', 'district']),
+      include: Helper.convertIncludes([
+        'studentInfo',
+        'city',
+        'district',
+        'customerPotentialStatusCare.statusParentPotential',
+        'customerLead.studentInfo.admissionRegister.studentByChargeNow.chargeStudent.tuition.paymentForm,customerLead.studentInfo.admissionRegister.studentByChargeNow.chargeStudent.tuition.fee,customerLead.studentInfo.admissionRegister.studentByChargeNow.chargeStudent.classType,customerLead.studentInfo.admissionRegister.studentByChargeNow.chargeStudent.schoolYear,customerLead.studentInfo.admissionRegister.studentByChargeNow.chargeStudent.classType',
+        'customerLead.studentInfo.admissionRegister.testInput.testInputDetail.categorySkill',
+        'customerLead.studentInfo.admissionRegister.testInput.testInputDetail.testInputDetailChildren.childEvaluate,customerLead.studentInfo.admissionRegister.testInput.testInputDetail.testInputDetailChildren.childEvaluateDetail,customerLead.studentInfo.admissionRegister.testInput.testInputDetail.testInputDetailChildren.childEvaluateDetailChildren,testInputDetail.categorySkill,admissionRegister.studentInfo',
+        'customerLead.studentInfo.admissionRegister.parentInfo',
+        'customerLead.studentInfo.admissionRegister.testInput.employee,customerLead.studentInfo.admissionRegister.testInput.classType,customerLead.studentInfo.admissionRegister.testInput.branch',
+      ]),
     },
   });
 }

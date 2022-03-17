@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Switch } from 'antd';
+import { Form, Switch, Tag } from 'antd';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -10,6 +10,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -202,14 +203,14 @@ class Index extends PureComponent {
         key: 'code',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record.code}</Text>,
+        render: (record) => <Text size="normal">{record?.code}</Text>,
       },
       {
         title: 'Tên kỳ đánh giá',
         key: 'name',
         width: 250,
         className: 'min-width-250',
-        render: (record) => <Text size="normal">{record.name}</Text>,
+        render: (record) => <Text size="normal">{record?.nameAssessmentPeriod?.name}</Text>,
       },
       {
         title: 'Năm học',
@@ -227,11 +228,23 @@ class Index extends PureComponent {
           ? `${Helper.getDate(record?.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record?.endDate, variables.DATE_FORMAT.DATE_VI)}` : ''
       },
       {
+        title: 'Loại đánh giá',
+        key: 'Rating-Type',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => (
+          <div className={stylesModule['wrapper-tag']}>
+            {record?.periodic ? <Tag size="normal" >Đánh giá định kì</Tag> : ""}
+            {record?.introduction ? <Tag size="normal" >Đánh giá nhập môn</Tag> : ""}
+          </div>
+        )
+      },
+      {
         title: 'Sử dụng',
         dataIndex: 'use',
         width: 150,
         className: 'min-width-150',
-        render: (use,record) => (
+        render: (use, record) => (
           <div
             role="presentation"
             onClick={(e) => {
@@ -292,10 +305,10 @@ class Index extends PureComponent {
     const loading = effects['childDevelopAssessmentPeriod/GET_DATA'];
     return (
       <>
-        <Helmet title="Kỳ đánh giá" />
+        <Helmet title="Cấu hình kì đánh giá" />
         <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Kỳ đánh giá</Text>
+            <Text color="dark">Cấu hình kì đánh giá</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

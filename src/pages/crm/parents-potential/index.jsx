@@ -206,13 +206,18 @@ class Index extends PureComponent {
         width: 125,
         fixed: 'right',
         render: (record) => (
-          <div className={styles['list-button']}>
+          <div className="d-flex justify-content-end">
+            {
+              !record?.status_hard ?
+              <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+              : ""
+            }
             <Button
               color="primary"
               icon="edit"
+              className='ml10'
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },

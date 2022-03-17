@@ -7,7 +7,6 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import { variables, Helper } from '@/utils';
 import { CheckCircleOutlined } from '@ant-design/icons';
-import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -22,10 +21,11 @@ const General = memo(() => {
   const mounted = useRef(false);
   const {
     parentLead,
+    details,
     lead,
-    error,
+    user,
     loading: { effects },
-  } = useSelector(({ loading, crmSaleParentsPotentialAdd }) => ({
+  } = useSelector(({ loading, crmSaleParentsPotentialAdd, user }) => ({
     loading,
     lead: crmSaleParentsPotentialAdd.lead,
     error: crmSaleParentsPotentialAdd.error,
@@ -33,6 +33,7 @@ const General = memo(() => {
     parentLead: crmSaleParentsPotentialAdd.parentLead,
     detailsLead: crmSaleParentsPotentialAdd.detailsLead,
     data: crmSaleParentsPotentialAdd.data,
+    user: user.user,
   }));
 
   const loadingSubmit = effects[`crmSaleParentsPotentialAdd/ADD_STATUS_LEAD`];
@@ -44,6 +45,8 @@ const General = memo(() => {
       payload: {
         ...values,
         customer_potential_id: params.id,
+        user_update_id: user?.id,
+        user_update_info: user,
       },
       callback: (response, error) => {
         if (response) {
@@ -91,6 +94,14 @@ const General = memo(() => {
     return mounted.current;
   }, []);
 
+  useEffect(() => {
+    if (details?.customerPotentialStatusCare?.filter(i => i?.statusParentPotential?.number === 3).length <= 0 && details?.customerPotentialStatusCare?.filter(i => i?.statusParentPotential?.number === 4) <= 0) {
+      formRef.current.setFieldsValue({
+        status_parent_potential_id: details?.customerPotentialStatusCare[(details?.customerPotentialStatusCare?.length - 1)]?.status_parent_potential_id,
+      });
+    }
+  }, [details]);
+
   const header = () => {
     const columns = [
       {
@@ -112,15 +123,16 @@ const General = memo(() => {
         key: 'name',
         className: 'max-width-150',
         width: 150,
-        render: (record) => get(record, 'name'),
+        render: (record) => <Text size="normal">{record?.user_update_info?.name}</Text>,
       },
     ];
     return columns;
   };
+
   return (
     <Form layout="vertical" initialValues={{ data: [{}] }} ref={formRef} onFinish={onFinish}>
       <div className="card">
-        <Loading loading={loading} isError={error.isError} params={{ error }}>
+        <>
           <div style={{ padding: 20 }} className="pb-0 border-bottom">
             <Heading type="form-title" style={{ marginBottom: 20 }}>
               Tình trạng tiềm năng
@@ -129,41 +141,65 @@ const General = memo(() => {
               <Pane className="col-lg-12 ">
                 <Steps
                   labelPlacement="vertical"
-                  current={lead.length-1}
+                  current={lead[0]?.statusParentPotential?.number - 1}
                   size="small"
                   className={stylesModule['wrapper-step']}
                 >
-                  {parentLead.map((items) => (
-                    <Step title={items.name} icon={<CheckCircleOutlined />} />
+                  {parentLead.map((items, index) => (
+                    <Step title={items.name} icon={<CheckCircleOutlined />} key={index} />
                   ))}
                 </Steps>
               </Pane>
             </div>
             <div className="row">
-              <Pane className="col-lg-6">
-                <FormItem
-                  options={['id', 'name']}
-                  name="status_parent_potential_id"
-                  data={parentLead}
-                  placeholder="Chọn"
-                  label="Tình trạng chăm sóc của phụ huynh tiềm năng"
-                  type={variables.SELECT}
-                  rules={[variables.RULES.EMPTY_INPUT]}
-                />
-              </Pane>
+              {
+                lead[0]?.statusParentPotential?.number === 3 || lead[0]?.statusParentPotential?.number  === 4 ?
+                  <Pane className="col-lg-6">
+                    <FormItem
+                      options={['id', 'name']}
+                      name="status_parent_potential_id"
+                      data={parentLead.filter(i => i?.use === false)}
+                      placeholder="Chọn"
+                      label="Tình trạng chăm sóc của phụ huynh tiềm năng"
+                      type={variables.SELECT}
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                      disabled
+                    />
+                  </Pane>
+                  :
+                  <Pane className="col-lg-6">
+                    <FormItem
+                      options={['id', 'name']}
+                      name="status_parent_potential_id"
+                      data={parentLead.filter(i => i?.use === false)}
+                      placeholder="Chọn"
+                      label="Tình trạng chăm sóc của phụ huynh tiềm năng"
+                      type={variables.SELECT}
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
+                  </Pane>
+              }
             </div>
             <div className={stylesModule['wrapper-btn']}>
-              <Button
-                color="success"
-                size="normal"
-                htmlType="submit"
-                loading={loadingSubmit || loading}
-              >
-                Lưu
-              </Button>
+              {
+                lead[0]?.statusParentPotential?.number === 3 || lead[0]?.statusParentPotential?.number  === 4 ?
+                  <Button
+                  color="success"  className="ml-4" disabled
+                  >
+                    Lưu
+                  </Button>:
+                  <Button
+                    color="success"
+                    size="normal"
+                    htmlType="submit"
+                    loading={loadingSubmit || loading}
+                  >
+                    Lưu
+                  </Button> 
+              }
             </div>
           </div>
-        </Loading>
+        </>
       </div>
       <div className="card">
         <div style={{ padding: 20 }} className="pb-0 border-bottom">
@@ -172,21 +208,21 @@ const General = memo(() => {
           </Heading>
           <div className="row">
             <Pane className="col-lg-12">
-            <div className={stylesModule['wrapper-table']}>
-              <Table
-                columns={header()}
-                dataSource={lead}
-                pagination={false}
-                className="table-edit"
-                isEmpty
-                params={{
-                  header: header(),
-                  type: 'table',
-                }}
-                bordered={false}
-                rowKey={(record) => record.id}
-                scroll={{ x: '100%' }}
-              />
+              <div className={stylesModule['wrapper-table']}>
+                <Table
+                  columns={header()}
+                  dataSource={lead}
+                  pagination={false}
+                  className="table-edit"
+                  isEmpty
+                  params={{
+                    header: header(),
+                    type: 'table',
+                  }}
+                  bordered={false}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: '100%' }}
+                />
               </div>
             </Pane>
           </div>

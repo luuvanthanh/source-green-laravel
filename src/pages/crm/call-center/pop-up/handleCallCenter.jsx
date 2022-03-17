@@ -59,13 +59,13 @@ const handlePageLoad = (username, password, hostname, port, path, playerRef) => 
     ua = new SIP.UA(config);
 
     ua.on('connected', () => {
-      console.log('%cCONNECTED', 'color: green; font-weight: bold');
+      console.log('%cĐÃ KẾT NỐI (CHƯA ĐĂNG KÝ)', 'color: #2ecc71; font-weight: bold');
     });
     ua.on('registered', () => {
-      console.log('%cREGISTERED', 'color: green; font-weight: bold');
+      console.log('%cĐÃ KẾT NỐI (ĐĂNG KÝ)', 'color: #2ecc71; font-weight: bold');
     });
     ua.on('unregistered', () => {
-      console.log('%cUNREGISTERED', 'color: green; font-weight: bold');
+      console.log('%cCHƯA ĐĂNG KÝ', 'color: #2ecc71; font-weight: bold');
     });
     ua.on('error', () => {
       console.log('%cERROR', 'color: red; font-weight: bold');
@@ -77,27 +77,27 @@ const handlePageLoad = (username, password, hostname, port, path, playerRef) => 
 
       session.on('accepted', () => {
         setSessionStatus('ACCEPTED');
-        console.log('%cACCEPTED', 'color: green; font-weight: bold');
+        console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
       });
       session.on('rejected', () => {
         setSessionStatus('REJECTED');
-        console.log('%cREJECTED', 'color: pink; font-weight: bold');
+        console.log('%cTỪ CHỐI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('cancel', () => {
         setSessionStatus('CANCEL');
-        console.log('%cREJECTED', 'color: pink; font-weight: bold');
+        console.log('%cHUỶ (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('failed', () => {
         setSessionStatus('FAILED');
-        console.log('%cREJECTED', 'color: pink; font-weight: bold');
+        console.log('%cTHẤT BẠI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('bye', () => {
         setSessionStatus('BYE');
-        console.log('%cBYE', 'color: red; font-weight: bold');
+        console.log('%cKẾT THÚC (GỌI ĐẾN)', 'color: red; font-weight: bold');
       });
 
       session.on('trackAdded', () => {
-        console.log('%cTRACK', 'color: yellow; font-weight: bold');
+        console.log('%cTHÊM ÂM THANH (GỌI ĐẾN)', 'color: yellow; font-weight: bold');
         const pc = session.sessionDescriptionHandler.peerConnection;
         const remoteStream = new MediaStream();
 
@@ -132,6 +132,7 @@ const handleCallClick = () => {
       status = session.status;
     }
     if (status === SESSION_STATUS.IDLE) {
+      console.log(session);
       session = ua.invite(phoneNumber, {
         media: {
           constraints: {
@@ -164,23 +165,23 @@ const handleCallClick = () => {
       });
 
       session.on('accepted', () => {
-        console.log('%cACCEPTED', 'color: green; font-weight: bold');
+        console.log('%cĐỒNG Ý (GỌI ĐI)', 'color: #2ecc71; font-weight: bold');
         setClientStatus('ACCEPTED');
       });
       session.on('rejected', () => {
-        console.log('%cREJECTED', 'color: pink; font-weight: bold');
+        console.log('%cTỪ CHỐI (GỌI ĐI)', 'color: pink; font-weight: bold');
         setClientStatus('REJECTED');
       });
       session.on('cancel', () => {
-        console.log('%cCANCEL', 'color: pink; font-weight: bold');
+        console.log('%cHUỶ (GỌI ĐI)', 'color: pink; font-weight: bold');
         setClientStatus('CANCEL');
       });
       session.on('failed', () => {
-        console.log('%cFAILED', 'color: pink; font-weight: bold');
+        console.log('%cTHẤT BẠI (GỌI ĐI)', 'color: pink; font-weight: bold');
         setClientStatus('FAILED');
       });
       session.on('bye', () => {
-        console.log('%cBYE', 'color: red; font-weight: bold');
+        console.log('%cKẾT THÚC (GỌI ĐI)', 'color: red; font-weight: bold');
         setClientStatus('BYE');
       });
       session.on('unavailable', () => {
@@ -190,7 +191,7 @@ const handleCallClick = () => {
         setClientStatus('NOT_FOUND');
       });
       session.on('trackAdded', () => {
-        console.log('%cTRACK', 'color: yellow; font-weight: bold');
+        console.log('%cTHÊM ÂM THANH (GỌI ĐI)', 'color: yellow; font-weight: bold');
         const pc = session.sessionDescriptionHandler.peerConnection;
         const remoteStream = new MediaStream();
 
@@ -218,27 +219,17 @@ const handleHangup = () => {
 };
 
 const handleAnswer = () => {
-  const option = {
-    sessionDescriptionHandlerOptions: {
-      constraints: {
-        audio: true,
-        video: false,
-      },
-    },
-  };
-  session.accept(option);
+  session.accept({
+    statusCode: 202,
+    reasonPhrase: 'Accepted',
+  });
 };
 
 const handleReject = () => {
-  const option = {
-    sessionDescriptionHandlerOptions: {
-      constraints: {
-        audio: false,
-        video: false,
-      },
-    },
-  };
-  session.reject(option);
+  session.reject({
+    statusCode: 603,
+    reasonPhrase: 'Decline',
+  });
 };
 
 export { handlePageLoad, handleCallClick, handleHangup, handleAnswer, handleReject };

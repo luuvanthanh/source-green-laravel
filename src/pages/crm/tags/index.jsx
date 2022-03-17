@@ -27,11 +27,8 @@ const Index = memo(() => {
 
   const [data, setData] = useState([
     {
-      id: uuidv4(),
-      category: { name: undefined },
-      product_id: undefined,
-      conversion_unit: undefined,
-      conversion_price: undefined,
+      name: undefined,
+      color_code: undefined,
     },
   ]);
 
@@ -70,7 +67,7 @@ const Index = memo(() => {
       type: 'crmTags/GET_TAGS',
       payload: {},
       callback: (response) => {
-        if (response) {
+        if (response?.parsePayload?.length > 0 ) {
           setData(
             response.parsePayload.map((item) => ({
               ...item,

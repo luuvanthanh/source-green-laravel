@@ -18,7 +18,7 @@ import { variables, Helper } from '@/utils';
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác' },
+  // { id: 'OTHER', name: 'Khác' },
 ];
 const Students = memo(() => {
 
@@ -80,6 +80,28 @@ const Students = memo(() => {
       type: 'crmSaleLeadAdd/ADD_STUDENTS',
       payload,
       callback: (response, error) => {
+        if(response) {
+          dispatch({
+            type: 'crmSaleLeadAdd/GET_STUDENTS',
+            payload: {
+              customer_lead_id: params.id,
+            },
+            callback: (response) => {
+              if (response) {
+                setStudents(response.parsePayload);
+                setDayOfBirth(moment(response.parsePayload.map((item) => ({
+                  birth_date: moment(item.birth_date),
+                }))));
+                form.setFieldsValue({
+                  data: response.parsePayload.map((item) => ({
+                    ...item,
+                    birth_date: moment(item.birth_date),
+                  })),
+                });
+              }
+            },
+          });
+        }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
             error?.validationErrors.forEach((item) => {
@@ -221,7 +243,7 @@ const Students = memo(() => {
                                     </Pane>
                                     <Pane className="col-lg-4">
                                       {
-                                        file?.age_month ?
+                                        file?.age_month >= 0  ?
                                           <Form.Item label="Tuổi (tháng)" >
                                             <Text size="normal">
                                               {file?.age_month}

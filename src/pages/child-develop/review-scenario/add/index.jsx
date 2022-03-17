@@ -66,7 +66,9 @@ const Index = memo(() => {
               inputAssessment: item?.inputAssessment ? item?.inputAssessment  : false ,
               periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment: false,
               use: item?.use ? item?.use : false,
-              detailChildren: item?.childEvaluateDetailChildren ? item?.childEvaluateDetailChildren : [],
+              detailChildren: item?.childEvaluateDetailChildren ? item?.childEvaluateDetailChildren?.map((item) => ({
+                content: item.content, use: item.use ? item.use  : false
+              })) : [],
             }))
           },
         callback: (response, error) => {
@@ -290,6 +292,7 @@ const Index = memo(() => {
                                                               fieldKey={[fieldItem.fieldKey, 'content']}
                                                               name={[fieldItem.name, 'content']}
                                                               type={variables.TEXTAREA}
+                                                              rules={[variables.RULES.EMPTY_INPUT]}
                                                             />
                                                           </div>
                                                           <div className={classnames(stylesModule.col)}>

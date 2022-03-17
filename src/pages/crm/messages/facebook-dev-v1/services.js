@@ -1,7 +1,6 @@
 import request from '@/utils/request';
 import requestCrm from '@/utils/requestCrm';
 import { Helper } from '@/utils';
-import { omit } from 'lodash';
 
 export function get(data = {}) {
   return request('/v1/districts', {
@@ -35,7 +34,7 @@ export function getConversations(params = {}) {
       show_conversation: 'true',
       orderBy: 'time',
       sortedBy: 'desc',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
+      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
     },
   });
 }
@@ -49,7 +48,7 @@ export function getConversationsCall(params = {}) {
       show_conversation: 'true',
       orderBy: 'time',
       sortedBy: 'desc',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
+      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
     },
   });
 }
@@ -128,7 +127,7 @@ export function getConversationsId(params = {}) {
       ...params,
       show_conversation: 'true',
       orderBy: 'created_at',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag']),
+      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
     },
   });
 }
@@ -159,14 +158,16 @@ export function addLead(data = {}) {
 }
 
 export function detailsLead(params = {}) {
-  return requestCrm(`/v1/customer-leads/${params?.userFacebookInfo?.customer_lead_id}`, {
+  return requestCrm(`/v1/customer-leads`, {
     method: 'GET',
     params: {
+      id: params?.userFacebookInfo?.customer_lead_id,
       include: Helper.convertIncludes([
         'studentInfo.categoryRelationship',
         'city',
         'district',
         'searchSource',
+        'statusLead',
         'statusCare.statusParentLead',
         'employee',
         'marketingProgram',
@@ -174,5 +175,47 @@ export function detailsLead(params = {}) {
         'relationship',
       ]),
     },
+  });
+}
+
+export function getEmployeeFB(params) {
+  return requestCrm(`/v1/facebook/pages/employee-facebooks`, {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function addEmployeeFB(data = {}) {
+  return requestCrm('/v1/facebook/pages/specify-conversations', {
+    method: 'POST',
+    data,
+  });
+}
+
+export function DeleteEmployeeFb(data = {}) {
+  return requestCrm(`/v1/facebook/pages/delete-specify-conversations`, {
+    method: 'POST',
+    params: {
+      ...data,
+    },
+  });
+}
+
+export function getPotential(data = {}) {
+  return requestCrm(`/v1/customer-potentials`, {
+    method: 'GET',
+    params: {
+      customer_lead_id: data,
+    },
+  });
+}
+
+export function getToket(params = {}) {
+  return request('/v12.0/oauth/access_token', {
+    prefix: ULR_FB,
+    method: 'GET',
+    params,
   });
 }

@@ -7,7 +7,7 @@ export const variables = {
     EXPIRE: 'EXPIRE',
   },
   STATUS_NAME: {
-    PAST_EVENTS: 'đã diễn ra',
+    PAST_EVENTS: 'Đã diễn ra',
     COMING_EVENTS: 'Sắp diễn ra',
   },
   STATUS_SHIFT: {

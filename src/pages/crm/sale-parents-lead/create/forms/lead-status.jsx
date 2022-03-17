@@ -19,7 +19,13 @@ import stylesModule from '../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
 
-const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
+const genders = [
+  { id: 'LEAD_NEW', name: 'Lead mới' },
+  { id: 'POTENTIAL', name: 'Có tiềm năng' },
+  { id: 'NOT_POTENTIAL', name: 'Không tiềm năng' },
+];
+
+const mapStateToProps = ({ loading, crmSaleLeadAdd, user }) => ({
   loading,
   details: crmSaleLeadAdd.details,
   error: crmSaleLeadAdd.error,
@@ -28,14 +34,21 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   parentLead: crmSaleLeadAdd.parentLead,
   lead: crmSaleLeadAdd.lead,
   parentPotential: crmSaleLeadAdd.parentPotential,
+  user: user.user,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, parentLead, lead, parentPotential }) => {
-    const formRef = useRef();
-    const formPotential = useRef();
+  ({ dispatch, loading: { effects }, match: { params }, details, error, parentLead, lead, parentPotential, user }) => {
+    const [formRef] = Form.useForm();
+    const [formPotential] = Form.useForm();
 
     const mounted = useRef(false);
     const [visible, setVisible] = useState(false);
+    const [checkStatus, setCheckStatus] = useState(false);
+    const [checkStatusBtn, setCheckStatusBtn] = useState(false);
+    const [checkSelect, setCheckSelect] = useState(true);
+    const [checkPost, setCheckPost] = useState(true);
+
+    const checkLead = lead.filter(i => i?.status === 'POTENTIAL');
 
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
@@ -62,35 +75,105 @@ const General = memo(
       });
     }, [params.id]);
 
-    const handleOk = () => {
-      mountedSet(setVisible, true);
+
+    useEffect(() => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_DETAILS',
         payload: params,
       });
+    }, []);
+
+    useEffect(() => {
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
+        payload: {
+          customer_lead_id: params.id,
+        },
+      });
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_PARENT_LEAD',
+        payload: {},
+      });
+    }, [params.id]);
+
+    const showModal = () => {
+      mountedSet(setVisible, true);
       dispatch({
         type: 'crmSaleLeadAdd/GET_PARENT_POTENTIAL',
         payload: {},
       });
     };
 
+    const handleOk = () => {
+      mountedSet(setVisible, true);
+    };
+
     const cancelModal = () => {
       mountedSet(setVisible, false);
     };
-
 
     /**
      * Function submit form modal
      * @param {object} values values of form
      */
     const onPotential = () => {
-      formPotential.current.validateFields().then((values) => {
+      formPotential.validateFields().then((values) => {
         dispatch({
           type: "crmSaleLeadAdd/ADD_POTENTIAL",
           payload: { statusPotential: values.statusPotential, id: params.id },
           callback: (response, error) => {
             if (response) {
+              setCheckSelect(true);
+              setCheckStatusBtn(true);
+              setCheckStatus(false);
               mountedSet(setVisible, false);
+            }
+            if (error) {
+              if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                error.data.errors.forEach((item) => {
+                  formRef.setFields([
+                    {
+                      name: get(item, 'source.pointer'),
+                      errors: [get(item, 'detail')],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+      });
+    };
+
+    const onFinish = (values) => {
+      if (values?.status_parent_lead_id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/ADD_STATUS_LEAD',
+          payload: {
+            status_parent_lead_id: values?.status_parent_lead_id,
+            customer_lead_id: params.id,
+          },
+          callback: () => {
+          },
+        });
+      }
+      if(checkPost){
+        dispatch({
+          type: 'crmSaleLeadAdd/ADD_STATUS',
+          payload: {
+            status: values?.status,
+            customer_lead_id: params.id,
+            user_update_id: user?.id,
+            user_update_info: user,
+          },
+          callback: (response, error) => {
+            if (response) {
+              dispatch({
+                type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
+                payload: {
+                  customer_lead_id: params.id,
+                },
+              });
             }
             if (error) {
               if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -106,39 +189,7 @@ const General = memo(
             }
           },
         });
-      });
-    };
-
-    const onFinish = (values) => {
-      dispatch({
-        type: 'crmSaleLeadAdd/ADD_STATUS_LEAD',
-        payload: {
-          ...values,
-          customer_lead_id: params.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            dispatch({
-              type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
-              payload: {
-                customer_lead_id: params.id,
-              },
-            });
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
+        }
     };
 
 
@@ -148,8 +199,8 @@ const General = memo(
     }, []);
 
     useEffect(() => {
-      if (visible) {
-        formPotential.current.setFieldsValue({
+      if (details) {
+        formPotential.setFieldsValue({
           ...details,
           ...head(details.positionLevel),
           birth_date: details.birth_date && moment(details.birth_date),
@@ -158,6 +209,96 @@ const General = memo(
       }
     }, [details]);
 
+    useEffect(() => {
+      if (details?.statusCare?.length - 1 || (details?.statusLead?.length - 1)) {
+        formRef?.setFieldsValue({
+          status_parent_lead_id: details?.statusCare[(details?.statusCare?.length - 1)]?.status_parent_lead_id,
+          status: details?.statusLead[(details?.statusLead?.length - 1)]?.status,
+        });
+        if (details?.statusLead[(details?.statusLead?.length - 1)]?.status === 'POTENTIAL' && checkLead.length <= 0) {
+          setCheckStatus(true);
+          setCheckStatusBtn(true);
+          setCheckSelect(true);
+        } 
+        if (details?.statusLead[(details?.statusLead?.length - 1)]?.status === 'POTENTIAL') {
+          setCheckSelect(true);
+          setCheckStatus(false);
+          setCheckStatusBtn(true);
+          setCheckPost(false);
+        }else {
+          setCheckStatus(false);
+          setCheckStatusBtn(true);
+          setCheckSelect(false);
+        }
+      }
+    }, [details]);
+
+    const onStatus = (id) => {
+      if (id === "POTENTIAL" && checkLead.length <= 0) {
+        setCheckStatus(true);
+        setCheckStatusBtn(false);
+        setCheckSelect(true);
+      } else {
+        setCheckSelect(false);
+        setCheckStatusBtn(true);
+        setCheckStatus(false);
+      }
+    };
+
+    /**
+       * Function header table
+       */
+    const headerPopup = () => {
+      const columns = [
+        {
+          title: 'STT',
+          key: 'index',
+          lassName: 'min-width-100',
+          width: 80,
+          render: (text, record, index) => <Text size="normal">{index + 1}</Text>,
+        },
+        {
+          title: 'Họ và tên',
+          key: 'name',
+          width: 150,
+          lassName: 'min-width-100',
+          render: (record) => <Text size="normal">{record?.full_name}</Text>,
+        },
+        {
+          title: 'Ngày sinh',
+          key: 'birthDay',
+          width: 150,
+          lassName: 'min-width-100',
+          render: (record) => Helper.getDate(record.birth_date, variables.DATE_FORMAT.DATE)
+        },
+        {
+          title: 'Tuổi (tháng)',
+          key: 'age',
+          width: 150,
+          lassName: 'min-width-100',
+          render: (record) => <Text size="normal">{record?.age_month}</Text>,
+        },
+        {
+          title: 'Giới tính',
+          key: 'sex',
+          width: 100,
+          lassName: 'min-width-100',
+          render: (record) => <Text size="normal">
+            {record?.sex === 'MALE' ? "Nam" : ""}
+            {record?.sex === 'FEMALE' ? "Nữ" : ""}
+            {record?.sex === 'OTHER' ? "Khác" : ""}
+          </Text>,
+        },
+        {
+          title: 'Mối quan hệ',
+          key: 'categoryRelationship',
+          width: 150,
+          lassName: 'min-width-100',
+          render: (record) => <Text size="normal">{get(record, 'categoryRelationship.name')}</Text>,
+        },
+      ];
+      return columns;
+    };
 
     const header = () => {
       const columns = [
@@ -173,21 +314,25 @@ const General = memo(
           title: 'Tên tình trạng chăm sóc',
           key: 'statusParent',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">{get(record, 'statusParentLead.name')}</Text>,
+          render: (record) => <Text size="normal">
+            {record?.status === 'LEAD_NEW' ? 'Lead mới' : ""}
+            {record?.status === 'POTENTIAL' ? 'Có tiềm năng' : ""}
+            {record?.status === 'NOT_POTENTIAL' ? 'Không tiềm năng' : ""}
+          </Text>,
         },
         {
           title: 'Người cập nhật',
           key: 'name',
           className: 'max-width-150',
           width: 150,
-          render: (record) => get(record, 'name'),
+          render: (record) => <Text size="normal">{record?.user_update_info?.name}</Text>,
         },
       ];
       return columns;
     };
     return (
       <>
-        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+        <Form layout="vertical" form={formRef} onFinish={onFinish}>
           <div className="card">
             <div style={{ padding: 20 }} className="pb-0 border-bottom">
               <Heading type="form-title" style={{ marginBottom: 20 }}>
@@ -195,7 +340,7 @@ const General = memo(
               </Heading>
               <Pane className="row mt20">
                 <Pane className="col-lg-12">
-                  <span className={styles['assignment-title']}>Tình trạng chăm sóc</span>
+                  <span className={styles['assignment-title']}>Tình trạng phân loại PH lead</span>
                 </Pane>
                 <Pane className="col-lg-4 mt10">
                   <FormItem
@@ -204,14 +349,48 @@ const General = memo(
                     data={parentLead}
                     placeholder="Chọn"
                     type={variables.SELECT}
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
-                <Pane className={styles[('order-assignment-btn', 'col-lg-3')]}>
-                  <Button color="success" ghost icon="next" onClick={handleOk} className="mt10">
-                    Tạo tiềm năng
-                  </Button>
+                <Pane className="col-lg-12">
+                  <span className={styles['assignment-title']}>Tình trạng phụ huynh lead</span>
                 </Pane>
+                <Pane className="col-lg-4 mt10">
+                  {
+                    checkSelect ?
+                      <FormItem
+                        options={['id', 'name']}
+                        name="status"
+                        data={genders}
+                        placeholder="Chọn"
+                        onChange={onStatus}
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY_INPUT]}
+                        disabled
+                      /> :
+                      <FormItem
+                        options={['id', 'name']}
+                        name="status"
+                        data={genders}
+                        placeholder="Chọn"
+                        onChange={onStatus}
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY_INPUT]}
+                      />
+                  }
+                </Pane>
+                {
+                  checkStatus && checkLead.length <= 0 ?
+                    <Pane className={styles[('order-assignment-btn', 'col-lg-3')]}>
+                      <Button color="success" ghost icon="next" onClick={showModal} className="mt10">
+                        Tạo tiềm năng
+                      </Button>
+                    </Pane> :
+                    <Pane className={styles[('order-assignment-btn', 'col-lg-3')]}>
+                      <Button color="success" icon="next" disabled className="mt10">
+                        Tạo tiềm năng
+                      </Button>
+                    </Pane>
+                }
                 <Modal
                   visible={visible}
                   title="Tạo tiềm năng"
@@ -246,7 +425,7 @@ const General = memo(
                   }
                 >
 
-                  <Form layout="vertical" ref={formPotential}>
+                  <Form layout="vertical" form={formPotential}>
                     <Pane className="card">
                       <Loading loading={loading} isError={error.isError} params={{ error }}>
                         <Pane style={{ padding: 20 }} className="pb-0">
@@ -284,7 +463,29 @@ const General = memo(
                                 disabled
                               />
                             </Pane>
-
+                            <Pane className="col-lg-12">
+                              <Heading type="form-title" style={{ marginBottom: 20 }}>
+                                Thông tin học sinh
+                              </Heading>
+                            </Pane>
+                            <Pane className="col-lg-12 pb20">
+                              <div className={stylesModule['wrapper-table']}>
+                                <Table
+                                  columns={headerPopup()}
+                                  dataSource={details?.studentInfo}
+                                  pagination={false}
+                                  className="table-normal"
+                                  isEmpty
+                                  params={{
+                                    header: header(),
+                                    type: 'table',
+                                  }}
+                                  bordered
+                                  rowKey={(record) => record.id}
+                                  scroll={{ x: '100%' }}
+                                />
+                              </div>
+                            </Pane>
                             <Pane className="col-lg-6">
                               <FormItem
                                 options={['id', 'name']}
@@ -301,19 +502,35 @@ const General = memo(
                       </Loading>
                     </Pane>
                   </Form>
+
+
                 </Modal>
 
               </Pane>
-              <div className={stylesModule['wrapper-btn']}>
-                <Button
-                  color="success"
-                  size="normal"
-                  htmlType="submit"
-                  loading={loadingSubmit}
-                >
-                  Lưu
-                </Button>
-              </div>
+              {
+                checkStatusBtn && !checkStatus ?
+                  <div className={stylesModule['wrapper-btn']}>
+                    <Button
+                      color="success"
+                      size="normal"
+                      htmlType="submit"
+                      loading={loadingSubmit}
+                    >
+                      Lưu
+                    </Button>
+                  </div> :
+                  <div className={stylesModule['wrapper-btn']}>
+                    <Button
+                      color="success"
+                      size="normal"
+                      htmlType="submit"
+                      loading={loadingSubmit}
+                      disabled
+                    >
+                      Lưu
+                    </Button>
+                  </div>
+              }
             </div>
 
           </div>
@@ -329,7 +546,7 @@ const General = memo(
                       columns={header()}
                       dataSource={lead}
                       pagination={false}
-                      className="table-edit"
+                      className="table-normal"
                       isEmpty
                       params={{
                         header: header(),
@@ -361,6 +578,7 @@ General.propTypes = {
   parentLead: PropTypes.arrayOf(PropTypes.any),
   lead: PropTypes.arrayOf(PropTypes.any),
   parentPotential: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -374,6 +592,7 @@ General.defaultProps = {
   parentLead: [],
   lead: [],
   parentPotential: [],
+  user: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));

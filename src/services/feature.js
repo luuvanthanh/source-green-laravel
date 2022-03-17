@@ -35,10 +35,10 @@ export const feature = {
       permission: [permissions.TD],
     },
     {
-      title: 'Ghi nhận',
+      title: 'Hình ảnh',
       src: '/images/home/movies.svg',
       animation: animationImage.record,
-      url: '/ghi-nhan/danh-sach',
+      url: '/hinh-anh/danh-sach',
       permission: [permissions.HA],
     },
     {
@@ -153,6 +153,7 @@ export const feature = {
       url: `${URL_AI}/verify-token?token=${cookies.get('access_token')}`,
       target: true,
       permission: [permissions.CAMERAAI],
+      key: 'AI',
     },
     {
       title: 'Sự phát triển của trẻ',

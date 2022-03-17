@@ -265,7 +265,7 @@ class Index extends PureComponent {
                               <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
                               <div className={stylesAllocation.info}>
                                 <h3 className={stylesAllocation.title}>{fullName}</h3>
-                                <p className={stylesAllocation.norm}>Chức vụ: {positionLevel}</p>
+                                <p className={stylesAllocation.norm}>Chức vụ: {positionLevel?.position?.name}</p>
                               </div>
                             </div>
                           </List.Item>
