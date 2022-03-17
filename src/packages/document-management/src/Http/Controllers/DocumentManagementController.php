@@ -36,6 +36,10 @@ class DocumentManagementController extends Controller
             $attributes['typeOfDocument'] = DocumentManagement::TYPE_DOCUMENT[$attributes['typeOfDocument']];
         }
 
+        if (isset($attributes['topic'])) {
+            $attributes['topic'] = DocumentManagement::TOPIC[$attributes['topic']];
+        }
+
         $documentManagement = $this->documentManagementRepository->getAll($attributes);
 
         return $this->success($documentManagement, trans('lang::messages.common.getListSuccess'));

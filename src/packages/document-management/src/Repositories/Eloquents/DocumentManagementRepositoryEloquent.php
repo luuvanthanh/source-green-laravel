@@ -55,6 +55,10 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
 
     public function getAll(array $attributes)
     {
+        if (isset($attributes['topic'])) {
+            $this->model = $this->model->where('Topic', $attributes['topic']);
+        }
+
         if (isset($attributes['typeOfDocument'])) {
             $this->model = $this->model->where('TypeOfDocument', $attributes['typeOfDocument']);
         }
@@ -118,6 +122,8 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
     public function update(array $attributes, $id)
     {
         $documentManagement = DocumentManagement::findOrFail($id);
+        $attributes['typeOfDocument'] = DocumentManagement::TYPE_DOCUMENT[$attributes['typeOfDocument']];
+        $attributes['topic'] = DocumentManagement::TOPIC[$attributes['topic']];
         $documentManagement->update($attributes);
 
         if (!empty($attributes['detail'])) {
