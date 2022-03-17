@@ -24,7 +24,7 @@ class CreateFingerprintsTable extends Migration
             $table->integer('FingerIndex')->nullable();
             $table->string('DeviceId');
             $table->string('Status')->default('ON');
-            $table->timestamp('DeletedAt')->nullable();
+            $table->softDeletes('DeletedAt', 0);
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
 

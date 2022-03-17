@@ -23,6 +23,7 @@ class CreateTransfersTable extends Migration
             $table->string('Reason')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 

@@ -20,7 +20,7 @@ class CreateEvaluateStepsTable extends Migration
             $table->string('Name');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 
@@ -31,6 +31,6 @@ class CreateEvaluateStepsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('EvaluateSteps');
+        Schema::dropIfExists('evaluate-teacher.EvaluateSteps');
     }
 }

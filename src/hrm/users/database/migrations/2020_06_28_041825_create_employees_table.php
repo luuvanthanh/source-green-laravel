@@ -61,6 +61,7 @@ class CreateEmployeesTable extends Migration
             $table->foreign('TrainingMajorId')->references('Id')->on('TrainingMajors');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 

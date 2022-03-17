@@ -23,6 +23,7 @@ class CreateWorkHoursTable extends Migration
             $table->uuid('AbsentTypeId')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 

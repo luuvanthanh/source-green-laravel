@@ -24,7 +24,7 @@ class CreateParameterValuesTable extends Migration
             $table->string('Type');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 

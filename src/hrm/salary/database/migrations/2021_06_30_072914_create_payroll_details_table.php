@@ -57,6 +57,7 @@ class CreatePayrollDetailsTable extends Migration
             $table->float('OtHoliday')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 
