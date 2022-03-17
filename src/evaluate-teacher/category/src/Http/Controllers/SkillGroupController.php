@@ -7,6 +7,9 @@ use GGPHP\Absent\Http\Requests\AbsentCreateRequest;
 use GGPHP\EvaluateTeacher\Category\Contracts\RatingLevelRepository;
 use GGPHP\EvaluateTeacher\Category\Contracts\SkillGroupRepository;
 use GGPHP\EvaluateTeacher\Category\Http\Requests\RatingLevelUpdateRequest;
+use GGPHP\EvaluateTeacher\Category\Http\Requests\SkillGroupCreateRequest;
+use GGPHP\EvaluateTeacher\Category\Http\Requests\SkillGroupDeleteRequest;
+use GGPHP\EvaluateTeacher\Category\Http\Requests\SkillGroupUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -45,7 +48,7 @@ class SkillGroupController extends Controller
      * @param AbsentCreateRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SkillGroupCreateRequest $request)
     {
         $skillGroup = $this->skillGroupRepository->create($request->all());
 
@@ -72,7 +75,7 @@ class SkillGroupController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(SkillGroupUpdateRequest $request, $id)
     {
         $credentials = $request->all();
         $skillGroup = $this->skillGroupRepository->update($credentials, $id);
@@ -86,7 +89,7 @@ class SkillGroupController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(SkillGroupDeleteRequest $request, $id)
     {
         $this->skillGroupRepository->delete($id);
 
