@@ -21,7 +21,7 @@ class CreateSkillGroupsTable extends Migration
             $table->text('Description')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 

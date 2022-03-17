@@ -28,6 +28,6 @@ class CreateEvaluateStepEvaluateTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('EvaluateStepEvaluateType');
+        Schema::dropIfExists('evaluate-teacher.EvaluateStepEvaluateType');
     }
 }

@@ -25,6 +25,7 @@ class CreatePayrollsTable extends Migration
             $table->json('ColumnIncurredAllowance')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 

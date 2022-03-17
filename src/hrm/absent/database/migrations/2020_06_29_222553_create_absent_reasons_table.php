@@ -21,6 +21,7 @@ class CreateAbsentReasonsTable extends Migration
             $table->foreign('AbsentTypeId')->references('Id')->on('AbsentTypes')->onDelete('cascade');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 

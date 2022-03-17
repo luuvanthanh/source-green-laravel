@@ -19,9 +19,9 @@ class CreateHealthInsurancesTable extends Migration
             $table->string('InsuranceNumber');
             $table->string('MedicalTreatmentPlace');
             $table->uuid('EmployeeId');
-            // $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 

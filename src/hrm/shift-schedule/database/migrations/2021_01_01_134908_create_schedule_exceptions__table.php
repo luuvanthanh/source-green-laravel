@@ -23,6 +23,7 @@ class CreateScheduleExceptionsTable extends Migration
             $table->foreign('ShiftId')->references('Id')->on('Shifts')->onDelete('cascade');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletedAt', 0);
         });
     }
 
