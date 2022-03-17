@@ -39,7 +39,7 @@ function Index() {
   const [employees, setEmployees] = useState([]);
   const [employeesActive, setEmployeesActive] = useState([]);
   const [sentEmployees, setSentEmployees] = useState([]);
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState([]);
   const [isAllEmployees, setIsAllEmployees] = useState(false);
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -252,7 +252,7 @@ function Index() {
       payload: file,
       callback: (response) => {
         if (response) {
-          setFile([head(response.results)?.fileInfo.url, head(response.results)?.fileInfo.name]);
+          setFile([head(response.results)?.fileInfo]);
         }
       },
     });
@@ -369,7 +369,7 @@ function Index() {
             });
             setContent(response.parsePayload?.content);
             if (response.parsePayload?.fileDocument) {
-              setFile([response.parsePayload?.fileDocument]);
+              setFile(JSON.parse(response.parsePayload?.fileDocument));
             }
             setEmployeesActive(response.parsePayload?.employee);
           }
@@ -565,7 +565,7 @@ function Index() {
                     </div>
                     {!isEmpty(file) && (
                       <div className={styles['documentary-file']}>
-                        {params.id ? <div>{last(JSON.parse(file))}</div> : <div>{last(file)}</div>}
+                        <div>{head(file)?.name}</div>
                         <Button
                           color="danger"
                           icon="remove"

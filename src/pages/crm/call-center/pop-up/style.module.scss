@@ -11,13 +11,23 @@
   background-color: $background-primary;
   color: $text-white;
   border-radius: 50%;
-  z-index: 99999;
+  z-index: 999;
   cursor: pointer;
   animation: blur 1s infinite linear;
 
   :global(img) {
     width: 50%;
   }
+}
+
+.main-form-add-lead {
+  position: fixed;
+  z-index: 2000;
+  top: 50px;
+  left: 50px;
+  width: 970px;
+  background-color: $background-white;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes blur {
@@ -37,11 +47,9 @@
   }
 }
 
-.call-center-modal,
-.phone-simulator {
-  :global(.ant-modal-content > button) {
-    display: none;
-  }
+:global(.ant-modal-mask) {
+  display: none;
+  background-color: unset !important;
 }
 
 .phone-simulator {
@@ -49,18 +57,31 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #2d3239;
+    padding: 0;
+  }
+
+  :global(.ant-modal-body),
+  :global(.ant-modal-content) {
+    border-radius: 12px;
+  }
+
+  :global(.anticon-close) {
+    color: $text-white;
   }
 }
 
 .show-input {
   text-align: center;
+  width: 100%;
   height: 100px !important;
   font-size: 30px;
   font-weight: bold;
   color: $text-primary;
   margin-bottom: 20px;
   line-height: 100px;
-  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .digits {
@@ -83,6 +104,25 @@
       max-width: 100%;
     }
   }
+
+  :global(.ant-btn),
+  :global(.ant-btn:hover),
+  :global(.ant-btn:active) {
+    background-color: #2d3239;
+    color: $text-white;
+  }
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  .button-item {
+    display: flex;
+    justify-content: center;
+    width: 30%;
+  }
 }
 
 .phone-call {
@@ -99,4 +139,136 @@
   :global(img) {
     width: 50%;
   }
+}
+
+.delete-number {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  color: $text-white;
+  border-radius: 50%;
+  z-index: 99999;
+  cursor: pointer;
+
+  :global(img) {
+    width: 70%;
+  }
+}
+
+.layout-call {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .avatar-item {
+    width: 100px;
+    height: 100px;
+    background-color: $background-white;
+    border-radius: 50%;
+    text-align: center;
+    margin: 20px 0 15px;
+    line-height: 100px;
+  }
+
+  .user-name {
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 30px;
+    color: $text-white;
+  }
+
+  .call-type,
+  .phone-number,
+  .call-status {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    color: $text-white;
+  }
+
+  .phone-number {
+    margin: 10px 0 15px;
+  }
+
+  .button-add-lead {
+    margin: 8px 0;
+  }
+
+  .time-active {
+    font-size: 40px;
+    line-height: 50px;
+    font-weight: bold;
+    color: $text-white;
+  }
+
+  .text-note {
+    width: 100%;
+    margin: 20px 0;
+
+    :global(.ant-input) {
+      background-color: #484e56;
+      color: $text-white;
+    }
+  }
+
+  .hangout {
+    &-group {
+      display: flex;
+      margin-top: 20px;
+      width: 100%;
+      justify-content: space-between;
+
+      &__invidual {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+      }
+    }
+
+    &-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 30%;
+    }
+
+    &-background {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 60px;
+      margin-bottom: 10px;
+      cursor: pointer;
+
+      &__invidual {
+        background-color: $background-danger;
+      }
+    }
+
+    &-title {
+      text-align: center;
+      color: $text-white;
+    }
+
+    &-background__success {
+      background-color: $background-success;
+    }
+
+    &-background__danger {
+      background-color: $background-danger;
+    }
+
+    &-rotate {
+      transform: rotate(132deg);
+    }
+  }
+}
+
+.border-y {
+  width: 100%;
+  border-bottom: 1px solid #383d45;
+  border-top: 1px solid #383d45;
 }
