@@ -1,19 +1,18 @@
 <?php
 
-namespace GGPHP\EvaluateTeacher\EvaluateTeacher\Models;
+namespace GGPHP\EvaluateTeacher\Category\Models;
 
 use GGPHP\Category\Models\TypeOfContract;
 use GGPHP\Core\Models\UuidModel;
-use GGPHP\EvaluateTeacher\Category\Models\SkillGroupDetail;
 
-class EvaluateTeacherDetail extends UuidModel
+class EvaluateStep extends UuidModel
 {
     public $incrementing = false;
 
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.EvaluateTeacherDetails';
+    protected $table = 'evaluate-teacher.EvaluateSteps';
 
     /**
      * The attributes that are mass assignable.
@@ -21,7 +20,7 @@ class EvaluateTeacherDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'SkillGroupDetailId', 'Content', 'EvaluateTeacherId'
+        'Code', 'Name'
     ];
 
     /**
@@ -31,8 +30,8 @@ class EvaluateTeacherDetail extends UuidModel
      */
     protected $hidden = [];
 
-    public function skillGroupDetail()
+    public function evaluateType()
     {
-        return $this->belongsTo(SkillGroupDetail::class, 'SkillGroupDetailId');
+        return $this->belongsToMany(EvaluateType::class, 'evaluate-teacher.EvaluateStepEvaluateType', 'EvaluateStepId', 'EvaluateTypeId');
     }
 }

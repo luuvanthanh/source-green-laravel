@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEvaluateTeacherDetailsTable extends Migration
+class CreateEvaluateStepsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,14 @@ class CreateEvaluateTeacherDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.EvaluateTeacherDetails', function (Blueprint $table) {
+        Schema::create('evaluate-teacher.EvaluateSteps', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->uuid('EvaluateTeacherId');
-            $table->foreign('EvaluateTeacherId')->references('Id')->on('evaluate-teacher.EvaluateTeachers')->onDelete('cascade');
-            $table->uuid('SkillGroupDetailId');
-            $table->string('Content')->nullable();
+            $table->string('Code');
+            $table->string('Name');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0);
+            $table->softDeletes('DeletedAt', 0)->nullable();
         });
     }
 
@@ -33,6 +31,6 @@ class CreateEvaluateTeacherDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.EvaluateTeacherDetails');
+        Schema::dropIfExists('EvaluateSteps');
     }
 }

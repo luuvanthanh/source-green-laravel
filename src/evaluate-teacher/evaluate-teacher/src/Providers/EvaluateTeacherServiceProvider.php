@@ -4,10 +4,6 @@ namespace GGPHP\EvaluateTeacher\EvaluateTeacher\Providers;
 
 use GGPHP\EvaluateTeacher\EvaluateTeacher\Repositories\Contracts\EvaluateTeacherRepository;
 use GGPHP\EvaluateTeacher\EvaluateTeacher\Repositories\Eloquent\EvaluateTeacherRepositoryEloquent;
-use GGPHP\EvaluateTeacher\EvaluateTeacher\Contracts\RatingLevelRepository;
-use GGPHP\EvaluateTeacher\EvaluateTeacher\Contracts\SkillGroupRepository;
-use GGPHP\EvaluateTeacher\EvaluateTeacher\Eloquent\RatingLevelRepositoryEloquent;
-use GGPHP\EvaluateTeacher\EvaluateTeacher\Eloquent\SkillGroupRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class EvaluateTeacherServiceProvider extends ServiceProvider

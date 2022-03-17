@@ -89,18 +89,4 @@ class EvaluateTeacherController extends Controller
         $this->evaluateTeacherRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function loadCategory(Request $request)
-    {
-        $credentials = $request->all();
-        $evaluateTeacher = $this->evaluateTeacherRepository->loadCategory($credentials);
-
-        return $this->success($evaluateTeacher, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
-    }
 }

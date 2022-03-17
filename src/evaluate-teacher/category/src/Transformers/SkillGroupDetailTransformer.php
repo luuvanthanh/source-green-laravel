@@ -3,6 +3,7 @@
 namespace GGPHP\EvaluateTeacher\Category\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\EvaluateTeacher\Category\Models\SkillGroupDetail;
 
 /**
  * Class PositionLevelTransformer.
@@ -18,5 +19,14 @@ class SkillGroupDetailTransformer extends BaseTransformer
      */
     protected $defaultIncludes = [];
 
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['skillGroup'];
+
+    public function includeAbsentType(SkillGroupDetail $skillGroupDetail)
+    {
+        if (empty($skillGroupDetail->skillGroup)) {
+            return;
+        }
+
+        return $this->item($skillGroupDetail->skillGroup, new SkillGroupTransformer, 'SkillGroup');
+    }
 }

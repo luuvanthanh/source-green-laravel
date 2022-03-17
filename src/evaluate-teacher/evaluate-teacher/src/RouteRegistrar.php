@@ -30,7 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::group(['middleware' => []], function () {
-                \Route::resource('evaluate-teachers', 'SkillGroupController');
+                \Route::resource('evaluate-teachers', 'EvaluateTeacherController');
             });
         });
     }
