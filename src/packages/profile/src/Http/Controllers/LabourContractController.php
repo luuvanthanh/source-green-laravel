@@ -108,4 +108,38 @@ class LabourContractController extends Controller
 
         return $result;
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function exportWordEnglish($id)
+    {
+        $result = $this->labourContractRepository->exportWordEnglish($id);
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function exportWordAuthority($id)
+    {
+        $result = $this->labourContractRepository->exportWordAuthority($id);
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
 }

@@ -82,7 +82,6 @@ class IclockController extends Controller
                 $return = vsprintf($template, $array);
                 break;
             case config('zk.subject_supporteds')['FINGERPRINT']:
-                \Log::info('abc', []);
                 if ($modelSync->action === 'deleted') {
                     $array = [
                         $modelSync->id,
@@ -204,7 +203,7 @@ class IclockController extends Controller
                 continue;
             }
             foreach ($haystack as $str) {
-                if (preg_match('/^{$str}/i', $value, $m)) {
+                if (preg_match("/^{$str}/i", $value, $m)) {
                     $stringAttributes = trim(str_replace($str, '', $value));
                     switch ($m[0]) {
                         case $haystack['employee']:
@@ -277,11 +276,11 @@ class IclockController extends Controller
             if (empty($attributes)) {
 
                 $attributes = array_slice(preg_split('/\t/', $value), 0, 4);
-                \Log::info('ac', $attributes);
+
                 $keyAttributes = ['EmployeeId', 'AttendedAt', 'TrackingType', 'Type'];
                 $attributes = array_combine($keyAttributes, $attributes);
 
-                $employee = User::where('FingerprintId', $attributes['EmployeeId'])->first();
+                $employee = User::where('FingerprintId', (int) $attributes['EmployeeId'])->first();
 
                 if (!$employee) {
                     continue;
