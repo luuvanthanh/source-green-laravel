@@ -40,7 +40,7 @@ class EvaluateStepCreateRequest extends FormRequest
                     return $fail('Trường đã có trong cơ sở dữ liệu.');
                 }
             }],
-            'evaluateType' => 'required|array'
+            'evaluateTypeId' => 'required|array'
         ];
     }
 }

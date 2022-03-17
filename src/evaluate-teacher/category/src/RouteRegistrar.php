@@ -35,6 +35,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::post('sort-rating-levels', 'RatingLevelController@sortRatingLevel');
                 \Route::resource('skill-groups', 'SkillGroupController');
                 \Route::resource('evaluate-steps', 'EvaluateStepController');
+                \Route::resource('evaluate-types', 'EvaluateTypeController');
             });
         });
     }

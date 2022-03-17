@@ -28,7 +28,7 @@ class EvaluateStepUpdateRequest extends FormRequest
             'name' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $typeTeacher = EvaluateStep::where('Name', $value)->where('Id', '!=', request()->type_teacher)->first();
+                    $typeTeacher = EvaluateStep::where('Name', $value)->where('Id', '!=', request()->evaluate_step)->first();
 
                     if (!is_null($typeTeacher)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -38,7 +38,7 @@ class EvaluateStepUpdateRequest extends FormRequest
             'code' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $typeTeacher = EvaluateStep::where('Code', $value)->where('Id', '!=', request()->type_teacher)->first();
+                    $typeTeacher = EvaluateStep::where('Code', $value)->where('Id', '!=', request()->evaluate_step)->first();
 
                     if (!is_null($typeTeacher)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

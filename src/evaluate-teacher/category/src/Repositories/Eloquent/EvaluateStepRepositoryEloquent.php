@@ -71,10 +71,9 @@ class EvaluateStepRepositoryEloquent extends CoreRepositoryEloquent implements E
         \DB::beginTransaction();
         try {
             $evaluateStep = EvaluateStep::create($attributes);
-            $evaluateStep->evaluateType()->attach($attributes['evaluateType']);
+            $evaluateStep->evaluateType()->attach($attributes['evaluateTypeId']);
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 
@@ -83,14 +82,14 @@ class EvaluateStepRepositoryEloquent extends CoreRepositoryEloquent implements E
 
     public function update(array $attributes, $id)
     {
-        $evaluateStep = TypeOfContract::findOrFail($id);
+        $evaluateStep = EvaluateStep::findOrFail($id);
 
         \DB::beginTransaction();
         try {
             $evaluateStep->update($attributes);
-            if (!empty($attributes['evaluateType'])) {
+            if (!empty($attributes['evaluateTypeId'])) {
                 $evaluateStep->evaluateType()->detach();
-                $evaluateStep->evaluateType()->attach($attributes['evaluateType']);
+                $evaluateStep->evaluateType()->attach($attributes['evaluateTypeId']);
             }
 
             \DB::commit();
