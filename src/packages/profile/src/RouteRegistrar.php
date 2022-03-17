@@ -51,10 +51,45 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'probationary-contracts.word.export',
             ]);
 
+            \Route::get('labours-contracts-export-word-english/{id}', [
+                'uses' => 'LabourContractController@exportWordEnglish',
+                'as' => 'labours-contracts.word-english.export',
+            ]);
+
+            \Route::get('probationary-contracts-export-word-english/{id}', [
+                'uses' => 'ProbationaryContractController@exportWordEnglish',
+                'as' => 'probationary-contracts.word-english.export',
+            ]);
+
+            \Route::get('labours-contracts-export-word-authority/{id}', [
+                'uses' => 'LabourContractController@exportWordAuthority',
+                'as' => 'labours-contracts.word-authority.export',
+            ]);
+
+            \Route::get('probationary-contracts-export-word-authority/{id}', [
+                'uses' => 'ProbationaryContractController@exportWordAuthority',
+                'as' => 'probationary-contracts.word-authority.export',
+            ]);
+
             \Route::resource('health-insurances', 'HealthInsuranceController');
 
             //seasonal-contracts
             \Route::resource('seasonal-contracts', 'SeasonalContractController');
+
+            \Route::get('seasonal-contracts-export-word/{id}', [
+                'uses' => 'SeasonalContractController@exportWord',
+                'as' => 'seasonal-contracts.word.export',
+            ]);
+
+            \Route::get('seasonal-contracts-export-word-english/{id}', [
+                'uses' => 'SeasonalContractController@exportWordEnglish',
+                'as' => 'seasonal-contracts.word-english.export',
+            ]);
+
+            \Route::get('seasonal-contracts-export-word-authority/{id}', [
+                'uses' => 'SeasonalContractController@exportWordAuthority',
+                'as' => 'seasonal-contracts.word-authority.export',
+            ]);
         });
     }
 }

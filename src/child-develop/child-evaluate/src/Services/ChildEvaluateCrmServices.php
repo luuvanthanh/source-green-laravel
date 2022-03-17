@@ -14,6 +14,7 @@ class ChildEvaluateCrmServices
         $token = request()->bearerToken();
 
         $data = self::payloadCrm($attributes, $id);
+        
         $response = Http::withToken($token)->post($url, $data);
 
         if ($response->failed()) {
@@ -29,15 +30,16 @@ class ChildEvaluateCrmServices
 
     public static function payloadCrm($attributes, $id)
     {
-        $categorySkill = CategorySkill::where('Id', $attributes['categorySkillId'])->first();
+        $categorySkill = CategorySkill::where('Id', $attributes['CategorySkillId'])->first();
         $detail = [];
         if (!empty($attributes['detail'])) {
             foreach ($attributes['detail'] as $value) {
                 $detail[] = [
-                    'name_criteria' => $value['nameCriteria'],
-                    'input_assessment' => $value['inputAssessment'],
-                    'periodic_assessment' => $value['periodicAssessment'],
-                    'use' => $value['use'],
+                    'name_criteria' => $value['NameCriteria'],
+                    'input_assessment' => $value['InputAssessment'],
+                    'periodic_assessment' => $value['PeriodicAssessment'],
+                    'use' => $value['Use'],
+                    'child_evaluate_detail_clover_id' => $value['Id'],
                     'detail_children' => $value['detailChildren']
                 ];
             }
@@ -45,8 +47,8 @@ class ChildEvaluateCrmServices
 
         $data = [
             'category_skill_id' => $categorySkill->CategorySkillCrmId,
-            'age' => $attributes['age'],
-            'use' => $attributes['use'],
+            'age' => $attributes['Age'],
+            'use' => $attributes['Use'],
             'child_evaluate_clover_id' => $id,
             'detail' => $detail,
         ];

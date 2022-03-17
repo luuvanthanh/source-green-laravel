@@ -22,7 +22,7 @@ class ProbationaryContractTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['employee', 'typeOfContract', 'division', 'position', 'branch'];
+    protected $availableIncludes = ['employee', 'typeOfContract', 'division', 'position', 'branch', 'represent'];
 
     /**
      * Transform the User entity.
@@ -76,6 +76,19 @@ class ProbationaryContractTransformer extends BaseTransformer
         }
 
         return $this->item($probationaryContract->employee, new UserTransformer, 'Employee');
+    }
+
+    /**
+     * @param LabourContract $labourContract
+     * @return mixed
+     */
+    public function includeRepresent(LabourContract $model)
+    {
+        if (empty($model->represent)) {
+            return;
+        }
+
+        return $this->item($model->represent, new UserTransformer, 'Represent');
     }
 
     /**

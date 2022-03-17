@@ -98,14 +98,14 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $childEvaluate = ChildEvaluate::create($attributes);
 
             if (!empty($attributes['detail'])) {
-                $this->storeDetail($childEvaluate->Id, $attributes['detail']);
+                $childEvaluate['detail'] = $this->storeDetail($childEvaluate->Id, $attributes['detail']);
             }
-
-            $childEvaluateCrmId = ChildEvaluateCrmServices::createChildEvaluate($attributes, $childEvaluate->Id);
+            $data = $childEvaluate->toArray();
+            $childEvaluateCrmId = ChildEvaluateCrmServices::createChildEvaluate($data, $childEvaluate->Id);
 
             if (isset($childEvaluateCrmId->data->id)) {
-                $childEvaluate->ChildEvaluateCrmId = $childEvaluateCrmId->data->id;
-                $childEvaluate->update();
+                $updateCrmId = ChildEvaluate::find($childEvaluate->Id);
+                $updateCrmId->update(['ChildEvaluateCrmId' => $childEvaluateCrmId->data->id]);
             }
 
             \DB::commit();
@@ -118,26 +118,36 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
     public function storeDetail($id, $detail)
     {
+        $arrDetail = [];
         foreach ($detail as $value) {
             $value['ChildEvaluateId'] = $id;
             $detail = ChildEvaluateDetail::create($value);
 
             if (!empty($value['detailChildren'])) {
-                $this->storeDetailChildren($detail->Id, $value['detailChildren']);
+                $detail['detailChildren'] = $this->storeDetailChildren($detail->Id, $value['detailChildren']);
             }
+
+            $arrDetail[] = $detail->toArray();
         }
 
-        return true;
+        return $arrDetail;
     }
 
     public function storeDetailChildren($id, $detailChildrent)
     {
+        $arrChildren = [];
         foreach ($detailChildrent as $value) {
             $value['ChildEvaluateDetailId'] = $id;
-            ChildEvaluateDetailChildren::create($value);
+            $detailChildrent = ChildEvaluateDetailChildren::create($value);
+
+            $arrChildren[] = [
+                'child_evaluate_detail_children_clover_id' => $detailChildrent->Id,
+                'content' => $detailChildrent->Content,
+                'use' =>  $detailChildrent->Use
+            ];
         }
 
-        return true;
+        return $arrChildren;
     }
 
     public function update(array $attributes, $id)
@@ -149,11 +159,12 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
             if (!empty($attributes['detail'])) {
                 ChildEvaluateDetail::where('ChildEvaluateId', $childEvaluate->Id)->delete();
-                $this->storeDetail($childEvaluate->Id, $attributes['detail']);
+                $childEvaluate['detail'] = $this->storeDetail($childEvaluate->Id, $attributes['detail']);
             }
-
+            $data = $childEvaluate->toArray();
+            
             if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
-                ChildEvaluateCrmServices::updateChildEvaluate($attributes, $childEvaluate->ChildEvaluateCrmId);
+                ChildEvaluateCrmServices::updateChildEvaluate($data, $childEvaluate->ChildEvaluateCrmId);
             }
 
             \DB::commit();

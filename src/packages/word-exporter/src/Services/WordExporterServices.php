@@ -53,6 +53,14 @@ class WordExporterServices
             'template' => 'decision_suspend.docx',
             'result' => 'decision_suspend.docx',
         ],
+        'contract_english' => [
+            'template' => 'contract_english.docx',
+            'result' => 'contract_english.docx',
+        ],
+        'authority_contract' => [
+            'template' => 'authority_contract.docx',
+            'result' => 'authority_contract.docx',
+        ],
     ];
 
     public function __construct()

@@ -282,6 +282,14 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         return parent::find($probationaryContract->Id);
     }
 
+    public function delete($id)
+    {
+        $probationaryContract = ProbationaryContract::findOrFail($id);
+
+        $probationaryContract->parameterValues()->detach();
+
+        return $probationaryContract->delete();
+    }
     public function exportWord($id)
     {
         $labourContract = ProbationaryContract::findOrFail($id);
@@ -325,12 +333,77 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         return $this->wordExporterServices->exportWord('probationary_contract', $params);
     }
 
-    public function delete($id)
+    public function exportWordEnglish($id)
     {
-        $probationaryContract = ProbationaryContract::findOrFail($id);
+        $labourContract = ProbationaryContract::findOrFail($id);
+        $now = Carbon::now();
 
-        $probationaryContract->parameterValues()->detach();
+        $employee = $labourContract->employee;
+        $params = [
+            'typeVn' => 'THỬ VIỆC',
+            'typeEnglish' => 'PROBATIONARY',
+            'contractNumber' => $labourContract->ContractNumber,
+            'dateNow' => $labourContract->ContractDate->format('d'),
+            'monthNow' => $labourContract->ContractDate->format('m'),
+            'yearNow' => $labourContract->ContractDate->format('Y'),
+            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
+            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
+            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
+            'nationality' => $employee->Nationality ? $employee->Nationality : '........',
+            'idCard' => $employee->IdCard ? $employee->IdCard : '........',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '........',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
+            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
+            'adress' => $employee->Address ? $employee->Address : '.......',
+            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
+            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
+            'position' => $labourContract->position ? $labourContract->position->Name : '........',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
+            'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
+            'salary' => number_format($labourContract->BasicSalary),
+        ];
 
-        return $probationaryContract->delete();
+        return $this->wordExporterServices->exportWord('contract_english', $params);
+    }
+
+    public function exportWordAuthority($id)
+    {
+        $labourContract = ProbationaryContract::findOrFail($id);
+        $now = Carbon::now();
+
+        $employee = $labourContract->employee;
+        $params = [
+            'typeVn' => 'THỬ VIỆC',
+            'typeEnglish' => 'PROBATIONARY',
+            'contractNumber' => $labourContract->ContractNumber,
+            'dateNow' => $labourContract->ContractDate->format('d'),
+            'monthNow' => $labourContract->ContractDate->format('m'),
+            'yearNow' => $labourContract->ContractDate->format('Y'),
+            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
+            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
+            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
+            'nationality' => $employee->Nationality ? $employee->Nationality : '........',
+            'idCard' => $employee->IdCard ? $employee->IdCard : '........',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '........',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
+            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
+            'adress' => $employee->Address ? $employee->Address : '.......',
+            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
+            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
+            'position' => $labourContract->position ? $labourContract->position->Name : '........',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
+            'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
+            'salary' => number_format($labourContract->BasicSalary),
+        ];
+
+        return $this->wordExporterServices->exportWord('authority_contract', $params);
     }
 }

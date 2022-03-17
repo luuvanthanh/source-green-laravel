@@ -3,9 +3,12 @@
 namespace GGPHP\Fee\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Fee\Models\Fee;
 use GGPHP\Fee\Models\FeePolicie;
 use GGPHP\Fee\Models\MoneyBus;
+use GGPHP\Fee\Models\PaymentForm;
 use GGPHP\Fee\Presenters\FeePoliciePresenter;
 use GGPHP\Fee\Repositories\Contracts\FeePolicieRepository;
 use Illuminate\Support\Facades\DB;
@@ -234,7 +237,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             $weekDayAdmission = $schooleYear->timetable->where('StartDate', '<=', $dayAdmission)->where('EndDate', '>=', $dayAdmission)->first();
             $money = 0;
             $result = 0;
-
             if (!is_null($weekDayAdmission)) {
                 $endMonth = Carbon::parse($weekDayAdmission->EndDate)->endOfMonth();
 
@@ -253,8 +255,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
                 $monthAdmission = Carbon::parse($dayAdmission)->floorMonth();
                 $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
-                $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
 
+                $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
+                $moneyMonth = 0;
                 if (!is_null($feePolicie)) {
                     switch ($fee->Type) {
                         case 'HP':
@@ -339,8 +342,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         }
                                         break;
                                     case 'THANG':
+
                                         if ($totalWeekStudyInMonth > 0) {
                                             $result = $money * ($remainingWeek / $totalWeekStudyInMonth);
+                                            $moneyMonth = $money;
                                         }
                                         break;
                                 }
@@ -472,6 +477,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         break;
                                     case 'THANG':
                                         $result = ($daysLeftInMonth - $totalDayWeekend) * $money;
+                                        $moneyMonth = $money;
                                         break;
                                 }
                             }
@@ -495,11 +501,16 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 'feeId' => $detail->feeId,
                 'paymentFormId' => $detail->paymentFormId,
                 'money' => $result,
+                'moneyMonth' => $moneyMonth,
                 'applyDate' => $attributes['dayAdmission']
             ];
         }
+
+        $detailData = $this->expectedToCollectMoney($feePolicie, $schooleYear, $data);
+
         return [
             'data' => $data,
+            'detailData' => $detailData,
         ];
     }
 
@@ -529,5 +540,142 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
             $schoolYear->update(['FeePolicieCrmId' => $item['id']]);
         }
+    }
+
+    public function expectedToCollectMoney($feePolicie, $schooleYear, $dataTuition)
+    {
+        $startDate = $schooleYear->StartDate;
+        $endDate = $schooleYear->EndDate;
+
+        $tuition = $dataTuition;
+        $rangeMonth = collect(CarbonPeriod::create($startDate, '1 month', $endDate)->toArray());
+
+        $data = [];
+        $monthFilter = request()->month;
+
+        if (!empty(request()->month)) {
+            $monthFilter = explode(',', $monthFilter);
+        }
+        foreach ($rangeMonth as $keyMonth => $month) {
+            $fee = [];
+
+            if (!empty($monthFilter) && !in_array($month->format('Y-m'), $monthFilter)) {
+                continue;
+            }
+            foreach ($tuition as $key => $value) {
+                $feeTuiTion = Fee::find($value['feeId']);
+                $paymentForm = PaymentForm::find($value['paymentFormId']);
+
+                $applyDate = Carbon::parse($value['applyDate'])->format('Y-m');
+                switch ($paymentForm->Code) {
+                    case 'NAM':
+                        if ($applyDate == $month->format('Y-m')) {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => $value['money']
+                            ];
+                        } else {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => 0
+                            ];
+                        }
+                        break;
+                    case 'THANG':
+                        if ($applyDate <= $month->format('Y-m')) {
+                            if ($applyDate ==  $month->format('Y-m')) {
+                                $fee[] = [
+                                    'fee_id' => $feeTuiTion->Id,
+                                    'fee_name' => $feeTuiTion->Name,
+                                    'money' => $value['money']
+                                ];
+                            } else {
+                                switch ($feeTuiTion->Type) {
+                                    case 'TIENAN':
+                                        $timetable = $schooleYear->timetable->where('Month', 'Tháng ' . $month->format('m') . '/' . $month->format('Y'))->where('Week', 1)->first();
+                                        $dayAdmission = $timetable->StartDate;
+                                        $endMonth = Carbon::parse($timetable->EndDate)->endOfMonth();
+                                        $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
+
+                                        $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
+
+                                        $result = ($daysLeftInMonth - $totalDayWeekend) * $value['moneyMonth'];
+
+                                        $fee[] = [
+                                            'fee_id' => $feeTuiTion->Id,
+                                            'fee_name' => $feeTuiTion->Name,
+                                            'money' => $result
+                                        ];
+                                        break;
+                                    default:
+                                        $fee[] = [
+                                            'fee_id' => $feeTuiTion->Id,
+                                            'fee_name' => $feeTuiTion->Name,
+                                            'money' => $value['moneyMonth']
+                                        ];
+                                        break;
+                                }
+                            }
+                        } else {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => 0
+                            ];
+                        }
+
+                        break;
+                    case 'HOCKY1':
+                        $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                            ->whereHas('paymentForm', function ($query) {
+                                $query->where('Code', 'HOCKY1');
+                            })->whereMonth('Date', $month->format('m'))->whereYear('Date', $month->format('Y'))->first();
+
+                        if ($applyDate == $month->format('Y-m') && !is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => $value['money']
+                            ];
+                        } elseif (!is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => 0
+                            ];
+                        }
+                        break;
+                    case 'HOCKY2':
+                        $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                            ->whereHas('paymentForm', function ($query) {
+                                $query->where('Code', 'HOCKY2');
+                            })->whereMonth('Date', $month->format('m'))->whereYear('Date', $month->format('Y'))->first();
+
+                        if ($applyDate == $month->format('Y-m') && !is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => $value['money']
+                            ];
+                        } elseif (!is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => 0
+                            ];
+                        }
+                        break;
+                }
+            }
+
+            $data[] = [
+                'month' =>  $month->format('Y-m'),
+                'fee' => $fee
+            ];
+        }
+
+        return $data;
     }
 }
