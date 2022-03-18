@@ -211,6 +211,7 @@ return [
         GGPHP\WorkOnline\Providers\WorkOnlineServiceProvider::class,
         Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
         GGPHP\EvaluateTeacher\Category\Providers\CategoryServiceProvider::class,
+        GGPHP\EvaluateTeacher\EvaluateTeacher\Providers\EvaluateTeacherServiceProvider::class,
     ],
 
     /*

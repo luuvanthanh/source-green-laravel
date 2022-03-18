@@ -97,7 +97,8 @@
             "ZK\\": "hrm/zk/src",
             "GGPHP\\WorkOnline\\": "hrm/work-online/src",
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
-            "GGPHP\\EvaluateTeacher\\Category\\": "evaluate-teacher/category/src/"
+            "GGPHP\\EvaluateTeacher\\Category\\": "evaluate-teacher/category/src/",
+            "GGPHP\\EvaluateTeacher\\EvaluateTeacher\\": "evaluate-teacher/evaluate-teacher/src/"
         },
         "classmap": [
             "database/seeds",

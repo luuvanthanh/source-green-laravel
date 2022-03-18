@@ -16,7 +16,7 @@ class CoreModel extends Model implements Presentable
 
     use CastDatetimeFormatTrait, BootPresentTrait;
     use SoftDeletes;
-    
+
     public function scopeWhereLike($query, $key, $value)
     {
         $value = mb_strtoupper($this->convert_vi_to_en($value));
