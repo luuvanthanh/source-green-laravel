@@ -192,11 +192,12 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
             });
         }])->get();
         foreach ($employees as $key => $employee) {
+            
             foreach ($employee->positionLevel as $key => $positionLevel) {
                 foreach ($employee->resignationDecision as $key => $resignationDecision) {
                     $branchName =  $positionLevel->branch->Name;
                     $divisionName = $positionLevel->division->Name;
-
+                    $positionName = $positionLevel->position->Name;
                     if (!array_key_exists($branchName, $result)) {
                         $result[$branchName] =  [
                             'branchName' => $branchName,
@@ -216,6 +217,7 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
                         'resignationDecisiontId' => $resignationDecision->Id,
                         'division' => $divisionName,
                         'branch' => $branchName,
+                        'position' =>$positionName,
                         'decisionDate' => $resignationDecision->DecisionDate->format('Y-m-d'),
                         'decisionNumber' => $resignationDecision->DecisionNumber,
                         'timeApply' => $resignationDecision->TimeApply->format('Y-m-d'),
