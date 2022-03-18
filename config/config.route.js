@@ -3063,6 +3063,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+          {
+            path: '/crm/call-center/quan-ly-may-le',
+            component: './crm/call-center/management-extension',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/call-center/quan-ly-may-le/:id/chi-tiet',
+            component: './crm/call-center/management-extension/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
         ],
       },
       //WEBFORM
@@ -3163,7 +3175,7 @@ export default [
             authority: [],
           },
           {
-            path:  '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia',
+            path: '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia',
             component: './child-develop/name-childrens-problems',
             wrappers: ['@/wrappers/auth'],
             authority: [],
