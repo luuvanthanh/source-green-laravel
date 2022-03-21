@@ -25,16 +25,16 @@ class BlockDeleteRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    $employees = User::where('BlockId', $value)->first();
+            // 'id' => [
+            //     'required',
+            //     function ($attribute, $value, $fail) {
+            //         $employees = User::where('BlockId', $value)->first();
 
-                    if (!is_null($employees)) {
-                        return $fail('Dữ liệu đang được sử dụng!');
-                    }
-                },
-            ],
+            //         if (!is_null($employees)) {
+            //             return $fail('Dữ liệu đang được sử dụng!');
+            //         }
+            //     },
+            // ],
         ];
     }
 }
