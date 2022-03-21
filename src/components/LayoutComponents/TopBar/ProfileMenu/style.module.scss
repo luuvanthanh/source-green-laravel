@@ -78,3 +78,32 @@
 .dropdownUser {
   min-width: 200px;
 }
+
+.button-cancel {
+  font-family: $base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-form-label;
+  cursor: pointer;
+  text-decoration-line: underline;
+}
+
+.wrapper-modal-check {
+  :global(.card) {
+    margin-bottom: 0px !important;
+  }
+  :global(.ant-modal-content) {
+    border-radius: 12px !important;
+  }
+  :global(.ant-modal-header) {
+    border-radius: 12px 12px 0px 0px !important;
+  }
+  .wrapper-modal-footer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+}

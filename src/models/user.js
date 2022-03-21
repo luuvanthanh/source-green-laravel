@@ -129,6 +129,21 @@ const UserModel = {
         });
       }
     },
+    *CHANG_PASSWORK({ payload }, saga) {
+      try {
+        yield saga.call(services.changePassword, payload);
+        if(payload) {
+          notification.success({
+            message: 'THÔNG BÁO',
+            description: 'Đổi mật khẩu thành công.',
+          });
+        }
+      }  catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+        });
+      }
+    },
   },
   reducers: {
     SET_USER: (state, { payload }) => ({

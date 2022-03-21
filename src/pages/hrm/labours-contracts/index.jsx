@@ -237,12 +237,14 @@ class Index extends PureComponent {
         key: 'creationTime',
         dataIndex: 'creationTime',
         className: 'min-width-160',
+        width: 160,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Nhân viên',
         key: 'name',
         className: 'min-width-220',
+        width: 220,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
@@ -255,12 +257,14 @@ class Index extends PureComponent {
         key: 'contract_number',
         dataIndex: 'contractNumber',
         className: 'min-width-120',
+        width: 120,
       },
       {
         title: 'Ngày hợp đồng',
         key: 'date',
         dataIndex: 'contractDate',
         className: 'min-width-150',
+        width: 150,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
       },
       {
@@ -268,12 +272,14 @@ class Index extends PureComponent {
         key: 'contract_category',
         dataIndex: 'typeOfContract',
         className: 'min-width-120',
+        width: 120,
         render: (value) => value?.name,
       },
       {
         title: 'Số năm/tháng hợp đồng',
         key: 'contract_category',
         className: 'min-width-150',
+        width: 150,
         render: (record) => `${record.month} tháng`,
       },
       {
@@ -281,6 +287,7 @@ class Index extends PureComponent {
         key: 'date',
         dataIndex: 'contractFrom',
         className: 'min-width-150',
+        width: 150,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
       },
       {
@@ -288,18 +295,21 @@ class Index extends PureComponent {
         key: 'deadline',
         dataIndex: 'contractTo',
         className: 'min-width-150',
+        width: 150,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Lương cơ bản',
         key: 'salary',
         className: 'min-width-150',
+        width: 150,
         render: (record) => Helper.getPrice(record.basicSalary),
       },
       {
         title: 'Tổng phụ cấp',
         key: 'payment',
         className: 'min-width-150',
+        width: 150,
         render: (record) => Helper.getPrice(record.totalAllowance),
       },
       {
@@ -307,6 +317,7 @@ class Index extends PureComponent {
         key: 'branch',
         dataIndex: 'branch',
         className: 'min-width-150',
+        width: 150,
         render: (value) => value?.name,
       },
       {
@@ -314,6 +325,7 @@ class Index extends PureComponent {
         key: 'position',
         dataIndex: 'position',
         className: 'min-width-150',
+        width: 150,
         render: (value) => value?.name,
       },
       {
@@ -459,7 +471,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>
