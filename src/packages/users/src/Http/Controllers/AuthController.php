@@ -128,6 +128,7 @@ class AuthController extends Controller
     {
         $cas = app('cas');
         $cas->authenticate();
+        dd($cas->user());
     }
 
     public function egovLoginCallback()
