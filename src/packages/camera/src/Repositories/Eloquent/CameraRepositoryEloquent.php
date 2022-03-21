@@ -208,7 +208,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
 
             $data['status'] = Camera::STATUS['STATUS_PENDING'];
             // Update camera information
-            if (!empty($dataCamera)) {
+            if (!empty($data)) {
                 $camera->update($data);
             }
 
@@ -379,8 +379,8 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         $dataBackup = [
             'server_id' => $camera->cameraServer->uuid,
             'cam_id' => $camera->id,
-            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y h:m:s'),
-            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y h:m:s'),
+            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y H:m:s'),
+            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:m:s'),
         ];
 
         $result = VmsCoreServices::getPlayback($dataBackup);
