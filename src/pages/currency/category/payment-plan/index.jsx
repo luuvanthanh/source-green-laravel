@@ -276,8 +276,8 @@ class Index extends PureComponent {
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-150',
+        width: 150,
         fixed: 'right',
         render: (record) => (
           <div className={stylesModule['list-button']} >
@@ -367,7 +367,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

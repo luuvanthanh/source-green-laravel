@@ -207,55 +207,64 @@ class Index extends PureComponent {
       {
         title: 'Mã học sinh',
         key: 'code',
+        width: 150,
         className: 'min-width-150',
         render: (record) => record?.student?.code || '',
       },
       {
         title: 'Tên học sinh',
         key: 'fullName',
+        width: 200,
         className: 'min-width-200',
         render: (record) => record?.student?.fullName || '',
       },
       {
         title: 'Cơ sở',
         key: 'branch',
+        width: 200,
         className: 'min-width-200',
         render: (record) => record?.student?.classStudent?.class?.branch?.name || '',
       },
       {
         title: 'Khối lớp',
         key: 'grade',
+        width: 150,
         className: 'min-width-150',
         render: (record) => record?.student?.classStudent?.class?.classType?.name || '',
       },
       {
         title: 'Lớp',
         key: 'class',
+        width: 150,
         className: 'min-width-150',
         render: (record) => record?.student?.classStudent?.class?.name || '',
       },
       {
         title: 'Năm học',
         key: 'schoolYear',
+        width: 150,
         className: 'min-width-150',
         render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
       },
       {
         title: 'Ngày nhập học',
         key: 'dayAdmission',
+        width: 150,
         className: 'min-width-150',
         render: (record) =>Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI)
       },
       {
         title: 'Chi tiết các loại phí',
         key: 'tuition',
+        width: 150,
         className: 'min-width-150',
         render: (record) => !isEmpty(record?.tuition) ? map(record?.tuition, 'fee.name').join(', ') : '',
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-150',
+        width: 150,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button color="success" icon="copy" onClick={() => history.push(`/chinh-sach-phi/tinh-phi-hoc-sinh-cu/${record?.id}/chi-tiet?type=ban-sao`)} />
@@ -332,7 +341,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

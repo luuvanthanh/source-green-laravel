@@ -171,18 +171,21 @@ class Index extends PureComponent {
         title: 'Năm học',
         key: 'schoolYear',
         className: 'min-width-150',
+        width: 150,
         render: (record) => `${record?.schoolYear?.year_from || ''} - ${record?.schoolYear?.year_to || ''}`
       },
       {
         title: 'Tên học sinh',
         key: 'nameStudent',
         className: 'min-width-200',
+        width: 200,
         render: (record) => record?.studentInfo?.full_name || record?.name_student,
       },
       {
         title: 'Sinh ngày',
         key: 'dateOfBirth',
         className: 'min-width-200',
+        width: 200,
         render: (record) =>
           record?.studentInfo
             ? Helper.getDate(record?.studentInfo?.birth_date, variables.DATE_FORMAT.DATE_VI) || " "
@@ -192,6 +195,7 @@ class Index extends PureComponent {
         title: 'Tháng tuổi',
         key: 'age',
         className: 'min-width-100',
+        width: 100,
         render: (record) =>
           record?.studentInfo
             ? <>{record?.studentInfo?.age_month || "0"}</>
@@ -201,6 +205,7 @@ class Index extends PureComponent {
         title: 'Ngày nhập học',
         key: 'dayAdmission',
         className: 'min-width-150',
+        width: 150,
         render: (record) =>
           record?.day_admission
             ? Helper.getDate(record?.day_admission, variables.DATE_FORMAT.DATE_VI)
@@ -210,6 +215,7 @@ class Index extends PureComponent {
         title: 'Họ tên cha',
         key: 'fatherName',
         className: 'min-width-150',
+        width: 150,
         render: (record) => {
           const a = record?.admissionRegister?.parentInfo.find(i => i.sex === "MALE");
           return <>{a?.full_name ? a?.full_name : record?.father_name}</>;
@@ -219,6 +225,7 @@ class Index extends PureComponent {
         title: 'SĐT cha',
         key: 'fatherPhoneNumber',
         className: 'min-width-150',
+        width: 150,
         render: (record) => {
           const a = record?.admissionRegister?.parentInfo.find(i => i.sex === "MALE");
           return <>{a?.phone ? a?.phone : record?.father_phone}</>;
@@ -228,6 +235,7 @@ class Index extends PureComponent {
         title: 'Họ tên mẹ',
         key: 'motherName',
         className: 'min-width-150',
+        width: 150,
         render: (record) => {
           const a = record?.admissionRegister?.parentInfo.find(i => i.sex === "FEMALE");
           return <>{a?.full_name ? a?.full_name : record?.mother_name}</>;
@@ -237,6 +245,7 @@ class Index extends PureComponent {
         title: 'SĐT mẹ',
         key: 'motherPhoneNumber',
         className: 'min-width-150',
+        width: 150,
         render: (record) => {
           const a = record?.admissionRegister?.parentInfo.find(i => i.sex === "FEMALE");
           return <>{a?.full_name ? a?.full_name : record?.mother_phone}</>;
@@ -246,12 +255,13 @@ class Index extends PureComponent {
         title: 'Tổng học phí đóng đ',
         key: 'totalMoney',
         className: 'min-width-200',
+        width: 200,
         render: (record) => Helper.getPrice(record.total_money) || 0,
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-100',
+        width: 100,
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
@@ -320,7 +330,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

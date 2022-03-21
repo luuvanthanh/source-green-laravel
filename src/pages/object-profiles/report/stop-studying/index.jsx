@@ -376,14 +376,14 @@ class Index extends PureComponent {
         StudentStatus: 'STOP_STUDYING ',
         IsStopStudying: 'false',
         branchId: query?.branchId || defaultBranch?.id,
-        From: dataIDSearch ? 
+        From: dataIDSearch?.length > 0 ? 
           moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
         : "",
-        To: dataIDSearch ? 
+        To: dataIDSearch?.length > 0 ? 
         moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
          : "",
       },
-      `Danhsachbaocaohocsinhnhaphocchinhthuc.xlsx`,
+      `Danhsachbaocaohocsinhngunghoc.xlsx`,
     );
   };
 
@@ -487,7 +487,7 @@ class Index extends PureComponent {
                   type: 'table',
                 }}
                 rowKey={(record) => record?.branch?.name || record?.id}
-                scroll={{ x: '100%' }}
+                scroll={{ x: '100%', y: '60vh' }}
               />
           </div>
         </div>

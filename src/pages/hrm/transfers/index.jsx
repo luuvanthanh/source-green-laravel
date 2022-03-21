@@ -220,7 +220,8 @@ class Index extends PureComponent {
       {
         title: 'STT',
         key: 'text',
-        width: 50,
+        width: 80,
+        className: 'min-width-80',
         align: 'center',
         render: (text, record, index) =>
           Helper.sttList(
@@ -234,6 +235,7 @@ class Index extends PureComponent {
         key: 'creationTime',
         dataIndex: 'creationTime',
         className: 'min-width-160',
+        width: 160,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
       },
       {
@@ -261,6 +263,7 @@ class Index extends PureComponent {
         title: 'Nhân viên',
         key: 'name',
         className: 'min-width-200',
+        width: 200,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(
@@ -400,7 +403,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

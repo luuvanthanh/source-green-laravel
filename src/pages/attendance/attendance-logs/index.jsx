@@ -401,7 +401,7 @@ class Index extends PureComponent {
               }}
               bordered
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

@@ -7,7 +7,8 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
-      ...Helper.getPagination(params.page, params.limit),
+      limit: params.limit,
+      page: params.page,
       include: Helper.convertIncludes([
        'employee,typeOfContract,position,branch'
       ]),
