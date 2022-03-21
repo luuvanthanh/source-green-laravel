@@ -30,6 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         // Tourist
         \Route::resource('tourists', 'TouristController');
+        \Route::get('export-tourists', 'TouristController@exportExcelTourists');
     }
 
     /**
@@ -41,7 +42,5 @@ class RouteRegistrar extends CoreRegistrar
     {
         // Tourist
         \Route::resource('tourists', 'TouristController')->only('store');
-
-        \Route::get('export-tourists', 'TouristController@exportExcelTourists');
     }
 }

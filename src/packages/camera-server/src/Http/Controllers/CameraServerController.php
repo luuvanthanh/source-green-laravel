@@ -150,4 +150,19 @@ class CameraServerController extends Controller
 
         return $this->success($cameraServer, trans('lang::messages.common.createSuccess'));
     }
+
+    /**
+     *
+     * @param  int $id
+     *
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        if ($this->cameraServerRepository->delete($id)) {
+            return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+        }
+
+        return response()->json(null, 422);
+    }
 }

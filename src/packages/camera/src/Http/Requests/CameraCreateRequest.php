@@ -3,8 +3,6 @@
 namespace GGPHP\Camera\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Validator;
-use GGPHP\Camera\Models\CameraVideoProperties;
 
 class CameraCreateRequest extends FormRequest
 {
