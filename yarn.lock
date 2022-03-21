@@ -4883,6 +4883,11 @@ classnames@2.x, classnames@^2.2.0, classnames@^2.2.1, classnames@^2.2.3, classna
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
   integrity sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
 
+clean-react-props@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/clean-react-props/-/clean-react-props-0.4.0.tgz#68642be5538a5fece380fed704a560de2db67954"
+  integrity sha512-8KKm9sC/cUax4SBWwSY5a3W44aJKOUQg39Bo3fRErp3/mF8D1kMN9xc1lvQGmvkK/AmpH2Xh/UYVZOJMcxoy9w==
+
 clean-regexp@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/clean-regexp/-/clean-regexp-1.0.0.tgz#8df7c7aae51fd36874e8f8d05b9180bc11a3fed7"
@@ -13960,6 +13965,22 @@ react-textarea-autosize@^8.3.2:
     "@babel/runtime" "^7.10.2"
     use-composed-ref "^1.0.0"
     use-latest "^1.0.0"
+
+react-timecode@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-timecode/-/react-timecode-1.2.0.tgz#d48431f79892f930ce4169db1fc072f63a41eafe"
+  integrity sha512-nm8KCipv0HItTLYFc4VkPFgTbETDRCRnVN4NDAggQfEouW3XDduXcewJsCsdck/jv309z25EdxVPyGTtirIk2w==
+  dependencies:
+    clean-react-props "^0.4.0"
+    prop-types "^15.7.2"
+
+react-timer-wrapper@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/react-timer-wrapper/-/react-timer-wrapper-0.4.1.tgz#021a068797903b023d503a7f6f233e6b23a9acd5"
+  integrity sha512-8hG5Q02+73xlLzPneYnspZfhiQ7+9mJyoEdA9khkYuen6sWHMfpraOBGGAgRtTqHu/tp3dIwsr8Yfku2iFjKYw==
+  dependencies:
+    clean-react-props "^0.4.0"
+    prop-types "^15.5.10"
 
 react-tween-state@^0.1.5:
   version "0.1.5"

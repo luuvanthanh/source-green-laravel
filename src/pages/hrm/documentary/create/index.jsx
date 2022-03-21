@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'umi';
 import { Form, Checkbox, List, message, Upload } from 'antd';
+import classnames from 'classnames';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Quill from '@/components/CommonComponent/Quill';
@@ -39,7 +40,7 @@ function Index() {
   const [employees, setEmployees] = useState([]);
   const [employeesActive, setEmployeesActive] = useState([]);
   const [sentEmployees, setSentEmployees] = useState([]);
-  const [file, setFile] = useState(null);
+  const [fileImage, setFileImage] = useState([]);
   const [isAllEmployees, setIsAllEmployees] = useState(false);
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -193,7 +194,7 @@ function Index() {
       },
       callback: (response) => {
         if (response) {
-          setEmployees(response.parsePayload);
+          setEmployees(response.parsePayload.filter((item) => item.checked).map((item) => item.id));
           setSearchEmployee({
             ...searchEmployee,
             page: variables.PAGINATION.PAGE,
@@ -242,17 +243,17 @@ function Index() {
     });
   };
 
-  const removeFiles = () => {
-    setFile(null);
+  const onRemoveFile = () => {
+    setFileImage(null);
   };
 
-  const onUpload = (file) => {
+  const onUpload = (files) => {
     dispatch({
       type: 'upload/UPLOAD',
-      payload: file,
+      payload: files,
       callback: (response) => {
         if (response) {
-          setFile([head(response.results)?.fileInfo.url, head(response.results)?.fileInfo.name]);
+          setFileImage([head(response.results)?.fileInfo]);
         }
       },
     });
@@ -280,7 +281,7 @@ function Index() {
       ...values,
       id: params.id,
       content,
-      fileDocument: !isEmpty(file) ? JSON.stringify(file) : null,
+      fileName: !isEmpty(fileImage) ? JSON.stringify(fileImage) : undefined,
       detail: !isAllEmployees
         ? employees.filter((item) => item.checked).map((item) => item.id)
         : [],
@@ -306,6 +307,10 @@ function Index() {
         }
       },
     });
+  };
+
+  const onSetFileImage = (fileImage) => {
+    setFileImage(Helper.isJSON(fileImage) ? JSON.parse(fileImage) : []);
   };
 
   useEffect(() => {
@@ -368,9 +373,7 @@ function Index() {
               title: response.parsePayload.title,
             });
             setContent(response.parsePayload?.content);
-            if (response.parsePayload?.fileDocument) {
-              setFile([response.parsePayload?.fileDocument]);
-            }
+            onSetFileImage(response.parsePayload?.fileName);
             setEmployeesActive(response.parsePayload?.employee);
           }
         },
@@ -563,15 +566,23 @@ function Index() {
                         <i>Chỉ hỗ trợ định dạng .xlsx. Dung lượng không được quá 5mb</i>
                       </Upload>
                     </div>
-                    {!isEmpty(file) && (
-                      <div className={styles['documentary-file']}>
-                        {params.id ? <div>{last(JSON.parse(file))}</div> : <div>{last(file)}</div>}
-                        <Button
-                          color="danger"
-                          icon="remove"
-                          className="ml-2"
-                          onClick={removeFiles}
-                        />
+                    {!isEmpty(fileImage) && (
+                      <div className={classnames(styles['files-container'], 'mt5')}>
+                        {fileImage.map((item) => (
+                          <div className={styles.item} key={item.id}>
+                            <a href={`${API_UPLOAD}${item.url}`} target="_blank" rel="noreferrer">
+                              {item?.name}
+                            </a>
+                            <span
+                              role="presentation"
+                              className="icon-cross"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onRemoveFile();
+                              }}
+                            />
+                          </div>
+                        ))}
                       </div>
                     )}
                   </Pane>

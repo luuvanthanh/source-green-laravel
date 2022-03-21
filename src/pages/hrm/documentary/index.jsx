@@ -28,6 +28,7 @@ function Index() {
 
   const [search, setSearch] = useState({
     typeOfDocument: query?.typeOfDocument,
+    topic: query?.topic,
     key: query?.key,
     startDate:
       query?.startDate || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
@@ -249,11 +250,9 @@ function Index() {
             initialValues={{
               ...search,
               typeOfDocument: search.typeOfDocument || null,
-              date: query?.startDate &&
-                query?.endDate && [
-                  moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-                  moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-                ],
+              topic: search.topic || null,
+              date: search.startDate &&
+                search.endDate && [moment(search.startDate), moment(search.endDate)],
             }}
             layout="vertical"
             form={formRef}
@@ -272,6 +271,7 @@ function Index() {
                   name="date"
                   onChange={(event) => onChangeDateRank(event, 'date')}
                   type={variables.RANGE_PICKER}
+                  allowClear={false}
                 />
               </div>
               <div className="col-lg-3">
@@ -279,6 +279,15 @@ function Index() {
                   data={[{ id: null, name: 'Tất cả loại công văn' }, ...variables.DOCUMENT_TYPE]}
                   name="typeOfDocument"
                   onChange={(event) => onChangeSelect(event, 'typeOfDocument')}
+                  type={variables.SELECT}
+                  allowClear={false}
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  data={[{ id: null, name: 'Tất cả chủ đề' }, ...variables.DOCUMENT_TOPIC]}
+                  name="topic"
+                  onChange={(event) => onChangeSelect(event, 'topic')}
                   type={variables.SELECT}
                   allowClear={false}
                 />

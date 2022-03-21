@@ -212,6 +212,12 @@ export const variables = {
     { id: 'CONG_VAN_NOI_BO', name: 'Công văn nội bộ' },
     { id: 'TAI_LIEU', name: 'Tài liệu' },
   ],
+  DOCUMENT_TOPIC: [
+    { id: 'THONG_BAO', name: 'Thông báo' },
+    { id: 'QUYET_DINH', name: 'Quyết định' },
+    { id: 'QUY_DINH', name: 'Quy định' },
+    { id: 'TO_TRINH', name: 'Tờ trình' },
+  ],
   TOPIC_TYPE: [
     { id: 'THONG_BAO', name: 'Thông báo' },
     { id: 'QUYET_DINH', name: 'Quyết định' },
