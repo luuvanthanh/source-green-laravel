@@ -95,11 +95,11 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
         $userId = $documentManagement->employee->pluck('Id')->toArray();
         $accountId = EmployeeAccount::whereIn('EmployeeId', $userId)->pluck('AppUserId')->toArray();
 
-        $file =  json_decode($documentManagement->FileDocument);
+        $file =  json_decode($documentManagement->FileName);
         $urlFile = '';
 
         if (!empty($file)) {
-            $urlFile = env('IMAGE_URL') . $file[0];
+            $urlFile = env('IMAGE_URL') . $file[0]->url;
         }
 
         if (!empty($accountId)) {
@@ -135,11 +135,11 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
         $userId = $documentManagement->employee->pluck('Id')->toArray();
         $accountId = EmployeeAccount::whereIn('EmployeeId', $userId)->pluck('AppUserId')->toArray();
 
-        $file =  json_decode($documentManagement->FileDocument);
+        $file =  json_decode($documentManagement->FileName);
         $urlFile = '';
 
         if (!empty($file)) {
-            $urlFile = env('IMAGE_URL') . $file[0];
+            $urlFile = env('IMAGE_URL') . $file[0]->url;
         }
 
         if (!empty($accountId)) {
