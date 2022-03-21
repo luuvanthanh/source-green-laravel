@@ -340,6 +340,6 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
 
     public function resignationDecision()
     {
-        return $this->hasMany(ResignationDecision::class, 'EmployeeId');
+        return $this->hasOne(ResignationDecision::class, 'EmployeeId');
     }
 }

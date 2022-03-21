@@ -142,4 +142,11 @@ class LabourContractController extends Controller
 
         return $result;
     }
+
+    public function reportWorkingSeniority(Request $request)
+    {
+        $labourContract = $this->labourContractRepository->reportWorkingSeniority($request->all());
+
+        return $this->success(['data' => $labourContract], trans('lang::messages.common.getListSuccess'));
+    }
 }
