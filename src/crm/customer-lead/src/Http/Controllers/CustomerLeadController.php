@@ -174,4 +174,11 @@ class CustomerLeadController extends Controller
 
         return $this->success($customerLead, trans('lang::messages.common.getInfoSuccess'));
     }
+
+    public function customerByPhone($phone)
+    {
+        $customerLead = $this->customerLeadRepository->customerByPhone($phone);
+
+        return $this->success($customerLead, trans('lang::messages.common.getInfoSuccess'));
+    }
 }

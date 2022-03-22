@@ -3,6 +3,8 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\CallCenter\Transformers\CallCenterTransformer;
+use GGPHP\Crm\CallCenter\Transformers\HistoryCallTranformer;
 use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
@@ -40,8 +42,8 @@ class CustomerLeadTransformer extends BaseTransformer
      */
     protected $availableIncludes = [
         'eventInfo', 'customerTag', 'reference', 'studentInfo',
-        'city', 'district', 'searchSource', 'statusCare', 'employee',
-        'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead', 'customerPotential'
+        'city', 'district', 'searchSource', 'statusCare', 'employee', 'customerPotential',
+        'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead', 'historyCall', 'statusCareLatest'
     ];
 
     /**
@@ -172,6 +174,16 @@ class CustomerLeadTransformer extends BaseTransformer
     public function includeStatusLead(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->statusLead, new StatusLeadTransformer, 'StatusLead');
+    }
+
+    public function includeHistoryCall(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->historyCall, new HistoryCallTranformer, 'HistoryCall');
+    }
+
+    public function includeStatusCareLatest(CustomerLead $customerLead)
+    {
+        return $this->item($customerLead->statusCareLatest, new StatusCareTransformer, 'StatusCare');
     }
 
     public function includeCustomerPotential(CustomerLead $customerLead)

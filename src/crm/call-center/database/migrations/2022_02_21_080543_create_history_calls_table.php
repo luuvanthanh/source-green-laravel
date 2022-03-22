@@ -22,7 +22,6 @@ class CreateHistoryCallsTable extends Migration
             $table->string('record_link')->nullable();
             $table->string('direction');
             $table->timestamps();
-
             $table->foreign('customer_lead_id')->references('id')->on('customer_leads')->onDelete('cascade');
         });
     }

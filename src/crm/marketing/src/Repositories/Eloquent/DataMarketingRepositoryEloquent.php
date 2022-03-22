@@ -75,6 +75,47 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
             });
         }
 
+        if (!empty($attributes['data_marketing_id'])) {
+            $dataMarketing = explode(',', $attributes['data_marketing_id']);
+            $this->model = $this->model->whereIn('id', $dataMarketing);
+        }
+
+        if (!empty($attributes['tag_id'])) {
+            $this->model = $this->model->whereHas('tag', function ($query) use ($attributes) {
+                $query->where('id', $attributes['tag_id']);
+            });
+        }
+
+        if (!empty($attributes['full_name']) && $attributes['full_name'] == 'true') {
+            $this->model = $this->model->whereIn('full_name', function ($query) {
+                $query->select('data_marketings.full_name')->from('data_marketings')->groupBy('data_marketings.full_name')->havingRaw('count(*) > 1');
+            });
+        }
+
+        if (!empty($attributes['email']) && $attributes['email'] == 'true') {
+            $this->model = $this->model->whereIn('email', function ($query) {
+                $query->select('data_marketings.email')->from('data_marketings')->groupBy('data_marketings.email')->havingRaw('count(*) > 1');
+            });
+        }
+
+        if (!empty($attributes['address']) && $attributes['address'] == 'true') {
+            $this->model = $this->model->whereIn('address', function ($query) {
+                $query->select('data_marketings.address')->from('data_marketings')->groupBy('data_marketings.address')->havingRaw('count(*) > 1');
+            });
+        }
+
+        if (!empty($attributes['phone']) && $attributes['phone'] == 'true') {
+            $this->model = $this->model->whereIn('phone', function ($query) {
+                $query->select('data_marketings.phone')->from('data_marketings')->groupBy('data_marketings.phone')->havingRaw('count(*) > 1');
+            });
+        }
+
+        if (!empty($attributes['birth_date']) && $attributes['birth_date'] == 'true') {
+            $this->model = $this->model->whereIn('birth_date', function ($query) {
+                $query->select('data_marketings.birth_date')->from('data_marketings')->groupBy('data_marketings.birth_date')->havingRaw('count(*) > 1');
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $dataMarketing = $this->paginate($attributes['limit']);
         } else {
@@ -101,15 +142,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
             }
         }
         $attributes['status'] = DataMarketing::STATUS['NOT_MOVE'];
-        $userId = $attributes['value']['from']['id'];
-        $dataMarketing = DataMarketing::where('user_facebook_id', $userId)->first();
-
-        if (is_null($dataMarketing)) {
-            if (isset($attributes['value']['from']['name'])) {
-                $attributes['user_facebook_id'] = $userId;
-                $attributes['full_name'] = $attributes['value']['from']['name'];
-            }
-        }
+        
         $dataMarketing = DataMarketing::create($attributes);
 
         return $this->parserResult($dataMarketing);
@@ -242,5 +275,23 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 $dataMarketing->marketingProgram()->attach($marketingProgram->id);
             }
         }
+    }
+
+    public function createTag(array $attributes)
+    {
+        $dataMarketing = DataMarketing::find($attributes['data_marketing_id']);
+        $dataMarketing->tag()->attach($attributes['tag_id']);
+
+        return parent::find($dataMarketing->id);
+    }
+
+    public function mergeDataMarketing(array $attributes)
+    {
+        $dataMarketing = DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->orderBy('created_at', 'DESC')->first();
+        $dataMarketing->update($attributes);
+
+        DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->where('id', '!=', $dataMarketing->id)->forceDelete();
+
+        return parent::parserResult($dataMarketing);
     }
 }

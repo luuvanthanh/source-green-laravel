@@ -4,22 +4,23 @@ namespace GGPHP\Crm\CallCenter\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
-use GGPHP\Crm\CallCenter\Repositories\Contracts\CallCenterRepository;
+use GGPHP\Crm\CallCenter\Http\Requests\CreateManagerCallRequest;
+use GGPHP\Crm\CallCenter\Repositories\Contracts\ManagerCallRepository;
 
-class CallCenterController extends Controller
+class ManagerCallController extends Controller
 {
     /**
      * @var $employeeRepository
      */
-    protected $callCenterRepository;
+    protected $managerCallRepository;
 
     /**
      * UserController constructor.
-     * @param StatusParentLeadRepository $inOutHistoriesRepository
+     * @param ManagerCallRepository $managerCallRepository
      */
-    public function __construct(CallCenterRepository $callCenterRepository)
+    public function __construct(ManagerCallRepository $managerCallRepository)
     {
-        $this->callCenterRepository = $callCenterRepository;
+        $this->managerCallRepository = $managerCallRepository;
     }
 
     /**
@@ -32,9 +33,9 @@ class CallCenterController extends Controller
     {
         $attributes = $request->all();
 
-        $callCenter = $this->callCenterRepository->getCallCenter($attributes);
+        $managerCall = $this->managerCallRepository->getManagerCall($attributes);
 
-        return $this->success($callCenter, trans('lang::messages.common.getListSuccess'));
+        return $this->success($managerCall, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -43,13 +44,13 @@ class CallCenterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateManagerCallRequest $request)
     {
         $attributes = $request->all();
 
-        $callCenter = $this->callCenterRepository->create($attributes);
+        $managerCall = $this->managerCallRepository->create($attributes);
 
-        return $this->success($callCenter, trans('lang::messages.common.createSuccess'));
+        return $this->success($managerCall, trans('lang::messages.common.createSuccess'));
     }
 
     /**
@@ -60,9 +61,9 @@ class CallCenterController extends Controller
      */
     public function show($id)
     {
-        $callCenter = $this->callCenterRepository->find($id);
+        $managerCall = $this->managerCallRepository->find($id);
 
-        return $this->success($callCenter, trans('lang::messages.common.getInfoSuccess'));
+        return $this->success($managerCall, trans('lang::messages.common.getInfoSuccess'));
     }
     /**
      * Update the specified resource in storage.
@@ -75,9 +76,9 @@ class CallCenterController extends Controller
     {
         $attributes = $request->all();
 
-        $callCenter = $this->callCenterRepository->update($attributes, $id);
+        $managerCall = $this->managerCallRepository->update($attributes, $id);
 
-        return $this->success($callCenter, trans('lang::messages.common.modifySuccess'));
+        return $this->success($managerCall, trans('lang::messages.common.modifySuccess'));
     }
 
     /**
@@ -88,8 +89,15 @@ class CallCenterController extends Controller
      */
     public function destroy($id)
     {
-        $this->callCenterRepository->delete($id);
+        $this->managerCallRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function countCall(Request $request)
+    {
+        $count = $this->managerCallRepository->countCall($request->all());
+
+        return $this->success($count, trans('lang::messages.common.getListSuccess'));
     }
 }
