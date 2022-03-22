@@ -33,7 +33,7 @@ class DocumentManagementCreateRequest extends FormRequest
             'receiveDivisionId' => 'nullable|exists:Divisions,Id',
             'title' => 'string',
             'content' => 'string',
-            'detail' => 'array',
+            'detail' => 'required|array',
         ];
     }
 }

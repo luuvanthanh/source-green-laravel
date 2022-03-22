@@ -24,6 +24,8 @@ class DocumentManagementUpdateRequest extends FormRequest
      */
     public function rules(Request $request)
     {
-        return [];
+        return [
+            'detail' => 'required|array',
+        ];
     }
 }

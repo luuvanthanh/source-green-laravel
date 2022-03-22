@@ -90,6 +90,14 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'SeasonalContractController@exportWordAuthority',
                 'as' => 'seasonal-contracts.word-authority.export',
             ]);
+
+            \Route::get('report-working-seniority', [
+                'uses' => 'LabourContractController@reportWorkingSeniority'
+            ]);
+
+            \Route::get('export-excel-working-seniority', [
+                'uses' => 'LabourContractController@exportExcelWorkingSeniority'
+            ]);
         });
     }
 }
