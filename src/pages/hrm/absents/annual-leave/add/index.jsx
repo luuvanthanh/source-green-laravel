@@ -252,6 +252,23 @@ class Index extends PureComponent {
     }));
   };
 
+  onSelectUser = (e) => {
+    const {
+      categories,
+    } = this.props;
+    const user = categories?.users?.find(i => i?.id === e);
+    const type = categories?.absentTypes.find(i => i?.code === 'K');
+    if (user?.positionLevel[0]?.division?.code === 'DH') {
+      this.formRef.current.setFieldsValue({
+        absentTypeId: type?.id,
+      });
+    } else {
+      this.formRef.current.setFieldsValue({
+        absentTypeId: undefined,
+      });
+    }
+  };
+
   /**
    * Function header table
    */
@@ -325,7 +342,7 @@ class Index extends PureComponent {
             placeholder="Chọn"
             disabled
             value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
-            onSelect={(value) => this.onChangeTimeStart(value, record)}
+            User={(value) => this.onChangeTimeStart(value, record)}
           />
         ),
       },
@@ -447,6 +464,7 @@ class Index extends PureComponent {
                       name="employeeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
+                      onChange={(e) => this.onSelectUser(e)}
                     />
                   </div>
                 </div>

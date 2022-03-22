@@ -283,7 +283,7 @@ class Index extends PureComponent {
     {
       title: 'STT',
       key: 'text',
-      width: 50,
+      width: 70,
       align: 'center',
       render: (text, record, index) =>
         Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
@@ -292,6 +292,7 @@ class Index extends PureComponent {
       title: 'Họ và Tên',
       key: 'fullName',
       className: 'min-width-200',
+      width: 200,
       render: (record) => (
         <AvatarTable
           fileImage={Helper.getPathAvatarJson(record?.fileImage)}
@@ -303,6 +304,7 @@ class Index extends PureComponent {
       title: 'Hình chấm',
       key: 'inOutHistory',
       className: 'min-width-130',
+      width: 130,
       align: 'center',
       render: (record) => {
         if (!isEmpty(record?.inOutHistory)) {
@@ -315,14 +317,14 @@ class Index extends PureComponent {
       title: 'Cơ sở',
       key: 'branch',
       className: 'min-width-130',
-      width: 100,
+      width: 130,
       render: (record) => record?.classStudent?.class?.branch?.name,
     },
     {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-130',
-      width: 100,
+      width: 130,
       render: (record) => record?.classStudent?.class?.name,
     },
     {
@@ -337,6 +339,7 @@ class Index extends PureComponent {
       title: 'Chi tiết',
       key: 'description',
       className: 'min-width-200',
+      width: 200,
       render: (record) => this.renderDescription(record.inOutHistory),
     },
   ];
@@ -433,7 +436,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>
