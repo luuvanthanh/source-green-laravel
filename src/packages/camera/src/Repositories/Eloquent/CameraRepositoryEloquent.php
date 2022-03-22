@@ -231,12 +231,12 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                     'streaming_infor' => [
                         'codec_id' => 27,
                         'profile' => $camera->profile,
-                        'width' => $dataResolution['width'],
-                        'height' => $dataResolution['height'],
-                        'fps' => $camera->fps,
-                        'bit_rate' => $camera->bit_rate,
-                        'gop' => $camera->gop,
-                        'max_B_frame' => $camera->frame_rate,
+                        'width' => (int)$dataResolution['width'],
+                        'height' => (int)$dataResolution['height'],
+                        'fps' => (int)$camera->fps,
+                        'bit_rate' => (int) $camera->bit_rate,
+                        'gop' => (int)$camera->gop,
+                        'max_B_frame' => (int)$camera->frame_rate,
                     ],
                 ]),
             ];
@@ -379,8 +379,8 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         $dataBackup = [
             'server_id' => $camera->cameraServer->uuid,
             'cam_id' => $camera->id,
-            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y h:m:s'),
-            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y h:m:s'),
+            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y H:m:s'),
+            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:m:s'),
         ];
 
         $result = VmsCoreServices::getPlayback($dataBackup);
@@ -411,11 +411,15 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         $dataBackup = [
             'server_id' => $camera->cameraServer->uuid,
             'cam_id' => $camera->id,
-            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y h:m:s'),
-            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y h:m:s'),
+            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y H:m:s'),
+            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:m:s'),
         ];
 
         $result = VmsCoreServices::exportVideo($dataBackup);
+
+        if ($result->stream_url) {
+            $result->stream_url = env('MEDIA_URL') . '/' . $result->stream_url;
+        }
 
         return $result;
     }
