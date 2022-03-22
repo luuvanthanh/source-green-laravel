@@ -15,7 +15,6 @@ class AddManagerCallIdInHistoryCallsTable extends Migration
     {
         Schema::table('history_calls', function (Blueprint $table) {
             $table->uuid('manager_call_id')->nullable();
-
             $table->foreign('manager_call_id')->references('id')->on('manager_calls')->onDelete('set Null');
         });
     }

@@ -15,13 +15,11 @@ class UpdateHistoryCallsTable extends Migration
     {
         Schema::table('history_calls', function (Blueprint $table) {
             $table->string('call_sid')->nullable()->change();
-
             $table->text('content')->nullable()->after('direction');
             $table->text('result')->nullable()->after('content');
             $table->text('refuse')->nullable()->after('result');
             $table->string('switchboard')->nullable();
             $table->uuid('employee_id')->nullable()->after('switchboard');
-
             $table->foreign('employee_id')->references('id')->on('employees');
         });
     }

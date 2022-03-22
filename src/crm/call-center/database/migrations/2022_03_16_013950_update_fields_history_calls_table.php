@@ -17,7 +17,6 @@ class UpdateFieldsHistoryCallsTable extends Migration
             $table->renameColumn('call_sid', 'call_id_sub');
             $table->uuid('call_id_parent')->nullable()->after('');
             $table->uuid('call_id_main');
-
         });
     }
 

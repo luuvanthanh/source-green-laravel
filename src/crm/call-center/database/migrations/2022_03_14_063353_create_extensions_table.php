@@ -23,7 +23,6 @@ class CreateExtensionsTable extends Migration
             $table->string('phone_number')->nullable();
             $table->unsignedInteger('state');
             $table->unsignedInteger('user_id_cmc');
-
             $table->timestamps();
         });
     }

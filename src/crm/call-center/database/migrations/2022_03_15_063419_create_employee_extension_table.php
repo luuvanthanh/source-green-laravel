@@ -16,7 +16,6 @@ class CreateEmployeeExtensionTable extends Migration
         Schema::create('employee_extension', function (Blueprint $table) {
             $table->uuid('employee_id');
             $table->uuid('extension_id');
-
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
             $table->foreign('extension_id')->references('id')->on('extensions')->onDelete('cascade');
         });

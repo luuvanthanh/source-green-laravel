@@ -44,7 +44,6 @@ class CustomerLeadTransformer extends BaseTransformer
         'eventInfo', 'customerTag', 'reference', 'studentInfo',
         'city', 'district', 'searchSource', 'statusCare', 'employee', 'customerPotential',
         'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead', 'historyCall', 'statusCareLatest'
-
     ];
 
     /**

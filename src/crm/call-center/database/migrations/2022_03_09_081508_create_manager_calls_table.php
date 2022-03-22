@@ -25,7 +25,6 @@ class CreateManagerCallsTable extends Migration
             $table->unsignedInteger('status')->default(1);
             $table->unsignedInteger('before_time')->nullable();
             $table->timestamps();
-
             $table->foreign('customer_lead_id')->references('id')->on('customer_leads')->onDelete('cascade');
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });

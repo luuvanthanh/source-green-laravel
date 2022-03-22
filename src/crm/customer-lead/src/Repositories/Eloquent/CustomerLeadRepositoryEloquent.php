@@ -248,7 +248,6 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
                 $attributes['code'] = CustomerLead::CODE . $stt;
             }
         }
-
         $attributes['manual_create'] = true;
         $customerLead = CustomerLead::create($attributes);
         $customerLead->statusLead()->create(['status' => StatusLead::STATUS_LEAD['LEAD_NEW']]);
