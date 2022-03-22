@@ -729,10 +729,10 @@ class Index extends PureComponent {
         ToolGroupId: query?.ToolGroupId,
         ToolDetailId: query?.ToolDetailId,
         branchId: query?.branchId || defaultBranch?.id,
-        FromDate: dataIDSearch ? 
+        FromDate: dataIDSearch?.length > 0 ? 
           moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
         : "",
-        ToDate: dataIDSearch ? 
+        ToDate: dataIDSearch?.length > 0 ? 
         moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
          : "",
       },
@@ -861,7 +861,7 @@ class Index extends PureComponent {
                   type: 'table',
                 }}
                 rowKey={(record) => record?.branch?.name || record?.id}
-                scroll={{ x: '100%' }}
+                scroll={{ x: '100%', y: '60vh' }}
               />
             </div>
           </div>

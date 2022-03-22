@@ -2152,6 +2152,13 @@ export async function getLeftMenuCRM() {
           pro: true,
         },
         {
+          title: 'Quản lý máy lẻ',
+          key: 'management-extensions',
+          url: ['/crm/call-center/quan-ly-may-le', '/crm/call-center/quan-ly-may-le/:id/chi-tiet'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
           title: 'Thống kê',
           key: 'statistical-call',
           url: ['/crm/call-center/thong-ke'],

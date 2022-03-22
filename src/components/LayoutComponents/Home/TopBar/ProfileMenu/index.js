@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'umi';
-import { Menu, Dropdown } from 'antd';
+import { Menu, Dropdown, Modal, Form } from 'antd';
 import PropTypes from 'prop-types';
+import Pane from '@/components/CommonComponent/Pane';
+import Button from '@/components/CommonComponent/Button';
+import FormItem from '@/components/CommonComponent/FormItem';
 import classnames from 'classnames';
 
 import { variables } from '@/utils';
@@ -10,6 +13,15 @@ import styles from './style.module.scss';
 
 @connect(({ user }) => ({ user }))
 class ProfileMenu extends React.Component {
+  formCheck = React.createRef();
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      isModalVisible: false,
+    };
+  }
+
   logout = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -39,13 +51,40 @@ class ProfileMenu extends React.Component {
       type: 'user/SWITCH_BRANCHES',
       payload: {
         branchId: branch?.id,
-        isReload: true
+        isReload: true,
       },
     });
   };
 
+  showModal = () => {
+    this.setState({ isModalVisible: true });
+  };
+
+  handleOk = () => {
+    const { dispatch } = this.props;
+    this.formCheck.current.validateFields().then((values) => {
+      if (values) {
+        dispatch({
+          type: 'user/CHANG_PASSWORK',
+          payload: values,
+        });
+        this.setState({ isModalVisible: false });
+        this.formCheck.current.setFieldsValue(
+         {
+          currentPassword: undefined,
+          newPassword: undefined
+         });
+      }
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({ isModalVisible: false });
+  };
+
   render() {
     const { user } = this.props;
+    const { isModalVisible } = this.state;
     const menu = (
       <Menu selectable={false} className={styles.dropdownUser}>
         <Menu.Item>
@@ -100,6 +139,63 @@ class ProfileMenu extends React.Component {
             Logout
           </span>
         </Menu.Item>
+        <Menu.Item onClick={this.showModal}>
+          <span className="d-flex align-items-center">
+            <i className={`${styles.menuIcon} icon-lock`} />
+            Đổi mật khẩu
+          </span>
+        </Menu.Item>
+        <Modal
+          title="Đổi mật khẩu"
+          centered
+          className={styles['wrapper-modal-check']}
+          visible={isModalVisible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          width={400}
+          footer={[
+            <div key="back" className={styles['wrapper-modal-footer']}>
+              <p
+                key="back"
+                role="presentation"
+                onClick={this.handleCancel}
+                className={styles['button-cancel']}
+              >
+                Hủy
+              </p>
+              <Button htmlType="submit" color="success" type="primary" onClick={this.handleOk}>
+                Lưu
+              </Button>
+            </div>
+          ]}
+        >
+          <div>
+            <Form layout="vertical" ref={this.formCheck}>
+              <Pane className="card">
+                <Pane style={{ padding: 20 }}>
+                  <Pane className="row">
+                    <Pane className="col-lg-12">
+                      <FormItem
+                        name="currentPassword"
+                        label="Mật khẩu hiện tại"
+                        type={variables.INPUT_PASSWORD}
+                        rules={[variables.RULES.EMPTY_INPUT]}
+                      />
+                    </Pane>
+                    <Pane className="col-lg-12">
+                      <FormItem
+                        name="newPassword"
+                        label="Mật khẩu mới"
+                        type={variables.INPUT_PASSWORD}
+                        rules={[variables.RULES.EMPTY_INPUT]}
+                      />
+                    </Pane>
+                  </Pane>
+                </Pane>
+              </Pane>
+            </Form>
+          </div>
+        </Modal>
       </Menu>
     );
     return (

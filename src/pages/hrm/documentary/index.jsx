@@ -28,6 +28,7 @@ function Index() {
 
   const [search, setSearch] = useState({
     typeOfDocument: query?.typeOfDocument,
+    topic: query?.topic,
     key: query?.key,
     startDate:
       query?.startDate || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
@@ -147,6 +148,7 @@ function Index() {
         title: 'Mã ID',
         key: 'STT',
         className: 'min-width-80',
+        width: 80,
         render: (text, record, index) =>
           `CV${Helper.serialOrder(search?.page, index, search?.limit)}`,
       },
@@ -155,18 +157,21 @@ function Index() {
         key: 'date',
         dataIndex: 'creationTime',
         className: 'min-width-150',
+        width: 150,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'BP gởi',
         key: 'sentDivisionId',
         className: 'min-width-120',
+        width: 120,
         render: (record) => <Text size="normal">{get(record, 'sentDivision.name')}</Text>,
       },
       {
         title: 'Người gởi',
         key: 'name',
         className: 'min-width-220',
+        width: 220,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(get(record, 'employeeSender.fileDocument'))}
@@ -179,6 +184,7 @@ function Index() {
         key: 'typeOfDocument',
         dataIndex: 'typeOfDocument',
         className: 'min-width-120',
+        width: 120,
         render: (value) => {
           const result = variables.DOCUMENT_TYPE.find((item) => item.id === value);
           return <Text size="normal">{result?.name}</Text>;
@@ -188,6 +194,7 @@ function Index() {
         title: 'Chủ đề',
         key: 'topic',
         dataIndex: 'topic',
+        width: 150,
         className: 'min-width-150',
         render: (value) => {
           const result = variables.TOPIC_TYPE.find((item) => item.id === value);
@@ -199,6 +206,7 @@ function Index() {
         key: 'title',
         dataIndex: 'title',
         className: 'min-width-150',
+        width: 150,
         render: (value) => <Text size="normal">{value}</Text>,
       },
       {
@@ -249,11 +257,9 @@ function Index() {
             initialValues={{
               ...search,
               typeOfDocument: search.typeOfDocument || null,
-              date: query?.startDate &&
-                query?.endDate && [
-                  moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-                  moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-                ],
+              topic: search.topic || null,
+              date: search.startDate &&
+                search.endDate && [moment(search.startDate), moment(search.endDate)],
             }}
             layout="vertical"
             form={formRef}
@@ -272,6 +278,7 @@ function Index() {
                   name="date"
                   onChange={(event) => onChangeDateRank(event, 'date')}
                   type={variables.RANGE_PICKER}
+                  allowClear={false}
                 />
               </div>
               <div className="col-lg-3">
@@ -279,6 +286,15 @@ function Index() {
                   data={[{ id: null, name: 'Tất cả loại công văn' }, ...variables.DOCUMENT_TYPE]}
                   name="typeOfDocument"
                   onChange={(event) => onChangeSelect(event, 'typeOfDocument')}
+                  type={variables.SELECT}
+                  allowClear={false}
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  data={[{ id: null, name: 'Tất cả chủ đề' }, ...variables.DOCUMENT_TOPIC]}
+                  name="topic"
+                  onChange={(event) => onChangeSelect(event, 'topic')}
                   type={variables.SELECT}
                   allowClear={false}
                 />
@@ -296,7 +312,7 @@ function Index() {
               type: 'table',
             }}
             rowKey={(record) => record.id}
-            scroll={{ x: '100%' }}
+            scroll={{ x: '100%', y: '60vh' }}
           />
         </div>
       </div>

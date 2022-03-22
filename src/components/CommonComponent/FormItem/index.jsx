@@ -49,6 +49,7 @@ const renderChildren = (
   notFoundContent,
   filterOption,
   disabledOptions,
+  showCount,
 ) => ({
   input: (
     <Input
@@ -190,7 +191,7 @@ const renderChildren = (
     <Input.TextArea
       autoSize={{ minRows: 3, maxRows: 5 }}
       placeholder={placeholder || 'Nhập'}
-      showCount
+      showCount={showCount}
     />
   ),
   rangePicker: (
@@ -401,6 +402,7 @@ export default function FormItem({
   notFoundContent,
   filterOption,
   disabledOptions,
+  showCount,
   ...rest
 }) {
   return (
@@ -431,6 +433,7 @@ export default function FormItem({
           notFoundContent,
           filterOption,
           disabledOptions,
+          showCount,
         )[type]
       }
     </Form.Item>
@@ -466,6 +469,7 @@ FormItem.propTypes = {
   notFoundContent: PropTypes.any,
   filterOption: PropTypes.bool,
   disabledOptions: PropTypes.arrayOf(PropTypes.any),
+  showCount: PropTypes.bool,
 };
 
 FormItem.defaultProps = {
@@ -497,6 +501,7 @@ FormItem.defaultProps = {
   notFoundContent: null,
   filterOption: false,
   disabledOptions: [],
+  showCount: true,
 };
 
 FormItem.displayName = 'Form';

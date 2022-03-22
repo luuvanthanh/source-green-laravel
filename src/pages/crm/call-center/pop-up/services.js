@@ -1,0 +1,10 @@
+import request from '@/utils/requestCrm';
+
+export function getToken(params = {}) {
+  return request('/v1/token', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+  });
+}

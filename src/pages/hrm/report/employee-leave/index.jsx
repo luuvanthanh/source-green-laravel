@@ -341,7 +341,7 @@ class Index extends PureComponent {
             children: (
               <div className={stylesModule['table-name']}>
                 {value?.children ?
-                  "" : <>{value?.division}</>
+                  "" : <>{value?.position}</>
                 }
               </div>
             ),
@@ -636,7 +636,7 @@ class Index extends PureComponent {
                   type: 'table',
                 }}
                 rowKey={(record) => record?.name || record?.id}
-                scroll={{ x: '100%' }}
+                scroll={{ x: '100%', y: '60vh' }}
               />
             </div>
           </div>

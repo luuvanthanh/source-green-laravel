@@ -49,3 +49,10 @@ export async function logout() {
     isLogin: true,
   });
 }
+
+export function changePassword(data = {}) {
+  return requestLogin('/api/identity/my-profile/change-password', {
+    method: 'POST',
+    data,
+  });
+}
