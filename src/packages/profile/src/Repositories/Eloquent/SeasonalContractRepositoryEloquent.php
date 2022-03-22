@@ -215,8 +215,8 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
 
         $employee = $labourContract->employee;
         $params = [
-            'typeVn' => 'THỬ VIỆC',
-            'typeEnglish' => 'PROBATIONARY',
+            'typeVn' => 'THỜI VỤ',
+            'typeEnglish' => 'SEASONAL',
             'contractNumber' => $labourContract->ContractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
@@ -277,6 +277,7 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => number_format($labourContract->BasicSalary),
+            'represent_name' => $labourContract->represent ? $labourContract->represent->FullName : '',
         ];
 
         return $this->wordExporterServices->exportWord('authority_contract', $params);

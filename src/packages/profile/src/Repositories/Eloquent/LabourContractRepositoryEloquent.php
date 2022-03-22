@@ -3,8 +3,10 @@
 namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Profile\Presenters\LabourContractPresenter;
@@ -44,12 +46,14 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         WordExporterServices $wordExporterServices,
         PositionLevelRepositoryEloquent $positionLevelRepository,
         ScheduleRepositoryEloquent $scheduleRepositoryEloquent,
-        Application $app
+        Application $app,
+        ExcelExporterServices $excelExporterServices
     ) {
         parent::__construct($app);
         $this->positionLevelRepository = $positionLevelRepository;
         $this->wordExporterServices = $wordExporterServices;
         $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
+        $this->excelExporterServices = $excelExporterServices;
     }
 
     /**
@@ -412,7 +416,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         return $labourContract->delete();
     }
 
-    public function reportWorkingSeniority($attributes)
+    public function reportWorkingSeniority($attributes, $parser = false)
     {
         $result = [];
         if (!empty($attributes['date'])) {
@@ -489,6 +493,10 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             $page = $attributes['page'];
         }
 
+        if ($parser) {
+            return $result;
+        }
+
         $result = $this->paginateCollection($result, $limit, $page);
         return $result;
     }
@@ -502,5 +510,39 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         $result->setPath(request()->url());
 
         return $result;
+    }
+
+    public function exportExcelWorkingSeniority($attributes)
+    {
+        $workingSeniority = $this->reportWorkingSeniority($attributes, true);
+
+        $branch = null;
+        if (!empty($attributes['branchId'])) {
+            $branch = Branch::where('Id', $attributes['branchId'])->first();
+        }
+
+        $employee = null;
+        if (!empty($attributes['employeeId'])) {
+            $employee = User::where('Id', $attributes['employeeId'])->first();
+        }
+
+        $params['{time}'] = Carbon::parse($attributes['date'])->format('d-m-Y');
+        $params['{branch_name}'] = is_null($branch) ? '--Tất cả--' : $branch->Name;
+        $params['{number_year_work_from}'] = isset($attributes['number_year_work_from']) ? $attributes['number_year_work_from'] . ' ' . 'năm' : '';
+        $params['{number_year_work_to}'] = isset($attributes['number_year_work_to']) ? $attributes['number_year_work_to'] . ' ' . 'năm' : '';
+        $params['{employee}'] = is_null($employee) ? '--Tất cả--' : $employee->FullName;
+        $number = 0;
+        foreach ($workingSeniority as $key => $value) {
+            $params['[number]'][] = $number += 1;
+            $params['[code]'][] = $value['employeeCode'];
+            $params['[fullName]'][] = $value['employeeName'];
+            $params['[position]'][] = $value['position'];
+            $params['[branch]'][] = $value['branch'];
+            $params['[contractFrom]'][] = $value['contractFrom'];
+            $params['[numberYearWork]'][] = $value['numberYearWork'];
+            $params['[numberMonthWork]'][] = $value['numberMonthWork'];
+        }
+
+        return $this->excelExporterServices->export('work_seniority', $params);
     }
 }

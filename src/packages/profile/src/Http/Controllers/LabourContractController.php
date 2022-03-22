@@ -149,4 +149,15 @@ class LabourContractController extends Controller
 
         return $this->success(['data' => $labourContract], trans('lang::messages.common.getListSuccess'));
     }
+
+    public function exportExcelWorkingSeniority(Request $request)
+    {
+        $result = $this->labourContractRepository->exportExcelWorkingSeniority($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
 }
