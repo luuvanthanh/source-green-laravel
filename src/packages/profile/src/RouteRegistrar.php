@@ -94,6 +94,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('report-working-seniority', [
                 'uses' => 'LabourContractController@reportWorkingSeniority'
             ]);
+
+            \Route::get('export-excel-working-seniority', [
+                'uses' => 'LabourContractController@exportExcelWorkingSeniority'
+            ]);
         });
     }
 }
