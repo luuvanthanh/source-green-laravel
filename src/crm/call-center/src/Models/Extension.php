@@ -9,7 +9,10 @@ class Extension extends UuidModel
 {
     protected $table = 'extensions';
 
-    protected  $fillable = ['password', 'domain', 'id_cmc', 'phone_id_cmc', 'state', 'user_id_cmc', 'phone_number', 'caller'];
+    protected  $fillable = [
+        'password', 'domain', 'id_cmc', 'phone_id_cmc',
+        'state', 'user_id_cmc', 'phone_number', 'caller', 'host_name', 'port'
+    ];
 
     public function employeeByExtension()
     {
