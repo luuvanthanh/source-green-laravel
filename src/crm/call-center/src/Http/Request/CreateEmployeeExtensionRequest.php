@@ -24,8 +24,8 @@ class CreateEmployeeExtensionRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee_id' => 'required|exists:employees,id',
-            'extension_id' => 'required|exists:extensions,id'
+            'extension_id' => 'required|exists:extensions,id',
+            'employee_id.*' => 'required|exists:employees,id|unique:employee_extension,employee_id|distinct'
         ];
     }
 }
