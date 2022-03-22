@@ -49,11 +49,11 @@ const Index = memo(() => {
   const [clientStatusCall, setClientStatusCall] = useState('');
   const audioRef = useRef(null);
 
-  const [sessionStatus, infoCall, sessionContext] = handlePageLoad();
+  const [serverStatus, infoCall, serverContext] = handlePageLoad();
   const [clientStatus, clientContext] = handleCallClick();
 
   useEffect(() => {
-    sessionContext(
+    serverContext(
       SERVER_INFO.username,
       SERVER_INFO.password,
       SERVER_INFO.hostname,
@@ -73,16 +73,16 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (
-      sessionStatus === STATUS.bye ||
-      sessionStatus === STATUS.cancel ||
-      sessionStatus === STATUS.rejected ||
-      sessionStatus === STATUS.failed
+      serverStatus === STATUS.bye ||
+      serverStatus === STATUS.cancel ||
+      serverStatus === STATUS.rejected ||
+      serverStatus === STATUS.failed
     ) {
       setIsVisible(false);
       setClientNumber('');
       setStatusCall(STATUS.idle);
     }
-  }, [sessionStatus]);
+  }, [serverStatus]);
 
   useEffect(() => {
     if (clientStatus === STATUS.bye) {
