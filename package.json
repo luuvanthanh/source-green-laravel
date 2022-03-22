@@ -103,6 +103,7 @@
     "redux-object": "^1.0.0",
     "rrule": "^2.6.8",
     "sass-loader": "^10.0.5",
+    "sip.js": "0.15.1",
     "slick-carousel": "^1.8.1",
     "store": "^2.0.12",
     "umi": "^3.2.14",

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { Session, UA, C } from 'sip.js';
 
 let config;
 let ua;
@@ -16,7 +17,7 @@ function waitingForApplyingAnswer(response) {
   let clearTimer;
 
   setTimeout(function check() {
-    i++;
+    i += 1;
     clearTimer = setTimeout(check, 10);
     if (session.hasAnswer || i > 14) {
       if (session.hasAnswer) {
@@ -36,12 +37,12 @@ function waitingForApplyingAnswer(response) {
   }, 10);
 }
 
-const handlePageLoad = (username, password, hostname, port, path, playerRef) => {
-  const player = playerRef;
-  const [sessionStatus, setSessionStatus] = useState('');
+const handlePageLoad = () => {
+  const [serverStatus, setServerStatus] = useState('');
   const [infoCall, setInfoCall] = useState({});
 
-  useEffect(() => {
+  const serverContext = useCallback((username, password, hostname, port, path, playerRef) => {
+    const player = playerRef;
     config = {
       displayName: username,
       uri: `sip:${username}@${hostname}`,
@@ -56,7 +57,7 @@ const handlePageLoad = (username, password, hostname, port, path, playerRef) => 
       },
     };
 
-    ua = new SIP.UA(config);
+    ua = new UA(config);
 
     ua.on('connected', () => {
       console.log('%cĐÃ KẾT NỐI (CHƯA ĐĂNG KÝ)', 'color: #2ecc71; font-weight: bold');
@@ -76,23 +77,23 @@ const handlePageLoad = (username, password, hostname, port, path, playerRef) => 
       session.type = 'inbound';
 
       session.on('accepted', () => {
-        setSessionStatus('ACCEPTED');
+        setServerStatus('ACCEPTED');
         console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
       });
       session.on('rejected', () => {
-        setSessionStatus('REJECTED');
+        setServerStatus('REJECTED');
         console.log('%cTỪ CHỐI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('cancel', () => {
-        setSessionStatus('CANCEL');
+        setServerStatus('CANCEL');
         console.log('%cHUỶ (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('failed', () => {
-        setSessionStatus('FAILED');
+        setServerStatus('FAILED');
         console.log('%cTHẤT BẠI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('bye', () => {
-        setSessionStatus('BYE');
+        setServerStatus('BYE');
         console.log('%cKẾT THÚC (GỌI ĐẾN)', 'color: red; font-weight: bold');
       });
 
@@ -105,34 +106,33 @@ const handlePageLoad = (username, password, hostname, port, path, playerRef) => 
           remoteStream.addTrack(receiver.track);
         });
 
-        if (typeof player?.srcObject !== 'undefined') {
+        if (typeof player.srcObject !== 'undefined') {
           player.srcObject = remoteStream;
-        } else if (typeof player?.mozSrcObject !== 'undefined') {
+        } else if (typeof player.mozSrcObject !== 'undefined') {
           player.mozSrcObject = remoteStream;
-        } else if (typeof player?.src !== 'undefined') {
+        } else if (typeof player.src !== 'undefined') {
           player.src = URL.createObjectURL(remoteStream);
         }
-        player?.play();
+        player.play();
       });
 
       setInfoCall(session);
     });
   }, []);
 
-  return { sessionStatus, infoCall };
+  return [serverStatus, infoCall, serverContext];
 };
 
 const handleCallClick = () => {
   const [clientStatus, setClientStatus] = useState('');
 
-  const performCall = useCallback((phoneNumber, playerRef) => {
+  const clientContext = useCallback((phoneNumber, playerRef) => {
     const player = playerRef;
     let status = SESSION_STATUS.IDLE;
     if (session) {
       status = session.status;
     }
     if (status === SESSION_STATUS.IDLE) {
-      console.log(session);
       session = ua.invite(phoneNumber, {
         media: {
           constraints: {
@@ -157,7 +157,7 @@ const handleCallClick = () => {
             if (
               session.sessionDescriptionHandler.hasDescription(response.getHeader('Content-Type'))
             ) {
-              session.status = SIP.Session.C.STATUS_EARLY_MEDIA;
+              session.status = Session.C.STATUS_EARLY_MEDIA;
               waitingForApplyingAnswer(response);
             }
           }
@@ -199,19 +199,19 @@ const handleCallClick = () => {
           remoteStream.addTrack(receiver.track);
         });
 
-        if (typeof player?.srcObject !== 'undefined') {
+        if (typeof player.srcObject !== 'undefined') {
           player.srcObject = remoteStream;
-        } else if (typeof player?.mozSrcObject !== 'undefined') {
+        } else if (typeof player.mozSrcObject !== 'undefined') {
           player.mozSrcObject = remoteStream;
-        } else if (typeof player?.src !== 'undefined') {
+        } else if (typeof player.src !== 'undefined') {
           player.src = URL.createObjectURL(remoteStream);
         }
-        player?.play();
+        player.play();
       });
     }
   }, []);
 
-  return [clientStatus, performCall];
+  return [clientStatus, clientContext];
 };
 
 const handleHangup = () => {
@@ -222,6 +222,12 @@ const handleAnswer = () => {
   session.accept({
     statusCode: 202,
     reasonPhrase: 'Accepted',
+    sessionDescriptionHandlerOptions: {
+      constraints: {
+        audio: true,
+        video: false,
+      },
+    },
   });
 };
 

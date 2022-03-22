@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Modal, Button } from 'antd';
 // import ButtonCus from '@/components/CommonComponent/Button';
 // import FormItem from '@/components/CommonComponent/FormItem';
@@ -31,36 +31,37 @@ const STATUS = {
   not_found: 'NOTFOUND',
 };
 
-function Index() {
+const SERVER_INFO = {
+  username: '23328',
+  password: 'crm@cmc2018',
+  hostname: 'kam-01.api-connect.io',
+  port: '7443',
+  path: '',
+};
+
+const Index = memo(() => {
   const [inputNumber, setInputNumber] = useState('');
   const [isVisible, setIsVisible] = useState(false);
-  const [isVisibleAddLead, setVisibleAddLead] = useState(false);
+  // const [isVisibleAddLead, setVisibleAddLead] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [statusCall, setStatusCall] = useState(STATUS.idle);
   const [clientNumber, setClientNumber] = useState('');
-  const [bounds, setBounds] = useState({ left: 0, top: 0, bottom: 0, right: 0 });
-  const draggleRef = useRef();
-  const audioRef = useRef();
-
-  const SERVER_INFO = {
-    username: '23328',
-    // username: '23359',
-    password: 'crm@cmc2018',
-    hostname: 'kam-01.api-connect.io',
-    port: '7443',
-    path: '',
-  };
-
-  const { sessionStatus, infoCall } = handlePageLoad(
-    SERVER_INFO.username,
-    SERVER_INFO.password,
-    SERVER_INFO.hostname,
-    SERVER_INFO.port,
-    SERVER_INFO.path,
-    audioRef.current,
-  );
-  const [clientStatus, performCall] = handleCallClick();
   const [clientStatusCall, setClientStatusCall] = useState('');
+  const audioRef = useRef(null);
+
+  const [sessionStatus, infoCall, sessionContext] = handlePageLoad();
+  const [clientStatus, clientContext] = handleCallClick();
+
+  useEffect(() => {
+    sessionContext(
+      SERVER_INFO.username,
+      SERVER_INFO.password,
+      SERVER_INFO.hostname,
+      SERVER_INFO.port,
+      SERVER_INFO.path,
+      audioRef.current,
+    );
+  }, []);
 
   useEffect(() => {
     if (!isEmpty(infoCall)) {
@@ -94,6 +95,8 @@ function Index() {
     }
   }, [clientStatus]);
 
+  const [bounds, setBounds] = useState({ left: 0, top: 0, bottom: 0, right: 0 });
+  const draggleRef = useRef();
   const onStart = (event, uiData) => {
     const { clientWidth, clientHeight } = window.document.documentElement;
     const targetRect = draggleRef.current?.getBoundingClientRect();
@@ -132,7 +135,7 @@ function Index() {
 
   const handleCancel = () => {
     setIsVisible(false);
-    setVisibleAddLead(false);
+    // setVisibleAddLead(false);
     setStatusCall(STATUS.idle);
     setClientStatusCall('');
     setInputNumber('');
@@ -140,7 +143,7 @@ function Index() {
 
   const callNumber = () => {
     setStatusCall(STATUS.outbound);
-    performCall(inputNumber, audioRef.current);
+    clientContext(inputNumber, audioRef.current);
   };
 
   const handleHangupClick = () => {
@@ -167,6 +170,9 @@ function Index() {
   return (
     <>
       <audio ref={audioRef} autoPlay>
+        <track kind="captions" />
+      </audio>
+      <audio src="/resources/iphone-ringtone.mp3" loop>
         <track kind="captions" />
       </audio>
       <div className={styles['logo-call']} role="presentation" onClick={showModal}>
@@ -359,13 +365,13 @@ function Index() {
         </div>
       </Modal>
 
-      {isVisibleAddLead && (
+      {/* {isVisibleAddLead && (
         <div className={styles['main-form-add-lead']}>
           <p>FORM THÊM LEAD</p>
         </div>
-      )}
+      )} */}
     </>
   );
-}
+});
 
 export default Index;
