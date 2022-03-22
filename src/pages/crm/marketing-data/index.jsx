@@ -450,7 +450,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

@@ -51,6 +51,7 @@ const Index = memo(() => {
     {
       title: 'STT',
       key: 'index',
+      width: 70,
       className: 'min-width-70',
       align: 'center',
       render: (text, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
@@ -69,6 +70,7 @@ const Index = memo(() => {
     {
       title: 'Cơ sở',
       key: 'branch',
+      width: 120,
       className: 'min-width-120',
       render: (record) => (
         <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
@@ -77,18 +79,21 @@ const Index = memo(() => {
     {
       title: 'Lớp',
       key: 'class',
+      width: 120,
       className: 'min-width-120',
       render: (record) => <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>,
     },
     {
       title: 'Mô tả',
       key: 'description',
+      width: 150,
       className: 'min-width-150',
       render: (record) => <Text size="normal">{record?.description}</Text>,
     },
     {
       title: 'Phụ huynh',
       key: 'parent',
+      width: 120,
       className: 'min-width-120',
       render: (record) => (
         <Text size="normal">
@@ -99,13 +104,14 @@ const Index = memo(() => {
     {
       title: 'Học sinh',
       key: 'student',
+      width: 120,
       className: 'min-width-120',
       render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
     },
     {
       key: 'action',
-      className: 'min-width-80',
-      width: 80,
+      className: 'min-width-100',
+      width: 100,
       fixed: 'right',
       render: (record) => (
         <div className={styles['list-button']}>
@@ -303,7 +309,7 @@ const Index = memo(() => {
               isError={error.isError}
               pagination={paginationTable(pagination)}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </Pane>
         </Pane>

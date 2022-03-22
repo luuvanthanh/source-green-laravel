@@ -46,7 +46,6 @@ class Application extends PureComponent {
   render() {
     const { data } = this.state;
     const settings = {
-      arrows: false,
       dots: true,
       slidesPerRow: 7,
       rows: 3,

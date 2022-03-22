@@ -148,6 +148,7 @@ function Index() {
         title: 'Mã ID',
         key: 'STT',
         className: 'min-width-80',
+        width: 80,
         render: (text, record, index) =>
           `CV${Helper.serialOrder(search?.page, index, search?.limit)}`,
       },
@@ -156,18 +157,21 @@ function Index() {
         key: 'date',
         dataIndex: 'creationTime',
         className: 'min-width-150',
+        width: 150,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'BP gởi',
         key: 'sentDivisionId',
         className: 'min-width-120',
+        width: 120,
         render: (record) => <Text size="normal">{get(record, 'sentDivision.name')}</Text>,
       },
       {
         title: 'Người gởi',
         key: 'name',
         className: 'min-width-220',
+        width: 220,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(get(record, 'employeeSender.fileDocument'))}
@@ -180,6 +184,7 @@ function Index() {
         key: 'typeOfDocument',
         dataIndex: 'typeOfDocument',
         className: 'min-width-120',
+        width: 120,
         render: (value) => {
           const result = variables.DOCUMENT_TYPE.find((item) => item.id === value);
           return <Text size="normal">{result?.name}</Text>;
@@ -189,6 +194,7 @@ function Index() {
         title: 'Chủ đề',
         key: 'topic',
         dataIndex: 'topic',
+        width: 150,
         className: 'min-width-150',
         render: (value) => {
           const result = variables.TOPIC_TYPE.find((item) => item.id === value);
@@ -200,6 +206,7 @@ function Index() {
         key: 'title',
         dataIndex: 'title',
         className: 'min-width-150',
+        width: 150,
         render: (value) => <Text size="normal">{value}</Text>,
       },
       {
@@ -305,7 +312,7 @@ function Index() {
               type: 'table',
             }}
             rowKey={(record) => record.id}
-            scroll={{ x: '100%' }}
+            scroll={{ x: '100%', y: '60vh' }}
           />
         </div>
       </div>

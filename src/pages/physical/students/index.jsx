@@ -66,6 +66,7 @@ const Index = memo(() => {
       title: 'Tuổi (tháng)',
       key: 'age',
       className: 'min-width-120',
+      width: 120,
       align: 'center',
       render: (record) => <Text size="normal">{record?.student?.age || 0} tháng</Text>,
     },
@@ -73,6 +74,7 @@ const Index = memo(() => {
       title: 'Giới tính',
       key: 'gender',
       className: 'min-width-120',
+      width: 120,
       align: 'center',
       render: (record) => variables.GENDERS[record?.student?.sex] || '',
     },
@@ -87,12 +89,14 @@ const Index = memo(() => {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-200',
+      width: 200,
       render: (record) => record?.student?.class?.name || '',
     },
     {
       title: 'Chiều cao (cm)',
       key: 'height',
-      className: 'min-width-120',
+      className: 'min-width-150',
+      width: 150,
       align: 'center',
       render: (record) =>
         record?.height?.value ? (
@@ -110,6 +114,7 @@ const Index = memo(() => {
       title: 'Cân nặng (kg)',
       key: 'wight',
       className: 'min-width-120',
+      width: 120,
       align: 'center',
       render: (record) =>
         record?.weight?.value ? (
@@ -125,8 +130,8 @@ const Index = memo(() => {
     },
     {
       key: 'action',
-      className: 'min-width-80',
-      width: 80,
+      className: 'min-width-100',
+      width: 100,
       fixed: 'right',
       render: (record) => (
         <div className={styles['list-button']}>
@@ -328,7 +333,7 @@ const Index = memo(() => {
               isError={error.isError}
               pagination={paginationTable(pagination)}
               rowKey={(record) => record?.student?.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </Pane>
         </Pane>
