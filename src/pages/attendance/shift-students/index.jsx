@@ -295,6 +295,7 @@ class Index extends PureComponent {
         title: 'Thời gian',
         key: 'time',
         className: classnames('min-width-120', 'max-width-200'),
+        width: 120,
         render: (record) =>
           record.shiftDetail.map((item) => {
             const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL);
@@ -317,6 +318,7 @@ class Index extends PureComponent {
         title: 'Mô tả',
         key: 'description',
         className: 'min-width-200',
+        width: 200,
         render: (record) => record.description,
       },
       {
@@ -336,8 +338,9 @@ class Index extends PureComponent {
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-100',
+        width: 100,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
@@ -403,7 +406,7 @@ class Index extends PureComponent {
               }}
               bordered={false}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

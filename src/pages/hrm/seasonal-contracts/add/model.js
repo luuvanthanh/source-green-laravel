@@ -16,6 +16,7 @@ export default {
       paramaterValues: [],
     },
     contractTypes: [],
+    Staff: [],
     details: {},
     error: {
       isError: false,
@@ -55,6 +56,10 @@ export default {
     SET_TYPE_CONTRACTS: (state, { payload }) => ({
       ...state,
       contractTypes: payload.parsePayload,
+    }),
+    SET_STAFF: (state, { payload }) => ({
+      ...state,
+      Staff:  payload?.filter(i => i?.positionLevelNow?.division?.code === 'CEO' || i?.positionLevelNow?.division?.code === 'HC'),
     }),
   },
   effects: {
@@ -122,6 +127,22 @@ export default {
         if (response) {
           yield saga.put({
             type: 'SET_DETAILS',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STAFF({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getStaff, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_STAFF',
             payload: response.parsePayload,
           });
         }

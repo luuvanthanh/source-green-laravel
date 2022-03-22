@@ -24,7 +24,7 @@ function Index() {
   const history = useHistory();
 
   const [
-    { error, contractTypes, details, categories },
+    { error, contractTypes, details, categories, Staff },
     loading,
     { menuLeftHRM },
   ] = useSelector(({ loading: { effects }, seasonalContractsAdd, menu }) => [
@@ -47,6 +47,10 @@ function Index() {
       payload: {
         type: 'THOI_VU',
       },
+    });
+    dispatch({
+      type: 'seasonalContractsAdd/GET_STAFF',
+      payload: {},
     });
   };
 
@@ -510,6 +514,15 @@ function Index() {
                     />
                   </div>
                 )}
+                 <div className="col-lg-8">
+                 <FormItem
+                      data={Staff}
+                      options={['id', 'fullName']}
+                      label="Đại diện ký hợp đồng bên Clover"
+                      name="representId"
+                      type={variables.SELECT}
+                    />
+                </div>
               </div>
               {!isEmpty(parameterValues) && (
                 <>

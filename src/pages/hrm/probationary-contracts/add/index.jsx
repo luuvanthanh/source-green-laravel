@@ -35,6 +35,7 @@ const mapStateToProps = ({ menu, probationaryContractsAdd, loading }) => ({
   loading,
   categories: probationaryContractsAdd.categories,
   contractTypes: probationaryContractsAdd.contractTypes,
+  Staff: probationaryContractsAdd.Staff,
   details: probationaryContractsAdd.details,
   error: probationaryContractsAdd.error,
   menuData: menu.menuLeftHRM,
@@ -125,6 +126,10 @@ class Index extends PureComponent {
       payload: {
         type: 'THU_VIEC',
       },
+    });
+    dispatch({
+      type: 'probationaryContractsAdd/GET_STAFF',
+      payload: {},
     });
   };
 
@@ -329,6 +334,7 @@ class Index extends PureComponent {
       menuData,
       categories,
       contractTypes,
+      Staff,
       loading: { effects },
       match: { params },
     } = this.props;
@@ -476,12 +482,21 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>
-                  <div className="col-lg-12">
+                  <div className="col-lg-2">
                     <FormItem
                       label="Không tham gia BHXH"
                       name="isSocialInsurance"
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"
+                    />
+                  </div>
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={Staff}
+                      options={['id', 'fullName']}
+                      label="Đại diện ký hợp đồng bên Clover"
+                      name="representId"
+                      type={variables.SELECT}
                     />
                   </div>
                 </div>
@@ -554,6 +569,7 @@ Index.propTypes = {
   details: PropTypes.objectOf(PropTypes.any),
   categories: PropTypes.objectOf(PropTypes.any),
   contractTypes: PropTypes.arrayOf(PropTypes.any),
+  Staff: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -565,6 +581,7 @@ Index.defaultProps = {
   details: {},
   categories: {},
   contractTypes: [],
+  Staff: [],
 };
 
 export default Index;
