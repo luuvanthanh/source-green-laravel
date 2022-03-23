@@ -31,6 +31,9 @@ class ExcelExporterServices
         'resignation_decision' => [
             'template' => 'resignation_decision.xlsx',
         ],
+        'absent' => [
+            'template' => 'absent.xlsx',
+        ],
     ];
 
     protected $disk;
