@@ -294,6 +294,16 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         $dataMarketing = DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->orderBy('created_at', 'DESC')->first();
         $dataMarketing->update($attributes);
 
+        if (!empty($attributes['studen_info'])) {
+            if (!empty($dataMarketing->studentInfo)) {
+                $dataMarketing->studentInfo()->forceDelete();
+            }
+            foreach ($attributes['studen_info'] as $value) {
+                $value['data_marketing_id'] = $dataMarketing->id;
+                DataMarketingStudentInfo::create($value);
+            }
+        }
+
         DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->where('id', '!=', $dataMarketing->id)->forceDelete();
 
         return parent::parserResult($dataMarketing);
