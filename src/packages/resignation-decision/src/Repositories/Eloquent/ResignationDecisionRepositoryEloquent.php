@@ -377,6 +377,10 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
                     $merge = $cell_coordinate . ':' . 'M' . $currentRow;
                     $listMerge[] = $merge;
                 }
+
+                if ($value[count($value) - 1] != 'division' && $value[count($value) - 1] != 'branch') {
+                    $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                }
             }
         ];
 
