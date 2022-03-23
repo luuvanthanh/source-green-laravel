@@ -1,4 +1,5 @@
 import request from '@/utils/requestLavarel';
+import { Helper } from '@/utils';
 
 export function add(data = {}) {
   return request('/v1/probationary-contracts', {
@@ -17,5 +18,16 @@ export function update(data = {}) {
 export function details(data) {
   return request(`/v1/probationary-contracts/${data.id}`, {
     method: 'GET',
+  });
+}
+
+export function getStaff() {
+  return request(`/v1/employees`, {
+    method: 'GET',
+    params: {
+      include: Helper.convertIncludes([
+        'positionLevel,positionLevelNow',
+      ]),
+    },
   });
 }

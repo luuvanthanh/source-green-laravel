@@ -129,7 +129,7 @@ const UserModel = {
         });
       }
     },
-    *CHANG_PASSWORK({ payload }, saga) {
+    *CHANGE_PASSWORD({ payload }, saga) {
       try {
         yield saga.call(services.changePassword, payload);
         if(payload) {

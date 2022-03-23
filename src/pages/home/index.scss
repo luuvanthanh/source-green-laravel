@@ -20,6 +20,14 @@
 }
 
 .items-container {
+  :global(.slick-next:before) {
+    font-size: 45px !important;
+  }
+  :global(.slick-prev:before) {
+    font-size: 45px !important;
+    position: absolute;
+    left: -25px;
+  }
   :global(.slick-list) {
     padding: 50px 0;
   }

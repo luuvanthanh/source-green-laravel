@@ -20,7 +20,7 @@ const genders = [
   { id: 'FEMALE', name: 'Nữ' },
   // { id: 'OTHER', name: 'Khác' },
 ];
-const mapStateToProps = ({ loading, crmMarketingDataAdd }) => ({
+const mapStateToProps = ({ loading, crmMarketingDataAdd, user }) => ({
   loading,
   details: crmMarketingDataAdd.details,
   error: crmMarketingDataAdd.error,
@@ -29,9 +29,10 @@ const mapStateToProps = ({ loading, crmMarketingDataAdd }) => ({
   city: crmMarketingDataAdd.city,
   district: crmMarketingDataAdd.district,
   search: crmMarketingDataAdd.search,
+  user : user.user,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district,search }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district,search , user}) => {
     const formRef = useRef();
     const [files, setFiles] = useState([]);
     const mounted = useRef(false);
@@ -52,6 +53,9 @@ const General = memo(
         type: 'crmMarketingDataAdd/GET_SEARCH',
         payload: {},
       });
+    }, []);
+
+    useEffect(() => {
       if(params.id){
         dispatch({
           type: 'crmMarketingDataAdd/GET_DISTRICTS',
@@ -79,7 +83,7 @@ const General = memo(
         type: params.id ? 'crmMarketingDataAdd/UPDATE' : 'crmMarketingDataAdd/ADD',
         payload: params.id
           ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files),user_create_id:null,user_create_info:null }
-          : { ...values, file_image: JSON.stringify(files), status: 'NOT_MOVE' },
+          : { ...values, file_image: JSON.stringify(files), status: 'NOT_MOVE', user_create_id: user?.id, user_create_info : user },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -304,6 +308,7 @@ General.propTypes = {
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
   search: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -317,6 +322,7 @@ General.defaultProps = {
   city: [],
   district: [],
   search: [],
+  user: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

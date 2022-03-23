@@ -65,7 +65,7 @@ class ProfileMenu extends React.Component {
     this.formCheck.current.validateFields().then((values) => {
       if (values) {
         dispatch({
-          type: 'user/CHANG_PASSWORK',
+          type: 'user/CHANGE_PASSWORD',
           payload: values,
         });
         this.setState({ isModalVisible: false });
@@ -178,8 +178,7 @@ class ProfileMenu extends React.Component {
         >
           <div>
             <Form layout="vertical" ref={this.formCheck}>
-              <Pane className="card">
-                <Pane style={{ padding: 20 }}>
+                <Pane >
                   <Pane className="row">
                     <Pane className="col-lg-12">
                       <FormItem
@@ -198,7 +197,6 @@ class ProfileMenu extends React.Component {
                       />
                     </Pane>
                   </Pane>
-                </Pane>
               </Pane>
             </Form>
           </div>

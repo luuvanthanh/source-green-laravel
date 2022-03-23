@@ -36,6 +36,7 @@ const mapStateToProps = ({ menu, laboursContractsAdd, loading, user }) => ({
   categories: laboursContractsAdd.categories,
   contractTypes: laboursContractsAdd.contractTypes,
   details: laboursContractsAdd.details,
+  Staff: laboursContractsAdd.Staff,
   error: laboursContractsAdd.error,
   menuData: menu.menuLeftHRM,
   user: user.user,
@@ -130,6 +131,10 @@ class Index extends PureComponent {
       payload: {
         type: 'HOP_DONG',
       },
+    });
+    dispatch({
+      type: 'laboursContractsAdd/GET_STAFF',
+      payload: {},
     });
   };
 
@@ -327,6 +332,7 @@ class Index extends PureComponent {
       error,
       menuData,
       categories,
+      Staff,
       contractTypes,
       loading: { effects },
       match: { params },
@@ -482,12 +488,21 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>
-                  <div className="col-lg-12">
+                  <div className="col-lg-2">
                     <FormItem
                       label="Không tham gia BHXH"
                       name="isSocialInsurance"
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"
+                    />
+                  </div>
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={Staff}
+                      options={['id', 'fullName']}
+                      label="Đại diện ký hợp đồng bên Clover"
+                      name="representId"
+                      type={variables.SELECT}
                     />
                   </div>
                 </div>
@@ -560,6 +575,7 @@ Index.propTypes = {
   categories: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   menuData: PropTypes.arrayOf(PropTypes.any),
+  Staff: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -571,6 +587,7 @@ Index.defaultProps = {
   categories: {},
   error: {},
   menuData: [],
+  Staff: [],
 };
 
 export default Index;

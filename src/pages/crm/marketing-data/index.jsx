@@ -287,7 +287,7 @@ class Index extends PureComponent {
         key: 'basis',
         width: 200,
         render: (record) => (
-          <text size="normal">{record?.marketingProgram?.map((item) => item.name).join(', ')}</text>
+          <Text size="normal">{record?.marketingProgram?.map((item) => item.name).join(', ')}</Text>
         ),
       },
       {
@@ -418,7 +418,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả Chương trình' }, ...program,]}
+                    data={[{ name: 'Chọn tất cả Chương trình' ,id : null}, ...program,]}
                     name="name"
                     onChange={(event) => this.onChangeSelect(event, 'marketing_program_id')}
                     type={variables.SELECT}
@@ -428,7 +428,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả Nguồn' }, ...searchs,]}
+                    data={[{ name: 'Chọn tất cả Nguồn', id : null }, ...searchs,]}
                     name="source"
                     onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
                     type={variables.SELECT}

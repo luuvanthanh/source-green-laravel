@@ -199,6 +199,7 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
+        width: 200,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
@@ -210,30 +211,34 @@ class Index extends PureComponent {
         title: 'Số điện thoại',
         key: 'phone',
         className: 'min-width-150',
+        width: 150,
         render: (record) => <Text size="normal">{record.phone}</Text>,
       },
       {
         title: 'Email',
         key: 'email',
         className: 'min-width-150',
+        width: 150,
         render: (record) => <Text size="normal">{record.email}</Text>,
       },
       {
         title: 'Địa chỉ',
         key: 'address',
         className: 'min-width-150',
+        width: 150,
         render: (record) => <Text size="normal">{record.address}</Text>,
       },
       {
         title: 'Trạng thái',
         key: 'status',
         className: 'min-width-150',
+        width: 150,
         render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         key: 'actions',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-100',
+        width: 100,
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
@@ -316,7 +321,7 @@ class Index extends PureComponent {
               })}
               bordered={false}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>
