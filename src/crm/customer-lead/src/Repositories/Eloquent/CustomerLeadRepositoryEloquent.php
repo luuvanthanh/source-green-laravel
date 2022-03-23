@@ -3,6 +3,8 @@
 namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Crm\CallCenter\Models\ManagerCall;
+use GGPHP\Crm\CallCenter\Repositories\Contracts\ManagerCallRepository;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\CustomerTag;
@@ -159,13 +161,25 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (isset($attributes['status_lead'])) {
             $this->model = $this->model->whereHas('statusLead', function ($query) use ($attributes) {
-                $query->where('status', $attributes['status_lead']);
+                $query->where(function ($query1) {
+                    $query1->select('status');
+                    $query1->from('status_lead');
+                    $query1->whereColumn('customer_lead_id', 'customer_leads.id');
+                    $query1->orderBy('created_at', 'desc');
+                    $query1->limit(1);
+                }, $attributes['status_lead']);
             });
         }
 
         if (!empty($attributes['status_type_lead'])) {
             $this->model = $this->model->whereHas('statusCare', function ($query) use ($attributes) {
-                $query->where('status_parent_lead_id', $attributes['status_type_lead']);
+                $query->where(function ($query1) {
+                    $query1->select('status_parent_lead_id');
+                    $query1->from('status_cares');
+                    $query1->whereColumn('customer_lead_id', 'customer_leads.id');
+                    $query1->orderBy('created_at', 'desc');
+                    $query1->limit(1);
+                }, $attributes['status_type_lead']);
             });
         }
 
@@ -185,6 +199,14 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $customerLead->update(['employee_id' => $value['employee_id']]);
             $employeeInfo = json_encode($value['employee_info']);
             $customerLead->update(['employee_info' => $employeeInfo]);
+
+            resolve(ManagerCallRepository::class)->updateOrCreate(
+                ['customer_lead_id' => $value['customer_lead_id']],
+                [
+                    'customer_lead_id' => $value['customer_lead_id'],
+                    'receive_date' => $customerLead->updated_at->toDateString()
+                ]
+            );
         }
 
         return parent::parserResult($customerLead);
@@ -226,7 +248,6 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
                 $attributes['code'] = CustomerLead::CODE . $stt;
             }
         }
-        
         $attributes['manual_create'] = true;
         $customerLead = CustomerLead::create($attributes);
         $customerLead->statusLead()->create(['status' => StatusLead::STATUS_LEAD['LEAD_NEW']]);
@@ -384,5 +405,18 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         $customerLead = CustomerLead::where('id', $ssoAccount->model_id)->first();
 
         return $this->parserResult($customerLead);
+    }
+
+    public function customerByPhone($phone)
+    {
+        $customer = $this->model->where(function ($query) use ($phone) {
+            $query->where('phone', $phone)->orWhere('other_phone', $phone);
+        })->first();
+
+        if (!is_null($customer)) {
+            return $this->parserResult($customer);
+        }
+
+        return [];
     }
 }

@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Marketing\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
+use GGPHP\Crm\Category\Transformers\TagTransformer;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
 use GGPHP\Crm\Province\Transformers\CityTransformer;
 use GGPHP\Crm\Province\Transformers\DistrictTransformer;
@@ -33,7 +34,7 @@ class DataMarketingTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource', 'marketingProgram', 'studentInfo'];
+    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource', 'marketingProgram', 'studentInfo', 'tag'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -106,5 +107,10 @@ class DataMarketingTransformer extends BaseTransformer
     public function includeStudentInfo(DataMarketing $dataMarketing)
     {
         return $this->collection($dataMarketing->studentInfo, new DataMarketingStudentInfoTransformer, 'StudentInfo');
+    }
+
+    public function includeTag(DataMarketing $dataMarketing)
+    {
+        return $this->collection($dataMarketing->tag, new TagTransformer, 'Tag');
     }
 }

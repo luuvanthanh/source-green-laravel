@@ -51,6 +51,8 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::post('customer-lead-accounts', 'CustomerLeadController@customerLeadAccount');
             \Route::resource('status-lead', 'StatusLeadController');
+
+            \Route::get('customer-by-phone/{phone}', 'CustomerLeadController@customerByPhone');
         });
     }
 

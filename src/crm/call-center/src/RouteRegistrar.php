@@ -27,7 +27,7 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             Route::post('/call', 'VoiceController@initiateCall')->name('initiate_call');
 
-            Route::post(
+            Route::get(
                 '/token',
                 ['uses' => 'TokenController@newToken', 'as' => 'new-token']
             );
@@ -41,15 +41,33 @@ class RouteRegistrar extends CoreRegistrar
                 ['uses' => 'CallController@newCall', 'as' => 'new-call']
             );
 
-            Route::get('/token', 'VoiceController@generateToken');
+            Route::post('/event/callback', 'HistoryCallController@callback');
+            Route::post('/answer-call', 'CallController@answerCall');
+            Route::post('/end-call', 'CallController@endCall');
+            Route::post('/incurred-call', 'CallController@incurredCall');
+
             Route::post('/incoming/voice/call', 'VoiceController@incomingVoiceCalls');
             Route::view('/dashboard2', 'dashboard');
 
             Route::post('/call-fail', 'CallController@callFail')->name('call-fail');
-            Route::post('/busy', 'CallController@busy')->name('busy');
+            Route::post('/status', 'CallController@status')->name('status');
             Route::post('/recording', 'VoiceController@recording');
 
-            Route::resource('call-centers', 'CallCenterController')->only('index', 'destroy');
+            Route::resource('history-calls', 'HistoryCallController')->only('index', 'destroy');
+
+            Route::post('forward', 'CallController@forward');
+
+            Route::post('update-end-call', 'HistoryCallController@updateEndCall');
+
+            Route::resource('manager-calls', 'ManagerCallController');
+
+            Route::post('call-out-going', 'CallController@callOutGoing');
+
+            Route::resource('extensions', 'ExtensionController');
+
+            Route::get('count-call', 'ManagerCallController@countCall');
+
+            Route::post('employee-extension', 'ExtensionController@employeeExtension');
         });
     }
 }

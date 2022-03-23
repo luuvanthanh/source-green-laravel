@@ -2,25 +2,25 @@
 
 namespace GGPHP\Crm\CallCenter\Presenters;
 
-use GGPHP\Crm\CallCenter\Transformers\CallCenterTransformer;
+use GGPHP\Crm\CallCenter\Transformers\ExtensionTranformer;
 use Prettus\Repository\Presenter\FractalPresenter;
 
 /**
- * Class CallCenterPresenter.
+ * Class ExtensionPresenter.
  *
  * @package namespace App\Presenters;
  */
-class CallCenterPresenter extends FractalPresenter
+class ExtensionPresenter extends FractalPresenter
 {
     /**
      * @var string
      */
-    public $resourceKeyItem = 'CallCenter';
+    public $resourceKeyItem = 'Extension';
 
     /**
      * @var string
      */
-    public $resourceKeyCollection = 'CallCenter';
+    public $resourceKeyCollection = 'Extension';
     /**
      * Transformer
      *
@@ -28,6 +28,6 @@ class CallCenterPresenter extends FractalPresenter
      */
     public function getTransformer()
     {
-        return new CallCenterTransformer();
+        return new ExtensionTranformer();
     }
 }

@@ -4,6 +4,9 @@ namespace GGPHP\Crm\Employee\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\AdmissionRegister\Models\TestInput;
+use GGPHP\Crm\CallCenter\Models\EmployeeExtension;
+use GGPHP\Crm\CallCenter\Models\Extension;
+use GGPHP\Crm\CallCenter\Models\ManagerCall;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -31,5 +34,20 @@ class Employee extends UuidModel
     public function testInput()
     {
         return $this->hasMany(TestInput::class, 'employee_id');
+    }
+
+    public function extension()
+    {
+        return $this->belongsToMany(Extension::class, EmployeeExtension::class);
+    }
+
+    public function branch()
+    {
+        return $this->hasMany(EmployeeExtension::class);
+    }
+
+    public function managerCall()
+    {
+        return $this->hasMany(ManagerCall::class);
     }
 }

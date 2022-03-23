@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Marketing\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\Category\Models\SearchSource;
+use GGPHP\Crm\Category\Models\Tag;
 use GGPHP\Crm\Province\Models\City;
 use GGPHP\Crm\Province\Models\District;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -57,5 +58,10 @@ class DataMarketing extends UuidModel
     public function studentInfo()
     {
         return $this->hasMany(DataMarketingStudentInfo::class);
+    }
+
+    public function tag()
+    {
+        return $this->belongsToMany(Tag::class, 'data_merketing_tags', 'data_marketing_id', 'tag_id');
     }
 }

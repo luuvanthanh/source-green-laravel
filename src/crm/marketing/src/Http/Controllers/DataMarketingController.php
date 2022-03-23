@@ -142,4 +142,31 @@ class DataMarketingController extends Controller
 
         return $this->success([], trans('lang::messages.common.movedSuccess'));
     }
+
+    public function createTag(Request $request)
+    {
+        $dataMarketing = $this->dataMarketingRepository->createTag($request->all());
+
+        return $this->success($dataMarketing, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
+
+    public function mergeDataMarketing(Request $request)
+    {
+        $attributes = $request->all();
+
+        if (isset($attributes['user_create_info'])) {
+            $attributes['user_create_info'] = json_encode($attributes['user_create_info']);
+        }
+
+        if (!empty($attributes['sex'])) {
+            $attributes['sex'] = DataMarketing::SEX[$attributes['sex']];
+        }
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = DataMarketing::STATUS[$attributes['status']];
+        }
+        $mergeDataMarketing = $this->dataMarketingRepository->mergeDataMarketing($attributes);
+
+        return $this->success($mergeDataMarketing, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
 }

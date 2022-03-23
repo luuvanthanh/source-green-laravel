@@ -3,6 +3,10 @@
 namespace GGPHP\Crm\Employee\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\CallCenter\Transformers\ExtensionTranformer;
+use GGPHP\Crm\CallCenter\Transformers\ManagerCallTransformer;
+use GGPHP\Crm\CallCenter\Transformers\SaleTransformer;
+use GGPHP\Crm\Employee\Models\Employee;
 
 /**
  * Class CityTransformer.
@@ -28,7 +32,7 @@ class EmployeeTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['managerCall', 'extension'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -41,5 +45,15 @@ class EmployeeTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [];
+    }
+
+    public function includeManagerCall(Employee $employee)
+    {
+        return $this->collection($employee->managerCall, new ManagerCallTransformer, 'ManagerCall');
+    }
+
+    public function includeExtension(Employee $employee)
+    {
+        return $this->collection($employee->extension, new ExtensionTranformer, 'Extension');
     }
 }

@@ -6,7 +6,6 @@ use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VoiceGrant;
-
 class TokenController extends Controller
 {
     public function __construct(AccessToken $accessToken)
@@ -26,11 +25,11 @@ class TokenController extends Controller
         $apiKey = config('services.twilio')['apiKey'];
         $apiSecret = config('services.twilio')['apiSecret'];
 
-        if ($forPage === route('dashboard', [], false)) {
-            $this->accessToken->setIdentity('support_agent');
-        } else {
-            $this->accessToken->setIdentity('customer');
-        }
+        // if ($forPage === route('dashboard', [], false)) {
+        $this->accessToken->setIdentity('support_agent');
+        // } else {
+        // $this->accessToken->setIdentity('support_agent');
+        // }
 
         // Create Voice grant
         $voiceGrant = new VoiceGrant();
@@ -44,7 +43,7 @@ class TokenController extends Controller
 
         // render token to string
         $token = $this->accessToken->toJWT();
-        
+
         return response()->json(['token' => $token]);
     }
 }
