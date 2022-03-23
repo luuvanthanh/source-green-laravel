@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\CallCenter\Http\Requests;
 
+use GGPHP\Crm\CallCenter\Models\EmployeeExtension;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateEmployeeExtensionRequest extends FormRequest
@@ -25,7 +26,21 @@ class CreateEmployeeExtensionRequest extends FormRequest
     {
         return [
             'extension_id' => 'required|exists:extensions,id',
-            'employee_id.*' => 'required|exists:employees,id|unique:employee_extension,employee_id|distinct'
+            'employee_id.*' => [
+                'required',
+                'exists:employees,id',
+                'distinct',
+                function ($attribute, $value, $fail) {
+                    $check = EmployeeExtension::where('employee_id', $value)
+                        ->where('extension_id', '!=', $this->extension_id)->first();
+
+                    if (!is_null($check)) {
+                        return $fail('Nhân sự :attribute đã tồn tại trong một nhánh khác');
+                    }
+                    
+                    return true;
+                }
+            ]
         ];
     }
 }

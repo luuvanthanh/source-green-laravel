@@ -88,14 +88,32 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
         }
 
         if (!empty($attributes['status_lead_id'])) {
-            $this->model = $this->model->where(function ($query) use ($attributes) {
-                $query->where(function ($querySub) {
-                    $querySub->select('status');
-                    $querySub->from('status_lead');
-                    $querySub->whereColumn('customer_lead_id', 'manager_calls.customer_lead_id');
-                    $querySub->orderBy('created_at', 'desc');
-                    $querySub->limit(1);
+            $this->model = $this->model->whereHas('customerLead.statusLead', function ($query) use ($attributes) {
+                $query->where(function ($query) {
+                    $query->select('status');
+                    $query->latest();
+                    $query->limit(1);
                 }, StatusLead::STATUS_LEAD[$attributes['status_lead_id']]);
+            });
+        }
+
+        if (!empty($attributes['status_care'])) {
+            $this->model = $this->model->whereHas('customerLead.statusCare', function ($query) use ($attributes) {
+                $query->where(function ($query) {
+                    $query->select('status_parent_lead_id');
+                    $query->latest();
+                    $query->limit(1);
+                }, $attributes['status_care']);
+            });
+        }
+
+        if (!empty($attributes['status_parent_potential_id'])) {
+            $this->model = $this->model->whereHas('customerLead.customerPotential.customerPotentialStatusCare', function ($query) use ($attributes) {
+                $query->where(function ($query) {
+                    $query->select('status_parent_potential_id');
+                    $query->latest();
+                    $query->limit(1);
+                }, $attributes['status_parent_potential_id']);
             });
         }
 
