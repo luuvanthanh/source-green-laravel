@@ -3,14 +3,13 @@
 namespace GGPHP\Crm\Marketing\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Crm\Marketing\Models\Article;
 
 /**
  * Class CategoryDetailTransformer.
  *
  * @package namespace App\Transformers;
  */
-class ArticleTransformer extends BaseTransformer
+class ArticleReactionInfoTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -29,12 +28,12 @@ class ArticleTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['postFacebookInfo'];
+    protected $availableIncludes = [];
 
     /**
      * Transform the CategoryDetail entity.
      *
-     * @param Article 
+     * @param ArticleReactionInfo 
 
      *
      * @return array
@@ -42,14 +41,5 @@ class ArticleTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [];
-    }
-
-    public function includePostFacebookInfo(Article $article)
-    {
-        if (empty($article->postFacebookInfo)) {
-            return;
-        }
-
-        return $this->item($article->postFacebookInfo, new PostFacebookInfoTransformer, 'PostFacebookInfo');
     }
 }

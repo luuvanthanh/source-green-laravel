@@ -83,7 +83,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             $userId = $attributes['to'];
         }
         $userFacebookInfo = UserFacebookInfo::where('user_id', $userId)->first();
-        \Log::info($userFacebookInfo);
+        //\Log::info($userFacebookInfo);
         if (!is_null($userFacebookInfo)) {
             $conversation = Conversation::where('user_facebook_info_id', $userFacebookInfo->id)->first();
         } else {
@@ -98,9 +98,9 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
     public function storeMessage($attributes)
     {
-        \Log::info($attributes);
+        //\Log::info($attributes);
         $page = Page::where('page_id_facebook', $attributes['from'])->first();
-        \Log::info($page);
+        //\Log::info($page);
         $notiInbox = Conversation::NOTI_INBOX['SEEN'];
         if (!is_null($page)) {
             $from = $page->id;
@@ -215,7 +215,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
     {
 
         $page = Page::where('page_id_facebook', $attributes['from'])->first();
-        \Log::info($page);
+        //\Log::info($page);
         if (is_null($page)) {
             if (!is_null($page)) {
                 $pageId = $page->id;
@@ -235,7 +235,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                     'status_send_message' => 'received',
                     'conversation_id' => $conversation->id
                 ]));
-                \Log::info(['tran thai tin nhan' => $statusSendMessage['delivery']['watermark']]);
+                //\Log::info(['tran thai tin nhan' => $statusSendMessage['delivery']['watermark']]);
                 foreach ($statusSendMessage['delivery']['mids'] as $value) {
                     // \Log::info($statusSendMessage['delivery']['watermark']);
                     $message = Message::where('message_id_facebook', $value)->first();
@@ -258,7 +258,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                     $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['READ']]);
                 }
                 $getMessage = Message::where('from', $pageId)->where('to', $userFacebookInfoId)->orderBy('created_at', 'desc')->first();
-                \Log::info(['$getMessage' => $getMessage]);
+                //\Log::info(['$getMessage' => $getMessage]);
                 if ($getMessage->status_send_message == Message::STATUS_SEND_MESSAGE['READ']) {
                     $allMessages = Message::where('from', $userFacebookInfoId)->where('to', $pageId)->get();
                     foreach ($allMessages as $key => $allMessage) {
