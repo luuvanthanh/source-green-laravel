@@ -156,13 +156,13 @@ const General = memo(
       mounted.current = true;
       return mounted.current;
     }, []);
-
     useEffect(() => {
       if (!isEmpty(details) && params.id) {
         formRef.current.setFieldsValue({
           ...details,
           ...head(details.positionLevel),
           birth_date: details.birth_date && moment(details.birth_date),
+          created_at: Helper.getDate(details?.created_at, variables.DATE_FORMAT.DATE_VI),
         });
         if (Helper.isJSON(details?.file_image)) {
           mountedSet(setFiles, JSON.parse(details?.file_image));
@@ -340,6 +340,19 @@ const General = memo(
                     rules={[variables.RULES.EMPTY_INPUT]}
                     disabled
                   />}
+                </Pane>
+                <Pane className="col-lg-4">
+                  {
+                    params?.id ? 
+                      <FormItem
+                        placeholder=" "
+                        name="created_at"
+                        type={variables.SELECT}
+                        label="Ngày nhận data"
+                        disabled
+                      />
+                     : ""
+                    }
                 </Pane>
               </Pane>
             </Pane>

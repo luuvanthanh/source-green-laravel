@@ -35,6 +35,8 @@ const Index = memo(() => {
   const [toolDetailSensitives, setToolDetailSensitives] = useState([
     {
       id: uuidv4(),
+      name: undefined,
+      explaination: undefined
     },
   ]);
   const [toolDetailLevels, setToolDetailLevels] = useState([
@@ -126,12 +128,14 @@ const Index = memo(() => {
                 })),
               );
             }
-            setToolDetailSensitives(
-              response?.toolDetailSensitives.map((item) => ({
-                ...item,
-                sensitivePeriodId: item?.sensitivePeriod?.id,
-              })),
-            );
+            if (!isEmpty(response.toolDetailLevels)) {
+              setToolDetailSensitives(
+                response?.toolDetailSensitives.map((item) => ({
+                  ...item,
+                  sensitivePeriodId: item?.sensitivePeriod?.id,
+                })),
+              );
+            }
           }
         },
       });
@@ -262,13 +266,19 @@ const Index = memo(() => {
         width: 50,
         align: 'center',
         render: (record) => (
-          <div className="groups-input">
-            <span
-              className="icon icon-remove"
-              role="presentation"
-              onClick={() => onRemove(record)}
-            />
-          </div>
+          <>
+            {
+              toolDetailSensitives?.length > 1 && (
+                <div className="groups-input">
+                  <span
+                    className="icon icon-remove"
+                    role="presentation"
+                    onClick={() => onRemove(record)}
+                  />
+                </div>
+              )
+            }
+          </>
         ),
       },
     ];
@@ -346,15 +356,20 @@ const Index = memo(() => {
         className: 'min-width-50',
         width: 50,
         align: 'center',
-        render: (record) => (
-          <div className="groups-input">
-            <span
-              className="icon icon-remove"
-              role="presentation"
-              onClick={() => onRemoveLevels(record)}
-            />
-          </div>
-        ),
+        render: (record) =>
+          <>
+            {
+              toolDetailLevels?.length > 1 && (
+                <div className="groups-input">
+                  <span
+                    className="icon icon-remove"
+                    role="presentation"
+                    onClick={() => onRemoveLevels(record)}
+                  />
+                </div>
+              )
+            }
+          </>
       },
     ];
     return columns;
@@ -378,7 +393,6 @@ const Index = memo(() => {
       }),
     };
   });
-
   return (
     <>
       <Helmet title="Tạo giáo cụ" />

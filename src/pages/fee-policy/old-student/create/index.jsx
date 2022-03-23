@@ -24,14 +24,13 @@ const Index = memo(() => {
     menuLeftFeePolicy,
     yearsSchool,
     students,
-  } = useSelector(({ loading, menu, schoolYear, OPchildren }) => ({
+  } = useSelector(({ loading, menu, schoolYear, oldStudentAdd }) => ({
     loading: loading.effects,
     menuLeftFeePolicy: menu.menuLeftFeePolicy,
     yearsSchool: schoolYear.data,
-    students: OPchildren.data
+    students: oldStudentAdd.students
   }));
   const dispatch = useDispatch();
-
   const history = useHistory();
   const isCopy = !!(history?.location?.query?.type === 'ban-sao');
   const formRef = useRef();
@@ -59,13 +58,12 @@ const Index = memo(() => {
     classTypeId: '',
   });
 
-  const getStudents = (keyWord = '') => {
+  const getStudents = () => {
     dispatch({
-      type: 'OPchildren/GET_DATA',
+      type: 'oldStudentAdd/GET_STUDENTS',
       payload: {
-        keyWord: keyWord || undefined,
         page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.PAGE_SIZE,
+        limit: 1000,
       },
     });
   };
@@ -88,7 +86,7 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res) {
-            setYearsDetail(res?.schoolYear?.changeParameter?.changeParameterDetail);
+            setYearsDetail(res?.expectedToCollectMoney);
             getStudents(res?.student?.code);
             setTuition(res?.tuition);
             setDetails((prev) => ({
@@ -171,6 +169,9 @@ const Index = memo(() => {
 
   const changeYear = (value) => {
     setIdYear(value);
+    formRef.current.setFieldsValue({
+      dayAdmission:  undefined,
+    });
     if (!value) {
       setDetails((prev) => ({
         ...prev,
@@ -236,6 +237,7 @@ const Index = memo(() => {
     const payload = {
       schoolYearId: values?.schoolYearId || undefined,
       studentId: values?.studentId || undefined,
+      expectedToCollectMoney: details?.expectedToCollectMoney || undefined,
       tuition,
       id: (params?.id && !isCopy) ? params?.id : undefined,
       dayAdmission: Helper.getDateTime({
@@ -287,6 +289,9 @@ const Index = memo(() => {
     setIdRes(childData);
   };
 
+ const callbackFunction = (e) => {
+    console.log("e",e)
+  };
 
   const tabs = () => [
     {
@@ -305,7 +310,7 @@ const Index = memo(() => {
     },
     {
       id: 'food',
-      name: 'Dự KIẾN PHẢI THU',
+      name: 'DỰ KIẾN PHẢI THU',
       component: (
         <Expected
           tuition={tuition}
@@ -317,6 +322,7 @@ const Index = memo(() => {
           details={details}
           idRes={idRes}
           YearsDetail={YearsDetail}
+          parentCallback ={callbackFunction}
         />
       ),
     },
@@ -376,12 +382,12 @@ const Index = memo(() => {
                     <FormItem
                       label="Tên học sinh"
                       name="studentId"
-                      data={loading['OPchildren/GET_DATA'] ? [] : students.map(item => ({ ...item, name: item?.fullName || '-' }))}
+                      data={loading['oldStudentAdd/GET_STUDENTS'] ? [] : students.map(item => ({ ...item, name: item?.fullName || '-' }))}
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
                       onChange={changeStudent}
                       onSearch={onSearch}
-                      notFoundContent={loading['OPchildren/GET_DATA'] ? <Spin size="small" /> : null}
+                      notFoundContent={loading['oldStudentAdd/GET_STUDENTS'] ? <Spin size="small" /> : null}
                       filterOption
                     />
                   </div>
