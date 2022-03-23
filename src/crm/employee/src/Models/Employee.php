@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Employee\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\AdmissionRegister\Models\TestInput;
 use GGPHP\Crm\CallCenter\Models\EmployeeExtension;
 use GGPHP\Crm\CallCenter\Models\Extension;
 use GGPHP\Crm\CallCenter\Models\ManagerCall;
@@ -28,6 +29,11 @@ class Employee extends UuidModel
     public function CustomerPotential()
     {
         return $this->hasMany(CustomerPotential::class);
+    }
+
+    public function testInput()
+    {
+        return $this->hasMany(TestInput::class, 'employee_id');
     }
 
     public function extension()
