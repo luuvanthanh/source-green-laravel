@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Marketing\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\Category\Models\Tag;
 use GGPHP\Crm\Province\Models\City;
@@ -32,7 +33,7 @@ class DataMarketing extends UuidModel
         'code', 'full_name', 'birth_date', 'sex', 'email', 'phone', 'other_phone',
         'address', 'city_id', 'district_id', 'facility_id', 'user_create_id', 'user_create_info', 'search_source_id',
         'facebook', 'zalo', 'instagram', 'skype', 'name_company', 'address_company',
-        'phone_company', 'career', 'file_image', 'status', 'town_ward_id', 'user_facebook_id'
+        'phone_company', 'career', 'file_image', 'status', 'town_ward_id', 'user_facebook_id', 'branch_id'
     ];
 
     public function city()
@@ -63,5 +64,10 @@ class DataMarketing extends UuidModel
     public function tag()
     {
         return $this->belongsToMany(Tag::class, 'data_merketing_tags', 'data_marketing_id', 'tag_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

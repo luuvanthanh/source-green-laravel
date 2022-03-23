@@ -32,7 +32,8 @@ class CreateDataMarketingRequest extends FormRequest
             'address' => 'required|string',
             'city_id' => 'required|exists:citys,id',
             'district_id' => 'required|exists:districts,id',
-            'search_source_id'=> 'required|exists:search_sources,id'
+            'search_source_id' => 'required|exists:search_sources,id',
+            'branch_id' => 'required|exists:branches,id'
         ];
     }
 }
