@@ -4,6 +4,7 @@ export default {
   namespace: 'oldStudentAdd',
   state: {
     details: {},
+    students: [],
     error: {
       isError: false,
       data: {},
@@ -23,7 +24,12 @@ export default {
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
-    })
+    }),
+    SET_STUDENTS: (state, { payload }) => ({
+      ...state,
+      students: payload.parsePayload,
+      pagination: payload.pagination,
+    }),
   },
   effects: {
     *GET_DETAILS({ payload, callback }, saga) {
@@ -66,6 +72,33 @@ export default {
         callback(response?.payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_MONEY_FEE_POLICIES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.moneyFeePolicies, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_STUDENTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getStudent, payload);
+        yield saga.put({
+          type: 'SET_STUDENTS',
+          payload: {
+            parsePayload: response.items,
+            pagination: {
+              total: response.totalCount,
+            },
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

@@ -28,11 +28,12 @@ const Index = memo(() => {
   const dispatch = useDispatch();
   const params = useParams();
 
-  const { loading, menuLeftFeePolicy, yearsSchool } = useSelector(
-    ({ loading, menu, schoolYear }) => ({
+  const { loading, menuLeftFeePolicy, yearsSchool, branches } = useSelector(
+    ({ loading, menu, schoolYear, feePolicyPolicyAdd }) => ({
       loading: loading.effects,
       menuLeftFeePolicy: menu.menuLeftFeePolicy,
       yearsSchool: schoolYear.data,
+      branches: feePolicyPolicyAdd.branches
     }),
   );
 
@@ -48,6 +49,10 @@ const Index = memo(() => {
     other: false,
   });
   useEffect(() => {
+    dispatch({
+      type: 'feePolicyPolicyAdd/GET_BRANCH',
+      payload: {},
+    });
     dispatch({
       type: 'schoolYear/GET_DATA',
       payload: {
@@ -294,6 +299,17 @@ const Index = memo(() => {
                   allowClear={false}
                   rules={[variables.RULES.EMPTY]}
                   disabled
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  className="mt15"
+                  label="Cơ sở"
+                  name="branch_id"
+                  type={variables.SELECT}
+                  data={branches}
+                  allowClear={false}
+                  rules={[variables.RULES.EMPTY]}
                 />
               </div>
             </Pane>

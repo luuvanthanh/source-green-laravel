@@ -1,3 +1,4 @@
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -7,9 +8,14 @@ export default {
       isError: false,
       data: {},
     },
+    branches: []
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
+    }),
   },
   effects: {
     *ADD({ payload, callback }, saga) {
@@ -34,6 +40,22 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_BRANCH({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+        callback(response.parsePayload || []);
+      } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },
