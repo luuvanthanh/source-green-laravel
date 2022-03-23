@@ -16,7 +16,11 @@ const Index = () => {
   const [
     { data, pagination },
     loading,
-  ] = useSelector(({ loading: { effects }, crmSaleParentsLead }) => [crmSaleParentsLead, effects]);
+  ] = useSelector(({ loading: { effects }, crmManagementExtension }) => [
+    crmManagementExtension,
+    effects,
+  ]);
+
   const { query, pathname } = useLocation();
   const { params } = useRouteMatch();
   const history = useHistory();
@@ -30,7 +34,7 @@ const Index = () => {
 
   const onLoad = () => {
     dispatch({
-      type: 'crmSaleParentsLead/GET_DATASOURCE',
+      type: 'crmManagementExtension/GET_DATA',
       payload: {
         ...search,
       },
@@ -61,10 +65,6 @@ const Index = () => {
     debouncedSearch(e.target.value, type);
   };
 
-  const onChangeSelect = (e, type) => {
-    debouncedSearch(e, type);
-  };
-
   const changePagination = ({ page, limit }) => {
     setSearch(
       (prev) => ({
@@ -79,9 +79,8 @@ const Index = () => {
   };
 
   const paginationFunction = (pagination) =>
-    Helper.paginationNet({
+    Helper.paginationLavarel({
       pagination,
-      query,
       callback: (response) => {
         changePagination(response);
       },
@@ -97,21 +96,21 @@ const Index = () => {
       },
       {
         title: 'Tài khoản',
-        key: 'username',
+        key: 'user_id_cmc',
         width: 100,
-        render: (record) => record?.username,
+        render: (record) => record?.user_id_cmc,
       },
       {
         title: 'Mật khẩu',
         key: 'password',
         width: 150,
-        render: (record) => record?.call_type,
+        render: (record) => record?.password,
       },
       {
         title: 'Hostname',
-        key: 'hostname',
+        key: 'host_name',
         width: 150,
-        render: (record) => record?.hostname,
+        render: (record) => record?.host_name,
       },
       {
         title: 'Port',
@@ -120,16 +119,11 @@ const Index = () => {
         render: (record) => record?.port,
       },
       {
-        title: 'Trạng thái',
-        key: 'status',
-        width: 150,
-        render: (record) => record?.status,
-      },
-      {
         title: 'Nhân viên trực tổng đài',
-        key: 'saler',
+        align: 'center',
+        key: 'employee_count',
         width: 230,
-        render: (record) => record?.saler,
+        render: (record) => record?.employee_count,
       },
       {
         key: 'action',
@@ -175,22 +169,13 @@ const Index = () => {
                   type={variables.INPUT_SEARCH}
                 />
               </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[{ id: null, name: 'Tất cả trạng thái' }]}
-                  name="status"
-                  onChange={(e) => onChangeSelect(e, 'status_id')}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
             </div>
           </Form>
           <Table
             bordered={false}
             columns={header(params)}
             dataSource={data}
-            loading={loading['crmSaleParentsLead/GET_DATA']}
+            loading={loading['crmManagementExtension/GET_DATA']}
             isEmpty
             disabled
             pagination={paginationFunction(pagination)}

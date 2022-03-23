@@ -8,3 +8,12 @@ export function getToken(params = {}) {
     },
   });
 }
+
+export function getExtensions(params = {}) {
+  return request('/v1/extensions', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
