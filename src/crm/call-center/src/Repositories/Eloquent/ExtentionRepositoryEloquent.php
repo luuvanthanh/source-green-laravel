@@ -135,9 +135,9 @@ class ExtensionRepositoryEloquent extends BaseRepository implements ExtensionRep
 
     public function employeeExtension(array $attributes)
     {
-        $extension = $this->model->find($attributes['extension_id']);
+        EmployeeExtension::where('extension_id', $attributes['extension_id'])->delete();
 
-        EmployeeExtension::where('employee_id', $attributes['employee_id'])->delete();
+        $extension = $this->model->find($attributes['extension_id']);
 
         $extension->employee()->attach($attributes['employee_id']);
 
