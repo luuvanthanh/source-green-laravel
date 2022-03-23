@@ -367,6 +367,8 @@ class Index extends PureComponent {
   };
 
   exportData = () => {
+    const { fullName, branchId, classId } = this.state.search;
+
     Helper.exportExcel(
       '/v1/export-excel-attendance',
       {
@@ -389,6 +391,9 @@ class Index extends PureComponent {
           isUTC: false,
         }),
         excel: true,
+        fullName: !isEmpty(fullName) && fullName,
+        branchId: !isEmpty(branchId) && branchId,
+        classId: !isEmpty(classId) && classId,
       },
       'THDiemdanh.xlsx',
     );

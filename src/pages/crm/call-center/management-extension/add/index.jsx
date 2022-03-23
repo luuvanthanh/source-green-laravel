@@ -1,17 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'umi';
-import { Form } from 'antd';
+import { Form, Select } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get } from 'lodash';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
+import { v4 as uuidv4 } from 'uuid';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import { useDispatch, useSelector } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
+import { head, isEmpty } from 'lodash';
+
+const { Option } = Select;
 
 function Index() {
   const [formRef] = Form.useForm();
@@ -20,72 +23,138 @@ function Index() {
   const history = useHistory();
 
   const [
-    { error },
+    { error, employees },
     loading,
     { menuLeftCRM },
-  ] = useSelector(({ loading: { effects }, seasonalContractsAdd, menu }) => [
-    seasonalContractsAdd,
+  ] = useSelector(({ loading: { effects }, crmManagementExtensionAdd, menu }) => [
+    crmManagementExtensionAdd,
     effects,
     menu,
   ]);
 
+  const [listEmployees, setListEmployees] = useState([]);
+
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'seasonalContractsAdd/GET_DETAILS_DATA',
+        type: 'crmManagementExtensionAdd/GET_DETAIL',
         payload: {
           id: params.id,
+        },
+        callback: (response) => {
+          formRef.setFieldsValue({
+            ...response,
+          });
+          setListEmployees(response?.employee.map((item) => ({ ...item })));
         },
       });
     }
   }, []);
 
+  const onSelectEmployees = (value, index) => {
+    const findEmployees = employees.find((item) => item.id === value);
+    const newListEmployees = [...listEmployees];
+    const newTeacher = {
+      ...newListEmployees[index],
+      id: findEmployees.id,
+      full_name: findEmployees.full_name,
+    };
+    newListEmployees[index] = newTeacher;
+    setListEmployees(newListEmployees);
+  };
+
+  useEffect(() => {
+    dispatch({
+      type: 'crmManagementExtensionAdd/GET_EMPLOYEES',
+      payload: {},
+    });
+  }, []);
+
+  const handleAdd = () => {
+    setListEmployees((prev) => [
+      ...prev,
+      {
+        id: uuidv4(),
+      },
+    ]);
+  };
+
   const header = () => {
     const columns = [
       {
-        title: 'Máy lẻ',
-        key: 'extension',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => get(record, 'extension'),
+        title: 'STT',
+        align: 'center',
+        className: 'min-width-100',
+        width: 100,
+        render: (value, record, index) => index + 1,
       },
       {
-        title: 'Loại cuộc gọi',
-        key: 'type_call',
-        width: 150,
-        className: 'min-width-150',
-        render: (record) => get(record, 'type_call'),
+        title: 'Tên nhân viên',
+        key: 'full_name',
+        render: (value, record, index) => (
+          <Select
+            className="w-100"
+            defaultValue={record.full_name}
+            onChange={(val) => onSelectEmployees(val, index)}
+          >
+            {employees?.map((item) => (
+              <Option key={item.id}>{item?.full_name}</Option>
+            ))}
+          </Select>
+        ),
       },
       {
-        title: 'Số điện thoại',
-        key: 'phone_number',
-        width: 80,
-        className: 'min-width-80',
-        render: (record) => get(record, 'phone_number'),
-      },
-      {
-        title: 'Trạng thái',
-        key: 'status',
-        width: 80,
-        className: 'min-width-80',
-        render: (record) => get(record, 'status'),
-      },
-      {
-        title: 'Call ID',
-        key: 'call_id',
-        width: 80,
-        className: 'min-width-80',
-        render: (record) => get(record, 'call_id'),
+        key: 'action',
+        align: 'center',
+        className: 'min-width-100',
+        width: 100,
+        render: (record) => (
+          <div className="groups-input">
+            <span
+              className="icon icon-remove"
+              role="presentation"
+              onClick={() => {
+                setListEmployees((prev) => prev.filter((item) => item.id !== record.id));
+              }}
+            />
+          </div>
+        ),
       },
     ];
     return columns;
   };
 
-  const onFinish = () => {};
+  const onFinish = () => {
+    const payload = {
+      employee_id: listEmployees.map((item) => item.id),
+      extension_id: params.id,
+    };
+    dispatch({
+      type: 'crmManagementExtensionAdd/UPDATE',
+      payload,
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              formRef.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   return (
     <>
-      <Breadcrumbs last="Tạo mới" menu={menuLeftCRM} />
+      <Breadcrumbs last="Chi tiết" menu={menuLeftCRM} />
       <Form className={styles['layout-form']} layout="vertical" form={formRef} onFinish={onFinish}>
         <div className={styles['content-form']}>
           <Loading
@@ -93,35 +162,58 @@ function Index() {
             params={{ error, type: 'container', goBack: '/quan-ly-nhan-su/hop-dong-thoi-vu' }}
           >
             <div className="row">
-              <div className="col-lg-10 offset-lg-1">
+              <div className="col-lg-8 offset-lg-2">
                 <div className={classnames(styles['content-children'], 'mt0')}>
                   <Heading type="form-title" className="mb15">
                     Thông tin máy lẻ
                   </Heading>
                   <div className="row">
                     <div className="col-lg-4">
-                      <FormItem label="Tài khoản" name="username" type={variables.INPUT} disabled />
+                      <FormItem
+                        label="Tài khoản"
+                        name="user_id_cmc"
+                        type={variables.INPUT}
+                        disabled
+                        placeholder=" "
+                      />
                     </div>
                     <div className="col-lg-4">
-                      <FormItem label="Mật khẩu" name="password" type={variables.INPUT} disabled />
+                      <FormItem
+                        label="Mật khẩu"
+                        name="password"
+                        type={variables.INPUT}
+                        disabled
+                        placeholder=" "
+                      />
                     </div>
                     <div className="col-lg-4">
-                      <FormItem label="Hostname" name="hostname" type={variables.INPUT} disabled />
+                      <FormItem
+                        label="Hostname"
+                        name="host_name"
+                        type={variables.INPUT}
+                        disabled
+                        placeholder=" "
+                      />
                     </div>
                   </div>
 
                   <div className="row">
                     <div className="col-lg-4">
-                      <FormItem label="Port" name="port" type={variables.INPUT} disabled />
-                    </div>
-                    <div className="col-lg-4">
-                      <FormItem label="Path" name="path" type={variables.INPUT} disabled />
+                      <FormItem
+                        label="Port"
+                        name="port"
+                        type={variables.INPUT}
+                        disabled
+                        placeholder=" "
+                      />
                     </div>
                     <div className="col-lg-4">
                       <FormItem
-                        label="Nhân viên trực tổng đài"
-                        name="saler"
-                        type={variables.SELECT}
+                        label="Path"
+                        name="path"
+                        type={variables.INPUT}
+                        disabled
+                        placeholder=" "
                       />
                     </div>
                   </div>
@@ -130,22 +222,27 @@ function Index() {
                     <div className="col-lg-12">
                       <div className="ant-col ant-form-item-label">
                         <label htmlFor="table">
-                          <span>Thông tin cuộc gọi</span>
+                          <span>Nhân viên trực máy lẻ</span>
                         </label>
                       </div>
                       <Table
-                        columns={header()}
-                        // dataSource={data}
-                        pagination={false}
-                        className={classnames('mb15', styles['statistical-table'])}
-                        isEmpty
-                        params={{
-                          header: header(),
-                          type: 'table',
-                        }}
                         bordered
+                        className={classnames(
+                          styles['statistical-table'],
+                          styles['table-edit'],
+                          'mb20',
+                        )}
+                        isEmpty
+                        columns={header()}
+                        dataSource={listEmployees}
+                        pagination={false}
                         rowKey={(record) => record.id}
                         scroll={{ x: '100%' }}
+                        footer={() => (
+                          <Button color="transparent-success" icon="plus" onClick={handleAdd}>
+                            Thêm nhân viên
+                          </Button>
+                        )}
                       />
                     </div>
                   </div>
@@ -159,7 +256,8 @@ function Index() {
                     color="success"
                     htmlType="submit"
                     loading={
-                      loading['seasonalContractsAdd/ADD'] || loading['seasonalContractsAdd/UPDATE']
+                      loading['crmManagementExtensionAdd/ADD'] ||
+                      loading['crmManagementExtensionAdd/UPDATE']
                     }
                   >
                     Lưu
