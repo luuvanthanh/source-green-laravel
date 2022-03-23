@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Marketing\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
 use GGPHP\Crm\Category\Transformers\TagTransformer;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
@@ -34,7 +35,7 @@ class DataMarketingTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource', 'marketingProgram', 'studentInfo', 'tag'];
+    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource', 'marketingProgram', 'studentInfo', 'tag', 'branch'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -112,5 +113,14 @@ class DataMarketingTransformer extends BaseTransformer
     public function includeTag(DataMarketing $dataMarketing)
     {
         return $this->collection($dataMarketing->tag, new TagTransformer, 'Tag');
+    }
+
+    public function includeBranch(DataMarketing $dataMarketing)
+    {
+        if (empty($dataMarketing->branch)) {
+            return;
+        }
+
+        return $this->item($dataMarketing->branch, new BranchTransformer, 'Branch');
     }
 }
