@@ -7,6 +7,7 @@ use Carbon\CarbonPeriod;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use GGPHP\Fee\Models\Fee;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -25,7 +26,7 @@ class ChargeOldStudentTransformer extends BaseTransformer
         $attributes = [];
         $routeName  = Route::currentRouteName();
 
-        if ($routeName == 'accountant.charge-old-students') {
+        if ($routeName == 'accountant.charge-old-students' || $routeName == 'charge-old-students.show') {
             $attributes['expectedToCollectMoney'] = $this->expectedToCollectMoney($model);
         }
 
