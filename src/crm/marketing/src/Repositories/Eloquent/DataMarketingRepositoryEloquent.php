@@ -281,7 +281,11 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
     public function createTag(array $attributes)
     {
         $dataMarketing = DataMarketing::find($attributes['data_marketing_id']);
-        $dataMarketing->tag()->attach($attributes['tag_id']);
+        
+        if (!is_null($dataMarketing)) {
+            $dataMarketing->tag()->detach();
+            $dataMarketing->tag()->attach($attributes['tag_id']);
+        }
 
         return parent::find($dataMarketing->id);
     }
