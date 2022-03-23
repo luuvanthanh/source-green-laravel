@@ -211,6 +211,32 @@ const Index = memo(() => {
     });
   };
 
+  const debouncedSearchUser = debounce((value) => {
+    dispatch({
+      type: 'notificationAdd/GET_EMPLOYEES',
+      payload: {
+        fullName: value,
+      },
+      callback: (response) => {
+        if (response) {
+          mountedSet(setEmployees, response.parsePayload);
+          mountedSet(setSearchEmployee, {
+            ...searchEmployee,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
+            divisionId: value,
+            total: response.pagination.total,
+            loading: false,
+          });
+        }
+      },
+    });
+  }, 600);
+
+  const onChangeSearch = (value) => {
+    debouncedSearchUser(value);
+  };
+
   const changeCheckboxEmployee = (id) => {
     mountedSet(
       setEmployees,
@@ -449,6 +475,12 @@ const Index = memo(() => {
                   </Pane>
                   <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
                     <FormItemAntd label="Người nhận thông báo">
+                    <FormItem
+                          name="FullName"
+                          placeholder="Nhập từ khóa tìm kiếm"
+                          type={variables.INPUT_SEARCH}
+                          onChange={(e) => onChangeSearch(e.target.value)}
+                        />
                       <Checkbox
                         checked={isAllEmployees}
                         onChange={(event) => changeAll(variablesModules.TYPE.EMPLOYEE, event)}
@@ -655,7 +687,7 @@ const Index = memo(() => {
                     !isAllParents
                   }
                 >
-                  Lưu
+                  Gửi
                 </Button>
               </Pane>
             </Pane>

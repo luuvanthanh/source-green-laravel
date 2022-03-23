@@ -20,16 +20,14 @@ export default {
       ...state,
       data: payload.parsePayload.map((key) => ({
         branch: key?.branch || {},
-        children: key?.studentMedicalProblems.map((item) => ({
-          id: item?.student?.class?.id || '',
-          class: item?.student?.class || '',
-          children: [
-            {
-              ...item,
-              branch: key?.branch || {},
-              class: item?.student?.class || '',
-            },
-          ],
+        children: key?.studentMedicalProblemGroupByClasses.map((item) => ({
+          id: item?.class?.id || '',
+          class: item?.class || '',
+          children: item?.studentMedicalProblems.map((i) => ({
+            ...i,
+            branch: key?.branch || {},
+            class: item?.class || '',
+          })),
         })),
       })),
       pagination: payload.pagination,

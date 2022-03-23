@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Modal, Radio } from 'antd';
 import classnames from 'classnames';
 import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -8,12 +8,18 @@ import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
+import Pane from '@/components/CommonComponent/Pane';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import variablesModules from './utils/variables';
+import stylesModule from './style.module.scss';
 
+
+const { Item: FormItemAntd } = Form;
+const { Group: RadioGroup } = Radio;
 let isMounted = true;
 /**
  * Set isMounted
@@ -57,6 +63,10 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
+      isModalVisible: false,
+      isModalRadio: variablesModules.TYPE.WORD,
+      idTable: undefined,
+      type: (variablesModules.TYPE.WORD),
     };
     setIsMounted(true);
   }
@@ -220,8 +230,23 @@ class Index extends PureComponent {
     });
   };
 
-  export = (id) => {
-    Helper.exportExcel(`/v1/labours-contracts-export-word/${id}`, {}, 'HopDongLaoDong.docx');
+  export = () => {
+    const { idTable, isModalRadio } = this.state;
+    Helper.exportExcel(`/v1/${isModalRadio}/${idTable}`,{}, `HopDongLaoDong.docx`);
+    this.setState({ isModalVisible: false });
+  };
+
+  showModal = (id) => {
+    this.setState({ isModalVisible: true });
+    this.setState({ idTable: id });
+  };
+
+  handleCancel = () => {
+    this.setState({ isModalVisible: false });
+  };
+
+  onChangeType = (e) => {
+    this.setState({ isModalRadio: e.target.value });
   };
 
   /**
@@ -365,7 +390,8 @@ class Index extends PureComponent {
                 color="success"
                 icon="export"
                 className="ml-2"
-                onClick={() => this.export(record.id)}
+                onClick={() => this.showModal(record.id)}
+              // onClick={() => this.export(record.id)}
               />
             </li>
           </ul>
@@ -384,7 +410,7 @@ class Index extends PureComponent {
       location: { pathname },
       categories,
     } = this.props;
-    const { search } = this.state;
+    const { search, isModalVisible, type } = this.state;
     const loading = effects['laboursContracts/GET_DATA'];
     return (
       <>
@@ -475,6 +501,47 @@ class Index extends PureComponent {
             />
           </div>
         </div>
+        <Modal
+          title="Thông tin kết xuất"
+          centered
+          className={stylesModule['wrapper-modal-check']}
+          visible={isModalVisible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          width={400}
+          footer={[
+            <div key="back" className={stylesModule['wrapper-modal-footer']}>
+              <p
+                key="back"
+                role="presentation"
+                onClick={this.handleCancel}
+                className={stylesModule['button-cancel']}
+              >
+                Hủy
+              </p>
+              <Button htmlType="submit" color="success" type="primary" onClick={this.export}>
+                Kết xuất
+              </Button>
+            </div>
+          ]}
+        >
+          <Pane className={stylesModule['wrapper-modal-content']}>
+            <Pane className="row">
+              <Pane className="col-lg-12">
+                Chọn loại kết xuất
+              </Pane>
+              <Pane className="col-lg-12">
+                <FormItemAntd >
+                  <RadioGroup
+                    defaultValue={type}
+                    options={variablesModules.TYPES}
+                    onChange={(e) => this.onChangeType(e)}
+                  />
+                </FormItemAntd>
+              </Pane>
+            </Pane>
+          </Pane>
+        </Modal>
       </>
     );
   }

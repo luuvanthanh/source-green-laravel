@@ -36,7 +36,7 @@ const studentStatusArr = [
   { id: 'DISTRIBUTED', name: 'Nhập môn' },
   { id: 'OFFICAL', name: 'Chính thức' },
   { id: 'WITHDRAW_APPLICATION', name: 'Rút hồ sơ' },
-  { id: 'STOP_STUDYING', name: 'Ngưng học' },
+  { id: 'STOP_STUDYING', name: 'Bảo lưu' },
 ];
 const mapStateToProps = ({ OPchildren, loading, user }) => ({
   loading,
@@ -268,6 +268,7 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
+        width: 200,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
@@ -279,6 +280,7 @@ class Index extends PureComponent {
         title: 'Tuổi (tháng)',
         key: 'age',
         className: 'min-width-150',
+        width: 150,
         align: 'center',
         render: (record) => <Text size="normal">{record.age}</Text>,
       },
@@ -286,18 +288,21 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'branch',
         className: 'min-width-150',
+        width: 150,
         render: (record) => <Text size="normal">{record?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
+        width: 150,
         render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       {
         title: 'Ngày vào lớp',
         key: 'date',
         className: 'min-width-150',
+        width: 150,
         render: (record) => (
           <Text size="normal">
             {Helper.getDate(record.registerDate, variables.DATE_FORMAT.DATE)}
@@ -308,12 +313,13 @@ class Index extends PureComponent {
         title: 'Trạng thái',
         key: 'status',
         className: 'min-width-150',
+        width: 150,
         render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         key: 'actions',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-100',
+        width: 100,
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
@@ -448,7 +454,7 @@ class Index extends PureComponent {
               })}
               bordered={false}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

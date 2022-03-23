@@ -46,3 +46,14 @@ export function getUsers(data = {}) {
     data,
   });
 }
+
+export function getStaff() {
+  return request(`/v1/employees`, {
+    method: 'GET',
+    params: {
+      include: Helper.convertIncludes([
+        'positionLevel,positionLevelNow',
+      ]),
+    },
+  });
+}

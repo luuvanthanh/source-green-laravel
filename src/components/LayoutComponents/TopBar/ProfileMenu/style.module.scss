@@ -69,7 +69,8 @@
   padding: 5px 10px;
   border-radius: 4px;
   transition: 0.3s all ease;
-  &:hover, &.actived {
+  &:hover,
+  &.actived {
     background: $text-success;
     cursor: pointer;
     color: $white;
@@ -91,14 +92,17 @@
 }
 
 .wrapper-modal-check {
+  :global(.ant-modal-body) {
+    padding: 24px 24px 0px 24px;
+  }
   :global(.card) {
-    margin-bottom: 0px !important;
+    margin-bottom: 0px;
   }
   :global(.ant-modal-content) {
-    border-radius: 12px !important;
+    border-radius: 12px;
   }
   :global(.ant-modal-header) {
-    border-radius: 12px 12px 0px 0px !important;
+    border-radius: 12px 12px 0px 0px;
   }
   .wrapper-modal-footer {
     display: flex;

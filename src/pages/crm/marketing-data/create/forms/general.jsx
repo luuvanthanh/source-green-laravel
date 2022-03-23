@@ -73,6 +73,9 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
                 <div className="ant-col ant-form-item-label">
                   <label className="ant-form-item-required">Người tạo</label>
                 </div>
+                <Text size="normal" className={stylesModule['general-detail']}>
+                  {details?.user_create_info?.userName}
+                </Text>
               </div>
               <div className="col-lg-4">
                 <div className="ant-col ant-form-item-label">
