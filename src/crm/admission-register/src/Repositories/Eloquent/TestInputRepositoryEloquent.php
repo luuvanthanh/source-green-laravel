@@ -89,6 +89,12 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
             $this->model = $this->model->where('employee_id', $attributes['employee_id']);
         }
 
+        if (!empty($attributes['employee_id_hrm'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->where('employee_id_hrm', $attributes['employee_id_hrm']);
+            });
+        }
+
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->model = $this->model->where('created_at', '>=', $attributes['startDate'])->where('created_at', '<=', $attributes['endDate']);
         }
