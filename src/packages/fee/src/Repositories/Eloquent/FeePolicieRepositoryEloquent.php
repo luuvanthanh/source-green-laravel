@@ -561,7 +561,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
         foreach ($rangeMonth as $keyMonth => $month) {
             $fee = [];
-
+            $totalMoneyMonth = 0;
             foreach ($tuition as $key => $value) {
                 $feeTuiTion = Fee::find($value['feeId']);
                 $paymentForm = PaymentForm::find($value['paymentFormId']);
@@ -575,6 +575,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => $value['money']
                             ];
+                            $totalMoneyMonth += $value['money'];
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
@@ -591,6 +592,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'fee_name' => $feeTuiTion->Name,
                                     'money' => $value['money']
                                 ];
+                                $totalMoneyMonth += $value['money'];
                             } else {
                                 switch ($feeTuiTion->Type) {
                                     case 'TIENAN':
@@ -602,6 +604,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
 
                                         $result = ($daysLeftInMonth - $totalDayWeekend) * $value['moneyMonth'];
+                                        $totalMoneyMonth += $result;
 
                                         $fee[] = [
                                             'fee_id' => $feeTuiTion->Id,
@@ -615,6 +618,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                             'fee_name' => $feeTuiTion->Name,
                                             'money' => $value['moneyMonth']
                                         ];
+                                        $totalMoneyMonth += $value['moneyMonth'];
                                         break;
                                 }
                             }
@@ -639,6 +643,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => $value['money']
                             ];
+                            $totalMoneyMonth += $value['money'];
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
@@ -659,6 +664,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => $value['money']
                             ];
+                            $totalMoneyMonth += $value['money'];
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
@@ -672,6 +678,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
             $data[] = [
                 'month' =>  $month->format('Y-m'),
+                'total_money_month' => $totalMoneyMonth,
                 'fee' => $fee
             ];
         }
