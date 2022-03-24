@@ -208,7 +208,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
 
             $data['status'] = Camera::STATUS['STATUS_PENDING'];
             // Update camera information
-            if (!empty($dataCamera)) {
+            if (!empty($data)) {
                 $camera->update($data);
             }
 

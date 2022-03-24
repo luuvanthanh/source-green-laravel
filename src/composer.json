@@ -35,6 +35,7 @@
         "spatie/laravel-medialibrary": "^9.8",
         "spatie/laravel-permission": "^3.13",
         "squizlabs/php_codesniffer": "^3.6",
+        "subfission/cas": "dev-master",
         "webpatser/laravel-uuid": "^4.0"
     },
     "require-dev": {

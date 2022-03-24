@@ -15,6 +15,13 @@ use Database\Seeders\ThirdPartyServicesTableSeeder;
 use Database\Seeders\TourGuidesTableSeeder;
 use Database\Seeders\TouristDestinationsTableSeeder;
 use Database\Seeders\TravelAgenciesTableSeeder;
+use Database\Seeders\SystemConfigsTableSeeder;
+use Database\Seeders\ThirdPartyServicesTableSeeder;
+use Database\Seeders\ApiSharesTableSeeder;
+use Database\Seeders\EmailVariableDefinitionsTableSeeder;
+use Database\Seeders\EventConfigsTableSeeder;
+use Database\Seeders\ListConfigTeamplateEmailTableSeeder;
+use Database\Seeders\TeamplateEmailVariableTableSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

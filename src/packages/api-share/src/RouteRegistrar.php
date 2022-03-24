@@ -30,6 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         // ApiShare
         \Route::resource('api-shares', 'ApiShareController')->only('index', 'update', 'show', 'store');
+        \Route::resource('access-apis', 'AccessApiController')->only('index', 'show');
         \Route::put('api-share-on-off/{id}', 'ApiShareController@onOffApi');
     }
 }

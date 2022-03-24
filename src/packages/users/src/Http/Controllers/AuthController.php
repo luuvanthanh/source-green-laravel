@@ -3,14 +3,19 @@
 namespace GGPHP\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthController extends Controller
 {
+
+
     /**
      * @var UserRepository
      */
@@ -48,6 +53,8 @@ class AuthController extends Controller
         }
 
         $request->user()->token()->revoke();
+        $cas = app('cas');
+        $cas->logout();
 
         return $this->success([], trans('lang::messages.auth.logoutSuccess'), ['isShowData' => false]);
     }
@@ -120,5 +127,29 @@ class AuthController extends Controller
     {
         $user = $this->userRepository->find(Auth::id());
         return $this->success($user, trans('lang::messages.common.getInfoSuccess'));
+    }
+
+    public function egovLogin(Request $request)
+    {
+        $cas = app('cas');
+        try {
+            $cas->authenticate();
+
+            $userEgov = $cas->user();
+            $user = User::where('email', $userEgov)->first();
+
+            if (is_null($user)) {
+                $cas->logout();
+                throw new HttpException(500, 'Người dùng không có quyền truy cập vào hệ thống!');
+            }
+
+            $objToken = $user->createToken('token-egov');
+            $strToken = $objToken->accessToken;
+            $expiration = $objToken->token->expires_at->diffInSeconds(Carbon::now()->addDays(config('constants.TOKEN.REFRESH_TOKEN_EXPIRE_IN')));
+
+            return response()->json(['token_type' => 'Bearer', 'expires_in' => $expiration, 'access_token' => $strToken]);
+        } catch (\Throwable $th) {
+            throw new HttpException(500, 'Đăng nhập egov không thành công!');
+        }
     }
 }
