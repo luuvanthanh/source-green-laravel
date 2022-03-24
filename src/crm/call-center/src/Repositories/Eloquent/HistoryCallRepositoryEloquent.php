@@ -189,7 +189,6 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
         ];
 
         $item = $this->model()::updateOrCreate(['id' => $data['call_id_main']], $data);
-
         broadcast(new RecevieCallEvent(['data' => $item]));
     }
 

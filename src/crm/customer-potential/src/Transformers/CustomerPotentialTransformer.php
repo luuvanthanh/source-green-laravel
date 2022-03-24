@@ -39,7 +39,7 @@ class CustomerPotentialTransformer extends BaseTransformer
     protected $availableIncludes = [
         'potentialStudentInfo', 'city', 'district', 'customerPotentialTag',
         'customerPotentialEventInfo', 'customerPotentialStatusCare',
-        'customerPotentialReference', 'employee', 'searchSource', 'branch', 'customerLead'
+        'customerPotentialReference', 'employee', 'searchSource', 'branch', 'customerLead', 'customerPotentialStatusCareLatest'
     ];
 
     /**
@@ -134,5 +134,10 @@ class CustomerPotentialTransformer extends BaseTransformer
         }
 
         return $this->item($customerPotential->customerLead, new CustomerLeadTransformer, 'CustomerLead');
+    }
+
+    public function includeCustomerPotentialStatusCareLatest(CustomerPotential $customerPotential)
+    {
+        return $this->collection($customerPotential->customerPotentialStatusCareLatest, new CustomerPotentialStatusCareTransformer, 'CustomerPotentialStatusCareLatest');
     }
 }
