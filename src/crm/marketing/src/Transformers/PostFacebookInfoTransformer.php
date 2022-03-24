@@ -29,7 +29,7 @@ class PostFacebookInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['articleReactionInfo'];
+    protected $availableIncludes = ['articleReactionInfo', 'articleCommentInfo'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -47,5 +47,10 @@ class PostFacebookInfoTransformer extends BaseTransformer
     public function includeArticleReactionInfo(PostFacebookInfo $postFacebookInfo)
     {
         return $this->collection($postFacebookInfo->articleReactionInfo, new ArticleReactionInfoTransformer, 'ArticleReactionInfo');
+    }
+
+    public function includeArticleCommentInfo(PostFacebookInfo $postFacebookInfo)
+    {
+        return $this->collection($postFacebookInfo->articleCommentInfo, new ArticleCommentInfoTransformer, 'ArticleCommentInfo');
     }
 }

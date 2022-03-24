@@ -4,22 +4,22 @@ namespace GGPHP\Crm\Marketing\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
-use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleReactionInfoRepository;
+use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleCommentInfoRepository;
 
-class ArticleReactionInfoController extends Controller
+class ArticleCommentInfoController extends Controller
 {
     /**
      * @var $employeeRepository
      */
-    protected $articleReactionInfoRepository;
+    protected $articleCommentRepository;
 
     /**
      * UserController constructor.
      * @param StatusParentLeadRepository $inOutHistoriesRepository
      */
-    public function __construct(ArticleReactionInfoRepository $articleReactionInfoRepository)
+    public function __construct(ArticleCommentInfoRepository $articleCommentRepository)
     {
-        $this->articleReactionInfoRepository = $articleReactionInfoRepository;
+        $this->articleCommentRepository = $articleCommentRepository;
     }
 
     /**
@@ -30,9 +30,9 @@ class ArticleReactionInfoController extends Controller
      */
     public function index(Request $request)
     {
-        $articleReactionInfo = $this->articleReactionInfoRepository->getArticleReactionInfo($request->all());
+        $articleComment = $this->articleCommentRepository->getArticleCommentInfo($request->all());
 
-        return $this->success($articleReactionInfo, trans('lang::messages.common.getListSuccess'));
+        return $this->success($articleComment, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -45,9 +45,9 @@ class ArticleReactionInfoController extends Controller
     {
         $credentials = $request->all();
 
-        $articleReactionInfo = $this->articleReactionInfoRepository->create($credentials);
+        $articleComment = $this->articleCommentRepository->create($credentials);
 
-        return $this->success($articleReactionInfo, trans('lang::messages.common.createSuccess'));
+        return $this->success($articleComment, trans('lang::messages.common.createSuccess'));
     }
 
     /**
@@ -58,9 +58,9 @@ class ArticleReactionInfoController extends Controller
      */
     public function show($id)
     {
-        $articleReactionInfo = $this->articleReactionInfoRepository->find($id);
+        $articleComment = $this->articleCommentRepository->find($id);
 
-        return $this->success($articleReactionInfo, trans('lang::messages.common.getInfoSuccess'));
+        return $this->success($articleComment, trans('lang::messages.common.getInfoSuccess'));
     }
     /**
      * Update the specified resource in storage.
@@ -73,9 +73,9 @@ class ArticleReactionInfoController extends Controller
     {
         $credentials = $request->all();
 
-        $articleReactionInfo = $this->articleReactionInfoRepository->update($credentials, $id);
+        $articleComment = $this->articleCommentRepository->update($credentials, $id);
 
-        return $this->success($articleReactionInfo, trans('lang::messages.common.modifySuccess'));
+        return $this->success($articleComment, trans('lang::messages.common.modifySuccess'));
     }
 
     /**
@@ -86,7 +86,7 @@ class ArticleReactionInfoController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        $this->articleReactionInfoRepository->deleteArticleReactionInfo($id, $request->all());
+        $this->articleCommentRepository->deleteArticleCommentInfo($id, $request->all());
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }

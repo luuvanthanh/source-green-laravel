@@ -4,6 +4,8 @@ namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
 use GGPHP\Crm\Facebook\Services\FacebookService;
 use GGPHP\Crm\Marketing\Models\Article;
+use GGPHP\Crm\Marketing\Models\ArticleCommentInfo;
+use GGPHP\Crm\Marketing\Models\ArticleCommentInfoDetail;
 use GGPHP\Crm\Marketing\Models\ArticleReactionInfo;
 use GGPHP\Crm\Marketing\Models\PostFacebookInfo;
 use GGPHP\Crm\Marketing\Presenters\ArticlePresenter;
@@ -145,7 +147,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         $postFacebookInfo->quantity_reaction = $quantity_reaction + 1;
                         FacebookService::createUserFacebookInfo($attributes);
                         $this->dataMarketingRepositoryEloquent->syncDataAuto($attributes);
-                        $data = [
+                        $dataLike = [
                             'post_facebook_info_id' => $postFacebookInfo->id,
                             'full_name' => $attributes['value']['from']['name'],
                             'reaction_type' => strtoupper($attributes['value']['reaction_type']),
@@ -153,7 +155,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         ];
                         $articleReactionInfo  = ArticleReactionInfo::where('post_facebook_info_id', $postFacebookInfo->id)->where('interactive_id', $attributes['value']['from']['id'])->first();
                         if (is_null($articleReactionInfo)) {
-                            ArticleReactionInfo::create($data);
+                            ArticleReactionInfo::create($dataLike);
                         } else {
                             $articleReactionInfo->reaction_type = strtoupper($attributes['value']['reaction_type']);
                             $articleReactionInfo->update();
@@ -163,7 +165,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         $postFacebookInfo->quantity_reaction = $quantity_reaction - 1;
                     } elseif ($attributes['value']['item'] == 'reaction' && $attributes['value']['verb'] == 'edit') {
                         $articleReactionInfo  = ArticleReactionInfo::where('post_facebook_info_id', $postFacebookInfo->id)->where('interactive_id', $attributes['value']['from']['id'])->first();
-                        $articleReactionInfo->reaction_type = $attributes['value']['reaction_type'];
+                        $articleReactionInfo->reaction_type = strtoupper($attributes['value']['reaction_type']);
                         $articleReactionInfo->update();
                     }
                 }
@@ -173,6 +175,22 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                     $postFacebookInfo->quantity_comment = $quantity_comment + 1;
                     FacebookService::createUserFacebookInfo($attributes);
                     $this->dataMarketingRepositoryEloquent->syncDataAuto($attributes);
+                    $dataComment = [
+                        'post_facebook_info_id' => $postFacebookInfo->id,
+                        'full_name' => $attributes['value']['from']['name'],
+                        'content' => $attributes['value']['message'],
+                        'interactive_id' => $attributes['value']['from']['id'],
+                        'comment_id' => $attributes['value']['comment_id'],
+                        'parent_id' => $attributes['value']['parent_id'],
+                    ];
+                    $articleCommentInfo = ArticleCommentInfo::where('comment_id', $attributes['value']['parent_id'])->first();
+
+                    if (!is_null($articleCommentInfo)) {
+                        $dataComment['article_comment_info_id'] = $articleCommentInfo->id;
+                        ArticleCommentInfoDetail::create($dataComment);
+                    } else {
+                        ArticleCommentInfo::create($dataComment);
+                    }
                 } elseif ($attributes['value']['item'] == 'comment' && $attributes['value']['verb'] == 'remove') {
                     $quantity_comment = $postFacebookInfo->quantity_comment;
                     $postFacebookInfo->quantity_comment = $quantity_comment - 1;
@@ -194,6 +212,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             $postFacebookInfo = PostFacebookInfo::where('article_id', $id)->first();
             $attributes['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
             $response = FacebookService::deletePagePost($attributes);
+            
             if ($response->success) {
                 $postFacebookInfo->forceDelete();
             }

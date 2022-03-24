@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Marketing\Providers;
 
+use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleCommentInfoRepository;
 use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleReactionInfoRepository;
 use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingStudentInfoRepository;
 use GGPHP\Crm\Marketing\Repositories\Eloquent\DataMarketingStudentInfoRepositoryEloquent;
@@ -10,6 +11,7 @@ use GGPHP\Crm\Marketing\Repositories\Eloquent\DataMarketingRepositoryEloquent;
 use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
 use GGPHP\Crm\Marketing\Repositories\Contracts\MarketingProgramRepository;
 use GGPHP\Crm\Marketing\Repositories\Contracts\PostFacebookInfoRepository;
+use GGPHP\Crm\Marketing\Repositories\Eloquent\ArticleCommentInfoRepositoryEloquent;
 use GGPHP\Crm\Marketing\Repositories\Eloquent\ArticleReactionInfoRepositoryEloquent;
 use GGPHP\Crm\Marketing\Repositories\Eloquent\ArticleRepositoryEloquent;
 use GGPHP\Crm\Marketing\Repositories\Eloquent\MarketingProgramRepositoryEloquent;
@@ -43,5 +45,6 @@ class MarketingServiceProvider extends ServiceProvider
         $this->app->bind(ArticleRepository::class, ArticleRepositoryEloquent::class);
         $this->app->bind(PostFacebookInfoRepository::class, PostFacebookInfoRepositoryEloquent::class);
         $this->app->bind(ArticleReactionInfoRepository::class, ArticleReactionInfoRepositoryEloquent::class);
+        $this->app->bind(ArticleCommentInfoRepository::class, ArticleCommentInfoRepositoryEloquent::class);
     }
 }
