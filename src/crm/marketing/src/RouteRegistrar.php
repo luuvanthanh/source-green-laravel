@@ -41,6 +41,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('merge-data-marketings', 'DataMarketingController@mergeDataMarketing');
             \Route::resource('post-facebook-infos', 'PostFacebookInfoController');
             \Route::resource('article-reaction-infos', 'ArticleReactionInfoController');
+            \Route::resource('article-comment-infos', 'ArticleCommentInfoController');
         });
     }
 }

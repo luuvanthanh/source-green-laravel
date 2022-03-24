@@ -19,4 +19,9 @@ class PostFacebookInfo extends UuidModel
     {
         return $this->hasMany(ArticleReactionInfo::class);
     }
+
+    public function articleCommentInfo()
+    {
+        return $this->hasMany(ArticleCommentInfo::class);
+    }
 }
