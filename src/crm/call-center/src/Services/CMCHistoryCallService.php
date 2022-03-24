@@ -17,7 +17,7 @@ class CMCHistoryCallService extends CallCenterCMCService
 
         $params = [
             'queryTime' => $milisecond,
-            'page' => 1
+            'pages' => 1
         ];
 
         $result = Http::withHeaders($header)->post($url, $params);

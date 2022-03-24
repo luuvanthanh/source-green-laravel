@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerLead\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\CallCenter\Models\HistoryCall;
+use GGPHP\Crm\CallCenter\Models\ManagerCall;
 use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
@@ -13,7 +14,6 @@ use GGPHP\Crm\Province\Models\City;
 use GGPHP\Crm\Province\Models\District;
 use GGPHP\Crm\Province\Models\TownWard;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
 
 class CustomerLead extends UuidModel
 {
@@ -120,8 +120,18 @@ class CustomerLead extends UuidModel
         return $this->hasMany(HistoryCall::class);
     }
 
+    public function statusLeadLatest()
+    {
+        return $this->statusLead()->latest()->limit(1);
+    }
+
     public function statusCareLatest()
     {
-        return $this->hasOne(StatusLead::class)->latest();
+        return $this->statusCare()->latest()->limit(1);
+    }
+
+    public function managerCall()
+    {
+        return $this->hasMany(ManagerCall::class);
     }
 }

@@ -4,7 +4,6 @@ namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Crm\CallCenter\Models\ManagerCall;
-use GGPHP\Crm\CallCenter\Repositories\Contracts\ManagerCallRepository;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\CustomerTag;
@@ -98,6 +97,22 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (!empty($attributes['employee_id']) && $attributes['employee_id'] != 'null') {
             $this->model = $this->model->where('employee_id', $attributes['employee_id']);
+        }
+
+        if (!empty($attributes['call_times'])) {
+            if ($attributes['call_times'] == 'FIRST') {
+                $this->model = $this->model->doesntHave('managerCall');
+            } else {
+                $this->model = $this->model->whereHas('managerCall', function ($query) use ($attributes) {
+                    $query->where(function ($query)  use ($attributes) {
+                        $query->select('call_times');
+                        $query->from('manager_calls');
+                        $query->whereColumn('customer_lead_id', 'customer_leads.id');
+                        $query->latest();
+                        $query->limit(1);
+                    }, ManagerCall::CALLTIME[$attributes['call_times']] - 1);
+                });
+            }
         }
 
         if (!empty($attributes['tag_id'])) {
@@ -199,14 +214,6 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $customerLead->update(['employee_id' => $value['employee_id']]);
             $employeeInfo = json_encode($value['employee_info']);
             $customerLead->update(['employee_info' => $employeeInfo]);
-
-            resolve(ManagerCallRepository::class)->updateOrCreate(
-                ['customer_lead_id' => $value['customer_lead_id']],
-                [
-                    'customer_lead_id' => $value['customer_lead_id'],
-                    'receive_date' => $customerLead->updated_at->toDateString()
-                ]
-            );
         }
 
         return parent::parserResult($customerLead);

@@ -3,8 +3,8 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Crm\CallCenter\Transformers\CallCenterTransformer;
 use GGPHP\Crm\CallCenter\Transformers\HistoryCallTranformer;
+use GGPHP\Crm\CallCenter\Transformers\ManagerCallTransformer;
 use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
@@ -43,7 +43,8 @@ class CustomerLeadTransformer extends BaseTransformer
     protected $availableIncludes = [
         'eventInfo', 'customerTag', 'reference', 'studentInfo',
         'city', 'district', 'searchSource', 'statusCare', 'employee', 'customerPotential',
-        'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead', 'historyCall', 'statusCareLatest'
+        'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead', 'historyCall',
+        'statusLeadLatest', 'statusCareLatest', 'managerCall'
     ];
 
     /**
@@ -181,13 +182,23 @@ class CustomerLeadTransformer extends BaseTransformer
         return $this->collection($customerLead->historyCall, new HistoryCallTranformer, 'HistoryCall');
     }
 
-    public function includeStatusCareLatest(CustomerLead $customerLead)
+    public function includeStatusLeadLatest(CustomerLead $customerLead)
     {
-        return $this->item($customerLead->statusCareLatest, new StatusCareTransformer, 'StatusCare');
+        return $this->collection($customerLead->statusLeadLatest, new StatusLeadTransformer, 'StatusLeadLatest');
     }
 
     public function includeCustomerPotential(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->customerPotential, new CustomerPotentialTransformer, 'CustomerPotential');
+    }
+
+    public function includeStatusCareLatest(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->statusCareLatest, new StatusCareTransformer, 'StatusCareLatest');
+    }
+
+    public function includeManagerCall(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->managerCall, new ManagerCallTransformer, 'ManagerCall');
     }
 }

@@ -87,4 +87,9 @@ class CustomerPotential extends UuidModel
     {
         return $this->belongsTo(TownWard::class);
     }
+
+    public function customerPotentialStatusCareLatest()
+    {
+        return $this->hasMany(CustomerPotentialStatusCare::class)->latest()->limit(1);
+    }
 }
