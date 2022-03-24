@@ -25,6 +25,15 @@ class ExcelExporterServices
         ], 'attendance_report' => [
             'template' => 'attendance_report.xlsx',
         ],
+        'work_seniority' => [
+            'template' => 'work_seniority.xlsx',
+        ],
+        'resignation_decision' => [
+            'template' => 'resignation_decision.xlsx',
+        ],
+        'absent' => [
+            'template' => 'absent.xlsx',
+        ],
     ];
 
     protected $disk;

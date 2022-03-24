@@ -65,6 +65,10 @@ class RouteRegistrar extends CoreRegistrar
                     'uses' => 'ResignationDecisionController@reportResignation',
                     'as' => 'report-resignation.reportResignation',
                 ]);
+
+                \Route::get('export-excel-resignation', [
+                    'uses' => 'ResignationDecisionController@exportExcelResignation',
+                ]);
             });
         });
     }

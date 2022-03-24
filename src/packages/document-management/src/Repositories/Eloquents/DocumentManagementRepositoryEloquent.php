@@ -55,6 +55,10 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
 
     public function getAll(array $attributes)
     {
+        if (isset($attributes['topic'])) {
+            $this->model = $this->model->where('Topic', $attributes['topic']);
+        }
+
         if (isset($attributes['typeOfDocument'])) {
             $this->model = $this->model->where('TypeOfDocument', $attributes['typeOfDocument']);
         }
@@ -91,11 +95,11 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
         $userId = $documentManagement->employee->pluck('Id')->toArray();
         $accountId = EmployeeAccount::whereIn('EmployeeId', $userId)->pluck('AppUserId')->toArray();
 
-        $file =  json_decode($documentManagement->FileDocument);
+        $file =  json_decode($documentManagement->FileName);
         $urlFile = '';
 
         if (!empty($file)) {
-            $urlFile = env('IMAGE_URL') . $file[0];
+            $urlFile = env('IMAGE_URL') . $file[0]->url;
         }
 
         if (!empty($accountId)) {
@@ -118,6 +122,8 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
     public function update(array $attributes, $id)
     {
         $documentManagement = DocumentManagement::findOrFail($id);
+        $attributes['typeOfDocument'] = DocumentManagement::TYPE_DOCUMENT[$attributes['typeOfDocument']];
+        $attributes['topic'] = DocumentManagement::TOPIC[$attributes['topic']];
         $documentManagement->update($attributes);
 
         if (!empty($attributes['detail'])) {
@@ -129,11 +135,11 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
         $userId = $documentManagement->employee->pluck('Id')->toArray();
         $accountId = EmployeeAccount::whereIn('EmployeeId', $userId)->pluck('AppUserId')->toArray();
 
-        $file =  json_decode($documentManagement->FileDocument);
+        $file =  json_decode($documentManagement->FileName);
         $urlFile = '';
 
         if (!empty($file)) {
-            $urlFile = env('IMAGE_URL') . $file[0];
+            $urlFile = env('IMAGE_URL') . $file[0]->url;
         }
 
         if (!empty($accountId)) {
