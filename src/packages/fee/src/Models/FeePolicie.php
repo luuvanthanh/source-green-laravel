@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\Category\Models\Branch;
 use GGPHP\Core\Models\UuidModel;
 
 class FeePolicie extends UuidModel
@@ -19,7 +20,7 @@ class FeePolicie extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'SchoolYearId', 'DecisionNumber', 'DecisionDate', 'FeePolicieCrmId'
+        'SchoolYearId', 'DecisionNumber', 'DecisionDate', 'FeePolicieCrmId', 'BranchId'
     ];
 
     /**
@@ -65,6 +66,15 @@ class FeePolicie extends UuidModel
     public function schoolYear()
     {
         return $this->belongsTo(\GGPHP\Fee\Models\SchoolYear::class, 'SchoolYearId');
+    }
+
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'BranchId');
     }
 
     /**
