@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
 use GGPHP\Crm\Facebook\Services\FacebookService;
 use GGPHP\Crm\Marketing\Models\Article;
+use GGPHP\Crm\Marketing\Models\ArticleReactionInfo;
 use GGPHP\Crm\Marketing\Models\PostFacebookInfo;
 use GGPHP\Crm\Marketing\Presenters\ArticlePresenter;
 use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
@@ -144,9 +145,26 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         $postFacebookInfo->quantity_reaction = $quantity_reaction + 1;
                         FacebookService::createUserFacebookInfo($attributes);
                         $this->dataMarketingRepositoryEloquent->syncDataAuto($attributes);
+                        $data = [
+                            'post_facebook_info_id' => $postFacebookInfo->id,
+                            'full_name' => $attributes['value']['from']['name'],
+                            'reaction_type' => strtoupper($attributes['value']['reaction_type']),
+                            'interactive_id' => $attributes['value']['from']['id']
+                        ];
+                        $articleReactionInfo  = ArticleReactionInfo::where('post_facebook_info_id', $postFacebookInfo->id)->where('interactive_id', $attributes['value']['from']['id'])->first();
+                        if (is_null($articleReactionInfo)) {
+                            ArticleReactionInfo::create($data);
+                        } else {
+                            $articleReactionInfo->reaction_type = strtoupper($attributes['value']['reaction_type']);
+                            $articleReactionInfo->update();
+                        }
                     } elseif ($attributes['value']['item'] == 'reaction' && $attributes['value']['verb'] == 'remove') {
                         $quantity_reaction = $postFacebookInfo->quantity_reaction;
                         $postFacebookInfo->quantity_reaction = $quantity_reaction - 1;
+                    } elseif ($attributes['value']['item'] == 'reaction' && $attributes['value']['verb'] == 'edit') {
+                        $articleReactionInfo  = ArticleReactionInfo::where('post_facebook_info_id', $postFacebookInfo->id)->where('interactive_id', $attributes['value']['from']['id'])->first();
+                        $articleReactionInfo->reaction_type = $attributes['value']['reaction_type'];
+                        $articleReactionInfo->update();
                     }
                 }
 

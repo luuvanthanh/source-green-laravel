@@ -14,4 +14,9 @@ class PostFacebookInfo extends UuidModel
     protected $fillable = [
         'quantity_reaction', 'quantity_comment', 'quantity_share', 'article_id', 'facebook_post_id', 'video_id'
     ];
+
+    public function articleReactionInfo()
+    {
+        return $this->hasMany(ArticleReactionInfo::class);
+    }
 }
