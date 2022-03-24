@@ -58,7 +58,7 @@ class ChargeOldStudentTransformer extends BaseTransformer
             foreach ($tuition as $key => $value) {
                 $paymentForm = $value->paymentForm;
                 $applyDate = Carbon::parse($value->ApplyDate)->format('Y-m');
-                $feeTuiTion = Fee::find($value['feeId']);
+                $feeTuiTion = Fee::find($value['FeeId']);
 
                 switch ($paymentForm->Code) {
                     case 'NAM':
