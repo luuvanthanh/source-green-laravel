@@ -4,8 +4,8 @@ namespace GGPHP\Tourist\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Tourist\Models\Tourist;
-use GGPHP\Users\Transformers\UserTransformer;
 use GGPHP\Camera\Transformers\CameraTransformer;
+use GGPHP\Category\Transformers\TouristDestinationTransformer;
 
 /**
  * Class TouristTransformer.
@@ -26,7 +26,7 @@ class TouristTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['touristDestination', 'camera'];
 
     /**
      * Array attribute doesn't parse.
@@ -70,5 +70,30 @@ class TouristTransformer extends BaseTransformer
             'image' => $image,
             'video' => $video
         ];
+    }
+
+    /**
+     * Include touristDestination
+     * @param Tourist $fault
+     */
+    public function includeTouristDestination(Tourist $model)
+    {
+        if (is_null($model->touristDestination)) {
+            return;
+        }
+
+        return $this->item($model->touristDestination, new TouristDestinationTransformer, 'TouristDestination');
+    }
+    /**
+     * Include camera
+     * @param Tourist $fault
+     */
+    public function includeCamera(Tourist $model)
+    {
+        if (is_null($model->camera)) {
+            return;
+        }
+
+        return $this->item($model->camera, new CameraTransformer, 'Camera');
     }
 }

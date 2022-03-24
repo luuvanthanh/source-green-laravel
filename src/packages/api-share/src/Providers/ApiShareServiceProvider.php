@@ -2,7 +2,9 @@
 
 namespace GGPHP\ApiShare\Providers;
 
+use GGPHP\ApiShare\Repositories\Contracts\AccessApiRepository;
 use GGPHP\ApiShare\Repositories\Contracts\ApiShareRepository;
+use GGPHP\ApiShare\Repositories\Eloquent\AccessApiRepositoryEloquent;
 use GGPHP\ApiShare\Repositories\Eloquent\ApiShareRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,5 +31,6 @@ class ApiShareServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(ApiShareRepository::class, ApiShareRepositoryEloquent::class);
+        $this->app->bind(AccessApiRepository::class, AccessApiRepositoryEloquent::class);
     }
 }

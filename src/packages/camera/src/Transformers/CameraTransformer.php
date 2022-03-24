@@ -3,17 +3,10 @@
 namespace GGPHP\Camera\Transformers;
 
 use GGPHP\Camera\Models\Camera;
-use GGPHP\Collection\Models\Collection as ModelCollection;
-use GGPHP\Camera\Transformers\CameraGeneralPropertiesTransformer;
-use GGPHP\Camera\Transformers\CameraNetworkPropertiesTransformer;
-use GGPHP\Camera\Transformers\CameraPtzPropertiesTransformer;
-use GGPHP\Camera\Transformers\CameraVideoPropertiesTransformer;
 use GGPHP\Category\Transformers\TouristDestinationTransformer;
 use GGPHP\Collection\Transformers\CollectionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Users\Models\User;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class CameraTransformer.

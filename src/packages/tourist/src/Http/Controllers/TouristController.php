@@ -104,7 +104,7 @@ class TouristController extends Controller
      */
     public function exportExcelTourists(Request $request)
     {
-        $result = $this->tourGuideRepository->exportExcelTourists($request->all());
+        $result = $this->touristRepository->exportExcelTourists($request->all());
 
         if (is_string($result)) {
             return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
