@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Fee\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\AdmissionRegister\Transformers\AdmissionRegisterTransformer;
+use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\CustomerLead\Transformers\StudentInfoTransformer;
 use GGPHP\Crm\Fee\Models\ChargeStudent;
 
@@ -31,7 +32,7 @@ class ChargeStudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'tuition', 'admissionRegister', 'schoolYear', 'classType'];
+    protected $availableIncludes = ['studentInfo', 'tuition', 'admissionRegister', 'schoolYear', 'classType', 'branch'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -84,5 +85,14 @@ class ChargeStudentTransformer extends BaseTransformer
         }
 
         return $this->item($chargeStudent->classType, new ClassTypeTransformer, 'ClassType');
+    }
+
+    public function includeBranch(ChargeStudent $chargeStudent)
+    {
+        if (empty($chargeStudent->branch)) {
+            return null;
+        }
+
+        return $this->item($chargeStudent->branch, new BranchTransformer, 'Branch');
     }
 }

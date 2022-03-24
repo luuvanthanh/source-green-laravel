@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Fee\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
+use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 
 class ChargeStudent extends UuidModel
@@ -12,7 +13,7 @@ class ChargeStudent extends UuidModel
 
     protected $fillable = [
         'day_admission', 'mother_phone', 'mother_name', 'father_phone', 'father_name', 'age',
-        'date_of_birth', 'name_student', 'student_info_id', 'school_year_id', 'class_type_id', 'total_money','status'
+        'date_of_birth', 'name_student', 'student_info_id', 'school_year_id', 'class_type_id', 'total_money', 'status', 'branch_id'
     ];
 
     public function studentInfo()
@@ -40,5 +41,8 @@ class ChargeStudent extends UuidModel
         return $this->belongsTo(ClassType::class);
     }
 
-    
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 }
