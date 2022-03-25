@@ -61,6 +61,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             $this->model = $this->model->where('FeePolicieCrmId', null);
         }
 
+        if (!empty($attributes['branchId'])) {
+            $this->model = $this->model->whereIn('branchId', explode(',', $attributes('branchId')));
+        }
+
         if (!empty($attributes['limit'])) {
             $feePolicie = $this->paginate($attributes['limit']);
         } else {
@@ -225,7 +229,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
         $details = json_decode($attributes['details']);
         $data = [];
-        $feePolicie = FeePolicie::where('SchoolYearId', $attributes['schoolYearId'])->first();
+        $feePolicie = FeePolicie::when(!empty($attributes['branchId']), function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('SchoolYearId', $attributes['schoolYearId'])->first();
         $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schoolYearId']);
 
         foreach ($details as $key => $detail) {
@@ -237,6 +243,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             $weekDayAdmission = $schooleYear->timetable->where('StartDate', '<=', $dayAdmission)->where('EndDate', '>=', $dayAdmission)->first();
             $money = 0;
             $result = 0;
+            $moneyMonth = 0;
+
             if (!is_null($weekDayAdmission)) {
                 $endMonth = Carbon::parse($weekDayAdmission->EndDate)->endOfMonth();
 
@@ -257,7 +265,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
 
                 $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
-                $moneyMonth = 0;
                 if (!is_null($feePolicie)) {
                     switch ($fee->Type) {
                         case 'HP':
@@ -551,17 +558,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         $rangeMonth = collect(CarbonPeriod::create($startDate, '1 month', $endDate)->toArray());
 
         $data = [];
-        $monthFilter = request()->month;
 
-        if (!empty(request()->month)) {
-            $monthFilter = explode(',', $monthFilter);
-        }
         foreach ($rangeMonth as $keyMonth => $month) {
             $fee = [];
-
-            if (!empty($monthFilter) && !in_array($month->format('Y-m'), $monthFilter)) {
-                continue;
-            }
+            $totalMoneyMonth = 0;
             foreach ($tuition as $key => $value) {
                 $feeTuiTion = Fee::find($value['feeId']);
                 $paymentForm = PaymentForm::find($value['paymentFormId']);
@@ -575,6 +575,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => $value['money']
                             ];
+                            $totalMoneyMonth += $value['money'];
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
@@ -591,6 +592,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'fee_name' => $feeTuiTion->Name,
                                     'money' => $value['money']
                                 ];
+                                $totalMoneyMonth += $value['money'];
                             } else {
                                 switch ($feeTuiTion->Type) {
                                     case 'TIENAN':
@@ -602,6 +604,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
 
                                         $result = ($daysLeftInMonth - $totalDayWeekend) * $value['moneyMonth'];
+                                        $totalMoneyMonth += $result;
 
                                         $fee[] = [
                                             'fee_id' => $feeTuiTion->Id,
@@ -615,6 +618,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                             'fee_name' => $feeTuiTion->Name,
                                             'money' => $value['moneyMonth']
                                         ];
+                                        $totalMoneyMonth += $value['moneyMonth'];
                                         break;
                                 }
                             }
@@ -639,7 +643,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => $value['money']
                             ];
-                        } elseif (!is_null($isMonth)) {
+                            $totalMoneyMonth += $value['money'];
+                        } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
@@ -659,7 +664,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => $value['money']
                             ];
-                        } elseif (!is_null($isMonth)) {
+                            $totalMoneyMonth += $value['money'];
+                        } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
@@ -672,6 +678,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
             $data[] = [
                 'month' =>  $month->format('Y-m'),
+                'total_money_month' => $totalMoneyMonth,
                 'fee' => $fee
             ];
         }

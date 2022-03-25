@@ -35,6 +35,9 @@ class CreateFeePolicieRequest extends FormRequest
                     }
                 },
             ],
+            'branchId' => [
+                'required'
+            ],
         ];
     }
 }
