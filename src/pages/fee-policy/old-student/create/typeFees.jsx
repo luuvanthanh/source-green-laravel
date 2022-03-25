@@ -18,7 +18,6 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
     fees: fees.data,
     paymentForm: paymentMethod.data,
   }));
-
   const changeText=(e)=>{
     hanDleChangeText(e);
 };
@@ -61,7 +60,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
         },
       ];
       return dispatch({
-        type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
+        type: 'oldStudentAdd/GET_MONEY_FEE_POLICIES',
         payload: {
           classTypeId,
           schoolYearId,
@@ -77,8 +76,8 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
           student: 'old',
         },
         callback: (res) => {
-          if (!_.isEmpty(res)) {
-            newTuition[index] = { ...res[0] };
+          if (!_.isEmpty(res?.payload)) {
+            newTuition[index] = { ...res?.payload[0], detailData: res?.detailData };
           } else {
             newTuition[index] = {
               ...newTuition[index],

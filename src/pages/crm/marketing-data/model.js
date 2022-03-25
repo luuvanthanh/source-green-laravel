@@ -131,6 +131,14 @@ import * as services from './services';
           });
         }
       },
+      *ADD_TAGS({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.addTags, payload);
+          callback(payload);
+        } catch (error) {
+          callback(null, error?.data?.error);
+        }
+      },
     },
     subscriptions: {},
   };

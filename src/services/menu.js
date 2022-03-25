@@ -1763,17 +1763,17 @@ export async function getLeftMenuFeePolicy() {
       icon: 'icon icon-fee-policy',
       permission: [permissions.CHINHSACHPHI],
     },
-    {
-      title: 'Tính phí học sinh mới',
-      key: 'new-student',
-      url: [
-        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi',
-        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/tao-moi',
-        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
-      ],
-      icon: 'icon icon-calculate',
-      permission: [permissions.CHINHSACHPHI],
-    },
+    // {
+    //   title: 'Tính phí học sinh mới',
+    //   key: 'new-student',
+    //   url: [
+    //     '/chinh-sach-phi/tinh-phi-hoc-sinh-moi',
+    //     '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/tao-moi',
+    //     '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+    //   ],
+    //   icon: 'icon icon-calculate',
+    //   permission: [permissions.CHINHSACHPHI],
+    // },
     {
       title: 'Tính phí học sinh cũ',
       key: 'old-student',

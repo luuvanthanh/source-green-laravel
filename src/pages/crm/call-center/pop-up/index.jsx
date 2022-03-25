@@ -7,11 +7,12 @@ import classnames from 'classnames';
 // import { variables } from '@/utils';
 import Timer from 'react-timer-wrapper';
 import Timecode from 'react-timecode';
-import { isEmpty } from 'lodash';
+import { head, isEmpty } from 'lodash';
+import { useDispatch, useSelector } from 'dva';
 import styles from './style.module.scss';
 import {
-  handlePageLoad,
-  handleCallClick,
+  handleOnServer,
+  handleOnClient,
   handleHangup,
   handleAnswer,
   handleReject,
@@ -31,36 +32,42 @@ const STATUS = {
   not_found: 'NOTFOUND',
 };
 
-const SERVER_INFO = {
-  username: '23328',
-  password: 'crm@cmc2018',
-  hostname: 'kam-01.api-connect.io',
-  port: '7443',
-  path: '',
-};
-
 const Index = memo(() => {
+  const dispatch = useDispatch();
   const [inputNumber, setInputNumber] = useState('');
   const [isVisible, setIsVisible] = useState(false);
-  // const [isVisibleAddLead, setVisibleAddLead] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [statusCall, setStatusCall] = useState(STATUS.idle);
   const [clientNumber, setClientNumber] = useState('');
   const [clientStatusCall, setClientStatusCall] = useState('');
+  const [isSaler, setIsSaler] = useState(false);
   const audioRef = useRef(null);
 
-  const [serverStatus, infoCall, serverContext] = handlePageLoad();
-  const [clientStatus, clientContext] = handleCallClick();
+  const { serverStatus, infoCall, serverContext } = handleOnServer();
+  const { clientStatus, clientContext } = handleOnClient();
+
+  const [user] = useSelector(({ user }) => [user]);
 
   useEffect(() => {
-    serverContext(
-      SERVER_INFO.username,
-      SERVER_INFO.password,
-      SERVER_INFO.hostname,
-      SERVER_INFO.port,
-      SERVER_INFO.path,
-      audioRef.current,
-    );
+    dispatch({
+      type: 'crmPopup/GET_EXTENSIONS',
+      payload: {
+        employee_id_hrm: user.objectInfo?.id,
+      },
+      callback: (response) => {
+        if (response && response.length === 1) {
+          setIsSaler(true);
+          serverContext(
+            head(response).user_id_cmc,
+            head(response).password,
+            head(response).host_name,
+            head(response).port,
+            '',
+            audioRef.current,
+          );
+        }
+      },
+    });
   }, []);
 
   useEffect(() => {
@@ -135,7 +142,6 @@ const Index = memo(() => {
 
   const handleCancel = () => {
     setIsVisible(false);
-    // setVisibleAddLead(false);
     setStatusCall(STATUS.idle);
     setClientStatusCall('');
     setInputNumber('');
@@ -159,109 +165,109 @@ const Index = memo(() => {
     handleAnswer(audioRef?.current);
   };
 
-  // const openFormAddLead = () => {
-  //   setVisibleAddLead(true);
-  // };
-
-  // const cancelFormAddLead = () => {
-  //   setVisibleAddLead(false);
-  // };
-
   return (
     <>
-      <audio ref={audioRef} autoPlay>
-        <track kind="captions" />
-      </audio>
-      <audio src="/resources/iphone-ringtone.mp3" loop>
-        <track kind="captions" />
-      </audio>
-      <div className={styles['logo-call']} role="presentation" onClick={showModal}>
-        <img src="/images/icon/phone.svg" alt="logo-call" />
-      </div>
+      {isSaler && (
+        <>
+          <audio ref={audioRef} autoPlay>
+            <track kind="captions" />
+          </audio>
+          <audio src="/resources/iphone-ringtone.mp3" loop>
+            <track kind="captions" />
+          </audio>
+          <div className={styles['logo-call']} role="presentation" onClick={showModal}>
+            <img src="/images/icon/phone.svg" alt="logo-call" />
+          </div>
 
-      <Modal
-        className={styles['phone-simulator']}
-        maskClosable={false}
-        footer={null}
-        visible={isVisible}
-        onCancel={handleCancel}
-        width={320}
-        modalRender={(modal) => (
-          <Draggable
-            disabled={isDisabled}
-            bounds={bounds}
-            onStart={(event, uiData) => onStart(event, uiData)}
+          <Modal
+            className={styles['phone-simulator']}
+            maskClosable={false}
+            footer={null}
+            visible={isVisible}
+            onCancel={handleCancel}
+            width={320}
+            modalRender={(modal) => (
+              <Draggable
+                disabled={isDisabled}
+                bounds={bounds}
+                onStart={(event, uiData) => onStart(event, uiData)}
+              >
+                <div ref={draggleRef}>{modal}</div>
+              </Draggable>
+            )}
           >
-            <div ref={draggleRef}>{modal}</div>
-          </Draggable>
-        )}
-      >
-        <div
-          style={{
-            padding: '0 24px 24px 24px',
-            cursor: 'move',
-            width: '100%',
-            zIndex: 1000,
-            marginTop: 40,
-          }}
-          onMouseOver={() => {
-            if (isDisabled) setIsDisabled(false);
-          }}
-          onMouseOut={() => setIsDisabled(true)}
-          onFocus={() => {}}
-          onBlur={() => {}}
-        >
-          {statusCall === STATUS.idle && (
-            <>
-              <div className={styles['show-input']}>{inputNumber}</div>
-              <div className={styles.digits}>{phoneBtns}</div>
-              <div className={styles['button-group']}>
-                <div className={styles['button-item']}> </div>
-                <div className={styles['button-item']}>
-                  <div className={styles['phone-call']} role="presentation" onClick={callNumber}>
-                    <img src="/images/icon/phone.svg" alt="phone-call" />
+            <div
+              style={{
+                padding: '0 24px 24px 24px',
+                cursor: 'move',
+                width: '100%',
+                zIndex: 1000,
+                marginTop: 40,
+              }}
+              onMouseOver={() => {
+                if (isDisabled) setIsDisabled(false);
+              }}
+              onMouseOut={() => setIsDisabled(true)}
+              onFocus={() => {}}
+              onBlur={() => {}}
+            >
+              {statusCall === STATUS.idle && (
+                <>
+                  <div className={styles['show-input']}>{inputNumber}</div>
+                  <div className={styles.digits}>{phoneBtns}</div>
+                  <div className={styles['button-group']}>
+                    <div className={styles['button-item']}> </div>
+                    <div className={styles['button-item']}>
+                      <div
+                        className={styles['phone-call']}
+                        role="presentation"
+                        onClick={callNumber}
+                      >
+                        <img src="/images/icon/phone.svg" alt="phone-call" />
+                      </div>
+                    </div>
+                    <div className={styles['button-item']}>
+                      <div
+                        className={styles['delete-number']}
+                        role="presentation"
+                        onClick={() =>
+                          setInputNumber(inputNumber.substr(0, inputNumber.length - 1))
+                        }
+                      >
+                        <img src="/images/icon/delete.svg" alt="delete-number" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className={styles['button-item']}>
-                  <div
-                    className={styles['delete-number']}
-                    role="presentation"
-                    onClick={() => setInputNumber(inputNumber.substr(0, inputNumber.length - 1))}
-                  >
-                    <img src="/images/icon/delete.svg" alt="delete-number" />
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+                </>
+              )}
 
-          {statusCall === STATUS.outbound && (
-            <>
-              <div className={styles['layout-call']}>
-                <p className={styles['call-type']}>CUỘC GỌI ĐI</p>
-                <div className={styles['avatar-item']}>
-                  <img
-                    src="/images/icon/user.svg"
-                    alt="user-avatar"
-                    className={styles['default-avatar']}
-                  />
-                </div>
-                <p className={styles['user-name']}>Không xác định</p>
-                <p className={styles['phone-number']}>
-                  {!isEmpty(clientNumber) ? clientNumber : inputNumber}
-                </p>
-                {clientStatusCall === STATUS.accepted && (
-                  <Timer active duration={null} className={styles['time-active']}>
-                    <Timecode />
-                  </Timer>
-                )}
-                {clientStatusCall === STATUS.bye && (
-                  <p className={styles['call-status']}>Đã kết thúc</p>
-                )}
-                {clientStatusCall !== STATUS.bye && clientStatusCall !== STATUS.accepted && (
-                  <p className={styles['call-status']}>Đang kết nối</p>
-                )}
-                {/* <ButtonCus
+              {statusCall === STATUS.outbound && (
+                <>
+                  <div className={styles['layout-call']}>
+                    <p className={styles['call-type']}>CUỘC GỌI ĐI</p>
+                    <div className={styles['avatar-item']}>
+                      <img
+                        src="/images/icon/user.svg"
+                        alt="user-avatar"
+                        className={styles['default-avatar']}
+                      />
+                    </div>
+                    <p className={styles['user-name']}>Không xác định</p>
+                    <p className={styles['phone-number']}>
+                      {!isEmpty(clientNumber) ? clientNumber : inputNumber}
+                    </p>
+                    {clientStatusCall === STATUS.accepted && (
+                      <Timer active duration={null} className={styles['time-active']}>
+                        <Timecode />
+                      </Timer>
+                    )}
+                    {clientStatusCall === STATUS.bye && (
+                      <p className={styles['call-status']}>Đã kết thúc</p>
+                    )}
+                    {clientStatusCall !== STATUS.bye && clientStatusCall !== STATUS.accepted && (
+                      <p className={styles['call-status']}>Đang kết nối</p>
+                    )}
+                    {/* <ButtonCus
                   color="primary"
                   className={styles['button-add-lead']}
                   onClick={openFormAddLead}
@@ -269,8 +275,8 @@ const Index = memo(() => {
                 >
                   Thêm Lead
                 </ButtonCus> */}
-              </div>
-              {/* <Form>
+                  </div>
+                  {/* <Form>
                 <div className={classnames(styles['layout-call'], styles['border-y'])}>
                   <FormItem
                     className={styles['text-note']}
@@ -282,57 +288,57 @@ const Index = memo(() => {
                   />
                 </div>
               </Form> */}
-              <div className={styles['layout-call']}>
-                <div className={styles['hangout-group__invidual']}>
-                  <div
-                    className={classnames(
-                      styles['hangout-background__invidual'],
-                      styles['hangout-background'],
-                      styles['hangout-rotate'],
-                    )}
-                    role="presentation"
-                    onClick={handleHangupClick}
-                  >
-                    <img src="/images/icon/phone.svg" alt="phone-call" />
-                  </div>
-                  <p className={styles['hangout-title']}>Kết thúc</p>
-                </div>
-              </div>
-            </>
-          )}
-
-          {statusCall === STATUS.inbound && (
-            <>
-              <div className={styles['layout-call']}>
-                <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
-                <div className={styles['avatar-item']}>
-                  <img
-                    src="/images/icon/user.svg"
-                    alt="user-avatar"
-                    className={styles['default-avatar']}
-                  />
-                </div>
-                <p className={styles['user-name']}>Không xác định</p>
-                <p className={styles['phone-number']}>{clientNumber}</p>
-                <p className={styles['call-status']}>Đang kết nối</p>
-              </div>
-              <div className={styles['layout-call']}>
-                <div className={styles['hangout-group']}>
-                  <div className={styles['hangout-item']}>
-                    <div
-                      className={classnames(
-                        styles['hangout-background'],
-                        styles['hangout-background__danger'],
-                        styles['hangout-rotate'],
-                      )}
-                      role="presentation"
-                      onClick={handleReject}
-                    >
-                      <img src="/images/icon/phone.svg" alt="phone-call" />
+                  <div className={styles['layout-call']}>
+                    <div className={styles['hangout-group__invidual']}>
+                      <div
+                        className={classnames(
+                          styles['hangout-background__invidual'],
+                          styles['hangout-background'],
+                          styles['hangout-rotate'],
+                        )}
+                        role="presentation"
+                        onClick={handleHangupClick}
+                      >
+                        <img src="/images/icon/phone.svg" alt="phone-call" />
+                      </div>
+                      <p className={styles['hangout-title']}>Kết thúc</p>
                     </div>
-                    <p className={styles['hangout-title']}>Kết thúc</p>
                   </div>
-                  {/* <div className={styles['hangout-item']}>
+                </>
+              )}
+
+              {statusCall === STATUS.inbound && (
+                <>
+                  <div className={styles['layout-call']}>
+                    <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
+                    <div className={styles['avatar-item']}>
+                      <img
+                        src="/images/icon/user.svg"
+                        alt="user-avatar"
+                        className={styles['default-avatar']}
+                      />
+                    </div>
+                    <p className={styles['user-name']}>Không xác định</p>
+                    <p className={styles['phone-number']}>{clientNumber}</p>
+                    <p className={styles['call-status']}>Đang kết nối</p>
+                  </div>
+                  <div className={styles['layout-call']}>
+                    <div className={styles['hangout-group']}>
+                      <div className={styles['hangout-item']}>
+                        <div
+                          className={classnames(
+                            styles['hangout-background'],
+                            styles['hangout-background__danger'],
+                            styles['hangout-rotate'],
+                          )}
+                          role="presentation"
+                          onClick={handleReject}
+                        >
+                          <img src="/images/icon/phone.svg" alt="phone-call" />
+                        </div>
+                        <p className={styles['hangout-title']}>Kết thúc</p>
+                      </div>
+                      {/* <div className={styles['hangout-item']}>
                     <div
                       className={classnames(
                         styles['hangout-background'],
@@ -345,31 +351,33 @@ const Index = memo(() => {
                     </div>
                     <p className={styles['hangout-title']}>Chuyển tiếp</p>
                   </div> */}
-                  <div className={styles['hangout-item']}>
-                    <div
-                      className={classnames(
-                        styles['hangout-background'],
-                        styles['hangout-background__success'],
-                      )}
-                      role="presentation"
-                      onClick={handleAnswerClick}
-                    >
-                      <img src="/images/icon/phone.svg" alt="phone-call" />
+                      <div className={styles['hangout-item']}>
+                        <div
+                          className={classnames(
+                            styles['hangout-background'],
+                            styles['hangout-background__success'],
+                          )}
+                          role="presentation"
+                          onClick={handleAnswerClick}
+                        >
+                          <img src="/images/icon/phone.svg" alt="phone-call" />
+                        </div>
+                        <p className={styles['hangout-title']}>Chấp nhận</p>
+                      </div>
                     </div>
-                    <p className={styles['hangout-title']}>Chấp nhận</p>
                   </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </Modal>
+                </>
+              )}
+            </div>
+          </Modal>
 
-      {/* {isVisibleAddLead && (
+          {/* {isVisibleAddLead && (
         <div className={styles['main-form-add-lead']}>
           <p>FORM THÊM LEAD</p>
         </div>
       )} */}
+        </>
+      )}
     </>
   );
 });

@@ -37,7 +37,7 @@ function waitingForApplyingAnswer(response) {
   }, 10);
 }
 
-const handlePageLoad = () => {
+const handleOnServer = () => {
   const [serverStatus, setServerStatus] = useState('');
   const [infoCall, setInfoCall] = useState({});
 
@@ -120,10 +120,10 @@ const handlePageLoad = () => {
     });
   }, []);
 
-  return [serverStatus, infoCall, serverContext];
+  return { serverStatus, infoCall, serverContext };
 };
 
-const handleCallClick = () => {
+const handleOnClient = () => {
   const [clientStatus, setClientStatus] = useState('');
 
   const clientContext = useCallback((phoneNumber, playerRef) => {
@@ -211,7 +211,7 @@ const handleCallClick = () => {
     }
   }, []);
 
-  return [clientStatus, clientContext];
+  return { clientStatus, clientContext };
 };
 
 const handleHangup = () => {
@@ -238,4 +238,4 @@ const handleReject = () => {
   });
 };
 
-export { handlePageLoad, handleCallClick, handleHangup, handleAnswer, handleReject };
+export { handleOnServer, handleOnClient, handleHangup, handleAnswer, handleReject };
