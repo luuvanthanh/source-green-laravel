@@ -29,11 +29,11 @@ const Index = memo(() => {
   const params = useParams();
 
   const { loading, menuLeftFeePolicy, yearsSchool, branches } = useSelector(
-    ({ loading, menu, schoolYear, feePolicyPolicyAdd }) => ({
+    ({ loading, menu, schoolYear, OPchildren }) => ({
       loading: loading.effects,
       menuLeftFeePolicy: menu.menuLeftFeePolicy,
       yearsSchool: schoolYear.data,
-      branches: feePolicyPolicyAdd.branches
+      branches: OPchildren.branches
     }),
   );
 
@@ -50,7 +50,7 @@ const Index = memo(() => {
   });
   useEffect(() => {
     dispatch({
-      type: 'feePolicyPolicyAdd/GET_BRANCH',
+      type: 'OPchildren/GET_BRANCHES',
       payload: {},
     });
     dispatch({
@@ -60,6 +60,10 @@ const Index = memo(() => {
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
+  }, []);
+
+
+  useEffect(() => {
     if (params?.id) {
       setShowDetails(true);
       dispatch({
@@ -83,12 +87,13 @@ const Index = memo(() => {
             schoolYearId: res?.schoolYearId,
             decisionDate: res?.decisionDate ? moment(res?.decisionDate) : null,
             decisionNumber: res?.decisionNumber,
+            branchId: res?.branchId,
             timeToPay,
           });
         },
       });
     }
-  }, []);
+  }, [params?.id]);
 
   const changeTab = (key) => {
     setTab(key);
@@ -305,7 +310,7 @@ const Index = memo(() => {
                 <FormItem
                   className="mt15"
                   label="Cơ sở"
-                  name="branch_id"
+                  name="branchId"
                   type={variables.SELECT}
                   data={branches}
                   allowClear={false}
