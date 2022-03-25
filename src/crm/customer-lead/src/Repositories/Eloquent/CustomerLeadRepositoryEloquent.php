@@ -424,6 +424,6 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             return $this->parserResult($customer);
         }
 
-        return [];
+        return ['data' => null];
     }
 }

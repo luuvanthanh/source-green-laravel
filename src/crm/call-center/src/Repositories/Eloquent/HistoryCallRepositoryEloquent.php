@@ -144,8 +144,12 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             CustomerPotentialStatusCare::create($data);
         }
 
+        if ($attributes['call_type'] == 'outbound') {
+            $callCenter = $this->model->where('call_id_sub', $attributes['call_id_sub'])->first();
+        } else {
+            $callCenter = $this->model->findOrFail($attributes['history_call_id']);
+        }
 
-        $callCenter = $this->model->where('call_sid', $attributes['call_sid'])->first();
         $callCenter->update($attributes);
 
         return $this->parserResult($callCenter);
