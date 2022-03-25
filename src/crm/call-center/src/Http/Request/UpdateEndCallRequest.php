@@ -26,8 +26,24 @@ class UpdateEndCallRequest extends FormRequest
         return [
             'status_lead' => 'nullable|in:LEAD_NEW,POTENTIAL,NOT_POTENTIAL',
             'status_parent_lead_id' => 'nullable|exists:status_parent_leads,id',
-            'customer_lead_id' => 'nullable|exists:history_calls,customer_lead_id',
-            'status_parent_potential_id' => 'nullable|exists:status_parent_potentials,id'
+            'customer_lead_id' => 'nullable|exists:customer_leads,id',
+            'status_parent_potential_id' => 'nullable|exists:status_parent_potentials,id',
+            'call_type' => 'required|in:inbound,outbound',
+            'call_id_sub' => 'required_if:call_type,outbound',
+            'history_call_id' => 'required_if:call_type,inbound',
+            'manager_call_id' => 'nullable|exists:manager_calls,id',
+            'employee_id' => 'required|exists:employees,id'
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+
+        if (!empty($data['manager_call_id'])) {
+            unset($data['customer_lead_id']);
+        }
+
+        return $data;
     }
 }
