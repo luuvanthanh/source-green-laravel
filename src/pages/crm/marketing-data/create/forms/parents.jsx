@@ -29,10 +29,11 @@ const mapStateToProps = ({ loading, crmMarketingDataAdd, user }) => ({
   city: crmMarketingDataAdd.city,
   district: crmMarketingDataAdd.district,
   search: crmMarketingDataAdd.search,
+  townWards: crmMarketingDataAdd.townWards,
   user : user.user,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district,search , user}) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district,search , user, branches, townWards}) => {
     const formRef = useRef();
     const [files, setFiles] = useState([]);
     const mounted = useRef(false);
@@ -53,16 +54,47 @@ const General = memo(
         type: 'crmMarketingDataAdd/GET_SEARCH',
         payload: {},
       });
+      dispatch({
+        type: 'crmMarketingDataAdd/GET_BRANCHES',
+        payload: {},
+      });
     }, []);
 
     useEffect(() => {
-      if(params.id){
+      if (params.id) {
         dispatch({
-          type: 'crmMarketingDataAdd/GET_DISTRICTS',
-          payload: {},
+          type: 'crmMarketingDataAdd/GET_DETAILS',
+          payload: params,
         });
       }
     }, [params.id]);
+
+    useEffect(() => {
+      if (details.city_id) {
+        dispatch({
+          type: 'crmMarketingDataAdd/GET_DISTRICTS',
+          payload: details,
+        });
+      }
+      if (details.district_id) {
+        dispatch({
+          type: 'crmMarketingDataAdd/GET_TOWN_WARDS',
+          payload: details
+        });
+      }
+      if (details.town_ward_id) {
+        dispatch({
+          type: 'crmMarketingDataAdd/GET_TOWN_WARDS',
+          payload: details
+        });
+      }
+      if (details.district_id) {
+        dispatch({
+          type: 'crmMarketingDataAdd/GET_DISTRICTS',
+          payload: details,
+        });
+      }
+    }, [details.id]);
 
     const onChangeCity = (city_id) => {
       dispatch({
@@ -73,6 +105,14 @@ const General = memo(
       });
     };
 
+    const onChangeDistricts = (district_id) => {
+      dispatch({
+        type: 'crmMarketingDataAdd/GET_TOWN_WARDS',
+        payload: {
+          district_id,
+        },
+      });
+    };
 
     /**
      * Function submit form modal
@@ -185,7 +225,7 @@ const General = memo(
                     name="email"
                     label="Email"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
+                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.EMAIL]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -193,7 +233,7 @@ const General = memo(
                     name="phone"
                     label="Số điện thoại"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
+                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.PHONE]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -204,7 +244,7 @@ const General = memo(
                     rules={[variables.RULES.PHONE]}
                   />
                 </Pane>
-                <Pane className="col-lg-4">
+                <Pane className="col-lg-12">
                   <FormItem
                     name="address"
                     label="Địa chỉ"
@@ -220,8 +260,8 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Thuộc tỉnh thành"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                     onChange={onChangeCity}
+                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -231,8 +271,19 @@ const General = memo(
                     data={district}
                     placeholder="Chọn"
                     type={variables.SELECT}
-                    label="Thuộc quận huyện"
                     rules={[variables.RULES.EMPTY_INPUT]}
+                    label="Thuộc quận huyện"
+                    onChange={onChangeDistricts}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    name="town_ward_id"
+                    data={townWards}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Phường/Xã"
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -264,11 +315,12 @@ const General = memo(
                 <Pane className="col-lg-4">
                   <FormItem
                     options={['id', 'name']}
-                    name="facility_id"
-                    data={city}
+                    name="branch_id"
+                    data={branches}
                     placeholder="Chọn"
                     type={variables.SELECT}
-                    label="Thuộc tỉnh thành"
+                    label="Chọn cơ sở"
+                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -309,6 +361,7 @@ General.propTypes = {
   district: PropTypes.arrayOf(PropTypes.any),
   search: PropTypes.arrayOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
+  townWards: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -323,6 +376,7 @@ General.defaultProps = {
   district: [],
   search: [],
   user: {},
+  townWards: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));
