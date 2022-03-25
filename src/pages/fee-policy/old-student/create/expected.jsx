@@ -90,15 +90,6 @@ const Index = memo(({ yearsSchool, idYear, idRes, YearsDetail }) => {
         }
         return sumVal?.toLocaleString();
     };
-    console.log("data", data)
-
-    const isModal = () => {
-        parentCallback();
-    };
-
-    useEffect(() => {
-        isModal();
-    }, [data?.length > 0]);
 
 
     return (
