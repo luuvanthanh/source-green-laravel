@@ -17,6 +17,7 @@ export function get(data = {}) {
         'search',
         'searchSource',
         'marketingProgram', 
+        'tag',
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
     },
@@ -67,5 +68,12 @@ export function getProgram() {
     params: {
       orderBy: 'name',
     },
+  });
+}
+
+export function addTags(data = {}) {
+  return request('/v1/data-marketing-tags', {
+    method: 'POST',
+    data,
   });
 }

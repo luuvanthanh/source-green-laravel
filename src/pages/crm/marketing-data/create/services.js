@@ -187,3 +187,20 @@ export function getRelationships() {
     method: 'GET',
   });
 }
+
+export function getBranches(params) {
+  return request('/v1/branches', {
+    method: 'GET',
+    params,
+  });
+}
+
+export function getTownWards(params) {
+  return request(`/v1/town-wards?${params.district_id}`, {
+    method: 'GET',
+    params: {
+      district_id: params.district_id,
+      orderBy: 'name',
+    },
+  });
+}
