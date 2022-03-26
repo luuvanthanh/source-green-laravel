@@ -1,9 +1,12 @@
 import * as services from './services';
 
 export default {
-  namespace: 'CRMManagementCallParents',
+  namespace: 'crmManagementCallParents',
   state: {
-    details: {},
+    data: [],
+    pagination: {
+      total: 0,
+    },
     error: {
       isError: false,
       data: {},
@@ -20,19 +23,21 @@ export default {
         },
       },
     }),
-    SET_DETAILS: (state, { payload }) => ({
+    SET_DATA: (state, { payload }) => ({
       ...state,
-      details: payload,
+      data: payload,
+      pagination: payload.pagination,
     }),
   },
   effects: {
-    *GET_DETAILS({ payload }, saga) {
+    *GET_DATA({ payload }, saga) {
       try {
-        const response = yield saga.call(services.details, payload);
+        const response = yield saga.call(services.get, payload);
         if (response) {
           yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response,
+            type: 'SET_DATA',
+            payload: response?.parsePayload,
+            pagination: response?.pagination,
           });
         }
       } catch (error) {
@@ -40,22 +45,6 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
-      }
-    },
-    *ADD({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.add, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *UPDATE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.update, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
       }
     },
   },

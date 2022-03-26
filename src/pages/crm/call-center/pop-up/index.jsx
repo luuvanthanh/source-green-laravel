@@ -50,7 +50,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'crmPopup/GET_EXTENSIONS',
+      type: 'crmCallCenter/GET_EXTENSIONS',
       payload: {
         employee_id_hrm: user.objectInfo?.id,
       },
@@ -68,6 +68,10 @@ const Index = memo(() => {
         }
       },
     });
+  }, []);
+
+  useEffect(() => {
+    serverContext('23388', 'crm@cmc2018', 'kam-01.api-connect.io', '7443', '', audioRef.current);
   }, []);
 
   useEffect(() => {
@@ -156,7 +160,7 @@ const Index = memo(() => {
     setIsVisible(false);
     setStatusCall(STATUS.idle);
     setInputNumber('');
-    setClientNumber('');
+    setClientNumber(''); // chưa xử lí bên test
     handleHangup();
   };
 
@@ -180,6 +184,7 @@ const Index = memo(() => {
           </div>
 
           <Modal
+            mask={false}
             className={styles['phone-simulator']}
             maskClosable={false}
             footer={null}
@@ -372,10 +377,10 @@ const Index = memo(() => {
           </Modal>
 
           {/* {isVisibleAddLead && (
-        <div className={styles['main-form-add-lead']}>
-          <p>FORM THÊM LEAD</p>
-        </div>
-      )} */}
+          <div className={styles['main-form-add-lead']}>
+            <p>FORM THÊM LEAD</p>
+          </div>
+        )} */}
         </>
       )}
     </>

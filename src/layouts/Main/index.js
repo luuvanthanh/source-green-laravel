@@ -7,7 +7,7 @@ import Settings from '@/components/LayoutComponents/Settings';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 import TopBar from '@/components/LayoutComponents/TopBar';
-import CallCenter from '@/pages/crm/call-center/pop-up';
+import CallCenter from '@/pages/crm/call-center/pop-up/test';
 
 const mapStateToProps = ({ settings, menu }) => ({
   isBorderless: settings.isBorderless,

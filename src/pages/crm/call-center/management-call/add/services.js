@@ -1,23 +1,16 @@
-import request from '@/utils/request';
+import request from '@/utils/requestCrm';
+
+export function details(data = {}) {
+  return request(`/v1/manager-calls/${data.id}`, {
+    method: 'GET',
+    params: {},
+  });
+}
 
 export function add(data = {}) {
-  return request('/criteria-groups', {
+  return request('/manager-calls', {
     method: 'POST',
     data,
     parse: true,
-  });
-}
-
-export function update(data = {}) {
-  return request(`/criteria-groups/${data.id}`, {
-    method: 'PUT',
-    data,
-    parse: true,
-  });
-}
-
-export function details(data = {}) {
-  return request(`/criteria-groups/${data.id}`, {
-    method: 'GET',
   });
 }

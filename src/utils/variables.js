@@ -263,6 +263,28 @@ export const variables = {
       y: { show: true },
     },
   },
+  CALL_TIME: [
+    {
+      id: 'FIRST',
+      name: 'Lần 1',
+    },
+    {
+      id: 'SECOND',
+      name: 'Lần 2',
+    },
+    {
+      id: 'THIRTH',
+      name: 'Lần 3',
+    },
+    {
+      id: 'FOURTH',
+      name: 'Lần 4',
+    },
+    {
+      id: 'FIVETH',
+      name: 'Lần 5',
+    },
+  ],
 };
 
 export default variables;

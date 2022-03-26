@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'crmPopup',
+  namespace: 'crmCallCenter',
   state: {
     data: [],
     pagination: {
@@ -30,10 +30,10 @@ export default {
     }),
   },
   effects: {
-    *GET_TOKEN({ payload, callback }, saga) {
+    *GET_EXTENSIONS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.getToken, payload);
-        callback(response);
+        const response = yield saga.call(services.getExtensions, payload);
+        callback(response?.parsePayload);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -41,10 +41,10 @@ export default {
         });
       }
     },
-    *GET_EXTENSIONS({ payload, callback }, saga) {
+    *CHECK_PHONE({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.getExtensions, payload);
-        callback(response?.parsePayload);
+        const response = yield saga.call(services.checkPhoneNumber, payload);
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

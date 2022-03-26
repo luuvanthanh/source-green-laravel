@@ -1,27 +1,10 @@
 import request from '@/utils/requestCrm';
-import { Helper } from '@/utils';
 
-export function get(data = {}) {
-  return request('/v1/customer-leads', {
+export function get(params = {}) {
+  return request('/v1/manager-calls', {
     method: 'GET',
     params: {
-      ...data,
-      limit: data.limit,
-      page: data.page,
-      orderBy: 'created_at',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes([
-        'city',
-        'district',
-        'search',
-        'statusCare.statusParentLead',
-        'studentInfo',
-        'employee',
-        'customerTag.tag',
-        'searchSource',
-      ]),
-      employeeId: data.employeeId && data.employeeId.join(','),
+      ...params,
     },
   });
 }
