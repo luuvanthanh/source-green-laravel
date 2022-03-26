@@ -93,6 +93,11 @@ function Index() {
         key: 'full_name',
         render: (value, record, index) => (
           <Select
+            placeholder="Chọn"
+            showSearch
+            filterOption={(input, option) =>
+              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
             className="w-100"
             defaultValue={record.full_name}
             onChange={(val) => onSelectEmployees(val, index)}

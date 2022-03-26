@@ -11,6 +11,7 @@ const variablesModule = {
     failed: 'FAILED',
     unavailable: 'UNAVAILABLE',
     not_found: 'NOTFOUND',
+    track_added: 'TRACK_ADDED',
   },
 };
 

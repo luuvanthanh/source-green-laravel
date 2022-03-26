@@ -1,23 +1,10 @@
-import request from '@/utils/request';
+import request from '@/utils/requestCrm';
 
-export function add(data = {}) {
-  return request('/criteria-groups', {
-    method: 'POST',
-    data,
-    parse: true,
-  });
-}
-
-export function update(data = {}) {
-  return request(`/criteria-groups/${data.id}`, {
-    method: 'PUT',
-    data,
-    parse: true,
-  });
-}
-
-export function details(data = {}) {
-  return request(`/criteria-groups/${data.id}`, {
+export function get(params = {}) {
+  return request('/v1/customer-leads/', {
     method: 'GET',
+    params: {
+      ...params,
+    },
   });
 }

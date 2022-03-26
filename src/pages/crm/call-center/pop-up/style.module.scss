@@ -47,11 +47,6 @@
   }
 }
 
-:global(.ant-modal-mask) {
-  display: none;
-  background-color: unset !important;
-}
-
 .phone-simulator {
   :global(.ant-modal-body) {
     display: flex;
@@ -170,6 +165,14 @@
     text-align: center;
     margin: 20px 0 15px;
     line-height: 100px;
+
+    .default-avatar {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
   }
 
   .user-name {
@@ -271,4 +274,23 @@
   width: 100%;
   border-bottom: 1px solid #383d45;
   border-top: 1px solid #383d45;
+}
+
+.call-result {
+  &-modal {
+    :global(.ant-modal-body .ant-row) {
+      display: unset;
+    }
+
+    :global(.ant-modal-footer) {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+
+  &-info {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 20px;
+  }
 }
