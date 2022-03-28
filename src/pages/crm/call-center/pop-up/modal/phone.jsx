@@ -2,12 +2,10 @@ import { Button } from 'antd';
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from '../style.module.scss';
-import { handleCallClick } from '../handleCallCenter';
 import variablesModule from '../variables';
 
-const Phone = memo(({ handleOnClick, audioRef }) => {
+const Phone = memo(({ handleOnClick }) => {
   const [inputNumber, setInputNumber] = useState('');
-  const { clientContext } = handleCallClick();
 
   const phoneBtns = [];
   [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach((item) => {
@@ -29,8 +27,7 @@ const Phone = memo(({ handleOnClick, audioRef }) => {
 
   const callNumber = () => {
     if (handleOnClick) {
-      handleOnClick(inputNumber, variablesModule.STATUS.outbound);
-      clientContext(inputNumber, audioRef.current);
+      handleOnClick(variablesModule.STATUS.outbound, inputNumber);
     }
   };
 
@@ -61,12 +58,10 @@ const Phone = memo(({ handleOnClick, audioRef }) => {
 
 Phone.propTypes = {
   handleOnClick: PropTypes.func,
-  audioRef: PropTypes.objectOf(PropTypes.any),
 };
 
 Phone.defaultProps = {
   handleOnClick: () => {},
-  audioRef: {},
 };
 
 export default Phone;

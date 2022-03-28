@@ -11,25 +11,26 @@ import { debounce } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation, useRouteMatch } from 'umi';
+import stylesModule from './styles.module.scss';
 
 const checkboxArr = [
-  { id: 1, name: 'Tất cả' },
-  { id: 2, name: 'Chưa có lịch gọi' },
-  { id: 3, name: 'Gọi lần 1' },
-  { id: 4, name: 'Gọi lần 2' },
-  { id: 5, name: 'Gọi lần 3' },
-  { id: 6, name: 'Gọi lần 4' },
-  { id: 7, name: 'Gọi lần 5' },
-  { id: 8, name: 'Overtime' },
-  { id: 9, name: 'Chưa gọi' },
-  { id: 10, name: 'Đã gọi' },
+  { id: 'ALL', name: 'Tất cả' },
+  { id: 'HAVENT_CALL', name: 'Chưa có lịch gọi' },
+  { id: 'ONE_TIME', name: 'Gọi lần 1' },
+  { id: 'TWO_TIME', name: 'Gọi lần 2' },
+  { id: 'THREE_TIME', name: 'Gọi lần 3' },
+  { id: 'FOUR_TIME', name: 'Gọi lần 4' },
+  { id: 'FIVE_TIME', name: 'Gọi lần 5' },
+  { id: 'OVERTIME', name: 'Overtime' },
+  { id: 'DONT_CALL', name: 'Chưa gọi' },
+  { id: 'CALLED', name: 'Đã gọi' },
 ];
 
 const Index = () => {
   const [
     { data, pagination },
     loading,
-  ] = useSelector(({ loading: { effects }, CRMHistoryCall }) => [CRMHistoryCall, effects]);
+  ] = useSelector(({ loading: { effects }, crmManagementCall }) => [crmManagementCall, effects]);
   const { query, pathname } = useLocation();
   const { params } = useRouteMatch();
   const history = useHistory();
@@ -43,7 +44,7 @@ const Index = () => {
 
   const onLoad = () => {
     dispatch({
-      type: 'CRMHistoryCall/GET_DATASOURCE',
+      type: 'crmManagementCall/GET_DATA',
       payload: {
         ...search,
       },
@@ -54,16 +55,8 @@ const Index = () => {
     });
   };
 
-  const loadCategories = () => {
-    dispatch({
-      type: 'crmHistoryCall/GET_EMPLOYEES',
-      payload: {},
-    });
-  };
-
   useEffect(() => {
     onLoad();
-    loadCategories();
   }, []);
 
   const debouncedSearch = debounce((value, type) => {
@@ -286,18 +279,21 @@ const Index = () => {
               </div>
             </div>
             <div className="row">
-              <div className="col-lg-12 d-flex">
-                {checkboxArr.map((item) => (
+              {checkboxArr.map((item) => (
+                <div className="col-xl-2 col-lg-3 col-4" key={item.id}>
                   <FormItem
-                    key={item.id}
                     name={item.id}
-                    className={classnames('checkbox-small', styles['list-checkbox-form'])}
+                    className={classnames(
+                      'checkbox-small',
+                      styles['list-checkbox-form'],
+                      stylesModule['checkbox-control'],
+                    )}
                     label={item.name}
                     type={variables.CHECKBOX_FORM}
                     valuePropName="checked"
                   />
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </Form>
           <Table

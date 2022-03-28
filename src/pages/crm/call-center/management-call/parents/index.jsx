@@ -1,851 +1,247 @@
-import React, { PureComponent } from 'react';
-import { connect, history } from 'umi';
-import { isEmpty, debounce, get } from 'lodash';
-import { Radio, Form } from 'antd';
-import Text from '@/components/CommonComponent/Text';
-import Table from '@/components/CommonComponent/Table';
-import { variables, Helper } from '@/utils';
-import PropTypes from 'prop-types';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import FormItem from '@/components/CommonComponent/FormItem';
+import Table from '@/components/CommonComponent/Table';
+import { Helper, variables } from '@/utils';
+import { Form } from 'antd';
+import { useDispatch, useSelector } from 'dva';
+import React, { memo, useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet';
+import { useHistory, useLocation } from 'umi';
 
-let isMounted = true;
-/**
- * Set isMounted
- * @param {boolean} value
- * @returns {boolean} value of isMounted
- */
-const setIsMounted = (value = true) => {
-  isMounted = value;
-  return isMounted;
-};
-/**
- * Get isMounted
- * @returns {boolean} value of isMounted
- */
-const getIsMounted = () => isMounted;
-const mapStateToProps = ({ crmSaleCheckList, loading }) => ({
-  error: crmSaleCheckList.error,
-  pagination: crmSaleCheckList.pagination,
-  branches: crmSaleCheckList.branches,
-  city: crmSaleCheckList.city,
-  district: crmSaleCheckList.district,
-  loading,
-});
-@connect(mapStateToProps)
-class Index extends PureComponent {
-  formRef = React.createRef();
+const Index = memo(() => {
+  const [
+    { data, pagination },
+    { effects },
+  ] = useSelector(({ crmManagementCallParents, loading }) => [crmManagementCallParents, loading]);
+  const dispatch = useDispatch();
+  const { pathname, query } = useLocation();
+  const history = useHistory();
+  const [formRef] = Form.useForm();
 
-  constructor(props) {
-    super(props);
-    const {
-      location: { query },
-    } = props;
-    this.state = {
-      search: {
-        key: query?.key,
-        page: query?.page || variables.PAGINATION.PAGE,
-        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      },
-      dataSource: [],
-      dataCoincide: [],
-    };
-    setIsMounted(true);
-  }
+  const [search, setSearch] = useState({
+    keyWord: query?.keyWord,
+    typeId: query?.typeId,
+    statusId: query?.statusId,
+    potentialId: query?.potentialId,
+  });
 
-  componentDidMount() {
-    this.onLoad();
-    this.loadCategories();
-  }
-
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
-
-  /**
-   * Set state properties
-   * @param {object} data the data input
-   * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
-   * @memberof setStateData
-   */
-  setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
-  };
-
-  /**
-   * Function load data
-   */
-  onLoad = () => {
-    const { search } = this.state;
-    const {
-      dataCheck,
-      location: { pathname },
-    } = this.props;
-    this.props.dispatch({
-      type: 'crmSaleCheckList/GET_DATA',
+  const onLoad = () => {
+    dispatch({
+      type: 'crmManagementCallParents/GET_DATA',
       payload: {
-        ...dataCheck,
-      },
-      callback: (response) => {
-        if (response) {
-          this.setStateData({
-            dataSource: response.parsePayload,
-          });
-        }
+        ...search,
       },
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({ ...search }),
     });
   };
 
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 300);
+  useEffect(() => {
+    onLoad();
+  }, [search]);
 
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
+  const onChangeExpected = (event, type) => {
+    switch (type) {
+      case 'keyWord':
+        setSearch((prevState) => ({
+          ...prevState,
+          [type]: event.target.value,
+        }));
+        break;
+      case 'timetableSettingId':
+        setSearch((prevState) => ({
+          ...prevState,
+          [type]: event,
+        }));
+        break;
+      case 'classId':
+        setSearch((prevState) => ({
+          ...prevState,
+          [type]: event,
+        }));
+        break;
+
+      default:
+        break;
+    }
   };
 
-  /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelect = (e, type) => {
-    this.debouncedSearch(e, type);
-  };
+  const header = () => [
+    {
+      title: 'STT',
+      width: 50,
+      align: 'center',
+      className: 'min-width-50',
+      render: (value, record, index) => index + 1,
+    },
+    {
+      title: 'Họ tên',
+      key: 'full_name',
+      width: 200,
+      className: 'min-width-200',
+      render: (record) => record?.full_name,
+    },
+    {
+      title: 'SĐT 1',
+      key: 'phone',
+      width: 150,
+      className: 'min-width-150',
+      render: (record) => record?.phone,
+    },
+    {
+      title: 'SĐT 2',
+      key: 'class',
+      width: 150,
+      dataIndex: 'class',
+      className: 'min-width-150',
+      render: (value) => value?.name,
+    },
+    {
+      title: 'Nội dung gọi',
+      key: 'age',
+      dataIndex: 'age',
+      className: 'min-width-150',
+      render: (value) => value?.name,
+    },
+    {
+      title: 'Nội dung gọi',
+      key: 'date',
+      className: 'min-width-150',
+      render: (value) => Helper.getDate(value?.registerDate, variables.DATE_FORMAT.DATE_VI),
+    },
+    {
+      title: 'Phân loại PH',
+      key: 'branch',
+      width: 150,
+      className: 'min-width-150',
+      render: (value) => value?.class?.branch?.name,
+    },
+    {
+      title: 'Tình trạng lead',
+      key: 'branch',
+      width: 150,
+      className: 'min-width-150',
+      render: (value) => value?.class?.branch?.name,
+    },
+    {
+      title: 'Tình trạng tiềm năng',
+      key: 'branch',
+      width: 150,
+      className: 'min-width-150',
+      render: (value) => value?.class?.branch?.name,
+    },
+    {
+      title: 'Người gọi',
+      key: 'branch',
+      width: 150,
+      className: 'min-width-150',
+      render: (value) => value?.class?.branch?.name,
+    },
+    {
+      title: 'Lần gọi',
+      key: 'branch',
+      width: 150,
+      className: 'min-width-150',
+      render: (value) => value?.class?.branch?.name,
+    },
+  ];
 
-  /**
-   * Function set pagination
-   * @param {integer} page page of pagination
-   * @param {integer} size size of pagination
-   */
-  changePagination = ({ page, limit }) => {
-    this.setState(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          page,
-          limit,
-        },
+  const changePagination = ({ page, limit }) => {
+    setSearch(
+      (prev) => ({
+        ...prev,
+        page,
+        limit,
       }),
       () => {
-        this.onLoad();
+        onLoad();
       },
     );
   };
 
-  /**
-   * Function pagination of table
-   * @param {object} pagination value of pagination items
-   */
-  pagination = (pagination) => {
-    const {
-      location: { query },
-    } = this.props;
-    return Helper.paginationNet({
+  const paginationFunction = (pagination) =>
+    Helper.paginationLavarel({
       pagination,
-      query,
       callback: (response) => {
-        this.changePagination(response);
+        changePagination(response);
       },
     });
-  };
 
-  loadCategories = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'crmSaleCheckList/GET_CITIES',
-      payload: {},
-    });
-    dispatch({
-      type: 'crmSaleCheckList/GET_DISTRICTS',
-      payload: {},
-    });
-  };
-
-  /**
-   * Function header table
-   */
-  header = () => {
-    const columns = [
-      {
-        title: 'STT ',
-        key: 'index',
-        width: 70,
-        fixed: 'left',
-        render: (text, record, index) =>
-          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
-      },
-      {
-        title: 'Tên',
-        key: 'name',
-        width: 250,
-        render: (record) => record?.full_name,
-      },
-      {
-        title: 'Địa chỉ',
-        key: 'address',
-        width: 200,
-        render: (record) => record?.address,
-      },
-      {
-        title: 'Email',
-        key: 'email',
-        width: 200,
-        render: (record) => record?.email,
-      },
-      {
-        title: 'Số điện thoại',
-        key: 'phone',
-        width: 150,
-        render: (record) => record?.phone,
-      },
-      {
-        title: 'Tên con',
-        key: 'nameChildren',
-        width: 150,
-        render: (record) => (
-          <Text size="normal">{record?.studentInfo?.map((item) => item.full_name).join(', ')}</Text>
-        ),
-      },
-      {
-        title: 'Ngày sinh con',
-        key: 'birth',
-        width: 150,
-        render: (record) => (
-          <Text size="normal">
-            {record?.studentInfo?.map((item) => item.birth_date).join(', ')}
-          </Text>
-        ),
-      },
-    ];
-    return columns;
-  };
-
-  //
-
-  headerModel = () => {
-    const columns = [
-      {
-        title: 'Mã phụ huynh ',
-        key: 'code',
-        width: 170,
-        fixed: 'left',
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeCoin(e, record, 'codeActive')}
-              value={record.codeActive}
-            >
-              <Radio value={record.code}>{record.code}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Hình ảnh phụ huynh',
-        key: 'img',
-        width: 170,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeAvt(e, record, 'avtActive')}
-              value={record.avtActive}
-              style={{ display: 'flex', justifyContent: 'center' }}
-            >
-              <Radio value={record.file_image}>
-                <AvatarTable fileImage={Helper.getPathAvatarJson(record.file_image)} />
-              </Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Họ  và tên',
-        key: 'name',
-        width: 200,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeName(e, record, 'nameActive')}
-              value={record.nameActive}
-            >
-              <Radio value={record.full_name}>{record.full_name}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Giới tính',
-        key: 'sex',
-        width: 150,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeSex(e, record, 'sexActive')}
-              value={record.sexActive}
-            >
-              <Radio value={record.sex}>{variables.GENDERS[record?.sex] || ''}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Email',
-        key: 'email',
-        width: 170,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeEmail(e, record, 'emailActive')}
-              value={record.emailActive}
-            >
-              <Radio value={record.email}>{record.email}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Số điện thoại',
-        key: 'phone',
-        width: 200,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangePhone(e, record, 'phoneActive')}
-              value={record.phoneActive}
-            >
-              <Radio value={record.phone}>{record.phone}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Số điện thoại khác',
-        key: 'other_phone',
-        width: 200,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeOtherPhone(e, record, 'other_phoneActive')}
-              value={record.other_phoneActive}
-            >
-              <Radio value={record.other_phone}>{record.other_phone}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Địa chỉ',
-        key: 'address',
-        width: 200,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeAddress(e, record, 'addressActive')}
-              value={record.addressActive}
-            >
-              <Radio value={record.address}>{record.address}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Xã phường',
-        key: 'townWard',
-        width: 200,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeTownWard(e, record, 'townWardActive')}
-              value={record.townWardActive}
-            >
-              <Radio value={record.town_ward_id}>{get(record, 'townWard.name')}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Quận Huyện',
-        key: 'district',
-        width: 170,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeDistrict(e, record, 'districtActive')}
-              value={record.districtActive}
-            >
-              <Radio value={record.district_id}>{get(record, 'district.name')}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Tỉnh thành',
-        key: 'city',
-        width: 170,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeCity(e, record, 'cityActive')}
-              value={record.cityActive}
-            >
-              <Radio value={record.city_id}>{get(record, 'city.name')}</Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Tên con',
-        key: 'full_name',
-        width: 170,
-        render: (record) => (
-          <>
-            <Radio.Group value={record.studentsNameActive}>
-              <Radio
-                value={record.studentInfo}
-                onChange={(e) => this.onChangeStudentsName(e, record, 'studentsNameActive')}
-              >
-                {record?.studentInfo?.map((item, index) => (
-                  <Text size="normal" key={index}>
-                    {item.full_name}
-                  </Text>
-                ))}
-              </Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-      {
-        title: 'Ngày sinh con',
-        key: 'student_birth_date',
-        width: 170,
-        render: (record) => (
-          <>
-            <Radio.Group
-              onChange={(e) => this.onChangeStudentsBirthDay(e, record, 'StudentsBirthDayActive')}
-              value={record.StudentsBirthDayActive}
-            >
-              <Radio value={record.studentInfo}>
-                {record?.studentInfo?.map((item, index) => (
-                  <Text size="normal" key={index}>
-                    {item.birth_date}
-                  </Text>
-                ))}
-              </Radio>
-            </Radio.Group>
-          </>
-        ),
-      },
-    ];
-    return columns;
-  };
-
-  submit = () => {
-    const { dataCoincide } = this.state;
-    const items = dataCoincide.filter((item) => item !== null);
-    const student = items.filter((item) => item.studentsNameActive);
-    const a = student.map((item) => item.studentsNameActive);
-    const { search } = this.state;
-    const {
-      location: { query },
-      location: { pathname },
-    } = this.props;
-    if (items.length && a.length) {
-      this.confirmAction({
-        callback: () => {
-          this.props.dispatch({
-            type: 'crmSaleCheckList/ADD_COINCIDE',
-            payload: {
-              merge_customer_lead_id: items.map((item) => item.id),
-              sex: items.map((item) => item.sexActive).join(''),
-              code: items.map((item) => item.codeActive).join(''),
-              file_image: items.map((item) => item.avtActive).join(''),
-              full_name: items.map((item) => item.nameActive).join(''),
-              email: items.map((item) => item.emailActive).join(''),
-              phone: items.map((item) => item.phoneActive).join(''),
-              other_phone: items.map((item) => item.other_phoneActive).join(''),
-              address: items.map((item) => item.addressActive).join(''),
-              town_ward_id: items?.map((item) => item.townWardActive).join(''),
-              district_id: items?.map((item) => item.districtActive).join(''),
-              city_id: items?.map((item) => item.cityActive).join(''),
-              studen_info: a[0].map((i) => ({ full_name: i.full_name, birth_date: i.birth_date })),
-            },
-            callback: (response, error) => {
-              if (response) {
-                this.isModal();
-                this.props.dispatch({
-                  type: 'crmSaleParentsLead/GET_DATA',
-                  payload: {
-                    page: query?.page,
-                    limit: query?.limit,
-                  },
-                });
-              }
-              if (error) {
-                if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-                  error.data.errors.forEach((item) => {
-                    this.formRef.current.setFields([
-                      {
-                        name: get(item, 'source.pointer'),
-                        errors: [get(item, 'detail')],
-                      },
-                    ]);
-                  });
-                }
-              }
-            },
-          });
-        },
-      });
-    } else {
-      this.confirmAction({
-        callback: () => {
-          this.props.dispatch({
-            type: 'crmSaleCheckList/ADD_COINCIDE',
-            payload: {
-              merge_customer_lead_id: items.map((item) => item.id),
-              sex: items.map((item) => item.sexActive).join(''),
-              code: items.map((item) => item.codeActive).join(''),
-              file_image: items.map((item) => item.avtActive).join(''),
-              full_name: items.map((item) => item.nameActive).join(''),
-              email: items.map((item) => item.emailActive).join(''),
-              phone: items.map((item) => item.phoneActive).join(''),
-              other_phone: items.map((item) => item.other_phoneActive).join(''),
-              address: items.map((item) => item.addressActive).join(''),
-              town_ward_id: items?.map((item) => item.townWardActive).join(''),
-              district_id: items?.map((item) => item.districtActive).join(''),
-              city_id: items?.map((item) => item.cityActive).join(''),
-            },
-            callback: (response, error) => {
-              if (response) {
-                this.isModal();
-                this.props.dispatch({
-                  type: 'crmSaleParentsLead/GET_DATA',
-                  payload: {
-                    page: query?.page,
-                    limit: query?.limit,
-                  },
-                });
-              }
-              if (error) {
-                if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-                  error.data.errors.forEach((item) => {
-                    this.formRef.current.setFields([
-                      {
-                        name: get(item, 'source.pointer'),
-                        errors: [get(item, 'detail')],
-                      },
-                    ]);
-                  });
-                }
-              }
-            },
-          });
-          history.push({
-            pathname,
-            query: Helper.convertParamSearch(search),
-          });
-        },
-      });
-    }
-  };
-
-  showModal = () => {
-    const { dataSource } = this.state;
-    this.setStateData({ isModalVisible: true });
-    const items = dataSource.filter((item) => item.isActive);
-    const { search } = this.state;
-    const {
-      location: { pathname },
-    } = this.props;
-    if (items.length) {
-      this.props.dispatch({
-        type: 'crmSaleCheckList/GET_DATA_COINCIDE',
-        payload: {
-          customer_lead_id: items.map((item) => item.id).join(','),
-        },
-        callback: (response) => {
-          if (response) {
-            this.setStateData({
-              dataCoincide: response,
-            });
-          }
-        },
-      });
-      history.push({
-        pathname,
-        query: Helper.convertParamSearch(search),
-      });
-    }
-  };
-
-  onChangeCoin = (e, record = {}, key = ['codeActive'], keyOrigin = 'code') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-        nameActive: record.id === item.id ? record.full_name : undefined,
-        avtActive: record.id === item.id ? record.file_image : undefined,
-        sexActive: record.id === item.id ? record.sex : undefined,
-        emailActive: record.id === item.id ? record.email : undefined,
-        phoneActive: record.id === item.id ? record.phone : undefined,
-        other_phoneActive: record.id === item.id ? record.other_phone : undefined,
-        addressActive: record.id === item.id ? record.address : undefined,
-        townWardActive: record.id === item.id ? record.town_ward_id : undefined,
-        districtActive: record.id === item.id ? record.district_id : undefined,
-        cityActive: record.id === item.id ? record.city_id : undefined,
-        studentsNameActive: record.id === item.id ? record.studentInfo : undefined,
-        StudentsBirthDayActive: record.id === item.id ? record.studentInfo : undefined,
-      })),
-    }));
-  };
-
-  onChangeName = (e, record = {}, key = 'nameActive', keyOrigin = 'full_name') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeAvt = (e, record = {}, key = 'avtActive', keyOrigin = 'file_image') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeEmail = (e, record = {}, key = 'emailActive', keyOrigin = 'email') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeSex = (e, record = {}, key = 'sexActive', keyOrigin = 'sex') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangePhone = (e, record = {}, key = 'phoneActive', keyOrigin = 'phone') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeOtherPhone = (e, record = {}, key = 'other_phoneActive', keyOrigin = 'other_phone') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeAddress = (e, record = {}, key = 'addressActive', keyOrigin = 'address') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeTownWard = (e, record = {}, key = 'townWardActive', keyOrigin = 'town_ward_id') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeDistrict = (e, record = {}, key = 'districtActive', keyOrigin = 'district_id') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeCity = (e, record = {}, key = 'cityActive', keyOrigin = 'city_id') => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeStudentsName = (
-    e,
-    record = {},
-    key = 'studentsNameActive',
-    keyOrigin = 'studentInfo',
-  ) => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onChangeStudentsBirthDay = (
-    e,
-    record = {},
-    key = 'StudentsBirthDayActive',
-    keyOrigin = 'studentInfo',
-  ) => {
-    this.setState((prevState) => ({
-      dataCoincide: prevState.dataCoincide.map((item) => ({
-        ...item,
-        [key]: record.id === item.id ? record[keyOrigin] : undefined,
-      })),
-    }));
-  };
-
-  onSelectChange = (e) => {
-    this.setStateData((prevState) => ({
-      dataSource: prevState.dataSource.map((item) => ({
-        ...item,
-        isActive: !!e.includes(item.id),
-      })),
-    }));
-  };
-
-  isModal = () => {
-    this.props.parentCallback({ isModal: false });
-  };
-
-  render() {
-    const {
-      match: { params },
-      loading: { effects },
-    } = this.props;
-    const { dataSource } = this.state;
-    const rowSelection = {
-      onChange: this.onSelectChange,
-    };
-    const loading =
-      effects['crmSaleCheckList/GET_DATA'] || effects['crmSaleCheckList/GET_DATA_COINCIDE'];
-    return (
-      <>
-        <Form>
-          <div className="row">
-            <div className="col-lg-3">
-              <FormItem
-                name="key"
-                onChange={(e) => this.onChange(e, 'key')}
-                placeholder="Tìm kiếm"
-                type={variables.INPUT_SEARCH}
-              />
-            </div>
-            <div className="col-lg-3">
-              <FormItem
-                data={[{ id: null, name: 'Phân loại PH' }]}
-                name="parents"
-                onChange={(e) => this.onChangeSelect(e, 'parents_id')}
-                type={variables.SELECT}
-                allowClear={false}
-              />
-            </div>
-            <div className="col-lg-3">
-              <FormItem
-                data={[{ id: null, name: 'Tình trạng lead' }]}
-                name="leadStatus"
-                onChange={(e) => this.onChangeSelect(e, 'leadStatus_id')}
-                type={variables.SELECT}
-                allowClear={false}
-              />
-            </div>
-            <div className="col-lg-3">
-              <FormItem
-                data={[{ id: null, name: 'Tình trạng tiềm năng' }]}
-                name="potentialStatus"
-                onChange={(e) => this.onChangeSelect(e, 'potentialStatus_id')}
-                type={variables.SELECT}
-                allowClear={false}
-              />
-            </div>
+  return (
+    <>
+      <Helmet title="Thống kê tiệm cận" />
+      <Form
+        initialValues={{
+          ...search,
+          typeId: query?.typeId || null,
+          statusId: query?.statusId || null,
+          potentialId: query?.potentialId || null,
+        }}
+        layout="vertical"
+        form={formRef}
+      >
+        <div className="row">
+          <div className="col-lg-3">
+            <FormItem
+              className="ant-form-item-row"
+              name="keyWord"
+              type={variables.INPUT_SEARCH}
+              placeholder="Từ khóa tìm kiếm"
+              onChange={(event) => onChangeExpected(event, 'keyWord')}
+            />
           </div>
-          <Table
-            bordered={false}
-            columns={this.header(params)}
-            dataSource={dataSource}
-            loading={loading}
-            rowSelection={{ ...rowSelection }}
-            pagination={false}
-            params={{
-              header: this.header(),
-              type: 'table',
-            }}
-            rowKey={(record) => record.id}
-            scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
-          />
-        </Form>
-      </>
-    );
-  }
-}
-
-Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
-  dataCheck: PropTypes.objectOf(PropTypes.any),
-  parentCallback: PropTypes.objectOf(PropTypes.any),
-};
-
-Index.defaultProps = {
-  match: {},
-  loading: {},
-  dispatch: {},
-  location: {},
-  dataCheck: {},
-  parentCallback: {},
-};
+          <div className="col-lg-3">
+            <FormItem
+              className="ant-form-item-row"
+              data={[{ id: null, name: 'Tất cả phân loại PH' }]}
+              name="typeId"
+              onChange={(event) => onChangeExpected(event, 'typeId')}
+              type={variables.SELECT}
+              allowClear={false}
+            />
+          </div>
+          <div className="col-lg-3">
+            <FormItem
+              className="ant-form-item-row"
+              data={[{ id: null, name: 'Tất cả tình trạng Lead' }]}
+              name="statusId"
+              onChange={(event) => onChangeExpected(event, 'statusId')}
+              type={variables.SELECT}
+              allowClear={false}
+            />
+          </div>
+          <div className="col-lg-3">
+            <FormItem
+              className="ant-form-item-row"
+              data={[{ id: null, name: 'Tất cả tình trạng tiềm năng' }]}
+              name="potentialId"
+              onChange={(event) => onChangeExpected(event, 'potentialId')}
+              type={variables.SELECT}
+              allowClear={false}
+            />
+          </div>
+        </div>
+      </Form>
+      <Table
+        bordered
+        columns={header()}
+        isEmpty
+        dataSource={data}
+        loading={effects['crmManagementCallParents/GET_DATA']}
+        pagination={paginationFunction(pagination)}
+        rowSelection={{
+          getCheckboxProps: (record) => ({ name: record.name }),
+        }}
+        params={{
+          header: header(),
+          type: 'table',
+        }}
+        rowKey={(record) => record.id}
+        scroll={{ x: '100%' }}
+      />
+    </>
+  );
+});
 
 export default Index;

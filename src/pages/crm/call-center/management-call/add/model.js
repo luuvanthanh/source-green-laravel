@@ -1,9 +1,8 @@
 import * as services from './services';
 
 export default {
-  namespace: 'CRMManagementCallAdd',
+  namespace: 'crmManagementCallAdd',
   state: {
-    details: {},
     error: {
       isError: false,
       data: {},
@@ -20,21 +19,12 @@ export default {
         },
       },
     }),
-    SET_DETAILS: (state, { payload }) => ({
-      ...state,
-      details: payload,
-    }),
   },
   effects: {
-    *GET_DETAILS({ payload }, saga) {
+    *GET_DETAILS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.details, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response,
-          });
-        }
+        callback(response?.parsePayload);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -45,14 +35,6 @@ export default {
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *UPDATE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);

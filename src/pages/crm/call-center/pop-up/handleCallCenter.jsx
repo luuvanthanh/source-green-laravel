@@ -192,6 +192,7 @@ const handleOnClient = () => {
       });
       session.on('trackAdded', () => {
         console.log('%cTHÊM ÂM THANH (GỌI ĐI)', 'color: yellow; font-weight: bold');
+        setClientStatus('TRACK_ADDED');
         const pc = session.sessionDescriptionHandler.peerConnection;
         const remoteStream = new MediaStream();
 
