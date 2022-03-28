@@ -1,14 +1,15 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Spin, Tabs } from 'antd';
+import { Form, Spin, Tabs, Table } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
-import _ from 'lodash';
+import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import Text from '@/components/CommonComponent/Text';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -42,10 +43,11 @@ const Index = memo(() => {
   const [tuition, setTuition] = useState([]);
 
   const [YearsDetail, setYearsDetail] = useState([]);
-
+  const [detalTuition, setDetalTuition] = useState([]);
   const [idYear, setIdYear] = useState();
   const [idRes, setIdRes] = useState();
 
+  const [checkData, setCheckData] = useState(false);
   const [errorTable, setErrorTable] = useState({
     tuition: false,
   });
@@ -59,6 +61,7 @@ const Index = memo(() => {
     classType: '',
     className: '',
     classTypeId: '',
+    expectedToCollectMoney: [],
   });
 
   const getStudents = () => {
@@ -89,7 +92,9 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res) {
-            setIdYear(res?.schoolYearId);
+           
+             setIdYear(res?.schoolYearId);
+            setCheckData(true);
             setYearsDetail(res?.expectedToCollectMoney);
             getStudents(res?.student?.code);
             setTuition(res?.tuition);
@@ -104,6 +109,7 @@ const Index = memo(() => {
               classType: res?.student?.classStudent?.class?.classType?.name || '',
               className: res?.student?.classStudent?.class?.name || '',
               classTypeId: res?.student?.classStudent?.class?.classType?.id || '',
+              expectedToCollectMoney: res?.expectedToCollectMoney || [],
             }));
             formRef.current.setFieldsValue({
               ...res,
@@ -229,9 +235,6 @@ const Index = memo(() => {
         classTypeId: student?.class?.classType?.id || '',
       };
       setDetails(newDetails);
-      // if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
-      //   getMoney(newDetails);
-      // }
     }
   };
 
@@ -255,9 +258,6 @@ const Index = memo(() => {
       dayAdmission: value ? Helper.getDate(value, variables.DATE_FORMAT.DATE_VI) : ''
     };
     setDetails(newDetails);
-    // if (newDetails?.classTypeId && newDetails?.schoolYearId && value) {
-    //   getMoney(newDetails);
-    // }
   };
 
   const changeTab = (key) => {
@@ -265,80 +265,82 @@ const Index = memo(() => {
   };
 
   const dataYear = yearsSchool?.filter((p) => (idYear === p.id ? (p) : ""));
-  const dataIdRes = idRes?.map(i => ({
-    ...i,
-    detailYear: dataYear[0]?.changeParameter?.changeParameterDetail,
-  }));
 
-  const data = YearsDetail?.length > 0 && dataYear?.length > 0 ?
-    YearsDetail?.map((p) =>
-    (
-      {
-        date: p?.date,
-        fees: fees.map((id, stt) => ({
-          money: dataIdRes?.map((a, index) => {
+  const sumArray = (e) => {
+    let sum = 0;
+    e?.map((value) => {
+      sum += value?.money;
+    });
 
-            for (let i = 0; i <= a?.detailData?.length; i++) {
-              if (a.feeId === id?.id && a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
-                return a?.detailData[i]?.fee[0]?.money || 0;
-              }
-            };
-            for (let i = 0; i <= a.detailYear?.length; i++) {
-              if (a?.feeId === id?.id && a?.detailYear[i]?.date === p?.date) {
-                return p?.fees[stt]?.money[index] || 0;
-              }
-            };
-            return 0;
-          })
-        })),
-        fee: fees.map(id => ({
-          money: idRes?.map((a) => {
-            for (let i = 0; i <= a?.detailData?.length; i++) {
-              if (a.feeId === id.id && a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
-                return {
-                  money: a?.detailData[i]?.fee[0]?.money || 0,
-                  feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
-                  fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
-                };
-              }
-            }
-          })
-        })),
-      }))
+    return sum;
+  };
 
-    :
+  const sumArrayMain = (e) => {
+    let sum = 0;
+    e.map((value) => {
+      sum += value?.total;
+    });
+
+    return sum;
+  };
+
+  const sumItem = (e) => {
+    const result = _(e)
+      .groupBy('feeId')
+      .map(function (items, feeId, money) {
+        return { feeId: feeId, money: sumArray(items) };
+      }).value();
+    return result;
+  };
+
+  const flattenArr = (arr) => {
+    let sum = [];
+    _.forEachRight(arr, function (value) {
+      sum = sum?.concat(value?.money)
+    })
+    return sumItem(sum);
+  };
+console.log("idRes",idRes)
+  const data = !checkData > 0 ?
     dataYear[0]?.changeParameter?.changeParameterDetail?.map((p) =>
     (
       {
         date: p?.date,
-        fees: fees.map(id => ({
-          money: idRes?.map((a) => {
-            for (let i = 0; i <= a?.detailData?.length; i++) {
-              if (a.feeId === id.id && a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
-                return a?.detailData[i]?.fee[0]?.money || 0;
-              }
+        money: idRes?.map((a) => {
+          for (let i = 0; i <= a?.detailData?.length; i++) {
+            if (a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
+              return {
+                money: a?.detailData[i]?.fee[0]?.money || 0,
+                feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
+                fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
+              };
             }
-            return 0;
-          })
-        })),
-        fee: fees.map(id => ({
-          money: idRes?.map((a) => {
-            for (let i = 0; i <= a?.detailData?.length; i++) {
-              if (a.feeId === id.id && a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
-                return {
-                  money: a?.detailData[i]?.fee[0]?.money || 0,
-                  feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
-                  fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
-                };
-              }
+          }
+        }),
+        total: sumArray(idRes?.map((a) => {
+          for (let i = 0; i <= a?.detailData?.length; i++) {
+            if (a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
+              return {
+                money: a?.detailData[i]?.fee[0]?.money || 0,
+                feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
+                fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
+              };
             }
-          })
-        })),
-      }));
+          }
+        }))
+      }))
+    :
+    details?.expectedToCollectMoney?.map((p) =>
+    ({
+      ...p,
+      total: sumArray(p?.money)
+    }
+    ),
+    );
 
-
-
-
+    if( !checkData && data?.length > 0) {
+      data?.push({ total: sumArrayMain(data), money: flattenArr(data) })
+    }
 
   useEffect(() => {
     dispatch({
@@ -376,39 +378,74 @@ const Index = memo(() => {
     }
   }, [params?.id]);
 
-  const row = (index) => {
-    if (idRes?.length > 0) {
-      var tables = document.getElementById("table"), sumVal = 0;
-      for (let i = 1; i < data?.length + 1; i++) {
-        const a = tables?.rows[i]?.cells[index]?.innerHTML;
-        const b = a?.replace(/,/g, "");
-        if (parseFloat(b) > 0 && !isNaN(b)) {
-          sumVal = sumVal + parseFloat(b);
-        }
-        return sumVal?.toLocaleString();
-      }
-    }
-  };
-
-  const total = (index) => {
-    if (idRes?.length > 0) {
-      var table = document.getElementById("table"), sumVal = 0;
-      for (let i = 1; i < fees?.length + 1; i++) {
-        const a = table?.rows[index]?.cells[i]?.innerHTML;
-        const b = a?.replace(/,/g, "");
-        if (b !== undefined && !isNaN(b)) {
-          sumVal = sumVal + parseFloat(b);
-        }
-        return sumVal?.toLocaleString();
-      }
-    }
-  };
-
-
-  const hanDleChangeText = (childData) => {
+  const hanDleChangeText = (childData, k) => {
     setIdRes(childData);
+    setCheckData(k);
   };
 
+  const header = () => {
+    const rowData = fees?.map(i => ({
+      title: i?.name,
+      width: 150,
+      key: 'money',
+      render: (record) => {
+        const item = record?.money?.find(k => k?.feeId === i?.id);
+        return (
+          <>
+            {
+              item?.feeId ?
+                <Text size="normal">
+                  {item?.money?.toLocaleString()}
+                </Text>
+                :
+                "0"
+            }
+          </>
+        );
+      }
+    }));
+    const columns = [
+      {
+        title: 'Tháng',
+        key: 'date',
+        className: 'min-width-150',
+        width: 200,
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.date, variables.DATE_FORMAT.DATE_MONTH)}
+          </Text>
+        ),
+      },
+      {
+        title: 'Ngoài giờ(đ)',
+        key: 'location',
+        width: 150,
+        className: 'min-width-150',
+        render: () => <> - </>,
+      },
+      {
+        title: 'Giảm trừ(đ)',
+        key: 'result',
+        width: 150,
+        className: 'min-width-150',
+        render: () => <> - </>,
+      },
+      {
+        title: 'Tổng tiền(đ)',
+        key: 'total',
+        fixed: 'right',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) =>
+          <Text size="normal">
+            {record?.total?.toLocaleString()}
+          </Text>
+      },
+    ];
+    columns.splice(1, 0, ...rowData);
+    return columns;
+  };
+console.log("setTuition",tuition)
   const tabs = () => [
     {
       id: 'tuition',
@@ -429,45 +466,30 @@ const Index = memo(() => {
       name: 'DỰ KIẾN PHẢI THU',
       component: (
         <>
-          <ScrollContainer hideScrollbars={false}>
-            <table className={stylesModule['table-container']} id="table" >
-              <thead>
-                <tr>
-                  <th scope="col" className={stylesModule['table-top']}>Tháng</th>
-                  {fees.map(i => <th scope="col" className={stylesModule['table-top']}>{i.name}</th>)}
-                  <th scope="col" className={stylesModule['table-top']} >Ngoài giờ(đ) </th>
-                  <th scope="col" className={stylesModule['table-top']}>Giảm trừ(đ)</th>
-                  <th scope="col" className={stylesModule['table-top']} style={{ background: '#eef0f4' }}>Tổng tiền(đ)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data?.map((i, index) =>
-                  <tr>
-                    <td className={stylesModule['table-content']}>{Helper.getDate(i?.date, variables.DATE_FORMAT.DATE_MONTH)}</td>
-                    {i?.fees?.map(item => <td className={stylesModule['table-content']}> {(item?.money?.filter((str) => { return str != 0 })).length > 0
-                      ? Helper?.getPrice(item?.money?.filter((str) => { return str != 0 }), 0, true) : 0}</td>)}
-                    <td className={stylesModule['table-content']}>-</td>
-                    <td className={stylesModule['table-content']}>-</td>
-                    <td className={stylesModule['table-content']}> {total(index + 1)}</td>
-                  </tr>
-                )}
-                <tr>
-                  <td className={stylesModule['table-footer']} />
-                  {fees?.map((i, index) =>
-                    <td className={stylesModule['table-footer']}>{row(index + 1)}</td>
-                  )}
-                  <td className={stylesModule['table-footer']} />
-                  <td className={stylesModule['table-footer']} />
-                  <td className={stylesModule['table-footer']} style={{ background: '#fff1eb' }} >{total(data?.length + 1)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </ScrollContainer>
+          {
+            fees?.length > 0 && (
+              <Table
+                columns={header()}
+                dataSource={data}
+                pagination={false}
+                className="table-normal"
+                isEmpty
+                childrenColumnName="children"
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                bordered
+                rowKey={(record) => record?.id}
+                scroll={{ x: '100%' }}
+              />
+            )
+          }
         </>
       ),
     },
   ];
-
+  console.log("data",data)
   const onFinish = (values) => {
     const errorTuition = checkValidate(tuition, 'tuition');
     if (errorTuition) {

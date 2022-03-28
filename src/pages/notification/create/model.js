@@ -109,6 +109,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *GET_CLASS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getClass, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

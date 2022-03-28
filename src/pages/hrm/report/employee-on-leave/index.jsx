@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -415,6 +416,26 @@ class Index extends PureComponent {
 
     handleCancel = () => this.setStateData({ visible: false });
 
+    // onChangeExcel = () => {
+    //     const { dataIDSearch } = this.state;
+    //     const {
+    //       defaultBranch,
+    //       location: { query },
+    //     } = this.props;
+    //     Helper.exportExcel(
+    //       `/export-excel-absents?`,
+    //       {
+    //         Class: query?.Class,
+    //         branchId: query?.branchId || defaultBranch?.id,
+    //         SearchDate: dataIDSearch
+    //           ? Helper.getDate(dataIDSearch, variables.DATE_FORMAT.DATE)
+    //           :  moment().format('YYYY-MM-DD'),
+    //       },
+    //       `Baocaonhanviendangnghi.xlsx`,
+    //     );
+    //   };
+
+      
     render() {
         const {
             data,
@@ -435,6 +456,9 @@ class Index extends PureComponent {
                     {/* FORM SEARCH */}
                     <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
                         <Text color="dark">Báo cáo nhân viên đang nghỉ phép</Text>
+                        {/* <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+              Xuất Excel
+            </Button> */}
                     </div>
                     <div className={classnames(styles['block-table'])}>
                         <Form

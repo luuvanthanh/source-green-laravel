@@ -150,13 +150,13 @@ class Index extends PureComponent {
   };
 
   formUpdate = (value, values) => {
-    const { month, year, contractFrom } = values;
+    const { month, contractFrom } = values;
 
     if (moment.isMoment(contractFrom)) {
       this.formRef?.current?.setFieldsValue({
         contractTo: moment(contractFrom)
           .add(month || 0, 'months')
-          .add(year || 0, 'years'),
+          .subtract(1, 'days'),
       });
     }
   };

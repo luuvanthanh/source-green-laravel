@@ -1,4 +1,4 @@
-import { memo, useMemo, useEffect } from 'react';
+import { memo, useMemo, useEffect , useState} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -18,9 +18,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
     fees: fees.data,
     paymentForm: paymentMethod.data,
   }));
-  const changeText=(e)=>{
-    hanDleChangeText(e);
+  const changeText=(e,k)=>{
+    hanDleChangeText(e,k);
 };
+
+const [check, setCheck] = useState(true);
 
   useEffect(() => {
     dispatch({
@@ -77,6 +79,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
         },
         callback: (res) => {
           if (!_.isEmpty(res?.payload)) {
+            setCheck(false);
             newTuition[index] = { ...res?.payload[0], detailData: res?.detailData };
           } else {
             newTuition[index] = {
@@ -111,10 +114,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
   };
 
   const removeLine = (record) => {
+    setCheck(false);
     const newTuition = [...tuition].filter((item) => item.id !== record.id);
     setTuition(newTuition);
   };
- changeText(tuition);
+ changeText(tuition, check);
   const columns = useMemo(() => [
     {
       title: 'Loại phí',

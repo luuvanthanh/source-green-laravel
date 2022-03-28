@@ -66,6 +66,7 @@ const Index = memo(() => {
   const [parents, setParents] = useState([]);
   const [employeesActive, setEmployeesActive] = useState([]);
   const [parentsActive, setParentsActive] = useState([]);
+  const [dataClass, setDataClass] = useState([]);
 
   const onChangeEditor = (value) => {
     mountedSet(setContent, value);
@@ -180,6 +181,21 @@ const Index = memo(() => {
             total: response.pagination.total,
             loading: false,
           });
+        }
+      },
+    });
+  };
+
+  const onChangeBranchParent = (value) => {
+
+    dispatch({
+      type: 'notificationAdd/GET_CLASS',
+      payload: {
+        branch: value,
+      },
+      callback: (response) => {
+        if (response) {
+          mountedSet(setDataClass, response.items);
         }
       },
     });
@@ -324,6 +340,22 @@ const Index = memo(() => {
   const onFinish = (values) => {
     const payload = {
       ...values,
+      RemindDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.RemindDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      RemindTime: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.RemindTime,
+        }),
+        format: variables.DATE_FORMAT.HOUR,
+        isUTC: false,
+      }),
       id: params.id,
       content,
       sentDate: moment(),
@@ -360,7 +392,6 @@ const Index = memo(() => {
       },
     });
   };
-
   useEffect(() => {
     if (params.id && !isEmpty(employees) && !isEmpty(parents)) {
       dispatch({
@@ -379,6 +410,10 @@ const Index = memo(() => {
               title: response.title,
               branchId: response?.branch?.id,
               divisionId: response?.division?.id,
+              ClassId: response?.class?.id,
+              IsReminded : response?.isReminded,
+              RemindTime :   moment(response?.remindTime, variables.DATE_FORMAT.HOUR),
+              RemindDate:  moment(response.remindDate),
             });
             mountedSet(
               setParents,
@@ -409,15 +444,28 @@ const Index = memo(() => {
             mountedSet(setEmployeesActive, response?.employeeNews);
             mountedSet(setParentsActive, response?.parentNews);
           }
+          if (response?.branch?.id) {
+            dispatch({
+              type: 'notificationAdd/GET_CLASS',
+              payload: {
+                branch: response?.branch?.id,
+              },
+              callback: (response) => {
+                if (response) {
+                  mountedSet(setDataClass, response.items);
+                }
+              },
+            });
+          }
         },
       });
     }
   }, [
     params.id &&
-      !isEmpty(employees) &&
-      searchEmployee.hasMore &&
-      !isEmpty(parents) &&
-      searchParent.hasMore,
+    !isEmpty(employees) &&
+    searchEmployee.hasMore &&
+    !isEmpty(parents) &&
+    searchParent.hasMore,
   ]);
 
   return (
@@ -475,12 +523,12 @@ const Index = memo(() => {
                   </Pane>
                   <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
                     <FormItemAntd label="Người nhận thông báo">
-                    <FormItem
-                          name="FullName"
-                          placeholder="Nhập từ khóa tìm kiếm"
-                          type={variables.INPUT_SEARCH}
-                          onChange={(e) => onChangeSearch(e.target.value)}
-                        />
+                      <FormItem
+                        name="FullName"
+                        placeholder="Nhập từ khóa tìm kiếm"
+                        type={variables.INPUT_SEARCH}
+                        onChange={(e) => onChangeSearch(e.target.value)}
+                      />
                       <Checkbox
                         checked={isAllEmployees}
                         onChange={(event) => changeAll(variablesModules.TYPE.EMPLOYEE, event)}
@@ -547,6 +595,24 @@ const Index = memo(() => {
                 <>
                   <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
                     <Pane className="row">
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          label="Cơ sở"
+                          name="branchId"
+                          data={branches}
+                          type={variables.SELECT}
+                          onChange={onChangeBranchParent}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          label="Lớp"
+                          name="ClassId"
+                          data={dataClass}
+                          type={variables.SELECT}
+                          onChange={onChangeDivision}
+                        />
+                      </Pane>
                       <Pane className="col-lg-12">
                         <FormItem
                           label="Người nhận"
@@ -667,6 +733,30 @@ const Index = memo(() => {
                   </label>
                 </div>
                 <Quill onChange={onChangeEditor} value={content} />
+                <Pane className="col-lg-12 mt20 d-flex p0">
+                  <Pane className="mr15">
+                    <FormItem
+                      className="checkbox-row checkbox-small p0"
+                      label="Đặt hẹn giờ gửi"
+                      name="IsReminded"
+                      type={variables.CHECKBOX_FORM}
+                      valuePropName="checked"
+                    />
+                  </Pane>
+                  <Pane  className='mr15'>
+                    <FormItem
+                      name="RemindDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </Pane>
+                  <Pane >
+                    <FormItem
+                      name="RemindTime"
+                      type={variables.TIME_PICKER}
+                    />
+                  </Pane>
+                </Pane>
               </Pane>
               <Pane className="p20">
                 <Button
