@@ -121,6 +121,16 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             }]);
         }
 
+        if (!empty($attributes['tourist_destination_id'])) {
+            $this->model = $this->model->whereHas('event', function ($query) use ($attributes) {
+                $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
+                $query->whereIn('tourist_destination_id', $touristDestinationId);
+            })->with(['event' => function ($query) use ($attributes) {
+                $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
+                $query->whereIn('tourist_destination_id', $touristDestinationId);
+            }]);
+        }
+
         if (!empty($attributes['count_event']) && $attributes['count_event'] == 'true') {
             $this->model = $this->model->withCount('event');
             if (!empty($attributes['number_count_event']) && !empty($attributes['condition_count_event'])) {

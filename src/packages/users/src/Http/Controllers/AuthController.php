@@ -4,6 +4,7 @@ namespace GGPHP\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use GGPHP\Users\Http\Requests\EgovLoginRequest;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Illuminate\Http\Request;
@@ -139,15 +140,14 @@ class AuthController extends Controller
             $user = User::where('email', $userEgov)->first();
 
             if (is_null($user)) {
-                $cas->logout();
+                $request->session()->flush();
                 throw new HttpException(500, 'Người dùng không có quyền truy cập vào hệ thống!');
             }
 
             $objToken = $user->createToken('token-egov');
             $strToken = $objToken->accessToken;
-            $expiration = $objToken->token->expires_at->diffInSeconds(Carbon::now()->addDays(config('constants.TOKEN.REFRESH_TOKEN_EXPIRE_IN')));
 
-            return response()->json(['token_type' => 'Bearer', 'expires_in' => $expiration, 'access_token' => $strToken]);
+            return redirect(env('WEB_CALL_BACK_LOGIN_EGOV') . '?token=' . $strToken);
         } catch (\Throwable $th) {
             throw new HttpException(500, 'Đăng nhập egov không thành công!');
         }

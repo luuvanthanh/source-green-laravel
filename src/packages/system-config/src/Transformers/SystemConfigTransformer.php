@@ -26,7 +26,7 @@ class SystemConfigTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['receiveEmail', 'teamplateEmail'];
 
     /**
      * Array attribute doesn't parse.
@@ -43,6 +43,26 @@ class SystemConfigTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
 
-        return [];
+        return [
+            'count_receive_email' => $model->receiveEmail->count()
+        ];
+    }
+
+    /**
+     * Include ReceiveEmail
+     * @param  SystemConfig $models
+     */
+    public function includeReceiveEmail(SystemConfig $models)
+    {
+        return $this->collection($models->receiveEmail, new UserTransformer, 'ReceiveEmail');
+    }
+
+    /**
+     * Include TeamplateEmail
+     * @param  SystemConfig $models
+     */
+    public function includeTeamplateEmail(SystemConfig $models)
+    {
+        return $this->collection($models->teamplateEmail, new TeamplateEmailTransformer, 'TeamplateEmail');
     }
 }

@@ -50,7 +50,7 @@ class AccessApiRepositoryEloquent extends BaseRepository implements AccessApiRep
      */
     public function getAccessApis(array $attributes)
     {
-        if (empty($attributes['api_share_id'])) {
+        if (!empty($attributes['api_share_id'])) {
             $this->model = $this->model->where('api_share_id', explode(',', $attributes['api_share_id']));
         }
 

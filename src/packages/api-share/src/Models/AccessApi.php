@@ -17,5 +17,6 @@ class AccessApi extends UuidModel
 
     protected $casts = [
         'is_share' => 'boolean',
+        'time' => 'datetime',
     ];
 }
