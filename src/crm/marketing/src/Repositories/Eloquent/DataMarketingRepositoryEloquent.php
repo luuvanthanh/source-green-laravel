@@ -210,7 +210,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                     'month_age' => $values->month_age,
                     'customer_lead_id' => $CustomerLead->id,
                     'file_image' => $values->file_image,
-                    'relationship' => $values->relationship
+                    'category_relationship_id' => $values->category_relationship_id
                 ];
                 StudentInfo::create($dataStudent);
             }
@@ -281,7 +281,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
     public function createTag(array $attributes)
     {
         $dataMarketing = DataMarketing::find($attributes['data_marketing_id']);
-        
+
         if (!is_null($dataMarketing)) {
             $dataMarketing->tag()->detach();
             $dataMarketing->tag()->attach($attributes['tag_id']);
