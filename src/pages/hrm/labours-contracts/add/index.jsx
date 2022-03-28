@@ -144,6 +144,8 @@ class Index extends PureComponent {
     this.setStateData({
       disabledInput: true,
       typeContract: itemContract?.code,
+      parameterValues:
+        itemContract?.parameterValues?.map((item, index) => ({ ...item, index })) || [],
     });
     this.formRef.current.setFieldsValue({
       month: itemContract?.code !== 'VTH' ? 0 : toString(itemContract.month),
