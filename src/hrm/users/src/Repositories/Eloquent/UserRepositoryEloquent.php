@@ -101,6 +101,10 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             });
         }
 
+        if (isset($attributes['category'])) {
+            $this->model = $this->model->where('Category', $attributes['category']);
+        }
+
         if (empty($attributes['limit'])) {
             $users = $this->get();
         } else {
@@ -115,7 +119,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         \DB::beginTransaction();
         try {
             $user = User::create($attributes);
-            
+
             $data = [
                 'full_name' => $user->FullName,
                 'employee_id_hrm' => $user->Id,

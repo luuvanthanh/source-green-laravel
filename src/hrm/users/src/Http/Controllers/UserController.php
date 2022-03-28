@@ -44,6 +44,10 @@ class UserController extends Controller
             $attributes['status'] = $newStatus;
         }
 
+        if (!empty($attributes['category'])) {
+            $attributes['category'] = User::CATEGORY[$attributes['category']];
+        }
+
         $employees = $this->employeeRepository->getUser($attributes);
 
         return $this->success($employees, trans('lang::messages.common.getListSuccess'));

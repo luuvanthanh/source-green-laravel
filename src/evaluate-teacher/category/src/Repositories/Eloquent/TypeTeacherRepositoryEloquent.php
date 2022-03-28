@@ -50,6 +50,11 @@ class TypeTeacherRepositoryEloquent extends CoreRepositoryEloquent implements Ty
 
     public function getTypeTeacher(array $attributes)
     {
+        if (!empty($attributes['typeTeacherId'])) {
+            $typeTeacher = explode(',', $attributes['typeTeacherId']);
+            $this->model = $this->model->whereIn('Id', $typeTeacher);
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->where(function ($query) use ($attributes) {
                 $query->orWhereLike('Name', $attributes['key']);
