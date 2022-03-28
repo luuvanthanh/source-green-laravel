@@ -229,9 +229,9 @@ const Index = memo(() => {
         classTypeId: student?.class?.classType?.id || '',
       };
       setDetails(newDetails);
-      if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
-        getMoney(newDetails);
-      }
+      // if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
+      //   getMoney(newDetails);
+      // }
     }
   };
 
@@ -247,15 +247,17 @@ const Index = memo(() => {
     getStudents(val);
   }, 300);
 
+
   const chgangeDayAdmission = (value) => {
+    setTuition(undefined);
     const newDetails = {
       ...details,
       dayAdmission: value ? Helper.getDate(value, variables.DATE_FORMAT.DATE_VI) : ''
     };
     setDetails(newDetails);
-    if (newDetails?.classTypeId && newDetails?.schoolYearId && value) {
-      getMoney(newDetails);
-    }
+    // if (newDetails?.classTypeId && newDetails?.schoolYearId && value) {
+    //   getMoney(newDetails);
+    // }
   };
 
   const changeTab = (key) => {
@@ -273,7 +275,7 @@ const Index = memo(() => {
     (
       {
         date: p?.date,
-        fees: fees.map(id => ({
+        fees: fees.map((id, stt) => ({
           money: dataIdRes?.map((a, index) => {
 
             for (let i = 0; i <= a?.detailData?.length; i++) {
@@ -281,12 +283,11 @@ const Index = memo(() => {
                 return a?.detailData[i]?.fee[0]?.money || 0;
               }
             };
-            for (let i = 0; i <= p?.fees?.length; i++) {
+            for (let i = 0; i <= a.detailYear?.length; i++) {
               if (a?.feeId === id?.id && a?.detailYear[i]?.date === p?.date) {
-               return p?.fees[index]?.money[index] || 0;
+                return p?.fees[stt]?.money[index] || 0;
               }
             };
-
             return 0;
           })
         })),
@@ -304,7 +305,7 @@ const Index = memo(() => {
           })
         })),
       }))
-      
+
     :
     dataYear[0]?.changeParameter?.changeParameterDetail?.map((p) =>
     (
@@ -375,26 +376,34 @@ const Index = memo(() => {
     }
   }, [params?.id]);
 
+  const row = (index) => {
+    if (idRes?.length > 0) {
+      var tables = document.getElementById("table"), sumVal = 0;
+      for (let i = 1; i < data?.length + 1; i++) {
+        const a = tables?.rows[i]?.cells[index]?.innerHTML;
+        const b = a?.replace(/,/g, "");
+        if (parseFloat(b) > 0 && !isNaN(b)) {
+          sumVal = sumVal + parseFloat(b);
+        }
+        return sumVal?.toLocaleString();
+      }
+    }
+  };
+
   const total = (index) => {
-    var table = document.getElementById("table"), sumVal = 0;
-    for (let i = 1; i < fees?.length; i++) {
+    if (idRes?.length > 0) {
+      var table = document.getElementById("table"), sumVal = 0;
+      for (let i = 1; i < fees?.length + 1; i++) {
         const a = table?.rows[index]?.cells[i]?.innerHTML;
         const b = a?.replace(/,/g, "");
-        sumVal = sumVal + parseFloat(b);
+        if (b !== undefined && !isNaN(b)) {
+          sumVal = sumVal + parseFloat(b);
+        }
+        return sumVal?.toLocaleString();
+      }
     }
-    return sumVal?.toLocaleString();
-};
+  };
 
-
-const row = (index) => {
-    var table = document.getElementById("table"), sumVal = 0;
-    for (let i = 1; i < data?.length + 1; i++) {
-        const a = table?.rows[i]?.cells[index]?.innerHTML;
-        const b = a?.replace(/,/g, "");
-        sumVal = sumVal + parseFloat(b);
-    }
-    return sumVal?.toLocaleString();
-};
 
   const hanDleChangeText = (childData) => {
     setIdRes(childData);
@@ -435,8 +444,8 @@ const row = (index) => {
                 {data?.map((i, index) =>
                   <tr>
                     <td className={stylesModule['table-content']}>{Helper.getDate(i?.date, variables.DATE_FORMAT.DATE_MONTH)}</td>
-                    {i?.fees?.map(item => <td className={stylesModule['table-content']}> {(item?.money?.filter((str) => { return str != '0' })).length > 0
-                      ? Helper?.getPrice(item?.money?.filter((str) => { return str != '0' }), 0, true) : '0'}</td>)}
+                    {i?.fees?.map(item => <td className={stylesModule['table-content']}> {(item?.money?.filter((str) => { return str != 0 })).length > 0
+                      ? Helper?.getPrice(item?.money?.filter((str) => { return str != 0 }), 0, true) : 0}</td>)}
                     <td className={stylesModule['table-content']}>-</td>
                     <td className={stylesModule['table-content']}>-</td>
                     <td className={stylesModule['table-content']}> {total(index + 1)}</td>
