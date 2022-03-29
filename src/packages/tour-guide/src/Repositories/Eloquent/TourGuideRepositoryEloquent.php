@@ -2,16 +2,19 @@
 
 namespace GGPHP\TourGuide\Repositories\Eloquent;
 
+use Carbon\Carbon;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\TourGuide\Jobs\ImportTourGuideJob;
 use GGPHP\TourGuide\Models\TourGuide;
 use GGPHP\TourGuide\Models\TourGuideAdditionalInformation;
 use GGPHP\TourGuide\Presenters\TourGuidePresenter;
 use GGPHP\TourGuide\Repositories\Contracts\TourGuideRepository;
+use GGPHP\TourGuide\Services\SyncTourGuideService;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
-use Carbon\Carbon;
-use GGPHP\ExcelExporter\Services\ExcelExporterServices;
-use GGPHP\WordExporter\Services\WordExporterServices;
-use Illuminate\Support\Facades\Http;
 
 /**
  * Class TourGuideRepositoryEloquent.
@@ -340,5 +343,45 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         }
 
         return  resolve(ExcelExporterServices::class)->export('object_image', $params);
+    }
+
+    public function syncTourGuide()
+    {
+        $limit = 500;
+
+        $pages = SyncTourGuideService::getPage($limit);
+
+        for ($page = 1; $page <= $pages; $page++) {
+            dispatch(new ImportTourGuideJob($page, $limit, 'NEW', null));
+        }
+
+        return [];
+    }
+
+    public function syncTourGuideAndImage()
+    {
+        $this->syncTourGuide();
+        $this->syncTourGuideImage();
+
+        return [];
+    }
+
+    public function syncTourGuideImage()
+    {
+        ini_set('max_execution_time', '30000');
+        $max = 100;
+        $total = TourGuide::count();
+
+        $pages = ceil($total / $max);
+
+        for ($i = 1; $i < ($pages + 1); $i++) {
+            $offset = (($i - 1)  * $max);
+            $start = ($offset == 0 ? 0 : ($offset + 1));
+
+            $legacy = TourGuide::skip($start)->take($max)->get();
+            dispatch(new ImportTourGuideJob(null, null, 'ADD_IMAGE', $legacy));
+        }
+
+        return [];
     }
 }

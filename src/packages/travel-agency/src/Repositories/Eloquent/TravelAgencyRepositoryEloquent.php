@@ -4,10 +4,12 @@ namespace GGPHP\TravelAgency\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\TravelAgency\Jobs\ImportTravelAgencyJob;
 use GGPHP\TravelAgency\Models\TravelAgencieTourGuide;
 use GGPHP\TravelAgency\Models\TravelAgency;
 use GGPHP\TravelAgency\Presenters\TravelAgencyPresenter;
 use GGPHP\TravelAgency\Repositories\Contracts\TravelAgencyRepository;
+use GGPHP\TravelAgency\Services\SyncTravelAgencyService;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -168,5 +170,19 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
         }
 
         return $value;
+    }
+
+    public function syncTravelAgency()
+    {
+        $limit = 500;
+
+        $pages = SyncTravelAgencyService::getPage($limit);
+
+        for ($page = 1; $page <= $pages; $page++) {
+
+            dispatch(new ImportTravelAgencyJob($page, $limit, null));
+        }
+
+        return [];
     }
 }

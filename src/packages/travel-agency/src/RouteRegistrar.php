@@ -34,6 +34,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::delete('travel-agencie-tour-guides/{id}', 'TravelAgencyController@deleteTourGuidesToTravelAgencie');
 
             \Route::get('export-excel-travel-agencies', 'TravelAgencyController@exportExcel');
+
+            \Route::get('sync-travel-agencies', 'TravelAgencyController@syncTravelAgency');
         });
     }
 }

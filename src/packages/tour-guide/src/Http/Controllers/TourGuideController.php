@@ -217,4 +217,18 @@ class TourGuideController extends Controller
 
         return $result;
     }
+
+    public function syncTourGuide(Request $request)
+    {
+        $this->tourGuideRepository->syncTourGuideAndImage();
+
+        return $this->success([], 'System processing');
+    }
+
+    public function syncTourGuideImage(Request $request)
+    {
+        $this->tourGuideRepository->syncTourGuideImage();
+
+        return $this->success([], 'System processing');
+    }
 }

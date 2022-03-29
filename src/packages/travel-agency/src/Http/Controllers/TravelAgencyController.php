@@ -175,4 +175,11 @@ class TravelAgencyController extends Controller
 
         return $result;
     }
+
+    public function syncTravelAgency(Request $request)
+    {
+        $this->travelAgencyRepository->syncTravelAgency();
+
+        return $this->success([], 'System processing');
+    }
 }

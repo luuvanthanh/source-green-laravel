@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Console\Commands\ImportImageTourGuideCommand;
+use App\Console\Commands\ImportTourGuideCommand;
+use App\Console\Commands\ImportTravelAgencyCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +16,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        ImportTourGuideCommand::class,
+        ImportImageTourGuideCommand::class,
+        ImportTravelAgencyCommand::class,
     ];
 
     /**
@@ -24,6 +29,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('command:sync-tour-guide')->dailyAt('00:00');
+        $schedule->command('command:command:sync-travel-agency')->dailyAt('00:15');
+        $schedule->command('command:sync-tour-guide-image')->dailyAt('00:30');
     }
 
     /**

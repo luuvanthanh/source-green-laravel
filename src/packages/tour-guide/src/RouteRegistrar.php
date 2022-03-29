@@ -42,6 +42,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('tour-guides-by-image', 'TourGuideController@tourGuidesByImage');
 
             \Route::get('export-tour-guides-by-image', 'TourGuideController@exportExcelTourGuidesByImage');
+
+            \Route::get('sync-tour-guides', 'TourGuideController@syncTourGuide');
+
+            \Route::get('sync-tour-guides-image', 'TourGuideController@syncTourGuideImage');
         });
     }
 

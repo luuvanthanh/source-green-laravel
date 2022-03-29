@@ -2,18 +2,18 @@
 
 namespace GGPHP\Users\Http\Controllers;
 
+use \Laravel\Passport\Http\Controllers\AccessTokenController as ATController;
 use App\Traits\ResponseTrait;
 use Exception;
 use GGPHP\Users\Models\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use League\OAuth2\Server\Exception\OAuthServerException;
-use Psr\Http\Message\ServerRequestInterface;
-use Response;
-use \Laravel\Passport\Http\Controllers\AccessTokenController as ATController;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Passport\TokenRepository;
 use Lcobucci\JWT\Parser as JwtParser;
 use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Psr\Http\Message\ServerRequestInterface;
+use Response;
 
 class AccessTokenController extends ATController
 {
