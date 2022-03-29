@@ -206,6 +206,7 @@ class FacebookService
                         'message' => [
                             'text' => $attributes['message'],
                         ],
+                        'tag' => 'CONFIRMED_EVENT_UPDATE'
                     ],
                     $attributes['page_access_token']
                 );
@@ -226,7 +227,8 @@ class FacebookService
                                         'url' => $url['url']
                                     ]
                                 ]
-                            ]
+                            ],
+                            'tag' => 'CONFIRMED_EVENT_UPDATE'
                         ],
                         $attributes['page_access_token']
                     );
