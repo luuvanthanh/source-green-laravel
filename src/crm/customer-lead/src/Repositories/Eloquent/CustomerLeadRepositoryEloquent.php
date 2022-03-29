@@ -310,6 +310,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
                 'relationship' => $value->relationship,
                 'file_image' => $value->file_image,
                 'customer_potential_id' => $customerPotential->id,
+                'category_relationship_id' => $value->category_relationship_id
             ];
             PotentialStudentInfo::create($dataStudent);
         }

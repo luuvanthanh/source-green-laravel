@@ -191,7 +191,8 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 'phone_company' => $value->phone_company,
                 'career' => $value->career,
                 'file_image' => $value->file_image,
-                'branch_id' => $value->branch_id
+                'branch_id' => $value->branch_id,
+                'town_ward_id' => $value->town_ward_id
             ];
             $CustomerLead = CustomerLead::create($data);
             $dataStatusLead = [

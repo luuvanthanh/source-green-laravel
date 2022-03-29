@@ -167,7 +167,8 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         }
         $dataConversation = [
             'page_id' => $pageId,
-            'user_facebook_info_id' => $userFacebookInfo->id
+            'user_facebook_info_id' => $userFacebookInfo->id,
+            'show_conversation' => true
         ];
         $conversation = Conversation::create($dataConversation);
         $dataMessage = [

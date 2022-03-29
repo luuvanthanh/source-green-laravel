@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadAccountRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateEmployeeAssignmentRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\UpdateCustomerLeadRequest;
@@ -161,7 +162,7 @@ class CustomerLeadController extends Controller
         return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
     }
 
-    public function customerLeadAccount(Request $request)
+    public function customerLeadAccount(CreateCustomerLeadAccountRequest $request)
     {
         $customerLead = $this->customerLeadRepository->customerLeadAccount($request->all());
 
