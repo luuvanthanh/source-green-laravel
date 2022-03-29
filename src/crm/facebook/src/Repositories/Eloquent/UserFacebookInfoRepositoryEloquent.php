@@ -117,7 +117,6 @@ class UserFacebookInfoRepositoryEloquent extends BaseRepository implements UserF
 
             \DB::commit();
         } catch (\Throwable $th) {
-            dd($th);
             \DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
