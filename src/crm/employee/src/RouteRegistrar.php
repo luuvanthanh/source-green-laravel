@@ -30,7 +30,10 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('employees', 'EmployeeController');
+
             \Route::post('sync-employees', 'EmployeeController@syncEmployee');
+
+            \Route::get('report-calls', 'EmployeeController@reportCall');
         });
     }
 }

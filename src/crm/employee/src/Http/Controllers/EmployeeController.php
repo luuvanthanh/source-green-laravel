@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\Employee\Http\Requests\CreateEmployeeRequest;
 use GGPHP\Crm\Employee\Http\Requests\UpdateEmployeeRequest;
-use GGPHP\Crm\Employee\Models\Employee;
 use GGPHP\Crm\Employee\Repositories\Contracts\EmployeeRepository;
 
 class EmployeeController extends Controller
@@ -101,5 +100,12 @@ class EmployeeController extends Controller
         $employee = $this->employeeRepository->syncEmployee($request->all());
 
         return $this->success($employee, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function reportCall(Request $request)
+    {
+        $employee = $this->employeeRepository->reportCall($request->all());
+
+        return $this->success($employee, trans('lang::messages.common.getListSuccess'));
     }
 }

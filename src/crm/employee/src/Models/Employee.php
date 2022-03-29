@@ -18,7 +18,7 @@ class Employee extends UuidModel
     protected $table = 'employees';
 
     protected $fillable = [
-        'full_name', 'employee_id_hrm', 'file_image'
+        'full_name', 'employee_id_hrm', 'file_image','code'
     ];
 
     public function customerLead()
