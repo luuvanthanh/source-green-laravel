@@ -608,4 +608,14 @@ class FacebookService
 
         return json_decode($graphNode)->data;
     }
+
+    public static function userLongToken(array $attributes)
+    {
+        $client_id = env('APP_ID_FACEBOOK');
+        $client_secret = env('APP_SECRET_FACEBOOK');
+        $user_access_token = $attributes['user_access_token'];
+        $response = file_get_contents('https://graph.facebook.com/oauth/access_token?client_id=' . $client_id . '&client_secret=' . $client_secret . '&grant_type=fb_exchange_token&fb_exchange_token=' . $user_access_token);
+
+        return json_decode($response);
+    }
 }

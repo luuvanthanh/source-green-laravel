@@ -238,4 +238,15 @@ class FacebookController extends Controller
             return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
         }
     }
+
+    public function userLongToken(Request $request)
+    {
+        try {
+            $userLongToken = FacebookService::userLongToken($request->all());
+
+            return $this->success(['data' => $userLongToken], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
+    }
 }
