@@ -33,7 +33,7 @@ class CameraCreateRequest extends FormRequest
             'ip'            => 'required|string',
             'port'          => 'required|string',
             'tourist_destination_id' => 'required|exists:tourist_destinations,id',
-            'camera_server_id' => 'sometimes|uuid'
+            'camera_server_id' => 'required|uuid'
         ];
     }
 }

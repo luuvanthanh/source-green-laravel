@@ -379,23 +379,28 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         $dataBackup = [
             'server_id' => $camera->cameraServer->uuid,
             'cam_id' => $camera->id,
-            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y H:m:s'),
-            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:m:s'),
+            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y H:i:s'),
+            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:i:s'),
         ];
 
         $result = VmsCoreServices::getPlayback($dataBackup);
+
+        if ($result->stream_name) {
+            $result->stream_url = env('MEDIA_URL')  . '/live' . '/' . $result->stream_name . '.flv';
+        }
 
         return $result;
     }
 
     public function playbackStop($attributes, $id)
     {
+
         // Check camera exist before update
         $camera = Camera::findOrFail($id);
 
         $dataBackup = [
             'server_id' => $camera->cameraServer->uuid,
-            'stream_name' => Carbon::parse($attributes['stream_name'])
+            'stream_name' => $attributes['stream_name']
         ];
 
         $result = VmsCoreServices::stopPlayback($dataBackup);
@@ -411,15 +416,11 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         $dataBackup = [
             'server_id' => $camera->cameraServer->uuid,
             'cam_id' => $camera->id,
-            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y H:m:s'),
-            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:m:s'),
+            'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y H:i:s'),
+            'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:i:s'),
         ];
 
         $result = VmsCoreServices::exportVideo($dataBackup);
-
-        if ($result->stream_url) {
-            $result->stream_url = env('MEDIA_URL') . '/' . $result->stream_url;
-        }
 
         return $result;
     }

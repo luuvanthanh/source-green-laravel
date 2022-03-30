@@ -17,11 +17,33 @@ class SyncTravelAgencyService
 {
     private static function getUrl()
     {
-        return env('URL_SYNC_DATA') . '/nghiepvu/dichvudulich/ds/LUHA';
+        return env('URL_SYNC_DATA') . '/nghiepvu/dichvudulich/ds/LUHA/';
     }
-    private static function getUrlDetail($id)
+
+    private static function getLoaiHinhDichVu($id)
     {
-        return env('URL_SYNC_DATA') . '/nghiepvu/huongdanvien/idhdv/' . $id;
+        $url = env('URL_SYNC_DATA') . '/dungchung/loaihinhdichvudulich/id/' . $id;
+
+        $source = Http::get($url);
+        if ($source->status() != 200) {
+            throw new Exception($source->body(), $source->status());
+        }
+
+        $data = json_decode($source->body(), true);
+
+        return $data;
+    }
+
+    private static function getDiaBan($id)
+    {
+        $url = env('URL_SYNC_DATA') . '/dungchung/diaban/quanhuyen/' . $id;
+        $source = Http::get($url);
+        if ($source->status() != 200) {
+            throw new Exception($source->body(), $source->status());
+        }
+        $data = json_decode($source->body(), true);
+
+        return $data;
     }
 
     public static function result($page, $limit)
@@ -38,15 +60,15 @@ class SyncTravelAgencyService
     {
         $params = [
             'page' => 1,
-            'isMaSort' => false,
-            'isNameSort' => false,
+            'isMaSort' => true,
+            'isNameSort' => true,
             'search' => '',
             'itemPerPage' => $limit,
             'isNameEngSort' => true,
         ];
 
-        $source = Http::get(self::getUrl(), $params);
 
+        $source = Http::get(self::getUrl(), $params);
         if ($source->status() != 200) {
             throw new Exception($source->body(), $source->status());
         }
@@ -97,6 +119,8 @@ class SyncTravelAgencyService
 
             if (is_null($tourGuide)) {
                 $now = Carbon::now()->format('Y-m-d H:m:s');
+                $loaihinhdichvu = self::getLoaiHinhDichVu($item['loaiHinhDichVu']);
+                // $diaban = self::getDiaBan($item['diaBan']);
 
                 $itemDetail = [
                     'id' => Uuid::generate(4)->string,
@@ -107,7 +131,7 @@ class SyncTravelAgencyService
                     'number_of_seasonal_worker' => $item['soLuongNhanLucThoiVu'],
                     'travel_permit' => $item['giayPhepKinhDoanh'],
                     'account_name' => $item['taiKhoan'],
-                    // 'service_type' => $item[''],
+                    'service_type' => $loaihinhdichvu['result']['ma'],
                     'license_date' => $item['ngayCapGpkd'],
                     'phone' => $item['sdt'],
                     'status' => $item['trangThai'],
@@ -123,7 +147,7 @@ class SyncTravelAgencyService
                     'website' => $item['website'],
                     'number_of_regular_employee' => $item['soLuongNhanLucThuongXuyen'],
                     'total_number_of_registered_vehicle' => $item['tongSoXeDangKy'],
-                    // 'locality' => $item[''],
+                    //  'locality' => $item[''],
                     'tax_code' => $item['mst'],
                     'note' => $item['ghiChu'],
                     'created_at' => $now,

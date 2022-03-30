@@ -27,12 +27,12 @@ class TravelAgency extends UuidModel implements HasMedia
     ];
 
     const SERVICE_TYPE = [
-        'AUTHORIZED_DEALER' => 0,
-        'REPRESENTATIVE_OFFICE' => 1,
-        'INTERNATIONAL_TO_BRANCH' => 2,
+        'AUTHORIZED_DEALER' => 6,
+        'REPRESENTATIVE_OFFICE' => 5,
+        'INTERNATIONAL_TO_BRANCH' => 4,
         'INLAND_TO_BRANCH' => 3,
-        'INLAND_TO' => 4,
-        'INTERNATIONAL_TO' => 5
+        'INLAND_TO' => 1,
+        'INTERNATIONAL_TO' => 2
     ];
 
     /**

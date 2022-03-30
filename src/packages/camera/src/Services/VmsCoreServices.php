@@ -94,9 +94,6 @@ class VmsCoreServices
 
     public static function getPlayback(array $attributes)
     {
-        $attributes['begin_datetime'] = '21-03-2022 15:51:00';
-        $attributes['end_datetime'] = '21-03-2022 15:55:00';
-
         $url = env('VMS_CORE_URL') . '/vms_core/get_backup_and_playback';
 
         $response = Http::asForm()->post($url, $attributes);
@@ -136,7 +133,6 @@ class VmsCoreServices
         $response = Http::asForm()->get($url, $attributes);
 
         if ($response->failed()) {
-            dd($response, $attributes);
             $message = 'Có lỗi từ api vms-core';
             if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
                 $message = 'Vms-core: ' . json_decode($response->body())->error->message;
@@ -144,6 +140,6 @@ class VmsCoreServices
             throw new HttpException(500, $message);
         }
 
-        return json_decode($response->body());
+        return $response;
     }
 }

@@ -173,7 +173,7 @@ class CameraController extends Controller
     {
         $camera = $this->cameraRepository->exportVideo($request->all(), $id);
 
-        return $this->success(['data' => $camera], trans('lang::messages.common.modifySuccess'));
+        return $camera;
     }
 
     /**
@@ -183,7 +183,7 @@ class CameraController extends Controller
      * @param  mixed $camera
      * @return Response
      */
-    public function playbackStop(CameraPlayBackRequest $request, $id)
+    public function playbackStop(Request $request, $id)
     {
         $camera = $this->cameraRepository->playbackStop($request->all(), $id);
 
