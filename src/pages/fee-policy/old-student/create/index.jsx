@@ -46,11 +46,13 @@ const Index = memo(() => {
   const [detalTuition, setDetalTuition] = useState([]);
   const [idYear, setIdYear] = useState();
   const [idRes, setIdRes] = useState();
-
+  const [checkId, setCheckId] = useState({});
   const [checkData, setCheckData] = useState(false);
   const [errorTable, setErrorTable] = useState({
     tuition: false,
   });
+
+  console.log("detalTuition", detalTuition)
   const [details, setDetails] = useState({
     schoolYearId: '',
     startDate: '',
@@ -92,8 +94,8 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res) {
-           
-             setIdYear(res?.schoolYearId);
+            setDetalTuition(JSON.parse(res?.typeFee));
+            setIdYear(res?.schoolYearId);
             setCheckData(true);
             setYearsDetail(res?.expectedToCollectMoney);
             getStudents(res?.student?.code);
@@ -124,6 +126,32 @@ const Index = memo(() => {
       getStudents();
     }
   }, []);
+
+  const hanDleChangeText = (childData, k) => {
+    setIdRes(childData);
+    console.log("ssss",childData)
+    setCheckData(k);
+    // setCheckId(checkId);
+    // console.log('checkId',checkId);
+    // console.log('deleteId',deleteId);
+    // if (JSON.stringify(checkId) !== '{}') {
+    //   if (detalTuition?.findIndex(i => i?.feeId === checkId?.feeId) !== -1) {
+    //     setDetalTuition(detalTuition.copyWithin( detalTuition?.findIndex(i => i?.feeId === checkId?.feeId), checkId, 1));
+    //     console.log('index', detalTuition?.findIndex(i => i?.feeId === checkId?.feeId))
+    //     console.log("d",checkId)
+    //     console.log("s",detalTuition)
+    //   } else {
+    //     detalTuition.splice(detalTuition?.length, 0, checkId);
+    //     setDetalTuition(detalTuition);
+    //   }
+    // }
+    // if (JSON.stringify(deleteId) !== '{}') {
+    //   if (detalTuition?.findIndex(i => i?.feeId === deleteId?.feeId) !== -1) {
+    //     detalTuition.splice(detalTuition?.findIndex(i => i?.feeId === deleteId?.feeId), 1);
+    //     setDetalTuition(detalTuition);
+    //   }
+    // }
+  };
 
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
@@ -253,6 +281,7 @@ const Index = memo(() => {
 
   const chgangeDayAdmission = (value) => {
     setTuition(undefined);
+    setDetalTuition([]);
     const newDetails = {
       ...details,
       dayAdmission: value ? Helper.getDate(value, variables.DATE_FORMAT.DATE_VI) : ''
@@ -300,7 +329,7 @@ const Index = memo(() => {
     })
     return sumItem(sum);
   };
-console.log("idRes",idRes)
+  console.log("checkData", checkData)
   const data = !checkData > 0 ?
     dataYear[0]?.changeParameter?.changeParameterDetail?.map((p) =>
     (
@@ -330,17 +359,37 @@ console.log("idRes",idRes)
         }))
       }))
     :
-    details?.expectedToCollectMoney?.map((p) =>
-    ({
-      ...p,
-      total: sumArray(p?.money)
-    }
-    ),
-    );
+    dataYear[0]?.changeParameter?.changeParameterDetail?.map((p) =>
+    (
+      {
+        date: p?.date,
+        money: idRes?.map((a) => {
+          for (let i = 0; i <= a?.detailData?.length; i++) {
+            if (a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
+              return {
+                money: a?.detailData[i]?.fee[0]?.money || 0,
+                feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
+                fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
+              };
+            }
+          }
+        }),
+        total: sumArray(idRes?.map((a) => {
+          for (let i = 0; i <= a?.detailData?.length; i++) {
+            if (a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
+              return {
+                money: a?.detailData[i]?.fee[0]?.money || 0,
+                feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
+                fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
+              };
+            }
+          }
+        }))
+      }));
 
-    if( !checkData && data?.length > 0) {
-      data?.push({ total: sumArrayMain(data), money: flattenArr(data) })
-    }
+
+  data?.push({ total: sumArrayMain(data), money: flattenArr(data) })
+
 
   useEffect(() => {
     dispatch({
@@ -378,10 +427,6 @@ console.log("idRes",idRes)
     }
   }, [params?.id]);
 
-  const hanDleChangeText = (childData, k) => {
-    setIdRes(childData);
-    setCheckData(k);
-  };
 
   const header = () => {
     const rowData = fees?.map(i => ({
@@ -445,7 +490,7 @@ console.log("idRes",idRes)
     columns.splice(1, 0, ...rowData);
     return columns;
   };
-console.log("setTuition",tuition)
+
   const tabs = () => [
     {
       id: 'tuition',
@@ -489,7 +534,7 @@ console.log("setTuition",tuition)
       ),
     },
   ];
-  console.log("data",data)
+  console.log("data", data)
   const onFinish = (values) => {
     const errorTuition = checkValidate(tuition, 'tuition');
     if (errorTuition) {
@@ -499,6 +544,7 @@ console.log("setTuition",tuition)
       schoolYearId: values?.schoolYearId || undefined,
       studentId: values?.studentId || undefined,
       expectedToCollectMoney: data || undefined,
+      typeFee: JSON.stringify(idRes),
       tuition,
       id: (params?.id && !isCopy) ? params?.id : undefined,
       dayAdmission: Helper.getDateTime({

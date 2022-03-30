@@ -6,6 +6,7 @@ import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
+import Button from '@/components/CommonComponent/Button';
 import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -56,6 +57,7 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         SearchDate: query.SearchDate ? moment(query.SearchDate) : "",
       },
+      dataIDSearch: [],
     };
     setIsMounted(true);
   }
@@ -234,6 +236,7 @@ class Index extends PureComponent {
       moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
       moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
     );
+    this.setStateData({ dataIDSearch: e });
   };
 
   /**
@@ -547,6 +550,29 @@ class Index extends PureComponent {
 
   handleCancel = () => this.setStateData({ visible: false });
 
+
+  onChangeExcel = () => {
+    const { dataIDSearch } = this.state;
+    const {
+      defaultBranch,
+      location: { query },
+    } = this.props;
+    Helper.exportExcel(
+      `/v1/export-excel-resignation`,
+      {
+        divisionId: query?.divisionId,
+        branchId: query?.branchId || defaultBranch?.id,
+        startDate: dataIDSearch?.length > 0 ? 
+        moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
+      : "",
+      endDate: dataIDSearch?.length > 0 ? 
+      moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
+       : "",
+      },
+      `Baocaonhanvienthoiviec.xlsx`,
+    );
+  };
+
   render() {
     const {
       data,
@@ -567,6 +593,9 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Báo cáo danh sách nhân viên thôi việc</Text>
+            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+                            Xuất Excel
+                        </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -603,17 +632,6 @@ class Index extends PureComponent {
                     name="divisionId"
                     placeholder="Chọn bộ phận"
                     onChange={(event) => this.onChangeSelect(event, 'divisionId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, fullName: 'Chọn tất cả nhân viên' }, ...positions]}
-                    name="employeeId"
-                    options={['id', 'fullName']}
-                    placeholder="Chọn nhân viên"
-                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
                     type={variables.SELECT}
                     allowClear={false}
                   />

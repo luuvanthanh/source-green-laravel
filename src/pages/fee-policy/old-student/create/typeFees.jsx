@@ -1,4 +1,4 @@
-import { memo, useMemo, useEffect , useState} from 'react';
+import { memo, useMemo, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -18,11 +18,28 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
     fees: fees.data,
     paymentForm: paymentMethod.data,
   }));
-  const changeText=(e,k)=>{
-    hanDleChangeText(e,k);
-};
+  const changeText = (e, k) => {
+    hanDleChangeText(e, k);
+  };
 
-const [check, setCheck] = useState(true);
+  const [check, setCheck] = useState(true);
+  const [checkId, setCheckId] = useState({});
+
+  const [dataItem, setDataItem] = useState([]);
+
+  const [data, setData] = useState([
+    {
+      feeId: undefined,
+      paymentFormId: undefined,
+    },
+
+  ]);
+
+
+  console.log("tuitionss", tuition)
+
+
+  const [deleteId, setDeleteId] = useState({});
 
   useEffect(() => {
     dispatch({
@@ -41,26 +58,29 @@ const [check, setCheck] = useState(true);
     });
   }, []);
 
-  
-  const getMoney = async (details, tuition, name, value, index) => {
-    const { schoolYearId, classTypeId, dayAdmission } = details;
-    const { feeId, paymentFormId } = tuition[index];
-    const newTuition = [...tuition];
 
+  useEffect(() => {
+    if (tuition?.length > 0) {
+      setData(tuition?.map(i =>
+      ({
+        id: i?.id,
+        feeId: i?.feeId,
+        paymentFormId: i?.paymentFormId,
+      })));
+    }
+  }, [tuition]);
+
+  const getMoney = async (e, record) => {
+    const { schoolYearId, classTypeId, dayAdmission } = details;
+    // const { feeId, paymentFormId } = tuition[index];
+    // const newTuition = [...tuition];
     if (
-      value &&
-      ((name === 'feeId' && paymentFormId) || (name === 'paymentFormId' && feeId)) &&
-      schoolYearId &&
-      classTypeId &&
-      dayAdmission
-    ) {
-      const details = [
-        {
-          ...newTuition[index],
-          paymentFormId: name === 'paymentFormId' ? value : paymentFormId,
-          feeId: name === 'feeId' ? value : feeId,
-        },
-      ];
+      (record?.feeId && record?.paymentFormId) ) {
+      const details = data?.map(i =>
+      ({
+        paymentFormId: i?.paymentFormId,
+        feeId: i?.feeId,
+      }));
       return dispatch({
         type: 'oldStudentAdd/GET_MONEY_FEE_POLICIES',
         payload: {
@@ -78,31 +98,32 @@ const [check, setCheck] = useState(true);
           student: 'old',
         },
         callback: (res) => {
-          if (!_.isEmpty(res?.payload)) {
-            setCheck(false);
-            newTuition[index] = { ...res?.payload[0], detailData: res?.detailData };
-          } else {
-            newTuition[index] = {
-              ...newTuition[index],
-              [name]: value,
-              money: 0,
-            };
+          if(!_.isEmpty(res?.payload)){
+           console.log("res",res);
+           setDataItem(res?.detailData);
+           setCheck(false);
           }
-          if (error) {
-            checkValidate(newTuition, 'tuition');
-          }
-          return setTuition(newTuition);
+        //   if (!_.isEmpty(res?.payload)) {
+        //     setCheck(false);
+        //     // newTuition[index] = { ...res?.payload[0], detailData: res?.detailData };
+        //     setDeleteId({});
+        //     setCheckId({ ...res?.payload[0], detailData: res?.detailData });
+        //   }
+        //   if (error) {
+        //     checkValidate(newTuition, 'tuition');
+        //   }
+        //   return setTuition(newTuition);
         },
       });
     }
-    newTuition[index] = {
-      ...newTuition[index],
-      [name]: value,
-    };
-    if (error) {
-      checkValidate(newTuition, 'tuition');
-    }
-    return setTuition(newTuition) ;
+    // newTuition[index] = {
+    //   ...newTuition[index],
+    //   [name]: value,
+    // };
+    // if (error) {
+    //   checkValidate(newTuition, 'tuition');
+    // }
+    // return setTuition(newTuition);
   };
   const onChange = async (event, record, name) => {
     let value = event;
@@ -114,71 +135,14 @@ const [check, setCheck] = useState(true);
   };
 
   const removeLine = (record) => {
+    setDeleteId(record);
     setCheck(false);
+    setCheckId({});
     const newTuition = [...tuition].filter((item) => item.id !== record.id);
     setTuition(newTuition);
   };
- changeText(tuition, check);
-  const columns = useMemo(() => [
-    {
-      title: 'Loại phí',
-      key: 'fees',
-      className: 'min-width-200',
-      render: (record) => (
-        <>
-          <FormItem
-            className="mb-0"
-            type={variables.SELECT}
-            placeholder="Chọn"
-            onChange={(e) => onChange(e, record, 'feeId')}
-            allowClear={false}
-            data={fees}
-            value={record?.feeId}
-            rules={[variables.RULES.EMPTY]}
-          />
-          {error && !record?.feeId && (
-            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-          )}
-        </>
-      ),
-    },
-    {
-      title: 'Hình thức',
-      key: 'format',
-      className: 'min-width-200',
-      render: (record) => (
-        <>
-          <FormItem
-            className="mb-0"
-            type={variables.SELECT}
-            placeholder="Chọn"
-            onChange={(e) => onChange(e, record, 'paymentFormId')}
-            allowClear={false}
-            data={paymentForm}
-            value={record?.paymentFormId}
-            rules={[variables.RULES.EMPTY]}
-          />
-          {error && !record?.paymentFormId && (
-            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-          )}
-        </>
-      ),
-    },
-    {
-      title: '',
-      key: 'delete',
-      with: 40,
-      align: 'center',
-      render: (record) => (
-        <DeleteOutlined
-          className="btn-delete-table"
-          onClick={() => {
-            removeLine(record);
-          }}
-        />
-      ),
-    },
-  ]);
+  console.log("tuition", tuition)
+  changeText(dataItem, check);
 
   const addLine = () => {
     setTuition([
@@ -192,29 +156,121 @@ const [check, setCheck] = useState(true);
     ]);
   };
 
+  const onChangeTitle = (e, record) => {
+    setData((prev) =>
+      prev.map((item) =>
+        item.test === record.test && item.id === record.id
+          ? { ...item, feeId: e }
+          : { ...item },
+      ),
+    );
+    getMoney(e, record);
+  };
+  const onChangeContent = (e, record) => {
+    setData((prev) =>
+      prev.map((item) =>
+        item.test === record.test &&  item.id === record.id
+          ? { ...item, paymentFormId: e }
+          : { ...item },
+      ),
+    );
+    getMoney(e, record);
+  };
+
+
+  const columns = [
+    {
+      title: 'Tên',
+      key: 'name',
+      lassName: 'min-width-300',
+      width: 300,
+      render: (value, record) => (
+        <FormItem
+          className="mb-0"
+          type={variables.SELECT}
+          placeholder="Chọn"
+          onChange={(e) => onChangeTitle(e, record)}
+          allowClear={false}
+          data={fees}
+          value={record?.feeId}
+          rules={[variables.RULES.EMPTY]}
+        />
+      ),
+    },
+    {
+      title: 'Nội dung',
+      key: 'content',
+      lassName: 'min-width-100',
+      render: (value, record) => (
+        <FormItem
+          className="mb-0"
+          type={variables.SELECT}
+          placeholder="Chọn"
+          onChange={(e) => onChangeContent(e, record)}
+          allowClear={false}
+          data={paymentForm}
+          value={record?.paymentFormId}
+          rules={[variables.RULES.EMPTY]}
+        />
+      ),
+    },
+    {
+      key: 'action',
+      className: 'min-width-100',
+      width: 100,
+      fixed: 'right',
+      render: (record) => (
+        <div >
+          <Button
+            onClick={() => {
+              setData(
+                data.filter(
+                  (val) =>
+                    (val.key || val.id || val.test) !== (record.key || record.id || record.test),
+                ),
+              );
+              // setRemove([...remove, record.id]);
+            }}
+            type="button"
+            color="danger"
+            icon="remove"
+          />
+        </div>
+      ),
+    },
+  ];
+  console.log("DATA", data)
   return (
     <>
       <TableCus
         className="content-vertical-top mb20"
         columns={columns}
-        dataSource={tuition}
+        dataSource={data}
         loading={false}
         error={{}}
         isError={false}
         pagination={false}
         rowKey="id"
         scroll={{ x: '100%' }}
-      />
-      {!!(details?.schoolYearId && details?.classTypeId && details?.dayAdmission) && (
-        <Pane className="px20">
-          <Button className="btn-create" color="success" icon="plus" onClick={addLine}>
-            Thêm dòng
+        footer={(item, index) => (
+          <Button
+            key={index}
+            onClick={() =>
+              setData([
+                ...data,
+                {
+                  key: '',
+                  test: uuidv4(),
+                },
+              ])
+            }
+            color="transparent-success"
+            icon="plus"
+          >
+            Thêm
           </Button>
-        </Pane>
-      )}
-      {_.isEmpty(tuition) && error && (
-        <p className="text-danger px20 pt20 mb0">{variables.RULES.EMPTY_INPUT.message}</p>
-      )}
+        )}
+      />
     </>
   );
 });
@@ -229,9 +285,9 @@ Index.propTypes = {
 
 Index.defaultProps = {
   tuition: [],
-  setTuition: () => {},
+  setTuition: () => { },
   error: false,
-  checkValidate: () => {},
+  checkValidate: () => { },
   details: {},
 };
 
