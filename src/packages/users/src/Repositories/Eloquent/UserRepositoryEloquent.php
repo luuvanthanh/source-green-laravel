@@ -167,7 +167,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
     public function syncEmployee()
     {
-        $employees = User::select('FullName', 'Id', 'FileImage')->get();
+        $employees = User::select('FullName', 'Id', 'FileImage','Code')->get();
 
         $response = CrmService::syncEmployee($employees->toArray());
 
