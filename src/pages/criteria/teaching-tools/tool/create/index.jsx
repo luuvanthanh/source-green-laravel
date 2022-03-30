@@ -128,7 +128,7 @@ const Index = memo(() => {
                 })),
               );
             }
-            if (!isEmpty(response.toolDetailLevels)) {
+            if (!isEmpty(response.toolDetailSensitives)) {
               setToolDetailSensitives(
                 response?.toolDetailSensitives.map((item) => ({
                   ...item,

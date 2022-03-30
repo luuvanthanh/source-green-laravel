@@ -128,11 +128,10 @@ export function getCities() {
   });
 }
 
-export function getDistricts(params) {
+export function getDistricts() {
   return request(`/v1/districts`, {
     method: 'GET',
     params: {
-      ...params,
       orderBy: 'name',
     },
   });
