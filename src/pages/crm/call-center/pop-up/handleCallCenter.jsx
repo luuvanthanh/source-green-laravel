@@ -37,11 +37,11 @@ function waitingForApplyingAnswer(response) {
   }, 10);
 }
 
-const handleOnServer = () => {
-  const [serverStatus, setServerStatus] = useState('');
+const handleInboundCall = () => {
+  const [inboundStatus, setInboundStatus] = useState('');
   const [infoCall, setInfoCall] = useState({});
 
-  const serverContext = useCallback((username, password, hostname, port, path, playerRef) => {
+  const inboundContext = useCallback((username, password, hostname, port, path, playerRef) => {
     const player = playerRef;
     config = {
       displayName: username,
@@ -77,23 +77,23 @@ const handleOnServer = () => {
       session.type = 'inbound';
 
       session.on('accepted', () => {
-        setServerStatus('ACCEPTED');
+        setInboundStatus('ACCEPTED');
         console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
       });
       session.on('rejected', () => {
-        setServerStatus('REJECTED');
+        setInboundStatus('REJECTED');
         console.log('%cTỪ CHỐI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('cancel', () => {
-        setServerStatus('CANCEL');
+        setInboundStatus('CANCEL');
         console.log('%cHUỶ (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('failed', () => {
-        setServerStatus('FAILED');
+        setInboundStatus('FAILED');
         console.log('%cTHẤT BẠI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('bye', () => {
-        setServerStatus('BYE');
+        setInboundStatus('BYE');
         console.log('%cKẾT THÚC (GỌI ĐẾN)', 'color: red; font-weight: bold');
       });
 
@@ -120,13 +120,14 @@ const handleOnServer = () => {
     });
   }, []);
 
-  return { serverStatus, infoCall, serverContext };
+  return { inboundStatus, infoCall, inboundContext };
 };
 
-const handleOnClient = () => {
-  const [clientStatus, setClientStatus] = useState('');
+const handleOutboundCall = () => {
+  const [outboundStatus, setOutboundStatus] = useState('');
+  const [outboundEvent, setOutboundEvent] = useState({});
 
-  const clientContext = useCallback((phoneNumber, playerRef) => {
+  const outboundContext = useCallback((phoneNumber, playerRef) => {
     const player = playerRef;
     let status = SESSION_STATUS.IDLE;
     if (session) {
@@ -158,6 +159,7 @@ const handleOnClient = () => {
               session.sessionDescriptionHandler.hasDescription(response.getHeader('Content-Type'))
             ) {
               session.status = Session.C.STATUS_EARLY_MEDIA;
+              setOutboundEvent(session);
               waitingForApplyingAnswer(response);
             }
           }
@@ -166,33 +168,33 @@ const handleOnClient = () => {
 
       session.on('accepted', () => {
         console.log('%cĐỒNG Ý (GỌI ĐI)', 'color: #2ecc71; font-weight: bold');
-        setClientStatus('ACCEPTED');
+        setOutboundStatus('ACCEPTED');
       });
       session.on('rejected', () => {
         console.log('%cTỪ CHỐI (GỌI ĐI)', 'color: pink; font-weight: bold');
-        setClientStatus('REJECTED');
+        setOutboundStatus('REJECTED');
       });
       session.on('cancel', () => {
         console.log('%cHUỶ (GỌI ĐI)', 'color: pink; font-weight: bold');
-        setClientStatus('CANCEL');
+        setOutboundStatus('CANCEL');
       });
       session.on('failed', () => {
         console.log('%cTHẤT BẠI (GỌI ĐI)', 'color: pink; font-weight: bold');
-        setClientStatus('FAILED');
+        setOutboundStatus('FAILED');
       });
       session.on('bye', () => {
         console.log('%cKẾT THÚC (GỌI ĐI)', 'color: red; font-weight: bold');
-        setClientStatus('BYE');
+        setOutboundStatus('BYE');
       });
       session.on('unavailable', () => {
-        setClientStatus('UNAVAILABLE');
+        setOutboundStatus('UNAVAILABLE');
       });
       session.on('not found', () => {
-        setClientStatus('NOT_FOUND');
+        setOutboundStatus('NOT_FOUND');
       });
       session.on('trackAdded', () => {
         console.log('%cTHÊM ÂM THANH (GỌI ĐI)', 'color: yellow; font-weight: bold');
-        setClientStatus('TRACK_ADDED');
+        setOutboundStatus('TRACK_ADDED');
         const pc = session.sessionDescriptionHandler.peerConnection;
         const remoteStream = new MediaStream();
 
@@ -212,7 +214,7 @@ const handleOnClient = () => {
     }
   }, []);
 
-  return { clientStatus, clientContext };
+  return { outboundStatus, outboundEvent, outboundContext };
 };
 
 const handleHangup = () => {
@@ -239,4 +241,4 @@ const handleReject = () => {
   });
 };
 
-export { handleOnServer, handleOnClient, handleHangup, handleAnswer, handleReject };
+export { handleInboundCall, handleOutboundCall, handleHangup, handleAnswer, handleReject };

@@ -13,6 +13,10 @@ const variablesModule = {
     not_found: 'NOTFOUND',
     track_added: 'TRACK_ADDED',
   },
+
+  SOCKET_STATUS: {
+    canceled: 'CANCELED',
+  },
 };
 
 export default variablesModule;

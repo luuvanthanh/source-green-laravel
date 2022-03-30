@@ -5,10 +5,10 @@ import styles from '../style.module.scss';
 import { handleAnswer, handleReject } from '../handleCallCenter';
 import variablesModule from '../variables';
 
-function Inbound({ handleOnClick, audioRef, inboundClient }) {
-  const handleInboundEnd = () => {
+function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
+  const handleInboundAnswer = () => {
     if (handleOnClick) {
-      handleOnClick(variablesModule.STATUS.outbound);
+      handleOnClick(variablesModule.STATUS.outbound, true);
       handleAnswer(audioRef.current);
     }
   };
@@ -25,9 +25,9 @@ function Inbound({ handleOnClick, audioRef, inboundClient }) {
       <div className={styles['layout-call']}>
         <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
         <div className={styles['avatar-item']}>
-          {inboundClient?.file_image ? (
+          {infoFromInbound?.file_image ? (
             <img
-              src={`${API_UPLOAD}${JSON.parse(inboundClient?.file_image)}`}
+              src={`${API_UPLOAD}${JSON.parse(infoFromInbound?.file_image)}`}
               alt="user-avatar"
               className={styles['default-avatar']}
             />
@@ -36,10 +36,10 @@ function Inbound({ handleOnClick, audioRef, inboundClient }) {
           )}
         </div>
         <p className={styles['user-name']}>
-          {inboundClient?.full_name ? inboundClient.full_name : 'Không xác định'}
+          {infoFromInbound?.full_name ? infoFromInbound.full_name : 'Không xác định'}
         </p>
         <p className={styles['phone-number']}>
-          {inboundClient?.phone ? inboundClient.phone : inboundClient.number}
+          {infoFromInbound?.phone ? infoFromInbound.phone : infoFromInbound.number}
         </p>
         <p className={styles['call-status']}>Đang kết nối</p>
       </div>
@@ -79,7 +79,7 @@ function Inbound({ handleOnClick, audioRef, inboundClient }) {
                 styles['hangout-background__success'],
               )}
               role="presentation"
-              onClick={handleInboundEnd}
+              onClick={handleInboundAnswer}
             >
               <img src="/images/icon/phone.svg" alt="phone-call" />
             </div>
@@ -94,13 +94,13 @@ function Inbound({ handleOnClick, audioRef, inboundClient }) {
 Inbound.propTypes = {
   handleOnClick: PropTypes.func,
   audioRef: PropTypes.objectOf(PropTypes.any),
-  inboundClient: PropTypes.any,
+  infoFromInbound: PropTypes.any,
 };
 
 Inbound.defaultProps = {
   handleOnClick: () => {},
   audioRef: {},
-  inboundClient: null,
+  infoFromInbound: null,
 };
 
 export default Inbound;

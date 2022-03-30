@@ -278,6 +278,8 @@
 
 .call-result {
   &-modal {
+    left: 30%;
+
     :global(.ant-modal-body .ant-row) {
       display: unset;
     }
