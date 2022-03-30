@@ -65,6 +65,12 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             $this->model = $this->model->whereIn('BranchId', explode(',', $attributes('branchId')));
         }
 
+        if (!empty($attributes['from']) && !empty($attributes['to'])) {
+            $this->model = $this->model->whereHas('schoolYear', function ($query) use ($attributes) {
+                $query->where('YearFrom', '>=', $attributes['from'])->where('YearTo', '<=', $attributes['to']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $feePolicie = $this->paginate($attributes['limit']);
         } else {
