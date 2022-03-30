@@ -62,7 +62,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         }
 
         if (!empty($attributes['branchId'])) {
-            $this->model = $this->model->whereIn('branchId', explode(',', $attributes('branchId')));
+            $this->model = $this->model->whereIn('BranchId', explode(',', $attributes('branchId')));
         }
 
         if (!empty($attributes['limit'])) {
