@@ -27,9 +27,9 @@ class CreateManagerCallRequest extends FormRequest
         return [
             'employee_id' => 'required|exists:employees,id',
             'expected_date' => 'required|date|date_format:Y-m-d|afterOrEqual:receive_date',
-            'receive_date' => 'required|date|date_format:Y-m-d|date_equals:' . now()->toDateString(),
+            'receive_date' => 'nullable|date|date_format:Y-m-d|date_equals:' . now()->toDateString(),
             'content' => 'required|string',
-            'call_times' => 'required|in:FIRST,SECOND,THIRTH,FOURTH,FIVETH',
+            'call_times' => 'required|in:FIRST,SECOND,THIRD,FOURTH,FIVETH',
             'list_customer_lead' => 'required|array',
             'list_customer_lead.*.customer_lead_id' => [
                 'required',
@@ -37,6 +37,7 @@ class CreateManagerCallRequest extends FormRequest
                 'distinct',
                 function ($attribute, $value, $fail) {
                     $check = ManagerCall::where('customer_lead_id', $value)
+                        ->where('employee_id', $this->employee_id)
                         ->where('call_times', ManagerCall::CALLTIME[$this->call_times])->first();
 
                     if (!is_null($check)) {
@@ -47,5 +48,16 @@ class CreateManagerCallRequest extends FormRequest
                 }
             ]
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+
+        if ($data['call_times'] != 'FIRST') {
+            unset($data['receive_date']);
+        }
+
+        return $data;
     }
 }

@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Crm\CallCenter\Models\ManagerCall;
+use GGPHP\Crm\CallCenter\Repositories\Contracts\ManagerCallRepository;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\CustomerTag;
@@ -101,17 +102,33 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (!empty($attributes['call_times'])) {
             if ($attributes['call_times'] == 'FIRST') {
-                $this->model = $this->model->doesntHave('managerCall');
+                $this->model = $this->model->whereHas('managerCall', function ($query) use ($attributes) {
+                    $query->where(function ($query) {
+                        $query->select('call_times');
+                        $query->from('manager_calls');
+                        $query->whereColumn('customer_lead_id', 'customer_leads.id');
+                        $query->latest();
+                        $query->limit(1);
+                    }, null);
+                    $query->where('employee_id', $attributes['employee_id']);
+                })->with(['managerCall' => function ($query) use ($attributes) {
+                    $query->where('call_times', null);
+                    $query->where('employee_id', $attributes['employee_id']);
+                }]);
             } else {
                 $this->model = $this->model->whereHas('managerCall', function ($query) use ($attributes) {
-                    $query->where(function ($query)  use ($attributes) {
+                    $query->where('employee_id', $attributes['employee_id']);
+                    $query->where(function ($query) {
                         $query->select('call_times');
                         $query->from('manager_calls');
                         $query->whereColumn('customer_lead_id', 'customer_leads.id');
                         $query->latest();
                         $query->limit(1);
                     }, ManagerCall::CALLTIME[$attributes['call_times']] - 1);
-                });
+                })->with(['managerCall' => function ($query) use ($attributes) {
+                    $query->where('employee_id', $attributes['employee_id']);
+                    $query->where('call_times', ManagerCall::CALLTIME[$attributes['call_times']] - 1);
+                }]);
             }
         }
 
@@ -214,6 +231,21 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $customerLead->update(['employee_id' => $value['employee_id']]);
             $employeeInfo = json_encode($value['employee_info']);
             $customerLead->update(['employee_info' => $employeeInfo]);
+
+            //tạo lịch gọi
+            $check = ManagerCall::where([
+                ['customer_lead_id', $value['customer_lead_id']],
+                ['employee_id', $value['employee_id']]
+            ])->first();
+
+            if (is_null($check)) {
+                $data['employee_id'] = $value['employee_id'];
+                $data['list_customer_lead'][] = ['customer_lead_id' => $value['customer_lead_id']];
+                $data['receive_date'] = now()->toDateString();
+                $data['call_times'] = array_search(null, ManagerCall::CALLTIME);
+
+                resolve(ManagerCallRepository::class)->create($data);
+            }
         }
 
         return parent::parserResult($customerLead);

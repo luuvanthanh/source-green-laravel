@@ -52,12 +52,9 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
     public function getManagerCall(array $attributes)
     {
         if (!empty($attributes['from_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->whereDate([
-                ['created_at', '<=', $attributes['from_date']],
-                ['created_at', '>=', $attributes['end_date']]
-            ])->whereTime([
-                ['created_at', '<=', $attributes['from_time']],
-                ['created_at', '>=', $attributes['end_time']]
+            $this->model = $this->model->where([
+                ['created_at', '>=', $attributes['from_date']],
+                ['created_at', '<=', $attributes['end_date']]
             ]);
         }
 
@@ -142,6 +139,14 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
             $this->model = $this->model->where('call_times', $this->model()::CALLTIME[$attributes['call_times']]);
         }
 
+        if (!empty($attributes['call_times'])) {
+            if ($attributes['call_times'] == 'FIRST') {
+                $this->model = $this->model->where('call_times', null);
+            } else {
+                $this->model = $this->model->where('call_times', ManagerCall::STATUS['call_times'] - 1);
+            }
+        }
+
         if (!empty($attributes['limit'])) {
             $managerCalls = $this->paginate($attributes['limit']);
         } else {
@@ -174,6 +179,8 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
         $fivethCall = $data->where('call_times', $this->model()::CALLTIME['FIVETH'])->count();
 
+        $notScheduledYet = $data->where('call_times', $this->model()::CALLTIME['YET_CREATE'])->count();
+
         $total = $data->count();
 
         $callYet = $data->where('status', ManagerCall::STATUS['CALLYET'])->count(); //chưa gọi
@@ -184,7 +191,6 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
             return $value->expected_date == null || $value->status == $this->model()::STATUS['CALLYET'];
         })->count();
 
-        $notScheduledYet = $data->where('expected_date', null)->count();
 
         $result = [
             'total' => $total,
@@ -205,10 +211,23 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
     public function create(array $attributes)
     {
         foreach ($attributes['list_customer_lead'] as $key => $value) {
-            $attributes['call_times'] = $this->model()::CALLTIME[$attributes['call_times']];
-            $attributes['customer_lead_id'] = $value['customer_lead_id'];
+            //Xóa record nếu trùng id phlead, khác employee và lần gọi bằng null
+            $this->model->where([
+                ['customer_lead_id', $value['customer_lead_id']],
+                ['employee_id', '!=', $attributes['employee_id']],
+            ])->where('call_times', null)->delete();
 
-            $this->model->create($attributes);
+            if ($attributes['call_times'] == 'FIRST') {
+                $this->model->where([
+                    ['customer_lead_id', $value['customer_lead_id']],
+                    ['employee_id', $attributes['employee_id']],
+                ])->where('call_times', null)->update(['call_times' => $this->model()::CALLTIME['FIRST']]);
+            } else {
+                $attributes['call_times'] = $this->model()::CALLTIME[$attributes['call_times']];
+                $attributes['customer_lead_id'] = $value['customer_lead_id'];
+
+                $this->model->create($attributes);
+            }
         }
 
         return [];

@@ -60,12 +60,9 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
     public function getHistoryCall(array $attributes)
     {
         if (!empty($attributes['from_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->whereDate([
-                ['created_at', '<=', $attributes['from_date']],
-                ['created_at', '>=', $attributes['end_date']]
-            ])->whereTime([
-                ['created_at', '<=', $attributes['from_time']],
-                ['created_at', '>=', $attributes['end_time']]
+            $this->model = $this->model->where([
+                ['created_at', '>=', $attributes['from_date']],
+                ['created_at', '<=', $attributes['end_date']]
             ]);
         }
 
@@ -168,8 +165,9 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
     {
         $call = $this->model()::where('call_id_main', $attributes['data']['uuid'])->first();
 
-        if ($attributes['data']['direction'] == 'inbound' && $attributes['event'] == 'call-log') {
-            if (!is_null($attributes['data']['callId'])) {
+        if ($attributes['data']['direction'] == 'inbound' && isset($attributes['data']['hangupCause'])) {
+
+            if (!is_null($attributes['event'] == 'call-log')) {
                 $this->callInbound($attributes);
             }
         }

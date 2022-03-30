@@ -15,6 +15,7 @@ class ManagerCall extends UuidModel
     ];
 
     const CALLTIME = [
+        'YET_CREATE' => null,
         'FIRST' => 1,
         'SECOND' => 2,
         'THIRD' => 3,
@@ -36,5 +37,4 @@ class ManagerCall extends UuidModel
     {
         return $this->belongsTo(CustomerLead::class);
     }
-
 }
