@@ -23,8 +23,6 @@ class EgovLoginRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'call_back_url' => 'required_without:ticket'
-        ];
+        return [];
     }
 }

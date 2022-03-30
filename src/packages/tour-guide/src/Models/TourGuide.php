@@ -34,7 +34,7 @@ class TourGuide extends UuidModel implements HasMedia
     protected $fillable = [
         'full_name', 'sex', 'id_card', 'date_of_birth', 'card_type_id', 'card_number', 'language_id', 'object_type_id',
         'expiration_date', 'degree', 'professional_certificate', 'nationality', 'home_town', 'resident',
-        'note', 'type'
+        'note', 'type', 'sync_data_id'
     ];
 
     /**

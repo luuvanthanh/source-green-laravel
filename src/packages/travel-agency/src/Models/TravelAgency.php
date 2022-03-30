@@ -45,7 +45,7 @@ class TravelAgency extends UuidModel implements HasMedia
         'travel_permit', 'account_name', 'service_type', 'license_date', 'phone', 'status', 'operator_name',
         'operator_phone', 'address', 'license_number', 'email', 'date_range', 'reporter_name', 'reporter_phone',
         'fax', 'exploiting_international_visitor_market', 'website', 'number_of_regular_employee', 'total_number_of_registered_vehicle',
-        'locality', 'tax_code', 'note'
+        'locality', 'tax_code', 'note', 'sync_data_id'
     ];
 
     public function travelAgencyAdditionalInformation()
