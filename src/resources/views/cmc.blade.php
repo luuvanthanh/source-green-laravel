@@ -128,15 +128,14 @@
         });
 
         socket.on('connect', () => {
-            console.log('Connected', socket.id);
+            console.log('Connected', socket.id, 'anhmv');
             socket.emit('subscribe', {
-                channel: 'recevie-call',
+                channel: 'receive-call',
             });
         });
 
-        socket.on('recevie.call.event', (event, data) => {
+        socket.on('receive.call.event', (event, data) => {
             console.log(data, event, 'goiden');
-
         });
     </script>
     <script src="https://sipjs.com/download/sip-0.15.1.min.js"></script>

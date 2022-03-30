@@ -6,7 +6,6 @@ use GGPHP\Crm\CallCenter\Models\ManagerCall;
 use GGPHP\Crm\CallCenter\Presenters\ManagerCallPresenter;
 use GGPHP\Crm\CallCenter\Repositories\Contracts\ManagerCallRepository;
 use GGPHP\Crm\CustomerLead\Models\StatusLead;
-use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -52,13 +51,13 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
     public function getManagerCall(array $attributes)
     {
-        if (!empty($attributes['fromDate']) && !empty($attributes['endDate'])) {
+        if (!empty($attributes['from_date']) && !empty($attributes['end_date'])) {
             $this->model = $this->model->whereDate([
-                ['created_at', '<=', $attributes['fromDate']],
-                ['created_at', '>=', $attributes['endDate']]
+                ['created_at', '<=', $attributes['from_date']],
+                ['created_at', '>=', $attributes['end_date']]
             ])->whereTime([
-                ['created_at', '<=', $attributes['fromTime']],
-                ['created_at', '>=', $attributes['endTime']]
+                ['created_at', '<=', $attributes['from_time']],
+                ['created_at', '>=', $attributes['end_time']]
             ]);
         }
 
@@ -84,7 +83,7 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
         }
 
         if (isset($attributes['called'])) {
-            $this->model = $this->model->where('status', ManagerCall::STATUS['CALLED']); //chưa gọicus
+            $this->model = $this->model->where('status', ManagerCall::STATUS['CALLED']); // đã gọi
         }
 
         if (!empty($attributes['status_lead'])) {
@@ -116,7 +115,7 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
                 $query->where(function ($query) {
                     $query->select('status_parent_potential_id');
                     $query->from('customer_potential_status_cares');
-                    $query->whereColumn('customer_lead_id', 'manager_calls.customer_lead_id');
+                    $query->whereColumn('customer_potential_id', 'customer_potentials.id');
                     $query->latest();
                     $query->limit(1);
                 }, $attributes['status_parent_potential_id']);
@@ -125,11 +124,11 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
         if (!empty($attributes['search'])) {
             $this->model = $this->model->whereHas('customerLead', function ($query) use ($attributes) {
-                $query->whereLike('phone', $attributes['search']);
+                $query->whereLike('phone', $attributes['search'])->orWhereLike('other_phone', $attributes['search']);
                 $query->orWhereLike('full_name', $attributes['search']);
             })->with([
                 'customerLead' => function ($query) use ($attributes) {
-                    $query->whereLike('phone', $attributes['search']);
+                    $query->whereLike('phone', $attributes['search'])->orWhereLike('other_phone', $attributes['search']);
                     $query->orWhereLike('full_name', $attributes['search']);
                 }
             ]);
@@ -158,14 +157,22 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
             $this->model = $this->model->where('employee_id', $attributes['employee_id']);
         }
 
+        if (!empty($attributes['from_date']) && !empty($attributes['end_date'])) {
+            $this->model = $this->model->whereDate('created_at', '>=', $attributes['from_date'])
+                ->whereDate('created_at', '<=', $attributes['end_date']);
+        }
+
         $data = $this->model->get();
 
-        $callTimes = $data->groupBy('call_times')->map->count()->map(function ($value, $key) {
-            return [
-                'key' => array_search($key, $this->model()::CALLTIME),
-                'value' => $value,
-            ];
-        })->values()->toArray();
+        $firstCall = $data->where('call_times', $this->model()::CALLTIME['FIRST'])->count();
+
+        $secondCall = $data->where('call_times', $this->model()::CALLTIME['SECOND'])->count();
+
+        $thirdCall = $data->where('call_times', $this->model()::CALLTIME['THIRD'])->count();
+
+        $fourthCall = $data->where('call_times', $this->model()::CALLTIME['FOURTH'])->count();
+
+        $fivethCall = $data->where('call_times', $this->model()::CALLTIME['FIVETH'])->count();
 
         $total = $data->count();
 
@@ -173,16 +180,23 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
         $called = $data->where('status', ManagerCall::STATUS['CALLED'])->count(); //đã gọi
 
-        $overtime = $data->filter(function ($value, $key) {
+        $overtime = $data->filter(function ($value) {
             return $value->expected_date == null || $value->status == $this->model()::STATUS['CALLYET'];
         })->count();
 
+        $notScheduledYet = $data->where('expected_date', null)->count();
+
         $result = [
-            'call_times' => $callTimes,
             'total' => $total,
+            'first' => $firstCall,
+            'second' => $secondCall,
+            'third' => $thirdCall,
+            'four' => $fourthCall,
+            'five' => $fivethCall,
             'call_yet' => $callYet,
             'called' => $called,
-            'overtime' => $overtime
+            'overtime' => $overtime,
+            'not_scheduled_yet' => $notScheduledYet
         ];
 
         return ['data' => $result];
@@ -198,9 +212,5 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
         }
 
         return [];
-    }
-
-    public function reportCall(array $attributes)
-    {
     }
 }

@@ -10,7 +10,7 @@ class HistoryCall extends UuidModel
     protected $table = 'history_calls';
 
     protected  $fillable = [
-        'customer_lead_id', 'call_id_sub', 'call_status', 'record_link', 'direction', 'content',
+        'customer_lead_id', 'call_id_sub', 'call_status', 'record_link', 'direction', 'content', 'hangup_cause',
         'result', 'refuse', 'phone', 'switchboard', 'employee_id', 'manager_call_id', 'call_id_parent', 'call_id_main'
     ];
 

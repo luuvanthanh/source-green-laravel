@@ -5,7 +5,6 @@ namespace GGPHP\Crm\Employee\Transformers;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\CallCenter\Transformers\ExtensionTranformer;
 use GGPHP\Crm\CallCenter\Transformers\ManagerCallTransformer;
-use GGPHP\Crm\CallCenter\Transformers\SaleTransformer;
 use GGPHP\Crm\Employee\Models\Employee;
 
 /**
@@ -44,7 +43,24 @@ class EmployeeTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'total_lead' => $model->total_lead,
+            'lead_new' => $model->lead_new,
+            'potential' => $model->lead_potential,
+            'not_potential' => $model->lead_not_potential,
+            'first_call' => $model->first_call,
+            'second_call' => $model->second_call,
+            'third_call' => $model->third_call,
+            'fourth_call' => $model->fourth_call,
+            'fiveth_call' => $model->fiveth_call,
+            'out_of_date' => $model->out_of_date,
+            'called' => $model->called
+        ];
+    }
+
+    public function customMeta(): array
+    {
+        return request()->total ?? [];
     }
 
     public function includeManagerCall(Employee $employee)

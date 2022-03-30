@@ -3,17 +3,17 @@
 namespace GGPHP\Crm\CallCenter\Repositories\Eloquent;
 
 use App\Jobs\UpdateHistoryCallJob;
-use GGPHP\Crm\CallCenter\Events\RecevieCallEvent;
-use GGPHP\Crm\CallCenter\Models\Extension;
+use GGPHP\Crm\CallCenter\Events\ReceiveCallEvent;
 use GGPHP\Crm\CallCenter\Models\HistoryCall;
 use GGPHP\Crm\CallCenter\Presenters\HistoryCallPresenter;
 use GGPHP\Crm\CallCenter\Repositories\Contracts\HistoryCallRepository;
 use GGPHP\Crm\CallCenter\Services\CMCHistoryCallService;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\StatusLead;
+use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\StatusCareRepository;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
-use GGPHP\Crm\CustomerPotential\Repositories\Contracts\CustomerPotentialRepository;
+use Illuminate\Support\Str;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -59,22 +59,22 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
     public function getHistoryCall(array $attributes)
     {
-        if (!empty($attributes['fromDate']) && !empty($attributes['endDate'])) {
+        if (!empty($attributes['from_date']) && !empty($attributes['end_date'])) {
             $this->model = $this->model->whereDate([
-                ['created_at', '<=', $attributes['fromDate']],
-                ['created_at', '>=', $attributes['endDate']]
+                ['created_at', '<=', $attributes['from_date']],
+                ['created_at', '>=', $attributes['end_date']]
             ])->whereTime([
-                ['created_at', '<=', $attributes['fromTime']],
-                ['created_at', '>=', $attributes['endTime']]
+                ['created_at', '<=', $attributes['from_time']],
+                ['created_at', '>=', $attributes['end_time']]
             ]);
         }
 
         if (!empty($attributes['phone'])) {
-            $this->model = $this->model->whereLike('phone', $attributes['key']);
+            $this->model = $this->model->whereLike('phone', $attributes['phone']);
         }
 
         if (!empty($attributes['switchboard'])) {
-            $this->model = $this->model->where('switchboard', $attributes['key']);
+            $this->model = $this->model->where('switchboard', $attributes['switchboard']);
         }
 
         if (!empty($attributes['extension_id'])) {
@@ -105,8 +105,6 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             $callCenter = $this->get();
         }
 
-
-
         return $callCenter;
     }
 
@@ -117,7 +115,6 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             resolve(StatusLead::class)->create($attributes);
         }
 
-
         //Phân loại phụ huynh
         if (!empty($attributes['customer_lead_id']) && !empty($attributes['status_parent_lead_id'])) {
             resolve(StatusCareRepository::class)->create($attributes);
@@ -126,6 +123,8 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
         //Tạo mới ph tiềm năng  vs trạng thái phụ tiềm năng
         if (!empty($attributes['customer_lead_id']) && !empty($attributes['status_parent_potential_id'])) {
             $customerLead = CustomerLead::find($attributes['customer_lead_id']);
+            $customerPotential = $customerLead->customerPotential->first();
+
             $customerLead->customer_lead_id = $customerLead->id;
             $customerLead = $customerLead->toArray();
 
@@ -134,14 +133,19 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             unset($customerLead['created_at']);
             unset($customerLead['updated_at']);
 
-            $customerPotential = resolve(CustomerPotentialRepository::class)->create($customerLead);
+            if (!$customerLead['flag_move_potential']) {
+                $attributes['id'] = $attributes['customer_lead_id'];
+                $attributes['statusPotential'] = $attributes['status_parent_potential_id'];
 
-            $data = [
-                'status_parent_potential_id' => $attributes['status_parent_potential_id'],
-                'customer_potential_id' => $customerPotential['data']['id'],
-            ];
+                resolve(CustomerLeadRepository::class)->moveToCustomerPotential($attributes);
+            } else {
+                $data = [
+                    'status_parent_potential_id' => $attributes['status_parent_potential_id'],
+                    'customer_potential_id' => $customerPotential->id,
+                ];
 
-            CustomerPotentialStatusCare::create($data);
+                CustomerPotentialStatusCare::create($data);
+            }
         }
 
         if ($attributes['call_type'] == 'outbound') {
@@ -164,16 +168,17 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
     {
         $call = $this->model()::where('call_id_main', $attributes['data']['uuid'])->first();
 
-        if ($attributes['data']['direction'] == 'inbound') {
-            // if (!is_null($attributes['data']['callId'])) {
-            $this->callInbound($attributes, $call);
-            // }
-        } else {
+        if ($attributes['data']['direction'] == 'inbound' && $attributes['event'] == 'call-log') {
+            if (!is_null($attributes['data']['callId'])) {
+                $this->callInbound($attributes);
+            }
+        }
+        if ($attributes['data']['direction'] == 'outbound') {
             $this->callOutbound($attributes, $call);
         }
     }
 
-    public function callInbound($attributes, $call)
+    public function callInbound($attributes)
     {
         $result = CMCHistoryCallService::logCallInbound($attributes['data']['uuid']);
 
@@ -186,14 +191,16 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             'call_id_sub' => $result['callId'],
             'call_id_main' => $result['uuid'],
             'call_id_parent' => $attributes['data']['parrentUuid'],
-            'call_status' => $result['state'],
-            'direction' => $result['direction'],
+            'call_status' => Str::upper($result['state']),
+            'direction' => Str::upper($result['direction']),
             'switchboard' => $result['pbxNumber'],
             'record_link' => $result['recordUrl'] == '/null' ? null : $result['recordUrl'],
+            'hangup_cause' => $result['hangupCause'] ?? null
         ];
 
         $item = $this->model()::updateOrCreate(['id' => $data['call_id_main']], $data);
-        broadcast(new RecevieCallEvent(['data' => $item]));
+
+        broadcast(new ReceiveCallEvent(['data' => $item]));
     }
 
     public function callOutbound($attributes, $call)
@@ -203,10 +210,11 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             'call_id_sub' => $attributes['data']['callId'],
             'call_id_main' => $attributes['data']['uuid'],
             'call_id_parent' => $attributes['data']['parrentUuid'],
-            'call_status' => $attributes['data']['state'] ?? null,
-            'direction' => $attributes['data']['direction'],
+            'call_status' => Str::upper($attributes['data']['state']) ?? null,
+            'direction' => Str::upper($attributes['data']['direction']),
             'switchboard' => $attributes['data']['pbxnumber'],
             'record_link' => $attributes['data']['recordUrl'] ?? null,
+            'hangup_cause' => $attributes['data']['hangupCause'] ?? null
         ];
 
         if ($attributes['event'] == 'call-record') {

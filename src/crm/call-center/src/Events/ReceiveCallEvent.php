@@ -8,7 +8,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RecevieCallEvent implements ShouldBroadcast
+class ReceiveCallEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -31,7 +31,7 @@ class RecevieCallEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('recevie-call');
+        return new Channel('receive-call');
     }
 
     /**
@@ -51,6 +51,6 @@ class RecevieCallEvent implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'recevie.call.event';
+        return 'receive.call.event';
     }
 }
