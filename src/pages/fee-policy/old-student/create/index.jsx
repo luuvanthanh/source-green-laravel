@@ -3,14 +3,12 @@ import { Helmet } from 'react-helmet';
 import { Form, Spin, Tabs, Table } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
-import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
-import ScrollContainer from 'react-indiana-drag-scroll';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -43,16 +41,18 @@ const Index = memo(() => {
   const [tuition, setTuition] = useState([]);
 
   const [YearsDetail, setYearsDetail] = useState([]);
-  const [detalTuition, setDetalTuition] = useState([]);
   const [idYear, setIdYear] = useState();
   const [idRes, setIdRes] = useState();
-  const [checkId, setCheckId] = useState({});
-  const [checkData, setCheckData] = useState(false);
+  const [dataTuition, setDataTuition] = useState([]);
+
+  const [checkSearch, setCheckSearch] = useState(false);
+
+  const [checkData, setCheckData] = useState(true);
   const [errorTable, setErrorTable] = useState({
     tuition: false,
   });
 
-  console.log("detalTuition", detalTuition)
+
   const [details, setDetails] = useState({
     schoolYearId: '',
     startDate: '',
@@ -94,10 +94,21 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res) {
-            setDetalTuition(JSON.parse(res?.typeFee));
             setIdYear(res?.schoolYearId);
-            setCheckData(true);
+            setCheckData(false);
             setYearsDetail(res?.expectedToCollectMoney);
+            setIdRes(res?.expectedToCollectMoney?.map((i, index) =>
+              index < res?.expectedToCollectMoney?.length - 1 ? (
+                ({
+                  month: i?.date,
+                  fee: i?.money?.map(k =>
+                  ({
+                    money: k?.money,
+                    fee_name: k?.fee_name,
+                    fee_id: k?.feeId,
+                  })
+                  )
+                })) : undefined));
             getStudents(res?.student?.code);
             setTuition(res?.tuition);
             setDetails((prev) => ({
@@ -126,33 +137,18 @@ const Index = memo(() => {
       getStudents();
     }
   }, []);
-
-  const hanDleChangeText = (childData, k) => {
-    setIdRes(childData);
-    console.log("ssss",childData)
+  if (idRes?.length === YearsDetail?.length) {
+    idRes?.splice(idRes?.length - 1, 1);
+  }
+  const hanDleChangeText = (childData, k, data, deleteId) => {
+    if (childData?.length > 0 || deleteId) {
+      setIdRes(childData);
+      setCheckSearch(false);
+    }
+    setDataTuition(data);
     setCheckData(k);
-    // setCheckId(checkId);
-    // console.log('checkId',checkId);
-    // console.log('deleteId',deleteId);
-    // if (JSON.stringify(checkId) !== '{}') {
-    //   if (detalTuition?.findIndex(i => i?.feeId === checkId?.feeId) !== -1) {
-    //     setDetalTuition(detalTuition.copyWithin( detalTuition?.findIndex(i => i?.feeId === checkId?.feeId), checkId, 1));
-    //     console.log('index', detalTuition?.findIndex(i => i?.feeId === checkId?.feeId))
-    //     console.log("d",checkId)
-    //     console.log("s",detalTuition)
-    //   } else {
-    //     detalTuition.splice(detalTuition?.length, 0, checkId);
-    //     setDetalTuition(detalTuition);
-    //   }
-    // }
-    // if (JSON.stringify(deleteId) !== '{}') {
-    //   if (detalTuition?.findIndex(i => i?.feeId === deleteId?.feeId) !== -1) {
-    //     detalTuition.splice(detalTuition?.findIndex(i => i?.feeId === deleteId?.feeId), 1);
-    //     setDetalTuition(detalTuition);
-    //   }
-    // }
-  };
 
+  };
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const key in object) {
@@ -206,7 +202,6 @@ const Index = memo(() => {
   };
 
   const changeYear = (value) => {
-    setTuition(undefined);
     setIdYear(value);
     formRef.current.setFieldsValue({
       dayAdmission: undefined,
@@ -232,14 +227,11 @@ const Index = memo(() => {
         dayAdmission: '',
       };
       setDetails(newDetails);
-      if (newDetails?.classTypeId && newDetails?.dayAdmission) {
-        getMoney(newDetails);
-      }
     }
   };
 
   const changeStudent = (value) => {
-    setTuition(undefined);
+    setCheckSearch(true);
     if (!value) {
       setDetails((prev) => ({
         ...prev,
@@ -280,13 +272,12 @@ const Index = memo(() => {
 
 
   const chgangeDayAdmission = (value) => {
-    setTuition(undefined);
-    setDetalTuition([]);
     const newDetails = {
       ...details,
       dayAdmission: value ? Helper.getDate(value, variables.DATE_FORMAT.DATE_VI) : ''
     };
     setDetails(newDetails);
+    setCheckSearch(true);
   };
 
   const changeTab = (key) => {
@@ -309,7 +300,6 @@ const Index = memo(() => {
     e.map((value) => {
       sum += value?.total;
     });
-
     return sum;
   };
 
@@ -329,35 +319,20 @@ const Index = memo(() => {
     })
     return sumItem(sum);
   };
-  console.log("checkData", checkData)
-  const data = !checkData > 0 ?
-    dataYear[0]?.changeParameter?.changeParameterDetail?.map((p) =>
-    (
-      {
-        date: p?.date,
-        money: idRes?.map((a) => {
-          for (let i = 0; i <= a?.detailData?.length; i++) {
-            if (a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
-              return {
-                money: a?.detailData[i]?.fee[0]?.money || 0,
-                feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
-                fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
-              };
-            }
-          }
-        }),
-        total: sumArray(idRes?.map((a) => {
-          for (let i = 0; i <= a?.detailData?.length; i++) {
-            if (a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
-              return {
-                money: a?.detailData[i]?.fee[0]?.money || 0,
-                feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
-                fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
-              };
-            }
-          }
-        }))
-      }))
+
+  const data = !checkData ?
+    idRes?.map(i =>
+    ({
+      date: i?.month,
+      total: sumArray(i?.fee),
+      money: i?.fee?.map(k =>
+      ({
+        money: k?.money,
+        fee_name: k?.fee_name,
+        feeId: k?.fee_id,
+      })
+      )
+    }))
     :
     dataYear[0]?.changeParameter?.changeParameterDetail?.map((p) =>
     (
@@ -440,7 +415,7 @@ const Index = memo(() => {
             {
               item?.feeId ?
                 <Text size="normal">
-                  {item?.money?.toLocaleString()}
+                  {Helper.getPrice(item?.money) || 0}
                 </Text>
                 :
                 "0"
@@ -462,28 +437,28 @@ const Index = memo(() => {
         ),
       },
       {
-        title: 'Ngoài giờ(đ)',
+        title: 'Ngoài giờ (đ)',
         key: 'location',
         width: 150,
         className: 'min-width-150',
         render: () => <> - </>,
       },
       {
-        title: 'Giảm trừ(đ)',
+        title: 'Giảm trừ (đ)',
         key: 'result',
         width: 150,
         className: 'min-width-150',
         render: () => <> - </>,
       },
       {
-        title: 'Tổng tiền(đ)',
+        title: 'Tổng tiền (đ)',
         key: 'total',
         fixed: 'right',
         width: 150,
         className: 'min-width-150',
         render: (record) =>
           <Text size="normal">
-            {record?.total?.toLocaleString()}
+            {Helper.getPrice(record?.total) || 0}
           </Text>
       },
     ];
@@ -502,6 +477,7 @@ const Index = memo(() => {
           error={errorTable?.tuition}
           checkValidate={checkValidate}
           details={details}
+          checkSearch={checkSearch}
           hanDleChangeText={hanDleChangeText}
         />
       ),
@@ -513,6 +489,7 @@ const Index = memo(() => {
         <>
           {
             fees?.length > 0 && (
+              <div className={stylesModule['wrapper-table']}>
               <Table
                 columns={header()}
                 dataSource={data}
@@ -527,25 +504,21 @@ const Index = memo(() => {
                 bordered
                 rowKey={(record) => record?.id}
                 scroll={{ x: '100%' }}
-              />
+                />
+                </div>
             )
           }
         </>
       ),
     },
   ];
-  console.log("data", data)
   const onFinish = (values) => {
-    const errorTuition = checkValidate(tuition, 'tuition');
-    if (errorTuition) {
-      return;
-    }
     const payload = {
       schoolYearId: values?.schoolYearId || undefined,
       studentId: values?.studentId || undefined,
       expectedToCollectMoney: data || undefined,
       typeFee: JSON.stringify(idRes),
-      tuition,
+      tuition: dataTuition,
       id: (params?.id && !isCopy) ? params?.id : undefined,
       dayAdmission: Helper.getDateTime({
         value: Helper.setDate({

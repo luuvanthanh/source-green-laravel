@@ -1,45 +1,51 @@
-import { memo, useMemo, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 
-import { DeleteOutlined } from '@ant-design/icons';
 import Button from '@/components/CommonComponent/Button';
-import Pane from '@/components/CommonComponent/Pane';
 import TableCus from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
 
-const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDleChangeText }) => {
+const Index = memo(({ tuition, details, hanDleChangeText , checkSearch}) => {
   const dispatch = useDispatch();
   const { fees, paymentForm } = useSelector(({ fees, paymentMethod }) => ({
     fees: fees.data,
     paymentForm: paymentMethod.data,
   }));
-  const changeText = (e, k) => {
-    hanDleChangeText(e, k);
+
+  const [check, setCheck] = useState(false);
+  const [feeId, setFeeId] = useState(undefined);
+  const [paymentFormId, setPaymentFormId] = useState(undefined);
+  const [deleteId, setDeleteId] = useState(false);
+  const changeText = (e, k, data, deleteId) => {
+    hanDleChangeText(e, k, data, deleteId);
   };
-
-  const [check, setCheck] = useState(true);
-  const [checkId, setCheckId] = useState({});
-
   const [dataItem, setDataItem] = useState([]);
 
   const [data, setData] = useState([
     {
       feeId: undefined,
       paymentFormId: undefined,
+      money: 0,
     },
 
   ]);
 
-
-  console.log("tuitionss", tuition)
-
-
-  const [deleteId, setDeleteId] = useState({});
+  useEffect(() => {
+    if (tuition?.length > 0) {
+      setData(tuition?.map(i =>
+      ({
+        id: i?.id,
+        feeId: i?.feeId,
+        paymentFormId: i?.paymentFormId,
+        money: 0,
+      })));
+    }
+  }, [tuition]);
 
   useEffect(() => {
     dispatch({
@@ -59,29 +65,44 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
   }, []);
 
 
-  useEffect(() => {
-    if (tuition?.length > 0) {
-      setData(tuition?.map(i =>
-      ({
-        id: i?.id,
-        feeId: i?.feeId,
-        paymentFormId: i?.paymentFormId,
-      })));
+  const onChangeTitle = (e, record) => {
+    setFeeId(e);
+    if (record?.paymentFormId) {
+      setPaymentFormId(record?.paymentFormId);
     }
-  }, [tuition]);
+    setData((prev) =>
+      prev.map((item) =>
+        item.test === record.test && item.id === record.id
+          ? { ...item, feeId: e, money: 0 }
+          : { ...item, money: 0 },
+      ),
+    );
+    // getMoney(e, record,data);
+  };
+  const onChangeContent = (e, record) => {
+    setPaymentFormId(e);
+    if (record?.paymentFormId) {
+      setFeeId(record?.feeId);
+    }
+    setData((prev) =>
+      prev.map((item) =>
+        item.test === record.test && item.id === record.id
+          ? { ...item, paymentFormId: e, money: 0 }
+          : { ...item, money: 0 },
+      ),
+    );
 
-  const getMoney = async (e, record) => {
-    const { schoolYearId, classTypeId, dayAdmission } = details;
-    // const { feeId, paymentFormId } = tuition[index];
-    // const newTuition = [...tuition];
-    if (
-      (record?.feeId && record?.paymentFormId) ) {
-      const details = data?.map(i =>
+  };
+
+  useEffect(() => {
+    if ((feeId && paymentFormId || deleteId) || (checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission)) {
+      const { schoolYearId, classTypeId, dayAdmission } = details;
+      const detailss = data?.map(i =>
       ({
         paymentFormId: i?.paymentFormId,
         feeId: i?.feeId,
       }));
-      return dispatch({
+      dispatch({
         type: 'oldStudentAdd/GET_MONEY_FEE_POLICIES',
         payload: {
           classTypeId,
@@ -94,90 +115,28 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
             format: variables.DATE_FORMAT.DATE_AFTER,
             isUTC: false,
           }),
-          details: JSON.stringify(details),
+          details: JSON.stringify(detailss),
           student: 'old',
         },
         callback: (res) => {
-          if(!_.isEmpty(res?.payload)){
-           console.log("res",res);
-           setDataItem(res?.detailData);
-           setCheck(false);
+          setPaymentFormId(undefined);
+          setFeeId(undefined);
+          setDeleteId(false);
+          if (!_.isEmpty(res?.payload) || !_.isEmpty(res?.detailData)) {
+            setDataItem(res?.detailData);
+            setCheck(false);
           }
-        //   if (!_.isEmpty(res?.payload)) {
-        //     setCheck(false);
-        //     // newTuition[index] = { ...res?.payload[0], detailData: res?.detailData };
-        //     setDeleteId({});
-        //     setCheckId({ ...res?.payload[0], detailData: res?.detailData });
-        //   }
-        //   if (error) {
-        //     checkValidate(newTuition, 'tuition');
-        //   }
-        //   return setTuition(newTuition);
+          if (res?.payload <= 0) {
+            setData([{
+              feeId: undefined,
+              paymentFormId: undefined,
+              money: 0,
+            },]);
+          }
         },
       });
     }
-    // newTuition[index] = {
-    //   ...newTuition[index],
-    //   [name]: value,
-    // };
-    // if (error) {
-    //   checkValidate(newTuition, 'tuition');
-    // }
-    // return setTuition(newTuition);
-  };
-  const onChange = async (event, record, name) => {
-    let value = event;
-    if (name === 'content') {
-      value = event.target.value;
-    }
-    const index = _.findIndex(tuition, (item) => item.id === record?.id);
-    getMoney(details, tuition, name, value, index);
-  };
-
-  const removeLine = (record) => {
-    setDeleteId(record);
-    setCheck(false);
-    setCheckId({});
-    const newTuition = [...tuition].filter((item) => item.id !== record.id);
-    setTuition(newTuition);
-  };
-  console.log("tuition", tuition)
-  changeText(dataItem, check);
-
-  const addLine = () => {
-    setTuition([
-      ...tuition,
-      {
-        id: uuidv4(),
-        feeId: null,
-        paymentFormId: null,
-        money: 0,
-      },
-    ]);
-  };
-
-  const onChangeTitle = (e, record) => {
-    setData((prev) =>
-      prev.map((item) =>
-        item.test === record.test && item.id === record.id
-          ? { ...item, feeId: e }
-          : { ...item },
-      ),
-    );
-    getMoney(e, record);
-  };
-  const onChangeContent = (e, record) => {
-    setData((prev) =>
-      prev.map((item) =>
-        item.test === record.test &&  item.id === record.id
-          ? { ...item, paymentFormId: e }
-          : { ...item },
-      ),
-    );
-    getMoney(e, record);
-  };
-
-
+  }, [feeId, paymentFormId, deleteId,checkSearch]);
   const columns = [
     {
       title: 'Tên',
@@ -229,7 +188,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
                     (val.key || val.id || val.test) !== (record.key || record.id || record.test),
                 ),
               );
-              // setRemove([...remove, record.id]);
+              setDeleteId(true);
             }}
             type="button"
             color="danger"
@@ -239,56 +198,58 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
       ),
     },
   ];
-  console.log("DATA", data)
+
+  changeText(dataItem, check, data, deleteId);
+
   return (
     <>
-      <TableCus
-        className="content-vertical-top mb20"
-        columns={columns}
-        dataSource={data}
-        loading={false}
-        error={{}}
-        isError={false}
-        pagination={false}
-        rowKey="id"
-        scroll={{ x: '100%' }}
-        footer={(item, index) => (
-          <Button
-            key={index}
-            onClick={() =>
-              setData([
-                ...data,
-                {
-                  key: '',
-                  test: uuidv4(),
-                },
-              ])
-            }
-            color="transparent-success"
-            icon="plus"
-          >
-            Thêm
-          </Button>
-        )}
-      />
+      {
+        details?.schoolYearId && details?.classTypeId && details?.dayAdmission && (
+          <TableCus
+            className="content-vertical-top mb20"
+            columns={columns}
+            dataSource={data}
+            loading={false}
+            error={{}}
+            isError={false}
+            pagination={false}
+            rowKey="id"
+            scroll={{ x: '100%' }}
+            footer={(item, index) => (
+              <Button
+                key={index}
+                onClick={() =>
+                  setData([
+                    ...data,
+                    {
+                      key: '',
+                      test: uuidv4(),
+                    },
+                  ])
+                }
+                color="transparent-success"
+                icon="plus"
+              >
+                Thêm
+              </Button>
+            )}
+          />
+        )
+      }
     </>
   );
 });
 
 Index.propTypes = {
   tuition: PropTypes.arrayOf(PropTypes.any),
-  setTuition: PropTypes.func,
-  error: PropTypes.bool,
-  checkValidate: PropTypes.func,
   details: PropTypes.objectOf(PropTypes.any),
+  checkSearch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   tuition: [],
-  setTuition: () => { },
-  error: false,
-  checkValidate: () => { },
   details: {},
+  checkSearch: {},
 };
 
 export default Index;
