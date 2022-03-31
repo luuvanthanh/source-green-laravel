@@ -166,11 +166,12 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
         $call = $this->model()::where('call_id_main', $attributes['data']['uuid'])->first();
 
         if ($attributes['data']['direction'] == 'inbound' && isset($attributes['data']['hangupCause'])) {
-
-            if (!is_null($attributes['event'] == 'call-log')) {
+            
+            if ($attributes['event'] == 'call-log') {
                 $this->callInbound($attributes);
             }
         }
+
         if ($attributes['data']['direction'] == 'outbound') {
             $this->callOutbound($attributes, $call);
         }
