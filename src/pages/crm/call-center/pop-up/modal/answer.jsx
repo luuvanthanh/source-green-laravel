@@ -7,10 +7,10 @@ import { handleHangup } from '../handleCallCenter';
 import styles from '../style.module.scss';
 import variablesModule from '../variables';
 
-const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) => {
-  const handleOutbound = () => {
+const Outbound = memo(({ handleOnClick, inboundStatusInfo, infoFromInbound }) => {
+  const handleAnswer = () => {
     if (handleOnClick) {
-      handleOnClick(variablesModule.STATUS.idle, '', false);
+      handleOnClick(variablesModule.STATUS.idle, '', false, true);
       handleHangup();
     }
   };
@@ -18,12 +18,12 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) 
   return (
     <>
       <div className={styles['layout-call']}>
-        <p className={styles['call-type']}>CUỘC GỌI ĐI</p>
+        <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
         {/* Thông tin */}
         <div className={styles['avatar-item']}>
-          {infoFromOutbound?.file_image ? (
+          {infoFromInbound?.file_image ? (
             <img
-              src={`${API_UPLOAD}${JSON.parse(infoFromOutbound?.file_image)}`}
+              src={`${API_UPLOAD}${JSON.parse(infoFromInbound?.file_image)}`}
               alt="user-avatar"
               className={styles['default-avatar']}
             />
@@ -32,21 +32,21 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) 
           )}
         </div>
         <p className={styles['user-name']}>
-          {infoFromOutbound?.full_name ? infoFromOutbound.full_name : 'Không xác định'}
+          {infoFromInbound?.full_name ? infoFromInbound.full_name : 'Không xác định'}
         </p>
         <p className={styles['phone-number']}>
-          {infoFromOutbound?.phone ? infoFromOutbound.phone : infoFromOutbound.number}
+          {infoFromInbound?.phone ? infoFromInbound.phone : infoFromInbound.number}
         </p>
 
         {/* TIMER */}
-        {outboundStatusInfo === variablesModule.STATUS.accepted && (
+        {inboundStatusInfo === variablesModule.STATUS.accepted && (
           <Timer active duration={null} className={styles['time-active']}>
             <Timecode />
           </Timer>
         )}
 
         {/* STATUS */}
-        {outboundStatusInfo !== variablesModule.STATUS.accepted && (
+        {inboundStatusInfo !== variablesModule.STATUS.accepted && (
           <p className={styles['call-status']}>Đang kết nối</p>
         )}
       </div>
@@ -59,7 +59,7 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) 
               styles['hangout-rotate'],
             )}
             role="presentation"
-            onClick={handleOutbound}
+            onClick={handleAnswer}
           >
             <img src="/images/icon/phone.svg" alt="phone-call" />
           </div>
@@ -72,14 +72,14 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) 
 
 Outbound.propTypes = {
   handleOnClick: PropTypes.func,
-  infoFromOutbound: PropTypes.any,
-  outboundStatusInfo: PropTypes.string,
+  inboundStatusInfo: PropTypes.string,
+  infoFromInbound: PropTypes.any,
 };
 
 Outbound.defaultProps = {
   handleOnClick: () => {},
-  infoFromOutbound: null,
-  outboundStatusInfo: '',
+  inboundStatusInfo: '',
+  infoFromInbound: null,
 };
 
 export default Outbound;

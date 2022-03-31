@@ -52,6 +52,47 @@ export default {
         });
       }
     },
+    *PARENT_LEAD_STATUS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getParentLeadStatus, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *PARENT_POTENTIALS_STATUS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getParentPotentialsStatus, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CRM_ID({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getCrmId, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addResultCall, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

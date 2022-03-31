@@ -285,6 +285,24 @@ export const variables = {
       name: 'Lần 5',
     },
   ],
+  STATUS_CALL: {
+    canceled: 'Đã huỷ',
+    rejected: 'Từ chối',
+    hangup: 'Đã kết thúc',
+  },
+  DIRECTION: {
+    inbound: 'Cuộc gọi đến',
+    outbound: 'Cuộc gọi đi',
+  },
+  DIRECTION_TYPE: [
+    { id: 'inbound', name: 'Cuộc gọi đến' },
+    { id: 'outbound', name: 'Cuộc gọi đi' },
+  ],
+  CALL_TYPE: [
+    { id: 'canceled', name: 'Đã huỷ' },
+    { id: 'rejected', name: 'Từ chối' },
+    { id: 'hangup', name: 'Đã kết thúc' },
+  ],
 };
 
 export default variables;
