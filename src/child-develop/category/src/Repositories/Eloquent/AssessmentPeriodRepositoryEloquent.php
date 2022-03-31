@@ -56,6 +56,18 @@ class AssessmentPeriodRepositoryEloquent extends BaseRepository implements Asses
             $this->model = $this->model->whereLike('Name', $attributes['key']);
         }
 
+        if (!empty($attributes['classId']) && !empty($attributes['periodic']) && $attributes['periodic'] == 'true') {
+            $this->model = $this->model->whereHas('classes', function ($query) use ($attributes) {
+                $query->where('ClassesId', $attributes['classId'])->where('Periodic', true);
+            });
+        }
+
+        if (!empty($attributes['classId']) && !empty($attributes['introduction']) && $attributes['introduction'] == 'true') {
+            $this->model = $this->model->whereHas('classes', function ($query) use ($attributes) {
+                $query->where('ClassesId', $attributes['classId'])->where('Introduction', true);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $assessmentPeriod = $this->paginate($attributes['limit']);
         } else {
