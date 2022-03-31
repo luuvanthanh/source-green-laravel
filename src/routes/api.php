@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1', 'middleware' => []], function () {
 
+    Route::get('/debug-sentry', function () {
+        throw new Exception('My first Sentry error!');
+    });
+
     \GGPHP\Crm\WebForm\RouteRegistrar::routes(function ($router) {
         $router->forGuest();
     });

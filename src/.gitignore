@@ -13,3 +13,4 @@ yarn-error.log
 /storage/worker.log
 /storage/cron.log
 .idead/
+laravel-echo-server.lock
