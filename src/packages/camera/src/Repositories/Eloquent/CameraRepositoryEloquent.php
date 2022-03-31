@@ -106,6 +106,11 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             });
         }
 
+        if (!empty($attributes['tourist_destination_id'])) {
+            $touristDestinationId = explode(',', $attributes['tourist_destination_id']);
+            $this->model = $this->model->whereIn('tourist_destination_id', $touristDestinationId);
+        }
+
         if (!empty($attributes['except_video_wall_id'])) {
             $exceptVideoWallId = explode(',', $attributes['except_video_wall_id']);
             $this->model = $this->model->whereHas('videoWalls', function ($q) use ($exceptVideoWallId) {
@@ -174,10 +179,10 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                         'profile' => $camera->profile,
                         'width' => $dataResolution['width'],
                         'height' => $dataResolution['height'],
-                        'fps' => $camera->fps,
-                        'bit_rate' => $camera->bit_rate,
-                        'gop' => $camera->gop,
-                        'max_B_frame' => $camera->frame_rate,
+                        'fps' => 0,
+                        'bit_rate' => 0,
+                        'gop' => 12,
+                        'max_B_frame' => 0,
                     ],
                 ]),
             ];
@@ -233,10 +238,10 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                         'profile' => $camera->profile,
                         'width' => (int)$dataResolution['width'],
                         'height' => (int)$dataResolution['height'],
-                        'fps' => (int)$camera->fps,
-                        'bit_rate' => (int) $camera->bit_rate,
-                        'gop' => (int)$camera->gop,
-                        'max_B_frame' => (int)$camera->frame_rate,
+                        'fps' => 0,
+                        'bit_rate' => 0,
+                        'gop' => 12,
+                        'max_B_frame' => 0,
                     ],
                 ]),
             ];

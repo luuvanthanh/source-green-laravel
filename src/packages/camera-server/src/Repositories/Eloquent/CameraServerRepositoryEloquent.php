@@ -157,11 +157,33 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
         try {
             $cameraServer = CameraServer::findOrFail($id);
 
+            $cameras = [];
+            foreach ($cameraServer->camera as $key => $camera) {
+                $cameras[] = [
+                    'on' => true,
+                    'rtsp' => $camera->rtsp,
+                    'cam_id' => $camera->id,
+                    'name' => $camera->name,
+                    'backup' => $camera->is_recording,
+                    'streaming' => $camera->is_streaming,
+                    'streaming_infor' => [
+                        'codec_id' => 27,
+                        'profile' => $camera->profile,
+                        'width' => 0,
+                        'height' => 0,
+                        'fps' => 0,
+                        'bit_rate' => 0,
+                        'gop' => 12,
+                        'max_B_frame' => 0,
+                    ],
+                ];
+            }
+
             $dataActive = [
                 'server_id' => $cameraServer->uuid,
                 'cam_data_as_bytes' => json_encode([
                     'input' => [
-                        'cameras' => []
+                        'cameras' => $cameras
                     ],
                     'output' => [
                         'backup_video' => [

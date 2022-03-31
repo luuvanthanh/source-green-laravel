@@ -124,18 +124,8 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $user->roles()->sync($attributes['role_id']);
         }
 
-        if (!empty($attributes['permission_id'])) {
-            $data = [];
-            foreach ($attributes['permission_id'] as  $permission) {
-                $data[] = [
-                    'permission_id' => $permission,
-                    'model_type' => User::class,
-                    'model_id' => $user->id,
-                    'collection_id' => '00000000-0000-0000-0000-000000000000',
-                ];
-            }
-            \DB::table('model_has_permissions')->insert($data);
-        }
+        $user->touristDestination()->sync($attributes['tourist_destination_id']);
+        $user->camera()->sync($attributes['camera_id']);
 
         // send mail
         $dataMail = [

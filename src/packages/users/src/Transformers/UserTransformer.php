@@ -2,6 +2,8 @@
 
 namespace GGPHP\Users\Transformers;
 
+use GGPHP\Camera\Transformers\CameraTransformer;
+use GGPHP\Category\Transformers\TouristDestinationTransformer;
 use GGPHP\Collection\Transformers\CollectionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\RolePermission\Transformers\PermissionTransformer;
@@ -34,7 +36,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'role', 'collection', 'permissionSystem', 'permission', 'videoWall'
+        'role', 'collection', 'videoWall', 'camera', 'touristDestination'
     ];
 
     /**
@@ -82,24 +84,6 @@ class UserTransformer extends BaseTransformer
     }
 
     /**
-     * Include PermissionSystem
-     * @param  User $user
-     */
-    public function includePermissionSystem(User $user)
-    {
-        return $this->collection($user->permissionSystem(), new PermissionTransformer, 'PermissionSystem');
-    }
-
-    /**
-     * Include Permission
-     * @param  User $user
-     */
-    public function includePermission(User $user)
-    {
-        return $this->collection($user->permissions, new PermissionTransformer, 'Permission');
-    }
-
-    /**
      * Collection transformer
      *
      * @param User $user
@@ -117,5 +101,23 @@ class UserTransformer extends BaseTransformer
     public function includeVideoWall(User $user)
     {
         return $this->collection($user->videoWalls, new VideoWallTransformer, 'VideoWall');
+    }
+
+    /**
+     * Include Role
+     * @param  User $user
+     */
+    public function includeCamera(User $user)
+    {
+        return $this->collection($user->camera, new CameraTransformer, 'Camera');
+    }
+
+    /**
+     * Include Role
+     * @param  User $user
+     */
+    public function includeTouristDestination(User $user)
+    {
+        return $this->collection($user->touristDestination, new TouristDestinationTransformer, 'TouristDestination');
     }
 }

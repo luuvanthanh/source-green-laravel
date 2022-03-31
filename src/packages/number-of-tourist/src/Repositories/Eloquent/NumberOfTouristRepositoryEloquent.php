@@ -73,10 +73,17 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                     $numberOfTourist->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                 }
                 $data = [];
+                $dataTouristDestination = [];
                 $numberOfTourists = $numberOfTourist->where('time', '>=', $startTime)->where('time', '<=', $endTime)->get();
 
                 foreach ($numberOfTourists as $numberOfTourist) {
                     $hours = (int)Carbon::parse($numberOfTourist->time)->format('H');
+
+                    if (array_key_exists($numberOfTourist->touristDestination->name, $dataTouristDestination)) {
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                    } else {
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                    }
 
                     if (!array_key_exists($hours, $data)) {
                         $data[$hours] = [
@@ -111,10 +118,17 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                     $numberOfTourist->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                 }
                 $data = [];
+                $dataTouristDestination = [];
                 $numberOfTourists = $numberOfTourist->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time'])->get();
 
                 foreach ($numberOfTourists as $numberOfTourist) {
                     $date = Carbon::parse($numberOfTourist->time)->format('Y-m-d');
+
+                    if (array_key_exists($numberOfTourist->touristDestination->name, $dataTouristDestination)) {
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                    } else {
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                    }
 
                     if (!array_key_exists($date, $data)) {
                         $data[$date] = [
@@ -151,10 +165,16 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                     $numberOfTourist->whereIn('tourist_destination_id', explode(',', $attributes['tourist_destination_id']));
                 }
                 $data = [];
+                $dataTouristDestination = [];
                 $numberOfTourists = $numberOfTourist->where('time', '>=', $startTime)->where('time', '<=', $endTime)->get();
 
                 foreach ($numberOfTourists as $numberOfTourist) {
                     $date = Carbon::parse($numberOfTourist->time)->format('Y-m');
+                    if (array_key_exists($numberOfTourist->touristDestination->name, $dataTouristDestination)) {
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                    } else {
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                    }
 
                     if (!array_key_exists($date, $data)) {
                         $data[$date] = [
@@ -225,6 +245,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
         return [
             'data' => array_values($data),
+            'dataTouristDestination' => $dataTouristDestination
         ];
     }
 
@@ -275,24 +296,25 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
         $tourist_destination = [];
         $column = [];
         $total = [];
+
         foreach ($reports['data'] as  $item) {
             $value = [];
 
             foreach ($item['tourist_destination'] as $touristDestination) {
                 $value[] = $touristDestination['number_of_guest'];
-                $value[] = ($touristDestination['number_of_guest'] / $item['number_of_guest']) * 100;
+                $value[] = ($touristDestination['number_of_guest'] / $reports['dataTouristDestination'][$touristDestination['name']]) * 100;
 
                 if (!array_key_exists($touristDestination['name'], $tourist_destination)) {
                     $tourist_destination[$touristDestination['name']] = $touristDestination['name'];
                     $tourist_destination[] = $touristDestination['name'];
                     $column[] = 'Số lượng du khách';
                     $column[] = 'Tỷ lệ trên tổng (%)';
-                    $total[] = $item['number_of_guest'];
+                    $total[] = $reports['dataTouristDestination'][$touristDestination['name']];
                     $total[] = 100;
                 }
             }
 
-            $params['[time]'][] = Carbon::parse($item['time'])->format('d-m-Y');
+            $params['[time]'][] = 'Tháng ' . Carbon::parse($item['time'])->format('m/Y');
             $params['[[value]]'][] = array_values($value);
         }
 

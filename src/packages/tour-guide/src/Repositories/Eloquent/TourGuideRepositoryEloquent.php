@@ -86,6 +86,10 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $this->model = $this->model->whereIn('type', $attributes['type']);
         }
 
+        if (!empty($attributes['language'])) {
+            $this->model = $this->model->whereIn('language_id', explode(',', $attributes['language']));
+        }
+
         if (!empty($attributes['updated_at'])) {
             $this->model = $this->model->where('updated_at', '>=', $attributes['updated_at']);
         }
@@ -213,7 +217,7 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $params['[expiration_date]'][] = !is_null($tourGuide->expiration_date) ?  Carbon::parse($tourGuide->expiration_date)->format('d-m-Y') : null;
         }
 
-        return  resolve(ExcelExporterServices::class)->export(' ', $params);
+        return  resolve(ExcelExporterServices::class)->export('hdvhp', $params);
     }
 
     public function exportExcelWithCountEvent($attributes)

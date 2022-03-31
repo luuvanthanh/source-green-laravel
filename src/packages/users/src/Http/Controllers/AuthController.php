@@ -54,8 +54,7 @@ class AuthController extends Controller
         }
 
         $request->user()->token()->revoke();
-        $cas = app('cas');
-        $cas->logout();
+        $request->session()->flush();
 
         return $this->success([], trans('lang::messages.auth.logoutSuccess'), ['isShowData' => false]);
     }

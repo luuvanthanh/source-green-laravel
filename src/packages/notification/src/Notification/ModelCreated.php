@@ -114,30 +114,31 @@ EOD;
      */
     public function toOnesignal($notifiable)
     {
-        $imageMedia = $this->model->getMedia('image');
-        $imageMedia = $imageMedia->isEmpty() ? null : $imageMedia->first();
         $image = [];
-
-        if (!is_null($imageMedia)) {
-            $image = [
-                'path' => $imageMedia->getPath(),
-                'name' => $imageMedia->name,
-            ];
-        }
-
+        $model_id = null;
+        $eventType = null;
         switch ($this->type) {
             case 'EVENT':
+                $imageMedia = $this->model->getMedia('image');
+                $imageMedia = $imageMedia->isEmpty() ? null : $imageMedia->first();
+                if (!is_null($imageMedia)) {
+                    $image = [
+                        'path' => $imageMedia->getPath(),
+                        'name' => $imageMedia->name,
+                    ];
+                }
                 $eventType =  $this->model->eventType->code;
+                $model_id = $this->model->id;
                 break;
             case 'SURVEYFORM':
-                $eventType = null;
+                $model_id = $this->model->survey->id;
                 break;
         }
 
         $data = [
             'message' => $this->getMessage($notifiable),
             'image' => $image,
-            'model_id' => $this->model->survey->id,
+            'model_id' => $model_id,
             'event_type' => $eventType,
             'type' => $this->type,
             'created_at' => $this->model->created_at->timezone(config('app.timezone'))->format('c'),

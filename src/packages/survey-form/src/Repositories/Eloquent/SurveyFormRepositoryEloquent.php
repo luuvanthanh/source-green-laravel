@@ -64,6 +64,17 @@ class SurveyFormRepositoryEloquent extends BaseRepository implements SurveyFormR
             $this->model = $this->model->whereLike('name', $attributes['name']);
         }
 
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('key', $attributes['key']);
+        }
+
+        if (!empty($attributes['count_question']) && $attributes['count_question'] == 'true') {
+            $this->model = $this->model->withCount('event');
+            if (!empty($attributes['number_count_question']) && !empty($attributes['condition_count_question'])) {
+                $this->model = $this->model->has('event', $attributes['condition_count_question'], $attributes['number_count_question']);
+            }
+        }
+
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
             $this->model = $this->model->where(function ($q2) use ($attributes) {
                 $q2->where([['start_date', '<=', $attributes['start_date']], ['end_date', '>=', $attributes['end_date']]])

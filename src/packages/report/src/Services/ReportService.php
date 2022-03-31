@@ -242,6 +242,7 @@ class ReportService
             }
 
             $dataByTime = [];
+            $dataByTouristDestinations = [];
             $total = 0;
             $touristDestinations = $touristDestination->get();
 
@@ -280,6 +281,12 @@ class ReportService
                         'name' => $value->name,
                         'number' => $events
                     ];
+
+                    if (array_key_exists($value->name, $dataByTouristDestinations)) {
+                        $dataByTouristDestinations[$value->name] +=  $events;
+                    } else {
+                        $dataByTouristDestinations[$value->name] =  $events;
+                    }
                 }
 
 
@@ -299,7 +306,8 @@ class ReportService
                 'event_name' => $item->name,
                 'event_code' => $item->code,
                 'total' => $total,
-                'data_by_time' => $dataByTime
+                'data_by_time' => $dataByTime,
+                'dataByTouristDestinations' => $dataByTouristDestinations
             ];
         }
 
@@ -893,14 +901,14 @@ class ReportService
             foreach ($item['tourist_destination'] as $touristDestination) {
 
                 $value[] = $touristDestination['number'];
-                $value[] = ($touristDestination['number'] / $reports[0]['total']) * 100;
+                $value[] = ($touristDestination['number'] / $reports[0]['dataByTouristDestinations'][$touristDestination['name']]) * 100;
 
                 if (!array_key_exists($touristDestination['name'], $tourist_destination)) {
                     $tourist_destination[$touristDestination['name']] = $touristDestination['name'];
                     $tourist_destination[] = $touristDestination['name'];
                     $column[] = 'Số lượng du khách';
                     $column[] = 'Tỷ lệ trên tổng (%)';
-                    $total[] = $reports[0]['total'];
+                    $total[] = $reports[0]['dataByTouristDestinations'][$touristDestination['name']];
                     $total[] = 100;
                 }
             }

@@ -121,6 +121,11 @@ class CollectionRepositoryEloquent extends BaseRepository implements CollectionR
      */
     public function getCollection(array $attributes)
     {
+        // Filter by camera device name/number
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('name', $attributes['key']);
+        }
+
         if (empty($attributes['limit'])) {
             $result = $this->all();
         } else {

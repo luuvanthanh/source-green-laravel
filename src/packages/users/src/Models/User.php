@@ -2,6 +2,8 @@
 
 namespace GGPHP\Users\Models;
 
+use GGPHP\Camera\Models\Camera;
+use GGPHP\Category\Models\TouristDestination;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Notification\Models\Player;
 use Illuminate\Auth\Authenticatable;
@@ -51,7 +53,8 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
      * @var array
      */
     protected $fillable = [
-        'full_name', 'email', 'password', 'phone', 'status', 'is_first_login',
+        'full_name', 'email', 'password', 'phone', 'status', 'is_first_login', 'unit_id',
+        'is_all_tourist_destination', 'is_all_camera'
     ];
 
     protected $guard_name = 'api';
@@ -71,6 +74,11 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
      */
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    protected $casts = [
+        'is_all_tourist_destination' => 'boolean',
+        'is_all_camera' => 'boolean'
     ];
 
     /**
@@ -108,22 +116,6 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
     }
 
     /**
-     * Get permission system
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function permissionSystem()
-    {
-        $permissions = new Collection();
-
-        foreach ($this->roles as $role) {
-            $permissions = $permissions->merge($role->permissions);
-        }
-
-        return $permissions->merge($this->permissions()->where('collection_id', '00000000-0000-0000-0000-000000000000')->get());
-    }
-
-    /**
      * Get the video walls for the user
      */
     public function videoWalls()
@@ -132,24 +124,26 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
     }
 
     /**
-     * A model may have multiple direct permissions.
-     */
-    public function permissions(): BelongsToMany
-    {
-        return $this->morphToMany(
-            config('permission.models.permission'),
-            'model',
-            config('permission.table_names.model_has_permissions'),
-            config('permission.column_names.model_morph_key'),
-            'permission_id'
-        )->withPivot('collection_id');
-    }
-
-    /**
      * Define relations player
      */
     public function players()
     {
         return $this->hasMany(Player::class);
+    }
+
+    /**
+     * Define relations player
+     */
+    public function touristDestination()
+    {
+        return $this->belongsToMany(TouristDestination::class, 'tourist_destination_user', 'user_id', 'tourist_destination_id');
+    }
+
+    /**
+     * Define relations player
+     */
+    public function camera()
+    {
+        return $this->belongsToMany(Camera::class, 'camera_user', 'user_id', 'camera_id');
     }
 }

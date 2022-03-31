@@ -68,6 +68,10 @@ class ActivityLogRepositoryEloquent extends BaseRepository implements ActivityLo
             $this->model = $this->model->whereDate('created_at', '>=', $attributes['start_date'])->whereDate('created_at', '<=', $attributes['end_date']);
         }
 
+        if (!empty($attributes['causer'])) {
+            $this->model = $this->model->where('causer_id', $attributes['causer']);
+        }
+
         if (!$parse) {
             return $this->model->get();
         }
