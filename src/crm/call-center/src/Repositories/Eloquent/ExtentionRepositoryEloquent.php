@@ -8,7 +8,6 @@ use GGPHP\Crm\CallCenter\Models\Extension;
 use GGPHP\Crm\CallCenter\Presenters\ExtensionPresenter;
 use GGPHP\Crm\CallCenter\Repositories\Contracts\ExtensionRepository;
 use GGPHP\Crm\CallCenter\Services\CMCExtensionService;
-use GGPHP\Crm\Employee\Models\Employee;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
