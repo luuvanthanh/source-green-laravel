@@ -59,11 +59,9 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
     public function getHistoryCall(array $attributes)
     {
-        if (!empty($attributes['from_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->where([
-                ['created_at', '>=', $attributes['from_date']],
-                ['created_at', '<=', $attributes['end_date']]
-            ]);
+        if (!empty($attributes['from_date']) && !empty($attributes['to_date'])) {
+            $this->model = $this->model->whereDate('created_at', '>=', $attributes['from_date'])
+                ->whereDate('created_at', '<=', $attributes['to_date']);
         }
 
         if (!empty($attributes['phone'])) {
@@ -145,7 +143,7 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             }
         }
 
-        if ($attributes['call_type'] == 'outbound') {
+        if ($attributes['call_type'] == 'OUTBOUND') {
             $callCenter = $this->model->where('call_id_sub', $attributes['call_id_sub'])->first();
         } else {
             $callCenter = $this->model->findOrFail($attributes['history_call_id']);
@@ -166,7 +164,6 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
         $call = $this->model()::where('call_id_main', $attributes['data']['uuid'])->first();
 
         if ($attributes['data']['direction'] == 'inbound' && isset($attributes['data']['hangupCause'])) {
-            
             if ($attributes['event'] == 'call-log') {
                 $this->callInbound($attributes);
             }
