@@ -299,6 +299,21 @@ class Index extends PureComponent {
     });
   };
 
+  onchangeDetail = (value, id, classId, medicineTimeType) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'medicaFollow/GET_DETAIL',
+      payload: {
+        value, id
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({ visible: true, objects: { ...response, class: classId, medicineTimeTypeId: medicineTimeType }, });
+        }
+      },
+    });
+  };
+
   /**
    * Function header table
    */
@@ -335,12 +350,13 @@ class Index extends PureComponent {
                     className={styles['item-avatar-signal']}
                     key={index}
                     role="presentation"
-                    onClick={() =>
-                      this.setStateData({
-                        visible: true,
-                        objects: { ...itemChild, class: record.class, medicineTimeTypeId: item.id },
-                      })
-                    }
+                    // onClick={() =>
+                    //   this.setStateData({
+                    //     visible: true,
+                    //     objects: { ...itemChild, class: record.class, medicineTimeTypeId: item.id },
+                    //   })
+                    // }
+                    onClick={() => this.onchangeDetail(itemChild?.id, item?.id, record.class, item.id)}
                   >
                     <AvatarTable
                       isBorder={status?.status === 'NOT_DRINK'}
@@ -500,7 +516,7 @@ class Index extends PureComponent {
           </div>
           {head(objects?.status)?.status === 'NOT_DRINK' &&
             Helper.getDate(head(objects?.status)?.date, variables.DATE_FORMAT.DATE_AFTER) ===
-              Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) && (
+            Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) && (
               <div
                 className={classnames(
                   styles['modal-footer'],

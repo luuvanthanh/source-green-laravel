@@ -115,6 +115,14 @@ export default {
         callback(null, error);
       }
     },
+    *GET_DETAIL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDetail, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

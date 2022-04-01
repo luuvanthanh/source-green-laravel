@@ -145,6 +145,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const loadingSubmit =
+    console.log("categories?.users",categories?.users)
       effects['resignationDecisionsAdd/ADD'] || effects['resignationDecisionsAdd/UPDATE'];
     return (
       <>
