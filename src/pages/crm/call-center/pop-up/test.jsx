@@ -9,6 +9,7 @@ import Outbound from './modal/outbound';
 import Phone from './modal/phone';
 import Answer from './modal/answer';
 import InboundResult from './modal/result/inbound';
+import OutboundResult from './modal/result/outbound';
 import styles from './style.module.scss';
 import variablesModule from './variables';
 
@@ -34,23 +35,26 @@ const Test = memo(() => {
   const [user] = useSelector(({ user, crmCallCenter }) => [user, crmCallCenter]);
   const dispatch = useDispatch();
 
+  const { inboundStatus, infoCall, inboundContext } = handleInboundCall();
+  const { outboundStatus, outboundEvent, outboundContext } = handleOutboundCall();
+
   const [isSaler, setIsSaler] = useState(false); // check người dùng CallCenter
   const [status, setStatus] = useState(variablesModule.STATUS.idle); // trạng thái điện thoại
 
-  const [outboundNumber, setOutboundNumber] = useState(''); // số GỌI ĐI (IN)
-  const [isOutbound, setIsOutbound] = useState(false); // check điều kiện GỌI ĐI (IN)
-  const [infoFromOutbound, setInfoFromOutbound] = useState(''); // số GỌI ĐI có thông tin (IN)
-  const [outboundStatusInfo, setOutboundStatusInfo] = useState(''); // trạng thái GỌI ĐI (IN)
+  const [outboundNumber, setOutboundNumber] = useState(''); // số GỌI ĐI (OUT)
+  const [isOutbound, setIsOutbound] = useState(false); // check điều kiện GỌI ĐI (OUT)
+  const [infoFromOutbound, setInfoFromOutbound] = useState(''); // số GỌI ĐI có thông tin (OUT)
+  const [outboundStatusInfo, setOutboundStatusInfo] = useState(''); // trạng thái GỌI ĐI (OUT)
+  const [outboundHistory, setOutboundHistory] = useState(outboundEvent); // lịch sử GỌI ĐI (OUT)
+  const [contentOutbound, setContentOutbound] = useState(''); // nội dung GỌI ĐI (OUT)
 
-  const [isInbound, setIsInbound] = useState(false); // check điều kiện GỌI ĐẾN (OUT)
-  const [infoFromInbound, setInfoFromInbound] = useState(''); // số GỌI ĐẾN có thông tin (OUT)
-  const [inboundStatusInfo, setInboundStatusInfo] = useState(''); // trạng thái GỌI ĐẾN (OUT)
-  const [inboundHistory, setInboundHistory] = useState({}); // lịch sử GỌI ĐẾN (OUT)
+  const [isInbound, setIsInbound] = useState(false); // check điều kiện GỌI ĐẾN (IN)
+  const [infoFromInbound, setInfoFromInbound] = useState(''); // số GỌI ĐẾN có thông tin (IN)
+  const [inboundStatusInfo, setInboundStatusInfo] = useState(''); // trạng thái GỌI ĐẾN (IN)
+  const [inboundHistory, setInboundHistory] = useState({}); // lịch sử GỌI ĐẾN (IN)
+  const [contentInbound, setContentInbound] = useState(''); // nội dung GỌI ĐI (IN)
 
   const audioRef = useRef(null);
-
-  const { inboundStatus, infoCall, inboundContext } = handleInboundCall();
-  const { outboundStatus, outboundContext } = handleOutboundCall();
 
   // Connect CallCenter
   useEffect(() => {
@@ -117,18 +121,29 @@ const Test = memo(() => {
 
   // Update trạng thái các state GỌI ĐẾN (IN)
   useEffect(() => {
-    if (
-      (inboundStatus === variablesModule.STATUS.bye ||
-        inboundStatus === variablesModule.STATUS.cancel ||
-        inboundStatus === variablesModule.STATUS.rejected ||
-        inboundStatus === variablesModule.STATUS.failed) &&
-      inboundHistory.call_status === variablesModule.SOCKET_STATUS.canceled
-    ) {
+    // if (
+    //   (inboundStatus === variablesModule.STATUS.bye ||
+    //     inboundStatus === variablesModule.STATUS.cancel ||
+    //     inboundStatus === variablesModule.STATUS.rejected ||
+    //     inboundStatus === variablesModule.STATUS.failed) &&
+    //   inboundHistory.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+    // ) {
+    //   // reset state
+    //   setStatus(variablesModule.STATUS.idle);
+    //   setIsVisible(false);
+    //   // setInfoFromInbound('');
+    //   setInfoFromOutbound('');
+    //   setInboundStatusInfo('');
+    //   setIsInbound(false);
+
+    //   setInboundHistory({});
+    // }
+    if (inboundStatus === variablesModule.STATUS.failed && isEmpty(inboundHistory)) {
       // reset state
       setStatus(variablesModule.STATUS.idle);
       setIsVisible(false);
-      // setInfoFromInbound('');
-      setInfoFromOutbound('');
+      setInfoFromInbound('');
+      // setInfoFromOutbound('');
       setInboundStatusInfo('');
       setIsInbound(false);
 
@@ -142,19 +157,30 @@ const Test = memo(() => {
 
   // Update trạng thái các state GỌI ĐI (OUT)
   useEffect(() => {
-    if (
-      outboundStatus === variablesModule.STATUS.bye ||
-      outboundStatus === variablesModule.STATUS.cancel ||
-      outboundStatus === variablesModule.STATUS.rejected ||
-      outboundStatus === variablesModule.STATUS.failed
-    ) {
+    // if (
+    //   outboundStatus === variablesModule.STATUS.bye ||
+    //   outboundStatus === variablesModule.STATUS.cancel ||
+    //   outboundStatus === variablesModule.STATUS.rejected ||
+    //   outboundStatus === variablesModule.STATUS.failed
+    // ) {
+    //   // reset state
+    //   setStatus(variablesModule.STATUS.idle);
+    //   setIsVisible(false);
+    //   setInfoFromInbound('');
+    //   setInfoFromOutbound('');
+    //   setOutboundStatusInfo('');
+    //   setIsOutbound(false);
+    // }
+    if (outboundStatus === variablesModule.STATUS.failed && isEmpty(outboundHistory)) {
       // reset state
       setStatus(variablesModule.STATUS.idle);
       setIsVisible(false);
-      setInfoFromInbound('');
+      // setInfoFromInbound('');
       setInfoFromOutbound('');
       setOutboundStatusInfo('');
       setIsOutbound(false);
+
+      setOutboundHistory({});
     }
 
     if (outboundStatus === variablesModule.STATUS.accepted) {
@@ -172,9 +198,17 @@ const Test = memo(() => {
       });
     });
     socket.on('receive.call.event', (e, d) => {
-      setInboundHistory(d.data);
+      if (d.data.hangup_cause !== variablesModule.SOCKET_STATUS.originator_cancel) {
+        setInboundHistory(d.data);
+      } else {
+        setInboundHistory({});
+      }
     });
   }, [infoCall.id]);
+
+  useEffect(() => {
+    setOutboundHistory(outboundEvent);
+  }, [outboundEvent.callId]);
 
   const showModal = () => {
     setIsVisible(true);
@@ -193,10 +227,23 @@ const Test = memo(() => {
   };
 
   // OUTBOUND (OUT)
-  const handleOutbound = (status, phone, statusModal) => {
-    setStatus(status);
-    setOutboundNumber(phone);
-    setIsVisible(statusModal);
+  const handleOutbound = (status, phone, statusModal, content) => {
+    // setStatus(status);
+    // setOutboundNumber(phone);
+    // setIsVisible(statusModal);
+    setContentOutbound(content);
+  };
+
+  // OUTBOUND RESULT (OUT)
+  const handleOutboundResult = () => {
+    setStatus(variablesModule.STATUS.idle);
+    setIsVisible(false);
+    setInfoFromInbound('');
+    setInfoFromOutbound('');
+    setOutboundStatusInfo('');
+    setIsOutbound(false);
+
+    setOutboundHistory({});
   };
 
   // INBOUND (IN)
@@ -206,10 +253,8 @@ const Test = memo(() => {
   };
 
   // ANSWER (IN)
-  const handleAnswer = (status, phone, statusModal) => {
-    // setStatus(status);
-    // setOutboundNumber(phone);
-    // setIsVisible(statusModal);
+  const handleAnswer = (content) => {
+    setContentInbound(content);
   };
 
   // INBOUND RESULT (IN)
@@ -228,7 +273,7 @@ const Test = memo(() => {
     <>
       {isSaler && (
         <>
-          <audio ref={audioRef} autoPlay>
+          <audio ref={audioRef} preload="none" autoPlay>
             <track kind="captions" />
           </audio>
           <div className={styles['logo-call']} role="presentation" onClick={showModal}>
@@ -316,16 +361,36 @@ const Test = memo(() => {
             title="Kết quả cuộc gọi"
             className={styles['call-result-modal']}
             closable={false}
-            visible={!isEmpty(inboundHistory)}
+            visible={!isEmpty(inboundHistory) || !isEmpty(outboundHistory)}
             width={350}
             footer={null}
           >
-            <InboundResult
-              handleOnClick={handleInboundResult}
-              inboundHistory={inboundHistory}
-              infoFromInbound={infoFromInbound}
-            />
+            {/* INBOUND RESULT */}
+            <div className={!isEmpty(inboundHistory) ? 'd-block' : 'd-none'}>
+              <InboundResult
+                handleOnClick={handleInboundResult}
+                inboundHistory={inboundHistory}
+                infoFromInbound={infoFromInbound}
+                contentInbound={contentInbound}
+              />
+            </div>
+
+            {/* OUTBOUND RESULT */}
+            <div className={!isEmpty(outboundHistory) ? 'd-block' : 'd-none'}>
+              <OutboundResult
+                handleOnClick={handleOutboundResult}
+                outboundHistory={outboundHistory}
+                infoFromOutbound={infoFromOutbound}
+                contentOutbound={contentOutbound}
+              />
+            </div>
           </Modal>
+
+          {/* {isVisibleAddLead && (
+            <div className={styles['main-form-add-lead']}>
+              <p>FORM THÊM LEAD</p>
+            </div>
+          )} */}
         </>
       )}
     </>

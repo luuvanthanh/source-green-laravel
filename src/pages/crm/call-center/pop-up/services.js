@@ -53,7 +53,7 @@ export function getCrmId(params = {}) {
 
 export function addResultCall(data = {}) {
   return request(`/v1/update-end-call`, {
-    method: 'POST',
+    method: 'PUT',
     data,
   });
 }

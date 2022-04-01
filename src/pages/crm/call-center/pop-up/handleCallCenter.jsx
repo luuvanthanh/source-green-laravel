@@ -40,6 +40,8 @@ function waitingForApplyingAnswer(response) {
 const handleInboundCall = () => {
   const [inboundStatus, setInboundStatus] = useState('');
   const [infoCall, setInfoCall] = useState({});
+  // const ringAudio = new Audio('/resources/iphone-ringtone.mp3');
+  // ringAudio.loop = true;
 
   const inboundContext = useCallback((username, password, hostname, port, path, playerRef) => {
     const player = playerRef;
@@ -75,9 +77,40 @@ const handleInboundCall = () => {
     ua.on('invite', (s) => {
       session = s;
       session.type = 'inbound';
+      // if (ringAudio.play() !== undefined) {
+      //   ringAudio?.play().then((_) => {
+      //     ringAudio?.play();
+      //   });
+      // }
 
       session.on('accepted', () => {
         setInboundStatus('ACCEPTED');
+        const pc = session.sessionDescriptionHandler.peerConnection;
+        const remoteStream = new MediaStream();
+
+        pc.getReceivers().forEach((receiver) => {
+          remoteStream.addTrack(receiver.track);
+        });
+
+        if (typeof player.srcObject !== 'undefined') {
+          player.srcObject = remoteStream;
+        } else if (typeof player.mozSrcObject !== 'undefined') {
+          player.mozSrcObject = remoteStream;
+        } else if (typeof player.src !== 'undefined') {
+          player.src = URL.createObjectURL(remoteStream);
+        }
+        // player.play();
+        if (player.play() !== undefined) {
+          player.play().then((_) => {
+            player.play();
+          });
+        }
+
+        // if (ringAudio.play() !== undefined) {
+        //   ringAudio.play().then((_) => {
+        //     ringAudio.pause();
+        //   });
+        // }
         console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
       });
       session.on('rejected', () => {
@@ -99,21 +132,6 @@ const handleInboundCall = () => {
 
       session.on('trackAdded', () => {
         console.log('%cTHÊM ÂM THANH (GỌI ĐẾN)', 'color: yellow; font-weight: bold');
-        const pc = session.sessionDescriptionHandler.peerConnection;
-        const remoteStream = new MediaStream();
-
-        pc.getReceivers().forEach((receiver) => {
-          remoteStream.addTrack(receiver.track);
-        });
-
-        if (typeof player.srcObject !== 'undefined') {
-          player.srcObject = remoteStream;
-        } else if (typeof player.mozSrcObject !== 'undefined') {
-          player.mozSrcObject = remoteStream;
-        } else if (typeof player.src !== 'undefined') {
-          player.src = URL.createObjectURL(remoteStream);
-        }
-        player.play();
       });
 
       setInfoCall(session);
@@ -159,7 +177,6 @@ const handleOutboundCall = () => {
               session.sessionDescriptionHandler.hasDescription(response.getHeader('Content-Type'))
             ) {
               session.status = Session.C.STATUS_EARLY_MEDIA;
-              setOutboundEvent(session);
               waitingForApplyingAnswer(response);
             }
           }
@@ -182,7 +199,8 @@ const handleOutboundCall = () => {
         console.log('%cTHẤT BẠI (GỌI ĐI)', 'color: pink; font-weight: bold');
         setOutboundStatus('FAILED');
       });
-      session.on('bye', () => {
+      session.on('bye', (response) => {
+        setOutboundEvent(response);
         console.log('%cKẾT THÚC (GỌI ĐI)', 'color: red; font-weight: bold');
         setOutboundStatus('BYE');
       });
@@ -209,7 +227,12 @@ const handleOutboundCall = () => {
         } else if (typeof player.src !== 'undefined') {
           player.src = URL.createObjectURL(remoteStream);
         }
-        player.play();
+        // player.play();
+        if (player.play() !== undefined) {
+          player.play().then((_) => {
+            player.play();
+          });
+        }
       });
     }
   }, []);

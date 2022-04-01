@@ -15,7 +15,7 @@ const variablesModule = {
   },
 
   SOCKET_STATUS: {
-    canceled: 'CANCELED',
+    originator_cancel: 'ORIGINATOR_CANCEL',
   },
 };
 
