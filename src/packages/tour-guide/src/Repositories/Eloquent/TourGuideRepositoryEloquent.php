@@ -193,8 +193,8 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $attributes['detail']['tour_guide_id'] = $tourGuide->id;
             $tourGuideAdditionalInformation = TourGuideAdditionalInformation::create($attributes['detail']);
 
-            if (!empty($attributes['files'])) {
-                $tourGuideAdditionalInformation->addMediaToEntity($tourGuideAdditionalInformation, $attributes['images'], 'files');
+            if (!empty($attributes['detail']['files'])) {
+                $tourGuideAdditionalInformation->addMediaToEntity($tourGuideAdditionalInformation, $attributes['detail']['files'], 'files');
             }
         }
 

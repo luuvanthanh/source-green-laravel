@@ -84,8 +84,8 @@ EOD;
             'message' => $this->getMessage($notifiable),
             'image' => [],
             'model_id' => $this->model->id,
-            'event_type' => 'CountNumberOfTourist',
-            'type' => 'CountNumberOfTourist',
+            'event_type' => 'COUNT_NUMBER_OF_TOURIST',
+            'type' => 'COUNT_NUMBER_OF_TOURIST',
             'created_at' => $this->model->created_at->timezone(config('app.timezone'))->format('c'),
         ];
 
