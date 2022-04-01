@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CallCenter\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\Employee\Models\Employee;
 
 class HistoryCall extends UuidModel
 {
@@ -22,5 +23,10 @@ class HistoryCall extends UuidModel
     public function managerCall()
     {
         return $this->belongsTo(ManagerCall::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
     }
 }
