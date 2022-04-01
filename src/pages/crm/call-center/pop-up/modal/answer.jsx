@@ -1,3 +1,6 @@
+import FormItem from '@/components/CommonComponent/FormItem';
+import { variables } from '@/utils';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { memo } from 'react';
@@ -8,9 +11,11 @@ import styles from '../style.module.scss';
 import variablesModule from '../variables';
 
 const Outbound = memo(({ handleOnClick, inboundStatusInfo, infoFromInbound }) => {
+  const [formRef] = Form.useForm();
+
   const handleAnswer = () => {
     if (handleOnClick) {
-      handleOnClick(variablesModule.STATUS.idle, '', false, true);
+      handleOnClick(formRef.getFieldValue().content);
       handleHangup();
     }
   };
@@ -19,7 +24,7 @@ const Outbound = memo(({ handleOnClick, inboundStatusInfo, infoFromInbound }) =>
     <>
       <div className={styles['layout-call']}>
         <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
-        {/* Thông tin */}
+        {/* INFO */}
         <div className={styles['avatar-item']}>
           {infoFromInbound?.file_image ? (
             <img
@@ -50,6 +55,15 @@ const Outbound = memo(({ handleOnClick, inboundStatusInfo, infoFromInbound }) =>
           <p className={styles['call-status']}>Đang kết nối</p>
         )}
       </div>
+      <Form className={styles['form-main']} form={formRef}>
+        <FormItem
+          placeholder="Nhập nội dung cuộc gọi"
+          name="content"
+          type={variables.TEXTAREA}
+          rules={[variables.RULES.MAX_LENGTH_INPUT]}
+          showCount={false}
+        />
+      </Form>
       <div className={styles['layout-call']}>
         <div className={styles['hangout-group__invidual']}>
           <div

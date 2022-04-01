@@ -6,9 +6,14 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['employee', 'employee.extension']),
       orderBy: 'created_at',
       sortedBy: 'desc',
+      include: Helper.convertIncludes([
+        'employee',
+        'employee.extension',
+        'customerLead',
+        'managerCall',
+      ]),
     },
   });
 }

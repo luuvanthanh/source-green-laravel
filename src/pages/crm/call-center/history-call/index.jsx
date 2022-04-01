@@ -26,7 +26,7 @@ const Index = () => {
     phone: query?.phone,
     from_date:
       query?.from_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-    end_date: query?.end_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    to_date: query?.to_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
@@ -163,9 +163,9 @@ const Index = () => {
       },
       {
         title: 'Kết quả cuộc gọi',
-        key: 'call_result',
+        key: 'result',
         width: 150,
-        render: (record) => record?.call_result,
+        render: (record) => record?.result || record?.refuse,
       },
       {
         title: 'Ghi âm',
@@ -201,7 +201,7 @@ const Index = () => {
           <Form
             initialValues={{
               ...search,
-              date: [moment(search.from_date), moment(search.end_date)],
+              date: [moment(search.from_date), moment(search.to_date)],
               switchboard: query?.switchboard || null,
               branchDirect: query?.branchDirect || null,
               employee: query?.employee || null,

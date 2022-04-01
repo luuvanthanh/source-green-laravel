@@ -286,22 +286,22 @@ export const variables = {
     },
   ],
   STATUS_CALL: {
-    canceled: 'Đã huỷ',
-    rejected: 'Từ chối',
-    hangup: 'Đã kết thúc',
+    CANCELED: 'Đã huỷ',
+    REJECTED: 'Từ chối',
+    HANGUP: 'Đã kết thúc',
   },
   DIRECTION: {
-    inbound: 'Cuộc gọi đến',
-    outbound: 'Cuộc gọi đi',
+    INBOUND: 'Cuộc gọi đến',
+    OUTBOUND: 'Cuộc gọi đi',
   },
   DIRECTION_TYPE: [
-    { id: 'inbound', name: 'Cuộc gọi đến' },
-    { id: 'outbound', name: 'Cuộc gọi đi' },
+    { id: 'INBOUND', name: 'Cuộc gọi đến' },
+    { id: 'OUTBOUND', name: 'Cuộc gọi đi' },
   ],
   CALL_TYPE: [
-    { id: 'canceled', name: 'Đã huỷ' },
-    { id: 'rejected', name: 'Từ chối' },
-    { id: 'hangup', name: 'Đã kết thúc' },
+    { id: 'CANCELED', name: 'Đã huỷ' },
+    { id: 'REJECTED', name: 'Từ chối' },
+    { id: 'HANGUP', name: 'Đã kết thúc' },
   ],
 };
 

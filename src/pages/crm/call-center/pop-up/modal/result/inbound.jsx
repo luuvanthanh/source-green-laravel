@@ -14,7 +14,7 @@ const leadStatus = [
   { id: 'NOT_POTENTIAL', name: 'Không tiềm năng' },
 ];
 
-const InboundResult = memo(({ handleOnClick, inboundHistory, infoFromInbound }) => {
+const InboundResult = memo(({ handleOnClick, inboundHistory, infoFromInbound, contentInbound }) => {
   const [user] = useSelector(({ user }) => [user]);
 
   const [formRef] = Form.useForm();
@@ -80,14 +80,15 @@ const InboundResult = memo(({ handleOnClick, inboundHistory, infoFromInbound }) 
   const onFinish = () => {
     formRef.validateFields().then((values) => {
       const payload = {
-        content: values.content && values.content,
+        result: values.result && values.result,
+        content: contentInbound && contentInbound,
         status_lead: values.status_lead && values.status_lead,
         status_parent_lead_id: values.status_parent_lead_id && values.status_parent_lead_id,
         customer_lead_id: infoFromInbound.customer_lead_id && infoFromInbound.customer_lead_id,
         status_parent_potential_id:
           values.status_parent_potential_id && values.status_parent_potential_id,
         history_call_id: inboundHistory.id && inboundHistory.id,
-        call_type: inboundHistory.direction && inboundHistory.direction.toLowerCase(),
+        call_type: inboundHistory.direction && inboundHistory.direction,
         call_id_sub: inboundHistory.call_id_sub && inboundHistory.call_id_sub,
         employee_id: crmIdUser,
       };
@@ -161,7 +162,7 @@ const InboundResult = memo(({ handleOnClick, inboundHistory, infoFromInbound }) 
         <FormItem
           label="Kết quả cuộc gọi"
           placeholder="Kết quả cuộc gọi"
-          name="content"
+          name="result"
           type={variables.TEXTAREA}
           rules={[variables.RULES.MAX_LENGTH_INPUT]}
           showCount={false}
@@ -180,12 +181,14 @@ InboundResult.propTypes = {
   handleOnClick: PropTypes.func,
   inboundHistory: PropTypes.object,
   infoFromInbound: PropTypes.any,
+  contentInbound: PropTypes.any,
 };
 
 InboundResult.defaultProps = {
   handleOnClick: () => {},
   inboundHistory: {},
   infoFromInbound: null,
+  contentInbound: null,
 };
 
 export default InboundResult;
