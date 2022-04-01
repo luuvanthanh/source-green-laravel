@@ -133,6 +133,8 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         if (is_null($testInput)) {
             $testInput = TestInput::create($attributes);
             $admissionRegister = AdmissionRegister::find($attributes['admission_register_id']);
+            $admissionRegister->update(['register_status' => AdmissionRegister::REGISTER_STATUS['TEST_INPUT']]);
+            
             $customerLeadId = $admissionRegister->studentInfo->customer_lead_id;
             $customerPotential = CustomerPotential::where('customer_lead_id', $customerLeadId)->first();
 

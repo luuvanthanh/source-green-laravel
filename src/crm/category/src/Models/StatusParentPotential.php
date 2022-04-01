@@ -13,6 +13,13 @@ class StatusParentPotential extends UuidModel
 
     const CODE = 'TTN';
 
+    const NUMBER_STATUS = [
+        'SALE_ONLINE' => 1,
+        'SIGHTSEEING' => 2,
+        'ADMISSION_REGISTER' => 3,
+        'TEST_INPUT' => 4
+    ];
+
     protected $table = 'status_parent_potentials';
 
     public $incrementing = false;
