@@ -57,7 +57,7 @@ class RouteRegistrar extends CoreRegistrar
 
             Route::post('forward', 'CallController@forward');
 
-            Route::post('update-end-call', 'HistoryCallController@updateEndCall');
+            Route::put('update-end-call', 'HistoryCallController@updateEndCall');
 
             Route::resource('manager-calls', 'ManagerCallController');
 
