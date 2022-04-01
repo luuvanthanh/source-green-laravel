@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import { Helper, variables } from '@/utils';
 
 export function add(data = {}) {
   return request('/news', {
@@ -18,5 +17,14 @@ export function update(data = {}) {
 export function get(data = {}) {
   return request(`/news/${data.id}`, {
     method: 'GET',
+  });
+}
+
+export function getClass(data = {}) {
+  return request(`/classes`, {
+    method: 'GET',
+    params: {
+      ...data,
+    }
   });
 }
