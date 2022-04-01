@@ -6,7 +6,8 @@ import { Helper, variables } from '@/utils';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import { useDispatch, useSelector } from 'dva';
-import { debounce } from 'lodash';
+import { debounce, head, isEmpty, last } from 'lodash';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation, useRouteMatch } from 'umi';
@@ -15,21 +16,24 @@ const Index = () => {
   const [
     { data, pagination },
     loading,
-  ] = useSelector(({ loading: { effects }, CRMHistoryCall }) => [CRMHistoryCall, effects]);
+  ] = useSelector(({ loading: { effects }, crmHistoryCall }) => [crmHistoryCall, effects]);
   const { query, pathname } = useLocation();
   const { params } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
   const [formRef] = Form.useForm();
   const [search, setSearch] = useState({
-    key: query?.key,
+    phone: query?.phone,
+    from_date:
+      query?.from_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    to_date: query?.to_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
 
   const onLoad = () => {
     dispatch({
-      type: 'CRMHistoryCall/GET_DATASOURCE',
+      type: 'crmHistoryCall/GET_DATA',
       payload: {
         ...search,
       },
@@ -40,32 +44,45 @@ const Index = () => {
     });
   };
 
-  const loadCategories = () => {
-    dispatch({
-      type: 'crmHistoryCall/GET_EMPLOYEES',
-      payload: {},
-    });
-  };
-
   useEffect(() => {
     onLoad();
-    loadCategories();
-  }, []);
+  }, [search]);
 
   const debouncedSearch = debounce((value, type) => {
-    setSearch(
-      (prev) => ({
-        ...prev,
-        [`${type}`]: value,
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.PAGE_SIZE,
-      }),
-      () => onLoad(),
-    );
+    setSearch((prev) => ({
+      ...prev,
+      [`${type}`]: value,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    }));
+  }, 300);
+
+  const debouncedSearchDateRank = debounce((from_date, to_date) => {
+    setSearch((prev) => ({
+      ...prev,
+      from_date,
+      to_date,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    }));
   }, 300);
 
   const onChange = (e, type) => {
     debouncedSearch(e.target.value, type);
+  };
+
+  const onChangeDateRank = (e) => {
+    if (!isEmpty(e)) {
+      debouncedSearchDateRank(
+        moment(head(e))?.format(variables.DATE_FORMAT.DATE_AFTER),
+        moment(last(e))?.format(variables.DATE_FORMAT.DATE_AFTER),
+      );
+    } else {
+      debouncedSearchDateRank(
+        moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+        moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+      );
+    }
   };
 
   const onChangeSelect = (e, type) => {
@@ -73,22 +90,16 @@ const Index = () => {
   };
 
   const changePagination = ({ page, limit }) => {
-    setSearch(
-      (prev) => ({
-        ...prev,
-        page,
-        limit,
-      }),
-      () => {
-        onLoad();
-      },
-    );
+    setSearch((prev) => ({
+      ...prev,
+      page,
+      limit,
+    }));
   };
 
   const paginationFunction = (pagination) =>
-    Helper.paginationNet({
+    Helper.paginationLavarel({
       pagination,
-      query,
       callback: (response) => {
         changePagination(response);
       },
@@ -106,13 +117,13 @@ const Index = () => {
         title: 'Ngày giờ gọi',
         key: 'call_date',
         width: 150,
-        render: (record) => record?.call_date,
+        render: (record) => moment(record?.created_at).format(variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Loại cuộc gọi',
         key: 'call_type',
         width: 150,
-        render: (record) => record?.call_type,
+        render: (record) => variables.DIRECTION[record?.direction],
       },
       {
         title: 'Tổng đài',
@@ -128,9 +139,9 @@ const Index = () => {
       },
       {
         title: 'Số điện thoại',
-        key: 'phone_number',
+        key: 'phone',
         width: 150,
-        render: (record) => record?.phone_number,
+        render: (record) => record?.phone,
       },
       {
         title: 'Nội dung',
@@ -146,21 +157,34 @@ const Index = () => {
       },
       {
         title: 'Trạng thái',
-        key: 'status',
+        key: 'call_status',
         width: 150,
-        render: (record) => record?.status,
+        render: (record) => Helper.getStatusCall(record?.call_status),
       },
       {
         title: 'Kết quả cuộc gọi',
-        key: 'call_result',
+        key: 'result',
         width: 150,
-        render: (record) => record?.call_result,
+        render: (record) => record?.result || record?.refuse,
       },
       {
         title: 'Ghi âm',
-        key: 'recording',
+        key: 'record_link',
         width: 150,
-        render: (record) => record?.recording,
+        render: (record) => (
+          <div className={styles['files-container']}>
+            <div className={styles.item}>
+              <a
+                href={record?.record_link}
+                target="_blank"
+                rel="noreferrer"
+                className={styles['link-record']}
+              >
+                {record?.record_link}
+              </a>
+            </div>
+          </div>
+        ),
       },
     ];
     return columns;
@@ -177,11 +201,12 @@ const Index = () => {
           <Form
             initialValues={{
               ...search,
+              date: [moment(search.from_date), moment(search.to_date)],
               switchboard: query?.switchboard || null,
               branchDirect: query?.branchDirect || null,
               employee: query?.employee || null,
-              calling: query?.calling || null,
-              status: query?.status || null,
+              call_type: query?.call_type || null,
+              call_status: query?.call || null,
             }}
             layout="vertical"
             form={formRef}
@@ -189,8 +214,8 @@ const Index = () => {
             <div className="row">
               <div className="col-lg-3">
                 <FormItem
-                  name="key"
-                  onChange={(e) => onChange(e, 'key')}
+                  name="phone"
+                  onChange={(e) => onChange(e, 'phone')}
                   placeholder="Số điện thoại"
                   type={variables.INPUT_SEARCH}
                 />
@@ -198,9 +223,9 @@ const Index = () => {
               <div className="col-lg-6">
                 <FormItem
                   name="date"
-                  onChange={(e) => onChangeSelect(e, 'date')}
+                  onChange={(event) => onChangeDateRank(event, 'date')}
                   placeholder="Nhập từ khóa"
-                  type={variables.RANGE_DATETIME_PICKER}
+                  type={variables.RANGE_PICKER}
                 />
               </div>
               <div className="col-lg-3">
@@ -232,18 +257,18 @@ const Index = () => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tất cả cuộc gọi' }]}
-                  name="calling"
-                  onChange={(e) => onChangeSelect(e, 'calling_id')}
+                  data={[{ id: null, name: 'Tất cả cuộc gọi' }, ...variables.DIRECTION_TYPE]}
+                  name="call_type"
+                  onChange={(e) => onChangeSelect(e, 'call_type')}
                   type={variables.SELECT}
                   allowClear={false}
                 />
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tất cả trạng thái' }]}
-                  name="status"
-                  onChange={(e) => onChangeSelect(e, 'status_id')}
+                  data={[{ id: null, name: 'Tất cả trạng thái' }, ...variables.CALL_TYPE]}
+                  name="call_status"
+                  onChange={(e) => onChangeSelect(e, 'call_status')}
                   type={variables.SELECT}
                   allowClear={false}
                 />

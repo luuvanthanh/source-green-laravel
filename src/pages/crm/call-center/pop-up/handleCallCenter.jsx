@@ -37,11 +37,13 @@ function waitingForApplyingAnswer(response) {
   }, 10);
 }
 
-const handleOnServer = () => {
-  const [serverStatus, setServerStatus] = useState('');
+const handleInboundCall = () => {
+  const [inboundStatus, setInboundStatus] = useState('');
   const [infoCall, setInfoCall] = useState({});
+  // const ringAudio = new Audio('/resources/iphone-ringtone.mp3');
+  // ringAudio.loop = true;
 
-  const serverContext = useCallback((username, password, hostname, port, path, playerRef) => {
+  const inboundContext = useCallback((username, password, hostname, port, path, playerRef) => {
     const player = playerRef;
     config = {
       displayName: username,
@@ -75,30 +77,14 @@ const handleOnServer = () => {
     ua.on('invite', (s) => {
       session = s;
       session.type = 'inbound';
+      // if (ringAudio.play() !== undefined) {
+      //   ringAudio?.play().then((_) => {
+      //     ringAudio?.play();
+      //   });
+      // }
 
       session.on('accepted', () => {
-        setServerStatus('ACCEPTED');
-        console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
-      });
-      session.on('rejected', () => {
-        setServerStatus('REJECTED');
-        console.log('%cTỪ CHỐI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
-      });
-      session.on('cancel', () => {
-        setServerStatus('CANCEL');
-        console.log('%cHUỶ (GỌI ĐẾN)', 'color: pink; font-weight: bold');
-      });
-      session.on('failed', () => {
-        setServerStatus('FAILED');
-        console.log('%cTHẤT BẠI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
-      });
-      session.on('bye', () => {
-        setServerStatus('BYE');
-        console.log('%cKẾT THÚC (GỌI ĐẾN)', 'color: red; font-weight: bold');
-      });
-
-      session.on('trackAdded', () => {
-        console.log('%cTHÊM ÂM THANH (GỌI ĐẾN)', 'color: yellow; font-weight: bold');
+        setInboundStatus('ACCEPTED');
         const pc = session.sessionDescriptionHandler.peerConnection;
         const remoteStream = new MediaStream();
 
@@ -113,20 +99,53 @@ const handleOnServer = () => {
         } else if (typeof player.src !== 'undefined') {
           player.src = URL.createObjectURL(remoteStream);
         }
-        player.play();
+        // player.play();
+        if (player.play() !== undefined) {
+          player.play().then((_) => {
+            player.play();
+          });
+        }
+
+        // if (ringAudio.play() !== undefined) {
+        //   ringAudio.play().then((_) => {
+        //     ringAudio.pause();
+        //   });
+        // }
+        console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
+      });
+      session.on('rejected', () => {
+        setInboundStatus('REJECTED');
+        console.log('%cTỪ CHỐI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
+      });
+      session.on('cancel', () => {
+        setInboundStatus('CANCEL');
+        console.log('%cHUỶ (GỌI ĐẾN)', 'color: pink; font-weight: bold');
+      });
+      session.on('failed', () => {
+        setInboundStatus('FAILED');
+        console.log('%cTHẤT BẠI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
+      });
+      session.on('bye', () => {
+        setInboundStatus('BYE');
+        console.log('%cKẾT THÚC (GỌI ĐẾN)', 'color: red; font-weight: bold');
+      });
+
+      session.on('trackAdded', () => {
+        console.log('%cTHÊM ÂM THANH (GỌI ĐẾN)', 'color: yellow; font-weight: bold');
       });
 
       setInfoCall(session);
     });
   }, []);
 
-  return { serverStatus, infoCall, serverContext };
+  return { inboundStatus, infoCall, inboundContext };
 };
 
-const handleOnClient = () => {
-  const [clientStatus, setClientStatus] = useState('');
+const handleOutboundCall = () => {
+  const [outboundStatus, setOutboundStatus] = useState('');
+  const [outboundEvent, setOutboundEvent] = useState({});
 
-  const clientContext = useCallback((phoneNumber, playerRef) => {
+  const outboundContext = useCallback((phoneNumber, playerRef) => {
     const player = playerRef;
     let status = SESSION_STATUS.IDLE;
     if (session) {
@@ -166,33 +185,34 @@ const handleOnClient = () => {
 
       session.on('accepted', () => {
         console.log('%cĐỒNG Ý (GỌI ĐI)', 'color: #2ecc71; font-weight: bold');
-        setClientStatus('ACCEPTED');
+        setOutboundStatus('ACCEPTED');
       });
       session.on('rejected', () => {
         console.log('%cTỪ CHỐI (GỌI ĐI)', 'color: pink; font-weight: bold');
-        setClientStatus('REJECTED');
+        setOutboundStatus('REJECTED');
       });
       session.on('cancel', () => {
         console.log('%cHUỶ (GỌI ĐI)', 'color: pink; font-weight: bold');
-        setClientStatus('CANCEL');
+        setOutboundStatus('CANCEL');
       });
       session.on('failed', () => {
         console.log('%cTHẤT BẠI (GỌI ĐI)', 'color: pink; font-weight: bold');
-        setClientStatus('FAILED');
+        setOutboundStatus('FAILED');
       });
-      session.on('bye', () => {
+      session.on('bye', (response) => {
+        setOutboundEvent(response);
         console.log('%cKẾT THÚC (GỌI ĐI)', 'color: red; font-weight: bold');
-        setClientStatus('BYE');
+        setOutboundStatus('BYE');
       });
       session.on('unavailable', () => {
-        setClientStatus('UNAVAILABLE');
+        setOutboundStatus('UNAVAILABLE');
       });
       session.on('not found', () => {
-        setClientStatus('NOT_FOUND');
+        setOutboundStatus('NOT_FOUND');
       });
       session.on('trackAdded', () => {
         console.log('%cTHÊM ÂM THANH (GỌI ĐI)', 'color: yellow; font-weight: bold');
-        setClientStatus('TRACK_ADDED');
+        setOutboundStatus('TRACK_ADDED');
         const pc = session.sessionDescriptionHandler.peerConnection;
         const remoteStream = new MediaStream();
 
@@ -207,12 +227,17 @@ const handleOnClient = () => {
         } else if (typeof player.src !== 'undefined') {
           player.src = URL.createObjectURL(remoteStream);
         }
-        player.play();
+        // player.play();
+        if (player.play() !== undefined) {
+          player.play().then((_) => {
+            player.play();
+          });
+        }
       });
     }
   }, []);
 
-  return { clientStatus, clientContext };
+  return { outboundStatus, outboundEvent, outboundContext };
 };
 
 const handleHangup = () => {
@@ -239,4 +264,4 @@ const handleReject = () => {
   });
 };
 
-export { handleOnServer, handleOnClient, handleHangup, handleAnswer, handleReject };
+export { handleInboundCall, handleOutboundCall, handleHangup, handleAnswer, handleReject };

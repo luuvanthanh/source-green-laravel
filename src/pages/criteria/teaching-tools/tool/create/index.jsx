@@ -35,8 +35,6 @@ const Index = memo(() => {
   const [toolDetailSensitives, setToolDetailSensitives] = useState([
     {
       id: uuidv4(),
-      name: undefined,
-      explaination: undefined
     },
   ]);
   const [toolDetailLevels, setToolDetailLevels] = useState([

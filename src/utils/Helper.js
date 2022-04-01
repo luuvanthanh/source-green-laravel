@@ -1223,6 +1223,20 @@ export default class Helpers {
     return '';
   };
 
+  static getStatusCall = (status) => {
+    if (variables.STATUS_CALL[status] === 'Đã huỷ') {
+      return <Tag color="yellow">Đã huỷ</Tag>;
+    }
+    if (variables.STATUS_CALL[status] === 'Từ chối') {
+      return <Tag color="danger">Từ chối</Tag>;
+    }
+    if (variables.STATUS_CALL[status] === 'Đã kết thúc') {
+      return <Tag color="success">Đã kết thúc</Tag>;
+    }
+
+    return '';
+  };
+
   static getStatusProbationaryContracts = (contractFrom, contractTo) => {
     const diffSignDate = moment(
       moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),

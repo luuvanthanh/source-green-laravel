@@ -330,7 +330,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                {/* <div className="col-lg-4">
                   <FormItem
                     name="user_id"
                     data={[]}
@@ -348,7 +348,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeSelect(event, 'actionType')}
                     type={variables.SELECT}
                   />
-                </div>
+                </div> */}
                 <div className="col-lg-4">
                   <FormItem
                     name="date"

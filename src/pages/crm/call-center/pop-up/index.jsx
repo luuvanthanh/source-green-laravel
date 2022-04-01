@@ -1,52 +1,47 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
-import { Modal, Button } from 'antd';
-// import ButtonCus from '@/components/CommonComponent/Button';
-// import FormItem from '@/components/CommonComponent/FormItem';
-import Draggable from 'react-draggable';
-import classnames from 'classnames';
-// import { variables } from '@/utils';
-import Timer from 'react-timer-wrapper';
-import Timecode from 'react-timecode';
-import { head, isEmpty } from 'lodash';
+import { Modal } from 'antd';
 import { useDispatch, useSelector } from 'dva';
+import { head, isEmpty } from 'lodash';
+import React, { memo, useEffect, useRef, useState } from 'react';
+import Draggable from 'react-draggable';
+import { handleOutboundCall, handleInboundCall } from './handleCallCenter';
+import Inbound from './modal/inbound';
+import Outbound from './modal/outbound';
+import Phone from './modal/phone';
 import styles from './style.module.scss';
-import {
-  handleOnServer,
-  handleOnClient,
-  handleHangup,
-  handleAnswer,
-  handleReject,
-} from './handleCallCenter';
-
-const STATUS = {
-  idle: 'IDLE',
-  inbound: 'INBOUND',
-  outbound: 'OUTBOUND',
-
-  accepted: 'ACCEPTED',
-  rejected: 'REJECTED',
-  cancel: 'CANCEL',
-  bye: 'BYE',
-  failed: 'FAILED',
-  unavailable: 'UNAVAILABLE',
-  not_found: 'NOTFOUND',
-};
+import variablesModule from './variables';
 
 const Index = memo(() => {
+  const [bounds, setBounds] = useState({ left: 0, top: 0, bottom: 0, right: 0 });
+  const draggleRef = useRef();
+  const onStart = (e, uiData) => {
+    const { clientWidth, clientHeight } = window.document.documentElement;
+    const targetRect = draggleRef.current?.getBoundingClientRect();
+    if (!targetRect) {
+      return;
+    }
+    setBounds({
+      left: -targetRect.left + uiData.x,
+      right: clientWidth - (targetRect.right - uiData.x),
+      top: -targetRect.top + uiData.y,
+      bottom: clientHeight - (targetRect.bottom - uiData.y),
+    });
+  };
+
+  const [user] = useSelector(({ user, crmCallCenter }) => [user, crmCallCenter]);
   const dispatch = useDispatch();
-  const [inputNumber, setInputNumber] = useState('');
+
+  const [isSaler, setIsSaler] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
-  const [statusCall, setStatusCall] = useState(STATUS.idle);
-  const [clientNumber, setClientNumber] = useState('');
-  const [clientStatusCall, setClientStatusCall] = useState('');
-  const [isSaler, setIsSaler] = useState(false);
+  const [statusCall, setStatusCall] = useState(variablesModule.STATUS.idle); // trạng thái điện thoại
+  const [outboundNumber, setOutboundNumber] = useState(''); // số gọi đi
+  const [inboundClient, setInboundClient] = useState(''); // số khách có thông tin
+  const [clientStatusInfo, setClientStatusInfo] = useState(''); // trạng thái máy khách
+  const [serverStatusInfo, setServerStatusInfo] = useState(''); // trạng thái máy lẻ
   const audioRef = useRef(null);
 
-  const { serverStatus, infoCall, serverContext } = handleOnServer();
-  const { clientStatus, clientContext } = handleOnClient();
-
-  const [user] = useSelector(({ user }) => [user]);
+  const { serverStatus, infoCall, serverContext } = handleInboundCall();
+  const { clientStatus, clientContext } = handleOutboundCall();
 
   useEffect(() => {
     dispatch({
@@ -70,75 +65,56 @@ const Index = memo(() => {
     });
   }, []);
 
-  useEffect(() => {
-    serverContext('23388', 'crm@cmc2018', 'kam-01.api-connect.io', '7443', '', audioRef.current);
-  }, []);
-
+  // useEffect thông tin số điện thoại
   useEffect(() => {
     if (!isEmpty(infoCall)) {
-      setStatusCall(STATUS[infoCall?.type]);
-      setClientNumber(infoCall?.request?.from?.displayName);
+      setStatusCall(variablesModule.STATUS[infoCall?.type]);
+      dispatch({
+        type: 'crmCallCenter/CHECK_PHONE',
+        payload: {
+          id: infoCall.request.from.displayName,
+        },
+        callback: (response) => {
+          if (response && !isEmpty(response.data)) {
+            setInboundClient(response.data.attributes);
+          } else {
+            setInboundClient({ number: infoCall.request.from.displayName });
+          }
+        },
+      });
       setIsVisible(true);
     }
   }, [infoCall]);
 
   useEffect(() => {
     if (
-      serverStatus === STATUS.bye ||
-      serverStatus === STATUS.cancel ||
-      serverStatus === STATUS.rejected ||
-      serverStatus === STATUS.failed
+      serverStatus === variablesModule.STATUS.bye ||
+      serverStatus === variablesModule.STATUS.cancel ||
+      serverStatus === variablesModule.STATUS.rejected ||
+      serverStatus === variablesModule.STATUS.failed
     ) {
+      setStatusCall(variablesModule.STATUS.idle);
       setIsVisible(false);
-      setClientNumber('');
-      setStatusCall(STATUS.idle);
+      setInboundClient('');
+      setServerStatusInfo('');
+    }
+
+    if (serverStatus === variablesModule.STATUS.accepted) {
+      setServerStatusInfo(variablesModule.STATUS.accepted);
     }
   }, [serverStatus]);
 
   useEffect(() => {
-    if (clientStatus === STATUS.bye) {
+    if (clientStatus === variablesModule.STATUS.bye) {
+      setStatusCall(variablesModule.STATUS.idle);
       setIsVisible(false);
-      setClientStatusCall('');
-      setClientNumber('');
+      setClientStatusInfo('');
     }
-    if (clientStatus === STATUS.accepted) {
-      setClientStatusCall(STATUS.accepted);
+
+    if (clientStatus === variablesModule.STATUS.accepted) {
+      setClientStatusInfo(variablesModule.STATUS.accepted);
     }
   }, [clientStatus]);
-
-  const [bounds, setBounds] = useState({ left: 0, top: 0, bottom: 0, right: 0 });
-  const draggleRef = useRef();
-  const onStart = (event, uiData) => {
-    const { clientWidth, clientHeight } = window.document.documentElement;
-    const targetRect = draggleRef.current?.getBoundingClientRect();
-    if (!targetRect) {
-      return;
-    }
-    setBounds({
-      left: -targetRect.left + uiData.x,
-      right: clientWidth - (targetRect.right - uiData.x),
-      top: -targetRect.top + uiData.y,
-      bottom: clientHeight - (targetRect.bottom - uiData.y),
-    });
-  };
-
-  const phoneBtns = [];
-  [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach((item) => {
-    phoneBtns.push(
-      <Button
-        className={styles['phone-button']}
-        onClick={(e) => {
-          if (inputNumber.length < 12) {
-            setInputNumber(inputNumber + e.target.value);
-          }
-        }}
-        value={item}
-        key={item}
-      >
-        {item}
-      </Button>,
-    );
-  });
 
   const showModal = () => {
     setIsVisible(true);
@@ -146,27 +122,25 @@ const Index = memo(() => {
 
   const handleCancel = () => {
     setIsVisible(false);
-    setStatusCall(STATUS.idle);
-    setClientStatusCall('');
-    setInputNumber('');
   };
 
-  const callNumber = () => {
-    setStatusCall(STATUS.outbound);
-    clientContext(inputNumber, audioRef.current);
+  // PHONE
+  const handlePhone = (status, phone) => {
+    setStatusCall(status);
+    setOutboundNumber(phone);
+    clientContext(phone, audioRef.current);
   };
 
-  const handleHangupClick = () => {
-    setIsVisible(false);
-    setStatusCall(STATUS.idle);
-    setInputNumber('');
-    setClientNumber(''); // chưa xử lí bên test
-    handleHangup();
+  // OUTBOUND
+  const handleOutbound = (status, phone, statusModal) => {
+    setStatusCall(status);
+    setOutboundNumber(phone);
+    setIsVisible(statusModal);
   };
 
-  const handleAnswerClick = () => {
-    setStatusCall(STATUS.outbound);
-    handleAnswer(audioRef?.current);
+  // INBOUND
+  const handleInbound = (status) => {
+    setStatusCall(status);
   };
 
   return (
@@ -174,9 +148,6 @@ const Index = memo(() => {
       {isSaler && (
         <>
           <audio ref={audioRef} autoPlay>
-            <track kind="captions" />
-          </audio>
-          <audio src="/resources/iphone-ringtone.mp3" loop>
             <track kind="captions" />
           </audio>
           <div className={styles['logo-call']} role="presentation" onClick={showModal}>
@@ -216,171 +187,34 @@ const Index = memo(() => {
               onFocus={() => {}}
               onBlur={() => {}}
             >
-              {statusCall === STATUS.idle && (
-                <>
-                  <div className={styles['show-input']}>{inputNumber}</div>
-                  <div className={styles.digits}>{phoneBtns}</div>
-                  <div className={styles['button-group']}>
-                    <div className={styles['button-item']}> </div>
-                    <div className={styles['button-item']}>
-                      <div
-                        className={styles['phone-call']}
-                        role="presentation"
-                        onClick={callNumber}
-                      >
-                        <img src="/images/icon/phone.svg" alt="phone-call" />
-                      </div>
-                    </div>
-                    <div className={styles['button-item']}>
-                      <div
-                        className={styles['delete-number']}
-                        role="presentation"
-                        onClick={() =>
-                          setInputNumber(inputNumber.substr(0, inputNumber.length - 1))
-                        }
-                      >
-                        <img src="/images/icon/delete.svg" alt="delete-number" />
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
+              {/* PHONE */}
+              <div className={statusCall === variablesModule.STATUS.idle ? 'd-block' : 'd-none'}>
+                <Phone handleOnClick={handlePhone} audioRef={audioRef} />
+              </div>
 
-              {statusCall === STATUS.outbound && (
-                <>
-                  <div className={styles['layout-call']}>
-                    <p className={styles['call-type']}>CUỘC GỌI ĐI</p>
-                    <div className={styles['avatar-item']}>
-                      <img
-                        src="/images/icon/user.svg"
-                        alt="user-avatar"
-                        className={styles['default-avatar']}
-                      />
-                    </div>
-                    <p className={styles['user-name']}>Không xác định</p>
-                    <p className={styles['phone-number']}>
-                      {!isEmpty(clientNumber) ? clientNumber : inputNumber}
-                    </p>
-                    {clientStatusCall === STATUS.accepted && (
-                      <Timer active duration={null} className={styles['time-active']}>
-                        <Timecode />
-                      </Timer>
-                    )}
-                    {clientStatusCall === STATUS.bye && (
-                      <p className={styles['call-status']}>Đã kết thúc</p>
-                    )}
-                    {clientStatusCall !== STATUS.bye && clientStatusCall !== STATUS.accepted && (
-                      <p className={styles['call-status']}>Đang kết nối</p>
-                    )}
-                    {/* <ButtonCus
-                  color="primary"
-                  className={styles['button-add-lead']}
-                  onClick={openFormAddLead}
-                  disabled={isVisibleAddLead}
-                >
-                  Thêm Lead
-                </ButtonCus> */}
-                  </div>
-                  {/* <Form>
-                <div className={classnames(styles['layout-call'], styles['border-y'])}>
-                  <FormItem
-                    className={styles['text-note']}
-                    name="note"
-                    placeholder="Nhập nội dung cuộc gọi"
-                    type={variables.TEXTAREA}
-                    rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                    showCount={false}
-                  />
-                </div>
-              </Form> */}
-                  <div className={styles['layout-call']}>
-                    <div className={styles['hangout-group__invidual']}>
-                      <div
-                        className={classnames(
-                          styles['hangout-background__invidual'],
-                          styles['hangout-background'],
-                          styles['hangout-rotate'],
-                        )}
-                        role="presentation"
-                        onClick={handleHangupClick}
-                      >
-                        <img src="/images/icon/phone.svg" alt="phone-call" />
-                      </div>
-                      <p className={styles['hangout-title']}>Kết thúc</p>
-                    </div>
-                  </div>
-                </>
-              )}
+              {/* OUTBOUND */}
+              <div
+                className={statusCall === variablesModule.STATUS.outbound ? 'd-block' : 'd-none'}
+              >
+                <Outbound
+                  handleOnClick={handleOutbound}
+                  outboundNumber={outboundNumber}
+                  clientStatusInfo={clientStatusInfo}
+                  serverStatusInfo={serverStatusInfo}
+                  inboundClient={inboundClient}
+                />
+              </div>
 
-              {statusCall === STATUS.inbound && (
-                <>
-                  <div className={styles['layout-call']}>
-                    <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
-                    <div className={styles['avatar-item']}>
-                      <img
-                        src="/images/icon/user.svg"
-                        alt="user-avatar"
-                        className={styles['default-avatar']}
-                      />
-                    </div>
-                    <p className={styles['user-name']}>Không xác định</p>
-                    <p className={styles['phone-number']}>{clientNumber}</p>
-                    <p className={styles['call-status']}>Đang kết nối</p>
-                  </div>
-                  <div className={styles['layout-call']}>
-                    <div className={styles['hangout-group']}>
-                      <div className={styles['hangout-item']}>
-                        <div
-                          className={classnames(
-                            styles['hangout-background'],
-                            styles['hangout-background__danger'],
-                            styles['hangout-rotate'],
-                          )}
-                          role="presentation"
-                          onClick={handleReject}
-                        >
-                          <img src="/images/icon/phone.svg" alt="phone-call" />
-                        </div>
-                        <p className={styles['hangout-title']}>Kết thúc</p>
-                      </div>
-                      {/* <div className={styles['hangout-item']}>
-                    <div
-                      className={classnames(
-                        styles['hangout-background'],
-                        styles['hangout-background__success'],
-                      )}
-                      role="presentation"
-                      onClick={handleReject}
-                    >
-                      <img src="/images/icon/share.svg" alt="phone-call" />
-                    </div>
-                    <p className={styles['hangout-title']}>Chuyển tiếp</p>
-                  </div> */}
-                      <div className={styles['hangout-item']}>
-                        <div
-                          className={classnames(
-                            styles['hangout-background'],
-                            styles['hangout-background__success'],
-                          )}
-                          role="presentation"
-                          onClick={handleAnswerClick}
-                        >
-                          <img src="/images/icon/phone.svg" alt="phone-call" />
-                        </div>
-                        <p className={styles['hangout-title']}>Chấp nhận</p>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
+              {/* INBOUND */}
+              <div className={statusCall === variablesModule.STATUS.inbound ? 'd-block' : 'd-none'}>
+                <Inbound
+                  handleOnClick={handleInbound}
+                  audioRef={audioRef}
+                  inboundClient={inboundClient}
+                />
+              </div>
             </div>
           </Modal>
-
-          {/* {isVisibleAddLead && (
-          <div className={styles['main-form-add-lead']}>
-            <p>FORM THÊM LEAD</p>
-          </div>
-        )} */}
         </>
       )}
     </>

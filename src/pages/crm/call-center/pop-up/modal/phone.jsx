@@ -27,7 +27,8 @@ const Phone = memo(({ handleOnClick }) => {
 
   const callNumber = () => {
     if (handleOnClick) {
-      handleOnClick(variablesModule.STATUS.outbound, inputNumber);
+      handleOnClick(variablesModule.STATUS.outbound, inputNumber, true);
+      setInputNumber('');
     }
   };
 

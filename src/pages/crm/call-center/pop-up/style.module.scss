@@ -189,6 +189,7 @@
     font-size: 14px;
     line-height: 18px;
     color: $text-white;
+    margin-bottom: 15px;
   }
 
   .phone-number {
@@ -278,6 +279,8 @@
 
 .call-result {
   &-modal {
+    left: 30%;
+
     :global(.ant-modal-body .ant-row) {
       display: unset;
     }
@@ -292,5 +295,21 @@
     font-weight: 400;
     font-size: 18px;
     line-height: 20px;
+  }
+}
+
+.form-main {
+  border-top: 1px solid #383d45 !important;
+  border-bottom: 1px solid #383d45 !important;
+
+  :global(.ant-row) {
+    margin: 10px 0;
+  }
+
+  :global(.ant-input) {
+    background-color: #484e56;
+    border: none;
+    border-radius: 3px;
+    color: $text-white;
   }
 }

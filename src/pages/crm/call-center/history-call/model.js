@@ -1,17 +1,9 @@
 import * as services from './services';
 
 export default {
-  namespace: 'CRMHistoryCall',
+  namespace: 'crmHistoryCall',
   state: {
     data: [],
-    city: [],
-    district: [],
-    tags: [],
-    lead: [],
-    branch: [],
-    types: [],
-    searchSource: [],
-    employees: [],
     pagination: {
       total: 0,
     },
@@ -36,38 +28,6 @@ export default {
         },
       },
     }),
-    SET_CITIES: (state, { payload }) => ({
-      ...state,
-      city: payload.parsePayload,
-    }),
-    SET_DISTRICTS: (state, { payload }) => ({
-      ...state,
-      district: payload.parsePayload,
-    }),
-    SET_TAGS: (state, { payload }) => ({
-      ...state,
-      tags: payload.parsePayload,
-    }),
-    SET_STATUS_LEAD: (state, { payload }) => ({
-      ...state,
-      lead: payload.parsePayload,
-    }),
-    SET_EMPLOYEES: (state, { payload }) => ({
-      ...state,
-      employees: payload.parsePayload,
-    }),
-    SET_SEARCH: (state, { payload }) => ({
-      ...state,
-      searchSource: payload.parsePayload,
-    }),
-    SET_BRANCH: (state, { payload }) => ({
-      ...state,
-      branch: payload.parsePayload,
-    }),
-    SET_TYPES: (state, { payload }) => ({
-      ...state,
-      types: payload.items,
-    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -79,20 +39,6 @@ export default {
             payload: response,
           });
         }
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *GET_EMPLOYEES({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getEmployees, payload);
-        yield saga.put({
-          type: 'SET_EMPLOYEES',
-          payload: response,
-        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

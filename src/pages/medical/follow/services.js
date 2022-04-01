@@ -57,3 +57,12 @@ export function received(params = {}) {
     parse: true,
   });
 }
+
+export function getDetail(data = {}) {
+  return request(`/medicals/${data?.value}/medicine-time-type/${data?.id}`, {
+    method: 'GET',
+    params: {
+     
+    },
+  });
+}
