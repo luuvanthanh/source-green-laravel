@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forAi();
     }
 
     /**
@@ -44,7 +45,21 @@ class RouteRegistrar extends CoreRegistrar
                 'comment' => 'Thông tin lịch sử vào ra trẻ',
                 'uses' => 'InOutHistoriesController@show',
             ]);
+        });
+    }
 
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forAi()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::post('in-out-histories', [
+                'comment' => 'Tạo mới lịch sử vào ra trẻ',
+                'uses' => 'InOutHistoriesController@store',
+            ]);
         });
     }
 }

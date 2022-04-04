@@ -110,4 +110,21 @@ class ResignationDecisionController extends Controller
         return $result;
     }
 
+    public function reportResignation(Request $request)
+    {
+        $resignationDecision = $this->resignationDecisionRepository->reportResignation($request->all());
+
+        return $this->success(['data' => $resignationDecision], trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function exportExcelResignation(Request $request)
+    {
+        $result = $this->resignationDecisionRepository->exportExcelResignation($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
 }

@@ -3,6 +3,7 @@
 namespace GGPHP\Absent\Repositories\Absent;
 
 use Prettus\Repository\Contracts\RepositoryInterface;
+
 /**
  * Interface UserRepository.
  *

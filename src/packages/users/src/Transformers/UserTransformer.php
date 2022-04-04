@@ -5,10 +5,14 @@ namespace GGPHP\Users\Transformers;
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Transformers\AbsentTransformer;
 use GGPHP\BusinessCard\Transformers\BusinessCardTransformer;
+use GGPHP\Category\Transformers\DegreeTransformer;
+use GGPHP\Category\Transformers\TrainingMajorTransformer;
+use GGPHP\Category\Transformers\TrainingSchoolTransformer;
 use GGPHP\Clover\Transformers\ClassTeacherTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
+use GGPHP\Profile\Transformers\LabourContractTransformer;
 use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
 use GGPHP\Timekeeping\Transformers\TimekeepingTransformer;
 use GGPHP\Users\Models\User;
@@ -38,7 +42,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow', 'businessCard'
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool', 'labourContract'
     ];
 
     /**
@@ -159,5 +163,37 @@ class UserTransformer extends BaseTransformer
     public function includePositionLevel(User $employee)
     {
         return $this->collection(empty($employee->positionLevel) ? [] : $employee->positionLevel, new PositionLevelTransformer, 'PositionLevel');
+    }
+
+    public function includeDegree(User $employee)
+    {
+        if (empty($employee->degree)) {
+            return;
+        }
+
+        return $this->item($employee->degree, new DegreeTransformer, 'Degree');
+    }
+
+    public function includeTrainingMajor(User $employee)
+    {
+        if (empty($employee->trainingMajor)) {
+            return;
+        }
+
+        return $this->item($employee->trainingMajor, new TrainingMajorTransformer, 'TrainingMajor');
+    }
+
+    public function includetrainingSchool(User $employee)
+    {
+        if (empty($employee->trainingSchool)) {
+            return;
+        }
+
+        return $this->item($employee->trainingSchool, new TrainingSchoolTransformer, 'TrainingSchool');
+    }
+
+    public function includeLabourContract(User $employee)
+    {
+        return $this->collection($employee->labourContract, new LabourContractTransformer, 'LabourContract');
     }
 }

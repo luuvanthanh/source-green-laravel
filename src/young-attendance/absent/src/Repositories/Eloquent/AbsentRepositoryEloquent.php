@@ -128,7 +128,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
         try {
             $absent = Absent::create($attributes);
-
             $begin = new \DateTime($attributes['startDate']);
             $end = new \DateTime($attributes['endDate'] . '23:59');
             $intervalDate = new \DateInterval('P1D');
@@ -190,7 +189,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
-                $message = "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate";
+                $message = 'Bé' . ' ' . $nameStudent . ' ' . 'xin nghỉ phép ngày' . ' ' . $startDate . '-' . $endDate;
 
                 if (!empty($userId)) {
                     $dataNoti = [
@@ -199,7 +198,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                         'imageURL' => $urlImage,
                         'message' => $message,
                         'moduleType' => 9,
-                        'moduleCode' => "ABSENT_STUDENT",
+                        'moduleCode' => 'ABSENT_STUDENT',
                         'refId' => $absent->Id,
                     ];
 
@@ -226,7 +225,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
-                $message = "Đơn xin phép nghỉ từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.";
+                $message = 'Đơn xin phép nghỉ từ ngày' . ' ' . $startDate . ' ' . 'đến ngày' . ' ' . $endDate . ' ' . 'cần Phụ huynh duyệt đơn.';
 
                 if (!empty($userId)) {
                     $dataNoti = [
@@ -235,7 +234,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                         'imageURL' => $urlImage,
                         'message' => $message,
                         'moduleType' => 9,
-                        'moduleCode' => "ABSENT_STUDENT",
+                        'moduleCode' => 'ABSENT_STUDENT',
                         'refId' => $absent->Id,
                     ];
 
@@ -331,7 +330,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
-            $message = "Bé $nameStudent xin nghỉ phép được thay đổi ngày $startDate - $endDate";
+            $message = 'Bé'  . ' ' . $nameStudent . ' ' . 'xin nghỉ phép được thay đổi ngày' . ' ' . $startDate . '-' . $endDate;
 
             if (!empty($userId)) {
                 $dataNoti = [
@@ -340,13 +339,13 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 9,
-                    'moduleCode' => "ABSENT_STUDENT",
+                    'moduleCode' => 'ABSENT_STUDENT',
                     'refId' => $absent->Id,
                 ];
 
                 dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
-        } else if ($absent->Status == 'PENDING') {
+        } elseif ($absent->Status == 'PENDING') {
             $parents = $absent->student->parent;
             $userId = [];
 
@@ -368,7 +367,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
-            $message = "Đơn xin phép nghỉ được thay đổi từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.";
+            $message = 'Đơn xin phép nghỉ được thay đổi từ ngày' . ' ' . $startDate . ' ' .  'đến ngày' . ' ' . $endDate . ' ' . 'cần Phụ huynh duyệt đơn.';
 
             if (!empty($userId)) {
                 $dataNoti = [
@@ -377,7 +376,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 9,
-                    'moduleCode' => "ABSENT_STUDENT",
+                    'moduleCode' => 'ABSENT_STUDENT',
                     'refId' => $absent->Id,
                 ];
 
@@ -393,7 +392,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         $absent = Absent::findOrFail($id);
 
         $absent->update([
-            "status" => $attributes['status'],
+            'status' => $attributes['status'],
         ]);
 
         $begin = new \DateTime($absent->StartDate);
@@ -440,7 +439,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         $startDate = $absent->StartDate->format('d-m');
         $endDate = $absent->EndDate->format('d-m');
 
-        $message = "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate";
+        $message = 'Bé' . ' ' . $nameStudent . ' ' . 'xin nghỉ phép ngày' . ' ' . $startDate . '-' . $endDate;
 
         if (!empty($userId)) {
             $dataNoti = [
@@ -449,7 +448,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 'imageURL' => $urlImage,
                 'message' => $message,
                 'moduleType' => 9,
-                'moduleCode' => "ABSENT_STUDENT",
+                'moduleCode' => 'ABSENT_STUDENT',
                 'refId' => $absent->Id,
             ];
 

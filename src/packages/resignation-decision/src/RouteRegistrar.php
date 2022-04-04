@@ -60,8 +60,16 @@ class RouteRegistrar extends CoreRegistrar
                     'uses' => 'ResignationDecisionController@exportWord',
                     'as' => 'resignation-decisions.word.export',
                 ]);
-            });
 
+                \Route::get('report-resignation', [
+                    'uses' => 'ResignationDecisionController@reportResignation',
+                    'as' => 'report-resignation.reportResignation',
+                ]);
+
+                \Route::get('export-excel-resignation', [
+                    'uses' => 'ResignationDecisionController@exportExcelResignation',
+                ]);
+            });
         });
     }
 }

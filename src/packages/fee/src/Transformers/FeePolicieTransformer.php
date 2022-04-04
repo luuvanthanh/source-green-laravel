@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Transformers;
 
+use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\FeePolicie;
 
@@ -13,13 +14,12 @@ use GGPHP\Fee\Models\FeePolicie;
 class FeePolicieTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['schoolYear'];
-    protected $defaultIncludes = ['feeDetail', 'moneyMeal', 'otherMoneyDetail'];
+    protected $availableIncludes = ['schoolYear', 'branch'];
+    protected $defaultIncludes = ['feeDetail', 'moneyMeal', 'otherMoneyDetail', 'moneyBus'];
 
     public function customAttributes($model): array
     {
-        return [
-        ];
+        return [];
     }
 
     /**
@@ -74,5 +74,19 @@ class FeePolicieTransformer extends BaseTransformer
         }
 
         return $this->item($feePolicie->schoolYear, new SchoolYearTransformer, 'SchoolYear');
+    }
+
+    public function includeMoneyBus(FeePolicie $feePolicie)
+    {
+        return $this->collection($feePolicie->moneyBus, new MoneyBusTransformer, 'MoneyBus');
+    }
+
+    public function includeBranch(FeePolicie $feePolicie)
+    {
+        if (empty($feePolicie->branch)) {
+            return null;
+        }
+
+        return $this->item($feePolicie->branch, new BranchTransformer, 'Branch');
     }
 }

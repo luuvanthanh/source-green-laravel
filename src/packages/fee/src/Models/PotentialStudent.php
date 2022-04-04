@@ -22,5 +22,4 @@ class PotentialStudent extends UuidModel
         'NameStudent', 'DateOfBirth', 'Age', 'DayAdmission',
         'FatherName', 'FatherPhoneNumber', 'MotherName', 'MotherPhoneNumber', 'TotalMoney',
     ];
-
 }

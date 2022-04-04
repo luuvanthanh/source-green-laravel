@@ -14,7 +14,6 @@ use GGPHP\Users\Transformers\UserTransformer;
  */
 class DivisionShiftTransformer extends BaseTransformer
 {
-
     /**
      * List of resources possible to include
      *

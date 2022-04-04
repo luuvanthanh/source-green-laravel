@@ -20,5 +20,4 @@ class HolidayDetailTransformer extends BaseTransformer
      */
 
     protected $availableIncludes = [];
-
 }

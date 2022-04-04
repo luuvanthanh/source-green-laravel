@@ -140,5 +140,4 @@ class TimekeepingController extends Controller
 
         return $result;
     }
-
 }

@@ -128,4 +128,11 @@ class UserController extends Controller
         $employee = $this->employeeRepository->sendEmployeeAccountant();
         return $this->success(['data' => $employee], trans('lang::messages.common.getListSuccess'));
     }
+
+    public function syncEmployee()
+    {
+        $employee = $this->employeeRepository->syncEmployee();
+
+        return $this->success($employee, trans('lang::messages.common.modifySuccess'));
+    }
 }

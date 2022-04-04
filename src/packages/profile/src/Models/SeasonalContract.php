@@ -12,7 +12,7 @@ class SeasonalContract extends UuidModel
         'ContractNumber', 'TypeOfContractId', 'EmployeeId',
         'Month', 'Date', 'DivisionId', 'PositionId',
         'WorkDetail', 'WorkTime', 'NameProject', 'JoinSocialInsurance', 'Project',
-        'BranchId', 'ContractDate','ContractFrom','ContractTo',
+        'BranchId', 'ContractDate', 'ContractFrom', 'ContractTo', 'RepresentId'
     ];
 
     protected $dateTimeFields = [
@@ -67,5 +67,13 @@ class SeasonalContract extends UuidModel
     public function branch()
     {
         return $this->belongsTo(\GGPHP\Category\Models\Branch::class, 'BranchId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function represent()
+    {
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'RepresentId');
     }
 }

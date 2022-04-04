@@ -104,5 +104,4 @@ class InOutHistoriesRepositoryEloquent extends CoreRepositoryEloquent implements
 
         return $inOutHistories;
     }
-
 }

@@ -3,16 +3,22 @@
 namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Profile\Presenters\LabourContractPresenter;
 use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
+use GGPHP\Users\Models\User;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 /**
  * Class LabourContractRepositoryEloquent.
@@ -40,12 +46,14 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         WordExporterServices $wordExporterServices,
         PositionLevelRepositoryEloquent $positionLevelRepository,
         ScheduleRepositoryEloquent $scheduleRepositoryEloquent,
-        Application $app
+        Application $app,
+        ExcelExporterServices $excelExporterServices
     ) {
         parent::__construct($app);
         $this->positionLevelRepository = $positionLevelRepository;
         $this->wordExporterServices = $wordExporterServices;
         $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
+        $this->excelExporterServices = $excelExporterServices;
     }
 
     /**
@@ -136,6 +144,18 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
 
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->model = $this->model->where('ContractDate', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))->where('ContractDate', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'));
+        }
+
+        if (!empty($attributes['date'])) {
+            $this->model = $this->model->where('ContractFrom', '<=', $attributes['date']);
+        }
+
+        if (isset($attributes['number_year_work_from']) && !empty($attributes['date'])) {
+            $this->model = $this->model->where('ContractFrom', '<=', Carbon::parse($attributes['date'])->subYear($attributes['number_year_work_from'])->format('Y-m-d'));
+        }
+
+        if (isset($attributes['number_year_work_to']) && !empty($attributes['date'])) {
+            $this->model = $this->model->where('ContractFrom', '>=', Carbon::parse($attributes['date'])->subYear($attributes['number_year_work_to'] + 1)->format('Y-m-d'));
         }
 
         if (!empty($attributes['limit'])) {
@@ -312,6 +332,81 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         return $this->wordExporterServices->exportWord('labour_contract', $params);
     }
 
+    public function exportWordEnglish($id)
+    {
+        $labourContract = LabourContract::findOrFail($id);
+        $now = Carbon::now();
+
+        $employee = $labourContract->employee;
+        $params = [
+            'typeVn' => 'LAO ĐỘNG',
+            'typeEnglish' => 'LABOUR',
+            'contractNumber' => $labourContract->ContractNumber,
+            'dateNow' => $labourContract->ContractDate->format('d'),
+            'monthNow' => $labourContract->ContractDate->format('m'),
+            'yearNow' => $labourContract->ContractDate->format('Y'),
+            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
+            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
+            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
+            'nationality' => $employee->Nationality ? $employee->Nationality : '........',
+            'idCard' => $employee->IdCard ? $employee->IdCard : '........',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '........',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
+            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
+            'adress' => $employee->Address ? $employee->Address : '.......',
+            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
+            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
+            'position' => $labourContract->position ? $labourContract->position->Name : '........',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
+            'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
+            'salary' => number_format($labourContract->BasicSalary),
+        ];
+
+        return $this->wordExporterServices->exportWord('contract_english', $params);
+    }
+
+    public function exportWordAuthority($id)
+    {
+        $labourContract = LabourContract::findOrFail($id);
+        $now = Carbon::now();
+
+        $employee = $labourContract->employee;
+        $params = [
+            'typeVn' => 'LAO ĐỘNG',
+            'typeEnglish' => 'LABOUR',
+            'contractNumber' => $labourContract->ContractNumber,
+            'dateNow' => $labourContract->ContractDate->format('d'),
+            'monthNow' => $labourContract->ContractDate->format('m'),
+            'yearNow' => $labourContract->ContractDate->format('Y'),
+            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
+            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
+            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
+            'nationality' => $employee->Nationality ? $employee->Nationality : '........',
+            'idCard' => $employee->IdCard ? $employee->IdCard : '........',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '........',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
+            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
+            'adress' => $employee->Address ? $employee->Address : '.......',
+            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
+            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
+            'position' => $labourContract->position ? $labourContract->position->Name : '........',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
+            'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
+            'salary' => number_format($labourContract->BasicSalary),
+            'represent_name' => $labourContract->represent ? $labourContract->represent->FullName : '',
+        ];
+
+        return $this->wordExporterServices->exportWord('authority_contract', $params);
+    }
+
     public function delete($id)
     {
         $labourContract = LabourContract::findOrFail($id);
@@ -319,5 +414,135 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         $labourContract->parameterValues()->detach();
 
         return $labourContract->delete();
+    }
+
+    public function reportWorkingSeniority($attributes, $parser = false)
+    {
+        $result = [];
+        if (!empty($attributes['date'])) {
+            $date = $attributes['date'];
+            $this->model = $this->model->where('ContractFrom', '<=', $attributes['date']);
+        }
+
+        if (isset($attributes['number_year_work_from']) && !empty($attributes['date'])) {
+            $this->model = $this->model->where('ContractFrom', '<=', Carbon::parse($attributes['date'])->subYear($attributes['number_year_work_from'])->format('Y-m-d'));
+        }
+
+        if (isset($attributes['number_year_work_to']) && !empty($attributes['date'])) {
+            $this->model = $this->model->where('ContractFrom', '>=', Carbon::parse($attributes['date'])->subYear($attributes['number_year_work_to'] + 1)->format('Y-m-d'));
+        }
+
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
+        $labourContracts = $this->model->get();
+        $numberYearWork = 0;
+        $numberMonthWork = 0;
+
+        foreach ($labourContracts as $labourContract) {
+            $employeeId = is_null($labourContract->employee) ? '' : $labourContract->employee->Id;
+            $resignationDecision = $labourContract->employee->resignationDecision;
+            if (is_null($resignationDecision)) {
+                if (!array_key_exists($employeeId, $result)) {
+                    if (!is_null($date)) {
+                        $date = Carbon::parse($date);
+                        $quantityWorking = $labourContract->ContractFrom->diff($date);
+                        $numberMonthWork = $quantityWorking->m;
+                        $numberYearWork = $quantityWorking->y;
+                    }
+                    $result[$employeeId] =  [
+                        'employeeId' => $employeeId,
+                        'employeeCode' => is_null($labourContract->employee) ? '' : $labourContract->employee->Code,
+                        'employeeName' => is_null($labourContract->employee) ? '' : $labourContract->employee->FullName,
+                        'position' => is_null($labourContract->position) ? '' : $labourContract->position->Name,
+                        'branch' => is_null($labourContract->branch) ? '' : $labourContract->branch->Name,
+                        'contractFrom' => $labourContract->ContractFrom->format('Y-m-d'),
+                        'numberYearWork' => $numberYearWork,
+                        'numberMonthWork' => $numberMonthWork,
+                    ];
+                } else {
+                    if ($labourContract->ContractFrom->format('Ymd') < Carbon::parse($result[$employeeId]['contractFrom'])->format('Ymd')) {
+                        if (!is_null($date)) {
+                            $date = Carbon::parse($date);
+                            $quantityWorking = $labourContract->ContractFrom->diff($date);
+                            $numberMonthWork = $quantityWorking->m;
+                            $numberYearWork = $quantityWorking->y;
+                        }
+                        $result[$employeeId]['employeeId'] =  $employeeId;
+                        $result[$employeeId]['employeeCode'] =  is_null($labourContract->employee) ? '' : $labourContract->employee->Code;
+                        $result[$employeeId]['employeeName'] =  is_null($labourContract->employee) ? '' : $labourContract->employee->FullName;
+                        $result[$employeeId]['position'] =  is_null($labourContract->position) ? '' : $labourContract->position->Name;
+                        $result[$employeeId]['branch'] =  is_null($labourContract->branch) ? '' : $labourContract->branch->Name;
+                        $result[$employeeId]['contractFrom'] =  $labourContract->ContractFrom->format('Y-m-d');
+                        $result[$employeeId]['numberYearWork'] =  $numberYearWork;
+                        $result[$employeeId]['numberMonthWork'] =  $numberMonthWork;
+                    }
+                }
+            }
+        }
+
+        $limit = 2;
+        $page = 1;
+        if (!empty($attributes['limit'])) {
+            $limit = $attributes['limit'];
+        }
+
+        if (!empty($attributes['page'])) {
+            $page = $attributes['page'];
+        }
+
+        if ($parser) {
+            return $result;
+        }
+
+        $result = $this->paginateCollection($result, $limit, $page);
+        return $result;
+    }
+
+    public function paginateCollection($items, $perPage = 2, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+
+        $result = new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+        $result->setPath(request()->url());
+
+        return $result;
+    }
+
+    public function exportExcelWorkingSeniority($attributes)
+    {
+        $workingSeniority = $this->reportWorkingSeniority($attributes, true);
+
+        $branch = null;
+        if (!empty($attributes['branchId'])) {
+            $branch = Branch::where('Id', $attributes['branchId'])->first();
+        }
+
+        $employee = null;
+        if (!empty($attributes['employeeId'])) {
+            $employee = User::where('Id', $attributes['employeeId'])->first();
+        }
+
+        $params['{time}'] = Carbon::parse($attributes['date'])->format('d-m-Y');
+        $params['{branch_name}'] = is_null($branch) ? '--Tất cả--' : $branch->Name;
+        $params['{number_year_work_from}'] = isset($attributes['number_year_work_from']) ? $attributes['number_year_work_from'] . ' ' . 'năm' : '';
+        $params['{number_year_work_to}'] = isset($attributes['number_year_work_to']) ? $attributes['number_year_work_to'] . ' ' . 'năm' : '';
+        $params['{employee}'] = is_null($employee) ? '--Tất cả--' : $employee->FullName;
+        $number = 0;
+        foreach ($workingSeniority as $key => $value) {
+            $params['[number]'][] = $number += 1;
+            $params['[code]'][] = $value['employeeCode'];
+            $params['[fullName]'][] = $value['employeeName'];
+            $params['[position]'][] = $value['position'];
+            $params['[branch]'][] = $value['branch'];
+            $params['[contractFrom]'][] = $value['contractFrom'];
+            $params['[numberYearWork]'][] = $value['numberYearWork'];
+            $params['[numberMonthWork]'][] = $value['numberMonthWork'];
+        }
+
+        return $this->excelExporterServices->export('work_seniority', $params);
     }
 }

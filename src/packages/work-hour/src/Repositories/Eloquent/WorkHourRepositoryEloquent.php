@@ -282,7 +282,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             if (!empty($user->workHourSummary)) {
                 foreach ($user->workHourSummary as $item) {
                     if ($values[$item['date']] == 'WK') {
-                        $values[$item['date']] = $values[$item['date']] . "," . round($item['value'], 2);
+                        $values[$item['date']] = $values[$item['date']] . ',' . round($item['value'], 2);
                     } else {
 
                         $values[$item['date']] = $item['value'] ? round($item['value'], 2) : '_';
@@ -336,7 +336,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
 
                 foreach ($mergeCoordinate as $key => $coordinate) {
                     if ($key % 2 != 0) {
-                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
                         $listMerge[] = $merge;
                     }
                 }
@@ -374,7 +374,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
             },
@@ -385,7 +385,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
             },
@@ -401,7 +401,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
                 $sheet->getCell($mergeColFirst)->setValue('Trưởng bộ phận xác nhận');
                 $sheet->getCell($cell_coordinate)->setValue(null);
 
-                $merge = $mergeColFirst . ":" . $mergeColEnd;
+                $merge = $mergeColFirst . ':' . $mergeColEnd;
 
                 $listMerge[] = $merge;
             },

@@ -29,5 +29,4 @@ class HolidayTransformer extends BaseTransformer
     {
         return $this->collection($holiday->holidayDetail, new HolidayDetailTransformer, 'HolidayDetail');
     }
-
 }

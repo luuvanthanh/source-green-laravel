@@ -152,6 +152,20 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'absent.summary',
                 'group' => 'Nghỉ phép',
             ]);
+
+            \Route::get('report-absents', [
+                'comment' => 'Báo cáo nhân viên nghỉ phép',
+                'uses' => 'AbsentController@reportAbsent',
+                'as' => 'absent.report',
+                'group' => 'Nghỉ phép',
+            ]);
+
+            \Route::get('export-excel-absents', [
+                'comment' => 'Xuất excel nhân viên nghỉ phép',
+                'uses' => 'AbsentController@exportExcelAbsent',
+                'as' => 'absent.export',
+                'group' => 'Nghỉ phép',
+            ]);
         });
     }
 }

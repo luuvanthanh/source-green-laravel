@@ -18,8 +18,7 @@ class ParamaterFormulaTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            "Recipe" => json_decode($model->Recipe),
+            'Recipe' => json_decode($model->Recipe),
         ];
     }
-
 }

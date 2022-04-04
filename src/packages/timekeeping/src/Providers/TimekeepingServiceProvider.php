@@ -17,13 +17,14 @@ class TimekeepingServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/config.php', 'constants-timekeeping'
+            __DIR__ . '/../../config/config.php',
+            'constants-timekeeping'
         );
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang-timekeeping');
         if ($this->app->runningInConsole()) {
             $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         }
-//        Timekeeping::observe(TimekeepingObserver::class);
+        // Timekeeping::observe(TimekeepingObserver::class);
     }
 
     /**

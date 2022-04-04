@@ -40,7 +40,7 @@ class DismissedCreateRequest extends FormRequest
 
                     if (!is_null($tranfer)) {
                         $startDate = $tranfer->StartDate->format('d-m-Y');
-                        return $fail("Thời gian áp dụng phải lớn hơn ngày $startDate.");
+                        return $fail('Thời gian áp dụng phải lớn hơn ngày' . $startDate . '.');
                     }
                 },
             ],
@@ -48,12 +48,12 @@ class DismissedCreateRequest extends FormRequest
             'data.*.employeeId' => [
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
-                    $employeeId = request()->employeeId;
+                    $employeeId = $value;
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
 
                     if (is_null($labourContract)  && is_null($probationaryContract)) {
-                        return $fail("Chưa có hợp đồng không được tạo quyết định.");
+                        return $fail('Chưa có hợp đồng không được tạo quyết định.');
                     }
                 },
             ],
@@ -71,7 +71,7 @@ class DismissedCreateRequest extends FormRequest
     public function messages()
     {
         return [
-            'decisionDate.after_or_equal' => "Trường phải là một ngày sau ngày hiện tại.",
+            'decisionDate.after_or_equal' => 'Trường phải là một ngày sau ngày hiện tại.',
         ];
     }
 }

@@ -109,5 +109,4 @@ class AppointController extends Controller
 
         return $result;
     }
-
 }

@@ -130,6 +130,10 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
             $this->model = $this->model->where('branchId', $attributes['branchId']);
         }
 
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->where('Status', $attributes['status']);
+        }
+
         if (!empty($attributes['limit'])) {
             $result = $this->paginate($attributes['limit']);
         } else {

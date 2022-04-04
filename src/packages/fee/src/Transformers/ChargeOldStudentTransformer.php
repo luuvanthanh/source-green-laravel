@@ -2,9 +2,14 @@
 
 namespace GGPHP\Fee\Transformers;
 
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use GGPHP\Fee\Models\Fee;
+use Illuminate\Support\Facades\Route;
 
 /**
  * Class ChargeOldStudentTransformer.
@@ -14,12 +19,14 @@ use GGPHP\Fee\Models\ChargeOldStudent;
 class ChargeOldStudentTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = [];
-    protected $defaultIncludes = ['student', 'tuition', 'schoolYear'];
+    protected $availableIncludes = ['student', 'tuition', 'schoolYear'];
+    protected $defaultIncludes = [];
 
     public function customAttributes($model): array
     {
-        return [];
+        $attributes = [];
+
+        return $attributes;
     }
 
     /**

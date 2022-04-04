@@ -50,5 +50,4 @@ class ScheduleRepeat extends UuidModel
 
         return $value = null;
     }
-
 }

@@ -95,21 +95,54 @@ class SeasonalContractController extends Controller
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  *
-    //  * @param int $id
-    //  * @return Response
-    //  */
-    // public function exportWord($id)
-    // {
-    //     $result = $this->labourContractRepository->exportWord($id);
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function exportWord($id)
+    {
+        $result = $this->seasonalContractRepository->exportWord($id);
 
-    //     if (is_string($result)) {
-    //         return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
-    //     }
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
 
-    //     return $result;
-    // }
+        return $result;
+    }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function exportWordEnglish($id)
+    {
+        $result = $this->seasonalContractRepository->exportWordEnglish($id);
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function exportWordAuthority($id)
+    {
+        $result = $this->seasonalContractRepository->exportWordAuthority($id);
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
 }

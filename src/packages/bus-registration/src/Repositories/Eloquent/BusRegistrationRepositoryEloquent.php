@@ -141,9 +141,13 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
     public function busRegistrationSummary(array $attributes, $parser = false)
     {
         $employees = $this->employeeRepositoryEloquent->model->whereHas('busRegistrations', function ($query) use ($attributes) {
-            $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            $query->whereHas('busRegistrationDetail', function ($q) use ($attributes) {
+                $q->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            });
         })->with(['busRegistrations' => function ($query) use ($attributes) {
-            $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            $query->with(['busRegistrationDetail' => function ($q) use ($attributes) {
+                $q->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            }]);
         }]);
 
         if (!empty($attributes['employeeId'])) {
@@ -178,18 +182,20 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 
     public function calculatorBusRegistrationReport($employee, $attributes)
     {
-        $busRegistrations = $employee->busRegistrations->toArray();
+        $busRegistrations = $employee->busRegistrations;
         $newBusRegistration = [];
         $totalBusRegistration = 0;
 
         if (count($busRegistrations) > 0) {
             foreach ($busRegistrations as $key => $busRegistration) {
-                $date = Carbon::parse($busRegistration['Date'])->format('Y-m-d');
+                foreach ($busRegistration->busRegistrationDetail as $key => $busRegistrationDetail) {
+                    $date = Carbon::parse($busRegistrationDetail['Date'])->format('Y-m-d');
 
-                if (array_key_exists($date, $newBusRegistration)) {
-                    $newBusRegistration[$date] += $busRegistration['HourNumber'];
-                } else {
-                    $newBusRegistration[$date] = $busRegistration['HourNumber'];
+                    if (array_key_exists($date, $newBusRegistration)) {
+                        $newBusRegistration[$date] += $busRegistrationDetail['Hours'];
+                    } else {
+                        $newBusRegistration[$date] = $busRegistrationDetail['Hours'];
+                    }
                 }
             }
 
@@ -262,7 +268,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
             if (!empty($user->busRegistrationSummary)) {
                 foreach ($user->busRegistrationSummary as $item) {
                     if ($values[$item['date']] == 'WK') {
-                        $values[$item['date']] = $values[$item['date']] . "," . round($item['value'], 2);
+                        $values[$item['date']] = $values[$item['date']] . ',' . round($item['value'], 2);
                     } else {
 
                         $values[$item['date']] = $item['value'] ? round($item['value'], 2) : '_';
@@ -316,7 +322,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 
                 foreach ($mergeCoordinate as $key => $coordinate) {
                     if ($key % 2 != 0) {
-                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
                         $listMerge[] = $merge;
                     }
                 }
@@ -354,7 +360,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
             },
@@ -365,7 +371,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $coordinateMerge = (int) $currentRow + 1;
                 $mergeCol = $currentColumn . $coordinateMerge;
-                $merge = $cell_coordinate . ":" . $mergeCol;
+                $merge = $cell_coordinate . ':' . $mergeCol;
 
                 $listMerge[] = $merge;
             },
@@ -381,7 +387,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
                 $sheet->getCell($mergeColFirst)->setValue('Trưởng bộ phận xác nhận');
                 $sheet->getCell($cell_coordinate)->setValue(null);
 
-                $merge = $mergeColFirst . ":" . $mergeColEnd;
+                $merge = $mergeColFirst . ':' . $mergeColEnd;
 
                 $listMerge[] = $merge;
             },

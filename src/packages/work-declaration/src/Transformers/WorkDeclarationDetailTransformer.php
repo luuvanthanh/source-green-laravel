@@ -26,7 +26,7 @@ class WorkDeclarationDetailTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            "time" => json_decode($model->Time),
+            'time' => json_decode($model->Time),
         ];
     }
 
@@ -69,7 +69,6 @@ class WorkDeclarationDetailTransformer extends BaseTransformer
      */
     public function includeTimekeeping(WorkDeclarationDetail $workDeclarationDetail)
     {
-        return $this->collection($lateEarly->timekeeping ?? [], new TimekeepingTransformer, 'Timekeeping');
+        return $this->collection($workDeclarationDetail->timekeeping ?? [], new TimekeepingTransformer, 'Timekeeping');
     }
-
 }

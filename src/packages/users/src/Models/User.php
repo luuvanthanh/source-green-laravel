@@ -4,11 +4,15 @@ namespace GGPHP\Users\Models;
 
 use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
+use GGPHP\Category\Models\Degree;
+use GGPHP\Category\Models\TrainingMajor;
+use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
+use GGPHP\ResignationDecision\Models\ResignationDecision;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\WorkOnline\Models\WorkOnline;
 use Illuminate\Auth\Authenticatable;
@@ -56,7 +60,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'Nation', 'IdCard', 'DateOfIssueIdCard', 'PlaceOfIssueIdCard', 'Religion', 'WorkDate',
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
-        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'AccountantId'
+        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'AccountantId', 'Description'
     ];
 
     protected $dateTimeFields = [
@@ -317,5 +321,25 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function workOnline()
     {
         return $this->hasMany(WorkOnline::class, 'EmployeeId');
+    }
+
+    public function degree()
+    {
+        return $this->belongsTo(Degree::class, 'DegreeId');
+    }
+
+    public function trainingMajor()
+    {
+        return $this->belongsTo(TrainingMajor::class, 'TrainingMajorId');
+    }
+
+    public function trainingSchool()
+    {
+        return $this->belongsTo(TrainingSchool::class, 'TrainingSchoolId');
+    }
+
+    public function resignationDecision()
+    {
+        return $this->hasOne(ResignationDecision::class, 'EmployeeId');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Http\Requests;
 
+use GGPHP\Fee\Models\Fee;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateFeeRequest extends FormRequest
@@ -24,6 +25,13 @@ class CreateFeeRequest extends FormRequest
     public function rules()
     {
         return [
+            'code' => function ($attribute, $value, $fail) {
+                $fee = Fee::where('Code', $value)->first();
+
+                if (!is_null($fee)) {
+                    return $fail('Mã phí đã có trong cơ sở dữ liệu.');
+                }
+            }
         ];
     }
 }

@@ -28,5 +28,4 @@ class ShiftDetail extends UuidModel
      * @var array
      */
     protected $hidden = [];
-
 }

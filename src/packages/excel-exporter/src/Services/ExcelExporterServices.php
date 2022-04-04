@@ -22,10 +22,24 @@ class ExcelExporterServices
         ],
         'salary_month' => [
             'template' => 'salary_month.xlsx',
+        ], 'attendance_report' => [
+            'template' => 'attendance_report.xlsx',
+        ],
+        'work_seniority' => [
+            'template' => 'work_seniority.xlsx',
+        ],
+        'resignation_decision' => [
+            'template' => 'resignation_decision.xlsx',
+        ],
+        'absent' => [
+            'template' => 'absent.xlsx',
         ],
     ];
 
-    protected $disk, $endPoint, $templateFileUrl, $resultFileUrl;
+    protected $disk;
+    protected $endPoint;
+    protected $templateFileUrl;
+    protected $resultFileUrl;
 
     public function __construct()
     {

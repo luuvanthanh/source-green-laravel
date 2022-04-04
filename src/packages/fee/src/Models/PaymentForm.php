@@ -19,7 +19,6 @@ class PaymentForm extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Type', 'IsSemester',
+        'Code', 'Name', 'Type', 'IsSemester', 'PaymentFormCrmId'
     ];
-
 }

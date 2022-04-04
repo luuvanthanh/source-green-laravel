@@ -38,5 +38,4 @@ class PayRollDetailTransformer extends BaseTransformer
 
         return $this->item($payRollDetail->employee, new UserTransformer, 'Employee');
     }
-
 }

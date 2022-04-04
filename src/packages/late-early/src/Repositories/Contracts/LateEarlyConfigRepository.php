@@ -3,6 +3,7 @@
 namespace GGPHP\LateEarly\Repositories\LateEarly;
 
 use Prettus\Repository\Contracts\RepositoryInterface;
+
 /**
  * Interface UserRepository.
  *

@@ -57,8 +57,10 @@ class ShiftCreateRequest extends FormRequest
                             return $fail('Thời gian về sớm phải nhỏ hơn thời gian kết thúc.');
                         }
 
-                        if ($value[$i]['startTime'] <= $value[$i - 1]['endTime']) {
-                            return $fail('Thời gian không hợp lệ.');
+                        if ($i >= 1) {
+                            if ($value[$i]['startTime'] <= $value[$i - 1]['endTime']) {
+                                return $fail('Thời gian không hợp lệ.');
+                            }
                         }
 
                         if ($value[$i]['startTime'] > $value[$i]['endTime'] && $value[$i]['endTime'] > $value[0]['startTime']) {

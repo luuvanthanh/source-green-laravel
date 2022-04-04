@@ -109,5 +109,4 @@ class TransferController extends Controller
 
         return $result;
     }
-
 }

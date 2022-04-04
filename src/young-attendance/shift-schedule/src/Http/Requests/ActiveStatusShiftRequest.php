@@ -35,7 +35,7 @@ class ActiveStatusShiftRequest extends FormRequest
                         $shift = Shift::where(['ShiftCode' => $value, 'Status' => Shift::ON])->first();
 
                         if (!is_null($shift)) {
-                            return $fail("Không hợp lệ, trùng mã ca!");
+                            return $fail('Không hợp lệ, trùng mã ca!');
                         }
                     }
                 },

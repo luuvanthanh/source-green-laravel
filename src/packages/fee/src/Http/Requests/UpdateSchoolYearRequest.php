@@ -31,7 +31,7 @@ class UpdateSchoolYearRequest extends FormRequest
                     $schoolYear = SchoolYear::where('YearFrom', $value)->where('Id', '!=', request()->id)->first();
 
                     if (!is_null($schoolYear)) {
-                        return $fail("Trường đã có trong cơ sở dữ liệu.");
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
                     }
                 },
             ],
@@ -40,7 +40,7 @@ class UpdateSchoolYearRequest extends FormRequest
                     $schoolYear = SchoolYear::where('YearTo', $value)->where('Id', '!=', request()->id)->first();
 
                     if (!is_null($schoolYear)) {
-                        return $fail("Trường đã có trong cơ sở dữ liệu.");
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
                     }
                 },
             ],
@@ -52,7 +52,7 @@ class UpdateSchoolYearRequest extends FormRequest
                     $startDate = Carbon::parse($value);
 
                     if ($startDate < $yearFrom || $startDate > $yearTo) {
-                        return $fail("Thời gian bắt đầu phải nằm trong từ năm đến năm.");
+                        return $fail('Thời gian bắt đầu phải nằm trong từ năm đến năm.');
                     }
                 },
             ],
@@ -65,11 +65,11 @@ class UpdateSchoolYearRequest extends FormRequest
                     $endDate = Carbon::parse($value);
 
                     if ($endDate <= $startDate) {
-                        return $fail("Thời gian kết thúc phải lớn hơn thời gian bắt đầu.");
+                        return $fail('Thời gian kết thúc phải lớn hơn thời gian bắt đầu.');
                     }
 
                     if ($endDate < $yearFrom || $endDate > $yearTo) {
-                        return $fail("Thời gian kết thúc phải nằm trong từ năm đến năm.");
+                        return $fail('Thời gian kết thúc phải nằm trong từ năm đến năm.');
                     }
                 },
             ],

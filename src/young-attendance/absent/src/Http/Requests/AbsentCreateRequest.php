@@ -34,7 +34,7 @@ class AbsentCreateRequest extends FormRequest
                     $now = Carbon::now();
 
                     if (Carbon::parse($value)->format('Y-m-d') < $now->format('Y-m-d')) {
-                        return $fail("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
+                        return $fail('Ngày bắt đầu không được nhỏ hơn ngày hiện tại');
                     }
 
                     if (Carbon::parse($value)->format('Y-m-d') == $now->format('Y-m-d')) {
@@ -47,7 +47,7 @@ class AbsentCreateRequest extends FormRequest
                         $checkStarDate = $this->checkStartDate($value);
 
                         if (!is_null($checkStarDate)) {
-                            return $fail("Phải xin phép trước " . $checkStarDate . " ngày");
+                            return $fail('Phải xin phép trước ' . $checkStarDate . ' ngày');
                         }
                     }
 
@@ -55,7 +55,7 @@ class AbsentCreateRequest extends FormRequest
                     $accessAbsent = $this->checkDuplicateAbsent($value);
 
                     if (!is_null($accessAbsent)) {
-                        return $fail("Học sinh đã đăng ký" . strtolower($accessAbsent['type']) . " vào ngày " . $accessAbsent['date']);
+                        return $fail('Học sinh đã đăng ký' . strtolower($accessAbsent['type']) . ' vào ngày ' . $accessAbsent['date']);
                     }
 
                     return true;
@@ -102,8 +102,8 @@ class AbsentCreateRequest extends FormRequest
             foreach ($listDateRequestAbsent as $dateRequest) {
                 if ($value->StartDate->format('Y-m-d') <= $dateRequest && $value->EndDate->format('Y-m-d') >= $dateRequest) {
                     return [
-                        "date" => date('d-m-Y', strtotime($dateRequest)),
-                        "type" => $value->absentType->name,
+                        'date' => date('d-m-Y', strtotime($dateRequest)),
+                        'type' => $value->absentType->name,
                     ];
                 }
             }

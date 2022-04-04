@@ -48,5 +48,4 @@ class DecisionSuspend extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
-
 }

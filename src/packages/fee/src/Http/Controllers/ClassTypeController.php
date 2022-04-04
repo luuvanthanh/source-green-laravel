@@ -89,4 +89,11 @@ class ClassTypeController extends Controller
         $this->classTypeRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    public function classTypeCrm(Request $request)
+    {
+        $this->classTypeRepository->classTypeCrm($request->all());
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
+    }
 }

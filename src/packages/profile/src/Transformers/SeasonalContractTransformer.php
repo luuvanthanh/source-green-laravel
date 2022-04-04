@@ -23,7 +23,7 @@ class SeasonalContractTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['employee', 'typeOfContract', 'division', 'position', 'branch'];
+    protected $availableIncludes = ['employee', 'typeOfContract', 'division', 'position', 'branch', 'represent'];
 
     /**
      * Transform the User entity.
@@ -62,8 +62,21 @@ class SeasonalContractTransformer extends BaseTransformer
         }
 
         return [
-            "parameterValues" => $parameterValues,
+            'parameterValues' => $parameterValues,
         ];
+    }
+
+    /**
+     * @param LabourContract $labourContract
+     * @return mixed
+     */
+    public function includeRepresent(LabourContract $model)
+    {
+        if (empty($model->represent)) {
+            return;
+        }
+
+        return $this->item($model->represent, new UserTransformer, 'Represent');
     }
 
     /**

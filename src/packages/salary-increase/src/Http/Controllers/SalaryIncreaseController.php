@@ -109,5 +109,4 @@ class SalaryIncreaseController extends Controller
 
         return $result;
     }
-
 }

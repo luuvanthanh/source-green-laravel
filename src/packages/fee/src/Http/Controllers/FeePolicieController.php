@@ -107,4 +107,11 @@ class FeePolicieController extends Controller
 
         return $this->success($feePolicies, trans('lang::messages.common.getListSuccess'));
     }
+
+    public function feePolicieCrm(Request $request)
+    {
+        $this->feePolicieRepository->updateFeePolicieCrm($request->all());
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
+    }
 }

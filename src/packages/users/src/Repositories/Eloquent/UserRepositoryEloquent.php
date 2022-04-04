@@ -2,9 +2,12 @@
 
 namespace GGPHP\Users\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Core\Services\AccountantService;
 use GGPHP\Core\Services\CrmService;
+use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
@@ -70,7 +73,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         if (!empty($attributes['hasClass'])) {
-            if ($attributes['hasClass'] == "true") {
+            if ($attributes['hasClass'] == 'true') {
                 $this->model = $this->model->whereHas('classTeacher');
             } else {
                 $this->model = $this->model->whereDoesnthave('classTeacher');
@@ -89,6 +92,16 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         $this->model = $this->model->tranferHistory($attributes);
 
+        if (!empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == 'true') {
+            $now = Carbon::now()->format('Y-m-d');
+
+            $this->model = $this->model->whereDoesntHave('labourContract', function ($query) use ($now) {
+                $query->where('ContractTo', '>', $now);
+            })->whereDoesntHave('probationaryContract', function ($query) use ($now) {
+                $query->where('ContractTo', '>', $now);
+            });
+        }
+
         if (empty($attributes['limit'])) {
             $users = $this->get();
         } else {
@@ -106,9 +119,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $data = [
                 'full_name' => $user->FullName,
                 'employee_id_hrm' => $user->Id,
-                'file_image' => $user->FileImage
+                'file_image' => $user->FileImage,
+                'code' => $user->Code
             ];
             $employeeCrm = CrmService::createEmployee($data);
+
             if (isset($employeeCrm->data->id)) {
                 $user->EmployeeIdCrm = $employeeCrm->data->id;
                 $user->update();
@@ -118,19 +133,19 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 "businessObjectGroupCode" => "NV",
                 "businessObjectRequest" => [
                     "name" => $user->FullName,
-                    "abbreviations" => "string",
+                    "branchId" => "00000000-0000-0000-0000-000000000000",
+                    "abbreviations" => "",
                     "code" => $user->Code,
                     "email" => $user->Email,
                     "fax" => $user->Fax,
                     "phone" => $user->PhoneNumber,
-                    "identityCard" => "string",
+                    "identityCard" => $user->IdCard,
                     "taxCode" => $user->TaxCode,
                     "address" => $user->Address,
-                    "invoiceAddress" => "string",
-                    "description" => "string",
-                    "isActive" => true,
-                    "utilities" => "string",
-                    "bankAccounts" => "string",
+                    "invoiceAddress" => "",
+                    "description" => "",
+                    "utilities" => "",
+                    "bankAccounts" => "",
                     "rating" => 0,
                     "orderIndex" => 0,
                     "businessObjectType" => "EMPLOYEE",
@@ -160,35 +175,45 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $data = [
                 'full_name' => $user->FullName,
                 'employee_id_hrm' => $user->Id,
-                'file_image' => $user->FileImage
+                'file_image' => $user->FileImage,
+                'code' => $user->Code
             ];
             $employeeIdCrm = $user->EmployeeIdCrm;
             $employeeCrm = CrmService::updateEmployee($data, $employeeIdCrm);
             $dataAccountant = [
                 "application" => 1,
                 "businessObjectGroupCode" => "NV",
+                "id" => $user->AccountantId,
                 "businessObjectRequest" => [
                     "name" => $user->FullName,
-                    "abbreviations" => "string",
+                    "branchId" => "00000000-0000-0000-0000-000000000000",
+                    "abbreviations" => "",
                     "code" => $user->Code,
                     "email" => $user->Email,
                     "fax" => $user->Fax,
                     "phone" => $user->PhoneNumber,
-                    "identityCard" => "string",
+                    "identityCard" => $user->IdCard,
                     "taxCode" => $user->TaxCode,
                     "address" => $user->Address,
-                    "invoiceAddress" => "string",
-                    "description" => "string",
-                    "isActive" => true,
-                    "utilities" => "string",
-                    "bankAccounts" => "string",
+                    "invoiceAddress" => "",
+                    "description" => "",
+                    "utilities" => "",
+                    "bankAccounts" => "",
                     "rating" => 0,
                     "orderIndex" => 0,
                     "businessObjectType" => "EMPLOYEE",
                     "refId" => $user->Id,
                 ]
             ];
-            $employeeAccountant = AccountantService::updateEmployee($dataAccountant);
+
+            if (!is_null($user->AccountantId)) {
+                $employeeAccountant = AccountantService::updateEmployee($dataAccountant);
+            }
+
+            if (!is_null($employeeIdCrm)) {
+                CrmService::updateEmployee($data, $employeeIdCrm);
+            }
+
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -209,19 +234,19 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                     "businessObjectGroupCode" => "NV",
                     "businessObjectRequest" => [
                         "name" => $user->FullName,
-                        "abbreviations" => "string",
+                        "branchId" => "00000000-0000-0000-0000-000000000000",
+                        "abbreviations" => "",
                         "code" => $user->Code,
                         "email" => $user->Email,
                         "fax" => $user->Fax,
                         "phone" => $user->PhoneNumber,
-                        "identityCard" => "string",
+                        "identityCard" => $user->IdCard,
                         "taxCode" => $user->TaxCode,
                         "address" => $user->Address,
-                        "invoiceAddress" => "string",
-                        "description" => "string",
-                        "isActive" => true,
-                        "utilities" => "string",
-                        "bankAccounts" => "string",
+                        "invoiceAddress" => "",
+                        "description" => "",
+                        "utilities" => "",
+                        "bankAccounts" => "",
                         "rating" => 0,
                         "orderIndex" => 0,
                         "businessObjectType" => "EMPLOYEE",
@@ -229,8 +254,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                     ]
                 ];
                 $employeeAccountant = AccountantService::createEmployee($dataAccountant);
-            }
 
+                if (!is_null($employeeAccountant)) {
+                    $user->update(['AccountantId' => $employeeAccountant->id]);
+                }
+            }
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -238,5 +266,18 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         return $employeeAccountant;
+    }
+    public function syncEmployee()
+    {
+        $employees = User::select('FullName', 'Id', 'FileImage', 'Code')->get();
+        $response = CrmService::syncEmployee($employees->toArray());
+
+        foreach ($response->data as $key => $value) {
+            $employee = User::where('Id', $value->attributes->employee_id_hrm)->first();
+            $employee->EmployeeIdCrm = $value->id;
+            $employee->update();
+        }
+
+        return $this->parserResult($employees);
     }
 }

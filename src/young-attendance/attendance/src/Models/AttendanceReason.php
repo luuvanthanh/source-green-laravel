@@ -22,5 +22,4 @@ class AttendanceReason extends UuidModel
     protected $fillable = [
         'Content',
     ];
-
 }

@@ -11,7 +11,10 @@ use PhpOffice\PhpWord\TemplateProcessor;
  */
 class WordExporterServices
 {
-    protected $disk, $endPoint, $templateFileUrl, $resultFileUrl;
+    protected $disk;
+    protected $endPoint;
+    protected $templateFileUrl;
+    protected $resultFileUrl;
 
     public $configs = [
         'labour_contract' => [
@@ -49,6 +52,14 @@ class WordExporterServices
         'decision_suspend' => [
             'template' => 'decision_suspend.docx',
             'result' => 'decision_suspend.docx',
+        ],
+        'contract_english' => [
+            'template' => 'contract_english.docx',
+            'result' => 'contract_english.docx',
+        ],
+        'authority_contract' => [
+            'template' => 'authority_contract.docx',
+            'result' => 'authority_contract.docx',
         ],
     ];
 
@@ -123,5 +134,4 @@ class WordExporterServices
             mkdir($path, 0777, true);
         }
     }
-
 }

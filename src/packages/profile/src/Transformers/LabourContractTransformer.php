@@ -9,6 +9,8 @@ use GGPHP\Category\Transformers\TypeOfContractTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Users\Transformers\UserTransformer;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * Class LabourContractTransformer.
@@ -22,7 +24,7 @@ class LabourContractTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['employee', 'typeOfContract', 'division', 'position', 'branch'];
+    protected $availableIncludes = ['employee', 'typeOfContract', 'division', 'position', 'branch', 'represent'];
 
     /**
      * Transform the User entity.
@@ -59,9 +61,20 @@ class LabourContractTransformer extends BaseTransformer
 
             $parameterValues[$key] = $value;
         }
+        $numberYearWork = null;
+        $numberMonthWork = null;
+        $date = request()->date;
+        if (!is_null($date)) {
+            $date = Carbon::parse($date);
+            $quantityWorking = $model->ContractFrom->diff($date);
+            $numberMonthWork = $quantityWorking->m;
+            $numberYearWork = $quantityWorking->y;
+        }
 
         return [
-            "parameterValues" => $parameterValues,
+            'parameterValues' => $parameterValues,
+            'numberYearWork' => $numberYearWork,
+            'numberMonthWork' => $numberMonthWork,
         ];
     }
 
@@ -76,6 +89,19 @@ class LabourContractTransformer extends BaseTransformer
         }
 
         return $this->item($labourContract->employee, new UserTransformer, 'Employee');
+    }
+
+    /**
+     * @param LabourContract $labourContract
+     * @return mixed
+     */
+    public function includeRepresent(LabourContract $model)
+    {
+        if (empty($model->represent)) {
+            return;
+        }
+
+        return $this->item($model->represent, new UserTransformer, 'Represent');
     }
 
     /**
@@ -129,5 +155,4 @@ class LabourContractTransformer extends BaseTransformer
 
         return $this->item($labourContract->branch, new BranchTransformer, 'Branch');
     }
-
 }

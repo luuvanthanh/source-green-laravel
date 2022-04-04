@@ -134,106 +134,105 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         // zero is a special case, it cause problems even with typecasting if we don't deal with it here
         $max_size = pow(10, 18);
         if (!$number) {
-            return "zero";
+            return 'zero';
         }
 
         if (is_int($number) && $number < abs($max_size)) {
             switch ($number) {
                     // set up some rules for converting digits to words
                 case $number < 0:
-                    $prefix = "negative";
+                    $prefix = 'negative';
                     $suffix = $this->translateToWords(-1 * $number);
-                    $string = $prefix . " " . $suffix;
+                    $string = $prefix . ' ' . $suffix;
                     break;
                 case 1:
-                    $string = "một";
+                    $string = 'một';
                     break;
                 case 2:
-                    $string = "hai";
+                    $string = 'hai';
                     break;
                 case 3:
-                    $string = "ba";
+                    $string = 'ba';
                     break;
                 case 4:
-                    $string = "bốn";
+                    $string = 'bốn';
                     break;
                 case 5:
-                    $string = "năm";
+                    $string = 'năm';
                     break;
                 case 6:
-                    $string = "sáu";
+                    $string = 'sáu';
                     break;
                 case 7:
-                    $string = "bảy";
+                    $string = 'bảy';
                     break;
                 case 8:
-                    $string = "tám";
+                    $string = 'tám';
                     break;
                 case 9:
-                    $string = "chín";
+                    $string = 'chín';
                     break;
                 case 10:
-                    $string = "mười";
+                    $string = 'mười';
                     break;
                 case 11:
-                    $string = "mười một";
+                    $string = 'mười một';
                     break;
                 case 12:
-                    $string = "mười hai";
+                    $string = 'mười hai';
                     break;
                 case 13:
-                    $string = "mười ba";
+                    $string = 'mười ba';
                     break;
                     // fourteen handled later
                 case 15:
-                    $string = "mười năm";
+                    $string = 'mười năm';
                     break;
                 case $number < 20:
                     $string = $this->translateToWords($number % 10);
-                    // eighteen only has one "t"
+                    // eighteen only has one 't'
                     if ($number == 18) {
-                        $suffix = "een";
+                        $suffix = 'een';
                     } else {
-                        $suffix = "teen";
+                        $suffix = 'teen';
                     }
                     $string .= $suffix;
                     break;
                 case 20:
-                    $string = "hai mươi";
+                    $string = 'hai mươi';
                     break;
                 case 30:
-                    $string = "ba mươi";
+                    $string = 'ba mươi';
                     break;
                 case 40:
-                    $string = "bốn mươi";
+                    $string = 'bốn mươi';
                     break;
                 case 50:
-                    $string = "năm mươi";
+                    $string = 'năm mươi';
                     break;
                 case 60:
-                    $string = "sáu mươi";
+                    $string = 'sáu mươi';
                     break;
                 case 70:
-                    $string = "bảy mươi";
+                    $string = 'bảy mươi';
                     break;
                 case 80:
-                    $string = "tắm mươi";
+                    $string = 'tắm mươi';
                     break;
                 case 90:
-                    $string = "chín mươi";
+                    $string = 'chín mươi';
                     break;
                 case $number < 100:
                     $prefix = $this->translateToWords($number - $number % 10);
                     $suffix = $this->translateToWords($number % 10);
-                    $string = $prefix . " " . $suffix;
+                    $string = $prefix . ' ' . $suffix;
                     break;
                     // handles all number 100 to 999
                 case $number < pow(10, 3):
-
                     // floor return a float not an integer
-                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 2)))) . " trăm";
+                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 2)))) . ' trăm';
                     if ($number % pow(10, 2)) {
-                        $suffix = " " . $this->translateToWords($number % pow(10, 2));
+                        $suffix = ' ' . $this->translateToWords($number % pow(10, 2));
                     }
 
                     if (isset($suffix)) {
@@ -245,29 +244,27 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                     break;
                 case $number < pow(10, 6):
                     // floor return a float not an integer
-                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 3)))) . " nghìn";
+                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 3)))) . ' nghìn';
                     if ($number % pow(10, 3)) {
                         $suffix = $this->translateToWords($number % pow(10, 3));
                     }
 
                     if (isset($suffix)) {
-                        $string = $prefix . " " . $suffix;
+                        $string = $prefix . ' ' . $suffix;
                     } else {
                         $string = $prefix;
                     }
-
                     break;
                 case $number < pow(10, 9):
-
                     // floor return a float not an integer
-                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 6)))) . " triệu";
+                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 6)))) . ' triệu';
                     if ($number % pow(10, 6)) {
 
                         $suffix = $this->translateToWords($number % pow(10, 6));
                     }
 
                     if (isset($suffix)) {
-                        $string = $prefix . " " . $suffix;
+                        $string = $prefix . ' ' . $suffix;
                     } else {
                         $string = $prefix;
                     }
@@ -275,13 +272,13 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                     break;
                 case $number < pow(10, 12):
                     // floor return a float not an integer
-                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 9)))) . " tỷ";
+                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 9)))) . ' tỷ';
                     if ($number % pow(10, 9)) {
                         $suffix = $this->translateToWords($number % pow(10, 9));
                     }
 
                     if (isset($suffix)) {
-                        $string = $prefix . " " . $suffix;
+                        $string = $prefix . ' ' . $suffix;
                     } else {
                         $string = $prefix;
                     }
@@ -289,13 +286,13 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                     break;
                 case $number < pow(10, 15):
                     // floor return a float not an integer
-                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 12)))) . " nghìn tỷ";
+                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 12)))) . ' nghìn tỷ';
                     if ($number % pow(10, 12)) {
                         $suffix = $this->translateToWords($number % pow(10, 12));
                     }
 
                     if (isset($suffix)) {
-                        $string = $prefix . " " . $suffix;
+                        $string = $prefix . ' ' . $suffix;
                     } else {
                         $string = $prefix;
                     }
@@ -305,13 +302,13 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                     // Default formatting is float and causes errors
                 case $number < pow(10, 18):
                     // floor return a float not an integer
-                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 15)))) . " triệu tỷ";
+                    $prefix = $this->translateToWords(intval(floor($number / pow(10, 15)))) . ' triệu tỷ';
                     if ($number % pow(10, 15)) {
                         $suffix = $this->translateToWords($number % pow(10, 15));
                     }
 
                     if (isset($suffix)) {
-                        $string = $prefix . " " . $suffix;
+                        $string = $prefix . ' ' . $suffix;
                     } else {
                         $string = $prefix;
                     }
@@ -319,7 +316,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                     break;
             }
         } else {
-            echo "ERROR with - $number<br/> Number must be an integer between -" . number_format($max_size, 0, ".", ",") . " and " . number_format($max_size, 0, ".", ",") . " exclussive.";
+            echo 'ERROR with - $number<br/> Number must be an integer between -' . number_format($max_size, 0, '.', ',') . ' and ' . number_format($max_size, 0, '.', ',') . ' exclussive.';
         }
 
         return $string;
@@ -330,6 +327,19 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         $decisionReward = DecisionReward::findOrFail($id);
         $now = Carbon::now();
 
+        if ($decisionReward->Type == 'REWARD') {
+            $type = 'Khen thưởng';
+            $text1 = 'được thưởng';
+            $text2 = 'được chi';
+            $text3 = 'khen thưởng';
+        }
+
+        if ($decisionReward->Type == 'DISCIPLINE') {
+            $type = 'Kỷ luật';
+            $text1 = 'bị phạt';
+            $text2 = 'bị trừ';
+            $text3 = 'kỷ luật';
+        };
         $detail = $decisionReward->decisionRewardDetails->first();
         $employee = $detail->employee;
         $params = [
@@ -344,6 +354,10 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
             'money' => $detail->Money ? number_format($detail->Money) : '........',
             'moneyWord' => $detail->Money ? $this->translateToWords($detail->Money) : '........',
             'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'type' => $type,
+            'text1' => $text1,
+            'text2' => $text2,
+            'text3' => $text3
         ];
 
         return $this->wordExporterServices->exportWord('decision_reward', $params);

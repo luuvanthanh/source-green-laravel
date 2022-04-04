@@ -58,6 +58,15 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
             });
         }
 
+        if (!empty($attributes['schoolYearId'])) {
+            $this->model = $this->model->where('SchoolYearId', $attributes['schoolYearId']);
+        }
+
+        if (!empty($attributes['studentId'])) {
+            $studentId = explode(',', $attributes['studentId']);
+            $this->model = $this->model->whereIn('StudentId', $studentId);
+        }
+
         if (!empty($attributes['from']) && !empty($attributes['to'])) {
             $this->model = $this->model->whereHas('schoolYear', function ($query) use ($attributes) {
                 $query->where(function ($q) use ($attributes) {
@@ -65,6 +74,22 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                         ->orWhere([['YearFrom', '>', $attributes['from']], ['YearFrom', '<=', $attributes['to']]])
                         ->orWhere([['YearTo', '>=', $attributes['from']], ['YearTo', '<', $attributes['to']]]);
                 });
+            });
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
+                $q->whereHas('classStudent', function ($query) use ($attributes) {
+                    $query->whereHas('classes', function ($queryBranch) use ($attributes) {
+                        $queryBranch->where('BranchId', $attributes['branchId']);
+                    });
+                });
+            });
+        }
+
+        if (!empty($attributes['classId'])) {
+            $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
+                $query->where('ClassId', $attributes['classId']);
             });
         }
 

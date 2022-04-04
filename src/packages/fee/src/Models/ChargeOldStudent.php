@@ -19,7 +19,11 @@ class ChargeOldStudent extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'StudentId', 'SchoolYearId',  'TotalMoney', 'DayAdmission'
+        'StudentId', 'SchoolYearId',  'TotalMoney', 'DayAdmission', 'ExpectedToCollectMoney', 'TypeFee'
+    ];
+
+    protected $casts = [
+        'ExpectedToCollectMoney' => 'array'
     ];
 
     /**

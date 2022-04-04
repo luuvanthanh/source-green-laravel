@@ -47,5 +47,4 @@ class ParameterTaxLogRepositoryEloquent extends CoreRepositoryEloquent implement
     {
         return ParameterTaxLogPresenter::class;
     }
-
 }

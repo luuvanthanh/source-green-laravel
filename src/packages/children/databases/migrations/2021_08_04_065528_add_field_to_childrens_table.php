@@ -28,7 +28,7 @@ class AddFieldToChildrensTable extends Migration
      */
     public function down()
     {
-        Schema::rename('Childrens', 'Children');
+        // Schema::rename('Childrens', 'Children');
 
         Schema::table('Childrens', function (Blueprint $table) {
             $table->dropColumn('Relationship');

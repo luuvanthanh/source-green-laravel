@@ -21,5 +21,4 @@ class ParentAccount extends UuidModel
     protected $fillable = [
         'ParentId', 'AppUserId', 'UserName', 'CreatorId', 'FaceImageStatus',
     ];
-
 }

@@ -19,7 +19,6 @@ class Fee extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Type',
+        'Code', 'Name', 'Type', 'FeeCrmId'
     ];
-
 }

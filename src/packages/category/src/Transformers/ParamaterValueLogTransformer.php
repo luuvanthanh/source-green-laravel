@@ -12,7 +12,5 @@ use GGPHP\Core\Transformers\BaseTransformer;
  */
 class ParamaterValueLogTransformer extends BaseTransformer
 {
-
     protected $availableIncludes = [];
-
 }

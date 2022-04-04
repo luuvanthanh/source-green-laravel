@@ -27,11 +27,14 @@ class CreateFeePolicieRequest extends FormRequest
         return [
             'schoolYearId' => [
                 'required',
+            ],
+            'branchId' => [
+                'required',
                 function ($attribute, $value, $fail) {
-                    $feePolicie = FeePolicie::where('SchoolYearId', $value)->first();
+                    $feePolicie = FeePolicie::where('SchoolYearId', $this->schoolYearId)->where('BranchId', $value)->first();
 
                     if (!is_null($feePolicie)) {
-                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                        return $fail('Một cơ sở chỉ có thể tạo được một năm học.');
                     }
                 },
             ],

@@ -2,6 +2,7 @@
 
 namespace GGPHP\Clover\Models;
 
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
 
 class Student extends UuidModel
@@ -74,11 +75,19 @@ class Student extends UuidModel
         return $this->belongsToMany(\GGPHP\Clover\Models\Parents::class, 'object.StudentParents', 'StudentId', 'ParentId');
     }
 
-     /**
+    /**
      * Define relations Schedule
      */
     public function studentTransporter()
     {
         return $this->hasMany(\GGPHP\Clover\Models\StudentTransporter::class, 'StudentId');
+    }
+
+    /**
+     * Define relations Schedule
+     */
+    public function testSemester()
+    {
+        return $this->hasMany(TestSemester::class, 'StudentId');
     }
 }

@@ -145,6 +145,6 @@ class ScheduleController extends Controller
     {
         $user = $this->scheduleRepository->getShiftUser($id, $request->all());
 
-        return $this->success(["data" => $user], trans('lang::messages.common.getListSuccess'));
+        return $this->success(['data' => $user], trans('lang::messages.common.getListSuccess'));
     }
 }

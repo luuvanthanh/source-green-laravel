@@ -16,5 +16,4 @@ class Degree extends UuidModel
     protected $fillable = [
         'Code', 'Name',
     ];
-
 }

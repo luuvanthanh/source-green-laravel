@@ -8,9 +8,9 @@ class TypeOfContract extends UuidModel
 {
     public $incrementing = false;
 
-    const HOP_DONG = "HOP_DONG";
-    const THU_VIEC = "THU_VIEC";
-    const THOI_VU = "THOI_VU";
+    const HOP_DONG = 'HOP_DONG';
+    const THU_VIEC = 'THU_VIEC';
+    const THOI_VU = 'THOI_VU';
     /**
      * Declare the table name
      */

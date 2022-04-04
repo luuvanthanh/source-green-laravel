@@ -33,12 +33,12 @@ return [
         'NOT_ACCEPTABLE' => 406,
         'SUCCESS' => 200,
     ],
-    "FORMAT_TIME" => [
+    'FORMAT_TIME' => [
         'HIS' => 'H:i:s',
         'YMD' => 'Y-m-d',
         'DM' => 'd-m',
     ],
-    "SENIORITYTYPE" => [
+    'SENIORITYTYPE' => [
         'MONTH' => 'MONTH',
         'YEAR' => 'YEAR',
     ],

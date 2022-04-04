@@ -29,15 +29,14 @@ class AbsentUpdateRequest extends FormRequest
 
                     if (!is_null($accessAbsent)) {
                         $date = Carbon::parse($accessAbsent)->setTimezone('GMT+7')->format('d-m-Y');
-                        return $fail("Bạn đã nghỉ vào ngày " . $date);
+                        return $fail('Bạn đã nghỉ vào ngày ' . $date);
                     }
 
                     $checkShift = $this->checkShift($value);
                     if (!is_null($checkShift)) {
                         $date = Carbon::parse($checkShift)->setTimezone('GMT+7')->format('d-m-Y');
-                        return $fail("Ngày $date không có ca làm việc");
+                        return $fail('Ngày' . $date . 'không có ca làm việc');
                     }
-
                     foreach ($value as $key => $item) {
 
                         $accessSameHoliday = $this->checkSameHoliday($item);
@@ -81,7 +80,6 @@ class AbsentUpdateRequest extends FormRequest
                     break;
                 case 2:
                     return $item['date'];
-                    break;
             }
         }
 
