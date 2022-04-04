@@ -209,25 +209,37 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (isset($attributes['status_lead'])) {
             $this->model = $this->model->whereHas('statusLead', function ($query) use ($attributes) {
-                $query->where(function ($query1) {
-                    $query1->select('status');
-                    $query1->from('status_lead');
-                    $query1->whereColumn('customer_lead_id', 'customer_leads.id');
-                    $query1->orderBy('created_at', 'desc');
-                    $query1->limit(1);
+                $query->where(function ($query) {
+                    $query->select('status');
+                    $query->from('status_lead');
+                    $query->whereColumn('customer_lead_id', 'customer_leads.id');
+                    $query->orderBy('created_at', 'desc');
+                    $query->limit(1);
                 }, $attributes['status_lead']);
             });
         }
 
         if (!empty($attributes['status_type_lead'])) {
             $this->model = $this->model->whereHas('statusCare', function ($query) use ($attributes) {
-                $query->where(function ($query1) {
-                    $query1->select('status_parent_lead_id');
-                    $query1->from('status_cares');
-                    $query1->whereColumn('customer_lead_id', 'customer_leads.id');
-                    $query1->orderBy('created_at', 'desc');
-                    $query1->limit(1);
+                $query->where(function ($query) {
+                    $query->select('status_parent_lead_id');
+                    $query->from('status_cares');
+                    $query->whereColumn('customer_lead_id', 'customer_leads.id');
+                    $query->orderBy('created_at', 'desc');
+                    $query->limit(1);
                 }, $attributes['status_type_lead']);
+            });
+        }
+
+        if (!empty($attributes['status_parent_potential_id'])) {
+            $this->model = $this->model->whereHas('customerPotential.customerPotentialStatusCareLatest', function ($query) use ($attributes) {
+                $query->where(function ($query) {
+                    $query->select('status_parent_potential_id');
+                    $query->from('customer_potential_status_cares');
+                    $query->whereColumn('customer_potential_id', 'customer_potentials.id');
+                    $query->latest();
+                    $query->limit(1);
+                }, $attributes['status_parent_potential_id']);
             });
         }
 
