@@ -2,8 +2,8 @@
 
 namespace GGPHP\Crm\CallCenter\Repositories\Eloquent;
 
-use App\Jobs\UpdateHistoryCallJob;
 use GGPHP\Crm\CallCenter\Events\ReceiveCallEvent;
+use GGPHP\Crm\CallCenter\Jobs\UpdateHistoryCallJob;
 use GGPHP\Crm\CallCenter\Models\HistoryCall;
 use GGPHP\Crm\CallCenter\Presenters\HistoryCallPresenter;
 use GGPHP\Crm\CallCenter\Repositories\Contracts\HistoryCallRepository;
@@ -201,12 +201,13 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
     public function callOutbound($attributes, $call)
     {
+        \Log::info($attributes);
         $data = [
             'phone' => $attributes['data']['destination'],
             'call_id_sub' => $attributes['data']['callId'],
             'call_id_main' => $attributes['data']['uuid'],
             'call_id_parent' => $attributes['data']['parrentUuid'],
-            'call_status' => Str::upper($attributes['data']['state']) ?? null,
+            'call_status' => isset($attributes['data']['state']) ? Str::upper($attributes['data']['state']) ?? null : null,
             'direction' => Str::upper($attributes['data']['direction']),
             'switchboard' => $attributes['data']['pbxnumber'],
             'record_link' => $attributes['data']['recordUrl'] ?? null,

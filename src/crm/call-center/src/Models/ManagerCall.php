@@ -28,7 +28,7 @@ class ManagerCall extends UuidModel
         'before_time', 'call_times', 'customer_lead_id', 'status', 'employee_id'
     ];
 
-    public function history()
+    public function historyCall()
     {
         return $this->hasMany(HistoryCall::class);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace GGPHP\Crm\CallCenter\Jobs;
 
 use GGPHP\Crm\CallCenter\Repositories\Contracts\HistoryCallRepository;
 use Illuminate\Bus\Queueable;

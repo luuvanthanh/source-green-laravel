@@ -5,6 +5,7 @@ namespace GGPHP\Crm\CallCenter\Transformers;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\CallCenter\Models\HistoryCall;
 use GGPHP\Crm\CustomerLead\Transformers\CustomerLeadTransformer;
+use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 
 /**
  * Class HistoryCallTranformer.
@@ -30,7 +31,7 @@ class HistoryCallTranformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['customerLead', 'managerCall'];
+    protected $availableIncludes = ['customerLead', 'managerCall', 'employee'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -44,7 +45,7 @@ class HistoryCallTranformer extends BaseTransformer
     {
         return [];
     }
-    
+
     public function customMeta(): array
     {
         return ['switchboard' => request()->switchboard_number];
@@ -66,5 +67,14 @@ class HistoryCallTranformer extends BaseTransformer
         }
 
         return $this->item($historyCall->managerCall, new ManagerCallTransformer, 'ManagerCall');
+    }
+
+    public function includeEmployee(HistoryCall $historyCall)
+    {
+        if ($historyCall->loadCount('employee')->employee_count < 1) {
+            return null;
+        }
+
+        return $this->item($historyCall->employee, new EmployeeTransformer, 'Employee');
     }
 }
