@@ -423,15 +423,25 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 })->get();
 
                             if (count($existCheckIn) == 0) {
+                                $existAttendance = Attendance::where('StudentId', $student->Id)
+                                    ->whereDate('Date', $date)
+                                    ->first();
 
-                                $dataCheckIn = [
-                                    'Date' => $date,
-                                    'StudentId' => $student->Id,
-                                    'Status' => Attendance::STATUS['HAVE_IN'],
-                                    'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
-                                ];
+                                if (is_null($existAttendance)) {
+                                    $dataCheckIn = [
+                                        'Date' => $date,
+                                        'StudentId' => $student->Id,
+                                        'Status' => Attendance::STATUS['HAVE_IN'],
+                                        'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
+                                    ];
 
-                                $this->model->create($dataCheckIn);
+                                    $this->model->create($dataCheckIn);
+                                } else {
+                                    $existAttendance->update([
+                                        'Status' => Attendance::STATUS['HAVE_IN'],
+                                        'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
+                                    ]);
+                                }
 
                                 $parents = $student->parent;
                                 $userId = [];
@@ -485,62 +495,34 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 ->whereDate('Date', $date)
                                 ->where(function ($query) {
                                     $query->where('Status', Attendance::STATUS['HAVE_OUT'])
-                                        ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
-                                        ->orWhere('Status', Attendance::STATUS['HAVE_IN']);
+                                        ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE']);
                                 })->get();
 
                             if (count($existCheckOut) == 0) {
-                                $dataCheckOut = [
-                                    'Date' => $date,
-                                    'StudentId' => $student->Id,
-                                    'Status' => Attendance::STATUS['HAVE_OUT'],
-                                    'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
-                                ];
+                                $existAttendance = Attendance::where('StudentId', $student->Id)
+                                    ->whereDate('Date', $date)
+                                    ->where(function ($query) {
+                                        $query->where('Status', Attendance::STATUS['HAVE_IN'])
+                                            ->orWhere('Status', Attendance::STATUS['NOT_IN_CLASS'])
+                                            ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
+                                    })
+                                    ->first();
 
-                                $this->model->create($dataCheckOut);
-
-                                $parents = $student->parent;
-                                $userId = [];
-
-                                if (!empty($parents)) {
-                                    foreach ($parents as $parent) {
-                                        if (!is_null($parent->account)) {
-                                            $userId[] = $parent->account->AppUserId;
-                                        }
-                                    }
-                                }
-
-                                $nameStudent = $student->FullName;
-                                $images =  json_decode($student->FileImage);
-                                $urlImage = '';
-
-                                if (!empty($images)) {
-                                    $urlImage = env('IMAGE_URL') . $images[0];
-                                }
-
-                                $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
-                                $message = 'Bé' . ' ' . $nameStudent . ' ' . 'đã ra về lúc' . ' ' . $timeCheckOut;
-
-
-                                if (!empty($userId)) {
-                                    $dataNoti = [
-                                        'users' => $userId,
-                                        'title' => $nameStudent,
-                                        'imageURL' => $urlImage,
-                                        'message' => $message,
-                                        'moduleType' => 6,
-                                        'moduleCode' => 'ATTENDANCE',
-                                        'refId' => $student->Id,
+                                if (is_null($existAttendance)) {
+                                    $dataCheckOut = [
+                                        'Date' => $date,
+                                        'StudentId' => $student->Id,
+                                        'Status' => Attendance::STATUS['HAVE_OUT'],
+                                        'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
                                     ];
 
-                                    dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                                    $this->model->create($dataCheckOut);
+                                } else {
+                                    $existAttendance->update([
+                                        'Status' => Attendance::STATUS['HAVE_OUT'],
+                                        'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
+                                    ]);
                                 }
-                            } elseif ($existCheckOut[0]->Status == Attendance::STATUS['HAVE_IN']) {
-
-                                $existCheckOut[0]->update([
-                                    'Status' => Attendance::STATUS['HAVE_OUT'],
-                                    'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
-                                ]);
 
                                 $parents = $student->parent;
                                 $userId = [];
@@ -563,6 +545,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                                 $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
                                 $message = 'Bé' . ' ' . $nameStudent . ' ' . 'đã ra về lúc' . ' ' . $timeCheckOut;
+
 
                                 if (!empty($userId)) {
                                     $dataNoti = [

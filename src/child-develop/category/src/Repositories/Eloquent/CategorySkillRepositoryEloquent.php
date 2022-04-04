@@ -107,13 +107,19 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
 
     public function sort(array $attributes)
     {
+        $arrCrmId = [];
+        $paramId = [];
         $listId = explode(',', $attributes['id']);
-
+        
         foreach ($listId as $key => $value) {
             $fisrtValue = CategorySkill::find($value);
-
             $fisrtValue->update(['NumericalSkill' => $key + 1]);
+            $arrCrmId[] = $fisrtValue->CategorySkillCrmId;
         }
+       
+        $paramId['id'] = implode(',', $arrCrmId);
+        ChildDevelopCategoryCrmServices::sortCategorySkillCrm($paramId);
+
         $result = CategorySkill::orderBy('NumericalSkill')->get();
 
         return parent::parserResult($result);
