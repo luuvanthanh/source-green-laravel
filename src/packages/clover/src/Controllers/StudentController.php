@@ -4,6 +4,7 @@ namespace GGPHP\Clover\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Clover\Imports\StudentImport;
+use GGPHP\Clover\Imports\TimekeepingImport;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Contracts\StudentRepository;
 use Illuminate\Http\Request;
@@ -64,6 +65,16 @@ class StudentController extends Controller
     public function importStudent()
     {
         Excel::import(new StudentImport, request()->file('file'));
+
+        return back();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function importTimekeeping()
+    {
+        Excel::import(new TimekeepingImport, request()->file('file'));
 
         return back();
     }
