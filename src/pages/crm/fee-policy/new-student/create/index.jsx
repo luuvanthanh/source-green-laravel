@@ -372,7 +372,7 @@ const Index = memo(() => {
     //   ),
     // },
   ];
-
+console.log("students",students)
   return (
     <>
       <Helmet title={params?.id ? 'Chi tiết' : 'Thêm mới'} />

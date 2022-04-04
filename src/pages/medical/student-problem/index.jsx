@@ -337,7 +337,7 @@ class Index extends PureComponent {
         title: 'Người xử lý',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.handler?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.handler?.fullName}</Text>,
       },
     ];
     return columns;
