@@ -277,6 +277,10 @@ class IclockController extends Controller
 
                 $attributes = array_slice(preg_split('/\t/', $value), 0, 4);
 
+                if (count($attributes) < 4) {
+                    continue;
+                }
+
                 $keyAttributes = ['EmployeeId', 'AttendedAt', 'TrackingType', 'Type'];
                 $attributes = array_combine($keyAttributes, $attributes);
 
