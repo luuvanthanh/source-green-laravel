@@ -115,12 +115,16 @@ class SyncTravelAgencyService
 
             $idTravelAgency = $item['id'];
 
-            $tourGuide = TravelAgency::where('sync_data_id', $idTravelAgency)->first();
+            $travelAgency = TravelAgency::where('sync_data_id', $idTravelAgency)->first();
 
-            if (is_null($tourGuide)) {
+            if (is_null($travelAgency)) {
                 $now = Carbon::now()->format('Y-m-d H:m:s');
                 $loaihinhdichvu = self::getLoaiHinhDichVu($item['loaiHinhDichVu']);
-                // $diaban = self::getDiaBan($item['diaBan']);
+
+                $diaban = null;
+                if (!empty($item['diaBan'])) {
+                    $diaban = self::getDiaBan($item['diaBan']);
+                }
 
                 $itemDetail = [
                     'id' => Uuid::generate(4)->string,
@@ -138,22 +142,22 @@ class SyncTravelAgencyService
                     'operator_name' => $item['tenDieuHanh'],
                     'operator_phone' => $item['sdtDieuHanh'],
                     'address' => $item['diaChi'],
-                    'license_number' => $item[''],
+                    'license_number' => $item['giayPhepLuHanh'],
                     'email' => $item['email'],
-                    'date_range' => $item[''],
+                    'date_range' => $item['ngayCapGiayPhepLuHanh'],
                     'reporter_name' => $item['tenBaoCao'],
                     'reporter_phone' => $item['sdtBaoCao'],
                     'fax' => $item['fax'],
                     'website' => $item['website'],
                     'number_of_regular_employee' => $item['soLuongNhanLucThuongXuyen'],
                     'total_number_of_registered_vehicle' => $item['tongSoXeDangKy'],
-                    //  'locality' => $item[''],
+                    'locality' =>  $diaban ? $diaban['result']['ten'] : null,
                     'tax_code' => $item['mst'],
                     'note' => $item['ghiChu'],
+                    'sync_data_id' => $item['id'],
                     'created_at' => $now,
                     'updated_at' => $now
                 ];
-
 
                 $result[] = $itemDetail;
             }

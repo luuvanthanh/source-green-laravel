@@ -180,13 +180,12 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
 
     public function syncTravelAgency()
     {
-        $limit = 500;
+        $limit = 50;
 
         $pages = SyncTravelAgencyService::getPage($limit);
 
         for ($page = 1; $page <= $pages; $page++) {
-            SyncTravelAgencyService::result($page, $limit);
-            // dispatch(new ImportTravelAgencyJob($page, $limit, null));
+            dispatch(new ImportTravelAgencyJob($page, $limit, null));
         }
 
         return [];
