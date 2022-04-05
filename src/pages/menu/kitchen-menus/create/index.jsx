@@ -82,8 +82,8 @@ const Index = memo(() => {
     });
     const payload = {
       ...omit(values, 'month'),
-      monthIndex: Number(Helper.getDate(values.month, 'M')),
-      yearIndex: Number(Helper.getDate(values.month, variables.DATE_FORMAT.YEAR)),
+      month: Number(Helper.getDate(values.month, 'M')),
+      year: Number(Helper.getDate(values.month, variables.DATE_FORMAT.YEAR)),
       fromDate: Helper.getDate(fromDate, variables.DATE_FORMAT.DATE_AFTER),
       toDate: Helper.getDate(toDate, variables.DATE_FORMAT.DATE_AFTER),
       menuType: 'STUDENT',
