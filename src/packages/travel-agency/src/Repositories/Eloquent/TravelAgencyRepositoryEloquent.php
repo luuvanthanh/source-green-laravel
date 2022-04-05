@@ -59,6 +59,12 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
 
     public function getTravelAgency(array $attributes, $parse = true)
     {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->orWhereLike('name', $attributes['key'])
+                ->orWhereLike('license_number', $attributes['key'])
+                ->orWhereLike('locality', $attributes['key']);
+        }
+
         if (!empty($attributes['name'])) {
             $this->model = $this->model->whereLike('name', $attributes['name']);
         }

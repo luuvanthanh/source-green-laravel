@@ -140,8 +140,8 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
 
         if (!empty($attributes['count_event']) && $attributes['count_event'] == 'true') {
             $this->model = $this->model->withCount('event');
-            if (!empty($attributes['number_count_event']) && !empty($attributes['condition_count_event'])) {
-                $this->model = $this->model->has('event', $attributes['condition_count_event'], $attributes['number_count_event']);
+            if (!empty($attributes['number_count']) && !empty($attributes['condition_count'])) {
+                $this->model = $this->model->has('event', $attributes['condition_count'], $attributes['number_count']);
             }
         }
 

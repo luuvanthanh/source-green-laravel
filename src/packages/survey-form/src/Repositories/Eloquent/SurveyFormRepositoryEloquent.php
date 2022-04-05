@@ -65,7 +65,7 @@ class SurveyFormRepositoryEloquent extends BaseRepository implements SurveyFormR
         }
 
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->whereLike('key', $attributes['key']);
+            $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
         if (!empty($attributes['count_question']) && $attributes['count_question'] == 'true') {
