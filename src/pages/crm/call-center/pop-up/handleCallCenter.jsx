@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import { Session, UA, C } from 'sip.js';
-import { Howl } from 'howler';
 
 let config;
 let ua;
@@ -79,7 +78,14 @@ const handleInboundCall = () => {
 
       const sound = new Audio('/resources/iphone-ringtone.mp3');
       sound.loop = true;
-      sound.play();
+      const soundPromise = sound.play();
+      if (soundPromise !== undefined) {
+        soundPromise
+          .then(() => {
+            sound.play();
+          })
+          .catch(() => {});
+      }
 
       session.on('accepted', () => {
         setInboundStatus('ACCEPTED');
@@ -95,7 +101,14 @@ const handleInboundCall = () => {
         if (playPromise !== undefined) {
           playPromise.then(() => {}).catch(() => {});
         }
-        sound.pause();
+
+        if (soundPromise !== undefined) {
+          soundPromise
+            .then(() => {
+              sound.pause();
+            })
+            .catch(() => {});
+        }
 
         console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
       });
