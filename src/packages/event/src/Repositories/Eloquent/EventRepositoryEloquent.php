@@ -224,7 +224,6 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
     public function handleEvent(array $attributes, $id)
     {
-        dd($attributes);
         $event = $this->model()::findOrFail($id);
 
         $attributes['is_follow'] = false;
