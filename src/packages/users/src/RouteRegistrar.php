@@ -66,6 +66,9 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'UserController@storage',
                 'as' => 'employees.show',
             ]);
+            \Route::post('send-employee-accountants', [
+                'uses' => 'UserController@sendEmployeeAccountant',
+            ]);
 
             \Route::post('sync-employees', [
                 'uses' => 'UserController@syncEmployee',
