@@ -44,7 +44,9 @@ class ChargeStudentTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'status' => array_search($model->status, $model::STATUS)
+        ];
     }
 
     public function includeStudentInfo(ChargeStudent $chargeStudent)

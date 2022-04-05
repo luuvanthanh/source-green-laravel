@@ -45,6 +45,8 @@ class UpdateChargeStudentRequest extends FormRequest
             'tuition.*.fee_id' => 'required|uuid|exists:fees,id',
             'tuition.*.payment_form_id' => 'required|uuid|exists:payment_forms,id',
             'tuition.*.money' => 'required|numeric',
+            'expected_to_collect_money' => 'required|array',
+            'status' => 'required|in:YET_PAID,PAID'
         ];
     }
 

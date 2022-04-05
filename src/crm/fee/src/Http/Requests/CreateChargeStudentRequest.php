@@ -45,6 +45,7 @@ class CreateChargeStudentRequest extends FormRequest
             'tuition.*.fee_id' => 'required|uuid|exists:fees,id',
             'tuition.*.payment_form_id' => 'required|uuid|exists:payment_forms,id',
             'tuition.*.money' => 'required|numeric',
+            'expected_to_collect_money' => 'required|array'
         ];
     }
 
@@ -53,7 +54,7 @@ class CreateChargeStudentRequest extends FormRequest
         $data = parent::all($keys);
 
         unset($data['details.*.id']);
-        
+
         if (!empty($data['student_info_id'])) {
             unset($data['name_student']);
             unset($data['date_of_birth']);
