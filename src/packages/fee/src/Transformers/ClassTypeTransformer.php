@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Transformers;
 
+use GGPHP\Clover\Transformers\ClassesTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\ClassType;
 
@@ -12,14 +13,17 @@ use GGPHP\Fee\Models\ClassType;
  */
 class ClassTypeTransformer extends BaseTransformer
 {
+    protected $availableIncludes = ['classes'];
 
-    protected $availableIncludes = [];
     protected $defaultIncludes = [];
 
     public function customAttributes($model): array
     {
-        return [
+        return [];
+    }
 
-        ];
+    public function includeClasses(ClassType $classType)
+    {
+        return $this->collection($classType->classes, new ClassesTransformer, 'Classes');
     }
 }

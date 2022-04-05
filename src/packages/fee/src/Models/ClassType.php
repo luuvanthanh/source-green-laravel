@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Models\UuidModel;
 
 class ClassType extends UuidModel
@@ -21,4 +22,9 @@ class ClassType extends UuidModel
     protected $fillable = [
         'Name', 'Code', 'From', 'To', 'Description', 'ClassTypeCrmId',
     ];
+
+    public function classes()
+    {
+        return $this->hasMany(Classes::class,'ClassTypeId');
+    }
 }
