@@ -161,7 +161,7 @@ const OutboundResult = memo(
           <FormItem
             label="Kết quả cuộc gọi"
             placeholder="Kết quả cuộc gọi"
-            name="content"
+            name="result"
             type={variables.TEXTAREA}
             rules={[variables.RULES.MAX_LENGTH_INPUT]}
             showCount={false}

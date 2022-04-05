@@ -32,7 +32,11 @@ const Test = memo(() => {
     });
   };
 
-  const [user] = useSelector(({ user, crmCallCenter }) => [user, crmCallCenter]);
+  const [user] = useSelector(({ user, crmCallCenter, crmHistoryCall }) => [
+    user,
+    crmCallCenter,
+    crmHistoryCall,
+  ]);
   const dispatch = useDispatch();
 
   const { inboundStatus, infoCall, inboundContext } = handleInboundCall();
@@ -76,6 +80,9 @@ const Test = memo(() => {
           );
         }
       },
+    });
+    dispatch({
+      type: 'crmHistoryCall/GET_DATA',
     });
   }, []);
 
@@ -121,23 +128,6 @@ const Test = memo(() => {
 
   // Update trạng thái các state GỌI ĐẾN (IN)
   useEffect(() => {
-    // if (
-    //   (inboundStatus === variablesModule.STATUS.bye ||
-    //     inboundStatus === variablesModule.STATUS.cancel ||
-    //     inboundStatus === variablesModule.STATUS.rejected ||
-    //     inboundStatus === variablesModule.STATUS.failed) &&
-    //   inboundHistory.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
-    // ) {
-    //   // reset state
-    //   setStatus(variablesModule.STATUS.idle);
-    //   setIsVisible(false);
-    //   // setInfoFromInbound('');
-    //   setInfoFromOutbound('');
-    //   setInboundStatusInfo('');
-    //   setIsInbound(false);
-
-    //   setInboundHistory({});
-    // }
     if (inboundStatus === variablesModule.STATUS.failed && isEmpty(inboundHistory)) {
       // reset state
       setStatus(variablesModule.STATUS.idle);
@@ -157,20 +147,6 @@ const Test = memo(() => {
 
   // Update trạng thái các state GỌI ĐI (OUT)
   useEffect(() => {
-    // if (
-    //   outboundStatus === variablesModule.STATUS.bye ||
-    //   outboundStatus === variablesModule.STATUS.cancel ||
-    //   outboundStatus === variablesModule.STATUS.rejected ||
-    //   outboundStatus === variablesModule.STATUS.failed
-    // ) {
-    //   // reset state
-    //   setStatus(variablesModule.STATUS.idle);
-    //   setIsVisible(false);
-    //   setInfoFromInbound('');
-    //   setInfoFromOutbound('');
-    //   setOutboundStatusInfo('');
-    //   setIsOutbound(false);
-    // }
     if (outboundStatus === variablesModule.STATUS.failed && isEmpty(outboundHistory)) {
       // reset state
       setStatus(variablesModule.STATUS.idle);
@@ -219,18 +195,15 @@ const Test = memo(() => {
   };
 
   // PHONE (OUT)
-  const handlePhone = (status, phone, condition) => {
-    setStatus(status);
+  const handlePhone = (phone) => {
+    setStatus(variablesModule.STATUS.outbound);
     setOutboundNumber(phone);
-    setIsOutbound(condition);
+    setIsOutbound(true);
     outboundContext(phone, audioRef.current);
   };
 
   // OUTBOUND (OUT)
-  const handleOutbound = (status, phone, statusModal, content) => {
-    // setStatus(status);
-    // setOutboundNumber(phone);
-    // setIsVisible(statusModal);
+  const handleOutbound = (content) => {
     setContentOutbound(content);
   };
 
@@ -273,7 +246,7 @@ const Test = memo(() => {
     <>
       {isSaler && (
         <>
-          <audio ref={audioRef} preload="none" autoPlay>
+          <audio ref={audioRef} autoPlay>
             <track kind="captions" />
           </audio>
           <div className={styles['logo-call']} role="presentation" onClick={showModal}>

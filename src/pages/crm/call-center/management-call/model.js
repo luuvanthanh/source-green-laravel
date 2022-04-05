@@ -4,14 +4,8 @@ export default {
   namespace: 'crmManagementCall',
   state: {
     data: [],
-    city: [],
-    district: [],
-    tags: [],
     lead: [],
-    branch: [],
-    types: [],
-    searchSource: [],
-    employees: [],
+    isCall: false,
     pagination: {
       total: 0,
     },
@@ -36,6 +30,14 @@ export default {
         },
       },
     }),
+    SET_STATUS_LEAD: (state, { payload }) => ({
+      ...state,
+      lead: payload.parsePayload,
+    }),
+    SET_IS_CALL: (state, { payload }) => ({
+      ...state,
+      isCall: payload,
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -53,6 +55,38 @@ export default {
           payload: error.data,
         });
       }
+    },
+    *GET_COUNTCALL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getCountCall, payload);
+        callback(response?.payload);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STATUS_LEAD({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getStatusLead, payload);
+        yield saga.put({
+          type: 'SET_STATUS_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *IS_CALL({ payload, callback }, saga) {
+      yield saga.put({
+        type: 'SET_IS_CALL',
+        payload,
+      });
+      callback();
     },
   },
   subscriptions: {},

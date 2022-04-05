@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 .wrapper-modal {
   :global(.ant-modal-footer) {
     display: flex;
@@ -100,7 +100,10 @@
     border-radius: 50%;
     color: #c4c4c4;
   }
-  :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle) {
+  :global(.ant-steps-item-custom.ant-steps-item-process
+      .ant-steps-item-icon
+      > .ant-steps-icon
+      .anticon-check-circle) {
     background-color: #3bb54a;
     color: $white;
     border-radius: 50%;
@@ -238,4 +241,8 @@
     font-weight: 700;
     color: white !important;
   }
+}
+
+.reminder-bg {
+  color: $text_danger !important;
 }

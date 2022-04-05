@@ -3,7 +3,7 @@ import { useHistory, useRouteMatch } from 'umi';
 import { Form, Modal } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get } from 'lodash';
+import { get, head, isEmpty } from 'lodash';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
@@ -13,6 +13,7 @@ import Table from '@/components/CommonComponent/Table';
 import { useDispatch, useSelector } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
 import Parents from '../parents';
+import moment from 'moment';
 
 const dataHour = (n) => {
   const allHour = [];
@@ -28,6 +29,8 @@ const Index = memo(() => {
   const { params } = useRouteMatch();
   const history = useHistory();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [crmIdUser, setCrmIdUser] = useState('');
+  const [parentLead, setParentLead] = useState([]);
 
   const [
     { error },
@@ -51,11 +54,26 @@ const Index = memo(() => {
         callback: () => {},
       });
     } else {
-      formRef.setFieldsValue({
-        employee_id: user.name,
+      dispatch({
+        type: 'crmCallCenter/GET_CRM_ID',
+        payload: {
+          employee_id_hrm: user.objectInfo?.id,
+        },
+        callback: (response) => {
+          if (response) {
+            setCrmIdUser(head(response.parsePayload).id);
+            formRef.setFieldsValue({
+              employee_id: head(response.parsePayload).full_name,
+            });
+          }
+        },
       });
     }
   }, []);
+
+  const onRemove = (id) => {
+    setParentLead((prev) => prev.filter((item) => item.id !== id));
+  };
 
   const header = () => {
     const columns = [
@@ -65,56 +83,74 @@ const Index = memo(() => {
         align: 'center',
         className: 'min-width-80',
         width: 80,
-        render: (record) => get(record, 'code'),
+        render: (value, record, index) => index + 1,
       },
       {
         title: 'Họ và tên',
         key: 'name',
         width: 150,
         className: 'min-width-150',
-        render: (record) => get(record, 'name'),
+        render: (record) => get(record, 'full_name'),
       },
       {
         title: 'SĐT 1',
-        key: 'callOne',
+        key: 'phone',
         width: 100,
         className: 'min-width-100',
-        render: (record) => get(record, 'callOne'),
+        render: (record) => get(record, 'phone'),
       },
       {
         title: 'SĐT 2',
-        key: 'callTwo',
+        key: 'phone_company',
         width: 100,
         className: 'min-width-100',
-        render: (record) => get(record, 'callTwo'),
+        render: (record) => get(record, 'phone_company'),
       },
       {
         title: 'Phân loại PH',
-        key: 'parents',
+        key: 'statusLeadLatest',
         width: 100,
         className: 'min-width-100',
-        render: (record) => get(record, 'parents'),
+        render: (record) => variables.LEAD_STATUS[record?.statusLeadLatest[0]?.status],
       },
       {
         title: 'Tình trạng PH Lead',
         key: 'leadStatus',
         width: 150,
         className: 'min-width-150',
-        render: (record) => get(record, 'leadStatus'),
+        render: (record) => record?.statusCareLatest[0]?.statusParentLead?.name,
       },
       {
         title: 'Tình trạng TN',
         key: 'potentialStatus',
         width: 100,
         className: 'min-width-100',
-        render: (record) => get(record, 'potentialStatus'),
+        render: (record) => record?.customerPotential[0],
       },
       {
         title: 'Lần đã gọi',
-        key: 'number_calls',
+        key: 'call_times',
         width: 100,
         className: 'min-width-100',
-        render: (record) => get(record, 'number_calls'),
+        render: () => variables.CALL_TIMES[formRef.getFieldValue().call_times],
+      },
+      {
+        key: 'actions',
+        width: 50,
+        className: 'min-width-50',
+        align: 'center',
+        render: (record) => (
+          <ul className="list-unstyled list-inline">
+            <li className="list-inline-item">
+              <Button
+                color="danger"
+                icon="remove"
+                className="ml-2"
+                onClick={() => onRemove(record.id)}
+              />
+            </li>
+          </ul>
+        ),
       },
     ];
     return columns;
@@ -128,9 +164,44 @@ const Index = memo(() => {
     setIsModalVisible(false);
   };
 
-  const handleOk = () => {};
+  const handleAddParent = (record) => {
+    setParentLead(record);
+    setIsModalVisible(false);
+  };
 
-  const onFinish = () => {};
+  const onFinish = () => {
+    formRef.validateFields().then((values) => {
+      const payload = {
+        ...values,
+        expected_date: moment(values.expected_date).format(variables.DATE_FORMAT.DATE_AFTER),
+        received_data: moment().format(variables.DATE_FORMAT.DATE_AFTER),
+        employee_id: crmIdUser,
+        list_customer_lead: parentLead.map((item) => ({ customer_lead_id: item.id })),
+      };
+
+      dispatch({
+        type: 'crmManagementCallAdd/ADD',
+        payload,
+        callback: (response, error) => {
+          if (response) {
+            history.goBack();
+          }
+          if (error) {
+            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+              error?.validationErrors.forEach((item) => {
+                formRef.setFields([
+                  {
+                    name: head(item.members),
+                    errors: [item.message],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    });
+  };
 
   return (
     <>
@@ -166,7 +237,7 @@ const Index = memo(() => {
                     <div className="col-lg-4">
                       <FormItem
                         label="Lần gọi"
-                        name="typeOfContractId"
+                        name="call_times"
                         type={variables.SELECT}
                         data={variables.CALL_TIME}
                       />
@@ -202,29 +273,21 @@ const Index = memo(() => {
                       className={styles['wrapper-modal-management-call']}
                       centered
                       visible={isModalVisible}
-                      onOk={handleOk}
                       onCancel={handleCancel}
                       width={1300}
-                      footer={[
-                        <p
-                          key="back"
-                          role="presentation"
-                          onClick={handleCancel}
-                          className={styles['button-cancel-management-call']}
-                        >
-                          Hủy
-                        </p>,
-                        <Button htmlType="submit" color="success" type="primary" onClick={handleOk}>
-                          Áp dụng
-                        </Button>,
-                      ]}
+                      footer={null}
                     >
-                      <Parents />
+                      <Parents
+                        handleOnClick={handleAddParent}
+                        callTimes={formRef.getFieldValue().call_times}
+                        crmIdUser={crmIdUser}
+                        parentLead={parentLead}
+                      />
                     </Modal>
                   </div>
                   <Table
                     columns={header()}
-                    // dataSource={data}
+                    dataSource={parentLead}
                     pagination={false}
                     className={classnames('mb15', styles['statistical-table'])}
                     isEmpty

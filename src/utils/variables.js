@@ -273,7 +273,7 @@ export const variables = {
       name: 'Lần 2',
     },
     {
-      id: 'THIRTH',
+      id: 'THIRD',
       name: 'Lần 3',
     },
     {
@@ -303,6 +303,23 @@ export const variables = {
     { id: 'REJECTED', name: 'Từ chối' },
     { id: 'HANGUP', name: 'Đã kết thúc' },
   ],
+  LEAD_STATUS: {
+    LEAD_NEW: 'Lead mới',
+    POTENTIAL: 'Có tiềm năng',
+    NOT_POTENTIAL: 'Không tiềm năng',
+  },
+  CALL_STATUS: {
+    CALLYET: 'Chưa gọi',
+    CALLED: 'Đã gọi',
+  },
+  CALL_TIMES: {
+    YET_CREATE: '',
+    FIRST: 'Lần 1',
+    SECOND: 'Lần 2',
+    THIRD: 'Lần 3',
+    FOURTH: 'Lần 4',
+    FIVETH: 'Lần 5',
+  },
 };
 
 export default variables;

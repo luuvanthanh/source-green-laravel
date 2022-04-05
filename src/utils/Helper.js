@@ -1237,6 +1237,17 @@ export default class Helpers {
     return '';
   };
 
+  static getManagerStatusCall = (status) => {
+    if (variables.CALL_STATUS[status] === 'Chưa gọi') {
+      return <Tag color="yellow">Chưa gọi</Tag>;
+    }
+    if (variables.CALL_STATUS[status] === 'Đã gọi') {
+      return <Tag color="success">Đã gọi</Tag>;
+    }
+
+    return '';
+  };
+
   static getStatusProbationaryContracts = (contractFrom, contractTo) => {
     const diffSignDate = moment(
       moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),

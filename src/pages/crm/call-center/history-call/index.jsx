@@ -11,6 +11,8 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation, useRouteMatch } from 'umi';
+import stylesModule from './styles.module.scss';
+import variablesModule from '../pop-up/variables';
 
 const Index = () => {
   const [
@@ -111,49 +113,109 @@ const Index = () => {
         title: 'STT ',
         key: 'index',
         width: 80,
-        render: (text, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
+        render: (text, record, index) => (
+          <p
+            className={
+              record?.call_status === variablesModule.STATUS.canceled &&
+              record?.direction === variablesModule.STATUS.inbound &&
+              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                ? stylesModule['reminder-bg']
+                : ''
+            }
+          >
+            {Helper.serialOrder(search?.page, index, search?.limit)}
+          </p>
+        ),
       },
       {
         title: 'Ngày giờ gọi',
         key: 'call_date',
         width: 150,
-        render: (record) => moment(record?.created_at).format(variables.DATE_FORMAT.DATE_TIME),
+        render: (record) => (
+          <p
+            className={
+              record?.call_status === variablesModule.STATUS.canceled &&
+              record?.direction === variablesModule.STATUS.inbound &&
+              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                ? stylesModule['reminder-bg']
+                : ''
+            }
+          >
+            {moment(record?.created_at).format(variables.DATE_FORMAT.DATE_TIME)}
+          </p>
+        ),
       },
       {
         title: 'Loại cuộc gọi',
         key: 'call_type',
         width: 150,
-        render: (record) => variables.DIRECTION[record?.direction],
+        render: (record) => (
+          <p
+            className={
+              record?.call_status === variablesModule.STATUS.canceled &&
+              record?.direction === variablesModule.STATUS.inbound &&
+              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                ? stylesModule['reminder-bg']
+                : ''
+            }
+          >
+            {variables.DIRECTION[record?.direction]}
+          </p>
+        ),
       },
       {
         title: 'Tổng đài',
         key: 'switchboard',
         width: 150,
-        render: (record) => record?.switchboard,
+        render: (record) => (
+          <p
+            className={
+              record?.call_status === variablesModule.STATUS.canceled &&
+              record?.direction === variablesModule.STATUS.inbound &&
+              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                ? stylesModule['reminder-bg']
+                : ''
+            }
+          >
+            {record?.switchboard}
+          </p>
+        ),
       },
       {
         title: 'Số nhánh',
-        key: 'branchRedirect',
+        key: 'employee.extension',
         width: 150,
-        render: (record) => record?.branchRedirect,
+        render: (record) => record?.employee?.extension[0].user_id_cmc,
       },
       {
         title: 'Số điện thoại',
         key: 'phone',
         width: 150,
-        render: (record) => record?.phone,
+        render: (record) => (
+          <p
+            className={
+              record?.call_status === variablesModule.STATUS.canceled &&
+              record?.direction === variablesModule.STATUS.inbound &&
+              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                ? stylesModule['reminder-bg']
+                : ''
+            }
+          >
+            {record?.phone}
+          </p>
+        ),
       },
       {
         title: 'Nội dung',
         key: 'content',
-        width: 150,
+        width: 300,
         render: (record) => record?.content,
       },
       {
         title: 'Sale gọi nhận',
-        key: 'saler',
+        key: 'employee.full_name',
         width: 150,
-        render: (record) => record?.saler,
+        render: (record) => record?.employee?.full_name,
       },
       {
         title: 'Trạng thái',
@@ -279,7 +341,7 @@ const Index = () => {
             bordered={false}
             columns={header(params)}
             dataSource={data}
-            loading={loading['crmSaleParentsLead/GET_DATA']}
+            loading={loading['crmHistoryCall/GET_DATA']}
             disabled
             pagination={paginationFunction(pagination)}
             params={{

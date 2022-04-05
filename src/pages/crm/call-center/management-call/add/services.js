@@ -8,7 +8,7 @@ export function details(data = {}) {
 }
 
 export function add(data = {}) {
-  return request('/manager-calls', {
+  return request('/v1/manager-calls', {
     method: 'POST',
     data,
     parse: true,
