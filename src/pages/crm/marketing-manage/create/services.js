@@ -130,6 +130,7 @@ export function updatePosts(data = {}) {
     method: 'PUT',
     data: {
       ...data,
+     
     },
   });
 }
@@ -151,8 +152,14 @@ export function details(params = {}) {
 }
 
 export function detailsPosts(params = {}) {
-  return request(`/v1/articles/${params.detailId}`, {
+  return request(`/v1/articles/${params.id}`, {
     method: 'GET',
+    params:{
+      ...params,
+      include: Helper.convertIncludes([
+        'postFacebookInfo.articleReactionInfo,postFacebookInfo.articleCommentInfo',
+      ]),
+    }
   });
 }
 
@@ -409,6 +416,7 @@ export function getPosts(params = {}) {
         isUTC: false,
       }),
       limit: params.limit,
+      include: Helper.convertIncludes(['postFacebookInfo']),
       page: params.page,
       orderBy: 'created_at',
       sortedBy: 'desc',

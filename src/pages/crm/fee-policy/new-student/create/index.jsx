@@ -30,13 +30,14 @@ const radios = [
 
 const Index = memo(() => {
   const params = useParams();
-  const { loading, menuLeftCRM, yearsSchool, classes, students } = useSelector(
+  const { loading, menuLeftCRM, yearsSchool, classes, students, branches } = useSelector(
     ({ loading, menu, CRMnewStudentAdd }) => ({
       loading: loading.effects,
       menuLeftCRM: menu.menuLeftCRM,
       yearsSchool: CRMnewStudentAdd.yearsSchool,
       classes: CRMnewStudentAdd.classes,
       students: CRMnewStudentAdd.students,
+      branches: CRMnewStudentAdd.branches,
     }),
   );
   const [tab, setTab] = useState('tuition');
@@ -65,20 +66,27 @@ const Index = memo(() => {
       },
     });
     dispatch({
-      type: 'CRMnewStudentAdd/GET_CLASS',
-      payload: {
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.SIZEMAX,
-      },
-    });
-    dispatch({
       type: 'CRMnewStudentAdd/GET_STUDENTS',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
+    dispatch({
+      type: 'CRMnewStudentAdd/GET_BRANCHES',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
     if (params.id) {
+      dispatch({
+        type: 'CRMnewStudentAdd/GET_CLASS',
+        payload: {
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.SIZEMAX,
+        },
+      });
       dispatch({
         type: 'CRMnewStudentAdd/GET_DETAILS',
         payload: {
@@ -94,15 +102,6 @@ const Index = memo(() => {
               variables.DATE_FORMAT.DATE_VI,
             );
             setDetails(res);
-            // if(res?.studentInfo){
-            //   formRef.current.setFieldsValue({
-            //     ...res,
-            //     range_date,
-            //     date_of_birth: moment(res.date_of_birth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-            //     day_admission: moment(res.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-            //     type: 'newStudent',
-            //   });
-            // }
             formRef.current.setFieldsValue({
               ...res,
               range_date,
@@ -114,6 +113,7 @@ const Index = memo(() => {
               father_phone: pather?.phone || res?.father_phone,
               mother_name: mother?.full_name || res?.mother_name,
               mother_phone: mother?.phone || res?.mother_phone,
+              branch_id: res?.branch_id,
               type: 'newStudent',
             });
             setTuition(
@@ -153,7 +153,7 @@ const Index = memo(() => {
     if (errorTuition) {
       return;
     }
-    const response = students.find((item) => item.id === values?.name_student );
+    const response = students.find((item) => item.id === values?.name_student);
     const payload = {
       ...values,
       date_of_birth: Helper.getDateTime({
@@ -205,28 +205,6 @@ const Index = memo(() => {
         fee_id: item.fee_id,
         payment_form_id: item.payment_form_id,
       }));
-    // dispatch({
-    //   type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
-    //   payload: {
-    //     details: JSON.stringify(newTuition),
-    //     class_type_id,
-    //     school_year_id,
-    //     day_admission: Helper.getDateTime({
-    //       value: Helper.setDate({
-    //         ...variables.setDateData,
-    //         originValue: day_admission,
-    //       }),
-    //       format: variables.DATE_FORMAT.DATE_AFTER,
-    //       isUTC: false,
-    //     }),
-    //     student: 'new',
-    //   },
-    //   callback: (res) => {
-    //     if (!_.isEmpty(res)) {
-    //       setTuition(res);
-    //     }
-    //   },
-    // });
   };
 
   const loadTableFees = (value, name) => {
@@ -252,6 +230,17 @@ const Index = memo(() => {
       );
       setFieldsValue({ day_admission: '', range_date });
     }
+  };
+
+  const onchangeBranches = (e) => {
+    dispatch({
+      type: 'CRMnewStudentAdd/GET_CLASS',
+      payload: {
+        branchId: e,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
   };
 
   const getClassByAge = (age = 0) => {
@@ -372,7 +361,7 @@ const Index = memo(() => {
     //   ),
     // },
   ];
-console.log("students",students)
+  console.log("branches", branches)
   return (
     <>
       <Helmet title={params?.id ? 'Chi tiết' : 'Thêm mới'} />
@@ -413,11 +402,11 @@ console.log("students",students)
                         {
                           details?.student_info_id ?
                             <FormItem
-                            className="input-noborder"
-                            label="Họ tên học sinh"
-                            name="name_student"
-                            type={variables.INPUT}
-                            placeholder="Họ và tên"
+                              className="input-noborder"
+                              label="Họ tên học sinh"
+                              name="name_student"
+                              type={variables.INPUT}
+                              placeholder="Họ và tên"
                             /> :
                             <>  {type === 'newStudent' ? (
                               <FormItem
@@ -462,7 +451,7 @@ console.log("students",students)
                       </div>
                       <div className="col-lg-3">
                         <FormItem
-                          className={type === 'oldStudent' ||  details?.student_info_id ? 'input-noborder' : ''}
+                          className={type === 'oldStudent' || details?.student_info_id ? 'input-noborder' : ''}
                           label="Ngày sinh"
                           name="date_of_birth"
                           type={variables.DATE_PICKER}
@@ -510,6 +499,18 @@ console.log("students",students)
                       </div>
                       <div className="col-lg-3">
                         <FormItem
+                          options={['branch_id_hrm', 'name']}
+                          label="Cơ sở dự kiến"
+                          name="branch_id"
+                          data={branches}
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                          onChange={onchangeBranches}
+                        />
+                      </div>
+                      <div className="col-lg-3">
+                        <FormItem
+                         options={['classTypeCrmId', 'name']}
                           label="Lớp học dự kiến"
                           name="class_type_id"
                           data={classes}
@@ -602,14 +603,6 @@ console.log("students",students)
                 <Heading type="form-title" className="heading-tab p20">
                   Các khoản học phí <span className="text-danger">*</span>
                 </Heading>
-                {/* <TypeFees
-                  tuition={tuition}
-                  setTuition={setTuition}
-                  error={errorTable?.tuition}
-                  checkValidate={checkValidate}
-                  addFees={addFees}
-                  formRef={formRef}
-                /> */}
                 <Tabs onChange={changeTab} activeKey={tab} className="test-12 p20">
                   {tabs().map(({ id, name, component }) => (
                     <TabPane

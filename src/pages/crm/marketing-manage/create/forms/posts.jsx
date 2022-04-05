@@ -3,7 +3,6 @@ import { Form } from 'antd';
 import { head, get, isEmpty } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import classnames from 'classnames';
 import Table from '@/components/CommonComponent/Table';
 import { useLocation, useParams, useHistory } from 'umi';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -34,8 +33,6 @@ const Index = memo(() => {
   const [pageCurrent, setPageCurrent] = useState({});
 
   const responseFacebook = (response) => {
-    console.log('response', response);
-    console.log('user',user);
     dispatch({
       type: 'crmMarketingManageAdd/GET_USER',
       payload: response,
@@ -102,7 +99,7 @@ const Index = memo(() => {
       mounted.current = false;
     };
   }, []);
-console.log("user", user);
+
   /**
    * Function header table
    */
@@ -111,30 +108,51 @@ console.log("user", user);
       {
         title: 'Thời gian ',
         key: 'date',
+        width: 80,
         render: (record) => Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Hình ảnh ',
         key: 'img',
-        render: (record) => <AvatarTable fileImage={Helper.getPathAvatarJson(record.file_image)} />,
+        width: 80,
+        render: (record) => <AvatarTable fileImage={Helper.getPathAvatarJson(record?.file_image)} />,
       },
       {
         title: 'Bài viết',
         key: 'name',
+        width: 200,
         render: (record) => (
           <p
             role="presentation"
             className={stylesModule['wrapper-posts']}
-            onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}
           >
             {record?.name}
           </p>
         ),
       },
       {
+        title: 'Lượt like',
+        key: 'img',
+        width: 100,
+        render: (record) => record?.postFacebookInfo?.quantity_reaction,
+      },
+      {
+        title: 'Lượt share',
+        key: 'img',
+        width: 100,
+        render: (record) => record?.postFacebookInfo?.quantity_share,
+      },
+      {
+        title: 'Lượt comment',
+        key: 'img',
+        width: 100,
+        render: (record) => record?.postFacebookInfo?.quantity_comment,
+      },
+      {
         title: 'Đăng lên',
         key: 'action',
-        width: 320,
+        width: 100,
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
@@ -172,7 +190,7 @@ console.log("user", user);
                 </Button>
               )}
             </>
-            <Button
+            {/* <Button
               color="primary"
               icon="sphere"
               size="normal"
@@ -182,7 +200,7 @@ console.log("user", user);
             </Button>
             <Button color="success" icon="mobile" className={stylesModule['button-Mobile']}>
               Mobile App
-            </Button>
+            </Button> */}
           </div>
         ),
       },
