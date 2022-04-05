@@ -186,8 +186,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                     ],
                 ]),
             ];
-
-            VmsCoreServices::startCamera($dataStartCamera);
+            dispatch(new VmsCoreJob($dataStartCamera, 'CREATE_CAMERA'));
         } catch (\Throwable $e) {
             DB::rollback();
             throw new HttpException(500, $e->getMessage());
@@ -222,6 +221,8 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 $camera->collection()->sync($data['collection_id']);
             }
 
+            DB::commit();
+
             $dataResolution = $this->getResolutionValue($camera->resolution);
 
             $dataStartCamera = [
@@ -246,9 +247,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 ]),
             ];
 
-            VmsCoreServices::updateCamera($dataStartCamera);
-
-            DB::commit();
+            dispatch(new VmsCoreJob($dataStartCamera, 'UPDATE_CAMERA'));
         } catch (\Throwable $e) {
             DB::rollback();
             throw new HttpException(500, $e->getMessage());
@@ -278,8 +277,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 'server_id' => $camera->cameraServer->uuid,
                 'cam_id' =>  $camera->id,
             ];
-
-            VmsCoreServices::stopCamera($dataDeleteCamera);
+            dispatch(new VmsCoreJob($dataDeleteCamera, 'DELETE_CAMERA'));
 
             $camera->delete();
 

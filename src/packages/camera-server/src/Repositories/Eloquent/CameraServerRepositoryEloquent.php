@@ -212,6 +212,46 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
             throw new HttpException(500, $th->getMessage());
         }
     }
+    public function activeVmsCoreNotCamera($id)
+    {
+        \DB::beginTransaction();
+
+        try {
+            $cameraServer = CameraServer::findOrFail($id);
+
+            $dataActive = [
+                'server_id' => $cameraServer->uuid,
+                'cam_data_as_bytes' => json_encode([
+                    'input' => [
+                        'cameras' => []
+                    ],
+                    'output' => [
+                        'backup_video' => [
+                            'root_path' => $cameraServer->root_path_bk,
+                            'second_interval' => (int) $cameraServer->second_interval_bk
+                        ],
+                        'media_server_url' => $cameraServer->media_server_url,
+                        'clip_root_path' => $cameraServer->clip_root_path,
+                        'log_root_path' => $cameraServer->log_root_path,
+                        'log_level' => (int) $cameraServer->log_level
+                    ],
+                    'delete_old_file' => [
+                        'backup_video_days_passed' => (int) $cameraServer->backup_video_day_passed,
+                        'clip_video_days_passed' => (int) $cameraServer->clip_video_day_passed,
+                        'logging_days_passed' => (int) $cameraServer->loggings_day_passed,
+                    ]
+                ])
+            ];
+
+            VmsCoreServices::activatedVmsCore($dataActive);
+            \DB::commit();
+
+            return parent::parserResult($cameraServer);
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+    }
 
     public function deactivationVmsCore($id)
     {
