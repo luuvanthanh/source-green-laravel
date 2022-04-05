@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import styles from '../style.module.scss';
-import { handleAnswer, handleReject } from '../handleCallCenter';
-import variablesModule from '../variables';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { handleAnswer, handleReject } from '../handleCallCenter';
+import styles from '../style.module.scss';
+import variablesModule from '../variables';
 
 function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
   const handleInboundAnswer = () => {
