@@ -8,14 +8,14 @@ export function get(params = {}) {
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
-      date: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: params.date,
-          targetValue: '23:59:59',
-        }),
-        isUTC: false,
-      }),
+      // date: Helper.getDateTime({
+      //   value: Helper.setDate({
+      //     ...variables.setDateData,
+      //     originValue: params.date,
+      //     targetValue: '23:59:59',
+      //   }),
+      //   isUTC: false,
+      // }),
     },
   });
 }

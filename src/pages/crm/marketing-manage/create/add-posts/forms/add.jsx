@@ -1,9 +1,9 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Breadcrumb, Form } from 'antd';
+import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 // import Quill from '@/components/CommonComponent/Quill';
-import { Link, connect, history, withRouter } from 'umi';
+import {  connect, history, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -12,6 +12,7 @@ import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import validator from 'validator';
 import { variables } from '@/utils/variables';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import { Helper } from '@/utils';
@@ -23,14 +24,16 @@ const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
     loading,
     detailsAddPost: crmMarketingManageAdd.detailsAddPost,
     error: crmMarketingManageAdd.error,
+    user: crmMarketingManageAdd.user,
 });
 const General = memo(
-    ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, error, location: { pathname } }) => {
+    ({ dispatch, loading: { effects }, match: { params }, detailsAddPost,user,  error, location: { pathname } }) => {
         const formRef = useRef();
-        // const [content, setContent] = useState('');
-        // const user = JSON.parse(localStorage.getItem('user'));
         const [files, setFiles] = useState([]);
         const mounted = useRef(false);
+        const [getToken, setGetToket] = useState({});
+
+        const [pageCurrent, setPageCurrent] = useState({});
         const mountedSet = (action, value) => mounted?.current && action(value);
         const loadingSubmit =
             effects[`crmMarketingManageAdd/ADD_POSTS`] || effects[`crmMarketingManageAdd/UPDATE_POSTS`];
@@ -107,14 +110,15 @@ const General = memo(
             return mounted.current;
         }, []);
         const cancel = () => {
-            const user = JSON.parse(localStorage.getItem('user'));
+            const user = JSON?.parse(sessionStorage?.getItem('user'));
             return Helper.confirmAction({
                 callback: () => {
                     dispatch({
                         type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
                         payload: {
-                            id: detailsAddPost.id,
-                            page_access_token: user?.accessToken,
+                            id: detailsAddPost?.id,
+                            page_id: user[0].id,
+                            page_access_token: user[0]?.access_token,
                         },
                         callback: (response) => {
                             if (response) {
@@ -125,7 +129,7 @@ const General = memo(
                 },
             });
         };
-        console.log("user", JSON?.parse(sessionStorage?.getItem('user')));
+
         useEffect(() => {
             if (params.id) {
                 formRef.current.setFieldsValue({
@@ -142,7 +146,78 @@ const General = memo(
         const uploadFiles = (file) => {
             mountedSet(setFiles, (prev) => [...prev, file]);
         };
-console.log("detailsAddPost",detailsAddPost)
+
+        const responseFacebook = (response) => {
+            dispatch({
+                type: 'crmMarketingManageAdd/GET_USER',
+                payload: response,
+            });
+        };
+
+        useEffect(() => {
+            if (user?.userID) {
+              dispatch({
+                type: 'crmFBDevV1/GET_TOKEN',
+                payload: {
+                  user_access_token: user?.accessToken,
+                },
+                callback: (response) => {
+                  if (response) {
+                    setGetToket(response);
+                  }
+                },
+              });
+            }
+          }, [user?.userID]);
+          useEffect(() => {
+            if (getToken?.user_access_token) {
+              dispatch({
+                type: 'crmFBDevV1/GET_PAGES',
+                payload: {
+                  user_access_token: getToken?.user_access_token,
+                  user_id: user?.userID,
+                },
+                callback: (response) => {
+                  if (response) {
+                    const firstPage = head(response.data);
+                    setPageCurrent(firstPage);
+                    sessionStorage.setItem('user', JSON.stringify(response.data));
+                  }
+                },
+              });
+            }
+          }, [getToken?.user_access_token]);
+
+          const addFB = (values) => {
+            dispatch({
+              type: 'crmMarketingManageAdd/ADD_FACEBOOK',
+              payload: {
+                article_id: values,
+                page_id: pageCurrent?.id,
+                page_access_token: pageCurrent?.access_token,
+              },
+              callback: (response, error) => {
+                if (response) {
+                  history.goBack();
+                }
+                if (error) {
+                  if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                    error.data.errors.forEach((item) => {
+                      formRef.current.setFields([
+                        {
+                          name: get(item, 'source.pointer'),
+                          errors: [get(item, 'detail')],
+                        },
+                      ]);
+                    });
+                  }
+                }
+              },
+            });
+          };
+
+
+        // console.log("detailsAddPost", detailsAddPost)
         return (
             <>
                 <Form layout="vertical" ref={formRef} onFinish={onFinish}>
@@ -158,15 +233,40 @@ console.log("detailsAddPost",detailsAddPost)
                                                 </Heading>
                                                 <div className='d-flex align-items-center'>
                                                     <p className='mr10'>Đăng lên: </p>
-                                                    <Button
-                                                        color="primary"
-                                                        icon="facebook"
-                                                        size="small"
-                                                        className={stylesModule['button-fb']}
-                                                        onClick={() => onFinish(params.id)}
-                                                    >
-                                                        Fanpage
-                                                    </Button>
+                                                    {isEmpty(user?.userID) && (
+                                                        <div>
+                                                            <FacebookLogin
+                                                                appId={APP_ID_FB}
+                                                                autoLoad={false}
+                                                                fields="name,email,picture,birthday"
+                                                                scope="public_profile,pages_show_list,pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_messaging"
+                                                                callback={responseFacebook}
+                                                                render={(renderProps) => (
+                                                                    <Button
+                                                                        onClick={renderProps.onClick}
+                                                                        type="button"
+                                                                        size="small"
+                                                                        color="primary"
+                                                                    >
+                                                                        Login FB
+                                                                    </Button>
+                                                                )}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    {
+                                                        !isEmpty(user?.userID) && (
+                                                            <Button
+                                                                color="primary"
+                                                                icon="facebook"
+                                                                size="small"
+                                                                className={stylesModule['button-fb']}
+                                                                onClick={() => addFB(params.id)}
+                                                            >
+                                                                Fanpage
+                                                            </Button>
+                                                        )
+                                                    }
                                                 </div>
                                             </div>
                                             :
@@ -249,6 +349,7 @@ General.propTypes = {
     district: PropTypes.arrayOf(PropTypes.any),
     location: PropTypes.objectOf(PropTypes.any),
     detailsPost: PropTypes.objectOf(PropTypes.any),
+    user:  PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -263,6 +364,7 @@ General.defaultProps = {
     district: [],
     location: {},
     detailsPost: {},
+    user: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

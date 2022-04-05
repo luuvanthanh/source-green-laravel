@@ -80,19 +80,19 @@ const General = memo(
                                 <Pane className={classnames('col-lg-4', stylesModule['item-title'])}>
                                     <div style={{ display: 'block' }}>
                                         <h3 className={stylesModule?.title}>Số lượt like</h3>
-                                        <p className={stylesModule?.like}>{detailsAddPost?.postFacebookInfo?.quantity_reaction}</p>
+                                        <p className={stylesModule?.like}>{detailsAddPost?.postFacebookInfo?.quantity_reaction || 0}</p>
                                     </div>
                                 </Pane>
                                 <Pane className={classnames('col-lg-4', stylesModule['item-title'])}>
                                     <div style={{ display: 'block' }}>
                                         <h3 className={stylesModule?.title}>Số lượt share</h3>
-                                        <p className={stylesModule?.share}>{detailsAddPost?.postFacebookInfo?.quantity_share}</p>
+                                        <p className={stylesModule?.share}>{detailsAddPost?.postFacebookInfo?.quantity_share || 0}</p>
                                     </div>
                                 </Pane>
                                 <Pane className={classnames('col-lg-4', stylesModule['item-title'])}>
                                     <div style={{ display: 'block' }}>
                                         <h3 className={stylesModule?.title}>Số lượt comment</h3>
-                                        <p className={stylesModule?.comment}>{detailsAddPost?.postFacebookInfo?.quantity_comment}</p>
+                                        <p className={stylesModule?.comment}>{detailsAddPost?.postFacebookInfo?.quantity_comment || 0}</p>
                                     </div>
                                 </Pane>
                             </Pane>

@@ -1,77 +1,80 @@
 import { memo } from 'react';
 import PropTypes from 'prop-types';
-import TableCus from '@/components/CommonComponent/Table';
+import { Helper, variables } from '@/utils';
+import Table from '@/components/CommonComponent/Table';
 
 const Index = memo(({ dataLike }) => {
-    const header = () => {
-        const columns = [
-            {
-                title: 'STT ',
-                key: 'index',
-                width: 80,
-            },
-            {
-                title: 'Thời gian',
-                key: 'created_at',
-                className: 'min-width-150',
-                width: 150,
-                render: (record) => record?.created_at,
-            },
-            {
-                title: 'Trạng thái',
-                className: 'min-width-250',
-                key: 'reaction_type',
-                render: (record) => record?.reaction_type,
-            },
-            {
-                title: 'Họ và tên',
-                key: 'name',
-                className: 'min-width-150',
-                width: 150,
-                render: (record) => record?.full_name,
-            },
-            {
-                title: 'Số điện thoại',
-                key: 'phone',
-                className: 'min-width-150',
-                width: 150,
-            },
-            {
-                title: 'Email',
-                key: 'email',
-                className: 'min-width-150',
-                width: 150,
-            },
-        ];
-        return columns;
-    };
+  const header = () => {
+    const columns = [
+      {
+        title: 'STT ',
+        key: 'index',
+        width: 80,
+        render: (value, record, index) => index + 1,
+      },
+      {
+        title: 'Thời gian',
+        key: 'created_at',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Trạng thái',
+        className: 'min-width-100',
+        width: 100,
+        key: 'reaction_type',
+        render: (record) => record?.reaction_type,
+      },
+      {
+        title: 'Họ và tên',
+        key: 'name',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => record?.full_name,
+      },
+      {
+        title: 'Số điện thoại',
+        key: 'phone',
+        className: 'min-width-150',
+        width: 150,
+      },
+      {
+        title: 'Email',
+        key: 'email',
+        className: 'min-width-150',
+        width: 150,
+      },
+    ];
+    return columns;
+  };
 
-
-    
-    console.log("dataLike",dataLike)
-    return (
-        <>
-            <TableCus
-                className="content-vertical-top mb20"
-                columns={header}
-                dataSource={dataLike}
-                loading={false}
-                error={{}}
-                isError={false}
-                pagination={false}
-                rowKey="id"
-                scroll={{ x: '100%' }}
-            />
-        </>
-    );
+  return (
+    <>
+      <Table
+        columns={header()}
+        dataSource={dataLike}
+        pagination={false}
+        className="table-normal"
+        isEmpty
+        params={{
+          header: header(),
+          type: 'table',
+        }}
+        bordered
+        rowKey={(record) => record.id}
+        scroll={{ x: '100%' }}
+      />
+    </>
+  );
 });
 
 Index.propTypes = {
-    dataLike: PropTypes.arrayOf(PropTypes.any),
+  dataLike: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-    dataLike: [],
+  dataLike: [],
 };
 
 export default Index;

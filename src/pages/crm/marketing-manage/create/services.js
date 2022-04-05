@@ -447,7 +447,7 @@ export function removeFacebook(data = {}) {
     method: 'DELETE',
     parse: true,
     data: {
-      page_access_token: data.page_access_token,
+      ...data,
     }
   });
 }

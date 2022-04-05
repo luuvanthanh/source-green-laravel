@@ -1,73 +1,80 @@
 import { memo } from 'react';
 import PropTypes from 'prop-types';
-import TableCus from '@/components/CommonComponent/Table';
+import { Helper, variables } from '@/utils';
+import Table from '@/components/CommonComponent/Table';
 
 const Index = memo(({ dataComment }) => {
-    const header = () => {
-        const columns = [
-            {
-                title: 'STT ',
-                key: 'index',
-                width: 80,
-            },
-            {
-                title: 'Thời gian',
-                key: 'created_at',
-                className: 'min-width-150',
-                width: 150,
-                render: (record) => record?.created_at,
-                fixed: 'left',
-            },
-            {
-                title: 'Trạng thái',
-                className: 'min-width-250',
-                key: 'status',
-            },
-            {
-                title: 'Họ và tên',
-                key: 'name',
-                className: 'min-width-150',
-                width: 150,
-                render: (record) => record?.name,
-            },
-            {
-                title: 'Số điện thoại',
-                key: 'phone',
-                className: 'min-width-150',
-                width: 150,
-            },
-            {
-                title: 'Email',
-                key: 'email',
-                className: 'min-width-150',
-                width: 150,
-            },
-        ];
-        return columns;
-    };
-    return (
-        <>
-            <TableCus
-                className="content-vertical-top mb20"
-                columns={header}
-                dataSource={dataComment}
-                loading={false}
-                error={{}}
-                isError={false}
-                pagination={false}
-                rowKey="id"
-                scroll={{ x: '100%' }}
-            />
-        </>
-    );
+  const header = () => {
+    const columns = [
+      {
+        title: 'STT ',
+        key: 'index',
+        width: 80,
+        render: (value, record, index) => index + 1,
+      },
+      {
+        title: 'Thời gian',
+        key: 'created_at',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Họ và tên',
+        key: 'name',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => record?.full_name,
+      },
+      {
+        title: 'Nội dung comment',
+        className: 'min-width-250',
+        width: 250,
+        key: 'content',
+        render: (record) => record?.content,
+      },
+      {
+        title: 'Số điện thoại',
+        key: 'phone',
+        className: 'min-width-150',
+        width: 150,
+      },
+      {
+        title: 'Email',
+        key: 'email',
+        className: 'min-width-150',
+        width: 150,
+      },
+    ];
+    return columns;
+  };
+
+  return (
+    <>
+      <Table
+        columns={header()}
+        dataSource={dataComment}
+        pagination={false}
+        className="table-normal"
+        isEmpty
+        params={{
+          header: header(),
+          type: 'table',
+        }}
+        bordered
+        rowKey={(record) => record.id}
+        scroll={{ x: '100%' }}
+      />
+    </>
+  );
 });
 
 Index.propTypes = {
-    dataComment: PropTypes.arrayOf(PropTypes.any),
+  dataComment: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-    dataComment: [],
+  dataComment: [],
 };
 
 export default Index;

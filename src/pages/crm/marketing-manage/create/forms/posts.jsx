@@ -17,11 +17,11 @@ const Index = memo(() => {
   const {
     loading: { effects },
     posts,
-    user,
+    users,
   } = useSelector(({ loading, crmMarketingManageAdd }) => ({
     loading,
     posts: crmMarketingManageAdd.posts,
-    user: crmMarketingManageAdd.user,
+    users: crmMarketingManageAdd.user,
   }));
   const loading = effects[`crmMarketingManageAdd/GET_POSTS`];
   const dispatch = useDispatch();
@@ -31,35 +31,50 @@ const Index = memo(() => {
   const history = useHistory();
   const { pathname } = useLocation();
   const [pageCurrent, setPageCurrent] = useState({});
+  const [getToken, setGetToket] = useState({});
 
   const responseFacebook = (response) => {
     dispatch({
       type: 'crmMarketingManageAdd/GET_USER',
       payload: response,
     });
-    if(response){
-      localStorage.setItem('user', JSON.stringify(response));
-      sessionStorage.setItem('user', JSON.stringify(response));
-    }
   };
 
+
   useEffect(() => {
-    if (user?.userID) {
+    if (users?.userID) {
       dispatch({
-        type: 'crmMarketingManageAdd/GET_PAGES',
+        type: 'crmFBDevV1/GET_TOKEN',
         payload: {
-          user_access_token: user?.accessToken,
-          user_id: user?.userID,
+          user_access_token: users?.accessToken,
         },
         callback: (response) => {
           if (response) {
-            const firstPage = head(response.payload);
-            setPageCurrent(firstPage);
+            setGetToket(response);
           }
         },
       });
     }
-  }, [user?.userID]);
+  }, [users?.userID]);
+
+  useEffect(() => {
+    if (getToken?.user_access_token) {
+      dispatch({
+        type: 'crmFBDevV1/GET_PAGES',
+        payload: {
+          user_access_token: getToken?.user_access_token,
+          user_id: users?.userID,
+        },
+        callback: (response) => {
+          if (response) {
+            const firstPage = head(response.data);
+            setPageCurrent(firstPage);
+            sessionStorage.setItem('user', JSON.stringify(response.data));
+          }
+        },
+      });
+    }
+  }, [getToken?.user_access_token]);
 
   const onFinish = (values) => {
     dispatch({
@@ -89,9 +104,9 @@ const Index = memo(() => {
     });
   };
 
-  useEffect(() => {
-    responseFacebook();
-  }, []);
+  // useEffect(() => {
+  //   responseFacebook();
+  // }, []);
 
   useEffect(() => {
     mounted.current = true;
@@ -135,19 +150,19 @@ const Index = memo(() => {
         title: 'Lượt like',
         key: 'img',
         width: 100,
-        render: (record) => record?.postFacebookInfo?.quantity_reaction,
+        render: (record) => record?.postFacebookInfo?.quantity_reaction || 0,
       },
       {
         title: 'Lượt share',
         key: 'img',
         width: 100,
-        render: (record) => record?.postFacebookInfo?.quantity_share,
+        render: (record) => record?.postFacebookInfo?.quantity_share || 0,
       },
       {
         title: 'Lượt comment',
         key: 'img',
         width: 100,
-        render: (record) => record?.postFacebookInfo?.quantity_comment,
+        render: (record) => record?.postFacebookInfo?.quantity_comment || 0,
       },
       {
         title: 'Đăng lên',
@@ -157,7 +172,7 @@ const Index = memo(() => {
         render: (record) => (
           <div className={styles['list-button']}>
             <>
-              {isEmpty(user?.userID) && (
+              {isEmpty(users?.userID) && (
                 <div>
                   <FacebookLogin
                     appId={APP_ID_FB}
@@ -178,7 +193,7 @@ const Index = memo(() => {
                   />
                 </div>
               )}
-              {!isEmpty(user?.userID) && (
+              {!isEmpty(users?.userID) && (
                 <Button
                   color="primary"
                   icon="facebook"
