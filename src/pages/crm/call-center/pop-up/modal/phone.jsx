@@ -1,10 +1,11 @@
-import { Button } from 'antd';
-import React, { memo, useState } from 'react';
+import { Button, Form, Input } from 'antd';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import React, { memo, useState } from 'react';
 import styles from '../style.module.scss';
-import variablesModule from '../variables';
 
 const Phone = memo(({ handleOnClick }) => {
+  const [formRef] = Form.useForm();
   const [inputNumber, setInputNumber] = useState('');
 
   const phoneBtns = [];
@@ -13,9 +14,12 @@ const Phone = memo(({ handleOnClick }) => {
       <Button
         className={styles['phone-button']}
         onClick={(e) => {
-          if (inputNumber.length < 12) {
-            setInputNumber(inputNumber + e.target.value);
-          }
+          formRef.setFieldsValue({
+            phone: !isEmpty(formRef.getFieldValue().phone)
+              ? formRef.getFieldValue().phone + e.target.value
+              : e.target.value,
+          });
+          setInputNumber(formRef.getFieldValue().phone);
         }}
         value={item}
         key={item}
@@ -27,14 +31,19 @@ const Phone = memo(({ handleOnClick }) => {
 
   const callNumber = () => {
     if (handleOnClick) {
-      handleOnClick(variablesModule.STATUS.outbound, inputNumber, true);
+      handleOnClick(inputNumber);
       setInputNumber('');
+      formRef.resetFields();
     }
   };
 
   return (
     <>
-      <div className={styles['show-input']}>{inputNumber}</div>
+      <Form form={formRef} className={styles['show-input']}>
+        <Form.Item name="phone" onChange={() => setInputNumber(formRef.getFieldValue().phone)}>
+          <Input placeholder="Nhập số" />
+        </Form.Item>
+      </Form>
       <div className={styles.digits}>{phoneBtns}</div>
       <div className={styles['button-group']}>
         <div className={styles['button-item']}> </div>
@@ -47,7 +56,14 @@ const Phone = memo(({ handleOnClick }) => {
           <div
             className={styles['delete-number']}
             role="presentation"
-            onClick={() => setInputNumber(inputNumber.substr(0, inputNumber.length - 1))}
+            onClick={() => {
+              formRef.setFieldsValue({
+                phone:
+                  !isEmpty(formRef.getFieldValue().phone) &&
+                  formRef.getFieldValue().phone.slice(0, -1),
+              });
+              setInputNumber(formRef.getFieldValue().phone);
+            }}
           >
             <img src="/images/icon/delete.svg" alt="delete-number" />
           </div>

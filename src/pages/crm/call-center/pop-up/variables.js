@@ -6,7 +6,7 @@ const variablesModule = {
 
     accepted: 'ACCEPTED',
     rejected: 'REJECTED',
-    cancel: 'CANCEL',
+    canceled: 'CANCELED',
     bye: 'BYE',
     failed: 'FAILED',
     unavailable: 'UNAVAILABLE',

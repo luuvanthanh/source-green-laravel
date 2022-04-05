@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import styles from '../style.module.scss';
 import { handleAnswer, handleReject } from '../handleCallCenter';
 import variablesModule from '../variables';
+import { isEmpty } from 'lodash';
 
 function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
   const handleInboundAnswer = () => {
@@ -25,7 +26,7 @@ function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
       <div className={styles['layout-call']}>
         <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
         <div className={styles['avatar-item']}>
-          {infoFromInbound?.file_image ? (
+          {infoFromInbound?.file_image !== '[]' && !isEmpty(infoFromInbound?.file_image) ? (
             <img
               src={`${API_UPLOAD}${JSON.parse(infoFromInbound?.file_image)}`}
               alt="user-avatar"

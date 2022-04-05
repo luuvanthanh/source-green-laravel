@@ -4,6 +4,7 @@ export default {
   namespace: 'crmManagementCallParents',
   state: {
     data: [],
+    lead: [],
     pagination: {
       total: 0,
     },
@@ -28,6 +29,10 @@ export default {
       data: payload,
       pagination: payload.pagination,
     }),
+    SET_STATUS_LEAD: (state, { payload }) => ({
+      ...state,
+      lead: payload.parsePayload,
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -40,6 +45,20 @@ export default {
             pagination: response?.pagination,
           });
         }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STATUS_LEAD({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getStatusLead, payload);
+        yield saga.put({
+          type: 'SET_STATUS_LEAD',
+          payload: response,
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
