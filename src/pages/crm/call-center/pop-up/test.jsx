@@ -143,6 +143,10 @@ const Test = memo(() => {
     if (inboundStatus === variablesModule.STATUS.accepted) {
       setInboundStatusInfo(variablesModule.STATUS.accepted);
     }
+
+    if (inboundStatus === variablesModule.STATUS.bye) {
+      setInboundStatusInfo(variablesModule.STATUS.bye);
+    }
   }, [inboundStatus]);
 
   // Update trạng thái các state GỌI ĐI (OUT)
@@ -161,6 +165,10 @@ const Test = memo(() => {
 
     if (outboundStatus === variablesModule.STATUS.accepted) {
       setOutboundStatusInfo(variablesModule.STATUS.accepted);
+    }
+
+    if (outboundStatus === variablesModule.STATUS.bye) {
+      setOutboundStatusInfo(variablesModule.STATUS.bye);
     }
   }, [outboundStatus]);
 

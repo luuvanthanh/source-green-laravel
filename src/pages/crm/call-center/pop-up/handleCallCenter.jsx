@@ -76,16 +76,32 @@ const handleInboundCall = () => {
       session = s;
       session.type = 'inbound';
 
-      const sound = new Audio('/resources/iphone-ringtone.mp3');
+      const sound = new Audio('/resources/skype-ringtones.mp3');
       sound.loop = true;
       const soundPromise = sound.play();
-      if (soundPromise !== undefined) {
-        soundPromise
-          .then(() => {
-            sound.play();
-          })
-          .catch(() => {});
-      }
+
+      const soundPlay = () => {
+        if (soundPromise !== undefined) {
+          soundPromise
+            .then(() => {
+              sound.play();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const soundStop = () => {
+        if (soundPromise !== undefined) {
+          soundPromise
+            .then(() => {
+              sound.pause();
+              sound.currentTime = 0;
+            })
+            .catch(() => {});
+        }
+      };
+
+      soundPlay();
 
       session.on('accepted', () => {
         setInboundStatus('ACCEPTED');
@@ -102,30 +118,28 @@ const handleInboundCall = () => {
           playPromise.then(() => {}).catch(() => {});
         }
 
-        if (soundPromise !== undefined) {
-          soundPromise
-            .then(() => {
-              sound.pause();
-            })
-            .catch(() => {});
-        }
+        soundStop();
 
         console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
       });
       session.on('rejected', () => {
         setInboundStatus('REJECTED');
+        soundStop();
         console.log('%cTỪ CHỐI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('cancel', () => {
         setInboundStatus('CANCEL');
+        soundStop();
         console.log('%cHUỶ (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('failed', () => {
         setInboundStatus('FAILED');
+        soundStop();
         console.log('%cTHẤT BẠI (GỌI ĐẾN)', 'color: pink; font-weight: bold');
       });
       session.on('bye', () => {
         setInboundStatus('BYE');
+        soundStop();
         console.log('%cKẾT THÚC (GỌI ĐẾN)', 'color: red; font-weight: bold');
       });
 

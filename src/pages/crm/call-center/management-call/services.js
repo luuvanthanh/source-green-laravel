@@ -11,6 +11,7 @@ export function get(params = {}) {
         'customerLead.statusCareLatest.statusParentLead',
         'customerLead.statusLeadLatest',
         'customerLead.customerPotential.customerPotentialStatusCareLatest',
+        'historyCall',
       ]),
     },
   });
