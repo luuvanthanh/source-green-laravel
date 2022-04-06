@@ -579,14 +579,16 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
-                                'money' => $value['money']
+                                'money' => $value['money'],
+                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
                             ];
                             $totalMoneyMonth += $value['money'];
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
-                                'money' => 0
+                                'money' => 0,
+                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
                             ];
                         }
                         break;
@@ -596,7 +598,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 $fee[] = [
                                     'fee_id' => $feeTuiTion->Id,
                                     'fee_name' => $feeTuiTion->Name,
-                                    'money' => $value['money']
+                                    'money' => $value['money'],
+                                    'fee_id_crm'=>$feeTuiTion->FeeCrmId
                                 ];
                                 $totalMoneyMonth += $value['money'];
                             } else {
@@ -615,14 +618,16 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         $fee[] = [
                                             'fee_id' => $feeTuiTion->Id,
                                             'fee_name' => $feeTuiTion->Name,
-                                            'money' => $result
+                                            'money' => $result,
+                                            'fee_id_crm'=>$feeTuiTion->FeeCrmId
                                         ];
                                         break;
                                     default:
                                         $fee[] = [
                                             'fee_id' => $feeTuiTion->Id,
                                             'fee_name' => $feeTuiTion->Name,
-                                            'money' => $value['moneyMonth']
+                                            'money' => $value['moneyMonth'],
+                                            'fee_id_crm'=>$feeTuiTion->FeeCrmId
                                         ];
                                         $totalMoneyMonth += $value['moneyMonth'];
                                         break;
@@ -632,7 +637,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
-                                'money' => 0
+                                'money' => 0,
+                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
                             ];
                         }
 
@@ -647,14 +653,16 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
-                                'money' => $value['money']
+                                'money' => $value['money'],
+                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
                             ];
                             $totalMoneyMonth += $value['money'];
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
-                                'money' => 0
+                                'money' => 0,
+                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
                             ];
                         }
                         break;
@@ -668,14 +676,16 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
-                                'money' => $value['money']
+                                'money' => $value['money'],
+                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
                             ];
                             $totalMoneyMonth += $value['money'];
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
-                                'money' => 0
+                                'money' => 0,
+                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
                             ];
                         }
                         break;
