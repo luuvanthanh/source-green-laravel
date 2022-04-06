@@ -384,14 +384,16 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             CustomerPotentialTag::create($dataTag);
         }
 
-        $statusPotential = StatusParentPotential::where('id', $attributes['statusPotential'])->first();
-        $data = [
-            'status_parent_potential_id' => $statusPotential->id,
-            'customer_potential_id' => $customerPotential->id,
-        ];
-        CustomerPotentialStatusCare::create($data);
+        if (!empty($attributes['statusPotential'])) {
+            $statusPotential = StatusParentPotential::find($attributes['statusPotential']);
+            $data = [
+                'status_parent_potential_id' => $statusPotential->id,
+                'customer_potential_id' => $customerPotential->id,
+            ];
+            CustomerPotentialStatusCare::create($data);
+        }
 
-        return null;
+        return $customerPotential;
     }
 
     public function storeCareProgram($attributes)

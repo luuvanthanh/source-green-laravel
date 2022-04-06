@@ -11,6 +11,7 @@ use GGPHP\Crm\AdmissionRegister\Services\ParentInfoService;
 use GGPHP\Crm\AdmissionRegister\Services\StudentService;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -66,6 +67,17 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             });
         }
 
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->whereHas('studentInfo', function ($query) use ($attributes) {
+                $query->where('customer_lead_id', $attributes['customer_lead_id']);
+            });
+        }
+
+        if (isset($attributes['register_status'])) {
+            $status = AdmissionRegister::REGISTER_STATUS[$attributes['register_status']];
+            $this->model = $this->model->where('register_status', $status);
+        }
+
         if (!empty($attributes['birth_date'])) {
             $this->model = $this->model->whereHas('studentInfo', function ($query) use ($attributes) {
                 $query->where('birth_date', $attributes['birth_date']);
@@ -108,11 +120,16 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         \DB::beginTransaction();
         try {
             $admissionRegister = AdmissionRegister::create($attributes);
-            
             $customerPotential = CustomerPotential::where('customer_lead_id', $attributes['customer_lead_id'])->first();
 
             if (!is_null($customerPotential)) {
-                $statusParentPotential = StatusParentPotential::where('number', 3)->first();
+                $statusParentPotential = StatusParentPotential::where('number', StatusParentPotential::NUMBER_STATUS['ADMISSION_REGISTER'])->first();
+                $customerPotential->customerPotentialStatusCare()->create(['status_parent_potential_id' => $statusParentPotential->id]);
+            } else {
+                $attributes['id'] = $attributes['customer_lead_id'];
+                $customerPotential = resolve(CustomerLeadRepository::class)->moveToCustomerPotential($attributes);
+
+                $statusParentPotential = StatusParentPotential::where('number', StatusParentPotential::NUMBER_STATUS['ADMISSION_REGISTER'])->first();
                 $customerPotential->customerPotentialStatusCare()->create(['status_parent_potential_id' => $statusParentPotential->id]);
             }
 
