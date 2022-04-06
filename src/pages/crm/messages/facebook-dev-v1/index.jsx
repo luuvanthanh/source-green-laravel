@@ -67,6 +67,8 @@ const Index = memo(() => {
   const [notReply, setNotReply] = useState(false);
   const [checkPhone, setCheckPhone] = useState(false);
   const [checkNotPhone, setCheckNotPhone] = useState(false);
+  const [getToken, setGetToket] = useState({});
+
 
 
   const [searchParent, setSearchParent] = useState({
@@ -101,9 +103,26 @@ const Index = memo(() => {
   useEffect(() => {
     if (user?.userID) {
       dispatch({
-        type: 'crmFBDevV1/GET_PAGES',
+        type: 'crmFBDevV1/GET_TOKEN',
         payload: {
           user_access_token: user?.accessToken,
+        },
+        callback: (response) => {
+          console.log("ddd",response)
+          if (response) {
+            setGetToket(response);
+          }
+        },
+      });
+    }
+  }, [user?.userID]);
+  
+  useEffect(() => {
+    if (getToken?.user_access_token) {
+      dispatch({
+        type: 'crmFBDevV1/GET_PAGES',
+        payload: {
+          user_access_token: getToken?.user_access_token,
           user_id: user?.userID,
         },
         callback: (response) => {
@@ -113,7 +132,8 @@ const Index = memo(() => {
         },
       });
     }
-  }, [user?.userID]);
+  }, [getToken?.user_access_token]);
+
 
   useEffect(() => {
     if (pageCurrent.length > 0) {

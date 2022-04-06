@@ -260,7 +260,7 @@ class Index extends PureComponent {
         title: 'Cơ sở quan tâm',
         key: 'phone',
         width: 150,
-        // render: (record) => <Text size="normal">{get(record, 'branch.name')}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'customerLead.branch.name')}</Text>,
       },
       {
         title: 'Quận',

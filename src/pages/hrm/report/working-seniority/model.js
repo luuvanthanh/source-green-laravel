@@ -6,7 +6,7 @@ import * as categories from '@/services/categories';
     state: {
       data: [],
       divisions: [],
-      positions: [],
+      employees: [],
       pagination: {
         total: 0,
       },
@@ -21,15 +21,19 @@ import * as categories from '@/services/categories';
       INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
       SET_DATA: (state, { payload }) => ({
         ...state,
-      data: payload,
+        data: Object.entries(payload?.payload?.data)?.map(i => 
+          ({
+            ...i[1],
+          })),
+          pagination: payload?.payload
        }),
       SET_DIVISIONS: (state, { payload }) => ({
         ...state,
         divisions: payload.parsePayload,
       }),
-      SET_POSITIONS: (state, { payload }) => ({
+      SET_EMPLOYEES: (state, { payload }) => ({
         ...state,
-        positions: payload.parsePayload,
+        employees: payload.parsePayload,
       }),
       SET_BRANCHES: (state, { payload }) => ({
         ...state,
@@ -49,10 +53,12 @@ import * as categories from '@/services/categories';
       *GET_DATA({ payload }, saga) {
         try {
           const response = yield saga.call(services.get, payload);
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: response.parsePayload,
-          });
+          if (response) {
+            yield saga.put({
+              type: 'SET_DATA',
+              payload: response,
+            });
+          }
         } catch (error) {
           yield saga.put({
             type: 'SET_ERROR',
@@ -74,11 +80,11 @@ import * as categories from '@/services/categories';
           });
         }
       },
-      *GET_POSITIONS({ payload }, saga) {
+      *GET_EMPLOYEES({ payload }, saga) {
         try {
-          const response = yield saga.call(services.getPositions, payload);
+          const response = yield saga.call(services.getEmployees, payload);
           yield saga.put({
-            type: 'SET_POSITIONS',
+            type: 'SET_EMPLOYEES',
             payload: response,
           });
         } catch (error) {

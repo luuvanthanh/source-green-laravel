@@ -333,7 +333,7 @@ const General = memo(
                                   data={employees}
                                   placeholder="Chọn"
                                   type={variables.SELECT}
-                                  label="giáo viên phỏng vấn trẻ"
+                                  label="Giáo viên phỏng vấn trẻ"
                                 />
                               </Pane>
 

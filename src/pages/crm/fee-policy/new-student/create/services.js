@@ -1,4 +1,5 @@
 import request from '@/utils/requestCrm';
+import requestClover from '@/utils/requestLavarel';
 import { Helper } from '@/utils';
 
 export function add(data = {}) {
@@ -12,15 +13,20 @@ export function details(params = {}) {
   return request(`/v1/charge-students/${params?.id}`, {
     method: 'GET',
     params: {
-      include: Helper.convertIncludes(['studentInfo.parentInfo', 'admissionRegister.parentInfo,classType,schoolYear,studentInfo', 'schoolYear', 'tuition.paymentForm,tuition.fee']),
-    }
+      include: Helper.convertIncludes([
+        'studentInfo.parentInfo',
+        'admissionRegister.parentInfo,classType,schoolYear,studentInfo',
+        'schoolYear',
+        'tuition.paymentForm,tuition.fee',
+      ]),
+    },
   });
 }
 
 export function update(data = {}) {
   return request(`/v1/charge-students/${data?.id}`, {
     method: 'PUT',
-    data
+    data,
   });
 }
 
@@ -36,15 +42,13 @@ export function getStudents(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes([
-        'studentInfo', 'parentInfo'
-      ]),
+      include: Helper.convertIncludes(['studentInfo', 'parentInfo']),
     },
   });
 }
 
 export function getClass(params = {}) {
-  return request('/v1/class-types', {
+  return requestClover('/v1/class-types', {
     method: 'GET',
     params,
   });
@@ -67,5 +71,15 @@ export function getPayment(params = {}) {
   return request('/v1/payment-forms', {
     method: 'GET',
     params,
+  });
+}
+
+export function getBranches(params) {
+  return request(`/v1/branches`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
   });
 }
