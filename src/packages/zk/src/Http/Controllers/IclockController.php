@@ -14,6 +14,7 @@ class IclockController extends Controller
         $sn = request()->get('SN');
         $device = \GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper::where('SerialNumber', $sn)->first();
         $syncTime = $device->syncTime()->firstOrCreate([]);
+
         if (!$syncTime->ZkSyncId) {
             $modelSync = \ZK\Models\ZKSync::first();
         } else {
@@ -25,30 +26,6 @@ class IclockController extends Controller
         }
 
         $model = $modelSync->subject()->withTrashed()->first();
-
-        if (!$model) {
-            $return = 'OK';
-            if (in_array($modelSync->SubjectType, ['GGPHP\MagneticCard\Models\MagneticCard'])) {
-                $obj = json_decode($modelSync->Payload);
-                $employee = User::find($obj->EmployeeId);
-                $array = [
-                    $modelSync->id,
-                    $employee->FingerprintId,
-                    $employee->FullName,
-                    0,
-                    rand(9999, 5),
-                    0,
-                    14,
-                    1,
-                ];
-                $template = "C:%d:DATA USER PIN=%d\tName=%s\tPri=%d\tPasswd=%s\tCard=%s\tGrp=%d\tTZ=%d\r\n";
-                $return = vsprintf($template, $array);
-            } else {
-                $modelSync->delete();
-            }
-
-            return response($return, 200)->header('Content-Type', 'text/plain');
-        }
 
         $return = '';
 
@@ -82,7 +59,7 @@ class IclockController extends Controller
                 $return = vsprintf($template, $array);
                 break;
             case config('zk.subject_supporteds')['FINGERPRINT']:
-                if ($modelSync->action === 'deleted') {
+                if ($modelSync->Action === 'deleted') {
                     $array = [
                         $modelSync->id,
                         $model->employee->FingerprintId,
@@ -90,17 +67,89 @@ class IclockController extends Controller
                     ];
                     $template = "C:%d:DATA DEL_FP PIN=%d\tFID=%d\r\n";
                 } else {
-                    $template = "C:YUEOI:DATA DEL_FP PIN=%d\tFID=%d\r\nC:%d:DATA UPDATE FINGERTMP PIN=%d\tFID=%d\tSize=%d\tValid=%d\tTMP=%s\r\n";
+                    $template = "C:%d:DATA UPDATE FINGERTMP PIN=%d\tFID=%d\tSize=%d\tValid=%d\tTMP=%s\r\n";
+
                     $array = [
-                        $model->employee->FingerprintId,
-                        $model->FingerIndex,
                         $modelSync->id,
                         $model->employee->FingerprintId,
-                        $model->FingerIndex,
+                        (int) $model->FingerIndex,
                         (int) $model->Size,
                         $model->Valid,
                         (string) $model->Finger,
                     ];
+                }
+
+                $return = vsprintf($template, $array);
+                break;
+            case config('zk.subject_supporteds')['BIO']:
+                if ($device->IsBio) {
+                    if ($modelSync->Action === 'deleted') {
+                        $array = [
+                            $modelSync->id,
+                            $model->employee->FingerprintId,
+                            $model->Index,
+                        ];
+                        $template = "C:%d:DATA DELETE BIODATA PIN=%d\tType=%d\tNo=%d\r\n";
+                    } else {
+
+                        $template = "C:%d:DATA UPDATE BIODATA Pin=%d\tNo=%d\tIndex=%d\tValid=%d\tDuress=%d\tType=%d\tMajorVer=%d\tMinorVer=%d\tFormat=%d\tTmp=%s\r\n";
+                        $array = [
+                            $modelSync->id,
+                            $model->employee->FingerprintId,
+                            $model->No,
+                            $model->Index,
+                            $model->Valid,
+                            $model->Duress,
+                            $model->Type,
+                            $model->MajorVer,
+                            $model->MinorVer,
+                            $model->Format,
+                            (string) $model->Tmp,
+                        ];
+                    }
+
+                    $return = vsprintf($template, $array);
+                } else {
+                    $array = [
+                        $modelSync->id,
+                        $model->employee->FingerprintId,
+                        $model->employee->FullName,
+                        0,
+                        rand(9999, 5),
+                        14,
+                        1,
+                    ];
+                    $template = "C:%d:DATA USER PIN=%d\tName=%s\tPri=%d\tPasswd=%s\tGrp=%d\tTZ=%d\r\n";
+                    $return = vsprintf($template, $array);
+                }
+                break;
+            case config('zk.subject_supporteds')['MAGNETICCARD']:
+                if ($modelSync->Action === 'deleted') {
+                    $array = [
+                        $modelSync->id,
+                        $model->employee->FingerprintId,
+                        $model->employee->FullName,
+                        0,
+                        rand(9999, 5),
+                        0,
+                        14,
+                        1,
+                    ];
+
+                    $template = "C:%d:DATA USER PIN=%d\tName=%s\tPri=%d\tPasswd=%s\tCard=%s\tGrp=%d\tTZ=%d\r\n";
+                } else {
+                    $array = [
+                        $modelSync->id,
+                        $model->employee->FingerprintId,
+                        $model->employee->FullName,
+                        0,
+                        rand(9999, 5),
+                        (int) $model->Card,
+                        14,
+                        1,
+                    ];
+
+                    $template = "C:%d:DATA USER PIN=%d\tName=%s\tPri=%d\tPasswd=%s\tCard=%s\tGrp=%d\tTZ=%d\r\n";
                 }
 
                 $return = vsprintf($template, $array);
@@ -114,7 +163,6 @@ class IclockController extends Controller
 
     public function deviceGetCommand()
     {
-
         $dataFromClient = (array) request()->getContent();
         $data = preg_split('/\n/', $dataFromClient[0]);
 
@@ -196,21 +244,23 @@ class IclockController extends Controller
             'employee' => 'USER',
             'fingerprint' => 'FP',
             'operationLog' => 'OPLOG',
+            'biodata' => 'BIODATA',
         ];
 
         foreach ($data as $value) {
             if (empty($value)) {
                 continue;
             }
+
             foreach ($haystack as $str) {
                 if (preg_match("/^{$str}/i", $value, $m)) {
-                    $stringAttributes = trim(str_replace($str, '', $value));
+                    $stringAttributes = trim($value);
                     switch ($m[0]) {
                         case $haystack['employee']:
                             $arrayAttributes = preg_split('/\t/', $stringAttributes);
-                            $result = array_map(function ($item) {
+                            $result = array_map(function ($item) use ($str) {
                                 $pos = strpos($item, '=');
-                                return [substr($item, 0, $pos) => substr($item, $pos + 1)];
+                                return [trim(str_replace($str, '', substr($item, 0, $pos))) => substr($item, $pos + 1)];
                             }, array_values($arrayAttributes));
                             $attributes = \Arr::collapse($result);
 
@@ -230,23 +280,25 @@ class IclockController extends Controller
                                 break;
                             }
 
-                            //call service add magnetic card to user
+                            // //call service add magnetic card to user
                             \GGPHP\MagneticCard\Services\MagneticCardServices::addOrUpdate($employee, [
-                                'magneticCard' => !empty($magneticCard) ? (int) $magneticCard : 0,
-                                'magneticCardPatch' => !empty($magneticCardPatch) ? $magneticCardPatch : 0,
-                                'magneticCardToken' => !empty($magneticCard) ? \Hash::make($magneticCard) : '',
-                                'deviceId' => $device->Id,
-                                'card' => !empty($card) ? $card : '',
+                                'MagneticCard' => !empty($magneticCard) ? (int) $magneticCard : 0,
+                                'MagneticCardPatch' => !empty($magneticCardPatch) ? $magneticCardPatch : 0,
+                                'MagneticCardToken' => !empty($magneticCard) ? \Hash::make($magneticCard) : '',
+                                'DeviceId' => $device->Id,
+                                'Card' => !empty($card) ? $card : '',
                             ]);
 
                             break;
                         case $haystack['fingerprint']:
                             $arrayAttributes = preg_split('/\t/', $stringAttributes);
-                            $result = array_map(function ($item) {
+
+                            $result = array_map(function ($item) use ($str) {
                                 $pos = strpos($item, '=');
-                                return [substr($item, 0, $pos) => substr($item, $pos + 1)];
+                                return [trim(str_replace($str, '', substr($item, 0, $pos))) => substr($item, $pos + 1)];
                             }, array_values($arrayAttributes));
                             $attributes = \Arr::collapse($result);
+
                             //find employee
                             $employee = User::where('FingerprintId', $attributes['PIN'])->first();
 
@@ -267,6 +319,39 @@ class IclockController extends Controller
                         case $haystack['operationLog']:
                             $attributes = preg_split('/\t/', $stringAttributes);
                             break;
+                        case $haystack['biodata']:
+                            $arrayAttributes = preg_split('/\t/', $stringAttributes);
+
+                            $result = array_map(function ($item) use ($str) {
+                                $pos = strpos($item, '=');
+                                return [trim(str_replace($str, '', substr($item, 0, $pos))) => substr($item, $pos + 1)];
+                            }, array_values($arrayAttributes));
+                            $attributes = \Arr::collapse($result);
+                            // find employee
+                            $employee = User::where('FingerprintId', $attributes['Pin'])->first();
+
+                            if (!$employee) {
+                                break;
+                            }
+
+                            $employee->bios()->updateOrCreate(
+                                [
+                                    'EmployeeId' => $employee->Id,
+                                    'Index' => $attributes['Index']
+                                ],
+                                [
+                                    'Pin' => $attributes['Pin'],
+                                    'No' => $attributes['No'],
+                                    'Valid' => $attributes['Valid'],
+                                    'Duress' => $attributes['Duress'],
+                                    'Type' => $attributes['Type'],
+                                    'MajorVer' => $attributes['MajorVer'],
+                                    'MinorVer' => $attributes['MinorVer'],
+                                    'Format' => $attributes['Format'],
+                                    'Tmp' => $attributes['Tmp'],
+                                ]
+                            );
+                            break;
                         default:
                             break;
                     }
@@ -276,14 +361,13 @@ class IclockController extends Controller
             if (empty($attributes)) {
 
                 $attributes = array_slice(preg_split('/\t/', $value), 0, 4);
+                $keyAttributes = ['EmployeeId', 'AttendedAt', 'TrackingType', 'Type'];
 
                 if (count($attributes) < 4) {
                     continue;
                 }
 
-                $keyAttributes = ['EmployeeId', 'AttendedAt', 'TrackingType', 'Type'];
                 $attributes = array_combine($keyAttributes, $attributes);
-
                 $employee = User::where('FingerprintId', (int) $attributes['EmployeeId'])->first();
 
                 if (!$employee) {
@@ -297,6 +381,7 @@ class IclockController extends Controller
                 }
 
                 $fields['Type'] = \GGPHP\Timekeeping\Models\Timekeeping::TYPE_COLLECTION[$fields['Type']];
+
                 \GGPHP\Timekeeping\Services\UserAttendence::attend($employee, array_merge(['DeviceId' => $device->Id], $fields));
             }
         }

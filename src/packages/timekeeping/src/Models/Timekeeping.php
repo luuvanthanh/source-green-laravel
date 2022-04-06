@@ -25,6 +25,7 @@ class Timekeeping extends UuidModel
         '1' => 'FINGERPRINT',
         '2' => 'CARD',
         '4' => 'CARD',
+        '15' => 'BIO'
     ];
 
     /**

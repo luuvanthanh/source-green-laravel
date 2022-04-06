@@ -71,7 +71,7 @@ return [
     |
      */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Ho_Chi_Minh',
 
     /*
     |--------------------------------------------------------------------------
@@ -228,6 +228,7 @@ return [
         GGPHP\Tariff\ConfigContent\Providers\ConfigContentServiceProvider::class,
         GGPHP\ChildDevelop\TestSemester\Providers\TestSemesterServiceProvider::class,
         GGPHP\Tariff\PaymentPlan\Providers\PaymentPlanServiceProvider::class,
+        GGPHP\Bio\Providers\BioServiceProvider::class,
     ],
 
     /*
