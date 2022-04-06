@@ -7,11 +7,13 @@ use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadAccountRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateEmployeeAssignmentRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\UpdateCustomerLeadRequest;
+use GGPHP\Crm\CustomerLead\Imports\CustomerLeadImport;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\StatusLead;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerLeadController extends Controller
 {
@@ -181,5 +183,12 @@ class CustomerLeadController extends Controller
         $customerLead = $this->customerLeadRepository->customerByPhone($phone);
 
         return $this->success($customerLead, trans('lang::messages.common.getInfoSuccess'));
+    }
+
+    public function importExcelCustomerLead()
+    {
+        Excel::import(new CustomerLeadImport(), request()->file('file'));
+
+        return $this->success(['data' =>  'Import thành công'], trans('lang::messages.common.createSuccess'));
     }
 }

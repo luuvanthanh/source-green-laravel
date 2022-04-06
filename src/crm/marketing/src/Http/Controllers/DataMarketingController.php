@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use GGPHP\Crm\Marketing\Http\Requests\CreateDataMarketingRequest;
 use GGPHP\Crm\Marketing\Http\Requests\MoveLeadRequest;
 use GGPHP\Crm\Marketing\Http\Requests\UpdateDataMarketingRequest;
+use GGPHP\Crm\Marketing\Imports\DataMarketingImport;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
 use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingRepository;
-
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DataMarketingController extends Controller
 {
@@ -168,5 +169,12 @@ class DataMarketingController extends Controller
         $mergeDataMarketing = $this->dataMarketingRepository->mergeDataMarketing($attributes);
 
         return $this->success($mergeDataMarketing, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
+
+    public function importExcelDataMarketing()
+    {
+        Excel::import(new DataMarketingImport(), request()->file('file'));
+
+        return $this->success(['data' =>  'Import thành công'], trans('lang::messages.common.createSuccess'));
     }
 }

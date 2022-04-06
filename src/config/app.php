@@ -196,6 +196,7 @@ return [
         GGPHP\Crm\SsoAccount\Providers\SsoAccountServiceProvider::class,
         GGPHP\Crm\Fee\Providers\FeeServiceProvider::class,
         GGPHP\Crm\CallCenter\Providers\CallCenterServiceProvider::class,
+        
     ],
 
     /*
@@ -247,6 +248,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Workflow' => ZeroDaHero\LaravelWorkflow\Facades\WorkflowFacade::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];
