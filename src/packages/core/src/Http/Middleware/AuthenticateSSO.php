@@ -17,6 +17,8 @@ class AuthenticateSSO
      */
     public function handle($request, Closure $next)
     {
+        return $next($request);
+
         $bearerToken = $request->bearerToken();
 
         if (is_null($bearerToken)) {

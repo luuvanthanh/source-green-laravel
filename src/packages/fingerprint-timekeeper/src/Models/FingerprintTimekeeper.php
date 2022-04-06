@@ -25,7 +25,11 @@ class FingerprintTimekeeper extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Name', 'SerialNumber', 'Ip', 'Port', 'Status',
+        'Name', 'SerialNumber', 'Ip', 'Port', 'Status', 'IsBio'
+    ];
+
+    protected $casts = [
+        'IsBio' => 'boolean'
     ];
 
     /**

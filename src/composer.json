@@ -113,7 +113,8 @@
             "GGPHP\\DocumentManagement\\": "packages/document-management/src",
             "GGPHP\\Tariff\\ConfigContent\\": "tariff/config-content/src",
             "GGPHP\\ChildDevelop\\TestSemester\\": "child-develop/test-semester/src",
-            "GGPHP\\Tariff\\PaymentPlan\\": "tariff/payment-plan/src"
+            "GGPHP\\Tariff\\PaymentPlan\\": "tariff/payment-plan/src",
+            "GGPHP\\Bio\\": "packages/bio/src/"
         },
         "classmap": [
             "database/seeds",
