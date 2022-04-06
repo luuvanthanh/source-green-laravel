@@ -84,8 +84,8 @@ const Index = memo(() => {
       ...omit(values, 'month'),
       month: Number(Helper.getDate(values.month, 'M')),
       year: Number(Helper.getDate(values.month, variables.DATE_FORMAT.YEAR)),
-      fromDate: moment(fromDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
-      toDate: moment(toDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
+      fromDate: fromDate === null ? null : moment(fromDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
+      toDate: toDate === null ? null : moment(toDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
       menuType: 'STUDENT',
       menuMeals: menuMeals.map((item) => ({
         ...omit(item, 'timeline', 'isAdd', 'originId'),
@@ -147,6 +147,24 @@ const Index = memo(() => {
             setFromDate(response.fromDate);
             setToDate(response.toDate);
             setWeeksKitchen(weeks);
+          }
+        },
+      });
+    });
+  };
+
+  const onTime = () => {
+    formRef.current.validateFields().then((values) => {
+      dispatch({
+        type: 'kitchenMenusCreate/GET_TIMETABLE_FEES',
+        payload: {
+          month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+          year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+        },
+        callback: (response) => {
+          if (response) {
+            setFromDate(response.fromDate);
+            setToDate(response.toDate);
           }
         },
       });
@@ -227,7 +245,7 @@ const Index = memo(() => {
       return r;
     }, []);
   };
-
+  
   useEffect(() => {
     if (query.id) {
       dispatch({
@@ -237,8 +255,8 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            setFromDate(response.fromDate);
-            setToDate(response.toDate);
+            setFromDate(moment(response.fromDate).format('DD/MM/YYYY'));
+            setToDate(moment(response.toDate).format('DD/MM/YYYY'));
             const result = convertMenuMeal(response?.menuMeals)
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({
@@ -272,8 +290,8 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            setFromDate(response.fromDate);
-            setToDate(response.toDate);
+            setFromDate(moment(response.fromDate).format('DD/MM/YYYY'));
+            setToDate(moment(response.toDate).format('DD/MM/YYYY'));
             const result = convertMenuMeal(response?.menuMeals)
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({
@@ -641,8 +659,8 @@ const Index = memo(() => {
         payload,
         callback: (response) => {
           if (response) {
-            setFromDate(response.fromDate);
-            setToDate(response.toDate);
+            setFromDate(moment(response.fromDate).format('DD/MM/YYYY'));
+            setToDate(moment(response.toDate).format('DD/MM/YYYY'));
             const data = response?.menuMeals?.map((item) => {
               const fromTimeString = item.fromTime.split('T');
               const toTimeString = item.toTime.split('T');
@@ -788,6 +806,7 @@ const Index = memo(() => {
                         <FormItem
                           label="Thời gian"
                           name="month"
+                          onClick={onTime}
                           type={variables.MONTH_PICKER}
                           rules={[variables.RULES.EMPTY]}
                         />

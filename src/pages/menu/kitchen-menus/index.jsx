@@ -119,20 +119,26 @@ const Index = memo(() => {
     [pagination],
   );
 
-  const changeFilterDebouce = debounce((name, value) => {
+  const changeFilterDebouce = debounce(() => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+    }));
+  }, 300);
+
+  const changeFilter = () => (value) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      ClassTypeId: value,
+    }));
+  };
+
+  const changeMonthFilter = (name) => (value) => {
+    changeFilterDebouce(name, value);
     setSearch((prevSearch) => ({
       ...prevSearch,
       Month: moment(value).startOf('month').format('MM'),
       Year: Helper.getDate(value, variables.DATE_FORMAT.YEAR),
     }));
-  }, 300);
-
-  const changeFilter = (name) => (value) => {
-    changeFilterDebouce(name, value);
-  };
-
-  const changeMonthFilter = (name) => (value) => {
-    changeFilterDebouce(name, value);
   };
 
   useEffect(() => {
