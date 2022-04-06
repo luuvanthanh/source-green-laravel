@@ -114,7 +114,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $columnBasicSalaryAndAllowance = [];
         $columnIncurredAllowance = [];
 
-        $employees = User::where('Status', User::STATUS['WORKING'])->get();
+        $employees = User::with(['workHours' => function ($query) use ($startDate, $endDate) {
+            $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
+        }])->where('Status', User::STATUS['WORKING'])->get();
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
 

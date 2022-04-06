@@ -15,4 +15,15 @@ class User extends CoreUser
     {
         return $this->hasMany(\GGPHP\Timekeeping\Models\Timekeeping::class, 'EmployeeId');
     }
+    public function bios()
+    {
+        return $this->hasMany(\GGPHP\Bio\Models\Bio::class, 'EmployeeId');
+    }
+    /**
+     * Define relations magneticCards
+     */
+    public function magneticCards()
+    {
+        return $this->hasMany(\GGPHP\MagneticCard\Models\MagneticCard::class, 'EmployeeId')->withTrashed();
+    }
 }

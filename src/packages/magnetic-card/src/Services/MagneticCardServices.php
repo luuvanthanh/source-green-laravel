@@ -1,4 +1,5 @@
 <?php
+
 namespace GGPHP\MagneticCard\Services;
 
 class MagneticCardServices
@@ -11,7 +12,7 @@ class MagneticCardServices
     public static function addOrUpdate($user, $attributes)
     {
         // find or create role admin
-        $card = $user->magneticCards()->where(['EmployeeId' => $user->Id, 'MagneticCardPatch' => $attributes['magneticCardPatch']])->first();
+        $card = $user->magneticCards()->where(['EmployeeId' => $user->Id, 'MagneticCardPatch' => $attributes['MagneticCardPatch']])->first();
 
         if ($card || count($user->magneticCards) > 0) {
             return;
