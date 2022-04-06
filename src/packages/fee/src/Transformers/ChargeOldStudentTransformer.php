@@ -8,6 +8,7 @@ use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use GGPHP\Fee\Models\ChargeStudent;
 use GGPHP\Fee\Models\Fee;
 use Illuminate\Support\Facades\Route;
 
@@ -19,12 +20,21 @@ use Illuminate\Support\Facades\Route;
 class ChargeOldStudentTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['student', 'tuition', 'schoolYear'];
+    protected $availableIncludes = ['student', 'tuition', 'schoolYear', 'detailPaymentAccountant'];
     protected $defaultIncludes = [];
 
     public function customAttributes($model): array
     {
         $attributes = [];
+        $route = Route::currentRouteName();
+
+        if ($route == 'accountant.charge-old-students') {
+
+            if (!empty(request()->month)) {
+                $param = Carbon::parse(request()->month)->format('Y-m');
+                $attributes['ExpectedToCollectMoney'] = $this->dataChargeStudentByMonth($param, $model);
+            }
+        }
 
         return $attributes;
     }
@@ -65,5 +75,23 @@ class ChargeOldStudentTransformer extends BaseTransformer
         }
 
         return $this->item($chargeOldStudent->student, new StudentTransformer, 'Student');
+    }
+
+    public function dataChargeStudentByMonth($param, $model)
+    {
+        $collection = collect($model->ExpectedToCollectMoney);
+        $expectedToCollectMoney = $collection->filter(function ($value, $key) use ($param) {
+
+            if (!empty($value['month'])) {
+                return $value['month'] == $param;
+            }
+        });
+
+        return $expectedToCollectMoney->all();
+    }
+
+    public function includeDetailPaymentAccountant(ChargeOldStudent $chargeOldStudent)
+    {
+        return $this->collection($chargeOldStudent->detailPaymentAccountant, new DetailPaymentAccountantTransformer, 'DetailPaymentAccountant');
     }
 }
