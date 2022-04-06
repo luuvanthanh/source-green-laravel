@@ -70,6 +70,12 @@ class ClassTypeRepositoryEloquent extends CoreRepositoryEloquent implements Clas
             $this->model = $this->model->where('ClassTypeCrmId', null);
         }
 
+        if (!empty($attributes['branchId'])) {
+            $this->model = $this->model->whereHas('classes', function ($query) use ($attributes) {
+                $query->where('BranchId', $attributes['branchId']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $fee = $this->paginate($attributes['limit']);
         } else {
