@@ -2,6 +2,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import { Form } from 'antd';
 import classnames from 'classnames';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { memo } from 'react';
 import Timecode from 'react-timecode';
@@ -15,7 +16,6 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) 
 
   const handleOutbound = () => {
     if (handleOnClick) {
-      // handleOnClick(variablesModule.STATUS.idle, '', false);
       handleOnClick(formRef.getFieldValue().content);
       handleHangup();
     }
@@ -27,7 +27,9 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) 
         <p className={styles['call-type']}>CUỘC GỌI ĐI</p>
         {/* INFO */}
         <div className={styles['avatar-item']}>
-          {infoFromOutbound?.file_image ? (
+          {!isEmpty(infoFromOutbound?.file_image) &&
+          infoFromOutbound?.file_image &&
+          infoFromOutbound?.file_image !== '[]' ? (
             <img
               src={`${API_UPLOAD}${JSON.parse(infoFromOutbound?.file_image)}`}
               alt="user-avatar"
@@ -51,10 +53,15 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) 
           </Timer>
         )}
 
-        {/* STATUS */}
-        {outboundStatusInfo !== variablesModule.STATUS.accepted && (
-          <p className={styles['call-status']}>Đang kết nối</p>
+        {outboundStatusInfo === variablesModule.STATUS.bye && (
+          <p className={styles['call-status']}>Đã kết thúc</p>
         )}
+
+        {/* STATUS */}
+        {outboundStatusInfo !== variablesModule.STATUS.accepted &&
+          outboundStatusInfo !== variablesModule.STATUS.bye && (
+            <p className={styles['call-status']}>Đang kết nối</p>
+          )}
       </div>
       <Form className={styles['form-main']} form={formRef}>
         <FormItem
