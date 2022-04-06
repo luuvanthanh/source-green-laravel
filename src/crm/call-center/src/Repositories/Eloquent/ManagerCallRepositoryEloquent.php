@@ -119,12 +119,16 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
         if (!empty($attributes['search'])) {
             $this->model = $this->model->whereHas('customerLead', function ($query) use ($attributes) {
-                $query->whereLike('phone', $attributes['search'])->orWhereLike('other_phone', $attributes['search']);
-                $query->orWhereLike('full_name', $attributes['search']);
+                $query->where(function ($query) use ($attributes) {
+                    $query->orWhereLike('phone', $attributes['search'])->orWhereLike('other_phone', $attributes['search']);
+                    $query->orWhereLike('full_name', $attributes['search']);
+                });
             })->with([
                 'customerLead' => function ($query) use ($attributes) {
-                    $query->whereLike('phone', $attributes['search'])->orWhereLike('other_phone', $attributes['search']);
-                    $query->orWhereLike('full_name', $attributes['search']);
+                    $query->where(function ($query) use ($attributes) {
+                        $query->orWhereLike('phone', $attributes['search'])->orWhereLike('other_phone', $attributes['search']);
+                        $query->orWhereLike('full_name', $attributes['search']);
+                    });
                 }
             ]);
         }
@@ -134,15 +138,7 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
         }
 
         if (!empty($attributes['call_times'])) {
-            $this->model = $this->model->where('call_times', $this->model()::CALLTIME[$attributes['call_times']]);
-        }
-
-        if (!empty($attributes['call_times'])) {
-            if ($attributes['call_times'] == 'FIRST') {
-                $this->model = $this->model->where('call_times', null);
-            } else {
-                $this->model = $this->model->where('call_times', ManagerCall::STATUS['call_times'] - 1);
-            }
+            $this->model = $this->model->where('call_times', ManagerCall::CALLTIME[$attributes['call_times']]);
         }
 
         if (!empty($attributes['limit'])) {
