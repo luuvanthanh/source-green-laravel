@@ -2884,7 +2884,7 @@ export default [
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/tiep-thi/quan-ly-chien-dich-marketing/:id/chi-tiet/:detailId/chi-tiet',
+            path: '/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/:id/chi-tiet-bai-viet',
             component: './crm/marketing-manage/create/add-posts',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],

@@ -84,8 +84,8 @@ const Index = memo(() => {
       ...omit(values, 'month'),
       month: Number(Helper.getDate(values.month, 'M')),
       year: Number(Helper.getDate(values.month, variables.DATE_FORMAT.YEAR)),
-      fromDate: Helper.getDate(fromDate, variables.DATE_FORMAT.DATE_AFTER),
-      toDate: Helper.getDate(toDate, variables.DATE_FORMAT.DATE_AFTER),
+      fromDate: moment(fromDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
+      toDate: moment(toDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
       menuType: 'STUDENT',
       menuMeals: menuMeals.map((item) => ({
         ...omit(item, 'timeline', 'isAdd', 'originId'),

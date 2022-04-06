@@ -34,7 +34,7 @@ const Students = memo(() => {
     !!mounted?.current && setFunction && setFunction(value);
   const {
     loading: { effects },
-    student,
+    details,
     relationships,
   } = useSelector(({ loading, crmSaleLeadAdd }) => ({
     loading,
@@ -192,7 +192,7 @@ const Students = memo(() => {
                               let file = {};
                               const { data } = form.getFieldsValue();
                               const itemData = data?.find((item, indexWater) => indexWater === index);
-                              file = student.find((item) => item.id === itemData?.id);
+                              file = details?.studentInfo?.find((item) => item?.id === itemData?.id);
                               return (
                                 <Pane
                                   key={field.key}
@@ -277,7 +277,7 @@ const Students = memo(() => {
                                     </Pane>
                                   </Pane>
 
-                                  {fields.length > 0 && (
+                                  {fields.length > 0 && !file?.admissionRegister?.length > 0 &&  (
                                     <DeleteOutlined
                                       className="position-absolute"
                                       style={{ top: 20, right: 20 }}

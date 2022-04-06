@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -40,10 +41,11 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ medicalStudentProblem, loading, user, HRMWorkingSeniority }) => ({
     loading,
+    pagination: HRMWorkingSeniority.pagination,
     data: HRMWorkingSeniority.data,
     divisions: HRMWorkingSeniority.divisions,
     branches: HRMWorkingSeniority.branches,
-    positions: HRMWorkingSeniority.positions,
+    employees: HRMWorkingSeniority.employees,
     error: medicalStudentProblem.error,
     defaultBranch: user.defaultBranch,
 });
@@ -140,7 +142,7 @@ class Index extends PureComponent {
             payload: {},
         });
         dispatch({
-            type: 'HRMWorkingSeniority/GET_POSITIONS',
+            type: 'HRMWorkingSeniority/GET_EMPLOYEES',
             payload: {},
         });
     };
@@ -218,13 +220,12 @@ class Index extends PureComponent {
         );
     };
 
-    debouncedSearchDateRank = debounce((startDate, endDate) => {
+    debouncedSearch = debounce((value, type) => {
         this.setStateData(
             (prevState) => ({
                 search: {
                     ...prevState.search,
-                    startDate,
-                    endDate,
+                    [`${type}`]: value,
                     page: variables.PAGINATION.PAGE,
                     limit: variables.PAGINATION.PAGE_SIZE,
                 },
@@ -250,7 +251,7 @@ class Index extends PureComponent {
         const {
             location: { query },
         } = this.props;
-        return Helper.paginationNet({
+        return Helper.paginationLavarel({
             pagination,
             query,
             callback: (response) => {
@@ -273,22 +274,22 @@ class Index extends PureComponent {
           {
             title: 'Mã NV',
             key: 'code',
-            render: (record) => <Text size="normal">{record?.employee?.code}</Text>,
+            render: (record) => <Text size="normal">{record?.employeeCode}</Text>,
           },
           {
             title: 'Tên nhân viên',
             key: 'name',
-            render: (record) =><Text size="normal">{record?.employee?.fullName}</Text>,
+            render: (record) => <Text size="normal">{record?.employeeName}</Text>,
           },
           {
             title: 'Chức vụ',
             key: 'position',
-            render: (record) =><Text size="normal">{record?.position?.name}</Text>,
+            render: (record) => <Text size="normal">{record?.position}</Text>,
           },
           {
             title: 'Cơ sở',
             key: 'division',
-            render: (record) => <Text size="normal">{record?.branch?.name}</Text>,
+            render: (record) => <Text size="normal">{record?.branch}</Text>,
           },
           {
             title: 'Thâm niên công tác',
@@ -314,6 +315,24 @@ class Index extends PureComponent {
         return columns;
     };
 
+    onChangeExcel = () => {
+        const {
+            defaultBranch,
+            location: { query },
+        } = this.props;
+        Helper.exportExcel(
+            `/v1/export-excel-working-seniority`,
+            {
+                employeeId: query?.employeeId,
+                number_year_work_from: query?.number_year_work_from,
+                number_year_work_to: query?.number_year_work_to,
+                branchId: query?.branchId || defaultBranch?.id,
+                date: query?.date ? moment(query.date) : moment().format(variables.DATE_FORMAT.DATE_AFTER),
+            },
+            `Baocaothamniencongtac.xlsx`,
+        );
+    };
+
     handleCancel = () => this.setStateData({ visible: false });
 
     render() {
@@ -321,6 +340,7 @@ class Index extends PureComponent {
             data,
             error,
             branches,
+            employees,
             pagination,
             match: { params },
             loading: { effects },
@@ -334,6 +354,9 @@ class Index extends PureComponent {
                     {/* FORM SEARCH */}
                     <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
                         <Text color="dark">Báo cáo thâm niên công tác</Text>
+                        <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+                            Xuất Excel
+                        </Button>
                     </div>
                     <div className={classnames(styles['block-table'])}>
                         <Form
@@ -367,10 +390,30 @@ class Index extends PureComponent {
                                 <div className="col-lg-3">
                                     <FormItem
                                         data={ dataTime(100)}
-                                        name="number_year_work"
-                                        placeholder="Chọn số năm làm việc"
-                                        onChange={(event) => this.onChangeSelect(event, 'number_year_work')}
+                                        name="number_year_work_from"
+                                        placeholder="Chọn số năm làm việc từ"
+                                        onChange={(event) => this.onChangeSelect(event, 'number_year_work_from')}
                                         type={variables.SELECT}
+                                    />
+                                </div>
+                                <div className="col-lg-3">
+                                    <FormItem
+                                        data={dataTime(100)}
+                                        name="number_year_work_to"
+                                        placeholder="Chọn số năm làm việc đến"
+                                        onChange={(event) => this.onChangeSelect(event, 'number_year_work_to')}
+                                        type={variables.SELECT}
+                                    />
+                                </div>
+                                <div className="col-lg-3">
+                                    <FormItem
+                                        data={[{ id: null, fullName: 'Chọn tất cả nhân viên' }, ...employees]}
+                                        name="employeeId"
+                                        options={['id', 'fullName']}
+                                        placeholder="Chọn nhân viên"
+                                        onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                                        type={variables.SELECT}
+                                        allowClear={false}
                                     />
                                 </div>
                             </div>
@@ -406,6 +449,7 @@ Index.propTypes = {
     data: PropTypes.arrayOf(PropTypes.any),
     pagination: PropTypes.objectOf(PropTypes.any),
     loading: PropTypes.objectOf(PropTypes.any),
+    employees: PropTypes.arrayOf(PropTypes.any),
     dispatch: PropTypes.objectOf(PropTypes.any),
     location: PropTypes.objectOf(PropTypes.any),
     branches: PropTypes.arrayOf(PropTypes.any),
@@ -419,6 +463,7 @@ Index.defaultProps = {
     pagination: {},
     loading: {},
     dispatch: {},
+    employees: [],
     location: {},
     branches: [],
     error: {},

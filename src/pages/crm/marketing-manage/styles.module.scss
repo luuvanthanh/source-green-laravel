@@ -178,13 +178,47 @@
   right: 20px;
   margin-top: 10px;
   background-color: green !important;
-  border: none !important; 
+  border: none !important;
 }
 
 .genneral-btn-link:focus {
   right: 20px;
   margin-top: 10px;
   color: black !important;
-  background-color: #FF0000 !important;
-  border: none !important; 
+  background-color: #ff0000 !important;
+  border: none !important;
+}
+
+.item-title {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  .title {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    color: #7a7e84;
+  }
+  .like {
+    text-align: center;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 40px;
+    color: #00a1e7;
+  }
+  .share {
+    text-align: center;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 40px;
+    color: #4760bf;
+  }
+  .comment {
+    text-align: center;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 40px;
+    color: #27a600;
+  }
 }

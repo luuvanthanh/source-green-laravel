@@ -7,6 +7,7 @@ export default {
     students: [],
     classes: [],
     yearsSchool: [],
+    branches: [],
     paymentForm: [],
     fees: [],
     error: {
@@ -24,6 +25,10 @@ export default {
           ...payload,
         },
       },
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -75,6 +80,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
     *UPDATE({ payload, callback }, saga) {

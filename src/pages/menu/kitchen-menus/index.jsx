@@ -35,7 +35,8 @@ const Index = memo(() => {
     branchId: query.branchId || defaultBranch?.id,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    date: query?.date || moment(),
+    Month: query?.Month ? query?.Month : moment().startOf('month').format('MM'),
+    Year: query?.Year ? query?.Year : Helper.getDate(moment(), variables.DATE_FORMAT.YEAR),
   });
 
   const columns = [
@@ -121,7 +122,8 @@ const Index = memo(() => {
   const changeFilterDebouce = debounce((name, value) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
-      [name]: value,
+      Month: moment(value).startOf('month').format('MM'),
+      Year: Helper.getDate(value, variables.DATE_FORMAT.YEAR),
     }));
   }, 300);
 
@@ -130,13 +132,7 @@ const Index = memo(() => {
   };
 
   const changeMonthFilter = (name) => (value) => {
-    const totalDay = moment(value).daysInMonth();
-    changeFilterDebouce(
-      name,
-      moment(value)
-        .endOf('months')
-        .subtract(totalDay / 2, 'days'),
-    );
+    changeFilterDebouce(name, value);
   };
 
   useEffect(() => {
@@ -148,7 +144,8 @@ const Index = memo(() => {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          date: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
+          Month: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_MONTH),
+          Year: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
         },
         variables.QUERY_STRING,
       )}`,

@@ -148,7 +148,7 @@ const Index = memo(({ classId, branchId }) => {
       ),
     },
   ];
-
+console.log("listAttendancesByStatus",listAttendancesByStatus)
   const cancelModal = () => {
     setVisible(false);
     setSearch({

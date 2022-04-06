@@ -4,6 +4,7 @@ import { connect, withRouter } from 'umi';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import { useDispatch } from 'dva';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -17,8 +18,9 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   details: crmSaleAdmissionAdd.details,
 });
 const General = memo(
-  ({ loading: { effects }, details }) => {
+  ({ loading: { effects }, details, match: { params } }) => {
     const formRef = useRef();
+    const dispatch = useDispatch();
     const mounted = useRef(false);
     const loadingSubmit = "";
     const loading = effects[``];
@@ -36,6 +38,15 @@ const General = memo(
         });
       }
     }, [details.id]);
+
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'crmSaleAdmissionAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, [params.id]);
 
 
     const header = () => {
@@ -236,6 +247,7 @@ const General = memo(
 );
 
 General.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   // error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
@@ -244,6 +256,7 @@ General.propTypes = {
 General.defaultProps = {
   loading: {},
   details: {},
+  match: {},
   // error: {},
 };
 

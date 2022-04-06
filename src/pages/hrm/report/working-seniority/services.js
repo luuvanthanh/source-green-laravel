@@ -1,17 +1,15 @@
 import request from '@/utils/requestLavarel';
-import { omit } from 'lodash';
-import { Helper, variables } from '@/utils';
+import {  variables } from '@/utils';
 
 export function get(params = {}) {
-  return request('/v1/labours-contracts', {
+  return request('/v1/report-working-seniority', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
-      limit: params.limit,
-      page: params.page,
-      include: Helper.convertIncludes([
-       'employee,typeOfContract,position,branch'
-      ]),
+      ...params,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      fullName: params.fullName,
     },
   });
 }
@@ -26,8 +24,8 @@ export function getDivisions(_params = {}) {
   });
 }
 
-export function getPositions(_params = {}) {
-  return request('/v1/positions', {
+export function getEmployees(_params = {}) {
+  return request('/v1/employees', {
     method: 'GET',
     params: {
       limit: variables.PAGINATION.SIZEMAX,

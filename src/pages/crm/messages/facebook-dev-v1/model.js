@@ -12,7 +12,11 @@ export default {
       isError: false,
       data: {},
     },
-    user: {},
+    user: {
+      accessToken:
+        'EAAM8onYIpqUBAD15XPZAeHHnSHmfzxxyYDuENZBF6xSAN2bK8ZAEWx9eZANEFe4xk33iWwrII0MzNIZCfDtuwyosa210dOe314MCbampmw5VPC61tBp5q4mNKZAVUdFxeiFZBvlpVIfoWRVKLCDKFtxb4PGLDpWKqMSDHGDBGm6iRVEX3jRhuFKhZBSh4LdjFldoR1zoO4fOOvYBrnLKl6iBd6TYJz3aFwqZBkAXdITFntGlToISOXak8EtDpZAebHfooZD',
+      userID: '2973416992874415',
+    },
     pages: [],
     users: [],
     relationships: [],
@@ -340,6 +344,21 @@ export default {
         const response = yield saga.call(services.getPotential, payload);
         yield saga.put({
           type: 'SET_POTENTIAL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TOKEN({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getToken, payload);
+        callback(payload);
+        yield saga.put({
+          type: 'SET_TOKEN',
           payload: response,
         });
       } catch (error) {
