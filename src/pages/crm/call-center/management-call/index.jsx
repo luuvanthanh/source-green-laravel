@@ -4,20 +4,19 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import { Helper, variables } from '@/utils';
-import { Form } from 'antd';
+import { Form, Radio } from 'antd';
 import classnames from 'classnames';
 import { useDispatch, useSelector } from 'dva';
-import { debounce, isEmpty } from 'lodash';
+import { debounce, head, isEmpty } from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation, useRouteMatch } from 'umi';
-import stylesModule from './styles.module.scss';
-import { handleOutboundCall } from '../pop-up/handleCallCenter';
+// import { handleOutboundCall } from '../pop-up/handleCallCenter';
 
 const checkboxArr = [
   { id: 'total', name: 'Tất cả' },
-  { id: 'not_scheduled_yet', name: 'Chưa có lịch gọi' },
+  { id: 'yet_create', name: 'Chưa có lịch gọi' },
   { id: 'first', name: 'Gọi lần 1' },
   { id: 'second', name: 'Gọi lần 2' },
   { id: 'third', name: 'Gọi lần 3' },
@@ -50,17 +49,48 @@ const Index = () => {
   const dispatch = useDispatch();
   const [formRef] = Form.useForm();
   const [search, setSearch] = useState({
-    key: query?.key,
+    search: query?.search,
     status_lead: query?.status_lead,
-    status_type_lead: query?.status_type_lead,
+    status_parent_lead_id: query?.status_parent_lead_id,
+    status_parent_potential_id: query?.status_parent_potential_id,
+    from_date:
+      query?.from_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    to_date: query?.to_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
   const [countCall, setCountCall] = useState({});
   const [isSaler, setIsSaler] = useState(false);
+  const [crmIdUser, setCrmIdUser] = useState('');
+  const [radioValue, setRadioValue] = useState('total');
 
-  const { outboundContext } = handleOutboundCall();
+  // const { outboundContext } = handleOutboundCall();
   const audioRef = useRef(null);
+
+  useEffect(() => {
+    dispatch({
+      type: 'crmCallCenter/GET_CRM_ID',
+      payload: {
+        employee_id_hrm: user.objectInfo?.id,
+      },
+      callback: (response) => {
+        if (response) {
+          setCrmIdUser(head(response.parsePayload).id);
+          dispatch({
+            type: 'crmManagementCall/GET_DATA',
+            payload: {
+              ...search,
+              employee_id: crmIdUser,
+            },
+          });
+          history.push({
+            pathname,
+            query: Helper.convertParamSearch(search),
+          });
+        }
+      },
+    });
+  }, [crmIdUser, search]);
 
   useEffect(() => {
     dispatch({
@@ -74,18 +104,9 @@ const Index = () => {
         }
       },
     });
-  }, []);
-
-  const onLoad = () => {
     dispatch({
-      type: 'crmManagementCall/GET_DATA',
-      payload: {
-        ...search,
-      },
-    });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
+      type: 'crmManagementCall/GET_STATUS_LEAD',
+      payload: {},
     });
     dispatch({
       type: 'crmManagementCall/GET_COUNTCALL',
@@ -95,19 +116,7 @@ const Index = () => {
         }
       },
     });
-  };
-
-  const onCategories = () => {
-    dispatch({
-      type: 'crmManagementCall/GET_STATUS_LEAD',
-      payload: {},
-    });
-  };
-
-  useEffect(() => {
-    onLoad();
-    onCategories();
-  }, [search]);
+  }, []);
 
   const debouncedSearch = debounce((value, type) => {
     setSearch((prev) => ({
@@ -126,6 +135,15 @@ const Index = () => {
     debouncedSearch(e, type);
   };
 
+  const onChoose = (e, type) => {
+    if (e.target.value === 'total') {
+      debouncedSearch(null, type);
+    } else {
+      debouncedSearch(e.target.value.toUpperCase(), type);
+    }
+    setRadioValue(e.target.value);
+  };
+
   const changePagination = ({ page, limit }) => {
     setSearch((prev) => ({
       ...prev,
@@ -142,12 +160,12 @@ const Index = () => {
       },
     });
 
-  const callNumber = (phone) => {
-    outboundContext(phone, audioRef.current);
-    dispatch({
-      type: 'crmManagementCall/IS_CALL',
-    });
-  };
+  // const callNumber = (phone) => {
+  //   outboundContext(phone, audioRef.current);
+  //   dispatch({
+  //     type: 'crmManagementCall/IS_CALL',
+  //   });
+  // };
 
   const header = () => {
     const columns = [
@@ -194,13 +212,13 @@ const Index = () => {
           isSaler && (
             <div className="d-flex justify-content-center align-items-center">
               <p className="mr10">{record?.customerLead?.phone}</p>
-              <img
+              {/* <img
                 src="/images/telephone-small.svg"
                 alt="telephone-small"
                 style={{ cursor: 'pointer' }}
                 role="presentation"
                 onClick={() => callNumber(record?.customerLead?.phone)}
-              />
+              /> */}
             </div>
           ),
       },
@@ -213,13 +231,13 @@ const Index = () => {
           isSaler && (
             <div className="d-flex justify-content-center align-items-center">
               <p className="mr10">{record?.customerLead?.other_phone}</p>
-              <img
+              {/* <img
                 src="/images/telephone-small.svg"
                 alt="telephone-small"
                 style={{ cursor: 'pointer' }}
                 role="presentation"
                 onClick={() => callNumber(record?.customerLead?.phone)}
-              />
+              /> */}
             </div>
           ),
       },
@@ -268,9 +286,22 @@ const Index = () => {
       },
       {
         title: 'Ghi âm',
-        key: 'record',
+        key: 'historyCall',
         width: 150,
-        render: (record) => record?.record,
+        render: (record) => (
+          <div className={styles['files-container']}>
+            <div className={styles.item}>
+              <a
+                href={record?.historyCall[0]?.record_link}
+                target="_blank"
+                rel="noreferrer"
+                className={styles['link-record']}
+              >
+                {record?.historyCall[0]?.record_link}
+              </a>
+            </div>
+          </div>
+        ),
       },
     ];
     return columns;
@@ -279,7 +310,7 @@ const Index = () => {
   return (
     <>
       <Helmet title="Quản lý lịch gọi" />
-      <audio ref={audioRef} preload="none" autoPlay>
+      <audio ref={audioRef} autoPlay>
         <track kind="captions" />
       </audio>
       <div className={classnames(styles['content-form'], styles['content-form-children'])}>
@@ -299,9 +330,10 @@ const Index = () => {
             initialValues={{
               ...search,
               status_lead: query?.status_lead || null,
-              status_type_lead: query?.status_type_lead || null,
-              potentialStatus: query?.potentialStatus || null,
+              status_parent_lead_id: query?.status_parent_lead_id || null,
+              status_parent_potential_id: query?.status_parent_potential_id || null,
               employee: query?.employee || null,
+              date: [moment(search.from_date), moment(search.to_date)],
             }}
             layout="vertical"
             form={formRef}
@@ -309,8 +341,8 @@ const Index = () => {
             <div className="row">
               <div className="col-lg-3">
                 <FormItem
-                  name="key"
-                  onChange={(e) => onChange(e, 'key')}
+                  name="search"
+                  onChange={(e) => onChange(e, 'search')}
                   placeholder="Số điện thoại"
                   type={variables.INPUT_SEARCH}
                 />
@@ -320,7 +352,7 @@ const Index = () => {
                   name="date"
                   onChange={(e) => onChangeSelect(e, 'date')}
                   placeholder="Nhập từ khóa"
-                  type={variables.RANGE_DATETIME_PICKER}
+                  type={variables.RANGE_PICKER}
                 />
               </div>
               <div className="col-lg-3">
@@ -335,8 +367,8 @@ const Index = () => {
               <div className="col-lg-3">
                 <FormItem
                   data={[{ id: null, name: 'Tình trạng lead' }, ...lead]}
-                  name="status_type_lead"
-                  onChange={(e) => onChangeSelect(e, 'status_type_lead')}
+                  name="status_parent_lead_id"
+                  onChange={(e) => onChangeSelect(e, 'status_parent_lead_id')}
                   type={variables.SELECT}
                   allowClear={false}
                 />
@@ -344,8 +376,8 @@ const Index = () => {
               <div className="col-lg-3">
                 <FormItem
                   data={[{ id: null, name: 'Tình trạng tiềm năng' }]}
-                  name="potentialStatus"
-                  onChange={(e) => onChangeSelect(e, 'potentialStatus_id')}
+                  name="status_parent_potential_id"
+                  onChange={(e) => onChangeSelect(e, 'status_parent_potential_id')}
                   type={variables.SELECT}
                   allowClear={false}
                 />
@@ -360,22 +392,34 @@ const Index = () => {
                 />
               </div>
             </div>
-            <div className="row">
+            {/* <div className="row">
               {checkboxArr.map((item) => (
                 <div className="col-xl-2 col-lg-3 col-4" key={item.id}>
                   <FormItem
                     name={item.id}
-                    className={classnames(
-                      'checkbox-small',
-                      styles['list-checkbox-form'],
-                      stylesModule['checkbox-control'],
-                    )}
                     label={`${item.name} (${countCall[item.id]})`}
-                    type={variables.CHECKBOX_FORM}
-                    valuePropName="checked"
+                    type={variables.RADIO}
+                    onChange={(e) => onChoose(e, item.id, 'call_times')}
                   />
                 </div>
               ))}
+            </div> */}
+            <div className="row">
+              <div className="col-lg-12 mb10">
+                <Radio.Group value={radioValue}>
+                  {checkboxArr.map((item) => (
+                    <Radio
+                      className="mb10"
+                      value={item.id}
+                      key={item.id}
+                      onChange={(e) => onChoose(e, 'call_times')}
+                      size="small"
+                    >
+                      {`${item.name} (${countCall[item.id]})`}
+                    </Radio>
+                  ))}
+                </Radio.Group>
+              </div>
             </div>
           </Form>
           <Table

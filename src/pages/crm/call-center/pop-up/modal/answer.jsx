@@ -2,6 +2,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import { Form } from 'antd';
 import classnames from 'classnames';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { memo } from 'react';
 import Timecode from 'react-timecode';
@@ -26,7 +27,9 @@ const Outbound = memo(({ handleOnClick, inboundStatusInfo, infoFromInbound }) =>
         <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
         {/* INFO */}
         <div className={styles['avatar-item']}>
-          {infoFromInbound?.file_image ? (
+          {!isEmpty(infoFromInbound?.file_image) &&
+          infoFromInbound?.file_image &&
+          infoFromInbound?.file_image !== '[]' ? (
             <img
               src={`${API_UPLOAD}${JSON.parse(infoFromInbound?.file_image)}`}
               alt="user-avatar"

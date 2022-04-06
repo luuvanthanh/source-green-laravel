@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
-import { useHistory, useRouteMatch } from 'umi';
+import { useHistory } from 'umi';
 import { Form, Modal } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
@@ -12,8 +12,8 @@ import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import { useDispatch, useSelector } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
-import Parents from '../parents';
 import moment from 'moment';
+import Parents from '../parents';
 
 const dataHour = (n) => {
   const allHour = [];
@@ -26,7 +26,6 @@ const dataHour = (n) => {
 const Index = memo(() => {
   const [formRef] = Form.useForm();
   const dispatch = useDispatch();
-  const { params } = useRouteMatch();
   const history = useHistory();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [crmIdUser, setCrmIdUser] = useState('');
@@ -37,38 +36,28 @@ const Index = memo(() => {
     loading,
     { menuLeftCRM },
     { user },
-  ] = useSelector(({ loading: { effects }, seasonalContractsAdd, menu, user }) => [
-    seasonalContractsAdd,
+  ] = useSelector(({ loading: { effects }, crmManagementCallAdd, menu, user }) => [
+    crmManagementCallAdd,
     effects,
     menu,
     user,
   ]);
 
   useEffect(() => {
-    if (params.id) {
-      dispatch({
-        type: 'seasonalContractsAdd/GET_DETAILS',
-        payload: {
-          id: params.id,
-        },
-        callback: () => {},
-      });
-    } else {
-      dispatch({
-        type: 'crmCallCenter/GET_CRM_ID',
-        payload: {
-          employee_id_hrm: user.objectInfo?.id,
-        },
-        callback: (response) => {
-          if (response) {
-            setCrmIdUser(head(response.parsePayload).id);
-            formRef.setFieldsValue({
-              employee_id: head(response.parsePayload).full_name,
-            });
-          }
-        },
-      });
-    }
+    dispatch({
+      type: 'crmCallCenter/GET_CRM_ID',
+      payload: {
+        employee_id_hrm: user.objectInfo?.id,
+      },
+      callback: (response) => {
+        if (response) {
+          setCrmIdUser(head(response.parsePayload).id);
+          formRef.setFieldsValue({
+            employee_id: head(response.parsePayload).full_name,
+          });
+        }
+      },
+    });
   }, []);
 
   const onRemove = (id) => {
@@ -174,7 +163,7 @@ const Index = memo(() => {
       const payload = {
         ...values,
         expected_date: moment(values.expected_date).format(variables.DATE_FORMAT.DATE_AFTER),
-        received_data: moment().format(variables.DATE_FORMAT.DATE_AFTER),
+        receive_date: moment().format(variables.DATE_FORMAT.DATE_AFTER),
         employee_id: crmIdUser,
         list_customer_lead: parentLead.map((item) => ({ customer_lead_id: item.id })),
       };
@@ -309,7 +298,7 @@ const Index = memo(() => {
                     color="success"
                     htmlType="submit"
                     loading={
-                      loading['seasonalContractsAdd/ADD'] || loading['seasonalContractsAdd/UPDATE']
+                      loading['crmManagementCallAdd/ADD'] || loading['crmManagementCallAdd/UPDATE']
                     }
                   >
                     Lưu
