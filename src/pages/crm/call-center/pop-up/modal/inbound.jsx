@@ -1,8 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import styles from '../style.module.scss';
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { handleAnswer, handleReject } from '../handleCallCenter';
+import styles from '../style.module.scss';
 import variablesModule from '../variables';
 
 function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
@@ -25,7 +26,7 @@ function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
       <div className={styles['layout-call']}>
         <p className={styles['call-type']}>CUỘC GỌI ĐẾN</p>
         <div className={styles['avatar-item']}>
-          {infoFromInbound?.file_image ? (
+          {infoFromInbound?.file_image !== '[]' && !isEmpty(infoFromInbound?.file_image) ? (
             <img
               src={`${API_UPLOAD}${JSON.parse(infoFromInbound?.file_image)}`}
               alt="user-avatar"

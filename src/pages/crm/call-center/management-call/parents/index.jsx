@@ -1,61 +1,81 @@
+import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 import { Form } from 'antd';
 import { useDispatch, useSelector } from 'dva';
 import React, { memo, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { useHistory, useLocation } from 'umi';
+import { useLocation } from 'umi';
+import PropTypes from 'prop-types';
 
-const Index = memo(() => {
+const leadStatus = [
+  { id: 'LEAD_NEW', name: 'Lead mới' },
+  { id: 'POTENTIAL', name: 'Có tiềm năng' },
+  { id: 'NOT_POTENTIAL', name: 'Không tiềm năng' },
+];
+
+const Index = memo(({ callTimes, crmIdUser, handleOnClick }) => {
   const [
-    { data, pagination },
+    { data, lead },
     { effects },
-  ] = useSelector(({ crmManagementCallParents, loading }) => [crmManagementCallParents, loading]);
+    { user },
+  ] = useSelector(({ crmManagementCallParents, loading, user }) => [
+    crmManagementCallParents,
+    loading,
+    user,
+  ]);
   const dispatch = useDispatch();
-  const { pathname, query } = useLocation();
-  const history = useHistory();
+  const { query } = useLocation();
   const [formRef] = Form.useForm();
 
   const [search, setSearch] = useState({
-    keyWord: query?.keyWord,
-    typeId: query?.typeId,
-    statusId: query?.statusId,
-    potentialId: query?.potentialId,
+    key: query?.key,
+    status_lead: query?.status_lead,
+    status_type_lead: query?.status_type_lead,
+    status_parent_potential_id: query?.status_parent_potential_id,
   });
 
-  const onLoad = () => {
+  const [parentRecord, setParentRecord] = useState([]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'crmManagementCallParents/GET_STATUS_LEAD',
+      payload: {},
+    });
+  }, []);
+
+  useEffect(() => {
     dispatch({
       type: 'crmManagementCallParents/GET_DATA',
       payload: {
         ...search,
+        call_times: callTimes,
+        employee_id: crmIdUser,
       },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch({ ...search }),
-    });
-  };
-
-  useEffect(() => {
-    onLoad();
-  }, [search]);
+  }, [search, callTimes]);
 
   const onChangeExpected = (event, type) => {
     switch (type) {
-      case 'keyWord':
+      case 'key':
         setSearch((prevState) => ({
           ...prevState,
-          [type]: event.target.value,
+          [type]: event.target.record,
         }));
         break;
-      case 'timetableSettingId':
+      case 'status_lead':
         setSearch((prevState) => ({
           ...prevState,
           [type]: event,
         }));
         break;
-      case 'classId':
+      case 'status_type_lead':
+        setSearch((prevState) => ({
+          ...prevState,
+          [type]: event,
+        }));
+        break;
+      case 'status_parent_potential_id':
         setSearch((prevState) => ({
           ...prevState,
           [type]: event,
@@ -84,99 +104,71 @@ const Index = memo(() => {
     },
     {
       title: 'SĐT 1',
-      key: 'phone',
+      key: 'customerLead.phone',
       width: 150,
       className: 'min-width-150',
       render: (record) => record?.phone,
     },
     {
       title: 'SĐT 2',
-      key: 'class',
+      key: 'other_phone',
       width: 150,
-      dataIndex: 'class',
       className: 'min-width-150',
-      render: (value) => value?.name,
+      render: (record) => record?.other_phone,
     },
     {
       title: 'Nội dung gọi',
-      key: 'age',
-      dataIndex: 'age',
+      key: 'content',
       className: 'min-width-150',
-      render: (value) => value?.name,
-    },
-    {
-      title: 'Nội dung gọi',
-      key: 'date',
-      className: 'min-width-150',
-      render: (value) => Helper.getDate(value?.registerDate, variables.DATE_FORMAT.DATE_VI),
+      render: (record) => record?.content,
     },
     {
       title: 'Phân loại PH',
-      key: 'branch',
+      key: 'statusLeadLatest',
       width: 150,
       className: 'min-width-150',
-      render: (value) => value?.class?.branch?.name,
+      render: (record) => variables.LEAD_STATUS[record?.statusLeadLatest[0]?.status],
     },
     {
       title: 'Tình trạng lead',
-      key: 'branch',
+      key: 'leadStatus',
       width: 150,
-      className: 'min-width-150',
-      render: (value) => value?.class?.branch?.name,
+      render: (record) => record?.statusCareLatest[0]?.statusParentLead?.name,
     },
     {
       title: 'Tình trạng tiềm năng',
-      key: 'branch',
+      key: 'potentialStatus',
       width: 150,
-      className: 'min-width-150',
-      render: (value) => value?.class?.branch?.name,
+      render: (record) => record?.customerPotential[0],
     },
     {
       title: 'Người gọi',
-      key: 'branch',
+      key: 'saler',
       width: 150,
-      className: 'min-width-150',
-      render: (value) => value?.class?.branch?.name,
+      render: () => user?.objectInfo?.fullName,
     },
     {
       title: 'Lần gọi',
-      key: 'branch',
+      key: 'call_times',
       width: 150,
-      className: 'min-width-150',
-      render: (value) => value?.class?.branch?.name,
+      render: () => variables.CALL_TIMES[callTimes],
     },
   ];
 
-  const changePagination = ({ page, limit }) => {
-    setSearch(
-      (prev) => ({
-        ...prev,
-        page,
-        limit,
-      }),
-      () => {
-        onLoad();
-      },
-    );
+  const handleOk = () => {
+    if (handleOnClick) {
+      handleOnClick(parentRecord);
+    }
   };
-
-  const paginationFunction = (pagination) =>
-    Helper.paginationLavarel({
-      pagination,
-      callback: (response) => {
-        changePagination(response);
-      },
-    });
 
   return (
     <>
-      <Helmet title="Thống kê tiệm cận" />
       <Form
         initialValues={{
           ...search,
-          typeId: query?.typeId || null,
-          statusId: query?.statusId || null,
-          potentialId: query?.potentialId || null,
+          status_lead: query?.status_lead || null,
+          status_type_lead: query?.status_type_lead || null,
+          status_parent_potential_id: query?.status_parent_potential_id || null,
         }}
         layout="vertical"
         form={formRef}
@@ -185,18 +177,18 @@ const Index = memo(() => {
           <div className="col-lg-3">
             <FormItem
               className="ant-form-item-row"
-              name="keyWord"
+              name="key"
               type={variables.INPUT_SEARCH}
               placeholder="Từ khóa tìm kiếm"
-              onChange={(event) => onChangeExpected(event, 'keyWord')}
+              onChange={(event) => onChangeExpected(event, 'key')}
             />
           </div>
           <div className="col-lg-3">
             <FormItem
               className="ant-form-item-row"
-              data={[{ id: null, name: 'Tất cả phân loại PH' }]}
-              name="typeId"
-              onChange={(event) => onChangeExpected(event, 'typeId')}
+              data={[{ id: null, name: 'Tất cả phân loại PH' }, ...leadStatus]}
+              name="status_lead"
+              onChange={(event) => onChangeExpected(event, 'status_lead')}
               type={variables.SELECT}
               allowClear={false}
             />
@@ -204,9 +196,9 @@ const Index = memo(() => {
           <div className="col-lg-3">
             <FormItem
               className="ant-form-item-row"
-              data={[{ id: null, name: 'Tất cả tình trạng Lead' }]}
-              name="statusId"
-              onChange={(event) => onChangeExpected(event, 'statusId')}
+              data={[{ id: null, name: 'Tất cả tình trạng Lead' }, ...lead]}
+              name="status_type_lead"
+              onChange={(event) => onChangeExpected(event, 'status_type_lead')}
               type={variables.SELECT}
               allowClear={false}
             />
@@ -215,8 +207,8 @@ const Index = memo(() => {
             <FormItem
               className="ant-form-item-row"
               data={[{ id: null, name: 'Tất cả tình trạng tiềm năng' }]}
-              name="potentialId"
-              onChange={(event) => onChangeExpected(event, 'potentialId')}
+              name="status_parent_potential_id"
+              onChange={(event) => onChangeExpected(event, 'status_parent_potential_id')}
               type={variables.SELECT}
               allowClear={false}
             />
@@ -229,9 +221,14 @@ const Index = memo(() => {
         isEmpty
         dataSource={data}
         loading={effects['crmManagementCallParents/GET_DATA']}
-        pagination={paginationFunction(pagination)}
+        pagination={false}
         rowSelection={{
-          getCheckboxProps: (record) => ({ name: record.name }),
+          onChange: (id, record) => {
+            setParentRecord(record);
+          },
+          getCheckboxProps: (record) => ({
+            full_name: record.full_name,
+          }),
         }}
         params={{
           header: header(),
@@ -240,8 +237,25 @@ const Index = memo(() => {
         rowKey={(record) => record.id}
         scroll={{ x: '100%' }}
       />
+      <div className="d-flex justify-content-end mt20">
+        <Button htmlType="submit" color="success" type="primary" onClick={handleOk}>
+          Áp dụng
+        </Button>
+      </div>
     </>
   );
 });
+
+Index.propTypes = {
+  callTimes: PropTypes.string,
+  crmIdUser: PropTypes.string,
+  handleOnClick: PropTypes.func,
+};
+
+Index.defaultProps = {
+  callTimes: '',
+  crmIdUser: '',
+  handleOnClick: () => {},
+};
 
 export default Index;

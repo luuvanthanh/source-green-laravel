@@ -40,8 +40,6 @@ function waitingForApplyingAnswer(response) {
 const handleInboundCall = () => {
   const [inboundStatus, setInboundStatus] = useState('');
   const [infoCall, setInfoCall] = useState({});
-  // const ringAudio = new Audio('/resources/iphone-ringtone.mp3');
-  // ringAudio.loop = true;
 
   const inboundContext = useCallback((username, password, hostname, port, path, playerRef) => {
     const player = playerRef;
@@ -77,40 +75,41 @@ const handleInboundCall = () => {
     ua.on('invite', (s) => {
       session = s;
       session.type = 'inbound';
-      // if (ringAudio.play() !== undefined) {
-      //   ringAudio?.play().then((_) => {
-      //     ringAudio?.play();
-      //   });
-      // }
+
+      const sound = new Audio('/resources/iphone-ringtone.mp3');
+      sound.loop = true;
+      const soundPromise = sound.play();
+      if (soundPromise !== undefined) {
+        soundPromise
+          .then(() => {
+            sound.play();
+          })
+          .catch(() => {});
+      }
 
       session.on('accepted', () => {
         setInboundStatus('ACCEPTED');
-        const pc = session.sessionDescriptionHandler.peerConnection;
+
         const remoteStream = new MediaStream();
-
-        pc.getReceivers().forEach((receiver) => {
-          remoteStream.addTrack(receiver.track);
+        session.sessionDescriptionHandler.peerConnection.getReceivers().forEach((receiver) => {
+          if (receiver.track) {
+            remoteStream.addTrack(receiver.track);
+          }
         });
-
-        if (typeof player.srcObject !== 'undefined') {
-          player.srcObject = remoteStream;
-        } else if (typeof player.mozSrcObject !== 'undefined') {
-          player.mozSrcObject = remoteStream;
-        } else if (typeof player.src !== 'undefined') {
-          player.src = URL.createObjectURL(remoteStream);
-        }
-        // player.play();
-        if (player.play() !== undefined) {
-          player.play().then((_) => {
-            player.play();
-          });
+        player.srcObject = remoteStream;
+        const playPromise = player.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {}).catch(() => {});
         }
 
-        // if (ringAudio.play() !== undefined) {
-        //   ringAudio.play().then((_) => {
-        //     ringAudio.pause();
-        //   });
-        // }
+        if (soundPromise !== undefined) {
+          soundPromise
+            .then(() => {
+              sound.pause();
+            })
+            .catch(() => {});
+        }
+
         console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
       });
       session.on('rejected', () => {
@@ -213,25 +212,17 @@ const handleOutboundCall = () => {
       session.on('trackAdded', () => {
         console.log('%cTHÊM ÂM THANH (GỌI ĐI)', 'color: yellow; font-weight: bold');
         setOutboundStatus('TRACK_ADDED');
-        const pc = session.sessionDescriptionHandler.peerConnection;
+
         const remoteStream = new MediaStream();
-
-        pc.getReceivers().forEach((receiver) => {
-          remoteStream.addTrack(receiver.track);
+        session.sessionDescriptionHandler.peerConnection.getReceivers().forEach((receiver) => {
+          if (receiver.track) {
+            remoteStream.addTrack(receiver.track);
+          }
         });
-
-        if (typeof player.srcObject !== 'undefined') {
-          player.srcObject = remoteStream;
-        } else if (typeof player.mozSrcObject !== 'undefined') {
-          player.mozSrcObject = remoteStream;
-        } else if (typeof player.src !== 'undefined') {
-          player.src = URL.createObjectURL(remoteStream);
-        }
-        // player.play();
-        if (player.play() !== undefined) {
-          player.play().then((_) => {
-            player.play();
-          });
+        player.srcObject = remoteStream;
+        const playPromise = player.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {}).catch(() => {});
         }
       });
     }
