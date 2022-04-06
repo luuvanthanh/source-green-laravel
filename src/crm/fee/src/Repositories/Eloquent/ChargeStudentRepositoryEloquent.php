@@ -11,7 +11,6 @@ use GGPHP\Crm\Fee\Presenters\ChargeStudentPresenter;
 use GGPHP\Crm\Fee\Repositories\Contracts\ChargeStudentRepository;
 use GGPHP\Crm\Fee\Services\ChargeStudentService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -74,7 +73,7 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
     {
         DB::beginTransaction();
         try {
-            $attributes['status'] = $attributes['status'] ?? 'Chưa thanh toán';
+            $attributes['status'] = $this->model()::STATUS['YET_PAID'];
 
             $chargeStudent = ChargeStudent::create($attributes);
 
@@ -83,8 +82,9 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
                 foreach ($attributes['tuition'] as $value) {
                     $chargeStudent->tuition()->create($value);
                 }
-                $totalMoney = array_sum(array_column($attributes['tuition'], 'money'));
             }
+
+            $totalMoney = array_sum(array_column($attributes['expected_to_collect_money'], 'total_money_month'));
 
             $chargeStudent->update(['total_money' => $totalMoney]);
 
@@ -112,7 +112,8 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
                     $chargeStudent->tuition()->create($value);
                 }
 
-                $totalMoney = array_sum(array_column($attributes['tuition'], 'money'));
+                $totalMoney = array_sum(array_column($attributes['expected_to_collect_money'], 'total_money_month'));
+
                 $chargeStudent->update(['total_money' => $totalMoney]);
             }
 
@@ -159,6 +160,6 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
             $attributes['details'][$key]['money'] = $item['money'];
         }
 
-        return $attributes;
+        return ['detail' => $attributes, 'data_details' => $data['detailData']];
     }
 }

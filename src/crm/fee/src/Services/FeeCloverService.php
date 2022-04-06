@@ -39,8 +39,8 @@ class FeeCloverService
         if ($data->failed()) {
             $message = 'Có lỗi từ api Clover';
 
-            if (isset(json_decode($data->body())->error) && isset(json_decode($data->body())->error->message)) {
-                $message = 'Clover: ' . json_decode($data->body())->error->message;
+            if (isset(json_decode($data->body())->errors) && isset(json_decode($data->body())->errors[0]->detail)) {
+                $message = 'Clover: ' . json_decode($data->body())->errors[0]->detail;
             }
 
             throw new HttpException($data->status(), $message);
@@ -56,6 +56,7 @@ class FeeCloverService
         if (empty($data['data'])) {
             return [];
         }
+        
         $data = $data['data'];
         $creates = [];
 
