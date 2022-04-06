@@ -395,9 +395,9 @@ class Index extends PureComponent {
       {
         title: 'Xác nhận phụ huynh',
         width: 200,
-        key: "parentNote",
+        key: "parentReview",
         className: 'min-width-200',
-        render: (record) => <Text size="normal">{record?.parentNote}</Text>,
+        render: (record) => <Text size="normal">{record?.parentReview}</Text>,
       },
       {
         title: 'Trạng thái xử lý',

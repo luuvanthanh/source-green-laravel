@@ -98,7 +98,7 @@ class Index extends PureComponent {
         ...search,
         orderBy: 'CreationTime',
         sortedBy: 'desc',
-        include: Helper.convertIncludes(['student.classStudent.class']),
+        include: Helper.convertIncludes(['student.classStudent.class','schoolYear','tuition']),
       },
     });
     history.push({

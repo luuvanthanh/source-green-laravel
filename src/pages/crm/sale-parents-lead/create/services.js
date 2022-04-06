@@ -84,6 +84,7 @@ export function details(params = {}) {
       ...params,
       include: Helper.convertIncludes([
         'studentInfo.categoryRelationship',
+        'studentInfo.admissionRegister',
         'city',
         'district',
         'searchSource',

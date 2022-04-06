@@ -2232,7 +2232,7 @@ export async function getLeftMenuCRM() {
             '/crm/tiep-thi/quan-ly-chien-dich-marketing/tao-moi',
             '/crm/tiep-thi/quan-ly-chien-dich-marketing/:id/chi-tiet',
             '/crm/tiep-thi/quan-ly-chien-dich-marketing/:id/chi-tiet/them-bai-viet',
-            '/crm/tiep-thi/quan-ly-chien-dich-marketing/:id/chi-tiet/:detailId/chi-tiet',
+            '/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/:id/chi-tiet-bai-viet',
           ],
           permission: [permissions.CRM],
           pro: true,

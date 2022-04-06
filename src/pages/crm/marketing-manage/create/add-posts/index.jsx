@@ -1,263 +1,102 @@
-import { memo, useRef, useEffect, useState } from 'react';
-import { Breadcrumb, Form } from 'antd';
-import { head, isEmpty, get } from 'lodash';
-import moment from 'moment';
-// import Quill from '@/components/CommonComponent/Quill';
-import { Link, connect, history, withRouter } from 'umi';
+import { memo, useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import { Menu } from 'antd';
 import PropTypes from 'prop-types';
+import validator from 'validator';
+import { useSelector, useDispatch } from 'dva';
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { Link } from 'umi';
+import Add from './forms/add';
+import PostsForm from './forms/details';
 
-import Pane from '@/components/CommonComponent/Pane';
-import Heading from '@/components/CommonComponent/Heading';
-import Button from '@/components/CommonComponent/Button';
-import Loading from '@/components/CommonComponent/Loading';
-import { variables } from '@/utils/variables';
-import FormItem from '@/components/CommonComponent/FormItem';
-import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
-import { Helper } from '@/utils';
-import stylesModule from '../../styles.module.scss';
+import { menu, defaultKey } from './menu';
 
-const marginProps = { style: { marginBottom: 12 } };
+const { Item: MenuItem } = Menu;
 
-const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
-  loading,
-  detailsAddPost: crmMarketingManageAdd.detailsAddPost,
-  error: crmMarketingManageAdd.error,
-});
-const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, error }) => {
-    const formRef = useRef();
-    // const [content, setContent] = useState('');
-    // const user = JSON.parse(localStorage.getItem('user'));
-    const [files, setFiles] = useState([]);
-    const mounted = useRef(false);
-    const mountedSet = (action, value) => mounted?.current && action(value);
-    const loadingSubmit =
-      effects[`crmMarketingManageAdd/ADD_POSTS`] || effects[`crmMarketingManageAdd/UPDATE_POSTS`];
-    const loading = effects[`crmMarketingManageAdd/GET_DETAILS_POSTS`];
+const forms = {
+  general: <Add />,
+  posts: <PostsForm />,
+};
+
+const Index = memo(({ match: { params }, location: { pathname, query } }) => {
+  const [activeMenuItem] = useState(defaultKey);
+
+  const dispatch = useDispatch();
+  const [{ menuLeftCRM }] = useSelector(({ menu }) => [menu]);
+
+  const { detailsAddPost } = useSelector(({ crmMarketingManageAdd }) => ({
+    detailsAddPost: crmMarketingManageAdd.detailsAddPost,
+  }));
+  
+  
+  const convertPathname = (pathname) => {
+    if (pathname) {
+      const listItemPath = pathname.split('/');
+      return  listItemPath
+        .map((item) => (validator.isUUID(item) || Number.parseInt(item, 10) ? ':id' : item))
+        .join('/');
+      }
+      return '';
+    };
+
     useEffect(() => {
-      if (params.detailId) {
+      if ( convertPathname(pathname) === '/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/:id/chi-tiet-bai-viet' ) {
         dispatch({
           type: 'crmMarketingManageAdd/GET_DETAILS_POSTS',
           payload: params,
-          callback: (response) => {
-            if (response) {
-              // mountedSet(setContent, response.parsePayload.content);
-            }
-          },
+          callback(){},
         });
       }
-    }, [params.detailId]);
+    }, [pathname]);
 
-    /**
-     * Function submit form modal
-     * @param {object} values values of form
-     */
-    const onFinish = (values) => {
-      dispatch({
-        type: params.detailId
-          ? 'crmMarketingManageAdd/UPDATE_POSTS'
-          : 'crmMarketingManageAdd/ADD_POSTS',
-        payload: params.detailId
-          ? {
-            ...detailsAddPost,
-            ...values,
-            marketing_program_id: params.id,
-            file_image: JSON.stringify(files),
-          }
-          : {
-            ...values,
-            file_image: JSON.stringify(files),
-            marketing_program_id: params.id,
-          },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    };
+  return (
+    <div style={{ padding: 20 }}>
+      <Helmet title="Quản lý chiến dịch marketing" />
+      <Breadcrumbs
+        className="pb20 pt0 pl0"
+        last={detailsAddPost?.id ? `${detailsAddPost?.name}` : 'tạo mới bài viết'}
+        menu={menuLeftCRM}
+      />
+      <div className="row">
+        <div className="col-lg-3">
+          <div className="card">
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 200}>
+              <Menu selectedKeys={query.type || activeMenuItem} mode="inline">
+                {detailsAddPost.id &&
+                  menu
+                    .filter((item) => item.key)
+                    .map(({ key, label }) => (
+                      <MenuItem key={key}>
+                        <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                      </MenuItem>
+                    ))}
+                {!detailsAddPost.id &&
+                  menu
+                    .filter((item) => item.key === 'general')
+                    .map(({ key, label }) => (
+                      <MenuItem key={key}>
+                        <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                      </MenuItem>
+                    ))}
+              </Menu>
+            </Scrollbars>
+          </div>
+        </div>
+        <div className="col-lg-9">{forms[query.type || defaultKey]}</div>
+      </div>
+    </div>
+  );
+});
 
-    useEffect(() => {
-      mounted.current = true;
-      return mounted.current;
-    }, []);
-    const cancel = () => {
-      const user = JSON.parse(localStorage.getItem('user'));
-      return Helper.confirmAction({
-        callback: () => {
-          dispatch({
-            type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
-            payload: {
-              id: detailsAddPost.id,
-              page_access_token: user?.accessToken,
-            },
-            callback: (response) => {
-              if (response) {
-                history.goBack();
-              }
-            },
-          });
-        },
-      });
-    };
-console.log("user",JSON?.parse(sessionStorage?.getItem('user')));
-    useEffect(() => {
-      if (params.detailId) {
-        formRef.current.setFieldsValue({
-          ...detailsAddPost,
-          ...head(detailsAddPost.positionLevel),
-          birth_date: detailsAddPost.birth_date && moment(detailsAddPost.birth_date),
-        });
-        if (Helper.isJSON(detailsAddPost?.file_image)) {
-          mountedSet(setFiles, JSON.parse(detailsAddPost?.file_image));
-        }
-      }
-    }, [detailsAddPost]);
-
-    const uploadFiles = (file) => {
-      mountedSet(setFiles, (prev) => [...prev, file]);
-    };
-    // const onChangeEditor = (value) => {
-    //   mountedSet(setContent, value);
-    // };
-    
-    return (
-      <>
-        <Pane style={{ margin: 20 }}>
-          <Breadcrumb separator=">" className={stylesModule['wrapper-breadcrumb']}>
-            <Breadcrumb.Item>
-              <Link to="/crm/tiep-thi/quan-ly-chien-dich-marketing" className={stylesModule.details}>
-              Quản lý chiến dịch marketing
-              </Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-              <Link
-                to={`/crm/tiep-thi/quan-ly-chien-dich-marketing/${params.id}/chi-tiet?type=posts`}
-                className={stylesModule.details}
-              >
-                Chi tiết
-              </Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item className={stylesModule.detailsEnd}>
-              {params.detailId ? `${detailsAddPost?.name}` : 'Thêm bài viết'}
-            </Breadcrumb.Item>
-          </Breadcrumb>
-        </Pane>
-        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-          <Pane className="col-lg-6 offset-lg-3">
-            <Pane className="card">
-              <Loading loading={loading} isError={error.isError} params={{ error }}>
-                <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-                  <Heading type="form-title" style={{ marginBottom: 20 }}>
-                    Thông tin thêm mới
-                  </Heading>
-                  <Pane className="row" {...marginProps}>
-                    <Pane className="col-lg-12">
-                      <FormItem
-                        name="name"
-                        label="Tên bài viết"
-                        type={variables.INPUT}
-                        rules={[variables.RULES.EMPTY_INPUT]}
-                      />
-                    </Pane>
-                    {/* <Pane className="col-lg-12">
-                      <Pane className="ant-col ant-form-item-label">
-                        <label>
-                          <span>Nội dung</span>
-                        </label>
-                      </Pane>
-                      <Quill onChange={onChangeEditor} value={content} />
-                    </Pane> */}
-                    <Pane className="col-lg-12 mb15">
-                      <FormItem
-                        name="content"
-                        label="Nội dung"
-                        placeholder="Nhập"
-                        type={variables.TEXTAREA}
-                        rules={[variables.RULES.EMPTY_INPUT]}
-                      />
-                    </Pane>
-                    <Pane className="col-lg-12">
-                      <Form.Item name="file_image" label="Ảnh đại diện">
-                        <MultipleImageUpload
-                          files={files}
-                          callback={(files) => uploadFiles(files)}
-                          removeFiles={(files) => mountedSet(setFiles, files)}
-                        />
-                      </Form.Item>
-                    </Pane>
-                  </Pane>
-                </Pane>
-
-                <Pane className="p20 d-flex justify-content-between align-items-center ">
-                  {params.detailId ? (
-                    <p
-                      className="btn-delete"
-                      role="presentation"
-                      loading={loadingSubmit}
-                      onClick={() => cancel()}
-                    >
-                      Xóa
-                    </p>
-                  ) : (
-                    <p
-                      className="btn-delete"
-                      role="presentation"
-                      loading={loadingSubmit}
-                      onClick={() => history.goBack()}
-                    >
-                      Hủy
-                    </p>
-                  )}
-                  <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
-                    Lưu
-                  </Button>
-                </Pane>
-              </Loading>
-            </Pane>
-          </Pane>
-        </Form>
-      </>
-    );
-  },
-);
-
-General.propTypes = {
-  dispatch: PropTypes.func,
+Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  detailsAddPost: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
-  branches: PropTypes.arrayOf(PropTypes.any),
-  classes: PropTypes.arrayOf(PropTypes.any),
-  city: PropTypes.arrayOf(PropTypes.any),
-  district: PropTypes.arrayOf(PropTypes.any),
-  detailsPost: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
 };
 
-General.defaultProps = {
+Index.defaultProps = {
   match: {},
-  detailsAddPost: {},
-  dispatch: () => { },
-  loading: {},
-  error: {},
-  branches: [],
-  classes: [],
-  city: [],
-  district: [],
-  detailsPost: {},
+  location: {},
 };
 
-export default withRouter(connect(mapStateToProps)(General));
+export default Index;

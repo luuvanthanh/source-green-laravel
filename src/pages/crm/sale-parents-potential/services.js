@@ -22,6 +22,7 @@ export function get(data = {}) {
         'employee',
         'customerLead.statusCare.statusParentLead',
         'customerPotentialStatusCare.statusParentPotential',
+        'customerLead.branch',
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
     },

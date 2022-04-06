@@ -219,3 +219,11 @@ export function getToket(params = {}) {
     params,
   });
 }
+
+export function getToken(params = {}) {
+  return request('/v1/facebook/pages/user-long-tokens', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params,
+  });
+}
