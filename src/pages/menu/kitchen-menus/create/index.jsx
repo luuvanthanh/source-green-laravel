@@ -43,6 +43,7 @@ const Index = memo(() => {
   const formRef = useRef();
   const formRefModal = useRef();
   const mounted = useRef(false);
+  const [check, setCheck] = useState(false);
 
   const onFinish = (values) => {
     let menuMeals = [];
@@ -171,23 +172,23 @@ const Index = memo(() => {
     });
   };
 
-  const remove = () => {
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'kitchenMenusCreate/REMOVE',
-          payload: {
-            ...params,
-          },
-          callback: (response) => {
-            if (response) {
-              history.push('/thuc-don');
-            }
-          },
-        });
-      },
-    });
-  };
+  // const remove = () => {
+  //   Helper.confirmAction({
+  //     callback: () => {
+  //       dispatch({
+  //         type: 'kitchenMenusCreate/REMOVE',
+  //         payload: {
+  //           ...params,
+  //         },
+  //         callback: (response) => {
+  //           if (response) {
+  //             history.push('/thuc-don');
+  //           }
+  //         },
+  //       });
+  //     },
+  //   });
+  // };
 
   const convertMenuMeal = (items) => {
     const o = {};
@@ -245,7 +246,7 @@ const Index = memo(() => {
       return r;
     }, []);
   };
-  
+
   useEffect(() => {
     if (query.id) {
       dispatch({
@@ -255,6 +256,7 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
+            setCheck(true);
             setFromDate(moment(response.fromDate).format('DD/MM/YYYY'));
             setToDate(moment(response.toDate).format('DD/MM/YYYY'));
             const result = convertMenuMeal(response?.menuMeals)
@@ -714,6 +716,35 @@ const Index = memo(() => {
     fileList: [],
   };
 
+  const onTimeForm = () => {
+    if (params?.id) {
+      return (<FormItem
+        label="Thời gian"
+        name="month"
+        type={variables.MONTH_PICKER}
+        rules={[variables.RULES.EMPTY]}
+        disabled
+      />);
+    }
+    if (check) {
+      return (
+        <FormItem
+          label="Thời gian"
+          name="month"
+          onClick={onTime}
+          type={variables.MONTH_PICKER}
+          rules={[variables.RULES.EMPTY]}
+        />
+      );
+    }
+    return (<FormItem
+      label="Thời gian"
+      name="month"
+      type={variables.MONTH_PICKER}
+      rules={[variables.RULES.EMPTY]}
+    />);
+  };
+
   return (
     <Pane style={{ paddingTop: 20 }}>
       <Modal
@@ -803,40 +834,74 @@ const Index = memo(() => {
                     </Heading>
                     <Pane className="row align-items-center">
                       <Pane className="col-2">
-                        <FormItem
-                          label="Thời gian"
-                          name="month"
-                          onClick={onTime}
-                          type={variables.MONTH_PICKER}
-                          rules={[variables.RULES.EMPTY]}
-                        />
+                        {
+                          onTimeForm()
+                        }
                       </Pane>
-                      <Pane className="col-3">
-                        <FormItem
-                          data={branches}
-                          label="Cơ sở"
-                          name="branchId"
-                          type={variables.SELECT}
-                          rules={[variables.RULES.EMPTY]}
-                        />
-                      </Pane>
-                      <Pane className="col-3">
-                        <FormItem
-                          data={classTypes}
-                          label="Loại lớp"
-                          name="classTypeId"
-                          type={variables.SELECT}
-                          rules={[variables.RULES.EMPTY]}
-                        />
-                      </Pane>
+                      {
+                        params?.id ?
+                          <>
+                            <Pane className="col-3">
+                              <FormItem
+                                data={branches}
+                                label="Cơ sở"
+                                name="branchId"
+                                type={variables.SELECT}
+                                rules={[variables.RULES.EMPTY]}
+                                disabled
+                              />
+                            </Pane>
+                            <Pane className="col-3">
+                              <FormItem
+                                data={classTypes}
+                                label="Loại lớp"
+                                name="classTypeId"
+                                type={variables.SELECT}
+                                rules={[variables.RULES.EMPTY]}
+                                disabled
+                              />
+                            </Pane>
+                          </> :
+                          <>
+                            <Pane className="col-3">
+                              <FormItem
+                                data={branches}
+                                label="Cơ sở"
+                                name="branchId"
+                                type={variables.SELECT}
+                                rules={[variables.RULES.EMPTY]}
+                              />
+                            </Pane>
+                            <Pane className="col-3">
+                              <FormItem
+                                data={classTypes}
+                                label="Loại lớp"
+                                name="classTypeId"
+                                type={variables.SELECT}
+                                rules={[variables.RULES.EMPTY]}
+                              />
+                            </Pane>
+                          </>
+                      }
                       <Pane className="col-4 d-flex">
-                        <Button
-                          color="success"
-                          onClick={onApply}
-                          loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
-                        >
-                          {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
-                        </Button>
+                        {
+                          params?.id || check ?
+                            <Button
+                              color="success"
+                              onClick={onApply}
+                              loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                              disabled
+                            >
+                              {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
+                            </Button> :
+                            <Button
+                              color="success"
+                              onClick={onApply}
+                              loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                            >
+                              {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
+                            </Button>
+                        }
                         {isEmpty(weeksKitchen) && (
                           <Button color="primary" onClick={exportData} className="ml10">
                             Export
@@ -1079,7 +1144,7 @@ const Index = memo(() => {
                   )}
                   {params.id && (
                     <Pane className="py20 d-flex justify-content-between align-items-center">
-                      <p className="btn-delete" role="presentation" onClick={remove}>
+                      <p className="btn-delete" role="presentation"  onClick={() => history.goBack()}>
                         Hủy
                       </p>
                       <div className="d-flex">

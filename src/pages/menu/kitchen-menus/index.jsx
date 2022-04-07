@@ -125,10 +125,10 @@ const Index = memo(() => {
     }));
   }, 300);
 
-  const changeFilter = () => (value) => {
+  const changeFilter = (e) => (value) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
-      ClassTypeId: value,
+      [e]: value,
     }));
   };
 
