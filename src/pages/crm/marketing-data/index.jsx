@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Select, Tag, Modal } from 'antd';
+import { Form, Select, Tag, Modal, Upload , message} from 'antd';
 import classnames from 'classnames';
 import { isEmpty, debounce, head, size, get, last } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -456,6 +456,19 @@ class Index extends PureComponent {
     this.setState({ isModalVisible: false });
   };
 
+  importExcel = (file) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'crmMarketingData/IMPORT_EXCEL',
+      payload: {file},  
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
   render() {
     const {
       match: { params },
@@ -467,6 +480,7 @@ class Index extends PureComponent {
       location: { pathname },
       location,
     } = this.props;
+    const self = this;
     const { search, dataSource, isModalVisible, dataCheck, isModal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
@@ -475,6 +489,28 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
+    const props =  {
+      beforeUpload() {
+        return null;
+      },
+      customRequest({ file }) {
+        const { name, size } = file;
+        const allowTypes = ['xlsx', 'xls'];
+        const maxSize = 5 * 2 ** 20;
+        if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+          setTimeout(() => {
+            message.error(
+              'Định dạng hỗ trợ: xlsx', 'xls Tổng dung lượng không vượt quá 20MB',
+            );
+          }, 300);
+          return;
+        }
+        self.importExcel(file);
+      },
+      showUploadList: false,
+      fileList: [],
+    };
+
     const loading = effects['crmMarketingData/GET_DATA'];
     return (
       <>
@@ -536,17 +572,19 @@ class Index extends PureComponent {
                         </Form>
                       </div>
                     </Modal>
-                    <Button color="primary" icon="export" className="ml-2">
-                      Import
-                    </Button>
-                    <Button
-                      color="success"
-                      icon="plus"
-                      onClick={() => history.push(`${pathname}/tao-moi`)}
-                      className="ml-2"
-                    >
-                      Tạo mới
-                    </Button>
+                    <Upload {...props}>
+                      <Button color="primary" icon="export" className="ml-2"  loading={effects['crmMarketingData/IMPORT_EXCEL']}> 
+                        Import
+                      </Button>
+                    </Upload>
+                      <Button
+                        color="success"
+                        icon="plus"
+                        onClick={() => history.push(`${pathname}/tao-moi`)}
+                        className="ml-2"
+                      >
+                        Tạo mới
+                      </Button>
                     <Button
                       color="success"
                       icon="next"

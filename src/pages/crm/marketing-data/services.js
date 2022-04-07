@@ -77,3 +77,14 @@ export function addTags(data = {}) {
     data,
   });
 }
+
+export function importExcel(data = {}) {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    formData.append(key, data[key]);
+  });
+  return request('/v1/import-excel-data-marketings', {
+    method: 'POST',
+    data: formData,
+  });
+}
