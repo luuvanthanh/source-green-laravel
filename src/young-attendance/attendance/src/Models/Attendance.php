@@ -27,11 +27,14 @@ class Attendance extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason', 'StudentTransporterId'
+        'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason', 'StudentTransporterId',
+        'IsHaveInAi', 'IsHaveOutAi'
     ];
 
     protected $casts = [
         'Date' => 'date:Y-m-d',
+        'IsHaveInAi' => 'boolean',
+        'IsHaveInAi' => 'boolean',
     ];
 
     /**
