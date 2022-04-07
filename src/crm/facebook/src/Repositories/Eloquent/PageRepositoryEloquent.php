@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 
+use GGPHP\Crm\Facebook\Jobs\SendMessageFacebook;
 use GGPHP\Crm\Facebook\Models\Page;
 use GGPHP\Crm\Facebook\Presenters\PagePresenter;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -52,6 +53,12 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
 
     public function getPage($attributes)
     {
+        if (!empty($attributes['article_id'])) {
+            $this->model = $this->model->whereHas('postFacebookInfo', function ($query) use ($attributes) {
+                $query->where('article_id', $attributes['article_id']);
+            });
+        }
+
         if (!empty($attributes['page_id_facebook'])) {
             $pageIdFacebook = explode(',', $attributes['page_id_facebook']);
             $this->model = $this->model->whereIn('page_id_facebook', $pageIdFacebook);
@@ -70,9 +77,11 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
     {
         if (!empty($attributes['url_files'])) {
             $data_url = [];
+
             foreach ($attributes['url_files'] as $urlFile) {
                 $type = '';
                 $url =  env('IMAGE_URL') . $urlFile['url'];
+
                 if (pathinfo($url, PATHINFO_EXTENSION) == 'mp3') {
                     $data_url[] = [
                         'type' => 'audio',
@@ -83,7 +92,7 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
                         'type' => 'video',
                         'url' => $url
                     ];
-                } elseif (pathinfo($url, PATHINFO_EXTENSION) == 'jpg' || pathinfo($url, PATHINFO_EXTENSION) == 'png' || pathinfo($url, PATHINFO_EXTENSION) == 'jpeg') {
+                } elseif (array_search(pathinfo($url, PATHINFO_EXTENSION), Page::IMAGE) != false) {
                     $data_url[] = [
                         'type' => 'image',
                         'url' => $url
@@ -104,8 +113,24 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
             $attributes['type'] = $type;
         }
 
-        $message = FacebookService::pageConversationSendMessage($attributes);
+        dispatch(new SendMessageFacebook($attributes));
 
-        return $message;
+        return null;
+    }
+
+    public function create(array $attributes)
+    {
+        if (!empty($attributes['data_page'])) {
+            foreach ($attributes['data_page'] as $dataPage) {
+                $page = Page::where('page_id_facebook', $dataPage['page_id_facebook'])->first();
+                if (is_null($page)) {
+                    $page = Page::create($dataPage);
+                } else {
+                    $page->update($dataPage);
+                }
+            }
+        }
+
+        return $this->parserResult($page);
     }
 }

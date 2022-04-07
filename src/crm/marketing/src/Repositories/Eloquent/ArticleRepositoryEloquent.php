@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
+use GGPHP\Crm\Facebook\Models\Page;
 use GGPHP\Crm\Facebook\Services\FacebookService;
 use GGPHP\Crm\Marketing\Models\Article;
 use GGPHP\Crm\Marketing\Models\ArticleCommentInfo;
@@ -72,7 +73,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
 
         if (!empty($attributes['marketing_program_id'])) {
             $this->model = $this->model->where('marketing_program_id', $attributes['marketing_program_id']);
-            if (!empty($attributes['page_access_token'])) {
+            if (!empty($attributes['data_page'])) {
                 $this->quantityShare($this->model->get(), $attributes);
             }
         }
@@ -88,52 +89,61 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
 
     public function postArticleFacebook($attributes)
     {
+        $response = [];
         $article = Article::findOrFail($attributes['article_id']);
 
-        $attributes['message'] = $article->name . "\n" . $article->content;
+        if (isset($attributes['data_page'])) {
+            foreach ($attributes['data_page'] as $value) {
+                $value['message'] = $article->name . "\n" . $article->content;
 
-        if ($article->file_image == '[]') {
-            $response = FacebookService::publishPagePost($attributes);
-            $facebook_post_id = $response->id;
-        } else {
-            $paths = json_decode($article->file_image);
+                if ($article->file_image == '[]') {
+                    $response = FacebookService::publishPagePost($value);
+                    $facebook_post_id = $response->id;
+                } else {
+                    $paths = json_decode($article->file_image);
 
-            foreach ($paths as $path) {
-                $urls[] = env('IMAGE_URL') . $path;
-            }
-            $video = false;
-            foreach ($urls as $url) {
-                if (pathinfo($url, PATHINFO_EXTENSION) == 'mp4') {
-                    $video = true;
-                    break;
+                    foreach ($paths as $path) {
+                        $urls[] = env('IMAGE_URL') . $path;
+                    }
+                    $video = false;
+                    foreach ($urls as $url) {
+                        if (pathinfo($url, PATHINFO_EXTENSION) == 'mp4') {
+                            $video = true;
+                            break;
+                        }
+                    }
+                    if ($video) {
+                        $value['title'] = $article->name;
+                        $value['description'] = $article->content;
+                        $response = FacebookService::publishPagePostWithVideo($value, $urls);
+
+                        $video_id = $response->id;
+                    } else {
+                        $response = FacebookService::publishPagePostWithImage($value, $urls);
+                        $facebook_post_id = $response->id;
+                    }
                 }
-            }
-            if ($video) {
-                $attributes['title'] = $article->name;
-                $attributes['description'] = $article->content;
-                $response = FacebookService::publishPagePostWithVideo($attributes, $urls);
 
-                $video_id = $response->id;
-            } else {
-                $response = FacebookService::publishPagePostWithImage($attributes, $urls);
-                $facebook_post_id = $response->id;
+
+                $pageId = Page::where('page_id_facebook', $value['page_id'])->select('id')->first();
+
+                if (isset($video_id)) {
+                    $data = [
+                        'article_id' => $article->id,
+                        'video_id' => $video_id,
+                        'page_id' => $pageId->id
+                    ];
+                } else {
+                    $data = [
+                        'article_id' => $article->id,
+                        'facebook_post_id' => $facebook_post_id,
+                        'page_id' => $pageId->id
+                    ];
+                }
+
+                PostFacebookInfo::create($data);
             }
         }
-
-        $postFacebookInfo = PostFacebookInfo::where('article_id', $article->id)->first();
-        if (isset($video_id)) {
-            $data = [
-                'article_id' => $article->id,
-                'video_id' => $video_id
-            ];
-        } else {
-            $data = [
-                'article_id' => $article->id,
-                'facebook_post_id' => $facebook_post_id
-            ];
-        }
-
-        PostFacebookInfo::create($data);
 
         return $response;
     }
@@ -229,18 +239,23 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
 
     public function quantityShare($article, $attributes)
     {
-        foreach ($article as $key => $value) {
-            if (!is_null($value->postFacebookInfo)) {
-                $attributes['page_access_token'] = $attributes['page_access_token'];
-                $attributes['post_id'] = $value->postFacebookInfo->facebook_post_id;
-                $response = FacebookService::getQuantitySharePost($attributes);
+        foreach ($article as $value) {
+            foreach (json_decode($attributes['data_page']) as $dataPage) {
+                $page = Page::where('page_id_facebook', $dataPage->page_id)->select('id')->first();
+                $postFacebookInfo = PostFacebookInfo::where('page_id', $page->id)->where('article_id', $value->id)->first();
+                
+                if (!is_null($postFacebookInfo)) {
+                    $attributes['page_access_token'] = $dataPage->page_access_token;
+                    $attributes['post_id'] = $postFacebookInfo->facebook_post_id;
+                    $response = FacebookService::getQuantitySharePost($attributes);
 
-                if (isset($response->shares)) {
-                    $value->postFacebookInfo->update(['quantity_share' => $response->shares->count]);
+                    if (isset($response->shares)) {
+                        $postFacebookInfo->update(['quantity_share' => $response->shares->count]);
+                    }
                 }
             }
         }
 
-        return;
+        return null;
     }
 }

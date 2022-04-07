@@ -26,16 +26,14 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
             }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -61,16 +59,14 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
             }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -96,6 +92,7 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
+
             if ($e->getHttpStatusCode() != 500) {
                 $status = $e->getHttpStatusCode();
             }
@@ -103,9 +100,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -132,16 +126,14 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
             }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -168,16 +160,14 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
             }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -236,6 +226,7 @@ class FacebookService
             }
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
+
             if ($e->getHttpStatusCode() != 500) {
                 $status = $e->getHttpStatusCode();
             }
@@ -243,9 +234,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            // if ($e->getStatusCode() != 500) {
-            //     $status = $e->getStatusCode();
-            // }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -320,9 +308,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -351,13 +336,17 @@ class FacebookService
                 if (!empty($photoId['id'])) {
                     $photoIdArray[] = $photoId['id'];
                 }
-            } catch (FacebookResponseException $e) {
+            } catch (\Facebook\Exceptions\FacebookResponseException $e) {
                 $status = 500;
+
                 if ($e->getHttpStatusCode() != 500) {
                     $status = $e->getHttpStatusCode();
                 }
+
                 throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
-            } catch (FacebookSDKException $e) {
+            } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+                $status = 500;
+
                 throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
             }
         }
@@ -384,6 +373,7 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
+
             if ($e->getHttpStatusCode() != 500) {
                 $status = $e->getHttpStatusCode();
             }
@@ -391,9 +381,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->ge != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -421,6 +408,7 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
+
             if ($e->getHttpStatusCode() != 500) {
                 $status = $e->getHttpStatusCode();
             }
@@ -428,9 +416,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -453,16 +438,14 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
             }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -501,6 +484,7 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
+
             if ($e->getHttpStatusCode() != 500) {
                 $status = $e->getHttpStatusCode();
             }
@@ -508,9 +492,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -532,6 +513,7 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
+
             if ($e->getHttpStatusCode() != 500) {
                 $status = $e->getHttpStatusCode();
             }
@@ -539,9 +521,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -562,6 +541,7 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
+
             if ($e->getHttpStatusCode() != 500) {
                 $status = $e->getHttpStatusCode();
             }
@@ -569,9 +549,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -590,6 +567,7 @@ class FacebookService
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
+
             if ($e->getHttpStatusCode() != 500) {
                 $status = $e->getHttpStatusCode();
             }
@@ -597,9 +575,6 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -643,7 +618,7 @@ class FacebookService
         }
 
         $graphNode = $response->getBody();
-        
+
         return json_decode($graphNode);
     }
 }

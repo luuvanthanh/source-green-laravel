@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Facebook\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Crm\Facebook\Repositories\Contracts\PageRepository;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class PageController extends Controller
 {
@@ -37,5 +38,13 @@ class PageController extends Controller
         } catch (\Throwable $th) {
             return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage());
         }
+    }
+
+    public function store(Request $request)
+    {
+        $attributes = $request->all();
+        $page  = $this->pageRepository->create($attributes);
+
+        return $this->success($page, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 }

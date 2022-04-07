@@ -58,6 +58,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::post('pages/delete-all-employee-facebook', 'EmployeeFacebookController@destroyAllEmployeeFacebook');
                 \Route::post('pages/refresh-link-files', 'MessageController@refreshLinkFile');
                 \Route::get('pages/user-long-tokens', 'FacebookController@userLongToken');
+                \Route::post('pages/add-pages', 'PageController@store');
             });
         });
     }

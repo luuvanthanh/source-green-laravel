@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Marketing\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Facebook\Transformers\PageTransformer;
 use GGPHP\Crm\Marketing\Models\PostFacebookInfo;
 
 /**
@@ -29,7 +30,7 @@ class PostFacebookInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['articleReactionInfo', 'articleCommentInfo'];
+    protected $availableIncludes = ['articleReactionInfo', 'articleCommentInfo', 'page'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -52,5 +53,14 @@ class PostFacebookInfoTransformer extends BaseTransformer
     public function includeArticleCommentInfo(PostFacebookInfo $postFacebookInfo)
     {
         return $this->collection($postFacebookInfo->articleCommentInfo, new ArticleCommentInfoTransformer, 'ArticleCommentInfo');
+    }
+
+    public function includePage(PostFacebookInfo $postFacebookInfo)
+    {
+        if (is_null($postFacebookInfo->page)) {
+            return;
+        }
+        
+        return $this->item($postFacebookInfo->page, new PageTransformer, 'Page');
     }
 }

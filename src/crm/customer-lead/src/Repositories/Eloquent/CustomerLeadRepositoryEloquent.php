@@ -281,7 +281,6 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
     public function mergeCustomerLead($attributes)
     {
-
         $mergeCustomerLead = CustomerLead::whereIn('id', $attributes['merge_customer_lead_id'])->orderBy('created_at', 'DESC')->first();
         $mergeCustomerLead->update($attributes);
 
