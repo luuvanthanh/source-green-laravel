@@ -517,7 +517,6 @@ const Index = memo(() => {
       schoolYearId: values?.schoolYearId || undefined,
       studentId: values?.studentId || undefined,
       expectedToCollectMoney: data || undefined,
-      typeFee: JSON.stringify(idRes),
       tuition: dataTuition,
       id: (params?.id && !isCopy) ? params?.id : undefined,
       dayAdmission: Helper.getDateTime({

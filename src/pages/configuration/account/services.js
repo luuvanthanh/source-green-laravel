@@ -1,9 +1,9 @@
-import request from '@/utils/requestLogin';
+import request from '@/utils/request';
 import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/api/identity/users', {
+  return request('/user', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),

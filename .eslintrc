@@ -23,7 +23,8 @@
     "API_URL_CRM": true,
     "APP_ID_FB": true,
     "io": true,
-    "URL_EMAIL_MARKETING": true
+    "URL_EMAIL_MARKETING": true,
+    "URL_SOCKET_LIVE" : true
   },
   "rules": {
     "react/jsx-wrap-multilines": 0,

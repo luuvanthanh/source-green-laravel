@@ -336,7 +336,7 @@ const Index = memo(() => {
 
 
   useEffect(() => {
-    const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
+    const socket = io(URL_SOCKET_LIVE, {
       transports: ['websocket'],
     });
     socket.on('connect', () => {
