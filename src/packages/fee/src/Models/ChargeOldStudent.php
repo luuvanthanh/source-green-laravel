@@ -13,13 +13,19 @@ class ChargeOldStudent extends UuidModel
      */
     protected $table = 'fee.ChargeOldStudents';
 
+    const PAYMENT_STATUS = [
+        'UNPAID' => 1,
+        'PAYING' => 2,
+        'PAID' => 3
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'StudentId', 'SchoolYearId',  'TotalMoney', 'DayAdmission', 'ExpectedToCollectMoney', 'TypeFee'
+        'StudentId', 'SchoolYearId',  'TotalMoney', 'DayAdmission', 'ExpectedToCollectMoney', 'PaymentStatus', 'ChargeStudentIdCrm'
     ];
 
     protected $casts = [
@@ -50,5 +56,10 @@ class ChargeOldStudent extends UuidModel
     public function student()
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Student::class, 'StudentId');
+    }
+
+    public function detailPaymentAccountant()
+    {
+        return $this->hasMany(DetailPaymentAccountant::class, 'ChargeOldStudentId');
     }
 }

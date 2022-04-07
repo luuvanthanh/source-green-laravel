@@ -84,6 +84,9 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             //charge-old-students
             Route::get('charge-old-students', 'ChargeOldStudentController@chargeOldStudent')->name('accountant.charge-old-students');
+
+            //post-detail-payment-accountant
+            Route::post('charge-old-student-detail-payments', 'ChargeOldStudentController@chargeOldStudentDetailPayment')->name('accountant.charge-old-student-detail-payments');
         });
     }
 }

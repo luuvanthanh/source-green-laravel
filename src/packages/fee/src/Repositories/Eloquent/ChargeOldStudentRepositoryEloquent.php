@@ -2,8 +2,10 @@
 
 namespace GGPHP\Fee\Repositories\Eloquent;
 
+use CloudCreativity\LaravelJsonApi\Utils\Arr;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use GGPHP\Fee\Models\DetailPaymentAccountant;
 use GGPHP\Fee\Presenters\ChargeOldStudentPresenter;
 use GGPHP\Fee\Repositories\Contracts\ChargeOldStudentRepository;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +57,12 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
         if (!empty($attributes['nameStudent'])) {
             $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
                 $query->whereLike('FullName', $attributes['nameStudent']);
+            });
+        }
+
+        if (!empty($attributes['month'])) {
+            $this->model = $this->model->whereHas('schoolYear', function ($query) use ($attributes) {
+                $query->where('StartDate', '<=', $attributes['month'])->where('EndDate', '>=', $attributes['month']);
             });
         }
 
@@ -120,11 +128,11 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                             unset($value[$key]);
                         }
                     }
-                    $totalMoney += $value['Money'];
                     $chargeStudent->tuition()->create($value);
                 }
             }
 
+            $totalMoney = array_sum(array_column($attributes['expectedToCollectMoney'], 'totalMoneyMonth'));
             $chargeStudent->update(['TotalMoney' => $totalMoney]);
 
             DB::commit();
@@ -158,11 +166,11 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                             unset($value[$key]);
                         }
                     }
-                    $totalMoney += $value['Money'];
                     $chargeStudent->tuition()->create($value);
                 }
             }
 
+            $totalMoney = array_sum(array_column($attributes['expectedToCollectMoney'], 'totalMoneyMonth'));
             $chargeStudent->update(['TotalMoney' => $totalMoney]);
 
             DB::commit();
@@ -172,5 +180,20 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
         }
 
         return parent::find($id);
+    }
+
+    public function chargeOldStudentDetailPayment(array $attributes)
+    {
+        foreach ($attributes['data'] as $value) {
+            $chargeOldStudent = ChargeOldStudent::find($value['chargeOldStudenId']);
+            $chargeOldStudent->update(['PaymentStatus' => ChargeOldStudent::PAYMENT_STATUS[$value['paymentStatus']]]);
+
+            foreach ($value['detail'] as $valueDetail) {
+                $valueDetail['ChargeOldStudentId'] = $chargeOldStudent->Id;
+                DetailPaymentAccountant::create($valueDetail);
+            }
+        }
+
+        return parent::find($chargeOldStudent->Id);
     }
 }
