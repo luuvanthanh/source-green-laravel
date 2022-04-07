@@ -33,16 +33,7 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $students = $this->studentRepository->all();
-        } else {
-            $students = $this->studentRepository->paginate($limit);
-        }
+        $students = $this->studentRepository->getStudent($request->all());
 
         return $this->success($students, trans('lang::messages.common.getListSuccess'));
     }
