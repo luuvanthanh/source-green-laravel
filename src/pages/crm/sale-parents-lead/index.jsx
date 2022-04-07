@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tag, Modal, Select } from 'antd';
+import { Form, Tag, Modal, Select , Upload , message } from 'antd';
 import classnames from 'classnames';
 import { get, debounce, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -511,6 +511,19 @@ class Index extends PureComponent {
     }));
   };
 
+  importExcel = (file) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'crmSaleParentsLead/IMPORT_EXCEL',
+      payload: {file},  
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
   render() {
     const {
       district,
@@ -527,6 +540,7 @@ class Index extends PureComponent {
       location,
     } = this.props;
     const { search, dataSource, isModalVisible, dataCheck, isModal } = this.state;
+    const self = this;
     const rowSelection = {
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
@@ -534,6 +548,28 @@ class Index extends PureComponent {
         name: record.employee_id,
       }),
     };
+    const props =  {
+      beforeUpload() {
+        return null;
+      },
+      customRequest({ file }) {
+        const { name, size } = file;
+        const allowTypes = ['xlsx', 'xls'];
+        const maxSize = 5 * 2 ** 20;
+        if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+          setTimeout(() => {
+            message.error(
+              'Định dạng hỗ trợ: xlsx', 'xls Tổng dung lượng không vượt quá 20MB',
+            );
+          }, 300);
+          return;
+        }
+        self.importExcel(file);
+      },
+      showUploadList: false,
+      fileList: [],
+    };
+
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
@@ -596,9 +632,11 @@ class Index extends PureComponent {
                       </div>
                     </Modal>
                   </div>
-                  <Button color="primary" icon="export" className="ml-2">
-                    Import
-                  </Button>
+                  <Upload {...props}>
+                      <Button color="primary" icon="export" className="ml-2"  loading={effects['crmSaleParentsLead/IMPORT_EXCEL']}> 
+                        Import
+                      </Button>
+                    </Upload>
                   <Button
                     color="success"
                     icon="plus"

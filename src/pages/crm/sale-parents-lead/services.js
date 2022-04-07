@@ -110,3 +110,14 @@ export function getTypes(params = {}) {
     },
   });
 }
+
+export function importExcel(data = {}) {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    formData.append(key, data[key]);
+  });
+  return request('/v1/import-excel-customer-leads', {
+    method: 'POST',
+    data: formData,
+  });
+}
