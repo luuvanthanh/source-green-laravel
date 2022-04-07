@@ -72,6 +72,9 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
 
         if (!empty($attributes['marketing_program_id'])) {
             $this->model = $this->model->where('marketing_program_id', $attributes['marketing_program_id']);
+            if (!empty($attributes['page_access_token'])) {
+                $this->quantityShare($this->model->get(), $attributes);
+            }
         }
 
         if (!empty($attributes['limit'])) {
@@ -212,7 +215,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             $postFacebookInfo = PostFacebookInfo::where('article_id', $id)->first();
             $attributes['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
             $response = FacebookService::deletePagePost($attributes);
-            
+
             if ($response->success) {
                 $postFacebookInfo->forceDelete();
             }
@@ -222,5 +225,22 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             \DB::rollback();
         }
         return null;
+    }
+
+    public function quantityShare($article, $attributes)
+    {
+        foreach ($article as $key => $value) {
+            if (!is_null($value->postFacebookInfo)) {
+                $attributes['page_access_token'] = $attributes['page_access_token'];
+                $attributes['post_id'] = $value->postFacebookInfo->facebook_post_id;
+                $response = FacebookService::getQuantitySharePost($attributes);
+
+                if (isset($response->shares)) {
+                    $value->postFacebookInfo->update(['quantity_share' => $response->shares->count]);
+                }
+            }
+        }
+
+        return;
     }
 }

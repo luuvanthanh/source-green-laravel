@@ -236,14 +236,15 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                     'status_send_message' => 'received',
                     'conversation_id' => $conversation->id
                 ]));
-                //\Log::info(['tran thai tin nhan' => $statusSendMessage['delivery']['watermark']]);
-                foreach ($statusSendMessage['delivery']['mids'] as $value) {
-                    // \Log::info($statusSendMessage['delivery']['watermark']);
-                    $message = Message::where('message_id_facebook', $value)->first();
-                    $message->watermark = $statusSendMessage['delivery']['watermark'];
-                    if ($message->status_send_message != Message::STATUS_SEND_MESSAGE['READ']) {
-                        $message->status_send_message = Message::STATUS_SEND_MESSAGE['RECEIVED'];
-                        $message->update();
+
+                if (isset($statusSendMessage['delivery']['mids'])) {
+                    foreach ($statusSendMessage['delivery']['mids'] as $value) {
+                        $message = Message::where('message_id_facebook', $value)->first();
+                        $message->watermark = $statusSendMessage['delivery']['watermark'];
+                        if ($message->status_send_message != Message::STATUS_SEND_MESSAGE['READ']) {
+                            $message->status_send_message = Message::STATUS_SEND_MESSAGE['RECEIVED'];
+                            $message->update();
+                        }
                     }
                 }
                 $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['RECEIVED']]);
