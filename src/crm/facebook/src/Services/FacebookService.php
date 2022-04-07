@@ -596,7 +596,6 @@ class FacebookService
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            dd($e);
             $status = 500;
             if ($e->getStatusCode() != 500) {
                 $status = $e->getStatusCode();
@@ -617,5 +616,34 @@ class FacebookService
         $response = file_get_contents('https://graph.facebook.com/oauth/access_token?client_id=' . $client_id . '&client_secret=' . $client_secret . '&grant_type=fb_exchange_token&fb_exchange_token=' . $user_access_token);
 
         return json_decode($response);
+    }
+
+    public static function getQuantitySharePost(array $attributes)
+    {
+        $fb = getFacebookSdk();
+
+        try {
+            $postId = $attributes['post_id'];
+            $response = $fb->get(
+                '/' . $postId . '?fields=shares',
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+        
+        return json_decode($graphNode);
     }
 }
