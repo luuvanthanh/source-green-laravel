@@ -191,12 +191,12 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
             'first' => $firstCall,
             'second' => $secondCall,
             'third' => $thirdCall,
-            'four' => $fourthCall,
-            'five' => $fivethCall,
+            'fourth' => $fourthCall,
+            'fiveth' => $fivethCall,
             'call_yet' => $callYet,
             'called' => $called,
             'overtime' => $overtime,
-            'not_scheduled_yet' => $notScheduledYet
+            'yet_create' => $notScheduledYet
         ];
 
         return ['data' => $result];

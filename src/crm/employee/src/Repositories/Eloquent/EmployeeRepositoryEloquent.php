@@ -62,6 +62,10 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
             $this->model = $this->model->whereLike('full_name', $attributes['key']);
         }
 
+        if (isset($attributes['sale'])) {
+            $this->model = $this->model->has('extension');
+        }
+
         if (!empty($attributes['limit'])) {
             $employee = $this->paginate($attributes['limit']);
         } else {
@@ -104,17 +108,17 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
             $this->model = $this->model->where('id', $attributes['employee_id']);
         }
 
-        $this->model = $this->model->withCount([
+        $this->model = $this->model->has('extension')->withCount([
             'customerLead as total_lead' => function ($query) use ($attributes) {
                 $query->whereHas('managerCall', function ($query) use ($attributes) {
                     $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['end_date']);
+                    $query->whereDate('created_at', '<=', $attributes['to_date']);
                 });
             },
             'customerLead as lead_new' => function ($query) use ($attributes) {
                 $query->whereHas('managerCall', function ($query) use ($attributes) {
                     $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['end_date']);
+                    $query->whereDate('created_at', '<=', $attributes['to_date']);
                 });
                 $query->whereHas('statusLeadLatest', function ($query) {
                     $query->where(function ($query) {
@@ -129,7 +133,7 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
             'customerLead as lead_potential' => function ($query) use ($attributes) {
                 $query->whereHas('managerCall', function ($query) use ($attributes) {
                     $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['end_date']);
+                    $query->whereDate('created_at', '<=', $attributes['to_date']);
                 });
                 $query->whereHas('statusLeadLatest', function ($query) {
                     $query->where(function ($query) {
@@ -144,7 +148,7 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
             'customerLead as lead_not_potential' => function ($query) use ($attributes) {
                 $query->whereHas('managerCall', function ($query) use ($attributes) {
                     $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['end_date']);
+                    $query->whereDate('created_at', '<=', $attributes['to_date']);
                 });
                 $query->whereHas('statusLeadLatest', function ($query) {
                     $query->where(function ($query) {
@@ -159,39 +163,39 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
             'customerLead as out_of_date' => function ($query) use ($attributes) {
                 $query->whereHas('managerCall', function ($query) use ($attributes) {
                     $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['end_date']);
+                    $query->whereDate('created_at', '<=', $attributes['to_date']);
                     $query->whereDate('expected_date', '<', now()->toDateString());
                     $query->where('status', ManagerCall::STATUS['CALLYET']);
                 });
             },
             'managerCall as first_call' => function ($query) use ($attributes) {
                 $query->whereDate('created_at', '>=', $attributes['from_date']);
-                $query->whereDate('created_at', '<=', $attributes['end_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
                 $query->where('call_times', ManagerCall::CALLTIME['FIRST']);
             },
             'managerCall as second_call' => function ($query) use ($attributes) {
                 $query->whereDate('created_at', '>=', $attributes['from_date']);
-                $query->whereDate('created_at', '<=', $attributes['end_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
                 $query->where('call_times', ManagerCall::CALLTIME['SECOND']);
             },
             'managerCall as third_call' => function ($query) use ($attributes) {
                 $query->whereDate('created_at', '>=', $attributes['from_date']);
-                $query->whereDate('created_at', '<=', $attributes['end_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
                 $query->where('call_times', ManagerCall::CALLTIME['THIRD']);
             },
             'managerCall as fourth_call' => function ($query) use ($attributes) {
                 $query->whereDate('created_at', '>=', $attributes['from_date']);
-                $query->whereDate('created_at', '<=', $attributes['end_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
                 $query->where('call_times', ManagerCall::CALLTIME['FOURTH']);
             },
             'managerCall as fiveth_call' => function ($query) use ($attributes) {
                 $query->whereDate('created_at', '>=', $attributes['from_date']);
-                $query->whereDate('created_at', '<=', $attributes['end_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
                 $query->where('call_times', ManagerCall::CALLTIME['FIVETH']);
             },
             'managerCall as called' => function ($query) use ($attributes) {
                 $query->whereDate('created_at', '>=', $attributes['from_date']);
-                $query->whereDate('created_at', '<=', $attributes['end_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
                 $query->where('status', ManagerCall::STATUS['CALLED']);
             }
         ]);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use GGPHP\Crm\Fee\Http\Requests\CalculatorTuitionRequest;
 use GGPHP\Crm\Fee\Http\Requests\CreateChargeStudentRequest;
 use GGPHP\Crm\Fee\Http\Requests\UpdateChargeStudentRequest;
+use GGPHP\Crm\Fee\Http\Requests\UpdateStatusChargeStudentRequest;
 use GGPHP\Crm\Fee\Repositories\Contracts\ChargeStudentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -88,5 +89,12 @@ class ChargeStudentController extends Controller
         $moneyFeePolicie = $this->chargeStudentRepository->moneyFeePolicie($request->all());
 
         return $this->success($moneyFeePolicie, trans('lang::messages.common.getInfoSuccess'));
+    }
+
+    public function updateStatusChargeStudent(UpdateStatusChargeStudentRequest $request)
+    {
+        $chargeStudent = $this->chargeStudentRepository->updateStatusChargeStudent($request->all());
+
+        return $this->success($chargeStudent, trans('lang::messages.common.modifySuccess'));
     }
 }
