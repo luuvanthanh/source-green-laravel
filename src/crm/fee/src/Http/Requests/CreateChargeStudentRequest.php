@@ -30,13 +30,13 @@ class CreateChargeStudentRequest extends FormRequest
                 'uuid',
                 'exists:admission_registers,student_info_id',
                 'exists:student_infos,id',
-                // function ($attribute, $value, $fail) {
-                //     $chargeStudent = ChargeStudent::where('school_year_id', $this->school_year_id)->where('student_info_id', $value)->first();
+                function ($attribute, $value, $fail) {
+                    $chargeStudent = ChargeStudent::where('school_year_id', $this->school_year_id)->where('student_info_id', $value)->first();
 
-                //     if (!is_null($chargeStudent)) {
-                //         return $fail('Học sinh chỉ có thể tạo được một lần cho một năm học.');
-                //     }
-                // }
+                    if (!is_null($chargeStudent)) {
+                        return $fail('Học sinh chỉ có thể tạo được một lần cho một năm học.');
+                    }
+                }
             ],
             'name_student' => 'required_without:student_info_id|string',
             'day_admission' => 'required|date|date_format:Y-m-d',
