@@ -17,13 +17,14 @@ class AuthenticateSSO
      */
     public function handle($request, Closure $next)
     {
-        return $next($request);
 
         $bearerToken = $request->bearerToken();
 
         if (is_null($bearerToken)) {
             throw new AuthenticationException;
         }
+
+        return $next($request);
 
         $ssoUrl = env('SSO_URL') . '/api/user/check-token';;
         $respone =  Http::withToken($bearerToken)->get("$ssoUrl");

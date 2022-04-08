@@ -20,7 +20,7 @@ class AttendanceLog extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'EmployeeId', 'AttendanceId', 'Action', 'Reason',
+        'EmployeeId', 'AttendanceId', 'Action', 'Reason', 'FileImage', 'Type'
     ];
 
     /**

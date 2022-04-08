@@ -4,6 +4,7 @@ namespace GGPHP\Fee\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Fee\Http\Requests\CreateChargeOldStudentRequest;
+use GGPHP\Fee\Http\Requests\CreateDetailPaymentAccountantRequest;
 use GGPHP\Fee\Http\Requests\UpdateChargeOldStudentRequest;
 use GGPHP\Fee\Repositories\Contracts\ChargeOldStudentRepository;
 use Illuminate\Http\Request;
@@ -111,5 +112,12 @@ class ChargeOldStudentController extends Controller
     {
         $this->chargeOldStudentRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    public function chargeOldStudentDetailPayment(CreateDetailPaymentAccountantRequest $request)
+    {
+        $chargeOldStudents = $this->chargeOldStudentRepository->chargeOldStudentDetailPayment($request->all());
+
+        return $this->success($chargeOldStudents, trans('lang::messages.common.createSuccess'));
     }
 }

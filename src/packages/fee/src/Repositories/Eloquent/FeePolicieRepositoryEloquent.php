@@ -12,6 +12,7 @@ use GGPHP\Fee\Models\PaymentForm;
 use GGPHP\Fee\Presenters\FeePoliciePresenter;
 use GGPHP\Fee\Repositories\Contracts\FeePolicieRepository;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Util\Json;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -230,9 +231,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         return parent::find($feePolicie->Id);
     }
 
-    public function moneyFeePolicies(array $attributes)
+    public function moneyFeePolicies(array $attributes, $isInternal = false)
     {
-
         $details = json_decode($attributes['details']);
         $data = [];
         $feePolicie = FeePolicie::when(!empty($attributes['branchId']), function ($query) use ($attributes) {
@@ -368,7 +368,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $feeDetail = $feePolicie->moneyMeal()
                                 ->where('ClassTypeId', $attributes['classTypeId'])
                                 ->where('PaymentFormId', $detail->paymentFormId)->first();
-
                             if (!is_null($feeDetail)) {
                                 $money = $feeDetail->Money;
                                 switch ($paymentForm->Code) {
@@ -509,7 +508,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 }
             }
 
-            $data[] = [
+            $result = [
                 'id' => isset($detail->id) ? $detail->id : null,
                 'feeId' => $detail->feeId,
                 'paymentFormId' => $detail->paymentFormId,
@@ -517,9 +516,15 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 'moneyMonth' => $moneyMonth,
                 'applyDate' => $attributes['dayAdmission']
             ];
+
+            if ($isInternal) {
+                return $result;
+            }
+
+            $data[] = $result;
         }
 
-        $detailData = $this->expectedToCollectMoney($feePolicie, $schooleYear, $data);
+        $detailData = $this->expectedToCollectMoney($attributes, $schooleYear, $data);
 
         return [
             'data' => $data,
@@ -555,7 +560,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         }
     }
 
-    public function expectedToCollectMoney($feePolicie, $schooleYear, $dataTuition)
+    public function expectedToCollectMoney($attributes, $schooleYear, $dataTuition)
     {
         $startDate = $schooleYear->StartDate;
         $endDate = $schooleYear->EndDate;
@@ -571,8 +576,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             foreach ($tuition as $key => $value) {
                 $feeTuiTion = Fee::find($value['feeId']);
                 $paymentForm = PaymentForm::find($value['paymentFormId']);
+                $value['applyDate'] = Carbon::parse($value['applyDate']);
 
-                $applyDate = Carbon::parse($value['applyDate'])->format('Y-m');
+                $applyDate = $value['applyDate']->format('Y-m');
                 switch ($paymentForm->Code) {
                     case 'NAM':
                         if ($applyDate == $month->format('Y-m')) {
@@ -580,7 +586,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => $value['money'],
-                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
                             $totalMoneyMonth += $value['money'];
                         } else {
@@ -588,7 +594,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => 0,
-                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
                         }
                         break;
@@ -599,7 +605,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'fee_id' => $feeTuiTion->Id,
                                     'fee_name' => $feeTuiTion->Name,
                                     'money' => $value['money'],
-                                    'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                    'fee_id_crm' => $feeTuiTion->FeeCrmId
                                 ];
                                 $totalMoneyMonth += $value['money'];
                             } else {
@@ -619,7 +625,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                             'fee_id' => $feeTuiTion->Id,
                                             'fee_name' => $feeTuiTion->Name,
                                             'money' => $result,
-                                            'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                            'fee_id_crm' => $feeTuiTion->FeeCrmId
                                         ];
                                         break;
                                     default:
@@ -627,7 +633,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                             'fee_id' => $feeTuiTion->Id,
                                             'fee_name' => $feeTuiTion->Name,
                                             'money' => $value['moneyMonth'],
-                                            'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                            'fee_id_crm' => $feeTuiTion->FeeCrmId
                                         ];
                                         $totalMoneyMonth += $value['moneyMonth'];
                                         break;
@@ -638,7 +644,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => 0,
-                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
                         }
 
@@ -654,7 +660,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => $value['money'],
-                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
                             $totalMoneyMonth += $value['money'];
                         } else {
@@ -662,30 +668,85 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => 0,
-                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
                         }
                         break;
                     case 'HOCKY2':
-                        $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                    case 'HOCKY1_HOCKY2':
+                        $dayAdmission = $value['applyDate']->format('Y-m-d');
+                        $firstMonthHk1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                            ->whereHas('paymentForm', function ($query) {
+                                $query->where('Code', 'HOCKY1');
+                            })
+                            ->where('Date', '>=', $value['applyDate']->startOfMonth()->format('Y-m-d'))->orderBy('Date', 'ASC')->first();
+
+                        $firstMonthHk2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                             ->whereHas('paymentForm', function ($query) {
                                 $query->where('Code', 'HOCKY2');
-                            })->whereMonth('Date', $month->format('m'))->whereYear('Date', $month->format('Y'))->first();
+                            })
+                            ->where('Date', '>=', $value['applyDate']->startOfMonth()->format('Y-m-d'))->orderBy('Date', 'ASC')->first();
 
-                        if ($applyDate == $month->format('Y-m') && !is_null($isMonth)) {
-                            $fee[] = [
-                                'fee_id' => $feeTuiTion->Id,
-                                'fee_name' => $feeTuiTion->Name,
-                                'money' => $value['money'],
-                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
-                            ];
-                            $totalMoneyMonth += $value['money'];
+
+                        if ($month->format('Y-m') >= $applyDate) {
+                            if (!is_null($firstMonthHk1)  && ($month->format('Y-m-d') ==  $firstMonthHk1->Date)) {
+                                $dayAdmission = $month->format('Y-m') == $value['applyDate']->format('Y-m') ? $dayAdmission : $firstMonthHk1->StartDate;
+
+                                $detail[] = [
+                                    'paymentFormId' => PaymentForm::where('Code', 'HOCKY1')->first()->Id,
+                                    'feeId' => $feeTuiTion->Id,
+                                ];
+
+                                $dataAttributes = [
+                                    'classTypeId' => $attributes['classTypeId'],
+                                    'schoolYearId' => $attributes['schoolYearId'],
+                                    'student' => $attributes['student'],
+                                    'dayAdmission' => $dayAdmission,
+                                    'details' => json_encode($detail)
+                                ];
+                                $moneyFeePolicies = $this->moneyFeePolicies($dataAttributes, true);
+                                $fee[] = [
+                                    'fee_id' => $feeTuiTion->Id,
+                                    'fee_name' => $feeTuiTion->Name,
+                                    'money' => $moneyFeePolicies['money'],
+                                    'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                ];
+                            } else if (!is_null($firstMonthHk2)  && ($month->format('Y-m-d') ==  $firstMonthHk2->Date)) {
+                                $dayAdmission = $month->format('Y-m') == $value['applyDate']->format('Y-m') ? $dayAdmission : $firstMonthHk1->StartDate;
+                                $detail[] = [
+                                    'paymentFormId' => PaymentForm::where('Code', 'HOCKY2')->first()->Id,
+                                    'feeId' => $feeTuiTion->Id,
+                                ];
+
+                                $dataAttributes = [
+                                    'classTypeId' => $attributes['classTypeId'],
+                                    'schoolYearId' => $attributes['schoolYearId'],
+                                    'student' => $attributes['student'],
+                                    'dayAdmission' => $dayAdmission,
+                                    'details' => json_encode($detail)
+                                ];
+
+                                $moneyFeePolicies = $this->moneyFeePolicies($dataAttributes, true);
+                                $fee[] = [
+                                    'fee_id' => $feeTuiTion->Id,
+                                    'fee_name' => $feeTuiTion->Name,
+                                    'money' => $moneyFeePolicies['money'],
+                                    'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                ];
+                            } else {
+                                $fee[] = [
+                                    'fee_id' => $feeTuiTion->Id,
+                                    'fee_name' => $feeTuiTion->Name,
+                                    'money' => 0,
+                                    'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                ];
+                            }
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
                                 'money' => 0,
-                                'fee_id_crm'=>$feeTuiTion->FeeCrmId
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
                         }
                         break;
