@@ -261,6 +261,10 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             });
         }
 
+        if (!empty($attributes['key'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
+        }
+
         if (!empty($attributes['limit'])) {
             $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
         } else {
