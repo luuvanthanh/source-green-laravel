@@ -73,7 +73,7 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
     {
         DB::beginTransaction();
         try {
-            $attributes['status'] = $this->model()::STATUS['YET_PAID'];
+            $attributes['status'] = $this->model()::STATUS['UNPAID'];
 
             $chargeStudent = ChargeStudent::create($attributes);
 
@@ -88,6 +88,26 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
 
             $chargeStudent->update(['total_money' => $totalMoney]);
 
+            if (!is_null($chargeStudent->admissionRegister)) {
+                //param sync to charge old student hrm
+                $params['studentId'] = $chargeStudent->admissionRegister->student_clover_id;
+                $params['schoolYearId'] = $chargeStudent->schoolYear->school_year_clover_id;
+                $params['dayAdmission'] = $chargeStudent->day_admission;
+                $params['expectedToCollectMoney'] = $chargeStudent->expected_to_collect_money;
+                $params['chargeStudentIdCrm'] = $chargeStudent->id;
+
+                $tuitions = $chargeStudent->tuition->map(function ($item) {
+                    return [
+                        'FeeId' => $item->fee->fee_clover_id,
+                        'PaymentFormId' => $item->paymentForm->payment_form_clover_id,
+                        'Money' => $item->money
+                    ];
+                });
+
+                $params['tuition'] = $tuitions;
+                $result = ChargeStudentService::syncCreateChargeStudentHrm($params);
+                $chargeStudent->update(['charge_student_hrm_id' => $result['data']['id']]);
+            }
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollback();
@@ -111,10 +131,31 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
                 foreach ($attributes['tuition'] as $value) {
                     $chargeStudent->tuition()->create($value);
                 }
+            }
 
-                $totalMoney = array_sum(array_column($attributes['expected_to_collect_money'], 'total_money_month'));
+            $totalMoney = array_sum(array_column($attributes['expected_to_collect_money'], 'total_money_month'));
 
-                $chargeStudent->update(['total_money' => $totalMoney]);
+            $chargeStudent->update(['total_money' => $totalMoney]);
+
+            if (!is_null($chargeStudent->admissionRegister)) {
+                $params['studentId'] = $chargeStudent->admissionRegister->student_clover_id;
+                $params['schoolYearId'] = $chargeStudent->schoolYear->school_year_clover_id;
+                $params['dayAdmission'] = $chargeStudent->day_admission;
+                $params['expectedToCollectMoney'] = $chargeStudent->expected_to_collect_money;
+                $params['chargeStudentIdCrm'] = $chargeStudent->id;
+
+                $tuitions = $chargeStudent->tuition->map(function ($item) {
+                    return [
+                        'FeeId' => $item->fee->fee_clover_id,
+                        'PaymentFormId' => $item->paymentForm->payment_form_clover_id,
+                        'Money' => $item->money
+                    ];
+                });
+
+                $params['tuition'] = $tuitions;
+                $result = ChargeStudentService::syncUpdateChargeStudentHrm($params, $chargeStudent->charge_student_hrm_id);
+
+                $chargeStudent->update(['charge_student_hrm_id' => $result['data']['id']]);
             }
 
             DB::commit();
@@ -160,6 +201,15 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
             $attributes['details'][$key]['money'] = $item['money'];
         }
 
-        return ['detail' => $attributes, 'data_details' => $data['detailData']];
+        return ['data' => $attributes['details'], 'data_details' => $data['detailData']];
+    }
+
+    public function updateStatusChargeStudent(array $attributes)
+    {
+        collect($attributes)->each(function ($item) {
+            $this->model->findOrFail($item['charge_student_id'])->update(['status' => ChargeStudent::STATUS[$item['status']]]);
+        });
+
+        return [];
     }
 }

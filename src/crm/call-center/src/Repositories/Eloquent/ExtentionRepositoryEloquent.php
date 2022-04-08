@@ -53,15 +53,13 @@ class ExtensionRepositoryEloquent extends BaseRepository implements ExtensionRep
 
     public function getExtension(array $attributes)
     {
-        if (!empty($attributes['employee_id_hrm'])) {
+        if (!empty($attributes['employee_id'])) {
             $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
-                $query->where('employee_id_hrm', $attributes['employee_id_hrm']);
+                $query->where('employee_id', $attributes['employee_id']);
             })->with(['employee' => function ($query) use ($attributes) {
-                $query->where('employee_id_hrm', $attributes['employee_id_hrm']);
+                $query->where('employee_id', $attributes['employee_id']);
             }]);
         }
-
-        $this->model = $this->model->withCount('employee');
 
         if (!empty($attributes['limit'])) {
             $callCenter = $this->paginate($attributes['limit']);

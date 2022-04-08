@@ -35,7 +35,7 @@ class UpdateChargeStudentRequest extends FormRequest
                     if (!is_null($chargeStudent)) {
                         return $fail('Học sinh chỉ có thể tạo được một lần cho một năm học.');
                     }
-                }
+                },
             ],
             'name_student' => 'required_if:student_info_id,null|string',
             'day_admission' => 'required|date|date_format:Y-m-d',
@@ -46,7 +46,15 @@ class UpdateChargeStudentRequest extends FormRequest
             'tuition.*.payment_form_id' => 'required|uuid|exists:payment_forms,id',
             'tuition.*.money' => 'required|numeric',
             'expected_to_collect_money' => 'required|array',
-            'status' => 'required|in:YET_PAID,PAID'
+            'charge_student_id' => function ($attribute, $value, $fail) {
+                $chargeStudent = ChargeStudent::findOrFail($this->route('charge_student'));
+
+                if ($chargeStudent->status == ChargeStudent::STATUS['UNPAID']) {
+                    return  true;
+                }
+
+                return $fail('Không được cập nhật học sinh đã có thanh toán phí');
+            }
         ];
     }
 
@@ -64,6 +72,8 @@ class UpdateChargeStudentRequest extends FormRequest
             unset($data['mother_name']);
             unset($data['mother_phone']);
         }
+
+        $data['charge_student_id'] = $this->route('charge_student');
 
         return $data;
     }
