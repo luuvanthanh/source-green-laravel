@@ -51,4 +51,19 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
     {
         return StudentPresenter::class;
     }
+
+    public function getStudent(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('FullName', $attributes['key']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $student = $this->paginate($attributes['limit']);
+        } else {
+            $student = $this->get();
+        }
+
+        return $student;
+    }
 }
