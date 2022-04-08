@@ -35,6 +35,7 @@ class ChargeOldStudentTransformer extends BaseTransformer
                 $attributes['ExpectedToCollectMoney'] = $this->dataChargeStudentByMonth($param, $model);
             }
         }
+        $attributes['PaymentStatus'] = array_search($model->PaymentStatus, $model::PAYMENT_STATUS);
 
         return $attributes;
     }

@@ -8,6 +8,7 @@ use GGPHP\Fee\Models\ChargeOldStudent;
 use GGPHP\Fee\Models\DetailPaymentAccountant;
 use GGPHP\Fee\Presenters\ChargeOldStudentPresenter;
 use GGPHP\Fee\Repositories\Contracts\ChargeOldStudentRepository;
+use GGPHP\Fee\Services\ChargeOldStudentService;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -132,7 +133,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 }
             }
 
-            $totalMoney = array_sum(array_column($attributes['expectedToCollectMoney'], 'totalMoneyMonth'));
+            $totalMoney = array_sum(array_column($attributes['expectedToCollectMoney'], 'total_money_month'));
             $chargeStudent->update(['TotalMoney' => $totalMoney]);
 
             DB::commit();
@@ -170,7 +171,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 }
             }
 
-            $totalMoney = array_sum(array_column($attributes['expectedToCollectMoney'], 'totalMoneyMonth'));
+            $totalMoney = array_sum(array_column($attributes['expectedToCollectMoney'], 'total_money_month'));
             $chargeStudent->update(['TotalMoney' => $totalMoney]);
 
             DB::commit();
@@ -184,6 +185,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
 
     public function chargeOldStudentDetailPayment(array $attributes)
     {
+        $dataCrm = [];
         foreach ($attributes['data'] as $value) {
             $chargeOldStudent = ChargeOldStudent::find($value['chargeOldStudenId']);
             $chargeOldStudent->update(['PaymentStatus' => ChargeOldStudent::PAYMENT_STATUS[$value['paymentStatus']]]);
@@ -192,6 +194,30 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 $valueDetail['ChargeOldStudentId'] = $chargeOldStudent->Id;
                 DetailPaymentAccountant::create($valueDetail);
             }
+
+            switch ($chargeOldStudent->PaymentStatus) {
+                case '1':
+                    $status = 'UNPAID';
+                    break;
+                case '2':
+                    $status = 'PAYING';
+                    break;
+                case '3':
+                    $status = 'PAID';
+                    break;
+                default:
+            }
+
+            if (!is_null($chargeOldStudent->ChargeStudentIdCrm)) {
+                $dataCrm[] = [
+                    'charge_student_id' => $chargeOldStudent->ChargeStudentIdCrm,
+                    'status' => $status
+                ];
+            }
+        }
+ 
+        if (!empty($dataCrm)) {
+            ChargeOldStudentService::updateStatusStudentCrm($dataCrm);
         }
 
         return parent::find($chargeOldStudent->Id);
