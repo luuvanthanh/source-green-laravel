@@ -18,6 +18,9 @@ export function details(params = {}) {
         'admissionRegister.parentInfo,classType,schoolYear,studentInfo',
         'schoolYear',
         'tuition.paymentForm,tuition.fee',
+        'tuition',
+        'schoolYear',
+        'student.classStudent.class'
       ]),
     },
   });
@@ -30,7 +33,7 @@ export function update(data = {}) {
   });
 }
 
-export function moneyFeePolicies(params = {}) {
+export function moneyFeePolicie(params = {}) {
   return request('/v1/money-fee-policies', {
     method: 'GET',
     params,
@@ -57,7 +60,10 @@ export function getClass(params = {}) {
 export function getYears(params = {}) {
   return request('/v1/school-years', {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      include: Helper.convertIncludes(['PaymentForm.changeParameter.changeParameterDetail']),
+    },
   });
 }
 export function getFees(params = {}) {

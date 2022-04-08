@@ -28,6 +28,7 @@ const Index = memo(({ tuition, details, hanDleChangeText , checkSearch}) => {
 
   const [data, setData] = useState([
     {
+      id: uuidv4(),
       feeId: undefined,
       paymentFormId: undefined,
       money: 0,
@@ -243,13 +244,15 @@ const Index = memo(({ tuition, details, hanDleChangeText , checkSearch}) => {
 Index.propTypes = {
   tuition: PropTypes.arrayOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
-  checkSearch: PropTypes.objectOf(PropTypes.any),
+  checkSearch: PropTypes.bool,
+  hanDleChangeText: PropTypes.func,
 };
 
 Index.defaultProps = {
   tuition: [],
   details: {},
-  checkSearch: {},
+  checkSearch: false,
+  hanDleChangeText: () => {},
 };
 
 export default Index;

@@ -18,6 +18,8 @@ let isMounted = true;
  * @param {boolean} value
  * @returns {boolean} value of isMounted
  */
+
+
 const setIsMounted = (value = true) => {
   isMounted = value;
   return isMounted;
