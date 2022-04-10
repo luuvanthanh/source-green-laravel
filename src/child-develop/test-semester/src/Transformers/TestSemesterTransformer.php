@@ -4,6 +4,7 @@ namespace GGPHP\ChildDevelop\TestSemester\Transformers;
 
 use GGPHP\ChildDevelop\Category\Transformers\AssessmentPeriodTransformer;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
+use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Transformers\ClassTypeTransformer;
@@ -92,6 +93,12 @@ class TestSemesterTransformer extends BaseTransformer
             $testing = isset($status[1]) ? $status[1] : 0;
             $finish = isset($status[2]) ? $status[2] : 0;
             $cancel = isset($status[3]) ? $status[3] : 0;
+
+            if (!empty(request()->classId)) {
+                $student = Student::where('ClassId', request()->classId)->get();
+                $totalStudent = $student->count();
+                $untesting = $totalStudent - ($testing + $finish);
+            }
 
             $data['test_semester'] = [
                 'total_untesting' => $untesting + $cancel,
