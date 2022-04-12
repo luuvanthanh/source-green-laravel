@@ -7,6 +7,7 @@ use GGPHP\Crm\CustomerLead\Models\StatusLead;
 use GGPHP\Crm\Employee\Models\Employee;
 use GGPHP\Crm\Employee\Presenters\EmployeePresenter;
 use GGPHP\Crm\Employee\Repositories\Contracts\EmployeeRepository;
+use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -109,18 +110,17 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
         }
 
         $this->model = $this->model->has('extension')->withCount([
-            'customerLead as total_lead' => function ($query) use ($attributes) {
-                $query->whereHas('managerCall', function ($query) use ($attributes) {
-                    $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['to_date']);
-                });
+            'managerCall as total_lead' => function ($query) use ($attributes) {
+                $query->select(DB::raw('count(distinct(customer_lead_id))'));
+                $query->whereDate('created_at', '>=', $attributes['from_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
             },
-            'customerLead as lead_new' => function ($query) use ($attributes) {
-                $query->whereHas('managerCall', function ($query) use ($attributes) {
-                    $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['to_date']);
-                });
-                $query->whereHas('statusLeadLatest', function ($query) {
+            'managerCall as lead_new' => function ($query) use ($attributes) {
+                $query->select(DB::raw('count(distinct(customer_lead_id))'));
+                $query->whereDate('created_at', '>=', $attributes['from_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
+
+                $query->whereHas('customerLead.statusLeadLatest', function ($query) {
                     $query->where(function ($query) {
                         $query->select('status');
                         $query->from('status_lead');
@@ -130,12 +130,12 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
                     }, StatusLead::STATUS_LEAD['LEAD_NEW']);
                 });
             },
-            'customerLead as lead_potential' => function ($query) use ($attributes) {
-                $query->whereHas('managerCall', function ($query) use ($attributes) {
-                    $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['to_date']);
-                });
-                $query->whereHas('statusLeadLatest', function ($query) {
+            'managerCall as lead_potential' => function ($query) use ($attributes) {
+                $query->select(DB::raw('count(distinct(customer_lead_id))'));
+                $query->whereDate('created_at', '>=', $attributes['from_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
+
+                $query->whereHas('customerLead.statusLeadLatest', function ($query) {
                     $query->where(function ($query) {
                         $query->select('status');
                         $query->from('status_lead');
@@ -145,12 +145,12 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
                     }, StatusLead::STATUS_LEAD['POTENTIAL']);
                 });
             },
-            'customerLead as lead_not_potential' => function ($query) use ($attributes) {
-                $query->whereHas('managerCall', function ($query) use ($attributes) {
-                    $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['to_date']);
-                });
-                $query->whereHas('statusLeadLatest', function ($query) {
+            'managerCall as lead_not_potential' => function ($query) use ($attributes) {
+                $query->select(DB::raw('count(distinct(customer_lead_id))'));
+                $query->whereDate('created_at', '>=', $attributes['from_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
+
+                $query->whereHas('customerLead.statusLeadLatest', function ($query) {
                     $query->where(function ($query) {
                         $query->select('status');
                         $query->from('status_lead');
@@ -160,13 +160,11 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
                     }, StatusLead::STATUS_LEAD['NOT_POTENTIAL']);
                 });
             },
-            'customerLead as out_of_date' => function ($query) use ($attributes) {
-                $query->whereHas('managerCall', function ($query) use ($attributes) {
-                    $query->whereDate('created_at', '>=', $attributes['from_date']);
-                    $query->whereDate('created_at', '<=', $attributes['to_date']);
-                    $query->whereDate('expected_date', '<', now()->toDateString());
-                    $query->where('status', ManagerCall::STATUS['CALLYET']);
-                });
+            'managerCall as out_of_date' => function ($query) use ($attributes) {
+                $query->whereDate('created_at', '>=', $attributes['from_date']);
+                $query->whereDate('created_at', '<=', $attributes['to_date']);
+                $query->whereDate('expected_date', '<', now()->toDateString());
+                $query->where('status', ManagerCall::STATUS['CALLYET']);
             },
             'managerCall as first_call' => function ($query) use ($attributes) {
                 $query->whereDate('created_at', '>=', $attributes['from_date']);
