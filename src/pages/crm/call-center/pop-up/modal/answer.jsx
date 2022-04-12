@@ -53,10 +53,15 @@ const Outbound = memo(({ handleOnClick, inboundStatusInfo, infoFromInbound }) =>
           </Timer>
         )}
 
-        {/* STATUS */}
-        {inboundStatusInfo !== variablesModule.STATUS.accepted && (
-          <p className={styles['call-status']}>Đang kết nối</p>
+        {inboundStatusInfo === variablesModule.STATUS.bye && (
+          <p className={styles['call-status']}>Đã kết thúc</p>
         )}
+
+        {/* STATUS */}
+        {inboundStatusInfo !== variablesModule.STATUS.accepted &&
+          inboundStatusInfo !== variablesModule.STATUS.bye && (
+            <p className={styles['call-status']}>Đang kết nối</p>
+          )}
       </div>
       <Form className={styles['form-main']} form={formRef}>
         <FormItem

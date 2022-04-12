@@ -317,3 +317,17 @@
     color: $text-white;
   }
 }
+
+.modal {
+  &-phone,
+  &-inbound,
+  &-answer {
+    padding: 0 24px 24px 24px;
+    margin-top: 40px;
+    width: 100% !important;
+  }
+
+  &-answer {
+    cursor: move;
+  }
+}

@@ -1,19 +1,29 @@
 import request from '@/utils/requestCrm';
 
 export function get(params = {}) {
-  return request('/v1/class-types', {
+  return request('/v1/report-calls', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
     },
   });
 }
 
-export function getClassByAge(params = {}) {
-  return request('/v1/class-types', {
+export function getChartEmployee(params = {}) {
+  return request('/v1/report-calls', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
+    },
+    // parse: true,
+  });
+}
+
+export function getSaler(params = {}) {
+  return request('/v1/employees', {
+    method: 'GET',
+    params: {
+      ...params,
     },
   });
 }

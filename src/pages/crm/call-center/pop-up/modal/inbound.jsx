@@ -9,7 +9,7 @@ import variablesModule from '../variables';
 function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
   const handleInboundAnswer = () => {
     if (handleOnClick) {
-      handleOnClick(variablesModule.STATUS.outbound, true);
+      handleOnClick();
       handleAnswer(audioRef.current);
     }
   };

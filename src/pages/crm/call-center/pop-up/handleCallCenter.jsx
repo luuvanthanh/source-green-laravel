@@ -105,21 +105,7 @@ const handleInboundCall = () => {
 
       session.on('accepted', () => {
         setInboundStatus('ACCEPTED');
-
-        const remoteStream = new MediaStream();
-        session.sessionDescriptionHandler.peerConnection.getReceivers().forEach((receiver) => {
-          if (receiver.track) {
-            remoteStream.addTrack(receiver.track);
-          }
-        });
-        player.srcObject = remoteStream;
-        const playPromise = player.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {}).catch(() => {});
-        }
-
         soundStop();
-
         console.log('%cĐỒNG Ý (GỌI ĐẾN)', 'color: #2ecc71; font-weight: bold');
       });
       session.on('rejected', () => {
@@ -145,6 +131,18 @@ const handleInboundCall = () => {
 
       session.on('trackAdded', () => {
         console.log('%cTHÊM ÂM THANH (GỌI ĐẾN)', 'color: yellow; font-weight: bold');
+
+        const remoteStream = new MediaStream();
+        session.sessionDescriptionHandler.peerConnection.getReceivers().forEach((receiver) => {
+          if (receiver.track) {
+            remoteStream.addTrack(receiver.track);
+          }
+        });
+        player.srcObject = remoteStream;
+        const playPromise = player.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {}).catch(() => {});
+        }
       });
 
       setInfoCall(session);
@@ -196,8 +194,8 @@ const handleOutboundCall = () => {
         }
       });
 
-      session.on('accepted', () => {
-        console.log('%cĐỒNG Ý (GỌI ĐI)', 'color: #2ecc71; font-weight: bold');
+      session.on('accepted', (response) => {
+        console.log('%cĐỒNG Ý (GỌI ĐI)', 'color: #2ecc71; font-weight: bold', response);
         setOutboundStatus('ACCEPTED');
       });
       session.on('rejected', () => {
@@ -214,7 +212,7 @@ const handleOutboundCall = () => {
       });
       session.on('bye', (response) => {
         setOutboundEvent(response);
-        console.log('%cKẾT THÚC (GỌI ĐI)', 'color: red; font-weight: bold');
+        console.log('%cKẾT THÚC (GỌI ĐI)', 'color: red; font-weight: bold', response);
         setOutboundStatus('BYE');
       });
       session.on('unavailable', () => {
