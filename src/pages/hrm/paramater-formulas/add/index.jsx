@@ -177,16 +177,15 @@ class Index extends PureComponent {
       if (isInteger(item.enum)) {
         return {
           variable: null,
-          type: item.recipe ? 'formular' : 'variable',
+          type: 'value',
           value: item.enum,
           operator: item.recipe,
           formular: item.children ? this.recipeRecursive(item.children) : [],
         };
       }
       return {
-        variable:
-          !isEmpty(item.children) && item.recipe ? 'formular' : item.enum.replaceAll('@', ''),
-        type: item.recipe ? 'formular' : 'variable',
+        variable: !isEmpty(item.children) ? 'formular' : item.enum.replaceAll('@', ''),
+        type: !isEmpty(item.children) ? 'formular' : 'variable',
         value: null,
         operator: item.recipe,
         formular: item.children ? this.recipeRecursive(item.children) : [],
