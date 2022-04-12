@@ -43,7 +43,17 @@ class AdmissionRegisterTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $register_status = null;
+
+        foreach (AdmissionRegister::REGISTER_STATUS as $key => $value) {
+            if ($value == $model->register_status) {
+                $register_status = $key;
+            }
+        }
+
+        return [
+            'register_status' => $register_status
+        ];
     }
 
     public function includeStudentInfo(AdmissionRegister $admissionRegister)
