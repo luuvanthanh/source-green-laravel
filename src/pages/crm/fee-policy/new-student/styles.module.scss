@@ -28,3 +28,11 @@
   right: 0;
   color: #373737;
 }
+
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3b5cad !important;
+    font-weight: 700;
+    color: white !important;
+  }
+}

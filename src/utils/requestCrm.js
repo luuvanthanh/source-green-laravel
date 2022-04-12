@@ -78,6 +78,7 @@ async function covertData(response) {
         pagination: get(dataRoot, 'meta.pagination'),
         unread: get(dataRoot, 'meta.UNREAD'),
         payload: data,
+        data_details: get(dataRoot, 'data_details'),
       };
     }
     return dataRoot;

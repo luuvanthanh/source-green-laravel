@@ -37,6 +37,8 @@ const Index = memo(() => {
   const [weeksKitchen, setWeeksKitchen] = useState([]);
   const [fromDate, setFromDate] = useState([]);
   const [toDate, setToDate] = useState([]);
+  const [monthDate, setMonthDate] = useState(undefined);
+  const [yearDate, setYearDate] = useState(undefined);
 
   const history = useHistory();
   const { query } = useLocation();
@@ -154,22 +156,32 @@ const Index = memo(() => {
     });
   };
 
-  const onTime = () => {
+  const onTimeSetTimeout = () => {
     formRef.current.validateFields().then((values) => {
-      dispatch({
-        type: 'kitchenMenusCreate/GET_TIMETABLE_FEES',
-        payload: {
-          month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
-          year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
-        },
-        callback: (response) => {
-          if (response) {
-            setFromDate(response.fromDate);
-            setToDate(response.toDate);
-          }
-        },
-      });
+      const month = Number(moment(values?.month).format('M'));
+      const year = Number(moment(values?.month).format('YYYY'));
+      if (month !== monthDate || year !== yearDate) {
+        setMonthDate(month);
+        setYearDate(year);
+        dispatch({
+          type: 'kitchenMenusCreate/GET_TIMETABLE_FEES',
+          payload: {
+            month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+            year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+          },
+          callback: (response) => {
+            if (response) {
+              setFromDate(response.fromDate);
+              setToDate(response.toDate);
+            }
+          },
+        });
+      }
     });
+  };
+
+  const onTime = () => {
+    setTimeout(onTimeSetTimeout, 250);
   };
 
   // const remove = () => {
@@ -257,6 +269,8 @@ const Index = memo(() => {
         callback: (response) => {
           if (response) {
             setCheck(true);
+            setMonthDate(response?.month);
+            setYearDate(response?.year);
             setFromDate(moment(response.fromDate).format('DD/MM/YYYY'));
             setToDate(moment(response.toDate).format('DD/MM/YYYY'));
             const result = convertMenuMeal(response?.menuMeals)
@@ -1144,7 +1158,7 @@ const Index = memo(() => {
                   )}
                   {params.id && (
                     <Pane className="py20 d-flex justify-content-between align-items-center">
-                      <p className="btn-delete" role="presentation"  onClick={() => history.goBack()}>
+                      <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
                         Hủy
                       </p>
                       <div className="d-flex">
