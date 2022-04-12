@@ -10,10 +10,10 @@ class Page extends UuidModel
     protected $table = 'pages';
 
     const IMAGE = [
-        'jpg' => 'jpg',
-        'png' => 'png',
-        'jpeg' => 'jpeg',
-        'jpe' => 'jpe',
+        'JPG' => 'jpg',
+        'PNG' => 'png',
+        'JPEG' => 'jpeg',
+        'JPE' => 'jpe',
     ];
 
     protected $fillable = [

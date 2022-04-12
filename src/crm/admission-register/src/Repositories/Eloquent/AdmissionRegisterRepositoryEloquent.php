@@ -13,6 +13,7 @@ use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -119,30 +120,42 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
     {
         \DB::beginTransaction();
         try {
-            $admissionRegister = AdmissionRegister::create($attributes);
+            $admissionRegister = AdmissionRegister::where('student_info_id', $attributes['student_info_id'])->where('status', true)->first();
+
+            if (!is_null($admissionRegister)) {
+                $attributes['status'] = false;
+                $admissionRegister->update($attributes);
+            } else {
+                $admissionRegister = AdmissionRegister::create($attributes);
+
+                if (!empty($attributes['parent_info'])) {
+                    $admissionRegister->parentInfo()->create($attributes['parent_info']);
+                }
+
+                $customerLead = CustomerLead::where('id', $attributes['customer_lead_id'])->first();
+
+                if (!is_null($customerLead)) {
+                    ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
+                    $studentClover = $this->createStudent($attributes, $admissionRegister, $customerLead->id);
+                    $admissionRegister->update(['student_clover_id' => $studentClover->student->id]);
+                }
+            }
+
             $customerPotential = CustomerPotential::where('customer_lead_id', $attributes['customer_lead_id'])->first();
 
             if (!is_null($customerPotential)) {
                 $statusParentPotential = StatusParentPotential::where('number', StatusParentPotential::NUMBER_STATUS['ADMISSION_REGISTER'])->first();
-                $customerPotential->customerPotentialStatusCare()->create(['status_parent_potential_id' => $statusParentPotential->id]);
+                $customerPotentialStatusCare = CustomerPotentialStatusCare::where('status_parent_potential_id', $statusParentPotential->id)->first();
+
+                if (is_null($customerPotentialStatusCare)) {
+                    $customerPotential->customerPotentialStatusCare()->create(['status_parent_potential_id' => $statusParentPotential->id]);
+                }
             } else {
                 $attributes['id'] = $attributes['customer_lead_id'];
                 $customerPotential = resolve(CustomerLeadRepository::class)->moveToCustomerPotential($attributes);
 
                 $statusParentPotential = StatusParentPotential::where('number', StatusParentPotential::NUMBER_STATUS['ADMISSION_REGISTER'])->first();
                 $customerPotential->customerPotentialStatusCare()->create(['status_parent_potential_id' => $statusParentPotential->id]);
-            }
-
-            $customerLead = CustomerLead::where('id', $attributes['customer_lead_id'])->first();
-            ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
-
-            if (!empty($attributes['parent_info'])) {
-                $admissionRegister->parentInfo()->create($attributes['parent_info']);
-            }
-
-            if (!is_null($customerLead)) {
-                $studentClover = $this->createStudent($attributes, $admissionRegister, $customerLead->id);
-                $admissionRegister->update(['student_clover_id' => $studentClover->student->id]);
             }
 
             \DB::commit();

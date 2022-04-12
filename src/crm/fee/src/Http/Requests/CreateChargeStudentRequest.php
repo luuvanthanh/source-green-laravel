@@ -28,6 +28,7 @@ class CreateChargeStudentRequest extends FormRequest
             'student_info_id' => [
                 'required_without:name_student',
                 'uuid',
+                'exists:admission_registers,student_info_id',
                 'exists:student_infos,id',
                 function ($attribute, $value, $fail) {
                     $chargeStudent = ChargeStudent::where('school_year_id', $this->school_year_id)->where('student_info_id', $value)->first();

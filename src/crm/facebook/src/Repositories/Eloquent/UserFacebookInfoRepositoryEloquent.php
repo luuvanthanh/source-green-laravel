@@ -97,7 +97,8 @@ class UserFacebookInfoRepositoryEloquent extends BaseRepository implements UserF
                 'email' => $userFacebookInfo->user_email,
                 'phone' => $userFacebookInfo->user_phone,
                 'address' => $userFacebookInfo->user_address,
-                'search_source_id' => $searchSource->id
+                'search_source_id' => $searchSource->id,
+                'user_facebook_info_id' => $userFacebookInfo->id
             ];
             $customerLead = CustomerLead::create($dataLead);
             $dataStatusLead = [

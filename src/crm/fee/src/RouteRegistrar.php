@@ -75,6 +75,7 @@ class RouteRegistrar extends CoreRegistrar
 
             //charge-studnet
             Route::resource('charge-students', 'ChargeStudentController')->except('detete');
+            Route::post('update-status-charge-students', 'ChargeStudentController@updateStatusChargeStudent');
 
             //tuition
             Route::resource('tuitions', 'TuitionController')->only('index');

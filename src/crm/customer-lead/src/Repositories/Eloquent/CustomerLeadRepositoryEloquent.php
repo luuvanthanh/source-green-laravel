@@ -281,13 +281,19 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
     public function mergeCustomerLead($attributes)
     {
-        $mergeCustomerLead = CustomerLead::whereIn('id', $attributes['merge_customer_lead_id'])->orderBy('created_at', 'DESC')->first();
+        $mergeCustomerLead = CustomerLead::whereIn('id', $attributes['merge_customer_lead_id'])->where('user_facebook_info_id', '!=', null)->first();
+
+        if (is_null($mergeCustomerLead)) {
+            $mergeCustomerLead = CustomerLead::whereIn('id', $attributes['merge_customer_lead_id'])->orderBy('created_at', 'DESC')->first();
+        }
+
         $mergeCustomerLead->update($attributes);
 
         if (!empty($attributes['studen_info'])) {
             if (!empty($mergeCustomerLead->studentInfo)) {
                 $mergeCustomerLead->studentInfo()->forceDelete();
             }
+
             foreach ($attributes['studen_info'] as $value) {
                 $value['customer_lead_id'] = $mergeCustomerLead->id;
                 StudentInfo::create($value);
