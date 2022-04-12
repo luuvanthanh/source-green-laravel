@@ -22,6 +22,7 @@ const General = memo(() => {
     const params = useParams();
     const dispatch = useDispatch();
     const [check, setCheck] = useState(false);
+    const [childIssue, setChildIssue] = useState([]);
 
     useEffect(() => {
         if (params.id) {
@@ -42,6 +43,11 @@ const General = memo(() => {
         }
     }, [details?.childEvaluateInfo]);
 
+    useEffect(() => {
+        if(childEvaluation?.childIssue?.length > 0){
+            setChildIssue(childEvaluation?.childIssue?.filter(i => i?.is_checked));
+        }
+    }, [childEvaluation?.childIssue?.length]);
 
     return (
         <>
@@ -72,7 +78,7 @@ const General = memo(() => {
                                             Vấn đề khó khăn
                                         </Heading>
                                         {
-                                            childEvaluation?.childIssue?.map((item, index) =>
+                                            childIssue?.map((item, index) =>
 
                                                 <Pane className={stylesModule['child-main']} key={index}>
                                                     <h3 className={stylesModule.title}>{item?.question}</h3>

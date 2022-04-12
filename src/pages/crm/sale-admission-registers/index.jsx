@@ -10,7 +10,15 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
+
+const status = [
+  { id: 'NEW_REGISTER', name: 'Đăng ký mới' },
+  { id: 'TEST_INPUT', name: 'Test đầu vào' },
+  { id: 'PENDING_PAYMENT', name: 'Chờ thanh toán' },
+  { id: 'CANCEL_REGISTER', name: 'Hủy đăng ký' },
+];
 
 let isMounted = true;
 /**
@@ -32,8 +40,7 @@ const mapStateToProps = ({ crmSaleAdmission, loading }) => ({
   error: crmSaleAdmission.error,
   pagination: crmSaleAdmission.pagination,
   branches: crmSaleAdmission.branches,
-  city: crmSaleAdmission.city,
-  district: crmSaleAdmission.district,
+  parents: crmSaleAdmission.parents,
   loading,
 });
 @connect(mapStateToProps)
@@ -182,7 +189,7 @@ class Index extends PureComponent {
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'crmSaleAdmission/GET_CITIES',
+      type: 'crmSaleAdmission/GET_PARENTS',
       payload: {},
     });
     dispatch({
@@ -224,7 +231,7 @@ class Index extends PureComponent {
         width: 150,
         render: (value, record) => (
           <div className='d-flex' >
-            {record.studentInfo?.age_month }
+            {record.studentInfo?.age_month}
           </div>
         ),
       },
@@ -266,7 +273,16 @@ class Index extends PureComponent {
         title: 'Tình trạng',
         key: 'status',
         width: 150,
-        render: (record) => record?.status,
+        render: (record) => (
+          <>
+            <Text size="normal">
+              {record?.register_status === "NEW_REGISTER" ? 'Đăng ký mới' : ""}
+              {record?.register_status === "TEST_INPUT" ? 'Test đầu vào' : ""}
+              {record?.register_status === "PENDING_PAYMENT" ? 'Chờ thanh toán' : ""}
+              {record?.register_status === "CANCEL_REGISTER" ? 'Hủy đăng ký' : ""}
+            </Text>
+          </>
+        ),
       },
       {
         key: 'action',
@@ -288,16 +304,26 @@ class Index extends PureComponent {
     return columns;
   };
 
+  /**
+ * Function change input
+ * @param {object} e event of input
+ * @param {string} type key of object search
+ */
+  onChangeDate = (e, type) => {
+    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    this.setStateData({ dataIDSearch: e });
+  };
+
   render() {
     const {
-      city,
+      parents,
       data,
-      district,
       match: { params },
       pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
+
     const { search } = this.state;
     const loading = effects['crmSaleAdmission/GET_DATA'];
     return (
@@ -334,40 +360,41 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={city}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'city_id')}
+                    options={['id', 'full_name']}
+                    data={[{ full_name: 'Chọn tất cả phụ huynh lead', id: null }, ...parents,]}
+                    name="customer_lead_id"
+                    onChange={(event) => this.onChangeSelect(event, 'customer_lead_id')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn Tỉnh thành"
+                    placeholder="Chọn phụ huynh lead"
                   />
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={district}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'district_id')}
-                    type={variables.SELECT}
+                    name="date_register"
+                    onChange={(event) => this.onChangeDate(event, 'date_register')}
+                    type={variables.DATE_PICKER}
                     allowClear={false}
-                    placeholder="Chọn Quận huyện"
+                    placeholder="Chọn thời gian đăng ký"
                   />
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    name="c"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
+                    name="birth_date"
+                    onChange={(event) => this.onChangeDate(event, 'birth_date')}
+                    type={variables.DATE_PICKER}
                     allowClear={false}
-                    placeholder="Chọn cơ sở"
+                    placeholder="Chọn ngày sinh"
                   />
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    name="d"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    data={[{ name: 'Chọn tất cả tình trạng', id: null }, ...status,]}
+                    name="register_status"
+                    onChange={(event) => this.onChangeSelect(event, 'register_status')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn nguồn"
+                    placeholder="Chọn tình trạng"
                   />
                 </div>
               </div>
@@ -383,7 +410,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>
@@ -398,8 +425,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  city: PropTypes.arrayOf(PropTypes.any),
-  district: PropTypes.arrayOf(PropTypes.any),
+  parents: PropTypes.arrayOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
 };
 
@@ -409,8 +435,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  city: [],
-  district: [],
+  parents: [],
   data: [],
 };
 

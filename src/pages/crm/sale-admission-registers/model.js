@@ -5,7 +5,7 @@ import * as services from './services';
     namespace: 'crmSaleAdmission',
     state: {
       data: [],
-      city: [],
+      parents: [],
       district: [],
       tags: [],
       lead: [],
@@ -33,9 +33,9 @@ import * as services from './services';
           },
         },
       }),
-      SET_CITIES: (state, { payload }) => ({
+      SET_PARENTS: (state, { payload }) => ({
         ...state,
-        city: payload.parsePayload,
+        parents: payload.parsePayload,
       }),
       SET_DISTRICTS: (state, { payload }) => ({
         ...state,
@@ -82,11 +82,11 @@ import * as services from './services';
           });
         }
       },
-      *GET_CITIES({ payload }, saga) {
+      *GET_PARENTS({ payload }, saga) {
         try {
-          const response = yield saga.call(services.getCities, payload);
+          const response = yield saga.call(services.getParents, payload);
           yield saga.put({
-            type: 'SET_CITIES',
+            type: 'SET_PARENTS',
             payload: response,
           });
         } catch (error) {

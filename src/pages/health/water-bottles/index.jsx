@@ -566,7 +566,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               bordered={false}
-              rowKey={(record) => record.id}
+              rowKey={(record) => record?.id}
               scroll={{ x: '100%' }}
             />
           </div>

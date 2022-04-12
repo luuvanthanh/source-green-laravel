@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Radio, Upload, message, } from 'antd';
+import { Form, Radio, Upload, message, Select } from 'antd';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
@@ -8,71 +8,80 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import { useDispatch } from 'dva';
-import { last, head, } from 'lodash';
+import { last, head, isEmpty } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import Table from '@/components/CommonComponent/Table';
 import stylesModule from '../../styles.module.scss';
 
-const dataTable = [
-  {
-    stt: '1',
-    full_name: 'Đơn đăng ký nhập học',
-    status: 0
-  },
-  {
-    stt: '2',
-    full_name: 'Thông tin y tế',
-    status: 1
-  },
-  {
-    stt: '3',
-    full_name: 'Giấy đồng ý',
-    status: 1
-  },
-  {
-    stt: '4',
-    full_name: 'Hộ khẩu',
-    status: 0
-  },
-  {
-    stt: '5',
-    full_name: 'Khai sinh',
-    status: 0
-  },
-  {
-    stt: '6',
-    full_name: 'Form phỏng vấn',
-    status: 1
-  }
-];
-const mapStateToProps = ({ loading }) => ({
+const { Option } = Select;
+const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
+  configuration: crmSaleAdmissionAdd.configuration,
 });
-const General = memo(({ loading: { effects }, error }) => {
+const General = memo(({ loading: { effects }, error, configuration, match: { params } }) => {
+  const [data, setData] = useState([
+    {
+      config_profile_info_id: undefined,
+      status: true,
+      file_image: undefined,
+      id: uuidv4(),
+    },
+  ]);
+  const [remove, setRemove] = useState([]);
+
   const formRef = useRef();
   const mounted = useRef(false);
   const loadingSubmit = "";
   const loading = effects[``];
   const dispatch = useDispatch();
-  const [file, setFile] = useState(null);
 
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
 
-  const onUpload = (file) => {
+  const onUpload = (file, record) => {
     dispatch({
       type: 'upload/UPLOAD',
       payload: file,
       callback: (response) => {
         if (response) {
-          setFile([head(response.results)?.fileInfo.url, head(response.results)?.fileInfo.name]);
+          setData((prev) =>
+            prev.map((item) =>
+              item.id === record.id
+                ? {
+                  ...item,
+                  file_image: head(response.results)?.fileInfo,
+                }
+                : item,
+            ),
+          );
         }
       },
     });
   };
 
-  const props = {
+  useEffect(() => {
+    dispatch({
+      type: 'crmSaleAdmissionAdd/GET_FILE_CONFIGURATION',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleAdmissionAdd/GET_DATA_FILE',
+      payload: params?.id,
+      callback: (response) => {
+        if (response?.length > 0) {
+          setData(response?.map(i => ({
+            ...i,
+            file_image: JSON.parse(i?.file_image)
+          })));
+        }
+      },
+    });
+  }, [params?.id]);
+  
+
+  const props = (record) => ({
     beforeUpload() {
       return null;
     },
@@ -83,10 +92,19 @@ const General = memo(({ loading: { effects }, error }) => {
         message.error('Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb');
         return;
       }
-      onUpload(file);
+      onUpload(file, record);
     },
     showUploadList: false,
     fileList: [],
+  });
+
+  const onSelectEmployees = (productId, record, type) => {
+    setData((prev) =>
+      prev.map((item) => ({
+        ...item,
+        [`${type}`]: item.id === record.id ? productId : item?.[`${type}`],
+      })),
+    );
   };
 
   const header = () => {
@@ -94,16 +112,28 @@ const General = memo(({ loading: { effects }, error }) => {
       {
         title: 'STT',
         key: 'type',
-        className: 'min-width-100',
-        width: 100,
-        dataIndex: 'stt',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record, index) => index + 1,
       },
       {
         title: 'Tên giấy tờ',
         key: 'type',
-        className: 'min-width-150',
-        width: 150,
-        dataIndex: 'full_name',
+        className: 'min-width-200',
+        width: 200,
+        render: (value, record) => (
+          <Select
+            placeholder="Chọn"
+            showSearch
+            className="w-100"
+            defaultValue={record.config_profile_info_id}
+            onChange={(val) => onSelectEmployees(val, record, 'config_profile_info_id')}
+          >
+            {configuration?.map((item) => (
+              <Option key={item.id}>{item?.name}</Option>
+            ))}
+          </Select>
+        )
       },
       {
         title: 'Tình trạng',
@@ -114,9 +144,10 @@ const General = memo(({ loading: { effects }, error }) => {
           <>
             <Radio.Group
               value={record.status}
+              onChange={(val) => onSelectEmployees(val?.target?.value, record, 'status')}
             >
-              <Radio value={0} >Đã nhận</Radio>
-              <Radio value={1} >Chưa nhận</Radio>
+              <Radio value >Đã nhận</Radio>
+              <Radio value={false} >Chưa nhận</Radio>
             </Radio.Group>
           </>
         ),
@@ -126,9 +157,9 @@ const General = memo(({ loading: { effects }, error }) => {
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: () => (
+        render: (record) => (
           <>
-            {file ? file[1] : ""}
+            {record?.file_image?.name}
           </>
         ),
       },
@@ -137,12 +168,26 @@ const General = memo(({ loading: { effects }, error }) => {
         key: 'action',
         width: 100,
         fixed: 'right',
-        render: () => (
+        render: (record) => (
           <div className={stylesModule['list-button']}>
-            <Upload {...props} >
+            <Upload {...props(record)} >
               <Button icon="cloud-upload" className={stylesModule.plan} />
             </Upload>
-            <Button icon="remove" className={stylesModule.remove} />
+            <Button
+              onClick={() => {
+                setData(
+                  data.filter(
+                    (val) =>
+                      (val.key || val.id || val.test) !== (record.key || record.id || record.test),
+                  ),
+                );
+                setRemove([...remove, record.id]);
+              }}
+              type="button"
+              color="danger"
+              icon="remove"
+              className={stylesModule.remove}
+            />
           </div>
         ),
       },
@@ -150,9 +195,39 @@ const General = memo(({ loading: { effects }, error }) => {
     return columns;
   };
 
+  const onFinish = () => {
+    const items = data.map((item) => ({
+      ...item,
+      file_image: JSON.stringify(item?.file_image),
+      admission_register_id: params.id,
+    }));
+    const payload = {
+      create_rows: items.filter((item) => !item.type),
+      update_rows: items.filter((item) => item.type),
+      delete_rows: remove,
+    };
+    dispatch({
+      type: 'crmSaleAdmissionAdd/ADD_FILE',
+      payload,
+      callback: (response, error) => {
+        if (error) {
+          if (error?.errors && !isEmpty(error?.errors)) {
+            error?.errors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: item?.source?.pointer,
+                  errors: [item.detail],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
+
   return (
-    <Form layout="vertical" ref={formRef} >
-      {/* <Pane className="card"> */}
+    <Form layout="vertical" ref={formRef} onFinish={onFinish} >
       <Loading loading={loading} isError={error.isError} params={{ error }}>
         <Pane className="card">
           <Pane className="border-bottom">
@@ -163,7 +238,7 @@ const General = memo(({ loading: { effects }, error }) => {
               <div className={stylesModule['wrapper-table']}>
                 <Table
                   columns={header()}
-                  dataSource={dataTable}
+                  dataSource={data}
                   pagination={false}
                   loading={loading}
                   className="table-edit"
@@ -175,6 +250,25 @@ const General = memo(({ loading: { effects }, error }) => {
                   bordered={false}
                   rowKey={(record) => record.id}
                   scroll={{ x: '100%' }}
+                  footer={(item, index) => (
+                    <Button
+                      key={index}
+                      onClick={() =>
+                        setData([
+                          ...data,
+                          {
+                            id: uuidv4(),
+                            status: true,
+                            file_image: undefined,
+                          },
+                        ])
+                      }
+                      color="transparent-success"
+                      icon="plus"
+                    >
+                      Thêm hồ sơ
+                    </Button>
+                  )}
                 />
               </div>
             </Pane>
@@ -193,11 +287,15 @@ const General = memo(({ loading: { effects }, error }) => {
 General.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  configuration: PropTypes.arrayOf(PropTypes.any),
+  match: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
   loading: {},
   error: {},
+  match: {},
+  configuration: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));
