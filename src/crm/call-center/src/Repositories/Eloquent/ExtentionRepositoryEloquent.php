@@ -55,9 +55,9 @@ class ExtensionRepositoryEloquent extends BaseRepository implements ExtensionRep
     {
         if (!empty($attributes['employee_id_hrm'])) {
             $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
-                $query->where('employee_id', $attributes['employee_id_hrm']);
+                $query->where('employee_id_hrm', $attributes['employee_id_hrm']);
             })->with(['employee' => function ($query) use ($attributes) {
-                $query->where('employee_id', $attributes['employee_id_hrm']);
+                $query->where('employee_id_hrm', $attributes['employee_id_hrm']);
             }]);
         }
 
