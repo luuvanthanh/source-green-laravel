@@ -181,7 +181,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
-        $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+        $parameter['SO_NGUOIPHUTHUOC'] = $dependentPerson;
         $isSocialInsurance = false;
 
         $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
@@ -349,33 +349,46 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
             //bhxh nld
             $socialInsuranceEmployee = 0;
-            $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
 
-            if (!is_null($formularSocialInsuranceEmployee)) {
-                $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
-                $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+            if (!$isSocialInsurance) {
+                $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
+
+                if (!is_null($formularSocialInsuranceEmployee)) {
+                    $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
+                    $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+                }
             }
             $parameter['BHXH_NLD'] = $socialInsuranceEmployee;
 
             //bhyt nld
             $healthInsuranceEmployee = 0;
-            $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
 
-            if (!is_null($formularHealthInsuranceEmployee)) {
-                $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
-                $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+            if (!$isSocialInsurance) {
+                $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
+
+                if (!is_null($formularHealthInsuranceEmployee)) {
+                    $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
+                    $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+                }
             }
             $parameter['BHYT_NLD'] = $healthInsuranceEmployee;
 
             //bhtn nld
             $unemploymentInsuranceEmployee = 0;
-            $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
 
-            if (!is_null($formularUnemploymentInsuranceEmployee)) {
-                $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
-                $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+            if (!$isSocialInsurance) {
+                $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
+
+                if (!is_null($formularUnemploymentInsuranceEmployee)) {
+                    $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
+                    $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+                }
             }
             $parameter['BHTN_NLD'] = $unemploymentInsuranceEmployee;
+
+            if (!$isSocialInsurance) {
+                $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
+            }
 
             //Tổng bh nld
             $totalEmployeeInsurance = 0;
@@ -389,42 +402,59 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
             //bhxh cty
             $socialInsuranceCompany = 0;
-            $formularSocialInsuranceCompany = ParamaterFormula::where('Code', 'BHXH_CTT')->first();
 
-            if (!is_null($formularSocialInsuranceCompany)) {
-                $socialInsuranceCompany = $this->getFormular(json_decode($formularSocialInsuranceCompany->Recipe), $contract, $parameter);
-                $socialInsuranceCompany = eval('return ' . $socialInsuranceCompany . ';');
+            if (!$isSocialInsurance) {
+                $formularSocialInsuranceCompany = ParamaterFormula::where('Code', 'BHXH_CTT')->first();
+
+                if (!is_null($formularSocialInsuranceCompany)) {
+                    $socialInsuranceCompany = $this->getFormular(json_decode($formularSocialInsuranceCompany->Recipe), $contract, $parameter);
+                    $socialInsuranceCompany = eval('return ' . $socialInsuranceCompany . ';');
+                }
             }
+
             $parameter['BHXH_CTT'] = $socialInsuranceCompany;
 
             //bhyt cty
             $healthInsuranceCompany = 0;
-            $formularHealthInsuranceCompany = ParamaterFormula::where('Code', 'BHYT_CTT')->first();
 
-            if (!is_null($formularHealthInsuranceCompany)) {
-                $healthInsuranceCompany = $this->getFormular(json_decode($formularHealthInsuranceCompany->Recipe), $contract, $parameter);
-                $healthInsuranceCompany = eval('return ' . $healthInsuranceCompany . ';');
+            if (!$isSocialInsurance) {
+                $formularHealthInsuranceCompany = ParamaterFormula::where('Code', 'BHYT_CTT')->first();
+
+                if (!is_null($formularHealthInsuranceCompany)) {
+                    $healthInsuranceCompany = $this->getFormular(json_decode($formularHealthInsuranceCompany->Recipe), $contract, $parameter);
+                    $healthInsuranceCompany = eval('return ' . $healthInsuranceCompany . ';');
+                }
             }
+
             $parameter['BHYT_CTT'] = $healthInsuranceCompany;
 
             //bhtn cty
             $unemploymentInsuranceCompany = 0;
-            $formularUnemploymentInsuranceCompany = ParamaterFormula::where('Code', 'BHTN_CTT')->first();
 
-            if (!is_null($formularUnemploymentInsuranceCompany)) {
-                $unemploymentInsuranceCompany = $this->getFormular(json_decode($formularUnemploymentInsuranceCompany->Recipe), $contract, $parameter);
-                $unemploymentInsuranceCompany = eval('return ' . $unemploymentInsuranceCompany . ';');
+            if (!$isSocialInsurance) {
+                $formularUnemploymentInsuranceCompany = ParamaterFormula::where('Code', 'BHTN_CTT')->first();
+
+                if (!is_null($formularUnemploymentInsuranceCompany)) {
+                    $unemploymentInsuranceCompany = $this->getFormular(json_decode($formularUnemploymentInsuranceCompany->Recipe), $contract, $parameter);
+                    $unemploymentInsuranceCompany = eval('return ' . $unemploymentInsuranceCompany . ';');
+                }
             }
             $parameter['BHTN_CTT'] = $unemploymentInsuranceCompany;
 
+            if (!$isSocialInsurance) {
+                $parameter['DIEU_CHINH_BHXH_CTT'] = 0;
+            }
+
             //Tổng bh cty
             $totalCompanyInsurance = 0;
+
             $formularTotalCompanyInsurance = ParamaterFormula::where('Code', 'TONG_BH_CTT')->first();
 
             if (!is_null($formularTotalCompanyInsurance)) {
                 $totalCompanyInsurance = $this->getFormular(json_decode($formularTotalCompanyInsurance->Recipe), $contract, $parameter);
                 $totalCompanyInsurance = eval('return ' . $totalCompanyInsurance . ';');
             }
+
             $parameter['TONG_BH_CTT'] = $totalCompanyInsurance;
 
             //phí công đoàn
@@ -624,7 +654,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
-        $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+        $parameter['SO_NGUOIPHUTHUOC'] = $dependentPerson;
         $isSocialInsurance = false;
 
         $overtime = $this->workHourRepositoryEloquent->calculatorWorkHourReport($employee, $holiday);
@@ -759,33 +789,43 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
                 //bhxh nld
                 $socialInsuranceEmployee = 0;
-                $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
+                if (!$isSocialInsurance) {
+                    $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
 
-                if (!is_null($formularSocialInsuranceEmployee)) {
-                    $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
-                    $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+                    if (!is_null($formularSocialInsuranceEmployee)) {
+                        $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
+                        $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+                    }
                 }
                 $parameter['BHXH_NLD'] = $socialInsuranceEmployee;
 
                 //bhyt nld
                 $healthInsuranceEmployee = 0;
-                $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
+                if (!$isSocialInsurance) {
+                    $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
 
-                if (!is_null($formularHealthInsuranceEmployee)) {
-                    $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
-                    $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+                    if (!is_null($formularHealthInsuranceEmployee)) {
+                        $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
+                        $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+                    }
                 }
                 $parameter['BHYT_NLD'] = $healthInsuranceEmployee;
 
                 //bhtn nld
                 $unemploymentInsuranceEmployee = 0;
-                $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
+                if (!$isSocialInsurance) {
+                    $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
 
-                if (!is_null($formularUnemploymentInsuranceEmployee)) {
-                    $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
-                    $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+                    if (!is_null($formularUnemploymentInsuranceEmployee)) {
+                        $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
+                        $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+                    }
                 }
                 $parameter['BHTN_NLD'] = $unemploymentInsuranceEmployee;
+
+                if (!$isSocialInsurance) {
+                    $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
+                }
 
                 //Tổng bh nld
                 $totalEmployeeInsurance = 0;
