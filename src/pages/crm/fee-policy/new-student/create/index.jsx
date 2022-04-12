@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Tabs } from 'antd';
+import { Form, Tabs, Table } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import _, { isEmpty } from 'lodash';
@@ -9,12 +9,14 @@ import moment from 'moment';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 
 import Loading from '@/components/CommonComponent/Loading';
 import TypeFees from './typeFees';
+import stylesModule from '../styles.module.scss';
 
 const { TabPane } = Tabs;
 const radios = [
@@ -30,34 +32,57 @@ const radios = [
 
 const Index = memo(() => {
   const params = useParams();
-  const { loading, menuLeftCRM, yearsSchool, classes, students, branches } = useSelector(
-    ({ loading, menu, CRMnewStudentAdd }) => ({
-      loading: loading.effects,
-      menuLeftCRM: menu.menuLeftCRM,
-      yearsSchool: CRMnewStudentAdd.yearsSchool,
-      classes: CRMnewStudentAdd.classes,
-      students: CRMnewStudentAdd.students,
-      branches: CRMnewStudentAdd.branches,
-    }),
-  );
+  const {
+    loading,
+    menuLeftCRM,
+    yearsSchool,
+    classes,
+    students,
+    branches,
+    fees,
+    detailsData,
+  } = useSelector(({ loading, menu, CRMnewStudentAdd }) => ({
+    loading: loading.effects,
+    menuLeftCRM: menu.menuLeftCRM,
+    detailsData: CRMnewStudentAdd.details,
+    yearsSchool: CRMnewStudentAdd.yearsSchool,
+    classes: CRMnewStudentAdd.classes,
+    students: CRMnewStudentAdd.students,
+    branches: CRMnewStudentAdd.branches,
+    fees: CRMnewStudentAdd.fees,
+  }));
   const [tab, setTab] = useState('tuition');
-  const [details, setDetails] = useState();
+  const [details, setDetails] = useState({
+    school_year_id: undefined,
+    day_admission: undefined,
+    class_type_id: undefined,
+  });
   const dispatch = useDispatch();
   const history = useHistory();
   const formRef = useRef();
   const type = formRef?.current?.getFieldValue('type');
 
   const [tuition, setTuition] = useState([]);
+  const [idRes, setIdRes] = useState();
+  const [dataTuition, setDataTuition] = useState([]);
+  const [checkSearch, setCheckSearch] = useState(false);
+
   const [errorTable, setErrorTable] = useState({
     tuition: false,
   });
-  const [addFees, setAddFees] = useState(false);
   const [disableday_admission, setDisableday_admission] = useState({
     start_date: null,
     end_date: null,
   });
 
   useEffect(() => {
+    dispatch({
+      type: 'CRMnewStudentAdd/GET_FEES',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
     dispatch({
       type: 'CRMnewStudentAdd/GET_YEARS',
       payload: {
@@ -79,10 +104,13 @@ const Index = memo(() => {
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
+  }, []);
+  useEffect(() => {
     if (params.id) {
       dispatch({
         type: 'CRMnewStudentAdd/GET_CLASS',
         payload: {
+          branchId: detailsData?.branch_id,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.SIZEMAX,
         },
@@ -94,20 +122,43 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res?.id) {
-            const pather = res?.admissionRegister?.parentInfo?.find(i => i.sex === "MALE");
-            const mother = res?.admissionRegister?.parentInfo?.find(i => i.sex === "FEMALE");
+            setTuition(res?.tuition);
+            setIdRes(res?.expected_to_collect_money);
+            const pather = res?.admissionRegister?.parentInfo?.find((i) => i.sex === 'MALE');
+            const mother = res?.admissionRegister?.parentInfo?.find((i) => i.sex === 'FEMALE');
             const range_date = Helper.getDateRank(
               res?.schoolYear?.start_date,
               res?.schoolYear?.end_date,
               variables.DATE_FORMAT.DATE_VI,
             );
-            setDetails(res);
+            setDetails((prev) => ({
+              ...prev,
+              startDate: res?.schoolYear?.startDate
+                ? Helper.getDate(res?.schoolYear?.startDate, variables.DATE_FORMAT.DATE_VI)
+                : '',
+              endDate: res?.schoolYear?.endDate
+                ? Helper.getDate(res?.schoolYear?.endDate, variables.DATE_FORMAT.DATE_VI)
+                : '',
+              school_year_id: res?.school_year_id || '',
+              day_admission: res?.day_admission
+                ? Helper.getDate(res?.day_admission, variables.DATE_FORMAT.DATE_VI)
+                : '',
+              code: res?.student?.code || '',
+              branchName: res?.student?.classStudent?.class?.branch?.name || '',
+              classType: res?.student?.classStudent?.class?.classType?.name || '',
+              className: res?.student?.classStudent?.class?.name || '',
+              class_type_id: res?.class_type_id || '',
+              expectedToCollectMoney: res?.expectedToCollectMoney || [],
+            }));
             formRef.current.setFieldsValue({
               ...res,
               range_date,
               age: res?.studentInfo?.age_month || res?.age,
               name_student: res?.studentInfo?.full_name || res?.name_student,
-              date_of_birth: moment(res?.studentInfo?.birth_date || res?.date_of_birth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+              date_of_birth: moment(
+                res?.studentInfo?.birth_date || res?.date_of_birth,
+                variables.DATE_FORMAT.YEAR_MONTH_DAY,
+              ),
               day_admission: moment(res.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
               father_name: pather?.full_name || res?.father_name,
               father_phone: pather?.phone || res?.father_phone,
@@ -116,20 +167,24 @@ const Index = memo(() => {
               branch_id: res?.branch_id,
               type: 'newStudent',
             });
-            setTuition(
-              res?.tuition?.map((item) => ({
-                id: item.id,
-                fee_id: item.fee_id || '',
-                payment_form_id: item.payment_form_id || '',
-                money: item.money || 0,
-              })),
-            );
-            setAddFees(true);
           }
         },
       });
     }
-  }, []);
+  }, [params.id]);
+
+  useEffect(() => {
+    if (detailsData.id) {
+      dispatch({
+        type: 'CRMnewStudentAdd/GET_CLASS',
+        payload: {
+          branchId: detailsData?.branch_id,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.SIZEMAX,
+        },
+      });
+    }
+  }, [detailsData.id]);
 
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
@@ -149,7 +204,7 @@ const Index = memo(() => {
   };
 
   const onFinish = (values) => {
-    const errorTuition = checkValidate(tuition, 'tuition');
+    const errorTuition = checkValidate(idRes, 'tuition');
     if (errorTuition) {
       return;
     }
@@ -172,7 +227,12 @@ const Index = memo(() => {
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
-      tuition,
+      tuition: dataTuition?.map((i) => ({
+        fee_id: i?.feeId,
+        payment_form_id: i?.paymentFormId,
+        money: i?.money,
+      })),
+      expected_to_collect_money: idRes || undefined,
       id: params?.id || undefined,
       student_info_id: response?.student_info_id || details?.student_info_id,
     };
@@ -208,15 +268,36 @@ const Index = memo(() => {
   };
 
   const loadTableFees = (value, name) => {
+    setCheckSearch(true);
+    if (name === 'day_admission') {
+      const newDetails = {
+        ...details,
+        day_admission: value ? Helper.getDate(value, variables.DATE_FORMAT.DATE_VI) : '',
+      };
+      setDetails(newDetails);
+    }
+    if (name === 'class_type_id') {
+      const newDetails = {
+        ...details,
+        class_type_id: value || '',
+      };
+      setDetails(newDetails);
+    }
     const { getFieldsValue, setFieldsValue } = formRef?.current;
     const { school_year_id, class_type_id, day_admission } = getFieldsValue();
     if (school_year_id && class_type_id && day_admission) {
       getMoney(school_year_id, class_type_id, day_admission, tuition);
-      setAddFees(true);
-    } else {
-      setAddFees(false);
     }
     if (name === 'school_year_id') {
+      setIdRes([]);
+      const response = yearsSchool.find((item) => item.id === value);
+      if (response?.id) {
+        const newDetails = {
+          ...details,
+          school_year_id: value,
+        };
+        setDetails(newDetails);
+      }
       const schoolYear = yearsSchool.find((item) => item.id === value);
       setDisableday_admission((prev) => ({
         ...prev,
@@ -298,8 +379,8 @@ const Index = memo(() => {
       return;
     }
     const response = students.find((item) => item.id === value);
-    const pather = response?.parentInfo?.find(i => i?.sex === "MALE");
-    const mother = response?.parentInfo?.find(i => i?.sex === "FEMALE");
+    const pather = response?.parentInfo?.find((i) => i?.sex === 'MALE');
+    const mother = response?.parentInfo?.find((i) => i?.sex === 'FEMALE');
     if (response?.id) {
       const range_date = Helper.getDateRank(
         response?.schoolYear?.start_date,
@@ -315,7 +396,10 @@ const Index = memo(() => {
         father_phone: pather?.phone,
         mother_name: mother?.full_name,
         mother_phone: mother?.phone,
-        date_of_birth: moment(response.studentInfo.birth_date, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        date_of_birth: moment(
+          response.studentInfo.birth_date,
+          variables.DATE_FORMAT.YEAR_MONTH_DAY,
+        ),
         // day_admission: moment(response.studentInfo.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
         type,
       });
@@ -329,6 +413,108 @@ const Index = memo(() => {
     setTab(key);
   };
 
+  const header = () => {
+    const rowData = fees?.map((i) => ({
+      title: i?.name,
+      width: 150,
+      key: 'money',
+      render: (record) => {
+        const item = record?.money?.find((k) => k?.feeId === i?.fee_clover_id);
+        return (
+          <>{item?.feeId ? <Text size="normal">{Helper.getPrice(item?.money) || 0}</Text> : '0'}</>
+        );
+      },
+    }));
+    const columns = [
+      {
+        title: 'Tháng',
+        key: 'date',
+        className: 'min-width-150',
+        width: 200,
+        render: (record) => (
+          <Text size="normal">{Helper.getDate(record.date, variables.DATE_FORMAT.DATE_MONTH)}</Text>
+        ),
+      },
+      {
+        title: 'Ngoài giờ (đ)',
+        key: 'location',
+        width: 150,
+        className: 'min-width-150',
+        render: () => <> - </>,
+      },
+      {
+        title: 'Giảm trừ (đ)',
+        key: 'result',
+        width: 150,
+        className: 'min-width-150',
+        render: () => <> - </>,
+      },
+      {
+        title: 'Tổng tiền (đ)',
+        key: 'total',
+        fixed: 'right',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{Helper.getPrice(record?.total) || 0}</Text>,
+      },
+    ];
+    columns.splice(1, 0, ...rowData);
+    return columns;
+  };
+
+  const sumArray = (e) => {
+    let sum = 0;
+    e?.map((value) => {
+      sum += value?.money;
+    });
+
+    return sum;
+  };
+
+  const sumArrayMain = (e) => {
+    let sum = 0;
+    e.map((value) => {
+      sum += value?.total;
+    });
+    return sum;
+  };
+
+  const sumItem = (e) => {
+    const result = _(e)
+      .groupBy('feeId')
+      .map((items, feeId, _money) => ({ feeId, money: sumArray(items) }))
+      .value();
+    return result;
+  };
+
+  const flattenArr = (arr) => {
+    let sum = [];
+    _.forEachRight(arr, (value) => {
+      sum = sum?.concat(value?.money);
+    });
+    return sumItem(sum);
+  };
+
+  const data = idRes?.map((i) => ({
+    date: i?.month,
+    total: sumArray(i?.fee),
+    money: i?.fee?.map((k) => ({
+      money: k?.money,
+      fee_name: k?.fee_name,
+      feeId: k?.fee_id,
+    })),
+  }));
+
+  data?.push({ total: sumArrayMain(data), money: flattenArr(data) });
+
+  const hanDleChangeText = (childData, k, data, deleteId) => {
+    if (childData?.length > 0 || deleteId) {
+      setCheckSearch(false);
+      setIdRes(childData);
+    }
+    setDataTuition(data);
+  };
+
   const tabs = () => [
     {
       id: 'tuition',
@@ -339,29 +525,41 @@ const Index = memo(() => {
           setTuition={setTuition}
           error={errorTable?.tuition}
           checkValidate={checkValidate}
-          addFees={addFees}
-          formRef={formRef}
+          details={details}
+          checkSearch={checkSearch}
+          hanDleChangeText={hanDleChangeText}
         />
       ),
     },
-    // {
-    //   id: 'food',
-    //   name: 'DỰ KIẾN PHẢI THU',
-    //   component: (
-    //     <Expected
-    //       tuition={tuition}
-    //       idYear={idYear}
-    //       yearsSchool={yearsSchool}
-    //       setTuition={setTuition}
-    //       error={errorTable?.tuition}
-    //       checkValidate={checkValidate}
-    //       idRes={idRes}
-    //       YearsDetail={YearsDetail}
-    //     />
-    //   ),
-    // },
+    {
+      id: 'food',
+      name: 'DỰ KIẾN PHẢI THU',
+      component: (
+        <>
+          {fees?.length > 0 && (
+            <div className={stylesModule['wrapper-table']}>
+              <Table
+                columns={header()}
+                dataSource={data}
+                pagination={false}
+                className="table-normal"
+                isEmpty
+                childrenColumnName="children"
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                bordered
+                rowKey={(record) => record?.month}
+                scroll={{ x: '100%' }}
+              />
+            </div>
+          )}
+        </>
+      ),
+    },
   ];
-  console.log("branches", branches)
+
   return (
     <>
       <Helmet title={params?.id ? 'Chi tiết' : 'Thêm mới'} />
@@ -399,16 +597,18 @@ const Index = memo(() => {
                   <Pane className="p20 border-top">
                     <div className="row">
                       <div className="col-lg-3">
-                        {
-                          details?.student_info_id ?
-                            <FormItem
-                              className="input-noborder"
-                              label="Họ tên học sinh"
-                              name="name_student"
-                              type={variables.INPUT}
-                              placeholder="Họ và tên"
-                            /> :
-                            <>  {type === 'newStudent' ? (
+                        {details?.student_info_id ? (
+                          <FormItem
+                            className="input-noborder"
+                            label="Họ tên học sinh"
+                            name="name_student"
+                            type={variables.INPUT}
+                            placeholder="Họ và tên"
+                          />
+                        ) : (
+                          <>
+                            {' '}
+                            {type === 'newStudent' ? (
                               <FormItem
                                 label="Tên học sinh"
                                 name="name_student"
@@ -430,8 +630,9 @@ const Index = memo(() => {
                                 rules={[variables.RULES.EMPTY]}
                                 onChange={selectStudent}
                               />
-                            )} </>
-                        }
+                            )}{' '}
+                          </>
+                        )}
                       </div>
                       <div className="col-lg-3">
                         <FormItem
@@ -451,7 +652,11 @@ const Index = memo(() => {
                       </div>
                       <div className="col-lg-3">
                         <FormItem
-                          className={type === 'oldStudent' || details?.student_info_id ? 'input-noborder' : ''}
+                          className={
+                            type === 'oldStudent' || details?.student_info_id
+                              ? 'input-noborder'
+                              : ''
+                          }
                           label="Ngày sinh"
                           name="date_of_birth"
                           type={variables.DATE_PICKER}
@@ -488,7 +693,7 @@ const Index = memo(() => {
                           type={variables.DATE_PICKER}
                           rules={[variables.RULES.EMPTY]}
                           allowClear={false}
-                          onChange={loadTableFees}
+                          onChange={(e) => loadTableFees(e, 'day_admission')}
                           disabledDate={(current) =>
                             (disableday_admission?.start_date &&
                               current < moment(disableday_admission?.start_date).startOf('day')) ||
@@ -510,91 +715,90 @@ const Index = memo(() => {
                       </div>
                       <div className="col-lg-3">
                         <FormItem
-                         options={['classTypeCrmId', 'name']}
+                          options={['classTypeCrmId', 'name']}
                           label="Lớp học dự kiến"
                           name="class_type_id"
                           data={classes}
                           type={variables.SELECT}
                           rules={[variables.RULES.EMPTY]}
-                          onChange={loadTableFees}
+                          onChange={(e) => loadTableFees(e, 'class_type_id')}
                         />
                       </div>
-                      {
-                        type !== 'newStudent' || details?.student_info_id ?
-
-                          <>
-                            <div className="col-lg-3">
-                              <FormItem
-                                className="input-noborder"
-                                label="Họ tên Cha"
-                                name="father_name"
-                                type={variables.INPUT}
-                                placeholder="Họ và tên"
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <FormItem
-                                className="input-noborder"
-                                label="SĐT Cha"
-                                name="father_phone"
-                                type={variables.INPUT}
-                                placeholder="Số điện thoại"
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <FormItem
-                                className="input-noborder"
-                                label="Họ tên Mẹ"
-                                name="mother_name"
-                                type={variables.INPUT}
-                                placeholder="Họ và tên"
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <FormItem
-                                className="input-noborder"
-                                label="SĐT Mẹ"
-                                name="mother_phone"
-                                type={variables.INPUT}
-                                placeholder="Số điện thoại"
-                              />
-                            </div>
-                          </> :
-                          <>
-                            <div className="col-lg-3">
-                              <FormItem
-                                label="Họ tên Cha"
-                                name="father_name"
-                                rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                                type={variables.INPUT}
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <FormItem
-                                label="SĐT Cha"
-                                name="father_phone"
-                                rules={[variables.RULES.PHONE]}
-                                type={variables.INPUT}
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <FormItem
-                                label="Họ tên Mẹ"
-                                name="mother_name"
-                                rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                                type={variables.INPUT}
-                              />
-                            </div>
-                            <div className="col-lg-3">
-                              <FormItem
-                                label="SĐT Mẹ"
-                                name="mother_phone"
-                                rules={[variables.RULES.PHONE]}
-                                type={variables.INPUT}
-                              />
-                            </div>
-                          </>
-                      }
+                      {type !== 'newStudent' || details?.student_info_id ? (
+                        <>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="input-noborder"
+                              label="Họ tên Cha"
+                              name="father_name"
+                              type={variables.INPUT}
+                              placeholder="Họ và tên"
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="input-noborder"
+                              label="SĐT Cha"
+                              name="father_phone"
+                              type={variables.INPUT}
+                              placeholder="Số điện thoại"
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="input-noborder"
+                              label="Họ tên Mẹ"
+                              name="mother_name"
+                              type={variables.INPUT}
+                              placeholder="Họ và tên"
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="input-noborder"
+                              label="SĐT Mẹ"
+                              name="mother_phone"
+                              type={variables.INPUT}
+                              placeholder="Số điện thoại"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="col-lg-3">
+                            <FormItem
+                              label="Họ tên Cha"
+                              name="father_name"
+                              rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                              type={variables.INPUT}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              label="SĐT Cha"
+                              name="father_phone"
+                              rules={[variables.RULES.PHONE]}
+                              type={variables.INPUT}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              label="Họ tên Mẹ"
+                              name="mother_name"
+                              rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                              type={variables.INPUT}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              label="SĐT Mẹ"
+                              name="mother_phone"
+                              rules={[variables.RULES.PHONE]}
+                              type={variables.INPUT}
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
                   </Pane>
                 </Loading>

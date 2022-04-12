@@ -1,4 +1,5 @@
 import * as categories from '@/services/categories';
+import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -120,6 +121,12 @@ export default {
       try {
         const response = yield saga.call(services.getTimeTableFees, payload);
         callback(response);
+        if (response?.timetableFeeGroupByWeeks?.length <= 0) {
+          notification.error({
+            message: 'THÔNG BÁO',
+            description: `Thời khóa biểu cho tháng ${payload?.month}/${payload?.year} chưa được tạo`,
+          });
+        }
       } catch (error) {
         callback(null, error?.data?.error);
       }
