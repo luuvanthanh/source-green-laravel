@@ -24,7 +24,7 @@ class CreateAdmissionRegisterRequest extends FormRequest
      * @return array
      */
     public function rules()
-    {
+    { 
         return [
             'customer_lead_id' => 'exists:customer_leads,id',
             'student_info_id' => [
@@ -35,11 +35,15 @@ class CreateAdmissionRegisterRequest extends FormRequest
                         $q->where('student_info_id', $value);
                     })->first();
 
+                    $admissionRegister = AdmissionRegister::where('student_info_id', $value)->where('status', true)->first();
+
                     if (is_null($studentInfo)) {
                         return true;
+                    } elseif (!is_null($admissionRegister)) {
+                        return true;
+                    } else {
+                        return $fail('Một học sinh chỉ được đăng ký một lần');
                     }
-
-                    return $fail('Một học sinh chỉ được đăng ký một lần');
                 },
             ],
             'date_register' => 'required|date_format:Y-m-d',
