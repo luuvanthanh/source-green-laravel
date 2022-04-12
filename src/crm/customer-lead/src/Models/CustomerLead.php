@@ -34,7 +34,7 @@ class CustomerLead extends UuidModel
         'address', 'city_id', 'district_id', 'branch_id', 'employee_id',
         'employee_info', 'user_create_id', 'user_create_info', 'search_source_id',
         'facebook', 'zalo', 'instagram', 'skype', 'name_company', 'address_company',
-        'phone_company', 'career', 'file_image', 'town_ward_id', 'flag_move_potential', 'manual_create'
+        'phone_company', 'career', 'file_image', 'town_ward_id', 'flag_move_potential', 'manual_create', 'user_facebook_info_id'
     ];
 
     public function reference()
