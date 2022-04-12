@@ -97,18 +97,7 @@ const Index = memo(() => {
             setIdYear(res?.schoolYearId);
             setCheckData(false);
             setYearsDetail(res?.expectedToCollectMoney);
-            setIdRes(res?.expectedToCollectMoney?.map((i, index) =>
-              index < res?.expectedToCollectMoney?.length - 1 ? (
-                ({
-                  month: i?.date,
-                  fee: i?.money?.map(k =>
-                  ({
-                    money: k?.money,
-                    fee_name: k?.fee_name,
-                    fee_id: k?.feeId,
-                  })
-                  )
-                })) : undefined));
+            setIdRes(res?.expectedToCollectMoney);
             getStudents(res?.student?.code);
             setTuition(res?.tuition);
             setDetails((prev) => ({
@@ -137,9 +126,9 @@ const Index = memo(() => {
       getStudents();
     }
   }, []);
-  if (idRes?.length === YearsDetail?.length) {
-    idRes?.splice(idRes?.length - 1, 1);
-  }
+  // if (idRes?.length === YearsDetail?.length) {
+  //   idRes?.splice(idRes?.length - 1, 1);
+  // }
   const hanDleChangeText = (childData, k, data, deleteId) => {
     if (childData?.length > 0 || deleteId) {
       setIdRes(childData);
@@ -320,50 +309,21 @@ const Index = memo(() => {
     return sumItem(sum);
   };
 
-  const data = !checkData ?
-    idRes?.map(i =>
+  const data = idRes?.map(i =>
+  ({
+    date: i?.month,
+    total: sumArray(i?.fee),
+    money: i?.fee?.map(k =>
     ({
-      date: i?.month,
-      total: sumArray(i?.fee),
-      money: i?.fee?.map(k =>
-      ({
-        money: k?.money,
-        fee_name: k?.fee_name,
-        feeId: k?.fee_id,
-      })
-      )
-    }))
-    :
-    dataYear[0]?.changeParameter?.changeParameterDetail?.map((p) =>
-    (
-      {
-        date: p?.date,
-        money: idRes?.map((a) => {
-          for (let i = 0; i <= a?.detailData?.length; i++) {
-            if (a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
-              return {
-                money: a?.detailData[i]?.fee[0]?.money || 0,
-                feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
-                fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
-              };
-            }
-          }
-        }),
-        total: sumArray(idRes?.map((a) => {
-          for (let i = 0; i <= a?.detailData?.length; i++) {
-            if (a?.detailData[i]?.month === p?.date?.slice(0, 7)) {
-              return {
-                money: a?.detailData[i]?.fee[0]?.money || 0,
-                feeId: a?.detailData[i]?.fee[0]?.fee_id || null,
-                fee_name: a?.detailData[i]?.fee[0]?.fee_name || null,
-              };
-            }
-          }
-        }))
-      }));
+      money: k?.money,
+      fee_name: k?.fee_name,
+      feeId: k?.fee_id,
+    })
+    )
+  }));
 
 
-  data?.push({ total: sumArrayMain(data), money: flattenArr(data) })
+  data?.push({ total: sumArrayMain(data), money: flattenArr(data) });
 
 
   useEffect(() => {
@@ -490,22 +450,22 @@ const Index = memo(() => {
           {
             fees?.length > 0 && (
               <div className={stylesModule['wrapper-table']}>
-              <Table
-                columns={header()}
-                dataSource={data}
-                pagination={false}
-                className="table-normal"
-                isEmpty
-                childrenColumnName="children"
-                params={{
-                  header: header(),
-                  type: 'table',
-                }}
-                bordered
-                rowKey={(record) => record?.id}
-                scroll={{ x: '100%' }}
+                <Table
+                  columns={header()}
+                  dataSource={data}
+                  pagination={false}
+                  className="table-normal"
+                  isEmpty
+                  childrenColumnName="children"
+                  params={{
+                    header: header(),
+                    type: 'table',
+                  }}
+                  bordered
+                  rowKey={(record) => record?.id}
+                  scroll={{ x: '100%' }}
                 />
-                </div>
+              </div>
             )
           }
         </>
@@ -516,8 +476,7 @@ const Index = memo(() => {
     const payload = {
       schoolYearId: values?.schoolYearId || undefined,
       studentId: values?.studentId || undefined,
-      expectedToCollectMoney: data || undefined,
-      typeFee: JSON.stringify(idRes),
+      expectedToCollectMoney: idRes || undefined,
       tuition: dataTuition,
       id: (params?.id && !isCopy) ? params?.id : undefined,
       dayAdmission: Helper.getDateTime({

@@ -206,6 +206,14 @@ export default {
         });
       }
     },
+    *IMPORT_EXCEL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.importExcel, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

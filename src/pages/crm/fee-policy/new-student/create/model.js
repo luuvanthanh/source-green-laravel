@@ -104,22 +104,15 @@ export default {
         callback(null, error?.data?.error);
       }
     },
-    *GET_MONEY_FEE_POLICIES({ payload, callback }, saga) {
+    *GET_MONEY_FEE({ payload ,callback}, saga) {
       try {
-        const response = yield saga.call(services.moneyFeePolicies, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_MONEY_FEE_POLICIES',
-            payload: response?.parsePayload,
-          });
-          callback(response?.parsePayload);
-        }
+        const response = yield saga.call(services.moneyFeePolicie, payload);
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
         });
-        callback(null, error?.data?.error);
       }
     },
     *GET_STUDENTS({ payload }, saga) {

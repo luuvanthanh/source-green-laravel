@@ -1,9 +1,10 @@
 import * as services from './services';
 
 export default {
-  namespace: 'CRMstatisticalCall',
+  namespace: 'crmStatisticalCall',
   state: {
     data: [],
+    saler: [],
     pagination: {
       total: 0,
     },
@@ -19,6 +20,10 @@ export default {
       data: payload.parsePayload,
       pagination: payload.pagination,
     }),
+    SET_SALER: (state, { payload }) => ({
+      ...state,
+      saler: payload?.parsePayload.map((item) => ({ ...item, name: item.full_name })),
+    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -30,7 +35,7 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
         yield saga.put({
@@ -40,6 +45,7 @@ export default {
             pagination: response.pagination,
           },
         });
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -47,12 +53,31 @@ export default {
         });
       }
     },
-    *GET_CLASS_BY_AGE({ payload, callback }, saga) {
+    *GET_CHART_EMPLOYEE({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.getClassByAge, payload);
-        callback(response.parsePayload);
+        const response = yield saga.call(services.getChartEmployee, payload);
+        callback(response);
       } catch (error) {
-        callback(null, error?.data?.error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_SALER({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSaler, payload);
+        yield saga.put({
+          type: 'SET_SALER',
+          payload: {
+            parsePayload: response.parsePayload,
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },
