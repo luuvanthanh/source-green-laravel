@@ -90,22 +90,26 @@ const Index = memo(() => {
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
 
+    const local = JSON?.parse(localStorage.getItem('page'));
+
+    
     useEffect(() => {
-      const userPage = JSON?.parse(sessionStorage?.getItem('user'));
+      const userPage = JSON?.parse(localStorage.getItem('user'));
       if (userPage?.userID) {
         setUser(userPage);
       }
-      const page = JSON?.parse(sessionStorage?.getItem('pageCurrent'));
+      const page = JSON?.parse(localStorage.getItem('pageCurrent'));
       if (page?.length > 0) {
         setPageCurrent(page);
       }
-      const pagedb = JSON?.parse(sessionStorage?.getItem('page'));
-      console.log("dapge",pagedb)
+      const pagedb = JSON?.parse(localStorage.getItem('page'));
+      console.log("page",pagedb);
       if (pagedb?.length > 0) {
         setPage(pagedb);
         setPageID([pagedb[0]]);
       }
-    }, []);
+    }, [local?.length > 0]);
+
 
 
   useEffect(() => {
@@ -1379,7 +1383,7 @@ const Index = memo(() => {
         <h3 className={styles.title}>Fanpage</h3>
       </div>
       <div className={styles['wrapper-container']}>
-        {isEmpty(user) && (
+        {isEmpty(JSON?.parse(localStorage.getItem('user'))) ? (
           <div className={styles['wrapper-login']}>
             <button
               type="button"
@@ -1389,8 +1393,9 @@ const Index = memo(() => {
               Login FB
             </button>
           </div>
-        )}
-        <div className={styles['sidebar-container']}>
+        ) : 
+        <>
+          <div className={styles['sidebar-container']}>
           <div className={styles['sidebar-header']}>
             <img src="/images/facebook/logoFacebook.svg" alt="facebook" className={styles.icon} />
             <Select value={pageID[0]?.attributes?.name} bordered={false} onChange={(e) => preventDefault(e, page)}>
@@ -2405,6 +2410,9 @@ const Index = memo(() => {
             </Scrollbars>
           </div>
         )}
+        </>
+        }
+      
       </div>
     </div>
   );

@@ -16,7 +16,6 @@ const Index = memo(() => {
 
   const [getToken, setGetToket] = useState(undefined);
 
-  const mounted = useRef(false);
 
   const responseFacebook = (response) => {
     if (response.userID) {
@@ -27,44 +26,54 @@ const Index = memo(() => {
     }
   };
 
-  // 
+  //
 
+  const hours = 20;
+  const now = new Date().getTime();
+  const setupTime = localStorage.getItem('setupTimeCRM');
+
+  if (now - setupTime > hours * 60 * 60) {
+    localStorage.clear();
+  }
 
   useEffect(() => {
     if (user?.userID) {
-      sessionStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('setupTimeCRM', now);
     }
   }, [user?.userID]);
 
   useEffect(() => {
     if (getToken?.user_access_token) {
-      sessionStorage.setItem('token', JSON.stringify(getToken));
+      localStorage.setItem('token', JSON.stringify(getToken));
     }
   }, [getToken?.user_access_token]);
 
   useEffect(() => {
     if (pageCurrent?.length > 0) {
-      sessionStorage.setItem('pageCurrent', JSON.stringify(pageCurrent));
+      localStorage.setItem('pageCurrent', JSON.stringify(pageCurrent));
     }
   }, [pageCurrent?.length > 0]);
 
   useEffect(() => {
     if (page?.length > 0) {
-      sessionStorage.setItem('page', JSON.stringify(page));
+      localStorage.setItem('page', JSON.stringify(page));
     }
   }, [page?.length > 0]);
 
-  // 
+  //
 
   useEffect(() => {
-    const a = JSON?.parse(sessionStorage?.getItem('user'));
+    const a = JSON?.parse(localStorage?.getItem('user'));
     if (a?.userID) {
       setUserToken(a);
+    } else {
+      setUserToken(undefined);
     }
   }, []);
 
   useEffect(() => {
-    if (user?.userID ) {
+    if (user?.userID) {
       dispatch({
         type: 'crmFBDevV1/GET_TOKEN',
         payload: {
@@ -80,7 +89,7 @@ const Index = memo(() => {
   }, [user?.userID]);
 
   useEffect(() => {
-    if (getToken?.user_access_token  ) {
+    if (getToken?.user_access_token) {
       dispatch({
         type: 'crmFBDevV1/GET_PAGES',
         payload: {
@@ -143,7 +152,7 @@ const Index = memo(() => {
 
   return (
     <div>
-      {userToken?.accessToken ? (
+      {!isEmpty(JSON?.parse(localStorage?.getItem('user'))) ? (
         <div role="presentation" className={styles['loginFacebook-container']}>
           <img src={userToken?.picture?.data?.url} alt="icon" className={styles.avt} />
           <div className={styles.login} role="presentation">
