@@ -59,9 +59,9 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
     public function getHistoryCall(array $attributes)
     {
-        if (!empty($attributes['from_date']) && !empty($attributes['to_date'])) {
-            $this->model = $this->model->whereDate('created_at', '>=', $attributes['from_date'])
-                ->whereDate('created_at', '<=', $attributes['to_date']);
+        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
+            $this->model = $this->model->whereDate('created_at', '>=', $attributes['start_date'])
+                ->whereDate('created_at', '<=', $attributes['end_date']);
         }
 
         if (!empty($attributes['phone'])) {
