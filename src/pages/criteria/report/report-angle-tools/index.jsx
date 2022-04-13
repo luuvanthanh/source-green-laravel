@@ -496,7 +496,7 @@ class Index extends PureComponent {
               <div className={stylesModule['table-name']}>
                 {value?.toolDetail ?
                   <AvatarTable
-                    fileImage={Helper.getPathAvatarJson(value?.toolDetail?.fileUrl)}
+                    fileImage={Helper.getPathAvatarJson(value?.toolDetail?.fileUrl[0]?.url)}
                   />
                   : ""
                 }

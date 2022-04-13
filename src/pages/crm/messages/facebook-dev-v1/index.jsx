@@ -28,7 +28,7 @@ const Index = memo(() => {
 
   const [formRef] = Form.useForm();
   const dispatch = useDispatch();
-  const [{ user, tags, relationships, employeeFB, conversationsId ,token}] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
+  const [{  tags, relationships, employeeFB, conversationsId, token }] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
     crmFBDevV1,
     effects,
   ]);
@@ -67,9 +67,8 @@ const Index = memo(() => {
   const [notReply, setNotReply] = useState(false);
   const [checkPhone, setCheckPhone] = useState(false);
   const [checkNotPhone, setCheckNotPhone] = useState(false);
-  const [getToken, setGetToket] = useState({});
 
-
+  const [user, setUser] = useState({});
 
   const [searchParent, setSearchParent] = useState({
     page: 1,
@@ -91,74 +90,24 @@ const Index = memo(() => {
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
 
-  const responseFacebook = (response) => {
-    if (response.userID) {
-      dispatch({
-        type: 'crmFBDevV1/GET_USER',
-        payload: response,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (user?.userID) {
-      dispatch({
-        type: 'crmFBDevV1/GET_TOKEN',
-        payload: {
-          user_access_token: user?.accessToken,
-        },
-        callback: (response) => {
-          console.log("ddd",response)
-          if (response) {
-            setGetToket(response);
-          }
-        },
-      });
-    }
-  }, [user?.userID]);
-  
-  useEffect(() => {
-    if (getToken?.user_access_token) {
-      dispatch({
-        type: 'crmFBDevV1/GET_PAGES',
-        payload: {
-          user_access_token: getToken?.user_access_token,
-          user_id: user?.userID,
-        },
-        callback: (response) => {
-          if (response) {
-            setPageCurrent(response.data);
-          }
-        },
-      });
-    }
-  }, [getToken?.user_access_token]);
+    useEffect(() => {
+      const userPage = JSON?.parse(sessionStorage?.getItem('user'));
+      if (userPage?.userID) {
+        setUser(userPage);
+      }
+      const page = JSON?.parse(sessionStorage?.getItem('pageCurrent'));
+      if (page?.length > 0) {
+        setPageCurrent(page);
+      }
+      const pagedb = JSON?.parse(sessionStorage?.getItem('page'));
+      console.log("dapge",pagedb)
+      if (pagedb?.length > 0) {
+        setPage(pagedb);
+        setPageID([pagedb[0]]);
+      }
+    }, []);
 
 
-  useEffect(() => {
-    if (pageCurrent.length > 0) {
-      dispatch({
-        type: 'crmFBDevV1/ADD_CONVERSATIONS',
-        payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
-        callback: () => { }
-      });
-      dispatch({
-        type: 'crmFBDevV1/ADD_EMPLOYEE',
-        payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
-        callback: () => { }
-      });
-      dispatch({
-        type: 'crmFBDevV1/GET_PAGESDB',
-        payload: { page_id_facebook: (pageCurrent.map(i => i.id).join(',')) },
-        callback: (response) => {
-          if (response) {
-            setPage(response.data);
-            setPageID([response.data[0]]);
-          }
-        },
-      });
-    }
-  }, [pageCurrent.length]);
   useEffect(() => {
     const pageId = page?.find(i => i?.id === pageID[0]?.id);
     if (pageId) {
@@ -169,7 +118,7 @@ const Index = memo(() => {
         },
       });
     }
-  }, [pageID]);
+  }, [pageID, page?.length > 0]);
 
   useEffect(() => {
     mounted.current = true;
@@ -857,7 +806,7 @@ const Index = memo(() => {
       </>
     );
   };
-  console.log("conversationCurrent", conversationCurrent)
+
   const onSnippet = (attributes, from, to, name) => {
 
     const check = attributes?.substr(-4, 4);
@@ -1432,23 +1381,13 @@ const Index = memo(() => {
       <div className={styles['wrapper-container']}>
         {isEmpty(user) && (
           <div className={styles['wrapper-login']}>
-            <FacebookLogin
-              appId={APP_ID_FB}
-              autoLoad={false}
-              fields="name,email,picture,birthday"
-              scope="public_profile,pages_show_list,pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_messaging"
-              callback={responseFacebook}
-              render={(renderProps) => (
-                <button
-                  onClick={renderProps.onClick}
-                  type="button"
-                  className={styles['button-login']}
-                >
-                  <span className="icon-facebook" />
-                  Login FB
-                </button>
-              )}
-            />
+            <button
+              type="button"
+              className={styles['button-login']}
+            >
+              <span className="icon-facebook" />
+              Login FB
+            </button>
           </div>
         )}
         <div className={styles['sidebar-container']}>
@@ -2336,7 +2275,7 @@ const Index = memo(() => {
                                       <div className={styles['contact-item']}>
                                         <p className={styles.label}>Tháng tuổi</p>
                                         {
-                                         file?.age_month >= 0 ?
+                                          file?.age_month >= 0 ?
                                             <Form.Item >
                                               <Text size="normal" className={styles.norm}>
                                                 {file?.age_month}
