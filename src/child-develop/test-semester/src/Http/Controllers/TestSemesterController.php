@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Http\Controllers;
 
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterCreateRequest;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
@@ -52,6 +53,10 @@ class TestSemesterController extends Controller
             }
 
             $attributes['type'] = array_values($valueType);
+        }
+
+        if (!empty($attributes['age'])) {
+            $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
         }
 
         if (!empty($attributes['approvalStatus'])) {

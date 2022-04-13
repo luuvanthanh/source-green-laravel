@@ -84,10 +84,24 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             });
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->where('EmployeeId', $attributes['employeeId']);
+        }
+
+        if (isset($attributes['age'])) {
+            $this->model = $this->model->whereHas('testSemesterDetail.testSemesterDetailChildren.childEvaluate', function ($query) use ($attributes) {
+                $query->where('Age', $attributes['age']);
+            });
+        }
+
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
+        }
+
         if (!empty($attributes['approvalStatus'])) {
             $this->model = $this->model->whereIn('ApprovalStatus', $attributes['approvalStatus']);
         }
-        
+
         if (!empty($attributes['branchId'])) {
             $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
                 $q->whereHas('classStudent', function ($q1) use ($attributes) {
