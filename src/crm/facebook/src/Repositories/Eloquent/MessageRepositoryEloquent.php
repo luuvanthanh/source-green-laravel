@@ -218,6 +218,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         $page = Page::where('page_id_facebook', $attributes['from'])->first();
         //\Log::info($page);
         if (is_null($page)) {
+
             if (!is_null($page)) {
                 $pageId = $page->id;
                 $userFacebookInfo = UserFacebookInfo::where('user_id', $attributes['to'])->first();
@@ -237,13 +238,16 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                     'conversation_id' => $conversation->id
                 ]));
 
-                if (isset($statusSendMessage['delivery']['mids'])) {
+                if (isset($statusSendMessage['delivery']['mids']) && isset($statusSendMessage['delivery']['watermark'])) {
                     foreach ($statusSendMessage['delivery']['mids'] as $value) {
                         $message = Message::where('message_id_facebook', $value)->first();
-                        $message->watermark = $statusSendMessage['delivery']['watermark'];
-                        if ($message->status_send_message != Message::STATUS_SEND_MESSAGE['READ']) {
-                            $message->status_send_message = Message::STATUS_SEND_MESSAGE['RECEIVED'];
-                            $message->update();
+
+                        if (!is_null($message)) {
+                            $message->watermark = $statusSendMessage['delivery']['watermark'];
+                            if ($message->status_send_message != Message::STATUS_SEND_MESSAGE['READ']) {
+                                $message->status_send_message = Message::STATUS_SEND_MESSAGE['RECEIVED'];
+                                $message->update();
+                            }
                         }
                     }
                 }
@@ -329,7 +333,6 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         $name = substr($url, strrpos($url, '/') + 1);
         Storage::disk('local')->put('public/files/' . $name, $contents);
         $url = env('URL_CRM') . '/storage/files/' . $name;
-
         return $url;
     }
 }

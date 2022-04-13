@@ -16,6 +16,15 @@ services:
     environment:
       - PHP_MEM_LIMIT=${PHP_MEM_LIMIT}
     restart: always
+  # redis
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6389:6379'
   laravel-echo-server:
     image: oanhnn/laravel-echo-server:latest
     environment:

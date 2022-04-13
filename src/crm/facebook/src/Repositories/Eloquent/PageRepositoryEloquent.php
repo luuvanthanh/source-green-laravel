@@ -98,7 +98,7 @@ class PageRepositoryEloquent extends BaseRepository implements PageRepository
                         'url' => $url
                     ];
                 } else {
-                    $name = $urlFile['name'];
+                    $name = str_replace(' ', '-', $urlFile['name']);
                     $contents = file_get_contents($url);
                     Storage::disk('local')->put('public/files/' . $name, $contents);
                     $url = env('URL_CRM') . '/storage/files/' . $name;
