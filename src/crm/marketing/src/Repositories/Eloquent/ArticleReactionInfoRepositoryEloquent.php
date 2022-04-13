@@ -51,6 +51,12 @@ class ArticleReactionInfoRepositoryEloquent extends BaseRepository implements Ar
             $this->model = $this->model->where('post_facebook_info_id', $attributes['post_facebook_info_id']);
         }
 
+        if (!empty($attributes['page_id']) && !empty($attributes['article_id'])) {
+            $this->model = $this->model->whereHas('postFacebookInfo', function ($query) use ($attributes) {
+                $query->where('page_id', $attributes['page_id'])->where('article_id', $attributes['article_id']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $articleReactionInfo = $this->paginate($attributes['limit']);
         } else {

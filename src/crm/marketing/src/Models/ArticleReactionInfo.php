@@ -11,4 +11,9 @@ class ArticleReactionInfo extends UuidModel
     protected $fillable = [
         'full_name', 'phone', 'email', 'reaction_type', 'post_facebook_info_id', 'interactive_id'
     ];
+
+    public function postFacebookInfo()
+    {
+        return $this->belongsTo(PostFacebookInfo::class);
+    }
 }

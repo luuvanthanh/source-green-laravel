@@ -90,4 +90,11 @@ class PostFacebookInfoController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function quantityShare(Request $request)
+    {
+        $this->postFacebookInfoRepository->quantityShare($request->all());
+
+        return $this->success([], trans('lang::messages.common.getInfoSuccess'));
+    }
 }

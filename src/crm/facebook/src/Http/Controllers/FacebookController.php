@@ -145,7 +145,13 @@ class FacebookController extends Controller
 
             return $this->success(['data' => $pages], trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
 
@@ -162,7 +168,13 @@ class FacebookController extends Controller
 
             return $this->success(['data' => $pageToken], trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
 
@@ -179,7 +191,13 @@ class FacebookController extends Controller
 
             return $this->success(['data' => $pageConversation], trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
 
@@ -196,7 +214,13 @@ class FacebookController extends Controller
 
             return $this->success(['data' => $pageConversationMessage], trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
 
@@ -213,7 +237,13 @@ class FacebookController extends Controller
 
             return $this->success(['data' => $mess], trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
 
@@ -221,10 +251,15 @@ class FacebookController extends Controller
     {
         try {
             $mess = FacebookService::publishPagePost($request->all());
-
             return $this->success(['data' => $mess], trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
 
@@ -235,7 +270,13 @@ class FacebookController extends Controller
 
             return $this->success((array) $mess, trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
 
@@ -246,7 +287,13 @@ class FacebookController extends Controller
 
             return $this->success(['data' => $userLongToken], trans('lang::messages.common.getListSuccess'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
 }

@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Facebook\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\Facebook\Models\Page;
+use GGPHP\Crm\Marketing\Transformers\PostFacebookInfoTransformer;
 
 /**
  * Class CustomerPotentialEventInfoTransformer.
@@ -29,7 +30,7 @@ class PageTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['conversation'];
+    protected $availableIncludes = ['conversation', 'postFacebookInfo'];
 
     /**
      * Transform the User entity.
@@ -46,5 +47,10 @@ class PageTransformer extends BaseTransformer
     public function includeConversation(Page $page)
     {
         return $this->collection($page->userFacebookInfo, new UserFacebookInfoTransformer, 'Conversation');
+    }
+
+    public function includePostFacebookInfo(Page $page)
+    {
+        return $this->collection($page->postFacebookInfo, new PostFacebookInfoTransformer, 'PostFacebookInfo');
     }
 }
