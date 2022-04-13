@@ -73,14 +73,6 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
             $this->model = $this->model->where('employee_id', $attributes['employee_id']);
         }
 
-        if (isset($attributes['call_yet'])) {
-            $this->model = $this->model->where('status', ManagerCall::STATUS['CALLYET']); //chưa gọi
-        }
-
-        if (isset($attributes['called'])) {
-            $this->model = $this->model->where('status', ManagerCall::STATUS['CALLED']); // đã gọi
-        }
-
         if (!empty($attributes['status_lead'])) {
             $this->model = $this->model->whereHas('customerLead.statusLeadLatest', function ($query) use ($attributes) {
                 $query->where(function ($query) {
@@ -133,12 +125,22 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
             ]);
         }
 
-        if (!empty($attributes['overtime'])) {
-            $this->model = $this->model->where('expected_date', null)->orWhere('status', ManagerCall::STATUS['CALLYET']);
-        }
-
         if (!empty($attributes['call_times'])) {
-            $this->model = $this->model->where('call_times', ManagerCall::CALLTIME[$attributes['call_times']]);
+
+            switch ($attributes['call_times']) {
+                case 'OVERTIME':
+                    $this->model = $this->model->where('expected_date', null);
+                    break;
+                case 'CALL_YET':
+                    $this->model = $this->model->where('status', ManagerCall::STATUS['CALLYET']); //chưa gọi
+                    break;
+                case 'CALLED':
+                    $this->model = $this->model->where('status', ManagerCall::STATUS['CALLED']); // đã gọi
+                    break;
+                default:
+                    $this->model = $this->model->where('call_times', ManagerCall::CALLTIME[$attributes['call_times']]);
+                    break;
+            }
         }
 
         if (!empty($attributes['limit'])) {
@@ -225,5 +227,272 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
         }
 
         return [];
+    }
+
+    public function statisticCustomerLead(array $attributes)
+    {
+        $leads  = $this->totalLead($attributes);
+
+        $leadNews = $this->leadNew($attributes);
+
+        $leadPotentials = $this->leadPotential($attributes);
+
+        $leadNotPotentials = $this->leadNotPotential($attributes);
+
+        $firstCall = $this->firstCall($attributes);
+
+        $secondCall = $this->secondCall($attributes);
+
+        $thirdCall = $this->thirdCall($attributes);
+
+        $fourthCall = $this->fourthCall($attributes);
+
+        $fivethCall = $this->fivethCall($attributes);
+
+        return [
+            'data' => [
+                'leads' => $leads,
+                'lead_news' => $leadNews,
+                'lead_potentials' => $leadPotentials,
+                'lead_not_potentials' => $leadNotPotentials,
+                'first' => $firstCall,
+                'second' => $secondCall,
+                'third' => $thirdCall,
+                'fourth' => $fourthCall,
+                'fiveth' => $fivethCall
+            ]
+        ];
+    }
+
+    public function totalLead($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $leads = $query->selectRaw('count(distinct(customer_lead_id)) as leads')->first()->leads;
+
+        return $leads;
+    }
+
+    public function leadNew($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $leadNews = $query->selectRaw('count(distinct(customer_lead_id)) as lead_news')->where('expected_date', null)->whereHas('customerLead.statusLeadLatest', function ($query) {
+            $query->where(function ($query) {
+                $query->select('status');
+                $query->from('status_lead');
+                $query->whereColumn('customer_lead_id', 'customer_leads.id');
+                $query->latest();
+                $query->limit(1);
+            }, StatusLead::STATUS_LEAD['LEAD_NEW']);
+        })->first()->lead_news;
+
+        return $leadNews;
+    }
+
+    public function leadPotential($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $leadPotentials = $query->selectRaw('count(distinct(customer_lead_id)) as lead_potential')->whereHas('customerLead.statusLeadLatest', function ($query) {
+            $query->where(function ($query) {
+                $query->select('status');
+                $query->from('status_lead');
+                $query->whereColumn('customer_lead_id', 'customer_leads.id');
+                $query->latest();
+                $query->limit(1);
+            }, StatusLead::STATUS_LEAD['POTENTIAL']);
+        })->first()->lead_potential;
+
+        return $leadPotentials;
+    }
+
+    public function leadNotPotential($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $leadNotPotentials = $query->selectRaw('count(distinct(customer_lead_id)) as lead_not_potential')->whereHas('customerLead.statusLeadLatest', function ($query) {
+            $query->where(function ($query) {
+                $query->select('status');
+                $query->from('status_lead');
+                $query->whereColumn('customer_lead_id', 'customer_leads.id');
+                $query->latest();
+                $query->limit(1);
+            }, StatusLead::STATUS_LEAD['NOT_POTENTIAL']);
+        })->first()->lead_not_potential;
+
+        return $leadNotPotentials;
+    }
+
+    public function called($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $called = $query->selectRaw('count(*) as called')->where('status', ManagerCall::STATUS['CALLED'])->first()->called;
+
+        return $called;
+    }
+
+    public function callYet($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $callYet = $query->selectRaw('count(*) as call_yet')->where('status', ManagerCall::STATUS['CALLYET'])->first()->call_yet;
+
+        return $callYet;
+    }
+
+    public function overtime($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+
+        $overtime = $query->selectRaw('count(*) as overtime')
+            ->whereDate('expected_date', '<', now()->toDateString())
+            ->where('status', ManagerCall::STATUS['CALLYET'])
+            ->where('status', ManagerCall::STATUS['CALLYET'])->first()->overtime;
+
+        return $overtime;
+    }
+
+    public function firstCall($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $firstCall = $query->selectRaw('count(*) as first')->where('call_times', ManagerCall::CALLTIME['FIRST'])->first()->first;
+
+        return $firstCall;
+    }
+
+    public function secondCall($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $secondCall = $query->selectRaw('count(*) as second')->where('call_times', ManagerCall::CALLTIME['SECOND'])->first()->second;
+
+        return $secondCall;
+    }
+
+    public function thirdCall($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $thirdCall = $query->selectRaw('count(*) as third')->where('call_times', ManagerCall::CALLTIME['THIRD'])->first()->third;
+
+        return $thirdCall;
+    }
+
+    public function fourthCall($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $fourthCall = $query->selectRaw('count(*) as fourth')->where('call_times', ManagerCall::CALLTIME['FOURTH'])->first()->fourth;
+
+        return $fourthCall;
+    }
+
+    public function fivethCall($attributes)
+    {
+        $query = $this->model()::query();
+
+        if (!empty($attributes['employee_id'])) {
+            $employees = explode(',', $attributes['employee_id']);
+            $query = $query->whereIn('employee_id', $employees);
+        }
+
+        $query = $query->whereDate('created_at', '>=', $attributes['start_date'])
+            ->whereDate('created_at', '<=', $attributes['end_date']);
+
+        $fivethCall = $query->selectRaw('count(*) as fiveth')->where('call_times', ManagerCall::CALLTIME['FIVETH'])->first()->fiveth;
+
+        return $fivethCall;
     }
 }

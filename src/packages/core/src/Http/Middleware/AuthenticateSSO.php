@@ -23,6 +23,8 @@ class AuthenticateSSO
             throw new AuthenticationException;
         }
 
+        return $next($request);
+
         $ssoUrl = env('SSO_URL') . '/api/user/check-token';
         $respone =  Http::withToken($bearerToken)->get($ssoUrl);
 

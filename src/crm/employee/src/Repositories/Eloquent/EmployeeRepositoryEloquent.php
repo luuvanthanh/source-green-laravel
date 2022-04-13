@@ -119,6 +119,7 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
                 $query->select(DB::raw('count(distinct(customer_lead_id))'));
                 $query->whereDate('created_at', '>=', $attributes['from_date']);
                 $query->whereDate('created_at', '<=', $attributes['to_date']);
+                $query->where('expected_date', null);
 
                 $query->whereHas('customerLead.statusLeadLatest', function ($query) {
                     $query->where(function ($query) {
