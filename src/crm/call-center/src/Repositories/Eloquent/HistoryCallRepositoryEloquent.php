@@ -89,10 +89,13 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             $this->model = $this->model->where('direction', $attributes['call_type']);
         }
 
+        if (!empty($attributes['employee_id'])) {
+            $this->model = $this->mode->where('emplopyee_id', $attributes['employee_id']);
+        }
+
         request()->switchboard_number = $this->model()::select('switchboard')->groupBy('switchboard')->get()->map(function ($item) {
             return $item->switchboard;
         });
-
 
         if (!empty($attributes['limit'])) {
             $callCenter = $this->paginate($attributes['limit']);
@@ -156,6 +159,7 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
     public function callback(array $attributes)
     {
+        \Log::info($attributes);
         dispatch(new UpdateHistoryCallJob($attributes));
     }
 
@@ -201,7 +205,7 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
     public function callOutbound($attributes, $call)
     {
-        \Log::info($attributes);
+        // \Log::info($attributes);
         $data = [
             'phone' => $attributes['data']['destination'],
             'call_id_sub' => $attributes['data']['callId'],
@@ -222,4 +226,5 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
         $this->model()::updateOrCreate(['id' => $id], $data);
     }
+    
 }

@@ -100,4 +100,11 @@ class ManagerCallController extends Controller
 
         return $this->success($count, trans('lang::messages.common.getListSuccess'));
     }
+
+    public function statisticCustomerLead(Request $request)
+    {
+        $statistics = $this->managerCallRepository->statisticCustomerLead($request->all());
+
+        return $this->success($statistics, trans('lang::messages.common.getListSuccess'));
+    }
 }
