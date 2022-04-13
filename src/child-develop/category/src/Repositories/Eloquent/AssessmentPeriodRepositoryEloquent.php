@@ -56,21 +56,21 @@ class AssessmentPeriodRepositoryEloquent extends BaseRepository implements Asses
             $this->model = $this->model->whereLike('Name', $attributes['key']);
         }
 
-        if (!empty($attributes['branchId'])) {
-            $this->model = $this->model->whereHas('branch', function ($query) use ($attributes) {
+        if (!empty($attributes['branchId']) && !empty($attributes['periodic']) && $attributes['periodic'] == 'true') {
+            $this->model = $this->model->where('Periodic', true)->whereHas('branch', function ($query) use ($attributes) {
                 $query->where('BranchId', $attributes['branchId']);
             });
         }
 
         if (!empty($attributes['classId']) && !empty($attributes['periodic']) && $attributes['periodic'] == 'true') {
-            $this->model = $this->model->whereHas('classes', function ($query) use ($attributes) {
-                $query->where('ClassesId', $attributes['classId'])->where('Periodic', true);
+            $this->model = $this->model->where('Periodic', true)->whereHas('classes', function ($query) use ($attributes) {
+                $query->where('ClassesId', $attributes['classId']);
             });
         }
 
         if (!empty($attributes['classId']) && !empty($attributes['introduction']) && $attributes['introduction'] == 'true') {
-            $this->model = $this->model->whereHas('classes', function ($query) use ($attributes) {
-                $query->where('ClassesId', $attributes['classId'])->where('Introduction', true);
+            $this->model = $this->model->where('Introduction', true)->whereHas('classes', function ($query) use ($attributes) {
+                $query->where('ClassesId', $attributes['classId']);
             });
         }
 
