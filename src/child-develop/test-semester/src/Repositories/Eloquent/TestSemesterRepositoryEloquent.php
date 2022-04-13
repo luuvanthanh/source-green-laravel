@@ -84,6 +84,10 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             });
         }
 
+        if (!empty($attributes['approvalStatus'])) {
+            $this->model = $this->model->whereIn('ApprovalStatus', $attributes['approvalStatus']);
+        }
+        
         if (!empty($attributes['branchId'])) {
             $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
                 $q->whereHas('classStudent', function ($q1) use ($attributes) {
@@ -208,11 +212,6 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
     public function update(array $attributes, $id)
     {
         $testSemester = TestSemester::find($id);
-
-        if (!empty($attributes['approvalStatus'])) {
-            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
-        }
-
         $testSemester->update($attributes);
 
         return parent::find($id);
