@@ -113,7 +113,7 @@ const renderChildren = (
       filterOption={
         filterOption
           ? false
-          : (input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
+          : (input, option) => Helper.slugify(option?.children)?.indexOf(Helper.slugify(input)) >= 0
       }
       notFoundContent={notFoundContent}
       onChange={onChange}

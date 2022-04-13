@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
-import { Form } from 'antd';
-import {  useHistory, useLocation } from 'umi';
+import { Form, notification } from 'antd';
+import { useHistory, useLocation } from 'umi';
 import classnames from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 
@@ -233,6 +233,58 @@ const General = memo(() => {
     });
   };
 
+  const onchangeMedical = () => {
+    if (detailsStudent?.student?.studentCrmId) {
+      dispatch({
+        type: 'OPProfile/GET_MEDICAL',
+        payload: { admission_register_id: detailsStudent?.student?.studentCrmId },
+        callback(res) {
+          if (res?.parsePayload?.length > 0) {
+            history.push(`/crm/sale/dang-ky-nhap-hoc/${detailsStudent?.student?.studentCrmId}/chi-tiet?type=medical`);
+          } if (res?.parsePayload?.length === 0) {
+            notification.error({
+              message: 'THÔNG BÁO',
+              description: `Học sinh ${detailsStudent?.student?.fullName} chưa được khai báo y tế.`,
+            });
+          }
+        },
+      });
+    } else {
+      notification.error({
+        message: 'THÔNG BÁO',
+        description: `Học sinh ${detailsStudent?.student?.fullName} chưa được khai báo y tế.`,
+      });
+    }
+  };
+
+  const onchangeEvaluate = () => {
+    if (detailsStudent?.student?.studentCrmId) {
+      dispatch({
+        type: 'OPProfile/GET_EVALUATE',
+        payload: { admission_register_id: detailsStudent?.student?.studentCrmId },
+        callback(res) {
+          if (res?.parsePayload?.length > 0) {
+            history.push(`/crm/sale/dang-ky-nhap-hoc/${detailsStudent?.student?.studentCrmId}/chi-tiet?type=childEvaluation`);
+          } if (res?.parsePayload?.length === 0) {
+            notification.error({
+              message: 'THÔNG BÁO',
+              description: `Học sinh ${detailsStudent?.student?.fullName} chưa được đánh giá.`,
+            });
+          }
+        },
+      });
+    } else {
+      notification.error({
+        message: 'THÔNG BÁO',
+        description: `Học sinh ${detailsStudent?.student?.fullName} chưa được đánh giá.`,
+      });
+    }
+  };
+
+  const onchangeCurriculum = () => {
+    history.push('/chuong-trinh-hoc/bao-cao-quan-tri-hs/hoc-thuat-theo-tung-goc-giao-cu');
+  };
+
   return (
     <>
       <div className={classnames(common['content-form'], common['content-form-children'])}>
@@ -375,7 +427,6 @@ const General = memo(() => {
                         )}
                       </p>
                     </div>
-                    <Button className={styles.btn}>Chi tiết</Button>
                   </div>
                   <div className="d-flex justify-content-between mb15">
                     <div className={classnames(styles['table-content'])}>
@@ -433,7 +484,6 @@ const General = memo(() => {
                         )}
                       </p>
                     </div>
-                    <Button className={styles.btn}>Chi tiết</Button>
                   </div>
                   <div className="d-flex justify-content-between mb15 pl10 pr10">
                     <div className={classnames(styles['table-content'])}>
@@ -516,7 +566,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Khai báo y tế</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn} onClick={onchangeMedical}>Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">
@@ -527,7 +577,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Đánh giá của phụ huynh</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn} onClick={onchangeEvaluate}>Chi tiết</Button>
                 </div>
               </div>
 
@@ -541,7 +591,9 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập giáo cụ</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn}
+                    onClick={onchangeCurriculum}
+                  >Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">

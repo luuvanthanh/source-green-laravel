@@ -186,6 +186,28 @@ export default {
         });
       }
     },
+    *GET_MEDICAL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getMedical, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_EVALUATE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getEvaluate, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };
