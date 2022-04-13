@@ -1,5 +1,5 @@
 import request from '@/utils/requestCrm';
-import { Helper } from '@/utils';
+import { Helper} from '@/utils';
 
 export function get(data = {}) {
   return request('/v1/admission-registers', {
@@ -15,16 +15,16 @@ export function get(data = {}) {
         'studentInfo',
         'parentInfo',
       ]),
-      employeeId: data.employeeId && data.employeeId.join(','),
     },
   });
 }
 
-export function getCities() {
-  return request(`/v1/citys`, {
+export function getParents() {
+  return request(`/v1/customer-leads`, {
     method: 'GET',
     params: {
-      orderBy: 'name',
+      limit: 10000,
+      page: 1,
     },
   });
 }

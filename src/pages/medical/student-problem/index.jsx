@@ -325,13 +325,13 @@ class Index extends PureComponent {
         title: 'Tình trạng',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.handleWay}</Text>,
+        render: (record) => <Text size="normal">{record?.employeeNote}</Text>,
       },
       {
         title: 'Cách xử lý',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.employeeNote}</Text>,
+        render: (record) => <Text size="normal">{record?.handleWay}</Text>,
       },
       {
         title: 'Người xử lý',

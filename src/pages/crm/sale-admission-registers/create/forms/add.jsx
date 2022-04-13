@@ -10,21 +10,21 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
+import stylesModule from '../../styles.module.scss';
 
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
   error: crmSaleAdmissionAdd.error,
   studentsLead: crmSaleAdmissionAdd.studentsLead,
   customerLead: crmSaleAdmissionAdd.customerLead,
-  studentsId: crmSaleAdmissionAdd.studentsId,
 });
 const General = memo(
-  ({ loading: { effects }, customerLead, studentsLead, studentsId }) => {
+  ({ loading: { effects }, customerLead, studentsLead }) => {
     const formRef = useRef();
     const mounted = useRef(false);
     const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD`];
     const dispatch = useDispatch();
-    
+
     useEffect(() => {
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_CUSTOMER_LEAD',
@@ -52,26 +52,16 @@ const General = memo(
         payload: {
           student_info_id,
         },
-        if(response) {
-          formRef.current.setFieldsValue({
-            data: response.parsePayload.map((item) => ({
-              ...item,
-              birth_date: moment(item.birth_date),
-            })),
-          });
+        callback(response) {
+          if (response) {
+            formRef.current.setFieldsValue({
+              age_month: response[0]?.age_month,
+              birth_date: response[0]?.birth_date ? moment(response[0]?.birth_date) : "",
+            });
+          }
         }
       });
     };
-
-    useEffect(() => {
-      if (studentsId) {
-        formRef.current.setFieldsValue({
-          ...studentsId[0],
-          birth_date: studentsId[0]?.birth_date ? moment(studentsId[0]?.birth_date) : "",
-        });
-      }
-    }, [studentsId]);
-
     /**
      * Function submit form modal
      * @param {object} values values of form
@@ -79,7 +69,7 @@ const General = memo(
     const onFinish = (values) => {
       dispatch({
         type: 'crmSaleAdmissionAdd/ADD',
-        payload: { ...values },
+        payload: { ...values, disable_status: true },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -106,14 +96,15 @@ const General = memo(
     }, []);
 
     return (
-      <Form
-        layout="vertical"
-        ref={formRef}
-        onFinish={onFinish}
-        initialValues={{
-          data: [{}],
-        }}
-      >
+      <Pane className={stylesModule['disabled-container']}>
+        <Form
+          layout="vertical"
+          ref={formRef}
+          onFinish={onFinish}
+          initialValues={{
+            data: [{}],
+          }}
+        >
           <Pane className="card p20">
             <Pane>
               <Heading type="form-title" style={{ marginBottom: 20 }}>
@@ -208,7 +199,8 @@ const General = memo(
               </Button>
             </Pane>
           </Pane>
-      </Form>
+        </Form>
+      </Pane>
     );
   },
 );
@@ -217,14 +209,12 @@ General.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   customerLead: PropTypes.arrayOf(PropTypes.any),
   studentsLead: PropTypes.arrayOf(PropTypes.any),
-  studentsId: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
   loading: {},
   customerLead: [],
   studentsLead: [],
-  studentsId: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));

@@ -1,5 +1,5 @@
-import { memo, useRef, useEffect } from 'react';
-import { Form } from 'antd';
+import { memo, useRef, useEffect, useState } from 'react';
+import { Form, Input } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 import { connect, withRouter } from 'umi';
@@ -10,6 +10,8 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
+import stylesModule from '../../styles.module.scss';
+
 
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
@@ -23,17 +25,26 @@ const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, }) => {
     const formRef = useRef();
     const mounted = useRef(false);
+    const [description, setDescription] = useState('');
+    const [result, setResult] = useState('');
+
     // const [ramdom, setRamdom] = useState(0);
     const loadingSubmit =
       effects[`crmSaleAdmissionAdd/UPDATE_STUDENTS`];
-    const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS`];
+    const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS_ID`];
     useEffect(() => {
-      if(params.id){
-      dispatch({
-        type: 'crmSaleAdmissionAdd/GET_DETAILS',
-        payload: params,
-      });
-    }
+      if (params.id) {
+        dispatch({
+          type: 'crmSaleAdmissionAdd/GET_DETAILS_ID',
+          payload: params,
+          callback: (response) => {
+            if (response) {
+              setDescription(response?.parent_wish);
+              setResult(response?.children_note);
+            }
+          },
+        });
+      }
     }, [params.id]);
 
     /**
@@ -86,44 +97,93 @@ const General = memo(
     return (
       <Form layout="vertical" ref={formRef} onFinish={onFinish}>
         <Pane className="card">
-            <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-              <Heading type="form-title" style={{ marginBottom: 20 }}>
+          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+            <Heading type="form-title" style={{ marginBottom: 20 }}>
               Thông tin đăng ký
-              </Heading>
-              <Pane className="row">
-                <Pane className="col-lg-4">
-                  <FormItem
-                    name="date_register"
-                    label="Thời gian đăng ký nhập học"
-                    type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
-                  />
+            </Heading>
+            {
+              details?.disable_status ?
+                <Pane className="row">
+                  <Pane className="col-lg-4">
+                    <FormItem
+                      name="date_register"
+                      label="Thời gian đăng ký nhập học"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </Pane>
+                  <Pane className="col-lg-12">
+                    <FormItem
+                      name="parent_wish"
+                      placeholder="Nhập"
+                      label="Mong muốn của phụ huynh"
+                      type={variables.TEXTAREA}
+                    />
+                  </Pane>
+                  <Pane className="col-lg-12">
+                    <FormItem
+                      name="children_note"
+                      placeholder="Nhập"
+                      label="Lưu ý trẻ"
+                      type={variables.TEXTAREA}
+                    />
+                  </Pane>
+                </Pane> :
+                <Pane className={stylesModule['disabled-container']}>
+                  <Pane className="row">
+                    <Pane className="col-lg-4">
+                      <FormItem
+                        name="date_register"
+                        label="Thời gian đăng ký nhập học"
+                        type={variables.DATE_PICKER}
+                        rules={[variables.RULES.EMPTY]}
+                        disabled
+                      />
+                    </Pane>
+                    <Pane className="col-lg-12">
+                      <Pane className="ant-col ant-form-item-label">
+                        <label>
+                          <span>Mong muốn của phụ huynh</span>
+                        </label>
+                      </Pane>
+                      <Input.TextArea
+                        value={description}
+                        placeholder=" "
+                        className='mb15'
+                        autoSize={{ minRows: 5, maxRows: 5 }}
+                        rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                        type={variables.TEXTAREA}
+                        disabled
+                      />
+                    </Pane>
+                    <Pane className="col-lg-12">
+                      <Pane className="ant-col ant-form-item-label">
+                        <label>
+                          <span>Lưu ý trẻ</span>
+                        </label>
+                      </Pane>
+                      <Input.TextArea
+                        value={result}
+                        placeholder=" "
+                        className='mb15'
+                        autoSize={{ minRows: 5, maxRows: 5 }}
+                        rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                        type={variables.TEXTAREA}
+                        disabled
+                      />
+                    </Pane>
+                  </Pane>
                 </Pane>
-                <Pane className="col-lg-12">
-                  <FormItem
-                    name="parent_wish"
-                    placeholder="Nhập"
-                    label="Mong muốn của phụ huynh"
-                    type={variables.TEXTAREA}
-                  // rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                  />
-                </Pane>
-                <Pane className="col-lg-12">
-                  <FormItem
-                    name="children_note"
-                    placeholder="Nhập"
-                    label="Lưu ý trẻ"
-                    type={variables.TEXTAREA}
-                  // rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                  />
-                </Pane>
-              </Pane>
-            </Pane>
-            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-              <Button color="success" size="large" htmlType="submit" loading={loadingSubmit || loading}>
-                Lưu
-              </Button>
-            </Pane>
+            }
+          </Pane>
+          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+            {
+              details?.disable_status ?
+                <Button color="success" size="large" htmlType="submit" loading={loadingSubmit || loading}>
+                  Lưu
+                </Button> : ""
+            }
+          </Pane>
         </Pane>
       </Form>
     );
