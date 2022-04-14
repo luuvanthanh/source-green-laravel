@@ -9,6 +9,15 @@ export function get(params = {}) {
   });
 }
 
+export function getChart(params = {}) {
+  return request('/v1/statistics-customer-lead', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
 export function getChartTotal(params = {}) {
   return request('/v1/report-calls', {
     method: 'GET',

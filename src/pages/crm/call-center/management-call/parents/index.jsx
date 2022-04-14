@@ -16,7 +16,7 @@ const leadStatus = [
 
 const Index = memo(({ callTimes, crmIdUser, handleOnClick }) => {
   const [
-    { data, lead },
+    { data, lead, potential },
     { effects },
     { user },
   ] = useSelector(({ crmManagementCallParents, loading, user }) => [
@@ -40,6 +40,10 @@ const Index = memo(({ callTimes, crmIdUser, handleOnClick }) => {
   useEffect(() => {
     dispatch({
       type: 'crmManagementCallParents/GET_STATUS_LEAD',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmManagementCallParents/GET_STATUS_POTENTIAL',
       payload: {},
     });
   }, []);
@@ -127,13 +131,13 @@ const Index = memo(({ callTimes, crmIdUser, handleOnClick }) => {
       key: 'statusLeadLatest',
       width: 150,
       className: 'min-width-150',
-      render: (record) => variables.LEAD_STATUS[record?.statusLeadLatest[0]?.status],
+      render: (record) => record?.statusCareLatest[0]?.statusParentLead?.name,
     },
     {
       title: 'Tình trạng lead',
       key: 'leadStatus',
       width: 150,
-      render: (record) => record?.statusCareLatest[0]?.statusParentLead?.name,
+      render: (record) => variables.LEAD_STATUS[record?.statusLeadLatest[0]?.status],
     },
     {
       title: 'Tình trạng tiềm năng',
@@ -186,7 +190,7 @@ const Index = memo(({ callTimes, crmIdUser, handleOnClick }) => {
           <div className="col-lg-3">
             <FormItem
               className="ant-form-item-row"
-              data={[{ id: null, name: 'Tất cả phân loại PH' }, ...leadStatus]}
+              data={[{ id: null, name: 'Tất cả phân loại PH' }, ...lead]}
               name="status_lead"
               onChange={(event) => onChangeExpected(event, 'status_lead')}
               type={variables.SELECT}
@@ -196,7 +200,7 @@ const Index = memo(({ callTimes, crmIdUser, handleOnClick }) => {
           <div className="col-lg-3">
             <FormItem
               className="ant-form-item-row"
-              data={[{ id: null, name: 'Tất cả tình trạng Lead' }, ...lead]}
+              data={[{ id: null, name: 'Tất cả tình trạng Lead' }, ...leadStatus]}
               name="status_type_lead"
               onChange={(event) => onChangeExpected(event, 'status_type_lead')}
               type={variables.SELECT}
@@ -206,7 +210,7 @@ const Index = memo(({ callTimes, crmIdUser, handleOnClick }) => {
           <div className="col-lg-3">
             <FormItem
               className="ant-form-item-row"
-              data={[{ id: null, name: 'Tất cả tình trạng tiềm năng' }]}
+              data={[{ id: null, name: 'Tất cả tình trạng tiềm năng' }, ...potential]}
               name="status_parent_potential_id"
               onChange={(event) => onChangeExpected(event, 'status_parent_potential_id')}
               type={variables.SELECT}

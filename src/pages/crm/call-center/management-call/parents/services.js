@@ -24,3 +24,13 @@ export function getStatusLead() {
     },
   });
 }
+
+export function getStatusPotential(params = {}) {
+  return request(`/v1/status-parent-potentials`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}

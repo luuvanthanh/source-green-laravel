@@ -4,6 +4,8 @@ export default {
   namespace: 'crmHistoryCall',
   state: {
     data: [],
+    saler: [],
+    extensions: [],
     pagination: {
       total: 0,
     },
@@ -19,6 +21,14 @@ export default {
       data: payload.parsePayload,
       pagination: payload.pagination,
     }),
+    SET_SALER: (state, { payload }) => ({
+      ...state,
+      saler: payload?.parsePayload.map((item) => ({ ...item, name: item.full_name })),
+    }),
+    SET_EXTENSIONS: (state, { payload }) => ({
+      ...state,
+      extensions: payload?.parsePayload.map((item) => ({ ...item, name: item.user_id_cmc })),
+    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -30,7 +40,7 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
         if (response) {
@@ -39,6 +49,39 @@ export default {
             payload: response,
           });
         }
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_SALER({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSaler, payload);
+        yield saga.put({
+          type: 'SET_SALER',
+          payload: {
+            parsePayload: response.parsePayload,
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_EXTENSIONS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getExtensions, payload);
+        yield saga.put({
+          type: 'SET_EXTENSIONS',
+          payload: {
+            parsePayload: response.parsePayload,
+          },
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

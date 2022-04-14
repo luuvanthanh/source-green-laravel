@@ -17,3 +17,21 @@ export function get(params = {}) {
     },
   });
 }
+
+export function getSaler(params = {}) {
+  return request('/v1/employees', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getExtensions(params = {}) {
+  return request('/v1/extensions', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
