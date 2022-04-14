@@ -12,7 +12,21 @@ export default {
       isError: false,
       data: {},
     },
-    user: {},
+    user: {
+      accessToken:
+        'EAAM8onYIpqUBAGU0TNkMgeUPbbI5JYWkCBGM197vLTSAQAv24BKKixZARJnWDM4YSdZBFnBljJhk4mGoOk773ZBIcgNpQHnqg5SXPzM9mGpnmIOCUdhh2l9d2FVpQhjTLoGPtwtUIhle7xPOin6bgrSPFnnvcBZCS4NFAz47ZAlr7iZBc3P7hnhgpS2bSsSjom74jk8c95yHKYnXgOn71v47vLexBTioV7Pci2JFq6dZA36ZBsE9RebCeYoRpZA5lBWQZD',
+      userID: '2973416992874415',
+      name: 'Phạm Công Thành',
+      picture: {
+        data: {
+          height: 50,
+          is_silhouette: false,
+          url:
+            'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2973416992874415&height=50&width=50&ext=1652493828&hash=AeS5DcZqDFVfpwn85Wg',
+          width: 50,
+        },
+      },
+    },
     pages: [],
     users: [],
     relationships: [],

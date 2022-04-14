@@ -1,4 +1,4 @@
-import { memo, useEffect, useState, useRef } from 'react';
+import { memo, useEffect, useState } from 'react';
 import classnames from 'classnames';
 import { useDispatch, useSelector } from 'dva';
 import { isEmpty } from 'lodash';
@@ -11,11 +11,9 @@ const Index = memo(() => {
 
   const [pageCurrent, setPageCurrent] = useState([]);
   const [page, setPage] = useState([]);
-  const [pageID, setPageID] = useState([]);
   const [userToken, setUserToken] = useState(undefined);
 
   const [getToken, setGetToket] = useState(undefined);
-
 
   const responseFacebook = (response) => {
     if (response.userID) {
@@ -143,7 +141,6 @@ const Index = memo(() => {
         callback: (response) => {
           if (response) {
             setPage(response.data);
-            setPageID([response.data[0]]);
           }
         },
       });

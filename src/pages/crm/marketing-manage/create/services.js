@@ -157,7 +157,7 @@ export function detailsPosts(params = {}) {
     params:{
       ...params,
       include: Helper.convertIncludes([
-        'postFacebookInfo.articleReactionInfo,postFacebookInfo.articleCommentInfo',
+        'postFacebookInfo.page',
       ]),
     }
   });

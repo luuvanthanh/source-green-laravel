@@ -53,10 +53,9 @@ export function getHeight(params = {}) {
 }
 
 export function getMedical(data = {}) {
-  return requestCRM(`/v1/medical-infos`, {
+  return requestCRM(`/v1/admission-registers`, {
     method: 'GET',
     params: {
-      MedicalInfo:data.id,
       ...data,
       limit: data.limit,
       page: data.page,
@@ -64,7 +63,7 @@ export function getMedical(data = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
-        "medicalDeclareInfo.configMedicalDeclare,childHeathDevelop"
+        "studentInfo,medicalInfo,childEvaluateInfo"
       ]),
     },
   });

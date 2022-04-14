@@ -42,6 +42,7 @@ const General = memo(() => {
   const [checkStudent, setCheckStudent] = useState(false);
   const [pipi, setPipi] = useState();
   const [pupu, setPupu] = useState([]);
+  const [water, setWater] = useState([]);
   const { query } = useLocation();
 
   const [search, setSearch] = useState({
@@ -72,9 +73,7 @@ const General = memo(() => {
         ].flat(),
         [
           'Bình nước',
-          dataWater?.length > 0
-            ? dataWater.map((i) => (i?.waterBottle?.type ? i?.waterBottle?.type : ''))
-            : '',
+          water?.length > 0 ? water[0]?.criteriaReportGroupByMonths.map((i) => i?.totalAmount) : '',
         ].flat(),
       ],
       type: 'bar',
@@ -200,18 +199,21 @@ const General = memo(() => {
       ToDate: moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
     });
   };
-
+  
   const onChangeData = () => {
-    const dataPipi = groupProperty.filter((i) => i.code === 'PIPI' || i.code === 'PUPU');
+    const dataPipi = groupProperty.filter((i) => i.code === 'PIPI' || i.code === 'PUPU' || i.code === 'WATERBOTTLE' );
     dispatch({
       type: 'OPProfile/GET_DATA',
       payload: { ...search, CriteriaPropertyIds: dataPipi.map((i) => i.id) },
-      callback(res) {
+      callback(res,er) {
         if (res) {
           setFormCheck(true);
           setPipi(res?.filter((i) => i?.criteriaGroupProperty?.code === 'PIPI'));
           setPupu(res?.filter((i) => i?.criteriaGroupProperty?.code === 'PUPU'));
+          setWater(res?.filter((i) => i?.criteriaGroupProperty?.code === 'WATERBOTTLE'));
         }
+        console.log("e",er);
+        console.log("res",res);
       },
     });
     dispatch({
@@ -237,16 +239,17 @@ const General = memo(() => {
     if (detailsStudent?.student?.studentCrmId) {
       dispatch({
         type: 'OPProfile/GET_MEDICAL',
-        payload: { admission_register_id: detailsStudent?.student?.studentCrmId },
+        payload: { student_info_id: detailsStudent?.student?.studentCrmId },
         callback(res) {
-          if (res?.parsePayload?.length > 0) {
-            history.push(`/crm/sale/dang-ky-nhap-hoc/${detailsStudent?.student?.studentCrmId}/chi-tiet?type=medical`);
-          } if (res?.parsePayload?.length === 0) {
-            notification.error({
-              message: 'THÔNG BÁO',
-              description: `Học sinh ${detailsStudent?.student?.fullName} chưa được khai báo y tế.`,
-            });
-          }
+          console.log("res",res)
+          // if (res?.parsePayload?.length > 0) {
+          //   history.push(`/crm/sale/dang-ky-nhap-hoc/${detailsStudent?.student?.studentCrmId}/chi-tiet?type=medical`);
+          // } if (res?.parsePayload?.length === 0) {
+          //   notification.error({
+          //     message: 'THÔNG BÁO',
+          //     description: `Học sinh ${detailsStudent?.student?.fullName} chưa được khai báo y tế.`,
+          //   });
+          // }
         },
       });
     } else {
@@ -479,7 +482,7 @@ const General = memo(() => {
                       <p className={styles.content}>
                         Cập nhập{' '}
                         {Helper.getDate(
-                          dataPipiPupu[0]?.criteriaGroupProperty?.lastModificationTime,
+                          dataPipiPupu[0]?.lasTModificationTime,
                           variables.DATE_FORMAT.DATE_TIME,
                         )}
                       </p>
@@ -508,7 +511,7 @@ const General = memo(() => {
                       <div className="pl15">
                         <p className={styles.title}>Số lần pupu</p>
                         <h2 className={styles.number}>
-                          {pupu?.length > 0 ? pipi[0]?.totalAmount : 0}
+                          {pupu?.length > 0 ? pupu[0]?.totalAmount : 0}
                         </h2>
                       </div>
                     </div>
@@ -521,9 +524,7 @@ const General = memo(() => {
                       <div className="pl15">
                         <p className={styles.title}>Bình nước</p>
                         <h2 className={styles.number}>
-                          {dataWater[dataWater?.length - 1]?.waterBottle?.type
-                            ? dataWater[dataWater?.length - 1]?.waterBottle?.type
-                            : '0'}
+                        {water?.length > 0 ? water[0]?.totalAmount : 0}
                         </h2>
                       </div>
                     </div>

@@ -1,27 +1,24 @@
 import { memo, useRef, useState, useEffect } from 'react';
-import { Form } from 'antd';
-import { head, get, isEmpty } from 'lodash';
+import { Form, Modal, Checkbox } from 'antd';
+import { get, isEmpty } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
+import classnames from 'classnames';
 import { useLocation, useParams, useHistory } from 'umi';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { useSelector, useDispatch } from 'dva';
 import Button from '@/components/CommonComponent/Button';
 import { Helper, variables } from '@/utils';
-import styles from '@/assets/styles/Common/common.scss';
 import stylesModule from '../../styles.module.scss';
 
 const Index = memo(() => {
   const {
     loading: { effects },
     posts,
-    users,
   } = useSelector(({ loading, crmMarketingManageAdd }) => ({
     loading,
     posts: crmMarketingManageAdd.posts,
-    users: crmMarketingManageAdd.user,
   }));
   const loading = effects[`crmMarketingManageAdd/GET_POSTS`];
   const dispatch = useDispatch();
@@ -30,83 +27,55 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const history = useHistory();
   const { pathname } = useLocation();
-  const [pageCurrent, setPageCurrent] = useState({});
-  const [getToken, setGetToket] = useState({});
+  const [page, setPage] = useState([]);
+  const [checkModal, setCheckModal] = useState(false);
+  const [dataModal, setDataModal] = useState({});
 
-  const responseFacebook = (response) => {
-    dispatch({
-      type: 'crmMarketingManageAdd/GET_USER',
-      payload: response,
-    });
-  };
+  const [checkPage, setCheckPage] = useState([]);
+
+
+
+  const local = JSON?.parse(localStorage.getItem('pageCurrent'));
 
 
   useEffect(() => {
-    if (users?.userID) {
+    const page = JSON?.parse(localStorage.getItem('pageCurrent'));
+    if (page?.length > 0) {
+      setPage(page);
+    }
+  }, [local?.length > 0]);
+
+  const handleOk = () => {
+    if (checkPage?.length > 0) {
       dispatch({
-        type: 'crmFBDevV1/GET_TOKEN',
+        type: 'crmMarketingManageAdd/ADD_FACEBOOK',
         payload: {
-          user_access_token: users?.accessToken,
+          article_id: dataModal?.id,
+          data_page: checkPage?.map(i =>
+          ({
+            page_id: i?.id,
+            page_access_token: i.access_token,
+          })
+          )
         },
-        callback: (response) => {
-          if (response) {
-            setGetToket(response);
+        callback: (response, error) => {
+          setCheckModal(false);
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
           }
         },
       });
     }
-  }, [users?.userID]);
-
-  useEffect(() => {
-    if (getToken?.user_access_token) {
-      dispatch({
-        type: 'crmFBDevV1/GET_PAGES',
-        payload: {
-          user_access_token: getToken?.user_access_token,
-          user_id: users?.userID,
-        },
-        callback: (response) => {
-          if (response) {
-            const firstPage = head(response.data);
-            setPageCurrent(firstPage);
-            sessionStorage.setItem('user', JSON.stringify(response.data));
-          }
-        },
-      });
-    }
-  }, [getToken?.user_access_token]);
-
-  const onFinish = (values) => {
-    dispatch({
-      type: 'crmMarketingManageAdd/ADD_FACEBOOK',
-      payload: {
-        article_id: values,
-        page_id: pageCurrent?.id,
-        page_access_token: pageCurrent.access_token,
-      },
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              formRef.current.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
   };
-
-  // useEffect(() => {
-  //   responseFacebook();
-  // }, []);
 
   useEffect(() => {
     mounted.current = true;
@@ -115,6 +84,10 @@ const Index = memo(() => {
     };
   }, []);
 
+  const onChangeModal = (record) => {
+    setCheckModal(true);
+    setDataModal(record);
+  };
   /**
    * Function header table
    */
@@ -124,18 +97,21 @@ const Index = memo(() => {
         title: 'Thời gian ',
         key: 'date',
         width: 80,
+        className: "min-width-80",
         render: (record) => Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Hình ảnh ',
         key: 'img',
         width: 80,
+        className: "min-width-80",
         render: (record) => <AvatarTable fileImage={Helper.getPathAvatarJson(record?.file_image)} />,
       },
       {
         title: 'Bài viết',
         key: 'name',
         width: 200,
+        className: "min-width-200",
         render: (record) => (
           <p
             role="presentation"
@@ -150,73 +126,60 @@ const Index = memo(() => {
         title: 'Lượt like',
         key: 'img',
         width: 100,
-        render: (record) => record?.postFacebookInfo?.quantity_reaction || 0,
+        className: "min-width-100",
+        render: (record) => (
+        <p  role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
+          {record?.quantity_reaction || 0}</p>)
       },
       {
         title: 'Lượt share',
         key: 'img',
         width: 100,
-        render: (record) => record?.postFacebookInfo?.quantity_share || 0,
+        className: "min-width-100",
+        render: (record) => (
+          <p  role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
+            {record?.quantity_share || 0}</p>)
       },
       {
         title: 'Lượt comment',
         key: 'img',
         width: 100,
-        render: (record) => record?.postFacebookInfo?.quantity_comment || 0,
+        className: "min-width-100",
+        render: (record) => (
+          <p  role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
+            {record?.quantity_comment || 0}</p>)
       },
       {
         title: 'Đăng lên',
         key: 'action',
-        width: 100,
+        width: 130,
+        className: classnames('min-width-130', 'max-width-130'),
         fixed: 'right',
         render: (record) => (
-          <div className={styles['list-button']}>
-            <>
-              {isEmpty(users?.userID) && (
-                <div>
-                  <FacebookLogin
-                    appId={APP_ID_FB}
-                    autoLoad={false}
-                    fields="name,email,picture,birthday"
-                    scope="public_profile,pages_show_list,pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_messaging"
-                    callback={responseFacebook}
-                    render={(renderProps) => (
-                      <Button
-                        onClick={renderProps.onClick}
-                        type="button"
-                        size="small"
-                        color="primary"
-                      >
-                        Login FB
-                      </Button>
-                    )}
-                  />
+          <>
+            {isEmpty(JSON?.parse(localStorage.getItem('pageCurrent'))) && (
+              <div
+                role="presentation"
+                className={stylesModule['loginFacebook-container']}
+              >
+                <div className={classnames('icon-facebook', stylesModule.loginIcon)} />
+                <div className={stylesModule.login} role="presentation">
+                  Login FB
                 </div>
-              )}
-              {!isEmpty(users?.userID) && (
-                <Button
-                  color="primary"
-                  icon="facebook"
-                  size="small"
-                  className={stylesModule['button-fb']}
-                  onClick={() => onFinish(record.id)}
-                >
-                  Fanpage
-                </Button>
-              )}
-            </>
-            {/* <Button
-              color="primary"
-              icon="sphere"
-              size="normal"
-              className={stylesModule['button-Website']}
-            >
-              Website
-            </Button>
-            <Button color="success" icon="mobile" className={stylesModule['button-Mobile']}>
-              Mobile App
-            </Button> */}
-          </div>
+              </div>
+            )}
+            {!isEmpty(JSON?.parse(localStorage.getItem('pageCurrent'))) && (
+              <Button
+                color="primary"
+                icon="facebook"
+                size="small"
+                className={stylesModule['button-fb']}
+                onClick={() => onChangeModal(record)}
+              >
+                Đăng bài
+              </Button>
+            )}
+          </>
         ),
       },
     ];
@@ -224,16 +187,87 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
+    if(page?.length > 0){
+    const details = page?.map(i =>
+    ({
+      page_id: i?.id,
+      page_access_token: i.access_token,
+    }));
     dispatch({
       type: 'crmMarketingManageAdd/GET_POSTS',
       payload: {
         marketing_program_id: params.id,
-      },
+        data_page: JSON.stringify(details),
+      }
     });
-  }, []);
+    }
+  }, [page?.length > 0]);
+
+  const handleCancel = () => {
+    setCheckModal(false);
+  };
+
+  const onChangeCheckBox = (e) => {
+    setCheckPage(e);
+  };
 
   return (
     <>
+      <Modal
+        title="Đăng fanpage"
+        centered
+        className={stylesModule['wrapper-modal-check']}
+        visible={checkModal}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        width={400}
+        footer={[
+          <div key="back" className={stylesModule['wrapper-modal-footer']}>
+            <p
+              key="back"
+              role="presentation"
+              onClick={handleCancel}
+              className={stylesModule['button-cancel']}
+            >
+              Đóng
+            </p>
+            <Button
+              htmlType="submit"
+              color="success"
+              type="primary"
+              onClick={handleOk}
+              loading={effects['crmMarketingManageAdd/ADD_FACEBOOK']}
+            >
+              Đăng bài
+            </Button>
+          </div>
+        ]}
+      >
+        <Pane className={stylesModule['wrapper-modal-content']}>
+          <div className={stylesModule['wrapper-modal-title']}>
+            <h3 className={stylesModule.title}>Bài viết</h3>
+            <p className={stylesModule.content}>{dataModal?.name}</p>
+          </div>
+          <div>
+            <Pane className="row">
+              <Pane className="col-lg-12">
+                <Heading style={{ marginBottom: 12 }} className={stylesModule['modal-name']}>
+                  Đăng bài lên fanpage
+                </Heading>
+              </Pane>
+
+              <Checkbox.Group style={{ width: '100%' }} onChange={onChangeCheckBox}>
+                {page?.map((i, index) =>
+                  <Pane className="col-lg-12 pb10" key={index}>
+                    <Checkbox value={i} className={stylesModule['modal-check']}>{i?.name}</Checkbox>
+                  </Pane>)
+                }
+
+              </Checkbox.Group>
+            </Pane>
+          </div>
+        </Pane>
+      </Modal>
       <div >
         <Form layout="vertical" ref={formRef} onFinish>
           <Pane className="card">
@@ -266,7 +300,7 @@ const Index = memo(() => {
                 }}
                 bordered={false}
                 rowKey={(record) => record.id}
-                scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
+                scroll={{ x: '100%' }}
               />
             </Pane>
           </Pane>

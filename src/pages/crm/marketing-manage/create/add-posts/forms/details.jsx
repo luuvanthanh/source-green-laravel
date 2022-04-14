@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Tabs } from 'antd';
+import { Form, Tabs, Select } from 'antd';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
@@ -16,6 +16,7 @@ import stylesModule from '../../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
 
+const { Option } = Select;
 const { TabPane } = Tabs;
 const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
     loading,
@@ -65,7 +66,7 @@ const General = memo(
                 ),
             },
         ];
-
+        console.log("detailsAddPost", detailsAddPost)
         return (
             <>
                 <Form layout="vertical" ref={formRef} >
@@ -99,6 +100,22 @@ const General = memo(
                         </Pane>
                     </Pane>
                     <Pane className="card">
+                        <div className="pt20 pl20">
+                            <Select
+                                style={{ width: 200 }}
+                                placeholder="Search to Select"
+                                optionFilterProp="children"
+                                showSearch
+                                filterOption={(input, option) =>
+                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }
+                                filterSort={(optionA, optionB) =>
+                                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                }
+                            >
+                                <Option value="1">Not Identified</Option>
+                            </Select>
+                        </div>
                         <Tabs onChange={changeTab} activeKey={tab} className="test-12 p20">
                             {tabs().map(({ id, name, component }) => (
                                 <TabPane

@@ -70,7 +70,7 @@ const General = memo(
           key: 'money',
           className: 'min-width-150',
           width: 150,
-          render: (record) => <Text size="normal">{Helper.getPrice(record?.money)}</Text>,
+          render: (record) => <Text size="normal">{Helper.getPrice(record?.expected_money)}</Text>,
         },
         {
           title: 'Tiền giảm (đ)',
@@ -84,11 +84,12 @@ const General = memo(
           key: 'name',
           className: 'min-width-150',
           width: 150,
-          render: (record) => <Text size="normal">{Helper.getPrice(record?.money)}</Text>,
+          render: (record) => <Text size="normal">{Helper.getPrice(record?.expected_money)}</Text>,
         },
       ];
       return columns;
     };
+
     return (
       <>
         {

@@ -1,5 +1,7 @@
 import * as categories from '@/services/categories';
+import {  notification } from 'antd';
 import * as services from './services';
+
 
 export default {
   namespace: 'OPProfile',
@@ -71,6 +73,11 @@ export default {
           payload: response,
         });
       } catch (error) {
+        console.log('res', error);
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: `Học sinh ${error.data} chưa được khai báo y tế.`,
+        });
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

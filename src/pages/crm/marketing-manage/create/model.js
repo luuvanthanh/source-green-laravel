@@ -150,7 +150,12 @@ import * as categories from '@/services/categories';
       }),
       SET_POSTS: (state, { payload }) => ({
         ...state,
-        posts: payload.parsePayload,
+        posts: payload.parsePayload?.map(i=> ({
+          ...i,
+          quantity_share: i?.postFacebookInfo?.reduce((n, {quantity_share}) => n + quantity_share, 0),
+          quantity_comment: i?.postFacebookInfo?.reduce((n, {quantity_comment}) => n + quantity_comment, 0),
+          quantity_reaction: i?.postFacebookInfo?.reduce((n, {quantity_reaction}) => n + quantity_reaction, 0),
+        })),
       }),
       SET_PAGES: (state, { payload }) => ({
         ...state,
