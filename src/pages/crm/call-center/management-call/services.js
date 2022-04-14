@@ -26,10 +26,21 @@ export function getCountCall(params = {}) {
   });
 }
 
-export function getStatusLead() {
+export function getStatusLead(params = {}) {
   return request(`/v1/status-parent-leads`, {
     method: 'GET',
     params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getStatusPotential(params = {}) {
+  return request(`/v1/status-parent-potentials`, {
+    method: 'GET',
+    params: {
+      ...params,
       orderBy: 'name',
     },
   });

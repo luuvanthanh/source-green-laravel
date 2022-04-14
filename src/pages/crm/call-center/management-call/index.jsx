@@ -35,7 +35,7 @@ const leadStatus = [
 
 const Index = () => {
   const [
-    { data, pagination, lead },
+    { data, pagination, lead, potential },
     loading,
     { user },
   ] = useSelector(({ loading: { effects }, crmManagementCall, user }) => [
@@ -69,28 +69,31 @@ const Index = () => {
 
   useEffect(() => {
     dispatch({
-      type: 'crmCallCenter/GET_CRM_ID',
+      type: 'crmManagementCall/GET_DATA',
       payload: {
-        employee_id_hrm: user.objectInfo?.id,
+        ...search,
+        employee_id: crmIdUser?.id,
+      },
+    });
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch(search),
+    });
+  }, [crmIdUser, search]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'crmManagementCall/GET_COUNTCALL',
+      payload: {
+        employee_id: crmIdUser?.id,
       },
       callback: (response) => {
         if (response) {
-          setCrmIdUser(head(response.parsePayload).id);
-          dispatch({
-            type: 'crmManagementCall/GET_DATA',
-            payload: {
-              ...search,
-              employee_id: crmIdUser,
-            },
-          });
-          history.push({
-            pathname,
-            query: Helper.convertParamSearch(search),
-          });
+          setCountCall(response);
         }
       },
     });
-  }, [crmIdUser, search]);
+  }, [crmIdUser]);
 
   useEffect(() => {
     dispatch({
@@ -109,16 +112,21 @@ const Index = () => {
       payload: {},
     });
     dispatch({
-      type: 'crmManagementCall/GET_COUNTCALL',
+      type: 'crmManagementCall/GET_STATUS_POTENTIAL',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmCallCenter/GET_CRM_ID',
+      payload: {
+        employee_id_hrm: user.objectInfo?.id,
+      },
       callback: (response) => {
-        if (response) {
-          setCountCall(response);
-        }
+        setCrmIdUser(head(response.parsePayload));
       },
     });
   }, []);
 
-  const debouncedSearch = debounce((value, type) => {
+  const debouncedSearch = debounce((type, value) => {
     setSearch((prev) => ({
       ...prev,
       [`${type}`]: value,
@@ -135,13 +143,28 @@ const Index = () => {
     debouncedSearch(e, type);
   };
 
-  const onChoose = (e, type) => {
+  const onChoose = (e, value, type) => {
     if (e.target.value === 'total') {
       debouncedSearch(null, type);
     } else {
-      debouncedSearch(e.target.value.toUpperCase(), type);
+      debouncedSearch(value, type);
     }
     setRadioValue(e.target.value);
+  };
+
+  const debouncedSearchDateRank = debounce((from_date, to_date) => {
+    setSearch((prev) => ({
+      ...prev,
+      from_date,
+      to_date,
+    }));
+  }, 1000);
+
+  const onChangeDateRank = (e) => {
+    debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   const changePagination = ({ page, limit }) => {
@@ -350,14 +373,14 @@ const Index = () => {
               <div className="col-lg-6">
                 <FormItem
                   name="date"
-                  onChange={(e) => onChangeSelect(e, 'date')}
+                  onChange={(e) => onChangeDateRank(e, 'date')}
                   placeholder="Nhập từ khóa"
                   type={variables.RANGE_PICKER}
                 />
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Phân loại PH' }, ...leadStatus]}
+                  data={[{ id: null, name: 'Phân loại PH' }, ...lead]}
                   name="status_lead"
                   onChange={(e) => onChangeSelect(e, 'status_lead')}
                   type={variables.SELECT}
@@ -366,7 +389,7 @@ const Index = () => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tình trạng lead' }, ...lead]}
+                  data={[{ id: null, name: 'Tình trạng lead' }, ...leadStatus]}
                   name="status_parent_lead_id"
                   onChange={(e) => onChangeSelect(e, 'status_parent_lead_id')}
                   type={variables.SELECT}
@@ -375,7 +398,7 @@ const Index = () => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tình trạng tiềm năng' }]}
+                  data={[{ id: null, name: 'Tình trạng tiềm năng' }, ...potential]}
                   name="status_parent_potential_id"
                   onChange={(e) => onChangeSelect(e, 'status_parent_potential_id')}
                   type={variables.SELECT}
@@ -392,27 +415,26 @@ const Index = () => {
                 />
               </div>
             </div>
-            {/* <div className="row">
-              {checkboxArr.map((item) => (
-                <div className="col-xl-2 col-lg-3 col-4" key={item.id}>
-                  <FormItem
-                    name={item.id}
-                    label={`${item.name} (${countCall[item.id]})`}
-                    type={variables.RADIO}
-                    onChange={(e) => onChoose(e, item.id, 'call_times')}
-                  />
-                </div>
-              ))}
-            </div> */}
             <div className="row">
               <div className="col-lg-12 mb10">
                 <Radio.Group value={radioValue}>
-                  {checkboxArr.map((item) => (
+                  {checkboxArr.slice(0, 7).map((item) => (
                     <Radio
                       className="mb10"
                       value={item.id}
                       key={item.id}
-                      onChange={(e) => onChoose(e, 'call_times')}
+                      onChange={(e) => onChoose(e, 'call_times', item.id.toUpperCase())}
+                      size="small"
+                    >
+                      {`${item.name} (${countCall[item.id]})`}
+                    </Radio>
+                  ))}
+                  {checkboxArr.slice(7).map((item) => (
+                    <Radio
+                      className="mb10"
+                      value={item.id}
+                      key={item.id}
+                      onChange={(e) => onChoose(e, item.id, true)}
                       size="small"
                     >
                       {`${item.name} (${countCall[item.id]})`}

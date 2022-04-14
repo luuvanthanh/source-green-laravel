@@ -4,6 +4,9 @@ export default {
   namespace: 'crmCallCenter',
   state: {
     data: [],
+    cities: [],
+    district: [],
+    townWards: [],
     pagination: {
       total: 0,
     },
@@ -18,6 +21,18 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_CITIES: (state, { payload }) => ({
+      ...state,
+      cities: payload.parsePayload,
+    }),
+    SET_DISTRICTS: (state, { payload }) => ({
+      ...state,
+      district: payload.parsePayload,
+    }),
+    SET_TOWN_WARDS: (state, { payload }) => ({
+      ...state,
+      townWards: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -91,6 +106,48 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_CITIES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCities, payload);
+        yield saga.put({
+          type: 'SET_CITIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DISTRICTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDistricts, payload);
+        yield saga.put({
+          type: 'SET_DISTRICTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TOWN_WARDS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTownWards, payload);
+        yield saga.put({
+          type: 'SET_TOWN_WARDS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },
