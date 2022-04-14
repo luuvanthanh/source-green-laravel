@@ -26,8 +26,21 @@ class CreateManagerCallRequest extends FormRequest
     {
         return [
             'employee_id' => 'required|exists:employees,id',
-            'expected_date' => 'required|date|date_format:Y-m-d|afterOrEqual:receive_date',
-            'receive_date' => 'nullable|date|date_format:Y-m-d|date_equals:' . now()->toDateString(),
+            'expected_date' => [
+                'required',
+                'date',
+                'date_format:Y-m-d',
+                function ($attribute, $value, $fail) {
+                    if (is_null($this->receive_date)) {
+                        return true;
+                    }
+
+                    if ($value < $this->receive_date) {
+                        return $fail('Trường :attribute phải là thời gian bắt đầu sau hoặc đúng bằng hôm nay');
+                    }
+                }
+            ],
+            'receive_date' => 'nullable|date|date_format:Y-m-d',
             'content' => 'required|string',
             'call_times' => 'required|in:FIRST,SECOND,THIRD,FOURTH,FIVETH',
             'list_customer_lead' => 'required|array',
