@@ -57,3 +57,35 @@ export function addResultCall(data = {}) {
     data,
   });
 }
+
+export function getCities(params = {}) {
+  return request(`/v1/citys`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'numerical_city',
+    },
+  });
+}
+
+export function getDistricts(params = {}) {
+  return request(`/v1/districts?${params.city_id}`, {
+    method: 'GET',
+    params: {
+      ...params,
+      city_id: params.city_id,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getTownWards(params = {}) {
+  return request(`/v1/town-wards?${params.district_id}`, {
+    method: 'GET',
+    params: {
+      ...params,
+      district_id: params.district_id,
+      orderBy: 'name',
+    },
+  });
+}

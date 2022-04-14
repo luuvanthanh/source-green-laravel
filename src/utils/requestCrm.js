@@ -79,6 +79,7 @@ async function covertData(response) {
         unread: get(dataRoot, 'meta.UNREAD'),
         payload: data,
         data_details: get(dataRoot, 'data_details'),
+        meta: get(dataRoot, 'meta'),
       };
     }
     return dataRoot;

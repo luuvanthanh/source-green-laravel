@@ -9,13 +9,21 @@ export function get(params = {}) {
   });
 }
 
+export function getChartTotal(params = {}) {
+  return request('/v1/report-calls', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
 export function getChartEmployee(params = {}) {
   return request('/v1/report-calls', {
     method: 'GET',
     params: {
       ...params,
     },
-    // parse: true,
   });
 }
 

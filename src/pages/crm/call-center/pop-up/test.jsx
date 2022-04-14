@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
 import { useDispatch, useSelector } from 'dva';
-import { isEmpty } from 'lodash';
+import { head, isEmpty } from 'lodash';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 import { handleOutboundCall, handleInboundCall } from './handleCallCenter';
@@ -10,6 +10,7 @@ import Phone from './modal/phone';
 import Answer from './modal/answer';
 import InboundResult from './modal/result/inbound';
 import OutboundResult from './modal/result/outbound';
+import AddLead from './modal/addLead';
 import styles from './style.module.scss';
 import variablesModule from './variables';
 
@@ -44,6 +45,7 @@ const Test = memo(() => {
 
   const [isSaler, setIsSaler] = useState(false); // check người dùng CallCenter
   const [isCalling, setIsCalling] = useState(false); // check đang trong cuộc gọi
+  const [isVisibleAddLead, setIsVisibleAddLead] = useState(false); // check form add lead
 
   const [outboundNumber, setOutboundNumber] = useState(''); // số GỌI ĐI (OUT)
   const [isOutbound, setIsOutbound] = useState(false); // check điều kiện GỌI ĐI (OUT)
@@ -73,14 +75,14 @@ const Test = memo(() => {
       callback: (response) => {
         if (response && response.length === 1) {
           setIsSaler(true);
-          // inboundContext(
-          //   head(response).user_id_cmc,
-          //   head(response).password,
-          //   head(response).host_name,
-          //   head(response).port,
-          //   '',
-          //   audioRef.current,
-          // );
+          inboundContext(
+            head(response).user_id_cmc,
+            head(response).password,
+            head(response).host_name,
+            head(response).port,
+            '',
+            audioRef.current,
+          );
         }
       },
     });
@@ -219,6 +221,14 @@ const Test = memo(() => {
     setContentOutbound(content);
   };
 
+  const handleDetectAddLead = () => {
+    setIsVisibleAddLead(true);
+  };
+
+  const handleAddLead = () => {
+    setIsVisibleAddLead(false);
+  };
+
   // OUTBOUND RESULT (OUT)
   const handleOutboundResult = () => {
     setIsVisibleAnswer(false);
@@ -315,6 +325,7 @@ const Test = memo(() => {
             closable={false}
             footer={null}
             visible={isVisibleAnswer}
+            // visible
             onCancel={handleCancel}
             width={320}
             zIndex={900}
@@ -343,6 +354,7 @@ const Test = memo(() => {
                   handleOnClick={handleOutbound}
                   infoFromOutbound={infoFromOutbound}
                   outboundStatusInfo={outboundStatusInfo}
+                  detectAddLead={handleDetectAddLead}
                 />
               </div>
 
@@ -397,11 +409,7 @@ const Test = memo(() => {
             </div>
           </Modal>
 
-          {/* {isVisibleAddLead && (
-            <div className={styles['main-form-add-lead']}>
-              <p>FORM THÊM LEAD</p>
-            </div>
-          )} */}
+          {isVisibleAddLead && <AddLead handleOnClick={handleAddLead} />}
         </>
       )}
     </>
