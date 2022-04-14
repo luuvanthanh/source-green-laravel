@@ -84,6 +84,24 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             });
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->where('EmployeeId', $attributes['employeeId']);
+        }
+
+        if (isset($attributes['age'])) {
+            $this->model = $this->model->whereHas('testSemesterDetail.testSemesterDetailChildren.childEvaluate', function ($query) use ($attributes) {
+                $query->where('Age', $attributes['age']);
+            });
+        }
+
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
+        }
+
+        if (!empty($attributes['approvalStatus'])) {
+            $this->model = $this->model->whereIn('ApprovalStatus', $attributes['approvalStatus']);
+        }
+
         if (!empty($attributes['branchId'])) {
             $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
                 $q->whereHas('classStudent', function ($q1) use ($attributes) {
@@ -118,6 +136,10 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             $testSemester = $this->paginate($attributes['limit']);
         } else {
             $testSemester = $this->get();
+        }
+        
+        if (empty($testSemester['data']) && !empty($attributes['classId'])) {
+            $testSemester['countStudent'] = Student::where('ClassId', $attributes['classId'])->get()->count();
         }
 
         return $testSemester;
@@ -208,11 +230,6 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
     public function update(array $attributes, $id)
     {
         $testSemester = TestSemester::find($id);
-
-        if (!empty($attributes['approvalStatus'])) {
-            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
-        }
-
         $testSemester->update($attributes);
 
         return parent::find($id);

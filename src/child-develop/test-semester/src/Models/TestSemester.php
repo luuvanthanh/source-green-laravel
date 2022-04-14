@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Models;
 
+use App\Models\User;
 use GGPHP\ChildDevelop\Category\Models\AssessmentPeriod;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
@@ -12,7 +13,7 @@ class TestSemester extends UuidModel
     protected $table = 'TestSemesters';
 
     protected $fillable = [
-        'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus', 'Strength', 'Encourage', 'ClassTypeId', 'TimeAgeTestSemester'
+        'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus', 'Strength', 'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId'
     ];
 
     const STATUS = [
@@ -25,7 +26,7 @@ class TestSemester extends UuidModel
     const APPROVAL_STATUS = [
         'UNSENT' => 0,
         'UNQUALIFIED' => 1,
-        'APPROVAD' => 2,
+        'APPROVED' => 2,
     ];
 
     const TYPE = [
@@ -51,5 +52,10 @@ class TestSemester extends UuidModel
     public function classType()
     {
         return $this->belongsTo(ClassType::class, 'ClassTypeId');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 }

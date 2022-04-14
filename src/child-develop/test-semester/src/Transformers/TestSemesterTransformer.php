@@ -8,6 +8,7 @@ use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Transformers\ClassTypeTransformer;
+use GGPHP\Users\Transformers\UserTransformer;
 
 /**
  * Class ReviewDetailTransformer.
@@ -33,7 +34,7 @@ class TestSemesterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType', 'assessmentPeriod'];
+    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType', 'assessmentPeriod', 'employee'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -155,5 +156,14 @@ class TestSemesterTransformer extends BaseTransformer
         }
 
         return $this->item($testSemester->assessmentPeriod, new AssessmentPeriodTransformer, 'AssessmentPeriod');
+    }
+
+    public function includeEmployee(TestSemester $testSemester)
+    {
+        if (empty($testSemester->user)) {
+            return null;
+        }
+
+        return $this->item($testSemester->user, new UserTransformer, 'Employee');
     }
 }

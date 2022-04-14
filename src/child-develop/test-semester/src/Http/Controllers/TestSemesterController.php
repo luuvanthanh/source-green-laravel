@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Http\Controllers;
 
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterCreateRequest;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
@@ -54,6 +55,20 @@ class TestSemesterController extends Controller
             $attributes['type'] = array_values($valueType);
         }
 
+        if (!empty($attributes['age'])) {
+            $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
+        }
+
+        if (!empty($attributes['approvalStatus'])) {
+            $approvalStatus = explode(',', $attributes['approvalStatus']);
+            $newApprovalStatus = [];
+            foreach ($approvalStatus as $value) {
+                $newApprovalStatus[] = TestSemester::APPROVAL_STATUS[$value];
+            }
+
+            $attributes['approvalStatus'] = array_values($newApprovalStatus);
+        }
+
         $testSemester = $this->testSemesterRepository->getAll($attributes);
 
         return $this->success($testSemester, trans('lang::messages.common.getListSuccess'));
@@ -100,6 +115,10 @@ class TestSemesterController extends Controller
     public function update(Request $request, $id)
     {
         $attributes = $request->all();
+
+        if (!empty($attributes['approvalStatus'])) {
+            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
+        }
 
         $testSemester = $this->testSemesterRepository->update($attributes, $id);
 
