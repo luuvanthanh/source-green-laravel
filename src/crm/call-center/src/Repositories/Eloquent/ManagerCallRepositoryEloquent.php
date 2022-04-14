@@ -253,6 +253,8 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
         $callYet = $this->callYet($attributes);
 
+        $overtime = $this->overtime($attributes);
+
         return [
             'data' => [
                 'leads' => $leads,
@@ -265,7 +267,8 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
                 'fourth' => $fourthCall,
                 'fiveth' => $fivethCall,
                 'called' => $called,
-                'call_yet' => $callYet
+                'call_yet' => $callYet,
+                'out_of_date'=> $overtime
             ]
         ];
     }
