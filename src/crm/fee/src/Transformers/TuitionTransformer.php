@@ -41,7 +41,9 @@ class TuitionTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'expected_money' => $this->expectedMoney($model)
+        ];
     }
 
     public function includeChargeStudent(Tuition $tuition)
@@ -61,6 +63,7 @@ class TuitionTransformer extends BaseTransformer
 
         return $this->item($tuition->paymentForm, new PaymentFormTransformer, 'PaymentForm');
     }
+
     public function includeFee(Tuition $tuition)
     {
         if ($tuition->loadCount('fee')->fee_count < 1) {
@@ -68,5 +71,30 @@ class TuitionTransformer extends BaseTransformer
         }
 
         return $this->item($tuition->fee, new FeeTransformer, 'Fee');
+    }
+
+    public function expectedMoney($model)
+    {
+        $chargeStudent = $model->chargeStudent;
+
+        $expectedToCollectMoney = $chargeStudent->expected_to_collect_money;
+        
+        if (!empty($expectedToCollectMoney)) {
+            $data = collect($expectedToCollectMoney)->map(function ($item) {
+                return $item['fee'];
+            });
+
+            $data = $data->flatten(1);
+
+            $money = $data->sum(function ($item) use ($model) {
+                if ($model->fee_id != $item['fee_id_crm']) {
+                    return $item['money'];
+                }
+            });
+
+            return $money;
+        }
+
+        return (int) 0;
     }
 }
