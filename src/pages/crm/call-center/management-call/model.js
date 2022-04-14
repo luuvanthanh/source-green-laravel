@@ -5,6 +5,7 @@ export default {
   state: {
     data: [],
     lead: [],
+    potential: [],
     isCall: false,
     pagination: {
       total: 0,
@@ -33,6 +34,10 @@ export default {
     SET_STATUS_LEAD: (state, { payload }) => ({
       ...state,
       lead: payload.parsePayload,
+    }),
+    SET_STATUS_POTENTIAL: (state, { payload }) => ({
+      ...state,
+      potential: payload.parsePayload,
     }),
     SET_IS_CALL: (state, { payload }) => ({
       ...state,
@@ -72,6 +77,20 @@ export default {
         const response = yield saga.call(services.getStatusLead, payload);
         yield saga.put({
           type: 'SET_STATUS_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STATUS_POTENTIAL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getStatusPotential, payload);
+        yield saga.put({
+          type: 'SET_STATUS_POTENTIAL',
           payload: response,
         });
       } catch (error) {

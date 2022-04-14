@@ -1,6 +1,7 @@
+import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
-import { Form } from 'antd';
+import { Form, Tag } from 'antd';
 import classnames from 'classnames';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
@@ -11,13 +12,19 @@ import { handleHangup } from '../handleCallCenter';
 import styles from '../style.module.scss';
 import variablesModule from '../variables';
 
-const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) => {
+const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo, detectAddLead }) => {
   const [formRef] = Form.useForm();
 
   const handleOutbound = () => {
     if (handleOnClick) {
       handleOnClick(formRef.getFieldValue().content);
       handleHangup();
+    }
+  };
+
+  const handleAddLead = () => {
+    if (detectAddLead) {
+      detectAddLead();
     }
   };
 
@@ -45,23 +52,25 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo }) 
         <p className={styles['phone-number']}>
           {infoFromOutbound?.phone ? infoFromOutbound.phone : infoFromOutbound.number}
         </p>
-
         {/* TIMER */}
         {outboundStatusInfo === variablesModule.STATUS.accepted && (
           <Timer active duration={null} className={styles['time-active']}>
             <Timecode />
           </Timer>
         )}
-
         {outboundStatusInfo === variablesModule.STATUS.bye && (
           <p className={styles['call-status']}>Đã kết thúc</p>
         )}
-
         {/* STATUS */}
         {outboundStatusInfo !== variablesModule.STATUS.accepted &&
           outboundStatusInfo !== variablesModule.STATUS.bye && (
             <p className={styles['call-status']}>Đang kết nối</p>
           )}
+
+        <Tag color="success">Có tiềm năng</Tag>
+        <Button color="primary" className="mb10" bb onClick={handleAddLead}>
+          Thêm lead
+        </Button>
       </div>
       <Form className={styles['form-main']} form={formRef}>
         <FormItem
@@ -96,12 +105,14 @@ Outbound.propTypes = {
   handleOnClick: PropTypes.func,
   infoFromOutbound: PropTypes.any,
   outboundStatusInfo: PropTypes.string,
+  detectAddLead: PropTypes.func,
 };
 
 Outbound.defaultProps = {
   handleOnClick: () => {},
   infoFromOutbound: null,
   outboundStatusInfo: '',
+  detectAddLead: () => {},
 };
 
 export default Outbound;

@@ -14,19 +14,8 @@ import C3Chart from 'react-c3js';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
 
-const boxArr = [
-  { id: 1, title: 'LEADS', number: 124, color: '#F8755F' },
-  { id: 2, title: 'LEAD MỚI', number: 14, color: '#4760BF' },
-  { id: 3, title: 'ĐÃ GỌI', number: 240, color: '#2FB4BD' },
-  { id: 4, title: 'CÓ TIỀM NĂNG', number: 200, color: '#1E9F4E' },
-  { id: 5, title: 'QUÁ HẠN', number: 5, color: '#CB0616' },
-];
-
 const Index = () => {
-  const [{ data, saler }, user] = useSelector(({ crmStatisticalCall, user }) => [
-    crmStatisticalCall,
-    user,
-  ]);
+  const [{ data, saler }] = useSelector(({ crmStatisticalCall }) => [crmStatisticalCall]);
   const { query, pathname } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -43,6 +32,25 @@ const Index = () => {
   // const [crmIdUser, setCrmIdUser] = useState('');
   const [crmIdEmployee, setCrmIdEmployee] = useState('');
   const [employeeDataChart, setEmployeeDataChart] = useState({});
+  const [totalDataChart, setTotalDataChart] = useState({});
+
+  const boxArr = [
+    { id: 1, title: 'LEADS', number: totalDataChart?.leads ?? 0, color: '#F8755F' },
+    { id: 2, title: 'LEAD MỚI', number: totalDataChart?.lead_new ?? 0, color: '#4760BF' },
+    {
+      id: 3,
+      title: 'ĐÃ GỌI',
+      number:
+        totalDataChart?.first_call +
+          totalDataChart?.second_call +
+          totalDataChart?.third_call +
+          totalDataChart?.fourth_call +
+          totalDataChart?.fiveth_call || 0,
+      color: '#2FB4BD',
+    },
+    { id: 4, title: 'CÓ TIỀM NĂNG', number: totalDataChart?.lead_potential ?? 0, color: '#1E9F4E' },
+    { id: 5, title: 'QUÁ HẠN', number: totalDataChart?.out_of_date ?? 0, color: '#CB0616' },
+  ];
 
   // useEffect(() => {
   //   dispatch({
@@ -74,6 +82,17 @@ const Index = () => {
       type: 'crmStatisticalCall/GET_DATA',
       payload: {
         ...search,
+      },
+    });
+    dispatch({
+      type: 'crmStatisticalCall/GET_CHART_TOTAL',
+      payload: {
+        ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          setTotalDataChart(response?.meta);
+        }
       },
     });
     history.push({
@@ -110,31 +129,33 @@ const Index = () => {
     });
   }, []);
 
-  const debouncedSearch = debounce((value, type) => {
+  const debouncedSearchDateRank = debounce((from_date, to_date) => {
     setSearch((prev) => ({
       ...prev,
-      [`${type}`]: value,
-      page: variables.PAGINATION.PAGE,
-      limit: variables.PAGINATION.PAGE_SIZE,
+      from_date,
+      to_date,
     }));
-  }, 300);
+  }, 1000);
 
-  const onChangeSelect = (e, type) => {
-    debouncedSearch(e, type);
+  const onChangeDateRank = (e) => {
+    debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
-  const leadStatusData = {
+  const totalChart = {
     columns: [
-      ['Leads', 120],
-      ['Lead mới', 20],
-      ['Gọi lần 1', 160],
-      ['Gọi lần 2', 120],
-      ['Gọi lần 3', 40],
-      ['Gọi lần 4', 20],
-      ['Gọi lần 5', 10],
-      ['Có tiềm năng', 200],
-      ['Không tiềm năng', 20],
-      ['Quá hạn', 10],
+      ['Leads', totalDataChart?.leads ?? null],
+      ['Lead mới', totalDataChart?.lead_new ?? null],
+      ['Gọi lần 1', totalDataChart?.first_call ?? null],
+      ['Gọi lần 2', totalDataChart?.second_call ?? null],
+      ['Gọi lần 3', totalDataChart?.third_call ?? null],
+      ['Gọi lần 4', totalDataChart?.fourth_call ?? null],
+      ['Gọi lần 5', totalDataChart?.fiveth_call ?? null],
+      ['Có tiềm năng', totalDataChart?.lead_potential ?? null],
+      ['Không tiềm năng', totalDataChart?.lead_not_potential ?? null],
+      ['Quá hạn', totalDataChart?.out_of_date ?? null],
     ],
     type: 'bar',
     colors: {
@@ -294,20 +315,6 @@ const Index = () => {
         className: 'min-width-80',
         render: (record) => get(record, 'out_of_date'),
       },
-      // {
-      //   title: 'Tỉ lệ có location',
-      //   key: 'locationOne',
-      //   width: 80,
-      //   className: 'min-width-80',
-      //   render: (record) => get(record, 'locationOne'),
-      // },
-      // {
-      //   title: 'Tỉ lệ có location 2',
-      //   key: 'locationTwo',
-      //   width: 80,
-      //   className: 'min-width-80',
-      //   render: (record) => get(record, 'locationTwo'),
-      // },
     ];
     return columns;
   };
@@ -326,7 +333,7 @@ const Index = () => {
               <FormItem
                 name="date"
                 className="m0"
-                onChange={(e) => onChangeSelect(e, 'date')}
+                onChange={(e) => onChangeDateRank(e, 'date')}
                 placeholder="Nhập từ khóa"
                 type={variables.RANGE_PICKER}
               />
@@ -352,7 +359,7 @@ const Index = () => {
             Tổng quan tình trạng Lead (không tinh overTAT)
           </Heading>
           <C3Chart
-            data={leadStatusData}
+            data={totalChart}
             axis={leadStatusAxis}
             grid={variables.CHART.grid}
             bar={{ width: 60 }}
@@ -378,6 +385,64 @@ const Index = () => {
             bordered
             rowKey={(record) => record.id}
             scroll={{ x: '100%' }}
+            summary={(pageData) => {
+              // let totalLeads = 0;
+              let totalLeadNew = 0;
+              let totalFirstCall = 0;
+              let totalSecondCall = 0;
+              let totalThirdCall = 0;
+              let totalFourthCall = 0;
+              let totalFivethCall = 0;
+              let totalPotential = 0;
+              let totalNotPotential = 0;
+              let totalOutOfDate = 0;
+
+              pageData.forEach(
+                ({
+                  // total_lead,
+                  lead_new,
+                  first_call,
+                  second_call,
+                  third_call,
+                  fourth_call,
+                  fiveth_call,
+                  potential,
+                  not_potential,
+                  out_of_date,
+                }) => {
+                  // totalLeads += total_lead;
+                  totalLeadNew += lead_new;
+                  totalFirstCall += first_call;
+                  totalSecondCall += second_call;
+                  totalThirdCall += third_call;
+                  totalFourthCall += fourth_call;
+                  totalFivethCall += fiveth_call;
+                  totalPotential += potential;
+                  totalNotPotential += not_potential;
+                  totalOutOfDate = out_of_date;
+                },
+              );
+
+              return (
+                <>
+                  <Table.Summary.Row>
+                    <Table.Summary.Cell colSpan={2}>
+                      <p style={{ fontWeight: 'bold' }}>TỔNG CỘNG</p>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell align="center"> </Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalLeadNew}</Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalFirstCall}</Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalSecondCall}</Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalThirdCall}</Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalFourthCall}</Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalFivethCall}</Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalPotential}</Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalNotPotential}</Table.Summary.Cell>
+                    <Table.Summary.Cell align="center">{totalOutOfDate}</Table.Summary.Cell>
+                  </Table.Summary.Row>
+                </>
+              );
+            }}
           />
         </Pane>
 

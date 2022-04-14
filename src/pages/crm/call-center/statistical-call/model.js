@@ -53,6 +53,17 @@ export default {
         });
       }
     },
+    *GET_CHART_TOTAL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getChartTotal, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_CHART_EMPLOYEE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getChartEmployee, payload);
