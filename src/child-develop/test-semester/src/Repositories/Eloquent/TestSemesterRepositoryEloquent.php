@@ -137,6 +137,10 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         } else {
             $testSemester = $this->get();
         }
+        
+        if (empty($testSemester['data']) && !empty($attributes['classId'])) {
+            $testSemester['countStudent'] = Student::where('ClassId', $attributes['classId'])->get()->count();
+        }
 
         return $testSemester;
     }
