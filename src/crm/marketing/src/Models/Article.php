@@ -22,6 +22,6 @@ class Article extends UuidModel
 
     public function postFacebookInfo()
     {
-        return $this->hasOne(PostFacebookInfo::class);
+        return $this->hasMany(PostFacebookInfo::class);
     }
 }

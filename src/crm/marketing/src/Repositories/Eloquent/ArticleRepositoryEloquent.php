@@ -222,14 +222,23 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
     {
         \DB::beginTransaction();
         try {
-            $postFacebookInfo = PostFacebookInfo::where('article_id', $id)->first();
-            $attributes['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
-            $response = FacebookService::deletePagePost($attributes);
+            if (!empty($attributes['data_page'])) {
+                foreach ($attributes['data_page'] as $dataPage) {
+                    $page = Page::where('page_id_facebook', $dataPage['page_id'])->select('id')->first();
+                    $postFacebookInfo = PostFacebookInfo::where('page_id', $page->id)->where('article_id', $id)->first();
 
-            if ($response->success) {
-                $postFacebookInfo->forceDelete();
+                    if (!is_null($postFacebookInfo)) {
+                        $attributes['page_access_token'] = $dataPage['page_access_token'];
+                        $attributes['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
+                        $response = FacebookService::deletePagePost($attributes);
+
+                        if ($response->success) {
+                            $postFacebookInfo->forceDelete();
+                        }
+                        Article::find($id)->delete();
+                    }
+                }
             }
-            Article::where('id', $id)->delete();
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -243,7 +252,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             foreach (json_decode($attributes['data_page']) as $dataPage) {
                 $page = Page::where('page_id_facebook', $dataPage->page_id)->select('id')->first();
                 $postFacebookInfo = PostFacebookInfo::where('page_id', $page->id)->where('article_id', $value->id)->first();
-                
+
                 if (!is_null($postFacebookInfo)) {
                     $attributes['page_access_token'] = $dataPage->page_access_token;
                     $attributes['post_id'] = $postFacebookInfo->facebook_post_id;
