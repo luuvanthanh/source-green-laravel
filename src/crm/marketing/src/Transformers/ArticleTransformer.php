@@ -46,10 +46,6 @@ class ArticleTransformer extends BaseTransformer
 
     public function includePostFacebookInfo(Article $article)
     {
-        if (empty($article->postFacebookInfo)) {
-            return;
-        }
-
-        return $this->item($article->postFacebookInfo, new PostFacebookInfoTransformer, 'PostFacebookInfo');
+        return $this->collection($article->postFacebookInfo, new PostFacebookInfoTransformer, 'PostFacebookInfo');
     }
 }

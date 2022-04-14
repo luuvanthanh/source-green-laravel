@@ -24,7 +24,7 @@ class DeleteArticleRequest extends FormRequest
     public function rules()
     {
         return [
-            'page_access_token' => 'required',
+            'data_page' => 'array|required',
         ];
     }
 }
