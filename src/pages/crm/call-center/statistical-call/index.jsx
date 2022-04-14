@@ -23,9 +23,9 @@ const Index = () => {
   const [formSaler] = Form.useForm();
   const [search, setSearch] = useState({
     key: query?.key,
-    from_date:
-      query?.from_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-    to_date: query?.to_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    start_date:
+      query?.start_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    end_date: query?.end_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
@@ -36,18 +36,8 @@ const Index = () => {
 
   const boxArr = [
     { id: 1, title: 'LEADS', number: totalDataChart?.leads ?? 0, color: '#F8755F' },
-    { id: 2, title: 'LEAD MỚI', number: totalDataChart?.lead_new ?? 0, color: '#4760BF' },
-    {
-      id: 3,
-      title: 'ĐÃ GỌI',
-      number:
-        totalDataChart?.first_call +
-          totalDataChart?.second_call +
-          totalDataChart?.third_call +
-          totalDataChart?.fourth_call +
-          totalDataChart?.fiveth_call || 0,
-      color: '#2FB4BD',
-    },
+    { id: 2, title: 'LEAD MỚI', number: totalDataChart?.lead_news ?? 0, color: '#4760BF' },
+    { id: 3, title: 'ĐÃ GỌI', number: totalDataChart?.called || 0, color: '#2FB4BD' },
     { id: 4, title: 'CÓ TIỀM NĂNG', number: totalDataChart?.lead_potential ?? 0, color: '#1E9F4E' },
     { id: 5, title: 'QUÁ HẠN', number: totalDataChart?.out_of_date ?? 0, color: '#CB0616' },
   ];
@@ -85,16 +75,27 @@ const Index = () => {
       },
     });
     dispatch({
-      type: 'crmStatisticalCall/GET_CHART_TOTAL',
+      type: 'crmStatisticalCall/GET_CHART',
       payload: {
         ...search,
       },
       callback: (response) => {
         if (response) {
-          setTotalDataChart(response?.meta);
+          setTotalDataChart(response?.payload);
         }
       },
     });
+    // dispatch({
+    //   type: 'crmStatisticalCall/GET_CHART_TOTAL',
+    //   payload: {
+    //     ...search,
+    //   },
+    //   callback: (response) => {
+    //     if (response) {
+    //       setTotalDataChart(response?.meta);
+    //     }
+    //   },
+    // });
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),
@@ -129,11 +130,11 @@ const Index = () => {
     });
   }, []);
 
-  const debouncedSearchDateRank = debounce((from_date, to_date) => {
+  const debouncedSearchDateRank = debounce((start_date, end_date) => {
     setSearch((prev) => ({
       ...prev,
-      from_date,
-      to_date,
+      start_date,
+      end_date,
     }));
   }, 1000);
 
@@ -147,14 +148,14 @@ const Index = () => {
   const totalChart = {
     columns: [
       ['Leads', totalDataChart?.leads ?? null],
-      ['Lead mới', totalDataChart?.lead_new ?? null],
-      ['Gọi lần 1', totalDataChart?.first_call ?? null],
-      ['Gọi lần 2', totalDataChart?.second_call ?? null],
-      ['Gọi lần 3', totalDataChart?.third_call ?? null],
-      ['Gọi lần 4', totalDataChart?.fourth_call ?? null],
-      ['Gọi lần 5', totalDataChart?.fiveth_call ?? null],
-      ['Có tiềm năng', totalDataChart?.lead_potential ?? null],
-      ['Không tiềm năng', totalDataChart?.lead_not_potential ?? null],
+      ['Lead mới', totalDataChart?.lead_news ?? null],
+      ['Gọi lần 1', totalDataChart?.first ?? null],
+      ['Gọi lần 2', totalDataChart?.second ?? null],
+      ['Gọi lần 3', totalDataChart?.third ?? null],
+      ['Gọi lần 4', totalDataChart?.fourth ?? null],
+      ['Gọi lần 5', totalDataChart?.fiveth ?? null],
+      ['Có tiềm năng', totalDataChart?.lead_potentials ?? null],
+      ['Không tiềm năng', totalDataChart?.lead_not_potentials ?? null],
       ['Quá hạn', totalDataChart?.out_of_date ?? null],
     ],
     type: 'bar',
@@ -325,7 +326,7 @@ const Index = () => {
       <div className={classnames(styles['content-form'], styles['content-form-children'])}>
         <Form
           form={formRef}
-          initialValues={{ ...search, date: [moment(search.from_date), moment(search.to_date)] }}
+          initialValues={{ ...search, date: [moment(search.start_date), moment(search.end_date)] }}
         >
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Thống kê</Text>

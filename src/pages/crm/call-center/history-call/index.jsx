@@ -16,7 +16,7 @@ import variablesModule from '../pop-up/variables';
 
 const Index = () => {
   const [
-    { data, pagination },
+    { data, pagination, saler, extensions },
     loading,
   ] = useSelector(({ loading: { effects }, crmHistoryCall }) => [crmHistoryCall, effects]);
   const { query, pathname } = useLocation();
@@ -26,18 +26,24 @@ const Index = () => {
   const [formRef] = Form.useForm();
   const [search, setSearch] = useState({
     phone: query?.phone,
-    from_date:
-      query?.from_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-    to_date: query?.to_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    start_date:
+      query?.start_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    end_date: query?.end_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
+  const [switchboard, setSwitchBoard] = useState([]);
 
   const onLoad = () => {
     dispatch({
       type: 'crmHistoryCall/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          setSwitchBoard(response?.meta.switchboard.map((item) => ({ id: item, name: item })));
+        }
       },
     });
     history.push({
@@ -48,6 +54,15 @@ const Index = () => {
 
   useEffect(() => {
     onLoad();
+    dispatch({
+      type: 'crmHistoryCall/GET_SALER',
+      payload: {
+        sale: true,
+      },
+    });
+    dispatch({
+      type: 'crmHistoryCall/GET_EXTENSIONS',
+    });
   }, [search]);
 
   const debouncedSearch = debounce((value, type) => {
@@ -59,11 +74,11 @@ const Index = () => {
     }));
   }, 300);
 
-  const debouncedSearchDateRank = debounce((from_date, to_date) => {
+  const debouncedSearchDateRank = debounce((start_date, end_date) => {
     setSearch((prev) => ({
       ...prev,
-      from_date,
-      to_date,
+      start_date,
+      end_date,
       page: variables.PAGINATION.PAGE,
       limit: variables.PAGINATION.PAGE_SIZE,
     }));
@@ -263,10 +278,10 @@ const Index = () => {
           <Form
             initialValues={{
               ...search,
-              date: [moment(search.from_date), moment(search.to_date)],
+              date: [moment(search.start_date), moment(search.end_date)],
               switchboard: query?.switchboard || null,
-              branchDirect: query?.branchDirect || null,
-              employee: query?.employee || null,
+              extension_id: query?.extension_id || null,
+              employee_id: query?.employee || null,
               call_type: query?.call_type || null,
               call_status: query?.call || null,
             }}
@@ -292,26 +307,26 @@ const Index = () => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tất cả tổng đài' }]}
+                  data={[{ id: null, name: 'Tất cả tổng đài' }, ...switchboard]}
                   name="switchboard"
-                  onChange={(e) => onChangeSelect(e, 'switchboard_id')}
+                  onChange={(e) => onChangeSelect(e, 'switchboard')}
                   type={variables.SELECT}
                   allowClear={false}
                 />
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tất cả số nhánh' }]}
-                  name="branchDirect"
-                  onChange={(e) => onChangeSelect(e, 'branchDirect_id')}
+                  data={[{ id: null, name: 'Tất cả số nhánh' }, ...extensions]}
+                  name="extension_id"
+                  onChange={(e) => onChangeSelect(e, 'extension_id')}
                   type={variables.SELECT}
                   allowClear={false}
                 />
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tất cả nhân viên' }]}
-                  name="employee"
+                  data={[{ id: null, name: 'Tất cả nhân viên' }, ...saler]}
+                  name="employee_id"
                   onChange={(e) => onChangeSelect(e, 'employee_id')}
                   type={variables.SELECT}
                   allowClear={false}

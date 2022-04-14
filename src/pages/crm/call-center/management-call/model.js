@@ -107,6 +107,17 @@ export default {
       });
       callback();
     },
+    *GET_SALER({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getSaler, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };
