@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
 use GGPHP\Crm\CallCenter\Models\ManagerCall;
 use GGPHP\Crm\CallCenter\Repositories\Contracts\ManagerCallRepository;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
@@ -493,5 +494,34 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         }
 
         return ['data' => []];
+    }
+
+    public function update(array $attributes, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $customerLead = CustomerLead::find($id);
+            $customerLead->update($attributes);
+
+            $customerPotential = CustomerPotential::where('customer_lead_id', $customerLead->id)->first();
+
+            if (!is_null($customerPotential)) {
+                $customerPotential->update($attributes);
+            }
+            $parentInfo = ParentInfo::where('customer_lead_id', $customerLead->id)->get();
+
+            if (!empty($parentInfo)) {
+                foreach ($parentInfo as $value) {
+                    $value->update($attributes);
+                }
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return $this->parserResult($customerLead);
     }
 }

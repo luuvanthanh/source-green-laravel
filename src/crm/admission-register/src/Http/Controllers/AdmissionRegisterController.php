@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\CreateAdmissionRegisterRequest;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\UpdateAdmissionRegisterRequest;
+use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\AdmissionRegisterRepository;
 
 class AdmissionRegisterController extends Controller
@@ -76,6 +77,10 @@ class AdmissionRegisterController extends Controller
     public function update(UpdateAdmissionRegisterRequest $request, $id)
     {
         $attributes = $request->all();
+
+        if (!empty($attributes['register_status'])) {
+            $attributes['register_status'] = AdmissionRegister::REGISTER_STATUS[$attributes['register_status']];
+        }
 
         $admissionRegister = $this->admissionRegisterRepository->update($attributes, $id);
 

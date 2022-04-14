@@ -74,10 +74,8 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         }
 
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->whereHas('admissionRegister', function ($q) use ($attributes) {
-                $q->whereHas('studentInfo', function ($query) use ($attributes) {
-                    $query->whereLike('full_name', $attributes['key']);
-                });
+            $this->model = $this->model->whereHas('admissionRegister.studentInfo', function ($query) use ($attributes) {
+                $query->whereLike('full_name', $attributes['key']);
             });
         }
 
@@ -100,12 +98,8 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         }
 
         if (isset($attributes['age'])) {
-            $this->model = $this->model->whereHas('testInputDetail', function ($q) use ($attributes) {
-                $q->whereHas('testInputDetailChildren', function ($q1) use ($attributes) {
-                    $q1->whereHas('childEvaluate', function ($query) use ($attributes) {
-                        $query->where('age', $attributes['age']);
-                    });
-                });
+            $this->model = $this->model->whereHas('testInputDetail.testInputDetailChildren.childEvaluate', function ($query) use ($attributes) {
+                $query->where('age', $attributes['age']);
             });
         }
 
@@ -134,12 +128,12 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
             $testInput = TestInput::create($attributes);
             $admissionRegister = AdmissionRegister::find($attributes['admission_register_id']);
             $admissionRegister->update(['register_status' => AdmissionRegister::REGISTER_STATUS['TEST_INPUT']]);
-            
+
             $customerLeadId = $admissionRegister->studentInfo->customer_lead_id;
             $customerPotential = CustomerPotential::where('customer_lead_id', $customerLeadId)->first();
 
             if (!is_null($customerPotential)) {
-                $statusParentPotential = StatusParentPotential::where('number', 4)->first();
+                $statusParentPotential = StatusParentPotential::where('number', StatusParentPotential::NUMBER_STATUS['TEST_INPUT'])->first();
                 $customerPotential->customerPotentialStatusCare()->create(['status_parent_potential_id' => $statusParentPotential->id]);
             }
         }
