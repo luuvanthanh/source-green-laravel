@@ -87,7 +87,7 @@ class TuitionTransformer extends BaseTransformer
             $data = $data->flatten(1);
 
             $money = $data->sum(function ($item) use ($model) {
-                if ($model->fee_id != $item['fee_id_crm']) {
+                if ($model->fee_id == $item['fee_id_crm']) {
                     return $item['money'];
                 }
             });
