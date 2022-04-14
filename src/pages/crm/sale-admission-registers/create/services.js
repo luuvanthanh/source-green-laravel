@@ -54,10 +54,10 @@ export function details(params = {}) {
       ...params,
       include: Helper.convertIncludes([
         'studentInfo,childEvaluateInfo.childDescription.childIssue',
-         'parentInfo',
-         'studentByChargeNow.chargeStudent.tuition.fee,studentByChargeNow.chargeStudent.classType,studentByChargeNow.chargeStudent.schoolYear', 
-         'studentInfo.chargeStudent.tuition.fee,studentInfo.chargeStudent.tuition.paymentForm,studentInfo.chargeStudent.classType,studentInfo.chargeStudent.schoolYear',
-        ]),
+        'parentInfo',
+        'studentByChargeNow.chargeStudent.tuition.fee,studentByChargeNow.chargeStudent.classType,studentByChargeNow.chargeStudent.schoolYear',
+        'studentInfo.chargeStudent.tuition.fee,studentInfo.chargeStudent.tuition.paymentForm,studentInfo.chargeStudent.classType,studentInfo.chargeStudent.schoolYear',
+      ]),
     },
   });
 }
@@ -189,7 +189,7 @@ export function addTestInput(data = {}) {
         format: variables.DATE_FORMAT.HOUR,
         isUTC: false,
       }),
-        parse: true,
+      parse: true,
     },
   });
 }
@@ -233,7 +233,7 @@ export function getMedical(data = {}) {
   return request(`/v1/medical-infos`, {
     method: 'GET',
     params: {
-      MedicalInfo:data.id,
+      MedicalInfo: data.id,
       ...data,
       limit: data.limit,
       page: data.page,
@@ -241,7 +241,7 @@ export function getMedical(data = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
-        "medicalDeclareInfo.configMedicalDeclare,childHeathDevelop"
+        'medicalDeclareInfo.configMedicalDeclare,childHeathDevelop',
       ]),
     },
   });
@@ -264,11 +264,9 @@ export function getChildEvaluation(data = {}) {
     method: 'GET',
     params: {
       orderBy: 'created_at',
-       sortedBy: 'desc',
+      sortedBy: 'desc',
       searchJoin: 'and',
-      include: Helper.convertIncludes([
-        "childDescription,childIssue"
-      ]),
+      include: Helper.convertIncludes(['childDescription,childIssue']),
     },
   });
 }
@@ -276,5 +274,33 @@ export function getChildEvaluation(data = {}) {
 export function getBranches() {
   return request(`/v1/branches`, {
     method: 'GET',
+  });
+}
+
+export function getDataFile(data = {}) {
+  return request('/v1/profile-infos', {
+    method: 'GET',
+    params: {
+      admission_register_id: data,
+      orderBy: 'created_at',
+      sortedBy: 'asc',
+      searchJoin: 'and',
+    },
+  });
+}
+
+export function getFileConfiguration(data) {
+  return request('/v1/config-profile-infos', {
+    method: 'GET',
+    data,
+  });
+}
+
+export function addFile(data = {}) {
+  return request('/v1/profile-infos', {
+    method: 'POST',
+    data: {
+      ...data,
+    },
   });
 }

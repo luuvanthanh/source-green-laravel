@@ -21,6 +21,7 @@ export default {
     branches: [],
     studentsId: [],
     childEvaluation: {},
+    configuration: [],
     error: {
       isError: false,
       data: {},
@@ -103,6 +104,10 @@ export default {
       ...state,
       branches: payload.parsePayload,
     }),
+    SET_FILE_CONFIGURATION: (state, { payload }) => ({
+      ...state,
+      configuration: payload,
+    }),
   },
   effects: {
     *GET_DETAILS({ payload }, saga) {
@@ -157,9 +162,10 @@ export default {
         });
       }
     },
-    *GET_STUDENTS_ID({ payload }, saga) {
+    *GET_STUDENTS_ID({ payload , callback}, saga) {
       try {
         const response = yield saga.call(services.getStudentsId, payload);
+        callback(response.parsePayload);
         yield saga.put({
           type: 'SET_STUDENTS_ID',
           payload: response,
@@ -383,6 +389,64 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_DETAILS_ID({ payload,callback }, saga) {
+      try {
+        const response = yield saga.call(services.details, payload);
+        callback(response?.parsePayload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DETAILS',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA_FILE({ payload,callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDataFile, payload);
+        callback(response?.parsePayload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_TAGS',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_FILE_CONFIGURATION({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getFileConfiguration, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_FILE_CONFIGURATION',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_FILE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addFile, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
       }
     },
   },

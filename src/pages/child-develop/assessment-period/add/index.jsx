@@ -263,7 +263,7 @@ class Index extends PureComponent {
                           data={schoolYear.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
                           placeholder="Chọn"
                           type={variables.SELECT}
-                          label="Năn học"
+                          label="Năm học"
                           rules={[variables.RULES.EMPTY_INPUT]}
                         />
                       </Pane>

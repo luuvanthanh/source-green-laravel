@@ -31,10 +31,10 @@ export const menu = [
   },
   {
     key: 'tuition',
-    label: 'Thông tin Học phí',
+    label: 'Thông tin học phí',
   },
   {
     key: 'file',
-    label: 'Thông tin Hồ sơ',
+    label: 'Thông tin hồ sơ',
   },
 ];
