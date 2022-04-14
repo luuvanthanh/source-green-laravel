@@ -184,7 +184,7 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
         $called = $data->where('status', ManagerCall::STATUS['CALLED'])->count(); //đã gọi
 
         $overtime = $data->filter(function ($value) {
-            return $value->expected_date == null || $value->status == $this->model()::STATUS['CALLYET'];
+            return $value->expected_date < now()->toDateString() && $value->status == ManagerCall::STATUS['CALLYET'];
         })->count();
 
 
@@ -249,6 +249,10 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
         $fivethCall = $this->fivethCall($attributes);
 
+        $called = $this->called($attributes);
+
+        $callYet = $this->callYet($attributes);
+
         return [
             'data' => [
                 'leads' => $leads,
@@ -259,7 +263,9 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
                 'second' => $secondCall,
                 'third' => $thirdCall,
                 'fourth' => $fourthCall,
-                'fiveth' => $fivethCall
+                'fiveth' => $fivethCall,
+                'called' => $called,
+                'call_yet' => $callYet
             ]
         ];
     }
@@ -405,7 +411,6 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
         $overtime = $query->selectRaw('count(*) as overtime')
             ->whereDate('expected_date', '<', now()->toDateString())
-            ->where('status', ManagerCall::STATUS['CALLYET'])
             ->where('status', ManagerCall::STATUS['CALLYET'])->first()->overtime;
 
         return $overtime;

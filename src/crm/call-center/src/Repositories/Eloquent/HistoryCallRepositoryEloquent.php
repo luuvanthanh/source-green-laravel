@@ -90,7 +90,7 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
         }
 
         if (!empty($attributes['employee_id'])) {
-            $this->model = $this->mode->where('emplopyee_id', $attributes['employee_id']);
+            $this->model = $this->model->where('emplopyee_id', $attributes['employee_id']);
         }
 
         request()->switchboard_number = $this->model()::select('switchboard')->groupBy('switchboard')->get()->map(function ($item) {
