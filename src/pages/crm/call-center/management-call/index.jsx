@@ -53,9 +53,9 @@ const Index = () => {
     status_lead: query?.status_lead,
     status_parent_lead_id: query?.status_parent_lead_id,
     status_parent_potential_id: query?.status_parent_potential_id,
-    from_date:
-      query?.from_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-    to_date: query?.to_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    start_date:
+      query?.start_date || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    end_date: query?.end_date || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
@@ -63,6 +63,7 @@ const Index = () => {
   const [isSaler, setIsSaler] = useState(false);
   const [crmIdUser, setCrmIdUser] = useState('');
   const [radioValue, setRadioValue] = useState('total');
+  const [saler, setSaler] = useState([]);
 
   // const { outboundContext } = handleOutboundCall();
   const audioRef = useRef(null);
@@ -112,6 +113,17 @@ const Index = () => {
       payload: {},
     });
     dispatch({
+      type: 'crmManagementCall/GET_SALER',
+      payload: {
+        sale: true,
+      },
+      callback: (response) => {
+        if (response) {
+          setSaler(response?.parsePayload.map((item) => ({ ...item, name: item.full_name })));
+        }
+      },
+    });
+    dispatch({
       type: 'crmManagementCall/GET_STATUS_POTENTIAL',
       payload: {},
     });
@@ -126,10 +138,19 @@ const Index = () => {
     });
   }, []);
 
-  const debouncedSearch = debounce((type, value) => {
+  const debouncedSearch = debounce((value, type) => {
     setSearch((prev) => ({
       ...prev,
       [`${type}`]: value,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    }));
+  }, 300);
+
+  const debouncedSearchRadio = debounce((value, type) => {
+    setSearch((prev) => ({
+      ...prev,
+      [`${type}`]: value === null ? value : value.toUpperCase(),
       page: variables.PAGINATION.PAGE,
       limit: variables.PAGINATION.PAGE_SIZE,
     }));
@@ -143,20 +164,20 @@ const Index = () => {
     debouncedSearch(e, type);
   };
 
-  const onChoose = (e, value, type) => {
+  const onChoose = (e, value) => {
     if (e.target.value === 'total') {
-      debouncedSearch(null, type);
+      debouncedSearchRadio(null, value);
     } else {
-      debouncedSearch(value, type);
+      debouncedSearchRadio(e.target.value, value);
     }
     setRadioValue(e.target.value);
   };
 
-  const debouncedSearchDateRank = debounce((from_date, to_date) => {
+  const debouncedSearchDateRank = debounce((start_date, end_date) => {
     setSearch((prev) => ({
       ...prev,
-      from_date,
-      to_date,
+      start_date,
+      end_date,
     }));
   }, 1000);
 
@@ -355,8 +376,8 @@ const Index = () => {
               status_lead: query?.status_lead || null,
               status_parent_lead_id: query?.status_parent_lead_id || null,
               status_parent_potential_id: query?.status_parent_potential_id || null,
-              employee: query?.employee || null,
-              date: [moment(search.from_date), moment(search.to_date)],
+              employee_id: query?.employee_id || null,
+              date: [moment(search.start_date), moment(search.end_date)],
             }}
             layout="vertical"
             form={formRef}
@@ -407,8 +428,8 @@ const Index = () => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tất cả nhân viên' }]}
-                  name="employee"
+                  data={[{ id: null, name: 'Tất cả nhân viên' }, ...saler]}
+                  name="employee_id"
                   onChange={(e) => onChangeSelect(e, 'employee_id')}
                   type={variables.SELECT}
                   allowClear={false}
@@ -418,23 +439,12 @@ const Index = () => {
             <div className="row">
               <div className="col-lg-12 mb10">
                 <Radio.Group value={radioValue}>
-                  {checkboxArr.slice(0, 7).map((item) => (
+                  {checkboxArr.map((item) => (
                     <Radio
                       className="mb10"
                       value={item.id}
                       key={item.id}
-                      onChange={(e) => onChoose(e, 'call_times', item.id.toUpperCase())}
-                      size="small"
-                    >
-                      {`${item.name} (${countCall[item.id]})`}
-                    </Radio>
-                  ))}
-                  {checkboxArr.slice(7).map((item) => (
-                    <Radio
-                      className="mb10"
-                      value={item.id}
-                      key={item.id}
-                      onChange={(e) => onChoose(e, item.id, true)}
+                      onChange={(e) => onChoose(e, 'call_times')}
                       size="small"
                     >
                       {`${item.name} (${countCall[item.id]})`}

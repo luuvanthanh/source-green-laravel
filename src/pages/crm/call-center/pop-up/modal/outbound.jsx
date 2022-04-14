@@ -22,11 +22,11 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo, de
     }
   };
 
-  const handleAddLead = () => {
-    if (detectAddLead) {
-      detectAddLead();
-    }
-  };
+  // const handleAddLead = () => {
+  //   if (detectAddLead) {
+  //     detectAddLead();
+  //   }
+  // };
 
   return (
     <>
@@ -67,10 +67,10 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo, de
             <p className={styles['call-status']}>Đang kết nối</p>
           )}
 
-        <Tag color="success">Có tiềm năng</Tag>
-        <Button color="primary" className="mb10" bb onClick={handleAddLead}>
+        {/* <Tag color="success">Có tiềm năng</Tag>
+        <Button color="primary" className="mb10" onClick={handleAddLead}>
           Thêm lead
-        </Button>
+        </Button> */}
       </div>
       <Form className={styles['form-main']} form={formRef}>
         <FormItem

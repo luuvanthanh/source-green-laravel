@@ -100,14 +100,14 @@ const Index = memo(() => {
         key: 'statusLeadLatest',
         width: 100,
         className: 'min-width-100',
-        render: (record) => variables.LEAD_STATUS[record?.statusLeadLatest[0]?.status],
+        render: (record) => record?.statusCareLatest[0]?.statusParentLead?.name,
       },
       {
         title: 'Tình trạng PH Lead',
         key: 'leadStatus',
         width: 150,
         className: 'min-width-150',
-        render: (record) => record?.statusCareLatest[0]?.statusParentLead?.name,
+        render: (record) => variables.LEAD_STATUS[record?.statusLeadLatest[0]?.status],
       },
       {
         title: 'Tình trạng TN',
