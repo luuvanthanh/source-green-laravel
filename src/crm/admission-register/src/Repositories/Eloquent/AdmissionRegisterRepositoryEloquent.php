@@ -95,6 +95,10 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             $this->model = $this->model->where('date_register', $attributes['date_register']);
         }
 
+        if (!empty($attributes['student_info_id'])) {
+            $this->model = $this->model->where('student_info_id', $attributes['student_info_id']);
+        }
+
         if (!empty($attributes['status_admission_register_id'])) {
             $this->model = $this->model->whereHas('statusAdmissionRegister', function ($query) use ($attributes) {
                 $query->where('id', $attributes['status_admission_register_id']);
@@ -123,6 +127,7 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             $admissionRegister = AdmissionRegister::where('student_info_id', $attributes['student_info_id'])->where('status', true)->first();
 
             if (!is_null($admissionRegister)) {
+                $attributes['register_status'] = AdmissionRegister::REGISTER_STATUS['NEW_REGISTER'];
                 $attributes['status'] = false;
                 $admissionRegister->update($attributes);
             } else {
