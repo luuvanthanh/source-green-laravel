@@ -58,7 +58,14 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
+        FromDate: query?.FromDate,
+        ToDate: query?.ToDate,
+        date: query?.FromDate &&
+          query?.ToDate && [
+            moment(query?.FromDate),
+            moment(query?.ToDate),
+          ],
+        ClassId: query?.ClassId,
       },
       dataIDSearch: [],
     };
@@ -99,25 +106,53 @@ class Index extends PureComponent {
     this.props.dispatch({
       type: 'reportAngleTools/GET_DATA',
       payload: {
-        ...search,
+        studentName: search?.studentName,
+        branchId: search?.branchId,
+        page: search?.page || variables.PAGINATION.PAGE,
+        limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
+        FromDate: search?.FromDate,
+        ToDate: search?.ToDate,
+        ToolGroupId: search?.ToolGroupId,
+        ToolDetailId: search?.ToolDetailId,
       },
     });
     this.props.dispatch({
       type: 'reportAngleTools/GET_TOOL_GROUPS',
       payload: {
-        ...search,
+        studentName: search?.studentName,
+        branchId: search?.branchId,
+        page: search?.page || variables.PAGINATION.PAGE,
+        limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
+        FromDate: search?.FromDate,
+        ToDate: search?.ToDate,
+        ToolGroupId: search?.ToolGroupId,
+        ToolDetailId: search?.ToolDetailId,
       },
     });
     this.props.dispatch({
       type: 'reportAngleTools/GET_TOOL_DETAILS',
       payload: {
-        ...search,
+        studentName: search?.studentName,
+        branchId: search?.branchId,
+        page: search?.page || variables.PAGINATION.PAGE,
+        limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
+        FromDate: search?.FromDate,
+        ToDate: search?.ToDate,
+        ToolGroupId: search?.ToolGroupId,
+        ToolDetailId: search?.ToolDetailId,
       },
     });
     history.push(
       `${pathname}?${Helper.convertParamSearchConvert(
         {
-          ...search,
+          studentName: search?.studentName,
+        branchId: search?.branchId,
+        page: search?.page || variables.PAGINATION.PAGE,
+        limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
+        FromDate: search?.FromDate,
+        ToDate: search?.ToDate,
+        ToolGroupId: search?.ToolGroupId,
+        ToolDetailId: search?.ToolDetailId,
           SearchDate: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
@@ -243,8 +278,8 @@ class Index extends PureComponent {
     this.debouncedSearchDateRank(
       moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
       moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
-      );
-      this.setStateData({ dataIDSearch: e });
+    );
+    this.setStateData({ dataIDSearch: e });
   };
 
   /**
@@ -729,12 +764,12 @@ class Index extends PureComponent {
         ToolGroupId: query?.ToolGroupId,
         ToolDetailId: query?.ToolDetailId,
         branchId: query?.branchId || defaultBranch?.id,
-        FromDate: dataIDSearch?.length > 0 ? 
+        FromDate: dataIDSearch?.length > 0 ?
           moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
-        : "",
-        ToDate: dataIDSearch?.length > 0 ? 
-        moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
-         : "",
+          : "",
+        ToDate: dataIDSearch?.length > 0 ?
+          moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
+          : "",
       },
       `Baocaoquantrihocsinhtheogocgiaocu.xlsx`,
     );

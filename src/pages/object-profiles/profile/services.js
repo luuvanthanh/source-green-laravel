@@ -63,7 +63,8 @@ export function getMedical(data = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
-        "studentInfo,medicalInfo,childEvaluateInfo"
+       "medicalInfo.medicalDeclareInfo.configMedicalDeclare,medicalInfo.childHeathDevelop",
+       "childEvaluateInfo",
       ]),
     },
   });

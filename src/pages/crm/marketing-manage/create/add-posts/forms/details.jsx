@@ -66,7 +66,7 @@ const General = memo(
                 ),
             },
         ];
-        console.log("detailsAddPost", detailsAddPost)
+
         return (
             <>
                 <Form layout="vertical" ref={formRef} >

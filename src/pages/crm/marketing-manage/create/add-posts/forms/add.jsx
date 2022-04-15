@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 // import Quill from '@/components/CommonComponent/Quill';
-import {  connect, history, withRouter } from 'umi';
+import { connect, history, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -15,6 +15,7 @@ import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import { Helper } from '@/utils';
+import stylesModule from '../../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
 
@@ -25,10 +26,11 @@ const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
     user: crmMarketingManageAdd.user,
 });
 const General = memo(
-    ({ dispatch, loading: { effects }, match: { params }, detailsAddPost,  error, location: { pathname } }) => {
+    ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, error, location: { pathname } }) => {
         const formRef = useRef();
         const [files, setFiles] = useState([]);
         const mounted = useRef(false);
+        const [check, setCheck] = useState(false);
         const mountedSet = (action, value) => mounted?.current && action(value);
         const loadingSubmit =
             effects[`crmMarketingManageAdd/ADD_POSTS`] || effects[`crmMarketingManageAdd/UPDATE_POSTS`];
@@ -46,7 +48,9 @@ const General = memo(
         };
 
         useEffect(() => {
+            setCheck(false);
             if (convertPathname(pathname) === '/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/:id/chi-tiet-bai-viet') {
+                setCheck(true);
                 dispatch({
                     type: 'crmMarketingManageAdd/GET_DETAILS_POSTS',
                     payload: params,
@@ -57,7 +61,7 @@ const General = memo(
                     },
                 });
             }
-        }, []);
+        }, [pathname]);
 
         /**
          * Function submit form modal
@@ -106,27 +110,33 @@ const General = memo(
         }, []);
         const cancel = () => {
             const user = JSON?.parse(localStorage.getItem('pageCurrent'));
-            // return Helper.confirmAction({
-            //     callback: () => {
-            //         dispatch({
-            //             type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
-            //             payload: {
-            //                 id: detailsAddPost?.id,
-            //                 page_id: user[0].id,
-            //                 page_access_token: user[0]?.access_token,
-            //             },
-            //             callback: (response) => {
-            //                 if (response) {
-            //                     history.goBack();
-            //                 }
-            //             },
-            //         });
-            //     },
-            // });
+            if (user?.length > 0) {
+                const details = user?.map(i =>
+                ({
+                    page_id: i?.id,
+                    page_access_token: i.access_token,
+                }));
+                return Helper.confirmAction({
+                    callback: () => {
+                        dispatch({
+                            type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
+                            payload: {
+                                id: detailsAddPost?.id,
+                                data_page: details,
+                            },
+                            callback: (response) => {
+                                if (response) {
+                                    history.goBack();
+                                }
+                            },
+                        });
+                    },
+                });
+            }
         };
 
         useEffect(() => {
-            if (params.id) {
+            if (check) {
                 formRef.current.setFieldsValue({
                     ...detailsAddPost,
                     ...head(detailsAddPost.positionLevel),
@@ -192,15 +202,15 @@ const General = memo(
                                 </Pane>
 
                                 <Pane className="p20 d-flex justify-content-between align-items-center ">
-                                    {detailsAddPost?.id ? (
-                                        <p
-                                            className="btn-delete"
+                                    {check? (
+                                        <Button
+                                            className={stylesModule?.cancel}
                                             role="presentation"
-                                            loading={loadingSubmit}
+                                            loading={effects['crmMarketingManageAdd/REMOVE_FACEBOOK']}
                                             onClick={() => cancel()}
                                         >
                                             Xóa
-                                        </p>
+                                        </Button>
                                     ) : (
                                         <p
                                             className="btn-delete"
@@ -236,7 +246,7 @@ General.propTypes = {
     district: PropTypes.arrayOf(PropTypes.any),
     location: PropTypes.objectOf(PropTypes.any),
     detailsPost: PropTypes.objectOf(PropTypes.any),
-    user:  PropTypes.objectOf(PropTypes.any),
+    user: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {

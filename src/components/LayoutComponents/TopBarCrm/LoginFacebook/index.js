@@ -26,11 +26,11 @@ const Index = memo(() => {
 
   //
 
-  const hours = 20;
+  const hours = 24;
   const now = new Date().getTime();
   const setupTime = localStorage.getItem('setupTimeCRM');
 
-  if (now - setupTime > hours * 60 * 60) {
+  if (now - setupTime > hours *  60 * 60 * 30  * 1000 ) {
     localStorage.clear();
   }
 

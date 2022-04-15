@@ -5,8 +5,8 @@ export const menu = [
     key: 'general',
     label: 'Thông tin bài viết',
   },
-  {
-    key: 'posts',
-    label: 'Xem tương tác',
-  },
+  // {
+  //   key: 'posts',
+  //   label: 'Xem tương tác',
+  // },
 ];

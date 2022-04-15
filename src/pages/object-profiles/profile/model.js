@@ -1,5 +1,6 @@
 import * as categories from '@/services/categories';
 import {  notification } from 'antd';
+import moment from 'moment';
 import * as services from './services';
 
 
@@ -73,11 +74,6 @@ export default {
           payload: response,
         });
       } catch (error) {
-        console.log('res', error);
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: `Học sinh ${error.data} chưa được khai báo y tế.`,
-        });
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -179,14 +175,19 @@ export default {
         });
       }
     },
-    *GET_HEIGHT({ payload }, saga) {
+    *GET_HEIGHT({ payload ,callback}, saga) {
       try {
         const response = yield saga.call(services.getHeight, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_HEIGHT',
           payload: response,
         });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: `Chưa có sức khỏe y tế được tạo từ ngày ${ moment(payload?.FromDate).format('DD/MM/YYYY')} đến ngày ${ moment(payload?.ToDate).format('DD/MM/YYYY')}`,
+        });
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
