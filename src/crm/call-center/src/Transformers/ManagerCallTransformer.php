@@ -45,7 +45,7 @@ class ManagerCallTransformer extends BaseTransformer
     {
         return [
             'status' => array_search($model->status, $model::STATUS) ? array_search($model->status, $model::STATUS) : null,
-            'call_times' => array_search($model->call_times, $model::CALLTIME) ? array_search($model->call_times, $model::CALLTIME) : null
+            'call_time' => array_search($model->call_times, $model::CALLTIME) ? array_search($model->call_times, $model::CALLTIME) : null
         ];
     }
 

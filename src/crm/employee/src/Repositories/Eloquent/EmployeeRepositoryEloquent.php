@@ -202,7 +202,7 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
         $result = $this->model->get();
 
         request()->total = [
-            'leads' => $result->sum('total_lead'),
+            'lead' => $result->sum('total_lead'),
             'lead_new' => $result->sum('lead_new'),
             'lead_potential' => $result->sum('lead_potential'),
             'lead_not_potential' => $result->sum('lead_not_potential'),
