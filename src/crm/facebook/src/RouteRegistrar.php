@@ -59,6 +59,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::post('pages/refresh-link-files', 'MessageController@refreshLinkFile');
                 \Route::get('pages/user-long-tokens', 'FacebookController@userLongToken');
                 \Route::post('pages/add-pages', 'PageController@store');
+                \Route::post('pages/registration-webhooks', 'FacebookController@registrationWebhook');
             });
         });
     }

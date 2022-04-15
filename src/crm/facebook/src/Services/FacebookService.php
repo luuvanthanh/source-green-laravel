@@ -621,4 +621,39 @@ class FacebookService
 
         return json_decode($graphNode);
     }
+
+    public static function registrationWebhook(array $attributes)
+    {
+        $fb = getFacebookSdk();
+        $subscribedFields = 'messages,messaging_postbacks,messaging_optins,messaging_optouts,message_deliveries,message_reads,messaging_payments,messaging_pre_checkouts,messaging_checkout_updates,messaging_account_linking,messaging_referrals,message_echoes,messaging_game_plays,standby,messaging_handovers,messaging_policy_enforcement,message_reactions,inbox_labels,messaging_feedback,messaging_customer_information,feed';
+        
+        try {
+            foreach ($attributes['data_page'] as $dataPage) {
+                $pageId = $dataPage['page_id'];
+                $response = $fb->post(
+                    '/' . $pageId . '/subscribed_apps',
+                    [
+                        'subscribed_fields' => $subscribedFields
+                    ],
+                    $dataPage['page_access_token']
+                );
+            }
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode);
+    }
 }
