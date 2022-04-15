@@ -98,7 +98,7 @@ class TestSemesterTransformer extends BaseTransformer
             if (!empty(request()->classId)) {
                 $student = Student::where('ClassId', request()->classId)->get();
                 $totalStudent = $student->count();
-                $untesting = $totalStudent - ($testing + $finish);
+                $untesting = $totalStudent - ($testing + $finish + $cancel);
             }
 
             $data['test_semester'] = [
