@@ -235,9 +235,10 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         if ($response->success) {
                             $postFacebookInfo->forceDelete();
                         }
-                        Article::find($id)->delete();
                     }
                 }
+
+                Article::where('id', $id)->delete();
             }
             \DB::commit();
         } catch (\Throwable $th) {
@@ -257,7 +258,6 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                     $attributes['page_access_token'] = $dataPage->page_access_token;
                     $attributes['post_id'] = $postFacebookInfo->facebook_post_id;
                     $response = FacebookService::getQuantitySharePost($attributes);
-
                     if (isset($response->shares)) {
                         $postFacebookInfo->update(['quantity_share' => $response->shares->count]);
                     }
