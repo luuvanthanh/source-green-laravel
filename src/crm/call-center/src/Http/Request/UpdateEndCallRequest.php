@@ -35,15 +35,4 @@ class UpdateEndCallRequest extends FormRequest
             'employee_id' => 'required|exists:employees,id'
         ];
     }
-
-    public function all($keys = null)
-    {
-        $data = parent::all($keys);
-
-        if (!empty($data['manager_call_id'])) {
-            unset($data['customer_lead_id']);
-        }
-
-        return $data;
-    }
 }

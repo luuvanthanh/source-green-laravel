@@ -69,7 +69,9 @@ class RouteRegistrar extends CoreRegistrar
 
             Route::post('employee-extension', 'ExtensionController@employeeExtension');
 
-            Route::get('statistics-customer-lead','ManagerCallController@statisticCustomerLead');
+            Route::get('statistics-customer-lead', 'ManagerCallController@statisticCustomerLead');
+
+            Route::get('switchboard', 'HistoryCallController@switchboard');            
         });
     }
 }
