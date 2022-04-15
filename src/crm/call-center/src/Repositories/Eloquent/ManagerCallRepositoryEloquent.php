@@ -257,10 +257,10 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
         return [
             'data' => [
-                'leads' => $leads,
-                'lead_news' => $leadNews,
-                'lead_potentials' => $leadPotentials,
-                'lead_not_potentials' => $leadNotPotentials,
+                'lead' => $leads,
+                'lead_new' => $leadNews,
+                'lead_potential' => $leadPotentials,
+                'lead_not_potential' => $leadNotPotentials,
                 'first' => $firstCall,
                 'second' => $secondCall,
                 'third' => $thirdCall,
@@ -268,7 +268,7 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
                 'fiveth' => $fivethCall,
                 'called' => $called,
                 'call_yet' => $callYet,
-                'out_of_date'=> $overtime
+                'out_of_date' => $overtime
             ]
         ];
     }
