@@ -320,3 +320,21 @@
     color: #3e4247;
   }
 }
+
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3b5cad !important;
+    font-weight: 700;
+    color: white !important;
+  }
+}
+
+.wrapper-none-detail {
+  padding: 20px;
+  font-family: $base__font-family;
+  font-weight: 500;
+  height: 300px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #3e4247;
+}

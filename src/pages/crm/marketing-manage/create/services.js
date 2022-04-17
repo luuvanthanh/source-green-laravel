@@ -451,3 +451,19 @@ export function removeFacebook(data = {}) {
     }
   });
 }
+
+export function getPostLike(params = {}) {
+  return request('/v1/article-reaction-infos', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params,
+  });
+}
+
+export function getPostComment(params = {}) {
+  return request('/v1/article-comment-infos', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params,
+  });
+}
