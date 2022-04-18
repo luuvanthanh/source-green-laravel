@@ -331,6 +331,13 @@ class Index extends PureComponent {
               mode="multiple"
               className={stylesModule['wrapper-tags']}
               onChange={(e) => this.onSelectColor(e, record)}
+              showSearch
+              filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              filterSort={(optionA, optionB) =>
+                  optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+              }
               tagRender={({ label, value, color_code, closable, onClose }) => {
                 const itemTag = tags.find(item => item?.id === value);
                 return (

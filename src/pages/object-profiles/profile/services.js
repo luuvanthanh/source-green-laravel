@@ -1,4 +1,6 @@
 import request from '@/utils/request';
+import requestCRM from '@/utils/requestCrm';
+import { Helper } from '@/utils';
 
 export function get(params = {}) {
   return request('/student-criterias/statistic-by-properties', {
@@ -47,6 +49,35 @@ export function getHeight(params = {}) {
   return request(`/student-criterias/statistic-by-physical/${params.StudentId}`, {
     method: 'GET',
     params,
+  });
+}
+
+export function getMedical(data = {}) {
+  return requestCRM(`/v1/admission-registers`, {
+    method: 'GET',
+    params: {
+      ...data,
+      limit: data.limit,
+      page: data.page,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes([
+       "medicalInfo.medicalDeclareInfo.configMedicalDeclare,medicalInfo.childHeathDevelop",
+       "childEvaluateInfo",
+      ]),
+    },
+  });
+}
+
+export function getEvaluate(params = {}) {
+  return requestCRM(`/v1/admission-registers`, {
+    method: 'GET',
+    params: {
+      ...params,
+      include: Helper.convertIncludes([
+        'studentInfo,childEvaluateInfo.childDescription.childIssue',]),
+    },
   });
 }
 

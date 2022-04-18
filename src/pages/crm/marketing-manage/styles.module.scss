@@ -222,3 +222,119 @@
     color: #27a600;
   }
 }
+
+.loginFacebook-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  .loginIcon {
+    padding: 5px;
+    background-color: rgb(56, 88, 152);
+    color: rgb(255, 255, 255);
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  .login {
+    font-weight: 700;
+    font-size: 14px;
+    color: #3e4247;
+  }
+  .avt {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+    border-radius: 50%;
+  }
+}
+
+.wrapper-modal-footer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.button-cancel {
+  font-family: $base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-form-label;
+  cursor: pointer;
+  text-decoration-line: underline;
+}
+
+.wrapper-modal-content {
+  .wrapper-modal-title {
+    .title {
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 20px;
+      color: #35373a;
+    }
+    .content {
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 22px;
+      color: #3e4247;
+      margin-bottom: 10px;
+    }
+  }
+  .modal-name {
+    border-top: 1px solid #eaeaea;
+    padding-top: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    color: #35373a;
+  }
+  .modal-check {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 22px;
+    color: #3e4247;
+  }
+}
+
+.cancel {
+  background-color: white !important;
+  color: black !important;
+  border: none !important;
+  text-decoration-style: solid !important;
+}
+.cancel:hover {
+  background-color: white;
+  color: black;
+  border: none;
+  text-decoration-style: solid;
+}
+
+.wrapper-breadcrumb {
+  .details {
+    font-family: $base__font-family;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 20px;
+    color: #3e4247;
+  }
+}
+
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3b5cad !important;
+    font-weight: 700;
+    color: white !important;
+  }
+}
+
+.wrapper-none-detail {
+  padding: 20px;
+  font-family: $base__font-family;
+  font-weight: 500;
+  height: 300px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #3e4247;
+}

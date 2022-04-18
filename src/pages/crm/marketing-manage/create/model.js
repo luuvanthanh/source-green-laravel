@@ -33,6 +33,12 @@ import * as categories from '@/services/categories';
       pages: [],
       user: {},
       detailsAddPost: {},
+      paginationComment: {
+        total: 0,
+      },
+      paginationLike:{
+        total: 0,
+      },
     },
     reducers: {
       SET_BRANCHESS: (state, { payload }) => ({
@@ -150,7 +156,12 @@ import * as categories from '@/services/categories';
       }),
       SET_POSTS: (state, { payload }) => ({
         ...state,
-        posts: payload.parsePayload,
+        posts: payload.parsePayload?.map(i=> ({
+          ...i,
+          quantity_share: i?.postFacebookInfo?.reduce((n, {quantity_share}) => n + quantity_share, 0),
+          quantity_comment: i?.postFacebookInfo?.reduce((n, {quantity_comment}) => n + quantity_comment, 0),
+          quantity_reaction: i?.postFacebookInfo?.reduce((n, {quantity_reaction}) => n + quantity_reaction, 0),
+        })),
       }),
       SET_PAGES: (state, { payload }) => ({
         ...state,
@@ -159,6 +170,14 @@ import * as categories from '@/services/categories';
       SET_USER: (state, { payload }) => ({
         ...state,
         user: payload,
+      }),
+      SET_POSTS_LIKE: (state, { payload }) => ({
+        ...state,
+        paginationLike: payload.pagination,
+      }),
+      SET_POSTS_COMMENT: (state, { payload }) => ({
+        ...state,
+        paginationComment: payload.pagination,
       }),
     },
     effects: {
@@ -560,6 +579,38 @@ import * as categories from '@/services/categories';
           callback(payload);
         } catch (error) {
           callback(null, error);
+        }
+      },
+      *GET_POSTS_LIKE({ payload, callback }, saga) {
+        try {
+          const response = yield saga.call(services.getPostLike, payload);
+          callback(response);
+          yield saga.put({
+            type: 'SET_POSTS_LIKE',
+            payload: response,
+          });
+        } catch (error) {
+          callback(null, error);
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_POSTS_COMMENT({ payload, callback }, saga) {
+        try {
+          const response = yield saga.call(services.getPostComment, payload);
+          callback(response);
+          yield saga.put({
+            type: 'SET_POSTS_COMMENT',
+            payload: response,
+          });
+        } catch (error) {
+          callback(null, error);
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
         }
       },
     },

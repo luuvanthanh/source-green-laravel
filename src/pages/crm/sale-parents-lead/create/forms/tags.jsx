@@ -134,6 +134,13 @@ const General = memo(() => {
                   mode="multiple"
                   className={stylesModule['details-tags']}
                   onChange={(e) => onSelectColor(e)}
+                  showSearch
+                  filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                  filterSort={(optionA, optionB) =>
+                      optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                  }
                   tagRender={({ label, value, color_code, closable, onClose }) => {
                     const itemTag = tags.find(item => item.id === value);
                     return (

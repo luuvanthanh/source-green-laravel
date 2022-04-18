@@ -1,5 +1,8 @@
 import * as categories from '@/services/categories';
+import {  notification } from 'antd';
+import moment from 'moment';
 import * as services from './services';
+
 
 export default {
   namespace: 'OPProfile',
@@ -172,13 +175,40 @@ export default {
         });
       }
     },
-    *GET_HEIGHT({ payload }, saga) {
+    *GET_HEIGHT({ payload ,callback}, saga) {
       try {
         const response = yield saga.call(services.getHeight, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_HEIGHT',
           payload: response,
         });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: `Chưa có sức khỏe y tế được tạo từ ngày ${ moment(payload?.FromDate).format('DD/MM/YYYY')} đến ngày ${ moment(payload?.ToDate).format('DD/MM/YYYY')}`,
+        });
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_MEDICAL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getMedical, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_EVALUATE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getEvaluate, payload);
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

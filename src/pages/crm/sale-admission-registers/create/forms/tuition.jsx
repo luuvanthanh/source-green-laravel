@@ -70,7 +70,7 @@ const General = memo(
           key: 'money',
           className: 'min-width-150',
           width: 150,
-          render: (record) => <Text size="normal">{Helper.getPrice(record?.money)}</Text>,
+          render: (record) => <Text size="normal">{Helper.getPrice(record?.expected_money)}</Text>,
         },
         {
           title: 'Tiền giảm (đ)',
@@ -84,11 +84,12 @@ const General = memo(
           key: 'name',
           className: 'min-width-150',
           width: 150,
-          render: (record) => <Text size="normal">{Helper.getPrice(record?.money)}</Text>,
+          render: (record) => <Text size="normal">{Helper.getPrice(record?.expected_money)}</Text>,
         },
       ];
       return columns;
     };
+
     return (
       <>
         {
@@ -178,11 +179,9 @@ const General = memo(
                         rowKey={(record) => record.id}
                         scroll={{ x: '100%' }}
                         summary={(pageData) => {
-                          let totalBorrow = '0';
-                          let totalShipping = '0';
-                          pageData.forEach(({ money, moneyDown }) => {
-                            totalBorrow += money;
-                            totalShipping += moneyDown;
+                          let totalBorrow = 0;
+                          pageData.forEach(({ expected_money }) => {
+                            totalBorrow += expected_money;
                           });
                           return (
                             <>
@@ -199,12 +198,12 @@ const General = memo(
                                 </Table.Summary.Cell>
                                 <Table.Summary.Cell>
                                   <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                    {Helper.getPrice(totalShipping)}
+                                    {Helper.getPrice("0")}
                                   </Text>
                                 </Table.Summary.Cell>
                                 <Table.Summary.Cell>
                                   <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                    {Helper.getPrice(totalBorrow + totalShipping)}
+                                    {Helper.getPrice(totalBorrow)}
                                   </Text>
                                 </Table.Summary.Cell>
                               </Table.Summary.Row>

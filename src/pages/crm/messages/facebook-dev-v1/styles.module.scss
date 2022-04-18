@@ -30,21 +30,26 @@
     top: 0;
     bottom: 0;
     right: 0;
-    background-color: rgba($color: $background-dark, $alpha: 1);
+    background-color: white;
     z-index: 999;
     border-radius: 2px;
   }
   .button-login {
-    background-color: $background-primary;
+    background-color: white;
     color: $text-white;
     padding: 15px 30px;
     border-radius: 4px;
-    font-size: 18px;
+    font-size: 22px;
     line-height: 32px;
+    font-weight: 700;
+    color: #3E4247;
     outline: none;
-    border: 1px solid $border-primary;
     span[class*="icon"] {
-      padding-right: 10px;
+      padding: 5px;
+      background-color: rgb(56, 88, 152);
+      color: rgb(255, 255, 255);
+      border-radius: 50%;
+      margin-right: 10px;
     }
   }
 }
