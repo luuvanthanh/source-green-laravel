@@ -128,8 +128,8 @@ const Index = memo(() => {
         width: 100,
         className: "min-width-100",
         render: (record) => (
-        <p  role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
-          {record?.quantity_reaction || 0}</p>)
+          <p role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
+            {record?.quantity_reaction || 0}</p>)
       },
       {
         title: 'Lượt share',
@@ -137,7 +137,7 @@ const Index = memo(() => {
         width: 100,
         className: "min-width-100",
         render: (record) => (
-          <p  role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
+          <p role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
             {record?.quantity_share || 0}</p>)
       },
       {
@@ -146,7 +146,7 @@ const Index = memo(() => {
         width: 100,
         className: "min-width-100",
         render: (record) => (
-          <p  role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
+          <p role="presentation" onClick={() => history.push(`/crm/tiep-thi/quan-ly-chien-dich-marketing/chi-tiet/${record.id}/chi-tiet-bai-viet`)}>
             {record?.quantity_comment || 0}</p>)
       },
       {
@@ -187,7 +187,6 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    if(page?.length > 0){
     const details = page?.map(i =>
     ({
       page_id: i?.id,
@@ -200,7 +199,6 @@ const Index = memo(() => {
         data_page: JSON.stringify(details),
       }
     });
-    }
   }, [page?.length > 0]);
 
   const handleCancel = () => {

@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import classnames from 'classnames';
+import { Menu, Dropdown} from 'antd';
 import { useDispatch, useSelector } from 'dva';
 import { isEmpty } from 'lodash';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -9,11 +10,12 @@ const Index = memo(() => {
   const dispatch = useDispatch();
   const [{ user }] = useSelector(({ crmFBDevV1, loading: { effects } }) => [crmFBDevV1, effects]);
 
-  const [pageCurrent, setPageCurrent] = useState([]);
+  const [pageCurrent, setPageCurrent] = useState(undefined);
   const [page, setPage] = useState([]);
   const [userToken, setUserToken] = useState(undefined);
+  const [checkLogout, setCheckLogout] = useState(false);
 
-  const [getToken, setGetToket] = useState(undefined);
+  const [getToken, setGetToken] = useState(undefined);
 
   const responseFacebook = (response) => {
     if (response.userID) {
@@ -30,9 +32,14 @@ const Index = memo(() => {
   const now = new Date().getTime();
   const setupTime = localStorage.getItem('setupTimeCRM');
 
-  if (now - setupTime > hours *  60 * 60 * 30  * 1000 ) {
+  if (now - setupTime > hours * 60 * 60 * 30 * 1000) {
     localStorage.clear();
   }
+
+  const onLogout = () => {
+    localStorage.clear();
+    setCheckLogout(true);
+  };
 
   useEffect(() => {
     if (user?.userID) {
@@ -48,10 +55,10 @@ const Index = memo(() => {
   }, [getToken?.user_access_token]);
 
   useEffect(() => {
-    if (pageCurrent?.length > 0) {
+    if (pageCurrent?.length >= 0) {
       localStorage.setItem('pageCurrent', JSON.stringify(pageCurrent));
     }
-  }, [pageCurrent?.length > 0]);
+  }, [pageCurrent?.length >= 0]);
 
   useEffect(() => {
     if (page?.length > 0) {
@@ -79,7 +86,7 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            setGetToket(response);
+            setGetToken(response?.data);
           }
         },
       });
@@ -87,24 +94,24 @@ const Index = memo(() => {
   }, [user?.userID]);
 
   useEffect(() => {
-    if (getToken?.user_access_token) {
+    if (getToken?.access_token) {
       dispatch({
         type: 'crmFBDevV1/GET_PAGES',
         payload: {
-          user_access_token: getToken?.user_access_token,
+          user_access_token: getToken?.access_token,
           user_id: user?.userID,
         },
         callback: (response) => {
           if (response) {
-            setPageCurrent(response.data);
+            setPageCurrent(response?.data);
           }
         },
       });
     }
-  }, [getToken?.user_access_token]);
+  }, [getToken?.access_token]);
 
   useEffect(() => {
-    if (pageCurrent.length > 0) {
+    if (pageCurrent?.length > 0) {
       dispatch({
         type: 'crmFBDevV1/ADD_CONVERSATIONS',
         payload: {
@@ -145,17 +152,30 @@ const Index = memo(() => {
         },
       });
     }
-  }, [pageCurrent.length]);
+  }, [pageCurrent?.length]);
+
+  const menu = (
+    <Menu selectable={false} className={styles.dropdownUser}>
+      <Menu.Item onClick={onLogout}>
+        <span className="d-flex align-items-center">
+          <i className={`${styles.menuIcon} icon-exit`} />
+          Logout
+        </span>
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <div>
-      {!isEmpty(JSON?.parse(localStorage?.getItem('user'))) ? (
-        <div role="presentation" className={styles['loginFacebook-container']}>
-          <img src={userToken?.picture?.data?.url} alt="icon" className={styles.avt} />
-          <div className={styles.login} role="presentation">
-            {userToken?.name}
+      {!isEmpty(JSON?.parse(localStorage?.getItem('user'))) && !checkLogout ? (
+        <Dropdown overlay={menu} trigger={['click']}>
+          <div role="presentation" className={styles['loginFacebook-container']}>
+            <img src={userToken?.picture?.data?.url} alt="icon" className={styles.avt} />
+            <div className={styles.login} role="presentation">
+              {userToken?.name}
+            </div>
           </div>
-        </div>
+        </Dropdown>
       ) : (
         <div className={styles['wrapper-login']}>
           <FacebookLogin

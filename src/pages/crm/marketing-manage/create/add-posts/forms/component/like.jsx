@@ -21,10 +21,19 @@ const Index = memo(({ dataLike, hanDleChangeLike, paginationLike }) => {
       },
       {
         title: 'Trạng thái',
-        className: 'min-width-100',
-        width: 100,
+        className: 'min-width-120',
+        width: 120,
         key: 'reaction_type',
-        render: (record) => record?.reaction_type,
+        render: (record) => (
+          <>
+          {record?.reaction_type === 'LIKE'? "Thích": "" }
+          {record?.reaction_type === 'CARE'? "Thương thương": "" }
+          {record?.reaction_type === 'HAHA'? "Cười": "" }
+          {record?.reaction_type === 'WOA'? "Ngạc nhiên": "" }
+          {record?.reaction_type === 'SAD'? "Buồn": "" }
+          {record?.reaction_type === 'ANGRY'? "Phẩn nộ": "" }
+          </>
+        ),
       },
       {
         title: 'Họ và tên',

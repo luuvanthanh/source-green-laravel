@@ -26,7 +26,7 @@ const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
     user: crmMarketingManageAdd.user,
 });
 const General = memo(
-    ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, error, location: { pathname } }) => {
+    ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, location: { pathname } }) => {
         const formRef = useRef();
         const [files, setFiles] = useState([]);
         const mounted = useRef(false);
@@ -69,14 +69,15 @@ const General = memo(
          */
         const onFinish = (values) => {
             dispatch({
-                type: params.detailId
+                type: check
                     ? 'crmMarketingManageAdd/UPDATE_POSTS'
                     : 'crmMarketingManageAdd/ADD_POSTS',
-                payload: params.detailId
+                payload: check
                     ? {
-                        ...detailsAddPost,
-                        ...values,
-                        marketing_program_id: params.id,
+                        id: params.id,
+                        name: values?.name,
+                        content: values?.content,
+                        marketing_program_id: detailsAddPost?.marketing_program_id,
                         file_image: JSON.stringify(files),
                     }
                     : {
@@ -157,7 +158,7 @@ const General = memo(
                 <Form layout="vertical" ref={formRef} onFinish={onFinish}>
                     <Pane >
                         <Pane className="card">
-                            <Loading loading={loading} isError={error.isError} params={{ error }}>
+                            <Loading loading={loading} >
                                 <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
                                     {
                                         detailsAddPost?.id ?
@@ -202,7 +203,7 @@ const General = memo(
                                 </Pane>
 
                                 <Pane className="p20 d-flex justify-content-between align-items-center ">
-                                    {check? (
+                                    {check ? (
                                         <Button
                                             className={stylesModule?.cancel}
                                             role="presentation"
