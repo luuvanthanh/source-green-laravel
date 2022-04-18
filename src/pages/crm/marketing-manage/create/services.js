@@ -467,3 +467,11 @@ export function getPostComment(params = {}) {
     params,
   });
 }
+
+export function getpostTokenShare(params = {}) {
+  return request('/v1/quantity-shares', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params,
+  });
+}

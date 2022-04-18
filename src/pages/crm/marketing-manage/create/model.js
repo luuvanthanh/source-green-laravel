@@ -613,5 +613,15 @@ import * as categories from '@/services/categories';
           });
         }
       },
+      *GET_POSTS_TOKEN_SHARE({ payload }, saga) {
+        try {
+          yield saga.call(services.getpostTokenShare, payload);
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
     },
   };

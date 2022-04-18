@@ -352,7 +352,7 @@ export default {
     *GET_TOKEN({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getToken, payload);
-        callback(payload);
+        callback(response);
         yield saga.put({
           type: 'SET_TOKEN',
           payload: response,
