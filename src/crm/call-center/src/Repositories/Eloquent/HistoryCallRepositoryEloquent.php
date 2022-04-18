@@ -59,6 +59,15 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
     public function getHistoryCall(array $attributes)
     {
+        if (!empty($attributes['id'])) {
+            $ids = explode(',', $attributes['id']);
+            $this->model = $this->model->whereIn('id', $ids);
+        }
+
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
+        }
+
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
             $this->model = $this->model->whereDate('created_at', '>=', $attributes['start_date'])
                 ->whereDate('created_at', '<=', $attributes['end_date']);
@@ -85,17 +94,17 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
             $this->model = $this->model->whereIn('call_status', $callStatus);
         }
 
-        if (!empty($attributes['call_type'])) {
-            $this->model = $this->model->where('direction', $attributes['call_type']);
+        if (!empty($attributes['direction'])) {
+            $this->model = $this->model->where('direction', $attributes['direction']);
+        }
+
+        if (!empty($attributes['hangup_cause'])) {
+            $this->model = $this->model->where('hangup_cause', $attributes['hangup_cause']);
         }
 
         if (!empty($attributes['employee_id'])) {
             $this->model = $this->model->where('emplopyee_id', $attributes['employee_id']);
         }
-
-        request()->switchboard_number = $this->model()::select('switchboard')->groupBy('switchboard')->get()->map(function ($item) {
-            return $item->switchboard;
-        });
 
         if (!empty($attributes['limit'])) {
             $callCenter = $this->paginate($attributes['limit']);
@@ -226,5 +235,13 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
 
         $this->model()::updateOrCreate(['id' => $id], $data);
     }
-    
+
+    public function switchboard()
+    {
+        $switchboardNumber = $this->model()::select('switchboard')->groupBy('switchboard')->get()->map(function ($item) {
+            return ['number' => $item->switchboard];
+        });
+
+        return ['data' => $switchboardNumber];
+    }
 }
