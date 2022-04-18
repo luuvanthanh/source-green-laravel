@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
+import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import csx from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -27,6 +27,7 @@ const Students = memo(() => {
   const {
     loading: { effects },
     relationships,
+    details
   } = useSelector(({ loading, crmSaleAdmissionAdd }) => ({
     loading,
     relationships: crmSaleAdmissionAdd.relationships,
@@ -37,19 +38,13 @@ const Students = memo(() => {
   }));
 
   const [writtenConsent, setWrittenConsent] = useState([]);
+  const [files, setFiles] = useState({});
   const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD_WRITTEN_CONSENT`];
-
-  const onSetImage = (file, position) => {
-    mountedSet(
-      setFileImage,
-      fileImage.map((item, index) => (index === position ? file : item)),
-    );
-  };
 
   const onFinish = (values) => {
     const confirm_transporter = values.data.map((item, index) => ({
       ...item,
-      file_image: fileImage[index],
+      file_image: files[index]?.files ? JSON.stringify(files[index].files) : undefined,
       birth_date: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
@@ -97,6 +92,7 @@ const Students = memo(() => {
       callback: (response) => {
         if (response) {
           setWrittenConsent(response.parsePayload);
+          setFiles({ ...response.parsePayload.map(item => ({ files: Helper.isJSON(item.file_image) ? JSON.parse(item.file_image) : [] })) });
           formRef.current.setFieldsValue({
             data: response.parsePayload.map((item) => ({
               ...item,
@@ -123,6 +119,24 @@ const Students = memo(() => {
       );
     }
   }, [writtenConsent]);
+
+  const uploadFiles = (file, index) => {
+    mountedSet(setFiles, (prev) => ({
+      ...prev,
+      [index]: {
+        files: prev[index]?.files ? [...prev[index].files, file] : [file],
+      },
+    }));
+  };
+
+  const removeFiles = (file, index) => {
+    mountedSet(setFiles, (prev) => ({
+      ...prev,
+      [index]: {
+        files: file,
+      },
+    }));
+  };
 
   return (
     <>
@@ -165,11 +179,10 @@ const Students = memo(() => {
                                 <Pane className="row">
                                   <Pane className="col-lg-4">
                                     <Form.Item name={[field.key, 'file_image']} label="Hình ảnh">
-                                      <ImageUpload
-                                        callback={(res) => {
-                                          onSetImage(res.fileInfo.url, index);
-                                        }}
-                                        fileImage={fileImage[index]}
+                                      <MultipleImageUpload
+                                        callback={(event) => uploadFiles(event, index)}
+                                        removeFiles={(event) => removeFiles(event, index)}
+                                        files={files[index]?.files || []}
                                       />
                                     </Form.Item>
                                   </Pane>
@@ -258,14 +271,18 @@ const Students = memo(() => {
                     <Button color="primary" icon="export" className="ml-2">
                       Xuất file giấy đồng ý
                     </Button>
-                    <Button
-                      color="success"
-                      htmlType="submit"
-                      loading={loadingSubmit}
-                      className="ml-2"
-                    >
-                      Lưu
-                    </Button>
+                    {
+                      details?.status && (
+                        <Button
+                          color="success"
+                          htmlType="submit"
+                          loading={loadingSubmit}
+                          className="ml-2"
+                        >
+                          Lưu
+                        </Button>
+                      )
+                    }
                   </Pane>
                 </Pane>
               </Pane>
