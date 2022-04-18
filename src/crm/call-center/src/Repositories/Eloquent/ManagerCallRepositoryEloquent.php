@@ -130,7 +130,8 @@ class ManagerCallRepositoryEloquent extends BaseRepository implements ManagerCal
 
             switch ($attributes['call_times']) {
                 case 'OVERTIME':
-                    $this->model = $this->model->where('expected_date', null);
+                    $this->model = $this->model->whereDate('expected_date', '<', now()->toDateString())
+                        ->where('status', ManagerCall::STATUS['CALLYET']);
                     break;
                 case 'CALL_YET':
                     $this->model = $this->model->where('status', ManagerCall::STATUS['CALLYET']); //chưa gọi
