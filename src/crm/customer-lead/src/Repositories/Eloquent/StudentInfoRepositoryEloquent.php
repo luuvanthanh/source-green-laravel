@@ -8,6 +8,8 @@ use GGPHP\Crm\CustomerLead\Models\EventInfo;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Presenters\StudentInfoPresenter;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\StudentInfoRepository;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Models\PotentialStudentInfo;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -81,6 +83,12 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
                 $updateStudentInfo = StudentInfo::find($value['id']);
                 $value['sex'] = StudentInfo::SEX[$value['sex']];
                 $updateStudentInfo->update($value);
+
+                $customerPotetial = CustomerPotential::where('customer_lead_id', $updateStudentInfo->customer_lead_id)->first();
+
+                if (!is_null($customerPotetial)) {
+                    PotentialStudentInfo::where('customer_potential_id', $customerPotetial->id)->first()->update($value);
+                }
             }
         }
 
