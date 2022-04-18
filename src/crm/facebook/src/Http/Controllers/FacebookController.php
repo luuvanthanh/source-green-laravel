@@ -86,7 +86,8 @@ class FacebookController extends Controller
                             'from' => $messaging['sender']['id'],
                             'to' => $messaging['recipient']['id'],
                             'content' => $text,
-                            'message_id_facebook' => $messageId
+                            'message_id_facebook' => $messageId,
+                            'watermark' => $messaging['timestamp']
                         ];
                         $this->messageRepository->checkCutomerConversationMessage($attributes);
                     }
@@ -97,7 +98,8 @@ class FacebookController extends Controller
                                 'from' => $messaging['sender']['id'],
                                 'to' => $messaging['recipient']['id'],
                                 'content' => $urlFile,
-                                'message_id_facebook' => $messageId
+                                'message_id_facebook' => $messageId,
+                                'watermark' => $messaging['timestamp']
                             ];
                             $this->messageRepository->checkCutomerConversationMessage($attributes);
                         }

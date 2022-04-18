@@ -125,7 +125,8 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             'message_id_facebook' => $attributes['message_id_facebook'],
             'from' => $from,
             'to' => $to,
-            'conversation_id' => $conversation->id
+            'conversation_id' => $conversation->id,
+            'watermark' => $attributes['watermark']
         ];
 
         $message = Message::create($dataMessage);
@@ -176,7 +177,8 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             'message_id_facebook' => $attributes['message_id_facebook'],
             'from' => $userFacebookInfo->id,
             'to' => $page->id,
-            'conversation_id' => $conversation->id
+            'conversation_id' => $conversation->id,
+            'watermark' => $attributes['watermark']
         ];
 
         $message = Message::create($dataMessage);
@@ -231,23 +233,20 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             }
             $conversation = Conversation::where('page_id', $pageId)->where('user_facebook_info_id', $userFacebookInfoId)->first();
 
-
             if (isset($statusSendMessage['delivery'])) {
                 broadcast(new FacebookStatusSendMessage([
                     'status_send_message' => 'received',
                     'conversation_id' => $conversation->id
                 ]));
 
-                if (isset($statusSendMessage['delivery']['mids']) && isset($statusSendMessage['delivery']['watermark'])) {
-                    foreach ($statusSendMessage['delivery']['mids'] as $value) {
-                        $message = Message::where('message_id_facebook', $value)->first();
+                if (isset($statusSendMessage['delivery']['watermark'])) {
+                    $message = Message::where('watermark', $statusSendMessage['delivery']['watermark'])->first();
 
-                        if (!is_null($message)) {
-                            $message->watermark = $statusSendMessage['delivery']['watermark'];
-                            if ($message->status_send_message != Message::STATUS_SEND_MESSAGE['READ']) {
-                                $message->status_send_message = Message::STATUS_SEND_MESSAGE['RECEIVED'];
-                                $message->update();
-                            }
+                    if (!is_null($message)) {
+                        $message->watermark = $statusSendMessage['delivery']['watermark'];
+                        if ($message->status_send_message != Message::STATUS_SEND_MESSAGE['READ']) {
+                            $message->status_send_message = Message::STATUS_SEND_MESSAGE['RECEIVED'];
+                            $message->update();
                         }
                     }
                 }
@@ -257,20 +256,12 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                     'status_send_message' => 'read',
                     'conversation_id' => $conversation->id
                 ]));
-                $messages = Message::where('watermark', $statusSendMessage['read']['watermark'])->get();
+                $messages = Message::where('from', $pageId)->where('to', $userFacebookInfoId)->get();
+
                 foreach ($messages as $message) {
                     $message->status_send_message = Message::STATUS_SEND_MESSAGE['READ'];
                     $message->update();
                     $conversation->update(['status_send_message' => Conversation::STATUS_SEND_MESSAGE['READ']]);
-                }
-                $getMessage = Message::where('from', $pageId)->where('to', $userFacebookInfoId)->orderBy('created_at', 'desc')->first();
-                //\Log::info(['$getMessage' => $getMessage]);
-                if ($getMessage->status_send_message == Message::STATUS_SEND_MESSAGE['READ']) {
-                    $allMessages = Message::where('from', $userFacebookInfoId)->where('to', $pageId)->get();
-                    foreach ($allMessages as $key => $allMessage) {
-                        $allMessage->status_send_message = Message::STATUS_SEND_MESSAGE['READ'];
-                        $allMessage->update();
-                    }
                 }
             }
         }
