@@ -54,6 +54,7 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::get('customer-by-phone/{phone}', 'CustomerLeadController@customerByPhone');
             \Route::post('import-excel-customer-leads', 'CustomerLeadController@importExcelCustomerLead');
+            \Route::get('template-excel-customer-leads', 'CustomerLeadController@templateExcelCustomerLead');
         });
     }
 
