@@ -14,6 +14,7 @@ const Index = memo(() => {
   const [page, setPage] = useState([]);
   const [userToken, setUserToken] = useState(undefined);
   const [checkLogout, setCheckLogout] = useState(false);
+  const [checkLogin, setCheckLogin] = useState(false);
 
   const [getToken, setGetToken] = useState(undefined);
 
@@ -39,12 +40,14 @@ const Index = memo(() => {
   const onLogout = () => {
     localStorage.clear();
     setCheckLogout(true);
+    setCheckLogin(false);
   };
 
   useEffect(() => {
     if (user?.userID) {
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('setupTimeCRM', now);
+      setCheckLogin(true);
     }
   }, [user?.userID]);
 
@@ -75,7 +78,7 @@ const Index = memo(() => {
     } else {
       setUserToken(undefined);
     }
-  }, []);
+  }, [checkLogin]);
 
   useEffect(() => {
     if (user?.userID) {

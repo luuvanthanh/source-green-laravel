@@ -735,8 +735,8 @@
   // }
   .actions-container {
     display: flex;
-    justify-content: center;
     align-items: center;
+    border-bottom: 1px solid #eaeaea;
     padding: 10px;
     :global(.ant-btn) {
       margin: 0 10px;
@@ -1078,4 +1078,13 @@
   line-height: 15px;
   text-align: right;
   color: rgba($color: $text, $alpha: 0.6);
+}
+
+.wrapper-modal {
+  :global(.ant-modal-footer) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
 }
