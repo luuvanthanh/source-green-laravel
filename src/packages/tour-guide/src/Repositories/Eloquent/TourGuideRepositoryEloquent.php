@@ -300,6 +300,10 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             }
         }
 
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->whereIn('type', $attributes['type']);
+        }
+
         $this->model = $this->model->whereHas('event', function ($query) use ($attributes) {
             $query->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
 
@@ -337,12 +341,13 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
 
         $key = 0;
         foreach ($tourGuides as $key => $tourGuide) {
+
             foreach ($tourGuide->event as $keyEvent => $event) {
                 $params['[number]'][] = ++$key;
                 $params['[full_name]'][] = $tourGuide->full_name;
                 $params['[tourist_destination]'][] = $event->touristDestination->name;
-                $params['[time]'][] = $event->time->format('d-m-Y H:i:s');
-                $params['[camera]'][] = $$event->camera->name;
+                $params['[time]'][] = Carbon::parse($event->time)->format('d-m-Y H:i:s');
+                $params['[camera]'][] = $event->camera->name;
             }
         }
 
@@ -382,7 +387,8 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $offset = (($i - 1)  * $max);
             $start = ($offset == 0 ? 0 : ($offset + 1));
 
-            $legacy = TourGuide::skip($start)->take($max)->get();
+            $legacy = TourGuide::doesntHave('media')->whereNotNull('sync_data_id')->skip($start)->take($max)->get();
+
             dispatch(new ImportTourGuideJob(null, null, 'ADD_IMAGE', $legacy));
         }
 

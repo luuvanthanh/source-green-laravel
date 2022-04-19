@@ -66,4 +66,12 @@ class EventConfigRepositoryEloquent extends BaseRepository implements EventConfi
 
         return $result;
     }
+
+    public function create($attributes)
+    {
+        $eventConfig = EventConfig::first();
+        $eventConfig->update($attributes);
+
+        return parent::parserResult($eventConfig);
+    }
 }

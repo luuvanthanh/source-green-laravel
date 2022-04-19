@@ -2,12 +2,15 @@
 
 namespace GGPHP\Camera\Models;
 
-use GGPHP\Core\Models\UuidModel;
-use GGPHP\Collection\Models\Collection;
+use GGPHP\AiService\Models\AiService;
 use GGPHP\Camera\Models\Camera;
+use GGPHP\Collection\Models\Collection;
+use GGPHP\Core\Models\UuidModel;
 
 class CameraService extends UuidModel
 {
+    protected $table = 'camera_service';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,4 +26,24 @@ class CameraService extends UuidModel
         'status' => 'boolean',
         'coordinates' => 'array'
     ];
+
+    /**
+     * User belong to
+     *
+     * @return type
+     */
+    public function camera()
+    {
+        return $this->belongsTo(Camera::class);
+    }
+
+    /**
+     * User belong to
+     *
+     * @return type
+     */
+    public function aiService()
+    {
+        return $this->belongsTo(AiService::class, 'ai_service_id');
+    }
 }

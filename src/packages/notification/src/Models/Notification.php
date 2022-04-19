@@ -20,7 +20,8 @@ class Notification extends IlluminateDatabaseNotification
      * @var array
      */
     protected $fillable = [
-        'notifiable_id', 'notifiable_type', 'data', 'notification_type', 'read_at'
+        'notifiable_id', 'notifiable_type', 'data', 'notification_type', 'read_at',
+        'tourist_destination_id'
     ];
 
     /**

@@ -8,16 +8,22 @@ use GGPHP\Notification\Channels\OnesignalChannel;
 class CountNumberOfTourist extends BaseNotification
 {
     public $numberWarning;
+    public $model;
+    public $type;
+    public $touristDestination;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($numberWarning = null)
+    public function __construct($type = null, $model = null, $touristDestination = null, $numberWarning)
     {
         parent::__construct();
         $this->numberWarning = $numberWarning;
+        $this->type = $type;
+        $this->model = $model;
+        $this->touristDestination = $touristDestination;
     }
 
     /**
@@ -52,7 +58,7 @@ EOD;
         $model = $this->model;
         $touristDestination = $model->touristDestination;
         $date = Carbon::parse($model->time)->format('d-m-Y');
-        $text = 'Số lượng du khách đến' . $touristDestination->name . 'ngày' . $date . 'vượt mức' . $this->numberWarning . 'người';
+        $text = 'Số lượng du khách đến ' . $touristDestination->name . ' ngày ' . $date . ' vượt mức ' . $this->numberWarning . ' người';
 
         return $text;
     }

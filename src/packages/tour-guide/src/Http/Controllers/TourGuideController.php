@@ -94,6 +94,17 @@ class TourGuideController extends Controller
     public function tourGuidesByImage(Request $request)
     {
         $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $type = explode(',', $attributes['type']);
+            $newType = [];
+            foreach ($type as $value) {
+                $newType[] = TourGuide::TYPE[$value];
+            }
+
+            $attributes['type'] = array_values($newType);
+        }
+
         $tourGuide = $this->tourGuideRepository->tourGuidesByImage($attributes);
 
         return $this->success($tourGuide, trans('lang::messages.common.getListSuccess'));
@@ -209,7 +220,20 @@ class TourGuideController extends Controller
      */
     public function exportExcelTourGuidesByImage(Request $request)
     {
-        $result = $this->tourGuideRepository->exportExcelTourGuidesByImage($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $type = explode(',', $attributes['type']);
+            $newType = [];
+            foreach ($type as $value) {
+                $newType[] = TourGuide::TYPE[$value];
+            }
+
+            $attributes['type'] = array_values($newType);
+        }
+
+
+        $result = $this->tourGuideRepository->exportExcelTourGuidesByImage($attributes);
 
         if (is_string($result)) {
             return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);

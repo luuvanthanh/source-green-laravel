@@ -22,7 +22,7 @@ class NotificationService
     public static function eventCreated($type, $model)
     {
         $recipients = User::whereHas('players')->get();
-        $sendData = new ModelCreated($type, $model);
+        $sendData = new ModelCreated($type, $model, $model->tourist_destination_id);
 
         \Notification::send($recipients, $sendData);
     }
@@ -34,7 +34,7 @@ class NotificationService
     public static function surveyFormCreated($type, $model)
     {
         $recipients = User::whereHas('players')->get();
-        $sendData = new ModelCreated($type, $model);
+        $sendData = new ModelCreated($type, $model, $model->tourist_destination_id);
 
         \Notification::send($recipients, $sendData);
     }
@@ -46,7 +46,7 @@ class NotificationService
     public static function updateCamera($type, $model)
     {
         $recipients = User::whereHas('players')->get();
-        $sendData = new CameraUpdate($type, $model);
+        $sendData = new CameraUpdate($type, $model, $model->tourist_destination_id);
 
         \Notification::send($recipients, $sendData);
     }
@@ -58,7 +58,7 @@ class NotificationService
     public static function countNumberOfTourist($model, $numberWarning)
     {
         $recipients = User::whereHas('players')->get();
-        $sendData = new CountNumberOfTourist(null, $model, $numberWarning);
+        $sendData = new CountNumberOfTourist(null, $model, $model->tourist_destination_id, $numberWarning);
 
         \Notification::send($recipients, $sendData);
     }

@@ -5,7 +5,9 @@ namespace GGPHP\Camera\Repositories\Eloquent;
 use Carbon\Carbon;
 use DB;
 use GGPHP\AiService\Models\AiService;
+use GGPHP\Camera\Jobs\VmsCoreJob;
 use GGPHP\Camera\Models\Camera;
+use GGPHP\Camera\Models\CameraService;
 use GGPHP\Camera\Presenters\CameraPresenter;
 use GGPHP\Camera\Repositories\Contracts\CameraCollectionRepository;
 use GGPHP\Camera\Repositories\Contracts\CameraRepository;
@@ -507,7 +509,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 'xy' => json_encode($attributes['coordinates']),
             ];
 
-            AiApiServices::updateCameraAiService($dataCameraService);
+            // AiApiServices::updateCameraAiService($dataCameraService);
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -566,7 +568,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 'on_flag' => $attributes['is_on'],
             ];
 
-            AiApiServices::onOfServiceCamera($dataCameraService);
+            // AiApiServices::onOfServiceCamera($dataCameraService);
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -575,5 +577,50 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         }
 
         return parent::find($id);
+    }
+
+    public function cameraAiService($attributes, $id)
+    {
+        $cameraService = CameraService::where('camera_id', $id)->pluck('ai_service_id')->toArray();
+        $aiServices = AiService::get();
+
+        if (count($cameraService) == 0 || count($cameraService) < count($aiServices)) {
+
+            foreach ($aiServices as $aiService) {
+                if (in_array($aiService->id, $cameraService)) {
+                    continue;
+                }
+                CameraService::create([
+                    'ai_service_id' => $aiService->id,
+                    'camera_id' => $id,
+                    'coordinates' => [
+                        [
+                            'x' => 0.02,
+                            'y' => 0.02,
+                            'index' => 0
+                        ],
+                        [
+                            'x' => 0.02,
+                            'y' => 0.02,
+                            'index' => 1
+                        ],
+                        [
+                            'x' => 0.02,
+                            'y' => 0.02,
+                            'index' => 2
+                        ],
+                        [
+                            'x' => 0.02,
+                            'y' => 0.02,
+                            'index' => 3
+                        ]
+                    ]
+                ]);
+            }
+        }
+
+        $cameraServiceRepositoryEloquent = resolve(CameraServiceRepositoryEloquent::class);
+
+        return $cameraServiceRepositoryEloquent->parserResult(CameraService::where('camera_id', $id)->get());
     }
 }

@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\EventConfig\Models\EventConfig;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\Notification\Models\Notification;
 use GGPHP\Notification\Services\NotificationService;
 use GGPHP\NumberOfTourist\Models\NumberOfTourist;
 use GGPHP\NumberOfTourist\Models\NumberOfTouristHandle;
@@ -262,14 +263,20 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
             $configCountTouristDetail = $eventConfig->config_count_tourist['detail'];
 
             $keyDetail = array_search($numberOfTourist->tourist_destination_id, array_column($configCountTouristDetail, 'tourist_destination_id'));
-
             if ($keyDetail !== false) {
                 $countNumberOfTourist = NumberOfTourist::where('tourist_destination_id', $numberOfTourist->tourist_destination_id)
                     ->whereDate('time', Carbon::parse($numberOfTourist->time)->format('Y-m-d'))
                     ->sum(\DB::raw('number_of_guest_out + number_of_guest_in'));
 
                 if ($countNumberOfTourist > $configCountTouristDetail[$keyDetail]['guest_number_warning']) {
-                    NotificationService::countNumberOfTourist($numberOfTourist, $configCountTouristDetail[$keyDetail]['guest_number_warning']);
+                    $notification = Notification::where('tourist_destination_id', $numberOfTourist->tourist_destination_id)
+                        ->whereJsonContains('data->type', 'COUNT_NUMBER_OF_TOURIST')
+                        ->whereDate('created_at', Carbon::parse($numberOfTourist->time)->format('Y-m-d'))
+                        ->first();
+
+                    if (is_null($notification)) {
+                        NotificationService::countNumberOfTourist($numberOfTourist, $configCountTouristDetail[$keyDetail]['guest_number_warning']);
+                    }
                 }
             } else {
 
@@ -279,7 +286,14 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                         ->sum(\DB::raw('number_of_guest_out + number_of_guest_in'));
 
                     if ($countNumberOfTourist > $eventConfig->config_count_tourist['guest_number_warning']) {
-                        NotificationService::countNumberOfTourist($numberOfTourist, $eventConfig->config_count_tourist['guest_number_warning']);
+                        $notification = Notification::where('tourist_destination_id', $numberOfTourist->tourist_destination_id)
+                            ->whereJsonContains('data->type', 'COUNT_NUMBER_OF_TOURIST')
+                            ->whereDate('created_at', Carbon::parse($numberOfTourist->time)->format('Y-m-d'))
+                            ->first();
+
+                        if (is_null($notification)) {
+                            NotificationService::countNumberOfTourist($numberOfTourist, $eventConfig->config_count_tourist['guest_number_warning']);
+                        }
                     }
                 }
             }

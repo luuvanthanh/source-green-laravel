@@ -100,6 +100,9 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
             $this->model = $this->model->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
         }
+        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
+            $this->model = $this->model->whereDate('time', '>=', $attributes['start_date'])->whereDate('time', '<=', $attributes['end_date']);
+        }
 
         if (!empty($attributes['event_code'])) {
             $this->model = $this->model->whereHas('eventType', function ($query) use ($attributes) {

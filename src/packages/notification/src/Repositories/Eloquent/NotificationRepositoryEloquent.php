@@ -66,6 +66,14 @@ class NotificationRepositoryEloquent extends BaseRepository implements Notificat
             $this->model = $this->model->where('created_at', '>=', $attributes['start_date'])->where('created_at', '<=', $attributes['end_date']);
         }
 
+        if (!empty($attributes['event_type'])) {
+            $this->model = $this->model->whereJsonContains('data->event_type', $attributes['event_type']);
+        }
+
+        if (!empty($attributes['tourist_destination_id'])) {
+            $this->model = $this->model->where('tourist_destination_id', $attributes['tourist_destination_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $notifications = $this->paginate($attributes['limit']);
         } else {
