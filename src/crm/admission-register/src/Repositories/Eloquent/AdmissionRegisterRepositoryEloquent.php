@@ -92,7 +92,7 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         }
 
         if (!empty($attributes['date_register'])) {
-            $this->model = $this->model->where('date_register', $attributes['date_register']);
+            $this->model = $this->model->whereDate('date_register', $attributes['date_register']);
         }
 
         if (!empty($attributes['student_info_id'])) {
