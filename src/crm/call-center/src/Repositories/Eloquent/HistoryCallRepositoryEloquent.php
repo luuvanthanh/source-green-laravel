@@ -99,7 +99,8 @@ class HistoryCallRepositoryEloquent extends BaseRepository implements HistoryCal
         }
 
         if (!empty($attributes['hangup_cause'])) {
-            $this->model = $this->model->where('hangup_cause', $attributes['hangup_cause']);
+            $hangupCause = explode(',', $attributes['hangup_cause']);
+            $this->model = $this->model->whereIn('hangup_cause', $hangupCause);
         }
 
         if (!empty($attributes['employee_id'])) {
