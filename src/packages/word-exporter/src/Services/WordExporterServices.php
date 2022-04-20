@@ -16,10 +16,10 @@ class WordExporterServices
     protected $templateFileUrl;
     protected $resultFileUrl;
     public $configs = [
-        // 'labour_contract' => [
-        //     'template' => 'labour_contract.docx',
-        //     'result' => 'labour_contract.docx',
-        // ],
+        'list_confirm_transporter' => [
+            'template' => 'list_confirm_transporter.docx',
+            'result' => 'list_confirm_transporter.docx',
+        ],
     ];
 
     public function __construct()
@@ -58,7 +58,7 @@ class WordExporterServices
         return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
     }
 
-    public function exportWordTransfer($teamplate, $param)
+    public function multipleExportWord($teamplate, $param)
     {
         $templateFile = $this->configs[$teamplate]['template'];
         $resultFile = $this->configs[$teamplate]['result'] ?? $templateFile;
@@ -75,13 +75,13 @@ class WordExporterServices
         }
         //Khởi tạo đối tượng phpWord
         $templateProcessor = new TemplateProcessor($templateFileUrl);
-
-        $templateProcessor->setValues(Arr::except($param, ['user']));
-
-        $dataUser = Arr::only($param, ['user']);
-
-        $templateProcessor->cloneRowAndSetValues('number', $dataUser['user']);
-
+        
+        $templateProcessor->setValues(Arr::except($param, ['detail']));
+        
+        $dataUser = Arr::only($param, ['detail']);
+      
+        $templateProcessor->cloneRowAndSetValues('number', $dataUser['detail']);
+        
         $templateProcessor->saveAs($resultFileUrl);
 
         return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);

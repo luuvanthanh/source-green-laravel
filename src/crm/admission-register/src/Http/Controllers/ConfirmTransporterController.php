@@ -52,4 +52,15 @@ class ConfirmTransporterController extends Controller
 
         return $this->success($confirmTransporter, trans('lang::messages.common.createSuccess'));
     }
+
+    public function exportConfirmTransporter(Request $request)
+    {
+        $export = $this->confirmTransporterRepository->exportConfirmTransporter($request->all());
+
+        if (is_string($export)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $export;
+    }
 }

@@ -7,6 +7,7 @@ use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\CreateAdmissionRegisterRequest;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\UpdateAdmissionRegisterRequest;
 use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
+use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\AdmissionRegisterRepository;
 
 class AdmissionRegisterController extends Controller
@@ -50,6 +51,10 @@ class AdmissionRegisterController extends Controller
     {
         $attributes = $request->all();
 
+        if (!empty($attributes['parent_info']) && !empty($attributes['parent_info']['sex'])) {
+            $attributes['parent_info']['sex'] = ParentInfo::SEX[$attributes['parent_info']['sex']];
+        }
+
         $admissionRegister = $this->admissionRegisterRepository->create($attributes);
 
         return $this->success($admissionRegister, trans('lang::messages.common.createSuccess'));
@@ -80,6 +85,10 @@ class AdmissionRegisterController extends Controller
 
         if (!empty($attributes['register_status'])) {
             $attributes['register_status'] = AdmissionRegister::REGISTER_STATUS[$attributes['register_status']];
+        }
+
+        if (!empty($attributes['parent_info']) && !empty($attributes['parent_info']['sex'])) {
+            $attributes['parent_info']['sex'] = ParentInfo::SEX[$attributes['parent_info']['sex']];
         }
 
         $admissionRegister = $this->admissionRegisterRepository->update($attributes, $id);
