@@ -14,6 +14,7 @@ use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerLeadController extends Controller
 {
@@ -190,5 +191,10 @@ class CustomerLeadController extends Controller
         Excel::import(new CustomerLeadImport(), request()->file('file'));
 
         return $this->success(['data' =>  'Import thành công'], trans('lang::messages.common.createSuccess'));
+    }
+
+    public function templateExcelCustomerLead()
+    {
+        return Storage::disk('local')->download('excel-exporter/templates' . '/' . 'template-customer-lead.xlsx');
     }
 }

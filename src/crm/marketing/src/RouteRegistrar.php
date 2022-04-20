@@ -44,6 +44,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('article-comment-infos', 'ArticleCommentInfoController');
             \Route::post('import-excel-data-marketings', 'DataMarketingController@importExcelDataMarketing');
             \Route::get('quantity-shares', 'PostFacebookInfoController@quantityShare');
+            \Route::get('template-excel-data-marketings', 'DataMarketingController@templateExcelDataMarketing');
         });
     }
 }

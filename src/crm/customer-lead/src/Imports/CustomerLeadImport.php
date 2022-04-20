@@ -9,8 +9,9 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, WithStartRow
+class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, WithStartRow, WithMultipleSheets
 {
     /**
      * @param array $row
@@ -77,5 +78,12 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
     public function startRow(): int
     {
         return 2;
+    }
+
+    public function sheets(): array
+    {
+        return [
+            'template' => new CustomerLeadImport()
+        ];
     }
 }

@@ -12,6 +12,7 @@ use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class DataMarketingController extends Controller
 {
@@ -176,5 +177,10 @@ class DataMarketingController extends Controller
         Excel::import(new DataMarketingImport(), request()->file('file'));
 
         return $this->success(['data' =>  'Import thành công'], trans('lang::messages.common.createSuccess'));
+    }
+
+    public function templateExcelDataMarketing()
+    {
+        return Storage::disk('local')->download('excel-exporter/templates' . '/' . 'template-data-marketing.xlsx');
     }
 }
