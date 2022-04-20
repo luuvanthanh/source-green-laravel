@@ -16,9 +16,14 @@ class WordExporterServices
     protected $templateFileUrl;
     protected $resultFileUrl;
     public $configs = [
+
         'list_confirm_transporter' => [
             'template' => 'list_confirm_transporter.docx',
             'result' => 'list_confirm_transporter.docx',
+        ],
+        'medical_info' => [
+            'template' => 'medical_info.docx',
+            'result' => 'medical_info.docx',
         ],
     ];
 
@@ -75,13 +80,13 @@ class WordExporterServices
         }
         //Khởi tạo đối tượng phpWord
         $templateProcessor = new TemplateProcessor($templateFileUrl);
-        
+
         $templateProcessor->setValues(Arr::except($param, ['detail']));
-        
+
         $dataUser = Arr::only($param, ['detail']);
-      
+
         $templateProcessor->cloneRowAndSetValues('number', $dataUser['detail']);
-        
+
         $templateProcessor->saveAs($resultFileUrl);
 
         return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
@@ -92,5 +97,36 @@ class WordExporterServices
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
         }
+    }
+
+    public function multipleTableExportWord($teamplate, $param)
+    {
+        $templateFile = $this->configs[$teamplate]['template'];
+        $resultFile = $this->configs[$teamplate]['result'] ?? $templateFile;
+
+        $templateFileUrl = $this->endPoint . '/' . $this->templateFolder . '/' . $templateFile;
+        $resultFileUrl = $this->endPoint . '/' . $this->resultFolder . '/' . $resultFile;
+
+        if (!file_exists($templateFileUrl)) {
+            return config('excel-exporter.error.template-not-found');
+        }
+
+        if ($this->disk == 'local') {
+            $this->makedir($this->endPoint . '/' . $this->resultFolder);
+        }
+        //Khởi tạo đối tượng phpWord
+        $templateProcessor = new TemplateProcessor($templateFileUrl);
+
+        $templateProcessor->setValues(Arr::except($param, ['detail', 'detailChildren']));
+
+        $dataDetail = Arr::only($param, ['detail']);
+        $dataDetailChildren = Arr::only($param, ['detailChildren']);
+
+        $templateProcessor->cloneRowAndSetValues('number', $dataDetail['detail']);
+        $templateProcessor->cloneRowAndSetValues('number', $dataDetailChildren['detailChildren']);
+
+        $templateProcessor->saveAs($resultFileUrl);
+
+        return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
     }
 }

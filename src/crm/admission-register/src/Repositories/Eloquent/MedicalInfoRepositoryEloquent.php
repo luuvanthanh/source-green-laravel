@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Crm\AdmissionRegister\Models\ChildHeathDevelop;
 use GGPHP\Crm\AdmissionRegister\Models\MedicalDeclareInfo;
 use GGPHP\Crm\AdmissionRegister\Models\MedicalInfo;
@@ -11,6 +12,9 @@ use GGPHP\Crm\AdmissionRegister\Presenters\ParentInfoPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\MedicalInfoRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
 
 /**
  * Class CustomerLeadRepositoryEloquent.
@@ -25,6 +29,16 @@ class MedicalInfoRepositoryEloquent extends BaseRepository implements MedicalInf
     protected $fieldSearchable = [
         'created_at',
     ];
+
+    public function __construct(
+        ExcelExporterServices $excelExporterServices,
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+        $this->excelExporterServices = $excelExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -110,5 +124,49 @@ class MedicalInfoRepositoryEloquent extends BaseRepository implements MedicalInf
         }
 
         return true;
+    }
+
+    public function exportMedicalInfo($attributes)
+    {
+        $dataValueDeclareInfo = [];
+        $dataValueChildHeathDevelop = [];
+        $now = Carbon::now()->setTimezone('GMT+7');
+        $medicalInfo = MedicalInfo::where('admission_register_id', $attributes['admission_register_id'])->first();
+
+        $dataValueDeclareInfo = $medicalInfo->medicalDeclareInfo->map(function ($item, $key) {
+            return [
+                'number' => $key + 1,
+                'question' => !empty($item->configMedicalDeclare->name) ? $item->configMedicalDeclare->name : '.....',
+                'answer' => !empty($item->is_checked) ? 'Có' : 'Không',
+                'reason' => !empty($item->reason) ? $item->reason : '.....'
+            ];
+        });
+
+        $dataValueChildHeathDevelop = $medicalInfo->childHeathDevelop->map(function ($item, $key) {
+            return [
+                'number' => $key + 1,
+                'sick' => $item->sick,
+                'year_sick' => $item->year,
+                'hospital_time' => $item->hospital_time,
+                'status' => $item->status,
+                'note' => !empty($item->note) ? $item->note : '.....'
+            ];
+        });
+
+        $param = [
+            'date' => $now->format('d'),
+            'month' => $now->format('m'),
+            'year' => $now->format('Y'),
+            'note' => $medicalInfo->note,
+            'full_name_parent' => $medicalInfo->admissionRegister->studentInfo->customerLead->full_name,
+            'full_name_student' => $medicalInfo->admissionRegister->studentInfo->full_name,
+            'birth_date' => $medicalInfo->admissionRegister->studentInfo->birth_date,
+            'weight' => $medicalInfo->weight . '.Kg',
+            'height'  => $medicalInfo->height . '.Cm',
+            'detail' => $dataValueDeclareInfo->all(),
+            'detailChildren' => $dataValueChildHeathDevelop->all()
+        ];
+
+        return $this->wordExporterServices->multipleTableExportWord('medical_info', $param);
     }
 }

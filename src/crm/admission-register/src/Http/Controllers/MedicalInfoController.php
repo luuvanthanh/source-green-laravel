@@ -4,6 +4,7 @@ namespace GGPHP\Crm\AdmissionRegister\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\Crm\AdmissionRegister\Http\Requests\ExportMedicalInfoRequest;
 use GGPHP\Crm\AdmissionRegister\Http\Requests\MedicalInfoCreateRequest;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\MedicalInfoRepository;
 
@@ -92,5 +93,16 @@ class MedicalInfoController extends Controller
         $this->medicalInfoRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function exportMedicalInfo(ExportMedicalInfoRequest $request)
+    {
+        $export = $this->medicalInfoRepository->exportMedicalInfo($request->all());
+
+        if (is_string($export)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $export;
     }
 }

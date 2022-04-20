@@ -29,10 +29,11 @@ class StudentService
     public static function createStudent(array $attributes)
     {
         $url = env('SSO_URL') . '/api/students';
+
         $token = request()->bearerToken();
 
         $response = Http::withToken($token)->post($url, $attributes);
-
+        
         if ($response->failed()) {
             $message = 'Có lỗi từ api CLOVER';
 
