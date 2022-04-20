@@ -21,6 +21,7 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
     public function model(array $row)
     {
         $sex = null;
+        $birthDate = null;
 
         if ($row[2] == 'Nam' || $row[2] == 'nam') {
             $sex = CustomerLead::SEX['MALE'];
@@ -28,7 +29,10 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
             $sex = CustomerLead::SEX['FEMALE'];
         }
 
-        $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+        if (!is_null($row[1])) {
+            $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+        }
+
         $searchSource = SearchSource::where('type', $row[5])->first();
         $data = [
             'full_name' => $row[0],
@@ -71,6 +75,8 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
             ],
             '*.2' => [
                 'required', 'in:nam,nữ,Nam,Nữ'
+            ], '*.1' => [
+                'date_format:d-m-Y'
             ]
         ];
     }

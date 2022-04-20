@@ -21,6 +21,7 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
     public function model(array $row)
     {
         $sex = null;
+        $birthDate = null;
 
         if ($row[2] == 'Nam' || $row[2] == 'nam') {
             $sex = DataMarketing::SEX['MALE'];
@@ -28,7 +29,10 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
             $sex = DataMarketing::SEX['FEMALE'];
         }
 
-        $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+        if (!is_null($row[1])) {
+            $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+        }
+
         $searchSource = SearchSource::where('type', $row[5])->first();
         $data = [
             'full_name' => $row[0],
@@ -60,7 +64,11 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
 
     public function rules(): array
     {
-        return [];
+        return [
+            '*.1' => [
+                'date_format:d-m-Y'
+            ]
+        ];
     }
 
     public function startRow(): int
