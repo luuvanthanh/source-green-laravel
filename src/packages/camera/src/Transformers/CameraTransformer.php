@@ -55,6 +55,8 @@ class CameraTransformer extends BaseTransformer
             $attributes['url_stream'] = $urlStream;
         }
 
+        $attributes['service_active'] = $model->cameraService->where('is_on', true)->count();
+
         return $attributes;
     }
 

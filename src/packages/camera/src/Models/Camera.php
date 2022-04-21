@@ -2,13 +2,13 @@
 
 namespace GGPHP\Camera\Models;
 
-use GGPHP\Core\Models\UuidModel;
-use GGPHP\Collection\Models\Collection;
 use GGPHP\CameraServer\Models\CameraServer;
 use GGPHP\Category\Models\TouristDestination;
+use GGPHP\Collection\Models\Collection;
+use GGPHP\Core\Models\UuidModel;
 use GGPHP\VideoWall\Models\VideoWall;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Redis;
 
 class Camera extends UuidModel
 {
@@ -87,6 +87,16 @@ class Camera extends UuidModel
     public function touristDestination()
     {
         return $this->belongsTo(TouristDestination::class);
+    }
+
+    /**
+     * Get video wall of camera
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function cameraService()
+    {
+        return $this->hasMany(CameraService::class);
     }
 
     /**
