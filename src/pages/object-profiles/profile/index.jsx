@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import { Form, notification } from 'antd';
-import { useHistory, useLocation } from 'umi';
+import { useLocation } from 'umi';
 import classnames from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 
@@ -47,8 +47,6 @@ const General = memo(() => {
     id: query?.id,
     SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
   });
-
-  const history = useHistory();
 
   const BAR = {
     data: {
@@ -279,6 +277,16 @@ const General = memo(() => {
     win.focus();
   };
 
+  const onchangePhysical = () => {
+    const win = window.open(`/chuong-trinh-hoc/the-chat?&BranchId=${detailsStudent?.student?.class?.branchId}&ClassId=${detailsStudent?.student?.class?.id}&FromDate=${search?.FromDate}&ToDate=${search?.ToDate}&StudentId=${detailsStudent?.student?.id}`, "_blank");
+    win.focus();
+  };
+
+  const onchangeEnglish = () => {
+    const win = window.open(`/chuong-trinh-hoc/tieng-anh?&BranchId=${detailsStudent?.student?.class?.branchId}&ClassId=${detailsStudent?.student?.class?.id}&FromDate=${search?.FromDate}&ToDate=${search?.ToDate}&StudentId=${detailsStudent?.student?.id}`, "_blank");
+    win.focus();
+  };
+
   const getStatus = (status, text = '') => {
     const nameStatus = variablesModule.STATUS_NAME[status];
     if (status && status !== 'NORMAL') {
@@ -431,10 +439,14 @@ const General = memo(() => {
                       </Text>
                       <p className={styles.content}>
                         Cập nhật{' '}
-                        {Helper.getDate(
-                          dataPipiPupu[0]?.criteriaGroupProperty?.lastModificationTime,
+                        {dataHeight?.studentCriterias?.length > 0 && ( dataHeight?.studentCriterias[0]?.lastModificationTime ? 
+                         Helper.getDate(
+                          dataHeight?.studentCriterias[0]?.lastModificationTime,
                           variables.DATE_FORMAT.DATE_TIME,
-                        )}
+                        ) : Helper.getDate(
+                          dataHeight?.studentCriterias[0]?.creationTime,
+                          variables.DATE_FORMAT.DATE_TIME,
+                        ))}
                       </p>
                     </div>
                   </div>
@@ -609,7 +621,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập thể chất</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn}   onClick={onchangePhysical}>Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">
@@ -620,7 +632,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập tiếng Anh</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn}  onClick={onchangeEnglish}>Chi tiết</Button>
                 </div>
               </div>
             </div>
