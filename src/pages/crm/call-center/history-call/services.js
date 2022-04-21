@@ -35,3 +35,12 @@ export function getExtensions(params = {}) {
     },
   });
 }
+
+export function getSwitchboard(params = {}) {
+  return request('/v1/switchboard', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}

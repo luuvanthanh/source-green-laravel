@@ -1,12 +1,15 @@
+import { Helper } from '@/utils';
 import classnames from 'classnames';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { handleAnswer, handleReject } from '../handleCallCenter';
 import styles from '../style.module.scss';
 import variablesModule from '../variables';
 
 function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
+  const [statusLead, setStatusLead] = useState(null);
+
   const handleInboundAnswer = () => {
     if (handleOnClick) {
       handleOnClick();
@@ -20,6 +23,14 @@ function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
       handleReject();
     }
   };
+
+  useEffect(() => {
+    if (!isEmpty(infoFromInbound?.statusLeadLatest)) {
+      setStatusLead(infoFromInbound?.statusLeadLatest[0].status);
+    } else {
+      setStatusLead(null);
+    }
+  }, [infoFromInbound?.statusLeadLatest]);
 
   return (
     <>
@@ -43,6 +54,7 @@ function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
           {infoFromInbound?.phone ? infoFromInbound.phone : infoFromInbound.number}
         </p>
         <p className={styles['call-status']}>Đang kết nối</p>
+        {!isEmpty(statusLead) && Helper.getStatusLeadLatest(statusLead)}
       </div>
       <div className={styles['layout-call']}>
         <div className={styles['hangout-group']}>
@@ -60,19 +72,6 @@ function Inbound({ handleOnClick, audioRef, infoFromInbound }) {
             </div>
             <p className={styles['hangout-title']}>Kết thúc</p>
           </div>
-          {/* <div className={styles['hangout-item']}>
-            <div
-              className={classnames(
-                styles['hangout-background'],
-                styles['hangout-background__success'],
-              )}
-              role="presentation"
-              onClick={handleReject}
-            >
-              <img src="/images/icon/share.svg" alt="phone-call" />
-            </div>
-            <p className={styles['hangout-title']}>Chuyển tiếp</p>
-          </div> */}
           <div className={styles['hangout-item']}>
             <div
               className={classnames(

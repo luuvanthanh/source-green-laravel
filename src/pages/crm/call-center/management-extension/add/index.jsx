@@ -95,8 +95,9 @@ function Index() {
           <Select
             placeholder="Chọn"
             showSearch
+            optionFilterProp="children"
             filterOption={(input, option) =>
-              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              option?.children?.toLowerCase()?.indexOf(input.toLowerCase()) >= 0
             }
             className="w-100"
             defaultValue={record.full_name}
