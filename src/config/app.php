@@ -229,6 +229,7 @@ return [
         GGPHP\ChildDevelop\TestSemester\Providers\TestSemesterServiceProvider::class,
         GGPHP\Tariff\PaymentPlan\Providers\PaymentPlanServiceProvider::class,
         GGPHP\Bio\Providers\BioServiceProvider::class,
+        GGPHP\ManualCalculation\Providers\ManualCalculationServiceProvider::class,
     ],
 
     /*
