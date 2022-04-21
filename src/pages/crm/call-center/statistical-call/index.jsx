@@ -38,7 +38,12 @@ const Index = () => {
     { id: 1, title: 'LEADS', number: totalDataChart?.leads ?? 0, color: '#F8755F' },
     { id: 2, title: 'LEAD MỚI', number: totalDataChart?.lead_news ?? 0, color: '#4760BF' },
     { id: 3, title: 'ĐÃ GỌI', number: totalDataChart?.called || 0, color: '#2FB4BD' },
-    { id: 4, title: 'CÓ TIỀM NĂNG', number: totalDataChart?.lead_potential ?? 0, color: '#1E9F4E' },
+    {
+      id: 4,
+      title: 'CÓ TIỀM NĂNG',
+      number: totalDataChart?.lead_potentials ?? 0,
+      color: '#1E9F4E',
+    },
     { id: 5, title: 'QUÁ HẠN', number: totalDataChart?.out_of_date ?? 0, color: '#CB0616' },
   ];
 

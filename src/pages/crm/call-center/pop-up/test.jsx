@@ -1,9 +1,10 @@
 import { Modal } from 'antd';
 import { useDispatch, useSelector } from 'dva';
+import { useLocation } from 'umi';
 import { head, isEmpty } from 'lodash';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
-import { handleOutboundCall, handleInboundCall } from './handleCallCenter';
+import { handleOutboundCall, handleInboundCall, stopSession } from './handleCallCenter';
 import Inbound from './modal/inbound';
 import Outbound from './modal/outbound';
 import Phone from './modal/phone';
@@ -33,15 +34,20 @@ const Test = memo(() => {
     });
   };
 
-  const [user] = useSelector(({ user, crmCallCenter, crmHistoryCall }) => [
+  const [
+    { user },
+    ,
+    { isClickToCall, quickPhoneNumber, quickStatus, outboundHistory }, // lịch sử GỌI ĐI (OUT)
+  ] = useSelector(({ user, crmCallCenter, crmManagementCall }) => [
     user,
     crmCallCenter,
-    crmHistoryCall,
+    crmManagementCall,
   ]);
   const dispatch = useDispatch();
+  const { pathname } = useLocation();
 
   const { inboundStatus, infoCall, inboundContext } = handleInboundCall();
-  const { outboundStatus, outboundEvent, outboundContext } = handleOutboundCall();
+  const { outboundStatus, outboundContext } = handleOutboundCall();
 
   const [isSaler, setIsSaler] = useState(false); // check người dùng CallCenter
   const [isCalling, setIsCalling] = useState(false); // check đang trong cuộc gọi
@@ -51,7 +57,6 @@ const Test = memo(() => {
   const [isOutbound, setIsOutbound] = useState(false); // check điều kiện GỌI ĐI (OUT)
   const [infoFromOutbound, setInfoFromOutbound] = useState(''); // số GỌI ĐI có thông tin (OUT)
   const [outboundStatusInfo, setOutboundStatusInfo] = useState(''); // trạng thái GỌI ĐI (OUT)
-  const [outboundHistory, setOutboundHistory] = useState(outboundEvent); // lịch sử GỌI ĐI (OUT)
   const [contentOutbound, setContentOutbound] = useState(''); // nội dung GỌI ĐI (OUT)
   const [isVisibleAnswer, setIsVisibleAnswer] = useState(false); // check modal GỌI ĐI (OUT)
 
@@ -86,10 +91,13 @@ const Test = memo(() => {
         }
       },
     });
-    dispatch({
-      type: 'crmHistoryCall/GET_DATA',
-    });
   }, []);
+
+  useEffect(() => {
+    if (!pathname.includes('crm')) {
+      stopSession();
+    }
+  }, [pathname]);
 
   useEffect(() => {
     // Thông tin số điện thoại GỌI ĐẾN (IN)
@@ -117,22 +125,29 @@ const Test = memo(() => {
 
   // Thông tin số điện thoại GỌI ĐI (OUT)
   useEffect(() => {
-    if (!isEmpty(outboundNumber)) {
+    dispatch({
+      type: 'crmHistoryCall/IS_CLICK',
+    });
+
+    if (!isEmpty(outboundNumber) || !isEmpty(quickPhoneNumber)) {
       dispatch({
         type: 'crmCallCenter/CHECK_PHONE',
         payload: {
-          id: outboundNumber,
+          id: !isEmpty(outboundNumber) ? outboundNumber : quickPhoneNumber,
         },
         callback: (response) => {
           if (response && !isEmpty(response.parsePayload)) {
             setInfoFromOutbound(response.parsePayload);
           } else {
-            setInfoFromOutbound({ number: outboundNumber });
+            setInfoFromOutbound({
+              number: !isEmpty(outboundNumber) ? outboundNumber : quickPhoneNumber,
+            });
           }
+          setIsOutbound(true);
         },
       });
     }
-  }, [outboundNumber]);
+  }, [outboundNumber, quickPhoneNumber]);
 
   // Update trạng thái các state GỌI ĐẾN (IN)
   useEffect(() => {
@@ -162,8 +177,6 @@ const Test = memo(() => {
       setOutboundStatusInfo('');
       setIsOutbound(false);
       setOutboundNumber('');
-
-      setOutboundHistory({});
     }
 
     if (outboundStatus === variablesModule.STATUS.accepted) {
@@ -174,29 +187,55 @@ const Test = memo(() => {
       setOutboundStatusInfo(variablesModule.STATUS.bye);
       setOutboundNumber('');
     }
-  }, [outboundStatus]);
+
+    if (quickStatus === variablesModule.STATUS.failed) {
+      dispatch({
+        type: 'crmManagementCall/IS_CLICK',
+        payload: {
+          isClickToCall: false,
+          quickPhoneNumber: '',
+          quickStatus: '',
+        },
+      });
+      dispatch({
+        type: 'crmManagementCall/OUTBOUND_HISTORY',
+        payload: {
+          outboundHistory: {},
+        },
+      });
+    }
+  }, [outboundStatus, quickStatus]);
 
   useEffect(() => {
-    const socket = io(URL_SOCKET_LIVE, {
-      transports: ['websocket'],
-    });
-    socket.on('connect', () => {
-      socket.emit('subscribe', {
-        channel: 'receive-call',
+    try {
+      const socket = io(URL_SOCKET_LIVE, {
+        transports: ['websocket'],
       });
-    });
-    socket.on('receive.call.event', (e, d) => {
-      if (d.data.hangup_cause !== variablesModule.SOCKET_STATUS.originator_cancel) {
-        setInboundHistory(d.data);
-      } else {
-        setInboundHistory({});
-      }
-    });
+      socket.on('connect', () => {
+        socket.emit('subscribe', {
+          channel: 'receive-call',
+        });
+      });
+      socket.on('receive.call.event', (e, d) => {
+        if (d.data.hangup_cause !== variablesModule.SOCKET_STATUS.originator_cancel) {
+          setInboundHistory(d.data);
+        } else {
+          setInboundHistory({});
+        }
+      });
+    } catch (error) {
+      // console.log(error);
+    }
   }, [infoCall.id]);
 
   useEffect(() => {
-    setOutboundHistory(outboundEvent);
-  }, [outboundEvent.callId]);
+    dispatch({
+      type: 'crmManagementCall/OUTBOUND_HISTORY',
+      payload: {
+        outboundHistory,
+      },
+    });
+  }, [outboundHistory?.callId]);
 
   const showModal = () => {
     setIsVisible(true);
@@ -238,7 +277,20 @@ const Test = memo(() => {
     setIsOutbound(false);
     setIsCalling(false);
 
-    setOutboundHistory({});
+    dispatch({
+      type: 'crmManagementCall/IS_CLICK',
+      payload: {
+        isClickToCall: false,
+        quickPhoneNumber: '',
+        quickStatus: '',
+      },
+    });
+    dispatch({
+      type: 'crmManagementCall/OUTBOUND_HISTORY',
+      payload: {
+        outboundHistory: {},
+      },
+    });
   };
 
   // INBOUND (IN)
@@ -324,7 +376,7 @@ const Test = memo(() => {
             maskClosable={false}
             closable={false}
             footer={null}
-            visible={isVisibleAnswer}
+            visible={isVisibleAnswer || isClickToCall}
             // visible
             onCancel={handleCancel}
             width={320}
@@ -353,7 +405,9 @@ const Test = memo(() => {
                 <Outbound
                   handleOnClick={handleOutbound}
                   infoFromOutbound={infoFromOutbound}
-                  outboundStatusInfo={outboundStatusInfo}
+                  outboundStatusInfo={
+                    !isEmpty(outboundStatusInfo) ? outboundStatusInfo : quickStatus
+                  }
                   detectAddLead={handleDetectAddLead}
                 />
               </div>

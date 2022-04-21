@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { get } from 'lodash';
 import TopBar from '@/components/LayoutComponents/TopBar';
 import CallCenter from '@/pages/crm/call-center/pop-up/test';
+import { stopSession } from '@/pages/crm/call-center/pop-up/handleCallCenter';
 import LoginFacebook from '@/components/LayoutComponents/TopBarCrm';
 
 const mapStateToProps = ({ settings, menu }) => ({
@@ -197,6 +198,13 @@ class MainLayout extends React.PureComponent {
       key = 'CURRENCY';
     }
     return key;
+  };
+
+  componentDidUpdate = (nextProps) => {
+    const { location } = this.props;
+    if (!nextProps.location.pathname.includes('crm') || !location.pathname.includes('crm')) {
+      stopSession();
+    }
   };
 
   render() {

@@ -26,15 +26,25 @@ const type = {
   STOP_DISTRIBUTED: 'IsStopDistributed',
 };
 
-const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
+const mapStateToProps = ({ loading, OPchildrenAdd, user }) => ({
   loading,
   details: OPchildrenAdd.details,
   error: OPchildrenAdd.error,
   branches: OPchildrenAdd.branches,
   classes: OPchildrenAdd.classes,
+  defaultBranch: user.defaultBranch,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, branches, classes }) => {
+  ({
+    dispatch,
+    loading: { effects },
+    match: { params },
+    details,
+    error,
+    branches,
+    classes,
+    defaultBranch,
+  }) => {
     const formRef = useRef();
     const [modalForm] = Form.useForm();
     const [dayOfBirth, setDayOfBirth] = useState(null);
@@ -164,6 +174,9 @@ const General = memo(
       dispatch({
         type: 'OPchildrenAdd/GET_BRANCHES',
         payload: params,
+      });
+      formRef.current.setFieldsValue({
+        branchId: defaultBranch.id,
       });
     }, []);
 
@@ -301,12 +314,7 @@ const General = memo(
 
                 <Pane className="row">
                   <Pane className="col-lg-4">
-                    <FormItem
-                      name="code"
-                      label="Mã học sinh"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                    />
+                    <FormItem name="code" label="Mã học sinh" type={variables.INPUT} disabled />
                   </Pane>
                   <Pane className="col-lg-4">
                     <FormItem
@@ -353,14 +361,25 @@ const General = memo(
                     />
                   </Pane>
                   <Pane className="col-lg-4">
-                    <FormItem
-                      data={branches}
-                      name="branchId"
-                      label="Mã cơ sở"
-                      type={variables.SELECT}
-                      onChange={onChangeBranch}
-                      disabled
-                    />
+                    {defaultBranch?.id ? (
+                      <FormItem
+                        data={[defaultBranch]}
+                        name="branchId"
+                        label="Mã cơ sở"
+                        type={variables.SELECT}
+                        onChange={onChangeBranch}
+                        disabled
+                      />
+                    ) : (
+                      <FormItem
+                        data={branches}
+                        name="branchId"
+                        label="Mã cơ sở"
+                        type={variables.SELECT}
+                        onChange={onChangeBranch}
+                        disabled
+                      />
+                    )}
                   </Pane>
                   <Pane className="col-lg-4">
                     <FormItem
@@ -460,6 +479,7 @@ General.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -470,6 +490,7 @@ General.defaultProps = {
   error: {},
   branches: [],
   classes: [],
+  defaultBranch: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

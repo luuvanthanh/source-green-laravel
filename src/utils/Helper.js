@@ -1268,15 +1268,32 @@ export default class Helpers {
     return '';
   };
 
-  static getStatusCall = (status) => {
-    if (variables.STATUS_CALL[status] === 'Đã huỷ') {
-      return <Tag color="yellow">Đã huỷ</Tag>;
+  static getStatusCall = (direction, cause) => {
+    if (direction === variables.DIRECTION_ENG.OUTBOUND) {
+      if (cause === variables.CAUSE_ENG.NORMAL_CLEARING) {
+        return <Tag color="success">Đã gọi</Tag>;
+      }
+      if (
+        cause === variables.CAUSE_ENG.NO_ANSWER ||
+        cause === variables.CAUSE_ENG.ORIGINATOR_CANCEL
+      ) {
+        return <Tag color="danger">Không bắt máy</Tag>;
+      }
+      if (cause === variables.CAUSE_ENG.CALL_REJECTED) {
+        return <Tag color="yellow">Máy bận</Tag>;
+      }
     }
-    if (variables.STATUS_CALL[status] === 'Từ chối') {
-      return <Tag color="danger">Từ chối</Tag>;
-    }
-    if (variables.STATUS_CALL[status] === 'Đã kết thúc') {
-      return <Tag color="success">Đã kết thúc</Tag>;
+
+    if (direction === variables.DIRECTION_ENG.INBOUND) {
+      if (cause === variables.CAUSE_ENG.NORMAL_CLEARING) {
+        return <Tag color="success">Đã nhận</Tag>;
+      }
+      if (cause === variables.CAUSE_ENG.NORMAL_TEMPORARY_FAILURE) {
+        return <Tag color="danger">Từ chối</Tag>;
+      }
+      if (cause === variables.CAUSE_ENG.CALL_REJECTED) {
+        return <Tag color="yellow">Gọi nhở</Tag>;
+      }
     }
 
     return '';
@@ -1288,6 +1305,20 @@ export default class Helpers {
     }
     if (variables.CALL_STATUS[status] === 'Đã gọi') {
       return <Tag color="success">Đã gọi</Tag>;
+    }
+
+    return '';
+  };
+
+  static getStatusLeadLatest = (status) => {
+    if (variables.LEAD_STATUS[status] === 'Lead mới') {
+      return <Tag color="success">Lead mới</Tag>;
+    }
+    if (variables.LEAD_STATUS[status] === 'Có tiềm năng') {
+      return <Tag color="success">Có tiềm năng</Tag>;
+    }
+    if (variables.LEAD_STATUS[status] === 'Không tiềm năng') {
+      return <Tag color="success">Không tiềm năng</Tag>;
     }
 
     return '';

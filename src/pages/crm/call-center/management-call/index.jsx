@@ -12,7 +12,7 @@ import moment from 'moment';
 import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation, useRouteMatch } from 'umi';
-// import { handleOutboundCall } from '../pop-up/handleCallCenter';
+import { handleOutboundCall } from '../pop-up/handleCallCenter';
 
 const checkboxArr = [
   { id: 'total', name: 'Tất cả' },
@@ -35,7 +35,7 @@ const leadStatus = [
 
 const Index = () => {
   const [
-    { data, pagination, lead, potential },
+    { data, pagination, lead, potential, outboundHistory },
     loading,
     { user },
   ] = useSelector(({ loading: { effects }, crmManagementCall, user }) => [
@@ -64,36 +64,41 @@ const Index = () => {
   const [crmIdUser, setCrmIdUser] = useState('');
   const [radioValue, setRadioValue] = useState('total');
   const [saler, setSaler] = useState([]);
-
-  // const { outboundContext } = handleOutboundCall();
+  const [currentPhone, setCurrentPhone] = useState(null);
   const audioRef = useRef(null);
 
+  const { outboundStatus, outboundContext } = handleOutboundCall();
+
   useEffect(() => {
-    dispatch({
-      type: 'crmManagementCall/GET_DATA',
-      payload: {
-        ...search,
-        employee_id: crmIdUser?.id,
-      },
-    });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
-    });
+    if (crmIdUser) {
+      dispatch({
+        type: 'crmManagementCall/GET_DATA',
+        payload: {
+          ...search,
+          employee_id: crmIdUser?.id,
+        },
+      });
+      history.push({
+        pathname,
+        query: Helper.convertParamSearch(search),
+      });
+    }
   }, [crmIdUser, search]);
 
   useEffect(() => {
-    dispatch({
-      type: 'crmManagementCall/GET_COUNTCALL',
-      payload: {
-        employee_id: crmIdUser?.id,
-      },
-      callback: (response) => {
-        if (response) {
-          setCountCall(response);
-        }
-      },
-    });
+    if (crmIdUser) {
+      dispatch({
+        type: 'crmManagementCall/GET_COUNTCALL',
+        payload: {
+          employee_id: crmIdUser?.id,
+        },
+        callback: (response) => {
+          if (response) {
+            setCountCall(response);
+          }
+        },
+      });
+    }
   }, [crmIdUser]);
 
   useEffect(() => {
@@ -204,12 +209,24 @@ const Index = () => {
       },
     });
 
-  // const callNumber = (phone) => {
-  //   outboundContext(phone, audioRef.current);
-  //   dispatch({
-  //     type: 'crmManagementCall/IS_CALL',
-  //   });
-  // };
+  const callNumber = (phone) => {
+    setCurrentPhone(phone);
+    outboundContext(phone, audioRef.current);
+  };
+
+  useEffect(() => {
+    if (currentPhone) {
+      dispatch({
+        type: 'crmManagementCall/IS_CLICK',
+        payload: {
+          isClickToCall: true,
+          quickPhoneNumber: currentPhone,
+          quickStatus: outboundStatus,
+          outboundHistory,
+        },
+      });
+    }
+  }, [outboundStatus]);
 
   const header = () => {
     const columns = [
@@ -256,13 +273,13 @@ const Index = () => {
           isSaler && (
             <div className="d-flex justify-content-center align-items-center">
               <p className="mr10">{record?.customerLead?.phone}</p>
-              {/* <img
+              <img
                 src="/images/telephone-small.svg"
                 alt="telephone-small"
                 style={{ cursor: 'pointer' }}
                 role="presentation"
                 onClick={() => callNumber(record?.customerLead?.phone)}
-              /> */}
+              />
             </div>
           ),
       },
@@ -275,13 +292,13 @@ const Index = () => {
           isSaler && (
             <div className="d-flex justify-content-center align-items-center">
               <p className="mr10">{record?.customerLead?.other_phone}</p>
-              {/* <img
+              <img
                 src="/images/telephone-small.svg"
                 alt="telephone-small"
                 style={{ cursor: 'pointer' }}
                 role="presentation"
                 onClick={() => callNumber(record?.customerLead?.phone)}
-              /> */}
+              />
             </div>
           ),
       },
@@ -320,7 +337,7 @@ const Index = () => {
         title: 'Lần gọi',
         key: 'call_times',
         width: 150,
-        render: (record) => variables.CALL_TIMES[record?.call_times],
+        render: (record) => variables.CALL_TIMES[record?.call_time],
       },
       {
         title: 'Trạng thái',

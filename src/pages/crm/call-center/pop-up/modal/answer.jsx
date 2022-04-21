@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import React, { memo } from 'react';
 import Timecode from 'react-timecode';
 import Timer from 'react-timer-wrapper';
-import { handleHangup } from '../handleCallCenter';
+import { handleHangup, handleTransfer } from '../handleCallCenter';
 import styles from '../style.module.scss';
 import variablesModule from '../variables';
 
@@ -19,6 +19,10 @@ const Outbound = memo(({ handleOnClick, inboundStatusInfo, infoFromInbound }) =>
       handleOnClick(formRef.getFieldValue().content);
       handleHangup();
     }
+  };
+
+  const handleInboundTransfer = () => {
+    handleTransfer();
   };
 
   return (
@@ -86,6 +90,19 @@ const Outbound = memo(({ handleOnClick, inboundStatusInfo, infoFromInbound }) =>
             <img src="/images/icon/phone.svg" alt="phone-call" />
           </div>
           <p className={styles['hangout-title']}>Kết thúc</p>
+        </div>
+        <div className={styles['hangout-item']}>
+          <div
+            className={classnames(
+              styles['hangout-background'],
+              styles['hangout-background__success'],
+            )}
+            role="presentation"
+            onClick={handleInboundTransfer}
+          >
+            <img src="/images/icon/share.svg" alt="phone-call" />
+          </div>
+          <p className={styles['hangout-title']}>Chuyển tiếp</p>
         </div>
       </div>
     </>

@@ -1,11 +1,11 @@
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils';
-import { Form, Tag } from 'antd';
+import { Helper, variables } from '@/utils';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import Timecode from 'react-timecode';
 import Timer from 'react-timer-wrapper';
 import { handleHangup } from '../handleCallCenter';
@@ -14,6 +14,7 @@ import variablesModule from '../variables';
 
 const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo, detectAddLead }) => {
   const [formRef] = Form.useForm();
+  const [statusLead, setStatusLead] = useState(null);
 
   const handleOutbound = () => {
     if (handleOnClick) {
@@ -22,11 +23,19 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo, de
     }
   };
 
-  // const handleAddLead = () => {
-  //   if (detectAddLead) {
-  //     detectAddLead();
-  //   }
-  // };
+  useEffect(() => {
+    if (!isEmpty(infoFromOutbound?.statusLeadLatest)) {
+      setStatusLead(infoFromOutbound?.statusLeadLatest[0].status);
+    } else {
+      setStatusLead(null);
+    }
+  }, [infoFromOutbound?.statusLeadLatest]);
+
+  const handleAddLead = () => {
+    if (detectAddLead) {
+      detectAddLead();
+    }
+  };
 
   return (
     <>
@@ -67,10 +76,12 @@ const Outbound = memo(({ handleOnClick, infoFromOutbound, outboundStatusInfo, de
             <p className={styles['call-status']}>Đang kết nối</p>
           )}
 
-        {/* <Tag color="success">Có tiềm năng</Tag>
-        <Button color="primary" className="mb10" onClick={handleAddLead}>
-          Thêm lead
-        </Button> */}
+        {!isEmpty(statusLead) && Helper.getStatusLeadLatest(statusLead)}
+        {infoFromOutbound.number && (
+          <Button color="primary" className="mb10" onClick={handleAddLead}>
+            Thêm lead
+          </Button>
+        )}
       </div>
       <Form className={styles['form-main']} form={formRef}>
         <FormItem
