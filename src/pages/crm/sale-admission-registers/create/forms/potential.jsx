@@ -75,6 +75,13 @@ const General = memo(
       });
     };
 
+    const onCancel = () => {
+      dispatch({
+        type: 'crmSaleAdmissionAdd/DELETE_REGISTERS',
+        payload: { status: true, register_status : "CANCEL_REGISTER", id: params.id },
+      });
+    };
+
     useEffect(() => {
       mounted.current = true;
       return mounted.current;
@@ -179,9 +186,14 @@ const General = memo(
           <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             {
               details?.disable_status ?
-                <Button color="success" size="large" htmlType="submit" loading={loadingSubmit || loading}>
-                  Lưu
-                </Button> : ""
+                <>
+                  <Button color="success" size="large" loading={effects['crmMarketingManageAdd/DELETE_REGISTERS']} className="mr10" onClick={onCancel}> 
+                    Huỷ đăng ký
+                  </Button>
+                  <Button color="success" size="large" htmlType="submit" loading={loadingSubmit || loading}>
+                    Lưu
+                  </Button>
+                </> : ""
             }
           </Pane>
         </Pane>

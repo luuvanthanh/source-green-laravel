@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tag, Modal, Select , Upload , message } from 'antd';
+import { Form, Tag, Modal, Select, Upload, message } from 'antd';
 import classnames from 'classnames';
 import { get, debounce, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -423,6 +423,13 @@ class Index extends PureComponent {
               mode="multiple"
               className={stylesModule['wrapper-tags']}
               onChange={(e) => this.onSelectColor(e, record)}
+              showSearch
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              filterSort={(optionA, optionB) =>
+                optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+              }
               tagRender={({ label, value, color_code, closable, onClose }) => {
                 const itemTag = tags.find(item => item?.id === value);
                 return (
@@ -460,7 +467,7 @@ class Index extends PureComponent {
         title: 'Ngày nhận data',
         key: 'search',
         width: 150,
-        render: (record) =>Helper.getDate(record?.created_at, variables.DATE_FORMAT.DATE_VI)
+        render: (record) => Helper.getDate(record?.created_at, variables.DATE_FORMAT.DATE_VI)
       },
       {
         key: 'action',
@@ -515,13 +522,19 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'crmSaleParentsLead/IMPORT_EXCEL',
-      payload: {file},  
+      payload: { file },
       callback: (response) => {
         if (response) {
           this.onLoad();
         }
       },
     });
+  };
+
+  onChangeExcel = () => {
+    Helper.exportExcelCRM(
+      `/v1/template-excel-customer-leads`," ", `template-customer-lead.xlsx`,
+    );
   };
 
   render() {
@@ -548,7 +561,7 @@ class Index extends PureComponent {
         name: record.employee_id,
       }),
     };
-    const props =  {
+    const props = {
       beforeUpload() {
         return null;
       },
@@ -632,11 +645,14 @@ class Index extends PureComponent {
                       </div>
                     </Modal>
                   </div>
+                  <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+                    Xuất Excel
+                  </Button>
                   <Upload {...props}>
-                      <Button color="primary" icon="export" className="ml-2"  loading={effects['crmSaleParentsLead/IMPORT_EXCEL']}> 
-                        Import
-                      </Button>
-                    </Upload>
+                    <Button color="primary" icon="upload1" className="ml-2" loading={effects['crmSaleParentsLead/IMPORT_EXCEL']}>
+                      Import
+                    </Button>
+                  </Upload>
                   <Button
                     color="success"
                     icon="plus"

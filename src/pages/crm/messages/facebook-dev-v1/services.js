@@ -227,3 +227,10 @@ export function getToken(params = {}) {
     params,
   });
 }
+
+export function addPageFB(data = {}) {
+  return requestCrm('/v1/facebook/pages/add-pages', {
+    method: 'POST',
+    data,
+  });
+}

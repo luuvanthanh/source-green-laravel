@@ -12,8 +12,8 @@ import Text from '@/components/CommonComponent/Text';
 import { variables, Helper } from '@/utils';
 import InfiniteScroll from 'react-infinite-scroller';
 import Button from '@/components/CommonComponent/Button';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import MultipleImageUpload from './UploadAvatar';
+import Calendar from './components/calendar';
 import styles from './styles.module.scss';
 
 
@@ -28,7 +28,7 @@ const Index = memo(() => {
 
   const [formRef] = Form.useForm();
   const dispatch = useDispatch();
-  const [{ user, tags, relationships, employeeFB, conversationsId ,token}] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
+  const [{ tags, relationships, employeeFB, conversationsId, token }] = useSelector(({ crmFBDevV1, loading: { effects } }) => [
     crmFBDevV1,
     effects,
   ]);
@@ -41,7 +41,7 @@ const Index = memo(() => {
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState(undefined);
   const [isAction, setIsAction] = useState(false);
-  const [pageCurrent, setPageCurrent] = useState([]);
+  const [pageCurrent, setPageCurrent] = useState(undefined);
   const [page, setPage] = useState([]);
   const [pageID, setPageID] = useState([]);
   const [conversationCurrent, setConversationCurrent] = useState({});
@@ -67,9 +67,8 @@ const Index = memo(() => {
   const [notReply, setNotReply] = useState(false);
   const [checkPhone, setCheckPhone] = useState(false);
   const [checkNotPhone, setCheckNotPhone] = useState(false);
-  const [getToken, setGetToket] = useState({});
 
-
+  const [user, setUser] = useState({});
 
   const [searchParent, setSearchParent] = useState({
     page: 1,
@@ -91,74 +90,26 @@ const Index = memo(() => {
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
 
-  const responseFacebook = (response) => {
-    if (response.userID) {
-      dispatch({
-        type: 'crmFBDevV1/GET_USER',
-        payload: response,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (user?.userID) {
-      dispatch({
-        type: 'crmFBDevV1/GET_TOKEN',
-        payload: {
-          user_access_token: user?.accessToken,
-        },
-        callback: (response) => {
-          console.log("ddd",response)
-          if (response) {
-            setGetToket(response);
-          }
-        },
-      });
-    }
-  }, [user?.userID]);
-  
-  useEffect(() => {
-    if (getToken?.user_access_token) {
-      dispatch({
-        type: 'crmFBDevV1/GET_PAGES',
-        payload: {
-          user_access_token: getToken?.user_access_token,
-          user_id: user?.userID,
-        },
-        callback: (response) => {
-          if (response) {
-            setPageCurrent(response.data);
-          }
-        },
-      });
-    }
-  }, [getToken?.user_access_token]);
+  const local = JSON?.parse(localStorage.getItem('page'));
 
 
   useEffect(() => {
-    if (pageCurrent.length > 0) {
-      dispatch({
-        type: 'crmFBDevV1/ADD_CONVERSATIONS',
-        payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
-        callback: () => { }
-      });
-      dispatch({
-        type: 'crmFBDevV1/ADD_EMPLOYEE',
-        payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
-        callback: () => { }
-      });
-      dispatch({
-        type: 'crmFBDevV1/GET_PAGESDB',
-        payload: { page_id_facebook: (pageCurrent.map(i => i.id).join(',')) },
-        callback: (response) => {
-          if (response) {
-            setPage(response.data);
-            setPageID([response.data[0]]);
-          }
-        },
-      });
+    const userPage = JSON?.parse(localStorage.getItem('user'));
+    if (userPage?.userID) {
+      setUser(userPage);
     }
-  }, [pageCurrent.length]);
+    const page = JSON?.parse(localStorage.getItem('pageCurrent'));
+    if (page?.length >= 0) {
+      setPageCurrent(page);
+    }
+    const pagedb = JSON?.parse(localStorage.getItem('page'));
+    if (pagedb?.length > 0) {
+      setPage(pagedb);
+      setPageID([pagedb[0]]);
+    }
+  }, [local?.length > 0]);
+
+
   useEffect(() => {
     const pageId = page?.find(i => i?.id === pageID[0]?.id);
     if (pageId) {
@@ -169,7 +120,7 @@ const Index = memo(() => {
         },
       });
     }
-  }, [pageID]);
+  }, [pageID, page?.length > 0]);
 
   useEffect(() => {
     mounted.current = true;
@@ -346,7 +297,6 @@ const Index = memo(() => {
     });
 
     socket.on('facebook.synchronize.conversation', (event, data) => {
-      console.log("data", data);
       if (data) {
         dispatch({
           type: 'crmFBDevV1/ADD_CONVERSATIONS',
@@ -385,27 +335,27 @@ const Index = memo(() => {
       }
     });
 
-    socket.on('facebook.status.send.message', (event, data) => {
-      if (data) {
-        dispatch({
-          type: 'crmFBDevV1/GET_MESSAGES',
-          payload: {
-            ...searchParent,
-            conversation_id: conversationCurrent?.id,
-          },
-          callback: (response) => {
-            if (response) {
-              if (response) {
-                setMessagers(response.data);
-                scrollbars.current.scrollToBottom();
-                setTimeout(() => {
-                }, 300);
-              }
-            }
-          },
-        });
-      }
-    });
+    // socket.on('facebook.status.send.message', (event, data) => {
+    //   if (data) {
+    //     dispatch({
+    //       type: 'crmFBDevV1/GET_MESSAGES',
+    //       payload: {
+    //         ...searchParent,
+    //         conversation_id: conversationCurrent?.id,
+    //       },
+    //       callback: (response) => {
+    //         if (response) {
+    //           if (response) {
+    //             setMessagers(response.data);
+    //             scrollbars.current.scrollToBottom();
+    //             setTimeout(() => {
+    //             }, 300);
+    //           }
+    //         }
+    //       },
+    //     });
+    //   }
+    // });
 
     if (conversationCurrent?.id) {
       socket.on('facebook.message.receive', (event, data) => {
@@ -731,26 +681,6 @@ const Index = memo(() => {
         </>
       );
     }
-    // if (arrFile?.indexOf(".mp4")) {
-    //   return (
-    //     <>
-    //       {attributes?.from !== conversationCurrent?.user_facebook_info_id && (
-    //         <div className={styles['messager-item']}>
-    //           <div className={styles['messager-video']}>
-    //             <video controls height={200} width={300} className={styles.video} >
-    //               <source src={attributes?.content} />
-    //             </video>
-    //           </div>
-    //           <div className={styles['messager-send']}>
-    //             <p className={styles.time}>
-    //               <Spin />
-    //             </p>
-    //           </div>
-    //         </div>
-    //       )}
-    //     </>
-    //   );
-    // } 
     if (check && checkHttp !== -1) {
       return (
         <>
@@ -857,7 +787,7 @@ const Index = memo(() => {
       </>
     );
   };
-  console.log("conversationCurrent", conversationCurrent)
+
   const onSnippet = (attributes, from, to, name) => {
 
     const check = attributes?.substr(-4, 4);
@@ -1430,1042 +1360,981 @@ const Index = memo(() => {
         <h3 className={styles.title}>Fanpage</h3>
       </div>
       <div className={styles['wrapper-container']}>
-        {isEmpty(user) && (
+        {isEmpty(JSON?.parse(localStorage.getItem('user'))) && (
           <div className={styles['wrapper-login']}>
-            <FacebookLogin
-              appId={APP_ID_FB}
-              autoLoad={false}
-              fields="name,email,picture,birthday"
-              scope="public_profile,pages_show_list,pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_messaging"
-              callback={responseFacebook}
-              render={(renderProps) => (
-                <button
-                  onClick={renderProps.onClick}
-                  type="button"
-                  className={styles['button-login']}
-                >
-                  <span className="icon-facebook" />
-                  Login FB
-                </button>
-              )}
-            />
+            <div
+              className={styles['button-login']}
+            >
+              <span className="icon-facebook" />
+              Login FB
+            </div>
           </div>
         )}
-        <div className={styles['sidebar-container']}>
-          <div className={styles['sidebar-header']}>
-            <img src="/images/facebook/logoFacebook.svg" alt="facebook" className={styles.icon} />
-            <Select value={pageID[0]?.attributes?.name} bordered={false} onChange={(e) => preventDefault(e, page)}>
-              {page?.map((i, index) =>
-                <Option value={i?.attributes?.page_id_facebook} key={index} className={styles.norm}> {i?.attributes?.name}</Option>
-              )}
-            </Select>
+        {!isEmpty(JSON?.parse(localStorage.getItem('user'))) && JSON?.parse(localStorage.getItem('pageCurrent'))?.length === 0 && (
+          <div className={styles['wrapper-login']}>
+            <div
+              className={styles['button-login']}
+            >
+              <span className="icon-facebook" />
+              Tài khoản của bạn chưa được thêm vào bất kỳ trang nào.
+            </div>
           </div>
-          <div className={styles['sidebar-actions']}>
-            {!isAction && (
-              <Input
-                placeholder="Nhập"
-                value={search?.target?.value}
-                prefix={<SearchOutlined />}
-                style={{ height: '39px' }}
-                onChange={(e) => onChangSearch(e, searchModal, "name_inbox")}
-                className={styles.input}
-                suffix={
-                  <span
-                    className="icon-equalizer"
-                    role="presentation"
-                    onClick={() => setIsAction((prev) => !prev)}
-                  />
-                }
-              />
-            )}
-            {isAction && (
-              <div className={styles['actions-container']}>
-                <img
-                  src="/images/facebook/Tag.svg"
-                  alt="facebookTag"
-                  className={classnames(styles.icon)}
-                  onClick={() => onChangeSearchModal('tags')}
-                  role="presentation"
-                  style={{ background: `${modalTag || checkbox.length > 0 ? "#F2F4F8" : ''}` }}
-                />
-
-                <img
-
-                  src="/images/facebook/user.svg"
-                  alt="facebookTag"
-                  className={classnames(styles.icon)}
-                  onClick={() => onChangeSearchModal('employee_facebook_id')}
-                  role="presentation"
-                  style={{ background: `${modalUser || checkboxUser.length > 0 ? "#F2F4F8" : ''}` }}
-                />
-
-                <img
-                  src="/images/facebook/notSeen.svg"
-                  alt="facebookTag"
-                  className={classnames(styles.icon)}
-                  onClick={() => onChangeSearchModal('noti_inbox')}
-                  role="presentation"
-                  style={{ background: `${notiInbox ? "#F2F4F8" : ''}` }}
-                />
-
-                <img
-                  src="/images/facebook/notRep.svg"
-                  alt="facebookTag"
-                  className={classnames(styles.icon)}
-                  onClick={() => onChangeSearchModal('not_reply')}
-                  role="presentation"
-                  style={{ background: `${notReply ? "#F2F4F8" : ''}` }}
-                />
-
-                <img
-                  src="/images/facebook/phone.svg"
-                  alt="facebookTag"
-                  className={classnames(styles.icon)}
-                  onClick={() => onChangeSearchModal('phone_number')}
-                  role="presentation"
-                  style={{ background: `${checkPhone ? "#F2F4F8" : ''}` }}
-                />
-
-                <img
-                  src="/images/facebook/notPhone.svg"
-                  alt="facebookTag"
-                  className={classnames(styles.icon)}
-                  onClick={() => onChangeSearchModal('not_phone_number')}
-                  role="presentation"
-                  style={{ background: `${checkNotPhone ? "#F2F4F8" : ''}` }}
-                />
-
-                <span
-                  className={classnames(styles.icon, 'icon-cancel')}
-                  role="presentation"
-                  onClick={() => onChangeModal()}
-                />
-              </div>
-            )}
-          </div>
-          <div className={styles['info-content']}>
-            {checkbox?.length > 0 && (checkbox?.map(i =>
-              <Tag
-                closable
-                color={i?.color_code}
-                className="m5"
-                onClose={() => changeCheckboxTag(i?.id, 'tag_id')}
-                key={i?.id}
-              >
-                {i?.name}
-              </Tag>))}
-            {checkboxUser?.length > 0 && (checkboxUser?.map(i =>
-              <Tag
-                closable
-                className="m5"
-                onClose={() => changeCheckboxTag(i?.id, 'employee_facebook_id')}
-                key={i?.id}
-              >
-                {i?.name}
-              </Tag>))}
-            {notiInbox && (
-              <Tag
-                closable
-                className="m5"
-                onClose={() => changeCheckboxTag("", '')}
-              >
-                Chưa đọc
-              </Tag>)}
-            {notReply && (
-              <Tag
-                closable
-                className="m5"
-                onClose={() => changeCheckboxTag("", '')}
-              >
-                Chưa phản hồi
-              </Tag>)}
-            {checkPhone && (
-              <Tag
-                closable
-                className="m5"
-                onClose={() => changeCheckboxTag("", '')}
-              >
-                Có số điện thoại
-              </Tag>)}
-            {checkNotPhone && (
-              <Tag
-                closable
-                className="m5"
-                onClose={() => changeCheckboxTag("", '')}
-              >
-                Chưa có số điện thoại
-              </Tag>)}
-            {searchModal === 'tags' && checkbox.length <= 0 && modalTag && (
-              <p className={styles.norm}>Chọn tag hiển thị</p>
-            )}
-            {searchModal === 'employee_facebook_id' && modalUser && (
-              <p className={styles.norm}>Nhân viên chỉ định</p>
-            )}
-            {
-              checkboxUser.length <= 0 && checkbox.length <= 0 && !notiInbox && !notReply && !checkNotPhone && !checkPhone && !modalTag && !modalUser &&
-              (<p className={styles.norm}>Gần đây</p>)
-            }
-          </div>
-          <div className={styles['user-container']}>
-
-            <div>
-              {loadingUser
-                && (
-                  <>
-                    <div className={classnames(styles['user-item'], {})} role="presentation">
-                      <div className={styles['user-content']}>
-                        <div className={styles['avatar-container']}>
-                          <Skeleton.Avatar active size="default" shape="circle" />
-                        </div>
-                        <div className={styles['user-info']}>
-                          <Skeleton.Input className="w-100" active size="default" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className={classnames(styles['user-item'], {})} role="presentation">
-                      <div className={styles['user-content']}>
-                        <div className={styles['avatar-container']}>
-                          <Skeleton.Avatar active size="default" shape="circle" />
-                        </div>
-                        <div className={styles['user-info']}>
-                          <Skeleton.Input className="w-100" active size="default" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className={classnames(styles['user-item'], {})} role="presentation">
-                      <div className={styles['user-content']}>
-                        <div className={styles['avatar-container']}>
-                          <Skeleton.Avatar active size="default" shape="circle" />
-                        </div>
-                        <div className={styles['user-info']}>
-                          <Skeleton.Input className="w-100" active size="default" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className={classnames(styles['user-item'], {})} role="presentation">
-                      <div className={styles['user-content']}>
-                        <div className={styles['avatar-container']}>
-                          <Skeleton.Avatar active size="default" shape="circle" />
-                        </div>
-                        <div className={styles['user-info']}>
-                          <Skeleton.Input className="w-100" active size="default" />
-                        </div>
-                      </div>
-                    </div>
-                  </>
+        )}
+        {!isEmpty(JSON?.parse(localStorage.getItem('pageCurrent'))) && (<>
+          <div className={styles['sidebar-container']}>
+            <div className={styles['sidebar-header']}>
+              <img src="/images/facebook/logoFacebook.svg" alt="facebook" className={styles.icon} />
+              <Select value={pageID[0]?.attributes?.name} bordered={false} onChange={(e) => preventDefault(e, page)}>
+                {page?.map((i, index) =>
+                  <Option value={i?.attributes?.page_id_facebook} key={index} className={styles.norm}> {i?.attributes?.name}</Option>
                 )}
-              {!loadingUser &&
-                <Scrollbars
-                  autoHide
-                  autoHideTimeout={1000}
-                  autoHideDuration={100}
-                  autoHeight
-                  autoHeightMax={searchModal === 'tags' ? "calc(100vh - 372px)" : "calc(100vh - 350px)"}
+              </Select>
+            </div>
+            <div className={styles['sidebar-actions']}>
+              {!isAction && (
+                <Input
+                  placeholder="Nhập"
+                  value={search?.target?.value}
+                  prefix={<SearchOutlined />}
+                  style={{ height: '39px' }}
+                  onChange={(e) => onChangSearch(e, searchModal, "name_inbox")}
+                  className={styles.input}
+                  suffix={
+                    <span
+                      className="icon-equalizer"
+                      role="presentation"
+                      onClick={() => setIsAction((prev) => !prev)}
+                    />
+                  }
+                />
+              )}
+              {isAction && (
+                <div className={styles['actions-container']}>
+                  <img
+                    src="/images/facebook/Tag.svg"
+                    alt="facebookTag"
+                    className={classnames(styles.icon)}
+                    onClick={() => onChangeSearchModal('tags')}
+                    role="presentation"
+                    style={{ background: `${modalTag || checkbox.length > 0 ? "#F2F4F8" : ''}` }}
+                  />
+
+                  <img
+
+                    src="/images/facebook/user.svg"
+                    alt="facebookTag"
+                    className={classnames(styles.icon)}
+                    onClick={() => onChangeSearchModal('employee_facebook_id')}
+                    role="presentation"
+                    style={{ background: `${modalUser || checkboxUser.length > 0 ? "#F2F4F8" : ''}` }}
+                  />
+
+                  <img
+                    src="/images/facebook/notSeen.svg"
+                    alt="facebookTag"
+                    className={classnames(styles.icon)}
+                    onClick={() => onChangeSearchModal('noti_inbox')}
+                    role="presentation"
+                    style={{ background: `${notiInbox ? "#F2F4F8" : ''}` }}
+                  />
+
+                  <img
+                    src="/images/facebook/notRep.svg"
+                    alt="facebookTag"
+                    className={classnames(styles.icon)}
+                    onClick={() => onChangeSearchModal('not_reply')}
+                    role="presentation"
+                    style={{ background: `${notReply ? "#F2F4F8" : ''}` }}
+                  />
+
+                  <img
+                    src="/images/facebook/phone.svg"
+                    alt="facebookTag"
+                    className={classnames(styles.icon)}
+                    onClick={() => onChangeSearchModal('phone_number')}
+                    role="presentation"
+                    style={{ background: `${checkPhone ? "#F2F4F8" : ''}` }}
+                  />
+
+                  <img
+                    src="/images/facebook/notPhone.svg"
+                    alt="facebookTag"
+                    className={classnames(styles.icon)}
+                    onClick={() => onChangeSearchModal('not_phone_number')}
+                    role="presentation"
+                    style={{ background: `${checkNotPhone ? "#F2F4F8" : ''}` }}
+                  />
+
+                  <span
+                    className={classnames(styles.icon, 'icon-cancel')}
+                    role="presentation"
+                    onClick={() => onChangeModal()}
+                  />
+                </div>
+              )}
+            </div>
+            <div className={styles['info-content']}>
+              {checkbox?.length > 0 && (checkbox?.map(i =>
+                <Tag
+                  closable
+                  color={i?.color_code}
+                  className="m5"
+                  onClose={() => changeCheckboxTag(i?.id, 'tag_id')}
+                  key={i?.id}
                 >
-                  <InfiniteScroll
-                    hasMore={!searchUser.loading && searchUser.hasMore}
-                    initialLoad={searchUser.loading}
-                    loadMore={handleInfiniteOnLoadUser}
-                    pageStart={0}
-                    useWindow={false}
-                  >
-                    {searchModal === 'tags' && modalTag && (
-                      <>
-                        {tags?.map(({ id, name, color_code }) => (
-                          <div className={styles['search-tags']} key={id}>
-                            <Checkbox
-                              className="mr15"
-                              onChange={() => changeCheckboxEmployee(id, name, color_code, 'tags')}
-                            />
-                            <p style={{ background: `${color_code}` }} className={styles.title}>{name}</p>
-                          </div>
-                        ))}
-                      </>)}
-                    {searchModal === 'employee_facebook_id' && modalUser && (
-                      <>
-                        {employeeFB?.map(({ id, employee_fb_name, avatar }) => (
-                          <div className={styles['search-tags']} key={id} onClick={() => changeCheckboxEmployee(id, employee_fb_name, null, 'employee_facebook_id')} role="presentation">
-                            <img src={avatar}
-                              alt="facebook"
-                              className={styles.img} />
-                            <p className={styles.title}>{employee_fb_name}</p>
-                          </div>
-                        ))}
-                      </>)}
-                    {
-                      !searchData && users.length > 0 && !modalTag && !modalUser && (
-                        users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
-                          <div
-                            className={classnames(styles['user-item'], {
-                              [styles['user-item-active']]:
-                                userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
-                            })}
-                            key={id}
-                            role="presentation"
-                            onClick={() => onChangeConversation(id)}
-                          >
-                            <div className={styles['user-content']}>
-                              <div className={styles['avatar-container']}>
-                                <span
-                                  className={classnames(styles.dot, { [styles.active]: can_reply })}
-                                />
-                                <img
-                                  src={userFacebookInfo?.avatar}
-                                  alt="facebook"
-                                  className={styles.img}
-                                />
-                              </div>
-                              {noti_inbox === "SEEN" ?
-                                <>
-                                  {
-                                    userFacebookInfo?.employeeFacebook ?
-                                      <>
-                                        <div className={styles['user-info']}>
-                                          <div className={styles['user-info-title']}>
-                                            <img
-                                              src={userFacebookInfo?.employeeFacebook?.avatar}
-                                              alt="fb"
-                                              className={styles.img}
-                                            />
-                                            <span className="icon-next" role="presentation" />
-                                            <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                          </div>
-                                          <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
-                                        </div>
-                                        <p className={styles.time}>
-                                          {time?.substr(-5, 5)}
-                                        </p>
-                                      </>
-                                      :
-                                      <>
-                                        <div className={styles['user-info']}>
-                                          <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                          <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
-                                        </div>
-                                        <p className={styles.time}>
-                                          {time?.substr(-5, 5)}
-                                        </p>
-                                      </>
-                                  }
-                                </>
-                                :
-                                <>
-                                  {userFacebookInfo?.employeeFacebook ?
-                                    <div className={styles['user-info-notseen']}>
-                                      <div className={styles['user-info-title']}>
-                                        <img
-                                          src={userFacebookInfo?.employeeFacebook?.avatar}
-                                          alt="fb"
-                                          className={styles.img}
-                                        />
-                                        <span className="icon-next" role="presentation" />
-                                        <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                      </div>
-                                      <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
-                                      <p className={styles.time}>
-                                        {time?.substr(-5, 5)}
-                                      </p>
-                                    </div>
-                                    :
-                                    <div className={styles['user-info-notseen']}>
-                                      <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
-                                      <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
-                                      <p className={styles.time}>
-                                        {time?.substr(-5, 5)}
-                                      </p>
-                                    </div>
-                                  }
-                                </>
-                              }
-                            </div>
-                            {userFacebookInfo?.userFacebookInfoTag.map((i) =>
-                              <div className='mt5' key={i?.id}>
-                                <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
-                              </div>
-                            )}
-                          </div>
-                        ))
-                      )
-                    }
-                    {
-                      !searchData && users.length === 0 && !modalTag && (
-                        <div className={styles['search-user']}>
-                          Chưa có dữ liệu
-                        </div>
-                      )
-                    }
-
-
-                  </InfiniteScroll>
-                </Scrollbars>
-              }
-
+                  {i?.name}
+                </Tag>))}
+              {checkboxUser?.length > 0 && (checkboxUser?.map(i =>
+                <Tag
+                  closable
+                  className="m5"
+                  onClose={() => changeCheckboxTag(i?.id, 'employee_facebook_id')}
+                  key={i?.id}
+                >
+                  {i?.name}
+                </Tag>))}
+              {notiInbox && (
+                <Tag
+                  closable
+                  className="m5"
+                  onClose={() => changeCheckboxTag("", '')}
+                >
+                  Chưa đọc
+                </Tag>)}
+              {notReply && (
+                <Tag
+                  closable
+                  className="m5"
+                  onClose={() => changeCheckboxTag("", '')}
+                >
+                  Chưa phản hồi
+                </Tag>)}
+              {checkPhone && (
+                <Tag
+                  closable
+                  className="m5"
+                  onClose={() => changeCheckboxTag("", '')}
+                >
+                  Có số điện thoại
+                </Tag>)}
+              {checkNotPhone && (
+                <Tag
+                  closable
+                  className="m5"
+                  onClose={() => changeCheckboxTag("", '')}
+                >
+                  Chưa có số điện thoại
+                </Tag>)}
+              {searchModal === 'tags' && checkbox.length <= 0 && modalTag && (
+                <p className={styles.norm}>Chọn tag hiển thị</p>
+              )}
+              {searchModal === 'employee_facebook_id' && modalUser && (
+                <p className={styles.norm}>Nhân viên chỉ định</p>
+              )}
               {
-                searchModal === 'tags' && modalTag &&
-                (<div className={styles['search-tags-btn']}>
-                  <Button color="success" htmlType="submit" onClick={() => onChangSearchBtn()} >
-                    Áp dụng
-                  </Button>
-                </div>)
+                checkboxUser.length <= 0 && checkbox.length <= 0 && !notiInbox && !notReply && !checkNotPhone && !checkPhone && !modalTag && !modalUser &&
+                (<p className={styles.norm}>Gần đây</p>)
               }
             </div>
-          </div>
-        </div>
-        <div className={styles['main-container']}>
-          {
-            loadingUser &&
-            (
-              <div className={styles['main-container-info']}>
-                <div className={styles['avatar-container']}>
-                  <Skeleton.Input className="w-100 h-100  rounded-circle" active size="default" />
-                  {/* <span className={classnames(styles.dot, { [styles.active]: true })} />
-                  <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} /> */}
-                </div>
-                <div style={{ height: '22px', width: '150px' }} className="d-flex pl10 align-items-center">
-                  <Skeleton.Input className="w-100 h-100" active size="default" />
-                </div>
-              </div>
-            )
-          }
-          {
-            !loadingUser && !conversationCurrent && (
-              <div className={styles['main-container-info']} style={{ height: '100%' }} />
-            )
-          }
-          {
-            !loadingUser && conversationCurrent &&
-            (
-              <div className={styles['main-container-info']}>
-                <div className={styles['avatar-container']}>
-                  <span className={classnames(styles.dot, { [styles.active]: true })} />
-                  <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} />
-                </div>
-                <div className={styles['user-info']}>
-                  <h3 className={styles.title}>{conversationCurrent?.userFacebookInfo?.user_name}</h3>
-                  {selectEmployee?.userFacebookInfo?.employee_facebook_id &&
-                    conversationsId[0]?.userFacebookInfo?.employee_facebook_id === selectEmployee?.userFacebookInfo?.employee_facebook_id && (
-                      //  conversationsId[0]?.userFacebookInfo?.employee_facebook_id === conversationCurrent?.userFacebookInfo?.employee_facebook_id && conversationCurrent?.userFacebookInfo?.employee_facebook_id && (
-                      <Select
-                        size="small" className={styles.norm}
-                        defaultValue={conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name}
-                        bordered={false}
-                        onChange={(e) => onChangeEmployeeFb(e)}
-                        dropdownRender={menu => (
-                          <>
-                            {menu}
-                            <Divider style={{ margin: '8px 0' }} />
-                            <Space align="center" style={{ padding: '0 8px 4px' }}>
-                              <Button htmlType="submit" className={styles['btn-select-delete']} onClick={(e) => onChangeDeleteEmployeeFb(e)}>Bỏ chỉ định</Button>
-                            </Space>
-                          </>
-                        )}
-                      >
-                        {employeeFB?.map((i, index) =>
-                          <Option value={i?.id} key={index}>{i?.employee_fb_name}</Option>
-                        )}
-                      </Select>)
-                  }
-                  {
-                    !conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name && (
-                      <Select
-                        defaultValue="Chọn nhân viên"
-                        bordered={false}
-                        onChange={(e) => onChangeEmployeeFb(e)}
-                        dropdownRender={menu => (
-                          <>
-                            {
-                              conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name ?
-                                <>
-                                  {menu}
-                                  <Divider style={{ margin: '8px 0' }} />
-                                  <Space align="center" style={{ padding: '0 8px 4px' }}>
-                                    <Button htmlType="submit" className={styles['btn-select-delete']} onClick={(e) => onChangeDeleteEmployeeFb(e)}>Bỏ chỉ định</Button>
-                                  </Space>
-                                </> : <> {menu} </>
-                            }
-                          </>
-                        )}
-                      >
-                        {employeeFB?.map((i, index) =>
-                          <Option value={i?.id} key={index}> {i?.employee_fb_name}</Option>
-                        )}
-                      </Select>
-                    )
-                  }
-                </div>
-              </div>
-            )
-          }
-          {loadingMessage && (
-            <div className={styles['messager-item']} style={{ width: '100%', height: 'calc(100vh - 350px)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <div className={styles['messager-loader']} />
-            </div>
-          )
-          }
-          <div className={styles['messager-container']}>
-            <div>
-              {/* {loadingMessage && (
-                <Scrollbars autoHide
-                  autoHideTimeout={1000}
-                  autoHideDuration={100}
-                  autoHeight
-                  autoHeightMax="calc(100vh - 320px)"
-                  renderTrackHorizontal={(props) => (
-                    <div {...props} className="track-horizontal" style={{ display: 'none' }} />
+            <div className={styles['user-container']}>
+
+              <div>
+                {loadingUser
+                  && (
+                    <>
+                      <div className={classnames(styles['user-item'], {})} role="presentation">
+                        <div className={styles['user-content']}>
+                          <div className={styles['avatar-container']}>
+                            <Skeleton.Avatar active size="default" shape="circle" />
+                          </div>
+                          <div className={styles['user-info']}>
+                            <Skeleton.Input className="w-100" active size="default" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={classnames(styles['user-item'], {})} role="presentation">
+                        <div className={styles['user-content']}>
+                          <div className={styles['avatar-container']}>
+                            <Skeleton.Avatar active size="default" shape="circle" />
+                          </div>
+                          <div className={styles['user-info']}>
+                            <Skeleton.Input className="w-100" active size="default" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={classnames(styles['user-item'], {})} role="presentation">
+                        <div className={styles['user-content']}>
+                          <div className={styles['avatar-container']}>
+                            <Skeleton.Avatar active size="default" shape="circle" />
+                          </div>
+                          <div className={styles['user-info']}>
+                            <Skeleton.Input className="w-100" active size="default" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={classnames(styles['user-item'], {})} role="presentation">
+                        <div className={styles['user-content']}>
+                          <div className={styles['avatar-container']}>
+                            <Skeleton.Avatar active size="default" shape="circle" />
+                          </div>
+                          <div className={styles['user-info']}>
+                            <Skeleton.Input className="w-100" active size="default" />
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   )}
-                  renderThumbHorizontal={(props) => (
-                    <div {...props} className="thumb-horizontal" style={{ display: 'none' }} />
-                  )}
-                  ref={scrollbars}>
-                  <div className={styles['messager-group']}>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-send']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-recieve']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-send']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-recieve']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-send']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-recieve']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-send']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-recieve']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-send']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                    <div className={styles['messager-item']}>
-                      <div className={styles['messager-recieve']}>
-                        <Skeleton.Input className="w-100" active size="default" />
-                      </div>
-                    </div>
-                  </div>
-                </Scrollbars>
-              )} */}
-              {!loadingMessage && (
-                <div className="border-bottom">
-                  <Scrollbars autoHide
+                {!loadingUser &&
+                  <Scrollbars
+                    autoHide
                     autoHideTimeout={1000}
                     autoHideDuration={100}
                     autoHeight
-                    autoHeightMax={files?.length > 0 ? "calc(100vh - 380px)" : "calc(100vh - 320px)"}
-                    renderTrackHorizontal={(props) => (
-                      <div {...props} className="track-horizontal" style={{ display: 'none' }} />
-                    )}
-                    renderThumbHorizontal={(props) => (
-                      <div {...props} className="thumb-horizontal" style={{ display: 'none' }} />
-                    )}
-                    ref={scrollbars}>
+                    autoHeightMax={searchModal === 'tags' ? "calc(100vh - 372px)" : "calc(100vh - 350px)"}
+                  >
                     <InfiniteScroll
-                      hasMore={!searchParent.loading && searchParent.hasMore}
-                      initialLoad={searchParent.loading}
-                      loadMore={handleInfiniteOnLoadMessages}
-                      style={{ display: 'flex', flexDirection: 'column-reverse' }}
-                      scrollableTarget="scrollableDiv"
-                      pageStart={1}
+                      hasMore={!searchUser.loading && searchUser.hasMore}
+                      initialLoad={searchUser.loading}
+                      loadMore={handleInfiniteOnLoadUser}
+                      pageStart={0}
                       useWindow={false}
-                      isReverse
                     >
-
-                      {messagers?.map(({ attributes, url, id }, index) => (
-                        <div className={styles['messager-item']} key={index} style={{ display: 'flex', flexDirection: 'column-reverse' }}>
-                          <div className={styles['messager-item']} >
-                            <div>{onStatus(attributes, url, id)}</div>
-                          </div>
-                        </div>
-                      ))}
-
-                    </InfiniteScroll>
-                  </Scrollbars>
-                </div>
-              )}
-            </div>
-
-          </div>
-          <div className={styles['messages-container']}>
-            <Upload {...props}
-              fileList={undefined}
-            >
-              <div className={styles['chat-icon']}>
-                <span className="icon-attachment" />
-              </div>
-            </Upload>
-            <MultipleImageUpload
-              files={files}
-              callback={(files) => uploadFiles(files)}
-              removeFiles={(files) => mountedSet(setFiles, files)}
-            />
-            <div className='d-flex'>
-              <div className={styles['chat-container']}>
-                <Input
-                  autosize={{ minRows: 1, maxRows: 1 }}
-                  width={80}
-                  placeholder="Nhập tin nhắn"
-                  onPressEnter={onPressEnter}
-                  className={styles.input}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                />
-                <div className={styles['group-icon']}>
-                  {/* <span className="icon-attachment" /> */}
-
-                  {/* <p className="icon-smile" /> */}
-                </div>
-              </div>
-
-
-            </div>
-          </div>
-
-        </div>
-        {loadingMessageUser && (
-          <div className={styles['info-container']}>
-            <div className={styles['user-container']}>
-              <div style={{ height: '100px', width: '100px' }}>
-                <Skeleton.Input className="w-100 h-100  rounded-circle" active size="default" />
-              </div>
-              <div style={{ height: '100px', width: '150px' }} className="d-flex align-items-center">
-                <Skeleton.Input className="w-100 pl10 pb10" active size="default" />
-              </div>
-            </div>
-            <div className={styles['actions-container']}>
-              <Skeleton.Input className="w-100" active size="default" />
-            </div>
-            <Scrollbars
-              autoHide
-              autoHideTimeout={1000}
-              autoHideDuration={100}
-              autoHeight
-              autoHeightMax="calc(100vh - 450px)"
-            >
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-              <Skeleton.Input className="w-100 p20" active size="default" />
-            </Scrollbars>
-          </div>
-        )}
-        {
-          !loadingMessageUser && !conversationCurrent && (
-            <div className={styles['info-container']} />
-          )
-        }
-        {!loadingMessageUser && conversationCurrent && (
-          <div className={styles['info-container']}>
-            <div className={styles['user-container']}>
-              <div className={styles['avatar-container']}>
-                <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} />
-              </div>
-              <div className='pl10'>
-                <div className={styles['user-info']}>
-                  <p className={styles.norm}>{conversationCurrent?.userFacebookInfo?.status === 'LEAD' ?
-                    detailLead?.full_name
-                    : conversationCurrent?.userFacebookInfo?.user_name}</p>
-                </div>
-                <div className={styles['status-container']}>
-                  {onStatusLead()}
-                </div>
-              </div>
-            </div>
-            {/* <div className={styles['actions-container']}>
-              <Button color="white" icon="email-plus" />
-              <Button color="white" icon="phone-plus" />
-              <Button color="white" icon="calendar-plus" />
-              <Button color="white" icon="add-file-plus" />
-            </div> */}
-            <Scrollbars
-              autoHide
-              autoHideTimeout={1000}
-              autoHideDuration={100}
-              autoHeight
-              autoHeightMax="calc(100vh - 300px)"
-            >
-              {
-                conversationCurrent?.userFacebookInfo?.status === 'LEAD' && conversationCurrent?.userFacebookInfo?.customer_lead_id === detailLead?.id ?
-
-                  <div className={styles['contact-container']}>
-                    <div className={styles['information-parents']}>
-                      <div className='d-flex justify-content-between'>
-                        <h3 className={styles.title}>THÔNG TIN CHUNG</h3>
-                        <a className={styles.link} href={`/crm/sale/ph-lead/${detailLead.id}/chi-tiet`} target="_blank" role="presentation">Xem tất cả</a>
-                      </div>
-                      <div className={styles['contact-items']}>
-                        <p className={styles.label}>Họ và tên</p>
-                        <h3 className={styles.name}>{detailLead?.full_name}</h3>
-                      </div>
-                      <div className={styles['contact-items']}>
-                        <p className={styles.label}>Giới tính</p>
-                        <h3 className={styles.name}>
-                          {detailLead?.sex === "MALE" ? "Nam" : ""}
-                          {detailLead?.sex === "FEMALE" ? "Nữ" : ""}
-                          {detailLead?.sex === "OTHER" ? "Khác" : ""}
-                        </h3>
-                      </div>
-                      <div className={styles['contact-items']}>
-                        <p className={styles.label}>Ngày sinh</p>
-                        <h3 className={styles.name}>{detailLead?.birth_date}</h3>
-                      </div>
-                      <div className={styles['contact-items']}>
-                        <p className={styles.label}>Điện thoại</p>
-                        <h3 className={styles.name}>{detailLead?.phone}</h3>
-                      </div>
-                      <div className={styles['contact-items']}>
-                        <p className={styles.label}>Email</p>
-                        <h3 className={styles.name}>{detailLead?.email}</h3>
-                      </div>
-                      <div className={styles['contact-items']}>
-                        <p className={styles.label}>Địa chỉ</p>
-                        <h3 className={styles.name}>{detailLead?.address}</h3>
-                      </div>
-                    </div>
-                    <div className={styles['information-students']}>
-                      <h3 className={styles.title}>THÔNG TIN HỌC SINH</h3>
+                      {searchModal === 'tags' && modalTag && (
+                        <>
+                          {tags?.map(({ id, name, color_code }) => (
+                            <div className={styles['search-tags']} key={id}>
+                              <Checkbox
+                                className="mr15"
+                                onChange={() => changeCheckboxEmployee(id, name, color_code, 'tags')}
+                              />
+                              <p style={{ background: `${color_code}` }} className={styles.title}>{name}</p>
+                            </div>
+                          ))}
+                        </>)}
+                      {searchModal === 'employee_facebook_id' && modalUser && (
+                        <>
+                          {employeeFB?.map(({ id, employee_fb_name, avatar }) => (
+                            <div className={styles['search-tags']} key={id} onClick={() => changeCheckboxEmployee(id, employee_fb_name, null, 'employee_facebook_id')} role="presentation">
+                              <img src={avatar}
+                                alt="facebook"
+                                className={styles.img} />
+                              <p className={styles.title}>{employee_fb_name}</p>
+                            </div>
+                          ))}
+                        </>)}
                       {
-                        detailLead?.studentInfo?.map((item, index) =>
-                          <div key={index}>
-                            <div className={styles['students-titles']}>
-                              <div type="form-title" className={styles.titleContent}>
-                                Học sinh {index + 1}
+                        !searchData && users.length > 0 && !modalTag && !modalUser && (
+                          users?.map(({ id, can_reply, userFacebookInfo, snippet, time, noti_inbox, from, to }) => (
+                            <div
+                              className={classnames(styles['user-item'], {
+                                [styles['user-item-active']]:
+                                  userFacebookInfo?.id === conversationCurrent?.userFacebookInfo?.id,
+                              })}
+                              key={id}
+                              role="presentation"
+                              onClick={() => onChangeConversation(id)}
+                            >
+                              <div className={styles['user-content']}>
+                                <div className={styles['avatar-container']}>
+                                  <span
+                                    className={classnames(styles.dot, { [styles.active]: can_reply })}
+                                  />
+                                  <img
+                                    src={userFacebookInfo?.avatar}
+                                    alt="facebook"
+                                    className={styles.img}
+                                  />
+                                </div>
+                                {noti_inbox === "SEEN" ?
+                                  <>
+                                    {
+                                      userFacebookInfo?.employeeFacebook ?
+                                        <>
+                                          <div className={styles['user-info']}>
+                                            <div className={styles['user-info-title']}>
+                                              <img
+                                                src={userFacebookInfo?.employeeFacebook?.avatar}
+                                                alt="fb"
+                                                className={styles.img}
+                                              />
+                                              <span className="icon-next" role="presentation" />
+                                              <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                            </div>
+                                            <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                          </div>
+                                          <p className={styles.time}>
+                                            {time?.substr(-5, 5)}
+                                          </p>
+                                        </>
+                                        :
+                                        <>
+                                          <div className={styles['user-info']}>
+                                            <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                            <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                          </div>
+                                          <p className={styles.time}>
+                                            {time?.substr(-5, 5)}
+                                          </p>
+                                        </>
+                                    }
+                                  </>
+                                  :
+                                  <>
+                                    {userFacebookInfo?.employeeFacebook ?
+                                      <div className={styles['user-info-notseen']}>
+                                        <div className={styles['user-info-title']}>
+                                          <img
+                                            src={userFacebookInfo?.employeeFacebook?.avatar}
+                                            alt="fb"
+                                            className={styles.img}
+                                          />
+                                          <span className="icon-next" role="presentation" />
+                                          <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                        </div>
+                                        <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                        <p className={styles.time}>
+                                          {time?.substr(-5, 5)}
+                                        </p>
+                                      </div>
+                                      :
+                                      <div className={styles['user-info-notseen']}>
+                                        <h3 className={styles.title}>{userFacebookInfo?.user_name}</h3>
+                                        <div>{onSnippet(snippet, from, to, userFacebookInfo?.user_name)}</div>
+                                        <p className={styles.time}>
+                                          {time?.substr(-5, 5)}
+                                        </p>
+                                      </div>
+                                    }
+                                  </>
+                                }
                               </div>
+                              {userFacebookInfo?.userFacebookInfoTag.map((i) =>
+                                <div className='mt5' key={i?.id}>
+                                  <Tag style={{ backgroundColor: `${i?.tag?.color_code}` }}>{i?.tag?.name}</Tag>
+                                </div>
+                              )}
                             </div>
-                            <div className={styles['contact-items']}>
-                              <p className={styles.label}>Họ và tên</p>
-                              <h3 className={styles.name}>{item?.full_name}</h3>
-                            </div>
-                            <div className={styles['contact-items']}>
-                              <p className={styles.label}>Giới tính</p>
-                              <h3 className={styles.name}>
-                                {item?.sex === "MALE" ? "Nam" : ""}
-                                {item?.sex === "FEMALE" ? "Nữ" : ""}
-                                {item?.sex === "OTHER" ? "Khác" : ""}
-                              </h3>
-                            </div>
-                            <div className={styles['contact-items']}>
-                              <p className={styles.label}>Ngày sinh</p>
-                              <h3 className={styles.name}>{item.birth_date} ({item?.age_month} Tháng tuổi)</h3>
-                            </div>
-                            <div className={styles['contact-items']}>
-                              <p className={styles.label}>Mối quan hệ</p>
-                              <h3 className={styles.name}>{item?.categoryRelationship?.name}</h3>
-                            </div>
+                          ))
+                        )
+                      }
+                      {
+                        !searchData && users.length === 0 && !modalTag && (
+                          <div className={styles['search-user']}>
+                            Chưa có dữ liệu
                           </div>
                         )
                       }
-                    </div>
-                    {detailLead?.statusLead
-                      ?.map((item, index) => (
-                        <div key={index}>
-                          {
-                            item?.status === 'POTENTIAL' ?
-                              <div className={styles['information-students']}>
-                                <h3 className={styles.title}>TÌNH TRẠNG TIỀM NĂNG</h3>
-                              </div>
-                              : ""
-                          }
-                        </div>
-                      ))
-                      .pop()}
+
+
+                    </InfiniteScroll>
+                  </Scrollbars>
+                }
+
+                {
+                  searchModal === 'tags' && modalTag &&
+                  (<div className={styles['search-tags-btn']}>
+                    <Button color="success" htmlType="submit" onClick={() => onChangSearchBtn()} >
+                      Áp dụng
+                    </Button>
+                  </div>)
+                }
+              </div>
+            </div>
+          </div>
+          <div className={styles['main-container']}>
+            {
+              loadingUser &&
+              (
+                <div className={styles['main-container-info']}>
+                  <div className={styles['avatar-container']}>
+                    <Skeleton.Input className="w-100 h-100  rounded-circle" active size="default" />
+                    {/* <span className={classnames(styles.dot, { [styles.active]: true })} />
+                  <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} /> */}
                   </div>
-                  :
-                  <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+                  <div style={{ height: '22px', width: '150px' }} className="d-flex pl10 align-items-center">
+                    <Skeleton.Input className="w-100 h-100" active size="default" />
+                  </div>
+                </div>
+              )
+            }
+            {
+              !loadingUser && !conversationCurrent && (
+                <div className={styles['main-container-info']} style={{ height: '100%' }} />
+              )
+            }
+            {
+              !loadingUser && conversationCurrent &&
+              (
+                <div className={styles['main-container-info']}>
+                  <div className={styles['avatar-container']}>
+                    <span className={classnames(styles.dot, { [styles.active]: true })} />
+                    <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} />
+                  </div>
+                  <div className={styles['user-info']}>
+                    <h3 className={styles.title}>{conversationCurrent?.userFacebookInfo?.user_name}</h3>
+                    {selectEmployee?.userFacebookInfo?.employee_facebook_id &&
+                      conversationsId[0]?.userFacebookInfo?.employee_facebook_id === selectEmployee?.userFacebookInfo?.employee_facebook_id && (
+                        //  conversationsId[0]?.userFacebookInfo?.employee_facebook_id === conversationCurrent?.userFacebookInfo?.employee_facebook_id && conversationCurrent?.userFacebookInfo?.employee_facebook_id && (
+                        <Select
+                          size="small" className={styles.norm}
+                          defaultValue={conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name}
+                          bordered={false}
+                          onChange={(e) => onChangeEmployeeFb(e)}
+                          dropdownRender={menu => (
+                            <>
+                              {menu}
+                              <Divider style={{ margin: '8px 0' }} />
+                              <Space align="center" style={{ padding: '0 8px 4px' }}>
+                                <Button htmlType="submit" className={styles['btn-select-delete']} onClick={(e) => onChangeDeleteEmployeeFb(e)}>Bỏ chỉ định</Button>
+                              </Space>
+                            </>
+                          )}
+                        >
+                          {employeeFB?.map((i, index) =>
+                            <Option value={i?.id} key={index}>{i?.employee_fb_name}</Option>
+                          )}
+                        </Select>)
+                    }
+                    {
+                      !conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name && (
+                        <Select
+                          defaultValue="Chọn nhân viên"
+                          bordered={false}
+                          onChange={(e) => onChangeEmployeeFb(e)}
+                          dropdownRender={menu => (
+                            <>
+                              {
+                                conversationsId[0]?.userFacebookInfo?.employeeFacebook?.employee_fb_name ?
+                                  <>
+                                    {menu}
+                                    <Divider style={{ margin: '8px 0' }} />
+                                    <Space align="center" style={{ padding: '0 8px 4px' }}>
+                                      <Button htmlType="submit" className={styles['btn-select-delete']} onClick={(e) => onChangeDeleteEmployeeFb(e)}>Bỏ chỉ định</Button>
+                                    </Space>
+                                  </> : <> {menu} </>
+                              }
+                            </>
+                          )}
+                        >
+                          {employeeFB?.map((i, index) =>
+                            <Option value={i?.id} key={index}> {i?.employee_fb_name}</Option>
+                          )}
+                        </Select>
+                      )
+                    }
+                  </div>
+                </div>
+              )
+            }
+            {loadingMessage && (
+              <div className={styles['messager-item']} style={{ width: '100%', height: 'calc(100vh - 350px)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div className={styles['messager-loader']} />
+              </div>
+            )
+            }
+            <div className={styles['messager-container']}>
+              <div>
+                {!loadingMessage && (
+                  <div className="border-bottom">
+                    <Scrollbars autoHide
+                      autoHideTimeout={1000}
+                      autoHideDuration={100}
+                      autoHeight
+                      autoHeightMax={files?.length > 0 ? "calc(100vh - 380px)" : "calc(100vh - 320px)"}
+                      renderTrackHorizontal={(props) => (
+                        <div {...props} className="track-horizontal" style={{ display: 'none' }} />
+                      )}
+                      renderThumbHorizontal={(props) => (
+                        <div {...props} className="thumb-horizontal" style={{ display: 'none' }} />
+                      )}
+                      ref={scrollbars}>
+                      <InfiniteScroll
+                        hasMore={!searchParent.loading && searchParent.hasMore}
+                        initialLoad={searchParent.loading}
+                        loadMore={handleInfiniteOnLoadMessages}
+                        style={{ display: 'flex', flexDirection: 'column-reverse' }}
+                        scrollableTarget="scrollableDiv"
+                        pageStart={1}
+                        useWindow={false}
+                        isReverse
+                      >
+
+                        {messagers?.map(({ attributes, url, id }, index) => (
+                          <div className={styles['messager-item']} key={index} style={{ display: 'flex', flexDirection: 'column-reverse' }}>
+                            <div className={styles['messager-item']} >
+                              <div>{onStatus(attributes, url, id)}</div>
+                            </div>
+                          </div>
+                        ))}
+
+                      </InfiniteScroll>
+                    </Scrollbars>
+                  </div>
+                )}
+              </div>
+
+            </div>
+            <div className={styles['messages-container']}>
+              <Upload {...props}
+                fileList={undefined}
+              >
+                <div className={styles['chat-icon']}>
+                  <span className="icon-attachment" />
+                </div>
+              </Upload>
+              <MultipleImageUpload
+                files={files}
+                callback={(files) => uploadFiles(files)}
+                removeFiles={(files) => mountedSet(setFiles, files)}
+              />
+              <div className='d-flex'>
+                <div className={styles['chat-container']}>
+                  <Input
+                    autosize={{ minRows: 1, maxRows: 1 }}
+                    width={80}
+                    placeholder="Nhập tin nhắn"
+                    onPressEnter={onPressEnter}
+                    className={styles.input}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <div className={styles['group-icon']}>
+                    {/* <span className="icon-attachment" /> */}
+
+                    {/* <p className="icon-smile" /> */}
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+
+          </div>
+          {loadingMessageUser && (
+            <div className={styles['info-container']}>
+              <div className={styles['user-container']}>
+                <div style={{ height: '100px', width: '100px' }}>
+                  <Skeleton.Input className="w-100 h-100  rounded-circle" active size="default" />
+                </div>
+                <div style={{ height: '100px', width: '150px' }} className="d-flex align-items-center">
+                  <Skeleton.Input className="w-100 pl10 pb10" active size="default" />
+                </div>
+              </div>
+              <div className={styles['actions-container']}>
+                <Skeleton.Input className="w-100" active size="default" />
+              </div>
+              <Scrollbars
+                autoHide
+                autoHideTimeout={1000}
+                autoHideDuration={100}
+                autoHeight
+                autoHeightMax="calc(100vh - 450px)"
+              >
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+                <Skeleton.Input className="w-100 p20" active size="default" />
+              </Scrollbars>
+            </div>
+          )}
+          {
+            !loadingMessageUser && !conversationCurrent && (
+              <div className={styles['info-container']} />
+            )
+          }
+          {!loadingMessageUser && conversationCurrent && (
+            <div className={styles['info-container']}>
+              <div className={styles['user-container']}>
+                <div className={styles['avatar-container']}>
+                  <img src={conversationCurrent?.userFacebookInfo?.avatar} alt="facebook" className={styles.img} />
+                </div>
+                <div className='pl10'>
+                  <div className={styles['user-info']}>
+                    <p className={styles.norm}>{conversationCurrent?.userFacebookInfo?.status === 'LEAD' ?
+                      detailLead?.full_name
+                      : conversationCurrent?.userFacebookInfo?.user_name}</p>
+                  </div>
+                  <div className={styles['status-container']}>
+                    {onStatusLead()}
+                  </div>
+                </div>
+              </div>
+              {/* <Button color="white" icon="email-plus" />
+              <Button color="white" icon="phone-plus" /> */}
+              {/* <Button color="white" icon="add-file-plus" /> */}
+              {
+                detailLead?.id && (
+                  <div className={styles['actions-container']}>
+                    <Calendar conversationCurrent={conversationCurrent} />
+                  </div>
+                )
+              }
+              <Scrollbars
+                autoHide
+                autoHideTimeout={1000}
+                autoHideDuration={100}
+                autoHeight
+                autoHeightMax="calc(100vh - 300px)"
+              >
+                {
+                  conversationCurrent?.userFacebookInfo?.status === 'LEAD' && conversationCurrent?.userFacebookInfo?.customer_lead_id === detailLead?.id ?
+
                     <div className={styles['contact-container']}>
                       <div className={styles['information-parents']}>
-                        <h3 className={styles.title}>THÔNG TIN CHUNG</h3>
-                        <div className={styles['contact-item']}>
-                          <label className={styles.labelRequired}>
-                            <p>Họ và tên</p>
-                          </label>
-                          <FormItem
-                            name="user_full_name"
-                            type={variables.INPUT}
-                            className={styles.norm}
-                            rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                          />
+                        <div className='d-flex justify-content-between'>
+                          <h3 className={styles.title}>THÔNG TIN CHUNG</h3>
+                          <a className={styles.link} href={`/crm/sale/ph-lead/${detailLead.id}/chi-tiet`} target="_blank" role="presentation">Xem tất cả</a>
                         </div>
-                        <div className={styles['contact-item']}>
-                          <label className={styles.labelRequired}>
-                            <p>Giới tính</p>
-                          </label>
-                          <FormItem
-                            options={['id', 'name']}
-                            data={sex}
-                            placeholder=" Chọn"
-                            name='sex'
-                            className={styles.norm}
-                            type={variables.SELECT}
-                            rules={[variables.RULES.EMPTY_INPUT]}
-                          />
+                        <div className={styles['contact-items']}>
+                          <p className={styles.label}>Họ và tên</p>
+                          <h3 className={styles.name}>{detailLead?.full_name}</h3>
                         </div>
-                        <div className={styles['contact-item']}>
+                        <div className={styles['contact-items']}>
+                          <p className={styles.label}>Giới tính</p>
+                          <h3 className={styles.name}>
+                            {detailLead?.sex === "MALE" ? "Nam" : ""}
+                            {detailLead?.sex === "FEMALE" ? "Nữ" : ""}
+                            {detailLead?.sex === "OTHER" ? "Khác" : ""}
+                          </h3>
+                        </div>
+                        <div className={styles['contact-items']}>
                           <p className={styles.label}>Ngày sinh</p>
-                          <FormItem
-                            name="user_birth_date"
-                            className={styles.norm}
-                            type={variables.DATE_PICKER}
-                            disabledDate={(current) => current > moment()}
-                          />
+                          <h3 className={styles.name}>{detailLead?.birth_date}</h3>
                         </div>
-                        <div className={styles['contact-item']}>
-                          <label className={styles.labelRequired}>
-                            <p>Điện thoại</p>
-                          </label>
-                          <FormItem
-                            name="user_phone"
-                            className={styles.norm}
-                            type={variables.INPUT}
-                            rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
-                          />
+                        <div className={styles['contact-items']}>
+                          <p className={styles.label}>Điện thoại</p>
+                          <h3 className={styles.name}>{detailLead?.phone}</h3>
                         </div>
-                        <div className={styles['contact-item']}>
+                        <div className={styles['contact-items']}>
                           <p className={styles.label}>Email</p>
-                          <FormItem
-                            name="user_email"
-                            className={styles.norm}
-                            type={variables.EMAIL}
-                          />
+                          <h3 className={styles.name}>{detailLead?.email}</h3>
                         </div>
-                        <div className={styles['contact-item']}>
+                        <div className={styles['contact-items']}>
                           <p className={styles.label}>Địa chỉ</p>
-                          <FormItem
-                            name="user_address"
-                            className={styles.norm}
-                            type={variables.INPUT}
-                          />
+                          <h3 className={styles.name}>{detailLead?.address}</h3>
                         </div>
                       </div>
                       <div className={styles['information-students']}>
                         <h3 className={styles.title}>THÔNG TIN HỌC SINH</h3>
-                        <Form.List name="data">
-                          {(fields, { add, remove }) => (
-                            <>
-                              {fields.map((field, index) => (
-                                <div
-                                  key={field.key}
-                                  className='border-bottom'
-                                >
-                                  <div className={styles['students-title']}>
-                                    <div type="form-title" className={styles.titleContent}>
-                                      Học sinh {index + 1}
-                                    </div>
-                                    {fields.length > 0 && (
-                                      <DeleteOutlined
-                                        onClick={() => {
-                                          remove(index);
-                                        }}
-                                      />
-                                    )}
-                                  </div>
-                                  <div className="row">
-                                    <div className="col-lg-12">
-                                      <div className={styles['contact-item']}>
-                                        <p className={styles.label}>Họ và tên</p>
-                                        <FormItem
-                                          name={[field.name, 'full_name']}
-                                          className={styles.norm}
-                                          fieldKey={[field.fieldKey, 'full_name']}
-                                          type={variables.INPUT}
-                                        />
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-12">
-                                      <div className={styles['contact-item']}>
-                                        <p className={styles.label}>Giới tính</p>
-                                        <FormItem
-                                          data={sex}
-                                          className={styles.norm}
-                                          name={[field.name, 'sex']}
-                                          fieldKey={[field.fieldKey, 'sex']}
-                                          type={variables.SELECT}
-                                        />
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-12">
-                                      <div className={styles['contact-item']}>
-                                        <p className={styles.label}>Ngày sinh</p>
-                                        <FormItem
-                                          name={[field.name, 'birth_date']}
-                                          className={styles.norm}
-                                          fieldKey={[field.fieldKey, 'birth_date']}
-                                          type={variables.DATE_PICKER}
-                                          onChange={onChaneDate}
-                                        />
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-12">
-                                      <div className={styles['contact-item']}>
-                                        <p className={styles.label}>Tháng tuổi</p>
-                                        {
-                                         file?.age_month >= 0 ?
-                                            <Form.Item >
-                                              <Text size="normal" className={styles.norm}>
-                                                {file?.age_month}
-                                              </Text>
-                                            </Form.Item>
-                                            : <Form.Item name={[field.name, 'age_month']} className={styles.norm}>
-                                              {dayOfBirth &&
-                                                moment().diff(moment(dayOfBirth), 'month')} Tháng tuổi
-                                            </Form.Item >
-                                        }
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-12">
-                                      <div className={styles['contact-item']}>
-                                        <p className={styles.label}>Mối quan hệ</p>
-                                        <FormItem
-                                          data={relationships}
-                                          className={styles.norm}
-                                          name={[field.name, 'category_relationship_id']}
-                                          fieldKey={[field.fieldKey, 'category_relationship_id']}
-                                          type={variables.SELECT}
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
+                        {
+                          detailLead?.studentInfo?.map((item, index) =>
+                            <div key={index}>
+                              <div className={styles['students-titles']}>
+                                <div type="form-title" className={styles.titleContent}>
+                                  Học sinh {index + 1}
                                 </div>
-                              ))}
-
-                              <div className={styles['students-add']}>
-                                <p
-                                  role="presentation"
-                                  color="success"
-                                  ghost
-                                  className="icon-plus-circle"
-                                  onClick={() => {
-                                    add();
-                                  }}
-                                />
                               </div>
-                            </>
-                          )}
-                        </Form.List>
+                              <div className={styles['contact-items']}>
+                                <p className={styles.label}>Họ và tên</p>
+                                <h3 className={styles.name}>{item?.full_name}</h3>
+                              </div>
+                              <div className={styles['contact-items']}>
+                                <p className={styles.label}>Giới tính</p>
+                                <h3 className={styles.name}>
+                                  {item?.sex === "MALE" ? "Nam" : ""}
+                                  {item?.sex === "FEMALE" ? "Nữ" : ""}
+                                  {item?.sex === "OTHER" ? "Khác" : ""}
+                                </h3>
+                              </div>
+                              <div className={styles['contact-items']}>
+                                <p className={styles.label}>Ngày sinh</p>
+                                <h3 className={styles.name}>{item.birth_date} ({item?.age_month} Tháng tuổi)</h3>
+                              </div>
+                              <div className={styles['contact-items']}>
+                                <p className={styles.label}>Mối quan hệ</p>
+                                <h3 className={styles.name}>{item?.categoryRelationship?.name}</h3>
+                              </div>
+                            </div>
+                          )
+                        }
                       </div>
-                      <div className={styles['menuRight-add']}>
-                        <Button color="success" htmlType="submit" className="w-100">
-                          Thêm phụ huynh Lead
-                        </Button>
-                      </div>
+                      {detailLead?.statusLead
+                        ?.map((item, index) => (
+                          <div key={index}>
+                            {
+                              item?.status === 'POTENTIAL' ?
+                                <div className={styles['information-students']}>
+                                  <h3 className={styles.title}>TÌNH TRẠNG TIỀM NĂNG</h3>
+                                </div>
+                                : ""
+                            }
+                          </div>
+                        ))
+                        .pop()}
                     </div>
-                  </Form>
-              }
+                    :
+                    <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+                      <div className={styles['contact-container']}>
+                        <div className={styles['information-parents']}>
+                          <h3 className={styles.title}>THÔNG TIN CHUNG</h3>
+                          <div className={styles['contact-item']}>
+                            <label className={styles.labelRequired}>
+                              <p>Họ và tên</p>
+                            </label>
+                            <FormItem
+                              name="user_full_name"
+                              type={variables.INPUT}
+                              className={styles.norm}
+                              rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                            />
+                          </div>
+                          <div className={styles['contact-item']}>
+                            <label className={styles.labelRequired}>
+                              <p>Giới tính</p>
+                            </label>
+                            <FormItem
+                              options={['id', 'name']}
+                              data={sex}
+                              placeholder=" Chọn"
+                              name='sex'
+                              className={styles.norm}
+                              type={variables.SELECT}
+                              rules={[variables.RULES.EMPTY_INPUT]}
+                            />
+                          </div>
+                          <div className={styles['contact-item']}>
+                            <p className={styles.label}>Ngày sinh</p>
+                            <FormItem
+                              name="user_birth_date"
+                              className={styles.norm}
+                              type={variables.DATE_PICKER}
+                              disabledDate={(current) => current > moment()}
+                            />
+                          </div>
+                          <div className={styles['contact-item']}>
+                            <label className={styles.labelRequired}>
+                              <p>Điện thoại</p>
+                            </label>
+                            <FormItem
+                              name="user_phone"
+                              className={styles.norm}
+                              type={variables.INPUT}
+                              rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
+                            />
+                          </div>
+                          <div className={styles['contact-item']}>
+                            <p className={styles.label}>Email</p>
+                            <FormItem
+                              name="user_email"
+                              className={styles.norm}
+                              type={variables.EMAIL}
+                            />
+                          </div>
+                          <div className={styles['contact-item']}>
+                            <p className={styles.label}>Địa chỉ</p>
+                            <FormItem
+                              name="user_address"
+                              className={styles.norm}
+                              type={variables.INPUT}
+                            />
+                          </div>
+                        </div>
+                        <div className={styles['information-students']}>
+                          <h3 className={styles.title}>THÔNG TIN HỌC SINH</h3>
+                          <Form.List name="data">
+                            {(fields, { add, remove }) => (
+                              <>
+                                {fields.map((field, index) => (
+                                  <div
+                                    key={field.key}
+                                    className='border-bottom'
+                                  >
+                                    <div className={styles['students-title']}>
+                                      <div type="form-title" className={styles.titleContent}>
+                                        Học sinh {index + 1}
+                                      </div>
+                                      {fields.length > 0 && (
+                                        <DeleteOutlined
+                                          onClick={() => {
+                                            remove(index);
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                    <div className="row">
+                                      <div className="col-lg-12">
+                                        <div className={styles['contact-item']}>
+                                          <p className={styles.label}>Họ và tên</p>
+                                          <FormItem
+                                            name={[field.name, 'full_name']}
+                                            className={styles.norm}
+                                            fieldKey={[field.fieldKey, 'full_name']}
+                                            type={variables.INPUT}
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-12">
+                                        <div className={styles['contact-item']}>
+                                          <p className={styles.label}>Giới tính</p>
+                                          <FormItem
+                                            data={sex}
+                                            className={styles.norm}
+                                            name={[field.name, 'sex']}
+                                            fieldKey={[field.fieldKey, 'sex']}
+                                            type={variables.SELECT}
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-12">
+                                        <div className={styles['contact-item']}>
+                                          <p className={styles.label}>Ngày sinh</p>
+                                          <FormItem
+                                            name={[field.name, 'birth_date']}
+                                            className={styles.norm}
+                                            fieldKey={[field.fieldKey, 'birth_date']}
+                                            type={variables.DATE_PICKER}
+                                            onChange={onChaneDate}
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-12">
+                                        <div className={styles['contact-item']}>
+                                          <p className={styles.label}>Tháng tuổi</p>
+                                          {
+                                            file?.age_month >= 0 ?
+                                              <Form.Item >
+                                                <Text size="normal" className={styles.norm}>
+                                                  {file?.age_month}
+                                                </Text>
+                                              </Form.Item>
+                                              : <Form.Item name={[field.name, 'age_month']} className={styles.norm}>
+                                                {dayOfBirth &&
+                                                  moment().diff(moment(dayOfBirth), 'month')} Tháng tuổi
+                                              </Form.Item >
+                                          }
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-12">
+                                        <div className={styles['contact-item']}>
+                                          <p className={styles.label}>Mối quan hệ</p>
+                                          <FormItem
+                                            data={relationships}
+                                            className={styles.norm}
+                                            name={[field.name, 'category_relationship_id']}
+                                            fieldKey={[field.fieldKey, 'category_relationship_id']}
+                                            type={variables.SELECT}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
 
-              <div className={styles['tags-container']}>
-                <h3 className={styles.title}>GẮN TAGS</h3>
-                <div >
-                  <Select
-                    showArrow
-                    value={conversationCurrent?.userFacebookInfo?.userFacebookInfoTag?.map((item) => item?.tag?.id)}
-                    mode="multiple"
-                    className={styles['wrapper-tags']}
-                    onChange={(e) => onSelectColor(e)}
-                    tagRender={({ label, value, color_code, closable, onClose }) => {
-                      const itemTag = tags.find(item => item.id === value);
-                      return (
-                        <Tag
-                          color={itemTag?.color_code || color_code}
-                          closable={closable}
-                          onClose={onClose}
-                          className={styles['tags-content']}
-                        >
-                          {label}
-                        </Tag>
-                      );
-                    }}
-                  >
-                    {tags.map((item, index) => (
-                      <Option
-                        value={item?.id}
-                        key={index}
-                        style={{ backgroundColor: `${item?.color_code}` }}
-                      >
-                        {item?.name}
-                      </Option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
-              <div className={styles['note-container']}>
-                <div className={styles['note-heading']}>
-                  <h3 className={styles.title}>GHI CHÚ</h3>
-                  <span className="icon-write-plus" onClick={() => setNoteModal(!noteModal)} role="presentation" />
-                </div>
-                <div className={styles['note-body']}>
-                  <div>
-                    {noteModal ?
-                      <div>
-                        <Input.TextArea className={styles.text} autoSize={{ minRows: 4, maxRows: 4 }} value={noteValue} onChange={(e) => onChangeNote(e.target.value)} />
-                        <div className='d-flex justify-content-end pt5 align-items-center'>
-                          <p
-                            className="btn-delete mr10"
-                            role="presentation"
-                            onClick={() => deleteNote(false)}
-                          >
-                            Hủy
-                          </p>
-                          <Button
-                            key="submit"
-                            color="success"
-                            type="primary"
-                            className={styles['cheack-btn-ok']}
-                            onClick={handleNote}
-                          >
-                            Lưu
+                                <div className={styles['students-add']}>
+                                  <p
+                                    role="presentation"
+                                    color="success"
+                                    ghost
+                                    className="icon-plus-circle"
+                                    onClick={() => {
+                                      add();
+                                    }}
+                                  />
+                                </div>
+                              </>
+                            )}
+                          </Form.List>
+                        </div>
+                        <div className={styles['menuRight-add']}>
+                          <Button color="success" htmlType="submit" className="w-100">
+                            Thêm phụ huynh Lead
                           </Button>
                         </div>
                       </div>
-                      :
-                      <div className='d-flex justify-content-between'>
-                        {noteValue}
+                    </Form>
+                }
 
-                      </div>
-                    }
+                <div className={styles['tags-container']}>
+                  <h3 className={styles.title}>GẮN TAGS</h3>
+                  <div >
+                    <Select
+                      showArrow
+                      value={conversationCurrent?.userFacebookInfo?.userFacebookInfoTag?.map((item) => item?.tag?.id)}
+                      mode="multiple"
+                      className={styles['wrapper-tags']}
+                      onChange={(e) => onSelectColor(e)}
+                      tagRender={({ label, value, color_code, closable, onClose }) => {
+                        const itemTag = tags.find(item => item.id === value);
+                        return (
+                          <Tag
+                            color={itemTag?.color_code || color_code}
+                            closable={closable}
+                            onClose={onClose}
+                            className={styles['tags-content']}
+                          >
+                            {label}
+                          </Tag>
+                        );
+                      }}
+                    >
+                      {tags.map((item, index) => (
+                        <Option
+                          value={item?.id}
+                          key={index}
+                          style={{ backgroundColor: `${item?.color_code}` }}
+                        >
+                          {item?.name}
+                        </Option>
+                      ))}
+                    </Select>
                   </div>
                 </div>
-              </div>
+                <div className={styles['note-container']}>
+                  <div className={styles['note-heading']}>
+                    <h3 className={styles.title}>GHI CHÚ</h3>
+                    <span className="icon-write-plus" onClick={() => setNoteModal(!noteModal)} role="presentation" />
+                  </div>
+                  <div className={styles['note-body']}>
+                    <div>
+                      {noteModal ?
+                        <div>
+                          <Input.TextArea className={styles.text} autoSize={{ minRows: 4, maxRows: 4 }} value={noteValue} onChange={(e) => onChangeNote(e.target.value)} />
+                          <div className='d-flex justify-content-end pt5 align-items-center'>
+                            <p
+                              className="btn-delete mr10"
+                              role="presentation"
+                              onClick={() => deleteNote(false)}
+                            >
+                              Hủy
+                            </p>
+                            <Button
+                              key="submit"
+                              color="success"
+                              type="primary"
+                              className={styles['cheack-btn-ok']}
+                              onClick={handleNote}
+                            >
+                              Lưu
+                            </Button>
+                          </div>
+                        </div>
+                        :
+                        <div className='d-flex justify-content-between'>
+                          {noteValue}
 
-            </Scrollbars>
-          </div>
-        )}
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+              </Scrollbars>
+            </div>
+          )}
+        </>)}
+
       </div>
     </div>
   );

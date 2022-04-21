@@ -304,3 +304,12 @@ export function addFile(data = {}) {
     },
   });
 }
+
+export function addCancelRegisters(data = {}) {
+  return request(`/v1/admission-registers/${data.id}`, {
+    method: 'PUT',
+    data: {
+      ...data,
+    },
+  });
+}

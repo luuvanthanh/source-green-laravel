@@ -8,6 +8,7 @@ import Button from '@/components/CommonComponent/Button';
 import Heading from '@/components/CommonComponent/Heading';
 import styles from '@/assets/styles/Common/common.scss';
 import { Helper } from '@/utils';
+import HelperModules from '../../utils/Helper';
 import stylesModule from '../../styles.module.scss';
 
 const General = memo(() => {
@@ -61,7 +62,7 @@ const General = memo(() => {
                 key: 'money',
                 className: 'min-width-150',
                 width: 150,
-                render: (record) => <Text size="normal">{Helper.getPrice(record?.money)}</Text>,
+                render: (record) => <Text size="normal">{record?.expected_money  === 0 ? '0 đ' : Helper.getPrice(record?.expected_money)}</Text>,
             },
             {
                 title: 'Tiền giảm (đ)',
@@ -75,7 +76,7 @@ const General = memo(() => {
                 key: 'name',
                 className: 'min-width-150',
                 width: 150,
-                render: (record) => <Text size="normal">{Helper.getPrice(record?.money)}</Text>,
+                render: (record) => <Text size="normal">{record?.expected_money  === 0 ? '0 đ' : Helper.getPrice(record?.expected_money)}</Text>,
             },
         ];
         return columns;
@@ -127,7 +128,7 @@ const General = memo(() => {
                 key: 'status',
                 width: 150,
                 className: 'min-width-100',
-                render: (record) => <Text size="normal"> {record?.admissionRegister[0]?.studentByChargeNow?.chargeStudent[0]?.status}</Text>,
+                render: (record) => <Text size="normal"> {HelperModules.statusTuition(record?.admissionRegister[0]?.studentByChargeNow?.chargeStudent[0]?.status)}</Text>,
             },
             {
                 title: 'Tác vụ',
@@ -222,12 +223,12 @@ const General = memo(() => {
                                                 {dataDetails?.admissionRegister[0]?.studentByChargeNow?.chargeStudent[0]?.classType?.name}
                                             </Text>
                                         </div>
-                                        <div className="col-lg-3" >
+                                        <div className="col-lg-2" >
                                             <div className="ant-col">
                                                 <label className={stylesModule['form-title']}>Trạng thái</label>
                                             </div>
                                             <Text size="normal" className={stylesModule['form-description']}>
-                                                {dataDetails?.admissionRegister[0]?.studentByChargeNow?.chargeStudent[0]?.status}
+                                                {HelperModules.statusTuition(dataDetails?.admissionRegister[0]?.studentByChargeNow?.chargeStudent[0]?.status)}
                                             </Text>
                                         </div>
                                         <div className="col-lg-12 border-top pt15" >
@@ -251,39 +252,37 @@ const General = memo(() => {
                                                     rowKey={(record) => record.id}
                                                     scroll={{ x: '100%' }}
                                                     summary={(pageData) => {
-                                                        let totalBorrow = '0';
-                                                        let totalShipping = '0';
-                                                        pageData.forEach(({ money, moneyDown }) => {
-                                                            totalBorrow += money;
-                                                            totalShipping += moneyDown;
+                                                        let totalBorrow = 0;
+                                                        pageData.forEach(({ expected_money }) => {
+                                                          totalBorrow += expected_money;
                                                         });
                                                         return (
-                                                            <>
-                                                                <Table.Summary.Row>
-                                                                    <Table.Summary.Cell colSpan={2}>
-                                                                        <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                                                            Tổng tiền
-                                                                        </Text>
-                                                                    </Table.Summary.Cell>
-                                                                    <Table.Summary.Cell>
-                                                                        <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                                                            {Helper.getPrice(totalBorrow)}
-                                                                        </Text>
-                                                                    </Table.Summary.Cell>
-                                                                    <Table.Summary.Cell>
-                                                                        <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                                                            {Helper.getPrice(totalShipping)}
-                                                                        </Text>
-                                                                    </Table.Summary.Cell>
-                                                                    <Table.Summary.Cell>
-                                                                        <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                                                            {Helper.getPrice(totalBorrow + totalShipping)}
-                                                                        </Text>
-                                                                    </Table.Summary.Cell>
-                                                                </Table.Summary.Row>
-                                                            </>
+                                                          <>
+                                                            <Table.Summary.Row>
+                                                              <Table.Summary.Cell colSpan={2}>
+                                                                <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                                                  Tổng tiền
+                                                                </Text>
+                                                              </Table.Summary.Cell>
+                                                              <Table.Summary.Cell>
+                                                                <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                                                  {totalBorrow === 0 ? '0 đ' : Helper.getPrice(totalBorrow)}
+                                                                </Text>
+                                                              </Table.Summary.Cell>
+                                                              <Table.Summary.Cell>
+                                                                <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                                                  {Helper.getPrice("0")}
+                                                                </Text>
+                                                              </Table.Summary.Cell>
+                                                              <Table.Summary.Cell>
+                                                                <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                                                {totalBorrow === 0 ? '0 đ' : Helper.getPrice(totalBorrow)}
+                                                                </Text>
+                                                              </Table.Summary.Cell>
+                                                            </Table.Summary.Row>
+                                                          </>
                                                         );
-                                                    }}
+                                                      }}
                                                 />
                                             </div>
                                         </div>

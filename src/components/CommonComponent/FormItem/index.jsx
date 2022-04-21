@@ -113,7 +113,7 @@ const renderChildren = (
       filterOption={
         filterOption
           ? false
-          : (input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
+          : (input, option) => Helper.slugify(option?.children)?.indexOf(Helper.slugify(input)) >= 0
       }
       notFoundContent={notFoundContent}
       onChange={onChange}
@@ -371,6 +371,28 @@ const renderChildren = (
         <Text className="no-data">Không có dữ liệu</Text>
       )}
     </Radio.Group>
+  ),
+  registersBirthDay: (
+    <DatePicker
+      disabled={disabled}
+      allowClear={allowClear}
+      disabledDate={disabledDate}
+      format={variables.DATE_FORMAT.DATE}
+      onChange={onChange}
+      placeholder="Chọn ngày sinh"
+      value={value}
+    />
+  ),
+  registersDay: (
+    <DatePicker
+      disabled={disabled}
+      allowClear={allowClear}
+      disabledDate={disabledDate}
+      format={variables.DATE_FORMAT.DATE}
+      onChange={onChange}
+      placeholder="Chọn ngày đăng ký"
+      value={value}
+    />
   ),
   switch: <Switch onChange={onChange} />,
 });

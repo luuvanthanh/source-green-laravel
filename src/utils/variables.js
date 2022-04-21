@@ -36,6 +36,8 @@ export const variables = {
   INPUT_DATE: 'inputDate',
   SWITCH: 'switch',
   AUTO_COMPLETE: 'AutoComplete',
+  DATE_REGISTERS_BIRTHDAY: 'registersBirthDay',
+  DATE_REGISTERS_DAY: 'registersDay',
   // RULES
   RULES: {
     EMPTY: { required: true, message: 'Vui lòng không được để trống trường này' },

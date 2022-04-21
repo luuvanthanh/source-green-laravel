@@ -94,23 +94,23 @@ const General = memo(() => {
               <Button color="primary" icon="facebook" className="ml-2">
                 Chat facebook
               </Button>
-              <Button color="primary" icon="zalo" className="ml-2">
+              {/* <Button color="primary" icon="zalo" className="ml-2">
                 Chat Zalo
-              </Button>
+              </Button> */}
             </div>
           </div>
           <div className="row">
             <Pane className="col-lg-4">
               <FormItem className="mt-2" label="Facebook" name="facebook" type={variables.INPUT} />
             </Pane>
-            <Pane className="col-lg-4">
+            {/* <Pane className="col-lg-4">
               <FormItem className="mt-2" label="zalo" name="ID Zalo" type={variables.INPUT} />
-            </Pane>
+            </Pane> */}
           </div>
         </div>
       </div>
 
-      <div className="card">
+      {/* <div className="card">
         <div style={{ padding: 20 }} className="pb-0 border-bottom">
           <Heading type="form-title" style={{ marginBottom: 20 }}>
             Lịch sử
@@ -136,7 +136,7 @@ const General = memo(() => {
             </Pane>
           </div>
         </div>
-      </div>
+      </div> */}
     </Form>
   );
 });

@@ -449,6 +449,16 @@ export default {
         callback(null, error);
       }
     },
+    *DELETE_REGISTERS({ payload }, saga) {
+      try {
+        yield saga.call(services.addCancelRegisters, payload);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

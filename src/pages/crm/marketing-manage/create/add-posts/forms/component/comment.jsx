@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helper, variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 
-const Index = memo(({ dataComment }) => {
+const Index = memo(({ dataComment, hanDleChangeComment, paginationComment }) => {
   const header = () => {
     const columns = [
       {
@@ -49,12 +49,32 @@ const Index = memo(({ dataComment }) => {
     return columns;
   };
 
+  const changeText = (page, limit) => {
+    hanDleChangeComment(page, limit);
+  };
+
+  const changePagination = ({ page, limit }) => {
+    changeText(page, limit);
+  };
+
+  /**
+   * Function pagination of table
+   * @param {object} pagination value of pagination items
+   */
+  const pagination = (pagination) =>
+    Helper.paginationLavarel({
+      pagination,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
+
   return (
     <>
       <Table
         columns={header()}
         dataSource={dataComment}
-        pagination={false}
+        pagination={pagination(paginationComment)}
         className="table-normal"
         isEmpty
         params={{
@@ -71,10 +91,13 @@ const Index = memo(({ dataComment }) => {
 
 Index.propTypes = {
   dataComment: PropTypes.arrayOf(PropTypes.any),
+  paginationComment: PropTypes.objectOf(PropTypes.any),
+  hanDleChangeComment: PropTypes.func,
 };
 
 Index.defaultProps = {
   dataComment: [],
+  paginationComment: {},
+  hanDleChangeComment: () => {},
 };
-
 export default Index;

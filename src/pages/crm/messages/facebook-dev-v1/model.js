@@ -200,11 +200,11 @@ export default {
     *GET_PAGESDB({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getPagesDb, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_PAGESDB',
           payload: response,
         });
-        callback(response);
       } catch (error) {
         callback(null, error);
         yield saga.put({
@@ -243,7 +243,7 @@ export default {
         callback(null, error);
       }
     },
-    *GET_CONVERSATIONS_ID({ payload,callback }, saga) {
+    *GET_CONVERSATIONS_ID({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getConversationsId, payload);
         callback(response);
@@ -352,7 +352,7 @@ export default {
     *GET_TOKEN({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getToken, payload);
-        callback(payload);
+        callback(response);
         yield saga.put({
           type: 'SET_TOKEN',
           payload: response,
@@ -362,6 +362,14 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *ADD_PAGE_FACEBOOK({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addPageFB, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },

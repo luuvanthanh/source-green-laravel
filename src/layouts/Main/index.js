@@ -9,6 +9,7 @@ import { get } from 'lodash';
 import TopBar from '@/components/LayoutComponents/TopBar';
 import CallCenter from '@/pages/crm/call-center/pop-up/test';
 import { stopSession } from '@/pages/crm/call-center/pop-up/handleCallCenter';
+import LoginFacebook from '@/components/LayoutComponents/TopBarCrm';
 
 const mapStateToProps = ({ settings, menu }) => ({
   isBorderless: settings.isBorderless,
@@ -239,9 +240,15 @@ class MainLayout extends React.PureComponent {
         )}
         <Settings />
         <Layout>
-          <Layout.Header>
-            <TopBar />
-          </Layout.Header>
+          {key === 'CRM' ? (
+            <Layout.Header>
+              <LoginFacebook />
+            </Layout.Header>
+          ) : (
+            <Layout.Header>
+              <TopBar />
+            </Layout.Header>
+          )}
           {children}
           {key === 'CRM' && <CallCenter />}
         </Layout>

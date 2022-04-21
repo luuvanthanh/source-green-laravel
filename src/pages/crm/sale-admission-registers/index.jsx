@@ -239,7 +239,7 @@ class Index extends PureComponent {
         title: 'Thời gian đăng ký',
         key: 'time',
         width: 150,
-        render: (record) => Helper.getDate(record?.created_at, variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record?.date_register, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Họ tên cha',
@@ -310,8 +310,13 @@ class Index extends PureComponent {
  * @param {string} type key of object search
  */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
-    this.setStateData({ dataIDSearch: e });
+    if (e) {
+      this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+      this.setStateData({ dataIDSearch: e });
+    } else {
+      this.debouncedSearch(e, type);
+      this.setStateData({ dataIDSearch: e });
+    }
   };
 
   render() {
@@ -373,18 +378,14 @@ class Index extends PureComponent {
                   <FormItem
                     name="date_register"
                     onChange={(event) => this.onChangeDate(event, 'date_register')}
-                    type={variables.DATE_PICKER}
-                    allowClear={false}
-                    placeholder="Chọn thời gian đăng ký"
+                    type={variables.DATE_REGISTERS_DAY}
                   />
                 </div>
                 <div className="col-lg-2">
                   <FormItem
                     name="birth_date"
                     onChange={(event) => this.onChangeDate(event, 'birth_date')}
-                    type={variables.DATE_PICKER}
-                    allowClear={false}
-                    placeholder="Chọn ngày sinh"
+                    type={variables.DATE_REGISTERS_BIRTHDAY}
                   />
                 </div>
                 <div className="col-lg-2">
