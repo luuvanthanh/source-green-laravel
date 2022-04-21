@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Select, Tag, Modal, Upload , message} from 'antd';
+import { Form, Select, Tag, Modal, Upload, message } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, debounce, head, size, get, last } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -333,10 +333,10 @@ class Index extends PureComponent {
               onChange={(e) => this.onSelectColor(e, record)}
               showSearch
               filterOption={(input, option) =>
-                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
               filterSort={(optionA, optionB) =>
-                  optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
               }
               tagRender={({ label, value, color_code, closable, onClose }) => {
                 const itemTag = tags.find(item => item?.id === value);
@@ -467,13 +467,19 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'crmMarketingData/IMPORT_EXCEL',
-      payload: {file},  
+      payload: { file },
       callback: (response) => {
         if (response) {
           this.onLoad();
         }
       },
     });
+  };
+
+  onChangeExcel = () => {
+    Helper.exportExcelCRM(
+      `/v1/template-excel-data-marketings`, " ", `template-data-marketing`,
+    );
   };
 
   render() {
@@ -496,7 +502,7 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
-    const props =  {
+    const props = {
       beforeUpload() {
         return null;
       },
@@ -579,19 +585,22 @@ class Index extends PureComponent {
                         </Form>
                       </div>
                     </Modal>
+                    <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+                      Xuất Excel
+                    </Button>
                     <Upload {...props}>
-                      <Button color="primary" icon="export" className="ml-2"  loading={effects['crmMarketingData/IMPORT_EXCEL']}> 
+                      <Button color="primary" icon="upload1" className="ml-2" loading={effects['crmMarketingData/IMPORT_EXCEL']}>
                         Import
                       </Button>
                     </Upload>
-                      <Button
-                        color="success"
-                        icon="plus"
-                        onClick={() => history.push(`${pathname}/tao-moi`)}
-                        className="ml-2"
-                      >
-                        Tạo mới
-                      </Button>
+                    <Button
+                      color="success"
+                      icon="plus"
+                      onClick={() => history.push(`${pathname}/tao-moi`)}
+                      className="ml-2"
+                    >
+                      Tạo mới
+                    </Button>
                     <Button
                       color="success"
                       icon="next"
