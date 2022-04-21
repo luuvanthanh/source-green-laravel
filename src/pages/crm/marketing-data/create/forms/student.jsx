@@ -159,8 +159,13 @@ const Students = memo(() => {
     }
   }, [students]);
 
-  const onChaneDate = (e) => {
-    mountedSet(setDayOfBirth, e);
+  const onChaneDate = (e, index) => {
+    mountedSet(setDayOfBirth, (prev) => ({
+      ...prev,
+      [index]: (
+        prev[index]?.files ? { ...prev[index].files } : { e }
+      ),
+    }));
   };
 
   return (
@@ -208,7 +213,7 @@ const Students = memo(() => {
 
                                   <Pane className="row">
                                     <Pane className="col-lg-4">
-                                      <Form.Item name={[field.key, 'file_image']} label="Hình ảnh">
+                                      <Form.Item label="Hình ảnh">
                                         <ImageUpload
                                           callback={(res) => {
                                             onSetImage(res.fileInfo.url, index);
@@ -238,21 +243,22 @@ const Students = memo(() => {
                                         label="Ngày sinh"
                                         fieldKey={[field.fieldKey, 'birth_date']}
                                         type={variables.DATE_PICKER}
-                                        onChange={onChaneDate}
+                                        onChange={(e) => onChaneDate(e, index)}
                                       />
                                     </Pane>
                                     <Pane className="col-lg-4">
-                                      {
-                                        file?.month_age >= 0 ?
+                                    {
+                                        dayOfBirth?.[index] ? (
+                                          <Form.Item label="Tuổi (tháng)" >
+                                            {dayOfBirth?.[index]?.e &&
+                                              moment().diff(moment(dayOfBirth?.[index]?.e), 'month')}
+                                          </Form.Item >
+                                        ) :
                                           <Form.Item label="Tuổi (tháng)" >
                                             <Text size="normal">
                                               {file?.month_age}
                                             </Text>
                                           </Form.Item>
-                                          : <Form.Item label="Tuổi (tháng)" name={[field.name, 'month_age']}>
-                                            {dayOfBirth &&
-                                              moment().diff(moment(dayOfBirth), 'month')}
-                                          </Form.Item >
                                       }
                                     </Pane>
                                     <Pane className="col-lg-4">
@@ -282,11 +288,12 @@ const Students = memo(() => {
                                       className="position-absolute"
                                       style={{ top: 20, right: 20 }}
                                       onClick={() => {
-                                        const student = students?.find(
-                                          (item, studentsIndex) => studentsIndex === index,
-                                        );
-                                        setDeleteRows((prev) => [...prev, student.id]);
+                                        setDeleteRows((prev) => [...prev, file.id]);
                                         remove(index);
+                                        mountedSet(
+                                          setFileImage,
+                                          fileImage.splice(index - 1 , 1)
+                                        );
                                       }}
                                     />
                                   )}

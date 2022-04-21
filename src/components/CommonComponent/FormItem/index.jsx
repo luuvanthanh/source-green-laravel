@@ -372,6 +372,28 @@ const renderChildren = (
       )}
     </Radio.Group>
   ),
+  registersBirthDay: (
+    <DatePicker
+      disabled={disabled}
+      allowClear={allowClear}
+      disabledDate={disabledDate}
+      format={variables.DATE_FORMAT.DATE}
+      onChange={onChange}
+      placeholder="Chọn ngày sinh"
+      value={value}
+    />
+  ),
+  registersDay: (
+    <DatePicker
+      disabled={disabled}
+      allowClear={allowClear}
+      disabledDate={disabledDate}
+      format={variables.DATE_FORMAT.DATE}
+      onChange={onChange}
+      placeholder="Chọn ngày đăng ký"
+      value={value}
+    />
+  ),
   switch: <Switch onChange={onChange} />,
 });
 export default function FormItem({

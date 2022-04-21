@@ -178,33 +178,6 @@ const General = memo(
                       type={variables.INPUT}
                     />
                   </Pane>
-                  {/* <Pane className="col-lg-4">
-                <FormItem
-                  options={['id', 'name']}
-                  name=""
-                  placeholder="Chọn"
-                  type={variables.SELECT}
-                  label="Cơ sở"
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  options={['id', 'name']}
-                  name=""
-                  placeholder="Chọn"
-                  type={variables.SELECT}
-                  label="Lớp"
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  options={['id', 'name']}
-                  name=""
-                  placeholder="Chọn"
-                  type={variables.SELECT}
-                  label="Năm"
-                />
-              </Pane> */}
                 </Pane>
               </Pane>
             </Pane>

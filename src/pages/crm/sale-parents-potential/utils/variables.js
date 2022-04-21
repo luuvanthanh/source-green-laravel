@@ -5,6 +5,9 @@ export const variables = {
     PENDING: 'PENDING',
     VALID: 'VALID',
     EXPIRE: 'EXPIRE',
+    UNPAID: 'UNPAID',
+    PAYING: 'PAYING',
+    PAID: 'PAID',
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Đang diễn ra',
@@ -43,6 +46,11 @@ export const variables = {
   },
   PARENT: 'PARENT',
   EMPLOYEES: 'EMPLOYEES',
+  STATUS_TUITION: {
+    UNPAID: 'Chưa thanh toán',
+    PAYING: 'Đang thanh toán',
+    PAID: 'Đã thanh toán',
+  },
 };
 
 export default variables;

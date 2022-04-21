@@ -11,6 +11,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import { Helper, variables } from '@/utils';
+import HelperModules from '../../utils/Helper';
 import stylesModule from '../../styles.module.scss';
 
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
@@ -70,7 +71,7 @@ const General = memo(
           key: 'money',
           className: 'min-width-150',
           width: 150,
-          render: (record) => <Text size="normal">{Helper.getPrice(record?.expected_money)}</Text>,
+          render: (record) => <Text size="normal">{record?.expected_money === 0 ?'0 đ' :  Helper.getPrice(record?.expected_money)}</Text>,
         },
         {
           title: 'Tiền giảm (đ)',
@@ -84,7 +85,7 @@ const General = memo(
           key: 'name',
           className: 'min-width-150',
           width: 150,
-          render: (record) => <Text size="normal">{Helper.getPrice(record?.expected_money)}</Text>,
+          render: (record) => <Text size="normal">{record?.expected_money === 0 ?'0 đ' :  Helper.getPrice(record?.expected_money)}</Text>,
         },
       ];
       return columns;
@@ -151,12 +152,12 @@ const General = memo(
                           {details?.studentByChargeNow?.chargeStudent[0]?.classType?.name}
                         </Text>
                       </div>
-                      <div className="col-lg-4">
+                      <div className="col-lg-2">
                         <div className="ant-col ant-form-item-label">
                           <label className="ant-form-item-required">Trạng thái</label>
                         </div>
                         <Text size="normal" className={stylesModule['general-detail']}>
-                          {details?.studentByChargeNow?.chargeStudent[0]?.status}
+                          {HelperModules.statusTuition(details?.studentByChargeNow?.chargeStudent[0]?.status)}
                         </Text>
                       </div>
                     </Pane>
@@ -193,7 +194,7 @@ const General = memo(
                                 </Table.Summary.Cell>
                                 <Table.Summary.Cell>
                                   <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                    {Helper.getPrice(totalBorrow)}
+                                    {totalBorrow === 0 ? '0 đ' : Helper.getPrice(totalBorrow)}
                                   </Text>
                                 </Table.Summary.Cell>
                                 <Table.Summary.Cell>
@@ -203,7 +204,7 @@ const General = memo(
                                 </Table.Summary.Cell>
                                 <Table.Summary.Cell>
                                   <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                    {Helper.getPrice(totalBorrow)}
+                                  {totalBorrow === 0 ? '0 đ' : Helper.getPrice(totalBorrow)}
                                   </Text>
                                 </Table.Summary.Cell>
                               </Table.Summary.Row>
