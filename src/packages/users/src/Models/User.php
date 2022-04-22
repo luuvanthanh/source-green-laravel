@@ -3,6 +3,7 @@
 namespace GGPHP\Users\Models;
 
 use Carbon\Carbon;
+use CloudCreativity\LaravelJsonApi\Eloquent\HasMany;
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Category\Models\Degree;
 use GGPHP\Category\Models\TrainingMajor;
@@ -10,6 +11,7 @@ use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
+use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
 use GGPHP\ResignationDecision\Models\ResignationDecision;
@@ -341,5 +343,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function resignationDecision()
     {
         return $this->hasOne(ResignationDecision::class, 'EmployeeId');
+    }
+
+    public function manualCalculation()
+    {
+        return $this->hasMany(ManualCalculation::class, 'EmployeeId');
     }
 }

@@ -114,7 +114,8 @@
             "GGPHP\\Tariff\\ConfigContent\\": "tariff/config-content/src",
             "GGPHP\\ChildDevelop\\TestSemester\\": "child-develop/test-semester/src",
             "GGPHP\\Tariff\\PaymentPlan\\": "tariff/payment-plan/src",
-            "GGPHP\\Bio\\": "packages/bio/src/"
+            "GGPHP\\Bio\\": "packages/bio/src/",
+            "GGPHP\\ManualCalculation\\": "packages/manual-calculation/src/"
         },
         "classmap": [
             "database/seeds",
