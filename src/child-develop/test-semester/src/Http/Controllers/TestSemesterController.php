@@ -169,4 +169,11 @@ class TestSemesterController extends Controller
 
         return $this->success($testSemester, trans('lang::messages.common.getListSuccess'));
     }
+
+    public function reportTestSemester(Request $request)
+    {
+        $reportTestSemester = $this->testSemesterRepository->reportTestSemester($request->all());
+
+        return $this->success($reportTestSemester, trans('lang::messages.common.getListSuccess'));
+    }
 }
