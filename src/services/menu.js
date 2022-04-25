@@ -2387,7 +2387,10 @@ export async function getLeftMenuChildDevelop() {
       key: 'monitor-childrens',
       icon: 'icon icon-home',
       permission: [],
-      url: ['/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre'],
+      url: [
+        '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
+        '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre/:id/chi-tiet',
+      ],
     },
     {
       title: 'Danh mục',

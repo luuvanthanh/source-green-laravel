@@ -46,3 +46,20 @@
     color: #6d7177;
   }
 }
+
+
+.wrapper-container {
+  .wrapper-title {
+    background-color: rgb(59, 92, 173);
+  }
+  .wrapper-table {
+    background-color: #ffffff;
+  }
+  :global(.ant-collapse-ghost > .ant-collapse-item > .ant-collapse-content) {
+    background-color: #ffffff !important;
+  }
+  :global(.ant-collapse-header) {
+    color: #ffffff !important;
+    margin-bottom: 10px;
+  }
+}

@@ -273,7 +273,7 @@ const General = memo(() => {
   };
 
   const onchangechilDevelop = () => {
-    const win = window.open(`/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre`, "_blank");
+    const win = window.open(`/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre?key=${detailsStudent?.student?.fullName}`, "_blank");
     win.focus();
   };
 

@@ -33,6 +33,7 @@ const mapStateToProps = ({ loading, OPchildrenAdd, user }) => ({
   branches: OPchildrenAdd.branches,
   classes: OPchildrenAdd.classes,
   defaultBranch: user.defaultBranch,
+  user: user.user,
 });
 const General = memo(
   ({
@@ -44,6 +45,7 @@ const General = memo(
     branches,
     classes,
     defaultBranch,
+    user,
   }) => {
     const formRef = useRef();
     const [modalForm] = Form.useForm();
@@ -81,23 +83,26 @@ const General = memo(
         type: params.id ? 'OPchildrenAdd/UPDATE' : 'OPchildrenAdd/ADD',
         payload: params.id
           ? {
-              ...details,
+            ...details,
+            id: params.id,
+            student: {
+              ...details.student,
+              ...values,
               id: params.id,
-              student: {
-                ...details.student,
-                ...values,
-                id: params.id,
-                fileImage: JSON.stringify(files),
-                age,
-              },
-            }
-          : {
-              student: {
-                ...values,
-                fileImage: JSON.stringify(files),
-                age,
-              },
+              fileImage: JSON.stringify(files),
+              age,
             },
+            branchId: details?.student?.class?.branchId,
+          }
+          : {
+            student: {
+              ...values,
+              fileImage: JSON.stringify(files),
+              age,
+              branchId: user?.branchs?.length > 0 ? user?.branchs[0]?.id : "",
+              registerDate: moment(),
+            },
+          },
         callback: (response, error) => {
           if (response) {
             history.push(
@@ -164,21 +169,23 @@ const General = memo(
         dispatch({
           type: 'OPchildrenAdd/STORE_STUDENT',
           payload,
-          callback: () => {},
+          callback: () => { },
         });
       });
       setVisibleModal(false);
     };
 
     useEffect(() => {
-      dispatch({
-        type: 'OPchildrenAdd/GET_BRANCHES',
-        payload: params,
-      });
-      formRef.current.setFieldsValue({
-        branchId: defaultBranch.id,
-      });
-    }, []);
+      if (user?.branchs?.length > 0) {
+        dispatch({
+          type: 'OPchildrenAdd/GET_BRANCHES',
+          payload: params,
+        });
+        formRef.current.setFieldsValue({
+          branchId: user?.branchs[0]?.id,
+        });
+      }
+    }, [user?.id]);
 
     useEffect(() => {
       mounted.current = true;
@@ -191,7 +198,7 @@ const General = memo(
           ...details.student,
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
           registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
-          branchId: details?.student?.class?.branchId,
+          branchId: details?.student?.branchId,
           status: details?.student?.status,
         });
         mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
@@ -459,9 +466,12 @@ const General = memo(
                     )}
                   </>
                 )}
-                <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
-                  Lưu
-                </Button>
+                {
+                  user?.roleCode === "admin" && !params?.id ? " " :
+                    <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                      Lưu
+                    </Button>
+                }
               </Pane>
             </Loading>
           </Pane>
@@ -480,17 +490,19 @@ General.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],
   classes: [],
   defaultBranch: {},
+  user: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));
