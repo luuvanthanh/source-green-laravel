@@ -7,6 +7,7 @@ export default {
     cities: [],
     district: [],
     townWards: [],
+    isConnected: false,
     pagination: {
       total: 0,
     },
@@ -33,6 +34,10 @@ export default {
     SET_TOWN_WARDS: (state, { payload }) => ({
       ...state,
       townWards: payload.parsePayload,
+    }),
+    SET_CHECK_STATUS: (state, { payload }) => ({
+      ...state,
+      isConnected: payload.isConnected,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -149,6 +154,12 @@ export default {
           payload: error.data,
         });
       }
+    },
+    *IS_CONNECTED({ payload }, saga) {
+      yield saga.put({
+        type: 'SET_IS_CONNECTED',
+        payload,
+      });
     },
   },
   subscriptions: {},

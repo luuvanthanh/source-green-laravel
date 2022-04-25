@@ -1446,6 +1446,16 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
+          title: 'Chấm công thủ công',
+          key: 'manual-timekeeping',
+          url: [
+            '/quan-ly-nhan-su/cham-cong-thu-cong',
+            '/quan-ly-nhan-su/cham-cong-thu-cong/tao-moi',
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
           title: 'Phân ca làm việc',
           key: 'work-shift',
           url: [
