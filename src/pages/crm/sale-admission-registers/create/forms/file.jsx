@@ -17,8 +17,9 @@ const { Option } = Select;
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
   configuration: crmSaleAdmissionAdd.configuration,
+  details: crmSaleAdmissionAdd.details
 });
-const General = memo(({ loading: { effects }, error, configuration, match: { params } }) => {
+const General = memo(({ loading: { effects }, error, configuration, match: { params }, details }) => {
   const [data, setData] = useState([
     {
       config_profile_info_id: undefined,
@@ -79,7 +80,7 @@ const General = memo(({ loading: { effects }, error, configuration, match: { par
       },
     });
   }, [params?.id]);
-  
+
 
   const props = (record) => ({
     beforeUpload() {
@@ -251,32 +252,38 @@ const General = memo(({ loading: { effects }, error, configuration, match: { par
                   rowKey={(record) => record.id}
                   scroll={{ x: '100%' }}
                   footer={(item, index) => (
-                    <Button
-                      key={index}
-                      onClick={() =>
-                        setData([
-                          ...data,
-                          {
-                            id: uuidv4(),
-                            status: true,
-                            file_image: undefined,
-                          },
-                        ])
-                      }
-                      color="transparent-success"
-                      icon="plus"
-                    >
-                      Thêm hồ sơ
-                    </Button>
+
+                    details?.register_status === "CANCEL_REGISTER" ? "" :
+                      <Button
+                        key={index}
+                        onClick={() =>
+                          setData([
+                            ...data,
+                            {
+                              id: uuidv4(),
+                              status: true,
+                              file_image: undefined,
+                            },
+                          ])
+                        }
+                        color="transparent-success"
+                        icon="plus"
+                      >
+                        Thêm hồ sơ
+                      </Button>
+
                   )}
                 />
               </div>
             </Pane>
           </Pane>
           <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-            <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
-              Lưu
-            </Button>
+            {
+              details?.register_status === "CANCEL_REGISTER" ? "" :
+                <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
+                  Lưu
+                </Button>
+            }
           </Pane>
         </Pane>
       </Loading>
@@ -289,6 +296,7 @@ General.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   configuration: PropTypes.arrayOf(PropTypes.any),
   match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -296,6 +304,7 @@ General.defaultProps = {
   error: {},
   match: {},
   configuration: [],
+  details: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

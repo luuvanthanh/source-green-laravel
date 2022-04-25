@@ -272,7 +272,7 @@ const Students = memo(() => {
                       Xuất file giấy đồng ý
                     </Button>
                     {
-                      details?.status && (
+                      details?.status &&  details?.register_status !== "CANCEL_REGISTER"&& (
                         <Button
                           color="success"
                           htmlType="submit"

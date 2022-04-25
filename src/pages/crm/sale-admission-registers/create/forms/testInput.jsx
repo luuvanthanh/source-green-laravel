@@ -21,7 +21,7 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
 });
 
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, employees, branches }) => {
+  ({ dispatch, loading: { effects }, match: { params }, employees, branches, details }) => {
     const formRef = useRef();
     const formSubmit = useRef();
     const mounted = useRef(false);
@@ -162,6 +162,15 @@ const General = memo(
         });
       }
     }, [params.id]);
+
+
+    useEffect(() => {
+      if (details?.id) {
+        formSubmit?.current?.setFieldsValue({
+          branch_id: details?.branch_id,
+        });
+      }
+    }, [details]);
 
     useEffect(() => {
       mounted.current = true;
@@ -365,10 +374,13 @@ const General = memo(
                 <Button color="primary" icon="export" className="ml-2">
                   Xuất form phỏng vấn
                 </Button>
+                {
+                  details?.register_status === "CANCEL_REGISTER" ? "" :
+                    <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
+                      Lưu
+                    </Button>
+                }
 
-                <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
-                  Lưu
-                </Button>
               </Pane>
             </Pane>
 
@@ -462,15 +474,28 @@ const General = memo(
                           Hủy
                         </p>,
 
-                        <Button
-                          htmlType="submit"
-                          color="success"
-                          type="primary"
-                          onClick={() => onFinish()}
-                          loading={loadingSubmit}
-                        >
-                          Lưu
-                        </Button>,
+                        details?.register_status === "CANCEL_REGISTER" ?
+                          <Button
+                            htmlType="submit"
+                            color="success"
+                            type="primary"
+                            onClick={() => onFinish()}
+                            loading={loadingSubmit}
+                            disabled
+                          >
+                            Lưu
+                          </Button>
+                          :
+                          <Button
+                            htmlType="submit"
+                            color="success"
+                            type="primary"
+                            onClick={() => onFinish()}
+                            loading={loadingSubmit}
+                          >
+                            Lưu
+                          </Button>
+                        ,
                       ]}
                     >
                       <div>
@@ -522,7 +547,7 @@ const General = memo(
                 </Pane>
               </Pane>
             </Form>
-          </Pane>
+          </Pane >
         )}
       </>
     );
@@ -532,7 +557,7 @@ const General = memo(
 General.propTypes = {
   dispatch: PropTypes.func,
   match: PropTypes.objectOf(PropTypes.any),
-  // details: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   // error: PropTypes.objectOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
@@ -542,7 +567,7 @@ General.propTypes = {
 
 General.defaultProps = {
   match: {},
-  // details: {},
+  details: {},
   dispatch: () => { },
   loading: {},
   // error: {},

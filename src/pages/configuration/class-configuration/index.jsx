@@ -89,20 +89,11 @@ const Index = memo(() => {
     }
   }, [data]);
 
-  const onChangeTitle = (e, record) => {
+  const onChange = (e, record, key) => {
     setData((prev) =>
       prev.map((item) =>
         item.test === record.test && item.id === record.id
-          ? { ...item, name: e.target.value }
-          : { ...item },
-      ),
-    );
-  };
-  const onChangeContent = (e, record) => {
-    setData((prev) =>
-      prev.map((item) =>
-        item.test === record.test && item.id === record.id
-          ? { ...item, content: e.target.value }
+          ? { ...item, [key]: e.target.value }
           : { ...item },
       ),
     );
@@ -122,7 +113,7 @@ const Index = memo(() => {
         if (response) {
           setData((prev) =>
             prev.map((item) =>
-              item.test === record.test && item.id === record.id 
+              item.test === record.test && item.id === record.id
                 ? {
                   ...item,
                   file_image: head(response.results)?.fileInfo?.url,
@@ -197,7 +188,21 @@ const Index = memo(() => {
           value={value.name}
           autoSize={{ minRows: 2, maxRows: 3 }}
           placeholder="Nhập"
-          onChange={(e) => onChangeTitle(e, record)}
+          onChange={(e) => onChange(e, record, 'name')}
+        />
+      ),
+    },
+    {
+      title: 'Thời gian',
+      key: 'time',
+      lassName: 'min-width-300',
+      width: 150,
+      render: (value, record) => (
+        <Input.TextArea
+          value={value.time}
+          autoSize={{ minRows: 2, maxRows: 3 }}
+          placeholder="Nhập"
+          onChange={(e) => onChange(e, record, 'time')}
         />
       ),
     },
@@ -210,7 +215,7 @@ const Index = memo(() => {
           value={value.content}
           autoSize={{ minRows: 2, maxRows: 3 }}
           placeholder="Nhập"
-          onChange={(e) => onChangeContent(e, record)}
+          onChange={(e) => onChange(e, record, 'content')}
         />
       ),
     },
@@ -239,7 +244,7 @@ const Index = memo(() => {
       ),
     },
   ];
-  
+
   return (
     <>
       <Helmet title="Cấu hình quy trình lớp học" />

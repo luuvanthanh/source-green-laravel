@@ -182,10 +182,13 @@ const General = memo(
               </Pane>
             </Pane>
 
-            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-              <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
-                Lưu
-              </Button>
+            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>\
+              {
+                details?.register_status === "CANCEL_REGISTER" ? "" :
+                  <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                    Lưu
+                  </Button>
+              }
             </Pane>
 
           </Pane>

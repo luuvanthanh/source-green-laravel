@@ -17,9 +17,10 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   error: crmSaleAdmissionAdd.error,
   studentsLead: crmSaleAdmissionAdd.studentsLead,
   customerLead: crmSaleAdmissionAdd.customerLead,
+  branches: crmSaleAdmissionAdd.branches,
 });
 const General = memo(
-  ({ loading: { effects }, customerLead, studentsLead }) => {
+  ({ loading: { effects }, customerLead, studentsLead, branches }) => {
     const formRef = useRef();
     const mounted = useRef(false);
     const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD`];
@@ -28,6 +29,10 @@ const General = memo(
     useEffect(() => {
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_CUSTOMER_LEAD',
+        payload: {},
+      });
+      dispatch({
+        type: 'crmSaleAdmissionAdd/GET_BRANCHES',
         payload: {},
       });
     }, []);
@@ -172,12 +177,22 @@ const General = memo(
                     rules={[variables.RULES.EMPTY]}
                   />
                 </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name="branch_id"
+                    label="Cơ sở"
+                    data={branches}
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
                 <Pane className="col-lg-12">
                   <FormItem
                     name="parent_wish"
                     placeholder="Nhập"
                     label="Mong muốn của phụ huynh"
                     type={variables.TEXTAREA}
+                    rules={[variables.RULES.EMPTY]}
                   />
                 </Pane>
                 <Pane className="col-lg-12">
@@ -209,12 +224,14 @@ General.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   customerLead: PropTypes.arrayOf(PropTypes.any),
   studentsLead: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
   loading: {},
   customerLead: [],
   studentsLead: [],
+  branches: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));
