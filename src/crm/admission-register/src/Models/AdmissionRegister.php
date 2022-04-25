@@ -4,6 +4,7 @@ namespace GGPHP\Crm\AdmissionRegister\Models;
 
 use Carbon\Carbon;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Category\Models\StatusAdmissionRegister;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -88,5 +89,10 @@ class AdmissionRegister extends UuidModel
                 $query->where([['start_date', '<', $date], ['end_date', '>', $date]]);
             });
         }]);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }
