@@ -586,7 +586,7 @@ class Index extends PureComponent {
                       </div>
                     </Modal>
                     <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
-                      Xuất Excel
+                      Mẫu Excel
                     </Button>
                     <Upload {...props}>
                       <Button color="primary" icon="upload1" className="ml-2" loading={effects['crmMarketingData/IMPORT_EXCEL']}>

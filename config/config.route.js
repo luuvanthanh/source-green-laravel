@@ -205,6 +205,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
+          {
+            path: '/chuong-trinh-hoc/tieng-anh',
+            component: './criteria/english',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat',
+            component: './criteria/physical',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
         ],
       },
       // CRITERIA
