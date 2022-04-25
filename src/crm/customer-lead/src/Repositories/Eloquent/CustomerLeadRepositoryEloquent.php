@@ -267,6 +267,8 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
                 ['employee_id', $value['employee_id']]
             ])->first();
 
+            $data = array();
+            
             if (is_null($check)) {
                 $data['employee_id'] = $value['employee_id'];
                 $data['list_customer_lead'][] = ['customer_lead_id' => $value['customer_lead_id']];
