@@ -287,7 +287,7 @@ const Students = memo(() => {
                                       className="position-absolute"
                                       style={{ top: 20, right: 20 }}
                                       onClick={() => {
-                                        setDeleteRows((prev) => [...prev, file.id]);
+                                        setDeleteRows((prev) => [...prev, file?.id]);
                                         remove(index);
                                         mountedSet(
                                           setFileImage,

@@ -183,6 +183,7 @@ const General = memo(
         });
         formRef.current.setFieldsValue({
           branchId: user?.branchs[0]?.id,
+          registerDate: moment(),
         });
       }
     }, [user?.id]);
@@ -198,7 +199,7 @@ const General = memo(
           ...details.student,
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
           registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
-          branchId: details?.student?.branchId,
+          branchId: details?.student?.branch?.name,
           status: details?.student?.status,
         });
         mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));

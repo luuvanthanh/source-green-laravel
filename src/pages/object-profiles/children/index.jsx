@@ -289,7 +289,7 @@ class Index extends PureComponent {
         key: 'branch',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.class?.branch?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',
