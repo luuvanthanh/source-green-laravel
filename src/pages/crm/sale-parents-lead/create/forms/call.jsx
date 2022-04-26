@@ -1,35 +1,43 @@
-import { memo, useRef, useEffect } from 'react';
-import { Form } from 'antd';
-import { useLocation, useParams, history } from 'umi';
-import { useSelector, useDispatch } from 'dva';
 import styles from '@/assets/styles/Common/common.scss';
-import Pane from '@/components/CommonComponent/Pane';
-import Heading from '@/components/CommonComponent/Heading';
-import { variables } from '@/utils';
-import Table from '@/components/CommonComponent/Table';
-import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { get } from 'lodash';
+import Heading from '@/components/CommonComponent/Heading';
+import Pane from '@/components/CommonComponent/Pane';
+import Table from '@/components/CommonComponent/Table';
+import { handleOutboundCall } from '@/pages/crm/call-center/pop-up/handleCallCenter';
+import { variables } from '@/utils';
+import { Form } from 'antd';
+import { useDispatch, useSelector } from 'dva';
+import moment from 'moment';
+import { memo, useEffect, useRef, useState } from 'react';
+import { useParams } from 'umi';
 import stylesModule from '../../styles.module.scss';
 
 const General = memo(() => {
   const dispatch = useDispatch();
   const params = useParams();
-  const { pathname } = useLocation();
   const mounted = useRef(false);
-  const { data } = useSelector(({ loading, crmSaleLeadAdd }) => ({
-    loading,
-    details: crmSaleLeadAdd.details,
-    data: crmSaleLeadAdd.data,
-    error: crmSaleLeadAdd.error,
-  }));
-  /**
-   * Load Items Degres
-   */
+  const audioRef = useRef(null);
+  const [formRef] = Form.useForm();
+  const [
+    { details },
+    { outboundHistory },
+  ] = useSelector(({ crmSaleLeadAdd, crmManagementCall }) => [crmSaleLeadAdd, crmManagementCall]);
+  const { outboundStatus, outboundContext } = handleOutboundCall();
+
+  const [currentPhone, setCurrentPhone] = useState(null);
+
   useEffect(() => {
     dispatch({
-      type: 'crmSaleLeadAdd/GET_DEGREES',
+      type: 'crmSaleLeadAdd/GET_DETAILS_CALL',
       payload: params,
+      callback: (response) => {
+        if (response) {
+          formRef.setFieldsValue({
+            phone: response.phone,
+            other_phone: response.other_phone,
+          });
+        }
+      },
     });
   }, []);
 
@@ -38,56 +46,80 @@ const General = memo(() => {
     return mounted.current;
   }, []);
 
+  const callNumber = (phone) => {
+    setCurrentPhone(phone);
+    outboundContext(phone, audioRef.current);
+  };
+
+  useEffect(() => {
+    if (currentPhone) {
+      dispatch({
+        type: 'crmManagementCall/IS_CLICK',
+        payload: {
+          isClickToCall: true,
+          quickPhoneNumber: currentPhone,
+          quickStatus: outboundStatus,
+          outboundHistory,
+        },
+      });
+    }
+  }, [outboundStatus]);
+
   const header = () => {
     const columns = [
       {
         title: 'Ngày giờ gọi',
-        key: 'updateDay',
+        key: 'created_at',
         width: 150,
-        render: (record) => get(record, 'updateDay'),
+        render: (record) => moment(record?.created_at).format(variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Số gọi',
         key: 'phone',
         width: 150,
-        render: (record) => get(record, 'phone'),
+        render: (record) =>
+          record?.direction === variables.DIRECTION_ENG.OUTBOUND
+            ? record.switchboard
+            : record.phone,
       },
       {
         title: 'Số nhận',
         key: 'phone',
         width: 150,
-        render: (record) => get(record, 'phone'),
+        render: (record) =>
+          record?.direction === variables.DIRECTION_ENG.OUTBOUND
+            ? record.phone
+            : record.switchboard,
       },
       {
         title: 'Nội dung cuộc gọi',
-        key: 'contents',
+        key: 'content',
         width: 150,
-        render: (record) => get(record, 'contents'),
+        render: (record) => record?.content,
       },
       {
         title: 'Người gọi',
-        key: 'name',
+        key: 'full_name',
         width: 150,
-        render: (record) => get(record, 'name'),
+        render: (record) =>
+          record?.direction === variables.DIRECTION_ENG.OUTBOUND && record?.employee?.full_name,
       },
       {
         title: 'Ghi âm',
-        key: 'record',
+        key: 'record_link',
         width: 150,
-        render: (record) => get(record, 'record'),
-      },
-      {
-        key: 'action',
-        width: 100,
-        fixed: 'right',
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet-cuoc-goi`)}
-            />
-            <Button color="danger" icon="remove" />
+          <div className={styles['files-container']}>
+            <div className={styles.item}>
+              <a
+                href={record?.record_link}
+                target="_blank"
+                rel="noreferrer"
+                className={styles['link-record']}
+              >
+                File ghi âm
+              </a>
+            </div>
           </div>
         ),
       },
@@ -96,61 +128,72 @@ const General = memo(() => {
   };
 
   return (
-    <Form layout="vertical">
+    <Form form={formRef} layout="vertical">
+      <audio ref={audioRef} autoPlay>
+        <track kind="captions" />
+      </audio>
       <div className="card">
         <div style={{ padding: 20 }} className="pb-0 border-bottom">
           <Heading type="form-title" style={{ marginBottom: 20 }}>
             Thông tin cuộc gọi
           </Heading>
           <div className="row">
-            <div className="col-lg-2">
-              <FormItem name="phoneNumberCompany" label="Số điện thoại" type={variables.INPUT} />
+            <div className="col-lg-6 d-flex">
+              <FormItem
+                name="phone"
+                label="Số điện thoại"
+                className={stylesModule['phone-input']}
+                type={variables.INPUT}
+              />
+              {details.phone && (
+                <img
+                  src="/images/telephone-small.svg"
+                  alt="telephone-small"
+                  className={stylesModule['call-icon']}
+                  role="presentation"
+                  onClick={() => callNumber(details.phone)}
+                />
+              )}
             </div>
-            <div className="col-lg-3 d-flex align-items-center">
-              <Button
-                color="success"
-                size="large"
-                htmlType="submit"
-                className={stylesModule['wrapper-btn-call']}
-              >
-                <span className="icon-phone" />
-              </Button>
-            </div>
-            <div className="col-lg-2">
-              <FormItem name="phoneNumberCompany" label="Số điện thoại" type={variables.INPUT} />
-            </div>
-            <div className="col-lg-3 d-flex align-items-center">
-              <Button
-                color="success"
-                size="large"
-                htmlType="submit"
-                className={stylesModule['wrapper-btn-call']}
-              >
-                <span className="icon-phone" />
-              </Button>
+            <div className="col-lg-6 d-flex">
+              <FormItem
+                name="other_phone"
+                label="Số điện thoại khác"
+                className={stylesModule['phone-input']}
+                type={variables.INPUT}
+              />
+              {details.other_phone && (
+                <img
+                  src="/images/telephone-small.svg"
+                  alt="telephone-small"
+                  className={stylesModule['call-icon']}
+                  role="presentation"
+                  onClick={() => callNumber(details.other_phone)}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
 
       <div className="card">
-        <div style={{ padding: 20 }} className="pb-0 border-bottom">
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <div className="border-bottom p20">
+          <div className="d-flex justify-content-between align-items-center mb-4">
             <Heading type="form-title">Lịch sử chăm sóc</Heading>
-            <Button
+            {/* <Button
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/them-lich-su`)}
             >
               Thêm lịch sử
-            </Button>
+            </Button> */}
           </div>
           <div className="row">
             <Pane className="col-lg-12">
               <div className={stylesModule['wrapper-table']}>
                 <Table
                   columns={header()}
-                  dataSource={data}
+                  dataSource={details?.historyCall}
                   pagination={false}
                   className="table-normal"
                   isEmpty
@@ -158,7 +201,7 @@ const General = memo(() => {
                     header: header(),
                     type: 'table',
                   }}
-                  bordered={false}
+                  bordered
                   rowKey={(record) => record.id}
                   scroll={{ x: '100%' }}
                 />

@@ -85,6 +85,7 @@ const OutboundResult = memo(
           content: contentOutbound && contentOutbound,
           status_lead: values.status_lead && values.status_lead,
           status_parent_lead_id: values.status_parent_lead_id && values.status_parent_lead_id,
+          customer_lead_id: infoFromOutbound.customer_lead_id && infoFromOutbound.customer_lead_id,
           status_parent_potential_id:
             values.status_parent_potential_id && values.status_parent_potential_id,
           call_type: 'OUTBOUND',

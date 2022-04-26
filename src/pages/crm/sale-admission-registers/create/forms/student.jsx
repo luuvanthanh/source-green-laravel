@@ -178,41 +178,17 @@ const General = memo(
                       type={variables.INPUT}
                     />
                   </Pane>
-                  {/* <Pane className="col-lg-4">
-                <FormItem
-                  options={['id', 'name']}
-                  name=""
-                  placeholder="Chọn"
-                  type={variables.SELECT}
-                  label="Cơ sở"
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  options={['id', 'name']}
-                  name=""
-                  placeholder="Chọn"
-                  type={variables.SELECT}
-                  label="Lớp"
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  options={['id', 'name']}
-                  name=""
-                  placeholder="Chọn"
-                  type={variables.SELECT}
-                  label="Năm"
-                />
-              </Pane> */}
                 </Pane>
               </Pane>
             </Pane>
 
-            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-              <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
-                Lưu
-              </Button>
+            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>\
+              {
+                details?.register_status === "CANCEL_REGISTER" ? "" :
+                  <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                    Lưu
+                  </Button>
+              }
             </Pane>
 
           </Pane>

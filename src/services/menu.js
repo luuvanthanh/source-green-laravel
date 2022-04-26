@@ -1446,6 +1446,16 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
+          title: 'Chấm công thủ công',
+          key: 'manual-timekeeping',
+          url: [
+            '/quan-ly-nhan-su/cham-cong-thu-cong',
+            '/quan-ly-nhan-su/cham-cong-thu-cong/tao-moi',
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
           title: 'Phân ca làm việc',
           key: 'work-shift',
           url: [
@@ -2387,7 +2397,10 @@ export async function getLeftMenuChildDevelop() {
       key: 'monitor-childrens',
       icon: 'icon icon-home',
       permission: [],
-      url: ['/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre'],
+      url: [
+        '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
+        '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre/:id/chi-tiet',
+      ],
     },
     {
       title: 'Danh mục',

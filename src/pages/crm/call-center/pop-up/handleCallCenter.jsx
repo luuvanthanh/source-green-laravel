@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Session, UA, C } from 'sip.js';
+import { useDispatch } from 'dva';
+import { isEmpty } from 'lodash';
 
 let config;
 let ua;
@@ -154,7 +156,7 @@ const handleInboundCall = () => {
 
 const handleOutboundCall = () => {
   const [outboundStatus, setOutboundStatus] = useState('');
-  const [outboundEvent, setOutboundEvent] = useState({});
+  const dispatch = useDispatch();
 
   const outboundContext = useCallback((phoneNumber, playerRef) => {
     const player = playerRef;
@@ -194,8 +196,8 @@ const handleOutboundCall = () => {
         }
       });
 
-      session.on('accepted', (response) => {
-        console.log('%cĐỒNG Ý (GỌI ĐI)', 'color: #2ecc71; font-weight: bold', response);
+      session.on('accepted', () => {
+        console.log('%cĐỒNG Ý (GỌI ĐI)', 'color: #2ecc71; font-weight: bold');
         setOutboundStatus('ACCEPTED');
       });
       session.on('rejected', () => {
@@ -211,8 +213,15 @@ const handleOutboundCall = () => {
         setOutboundStatus('FAILED');
       });
       session.on('bye', (response) => {
-        setOutboundEvent(response);
-        console.log('%cKẾT THÚC (GỌI ĐI)', 'color: red; font-weight: bold', response);
+        if (!isEmpty(response)) {
+          dispatch({
+            type: 'crmManagementCall/OUTBOUND_HISTORY',
+            payload: {
+              outboundHistory: response,
+            },
+          });
+        }
+        console.log('%cKẾT THÚC (GỌI ĐI)', 'color: red; font-weight: bold');
         setOutboundStatus('BYE');
       });
       session.on('unavailable', () => {
@@ -240,7 +249,7 @@ const handleOutboundCall = () => {
     }
   }, []);
 
-  return { outboundStatus, outboundEvent, outboundContext };
+  return { outboundStatus, outboundContext };
 };
 
 const handleHangup = () => {
@@ -267,4 +276,48 @@ const handleReject = () => {
   });
 };
 
-export { handleInboundCall, handleOutboundCall, handleHangup, handleAnswer, handleReject };
+const handleTransfer = (
+  username = 23389,
+  password = 'crm@cmc2018',
+  hostname = 'kam-01.api-connect.io',
+  port = 7443,
+  path = '',
+) => {
+  const configTransfer = {
+    displayName: username,
+    uri: `sip:${username}@${hostname}`,
+    transportOptions: { wsServers: [`wss://${hostname}:${port}${path}`] },
+    authorizationUsersip: username,
+    password,
+    sessionDescriptionHandlerOptions: {
+      constraints: {
+        audio: true,
+        video: false,
+      },
+    },
+  };
+  const optionUa = {
+    activeAfterTransfer: false,
+  };
+  const uaTransfer = new UA(configTransfer);
+  ua.on('invite', (session) => {
+    session.refer(uaTransfer, optionUa);
+  });
+};
+
+const stopSession = () => {
+  if (!isEmpty(ua) || ua?.status === 3) {
+    // ua.stop();
+    ua.unregister();
+  }
+};
+
+export {
+  handleInboundCall,
+  handleOutboundCall,
+  handleHangup,
+  handleAnswer,
+  handleReject,
+  handleTransfer,
+  stopSession,
+};

@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import * as services from './services';
 
   export default {
@@ -31,8 +32,15 @@ import * as services from './services';
                 ...i,
                 toolGroup: i?.curriculumReviewGroupByToolGroups[0]?.toolGroup,
                 children: 
-                   i?.curriculumReviewGroupByToolGroups[0]?.curriculumReviews,
-                
+                   i?.curriculumReviewGroupByToolGroups[0]?.curriculumReviews?.map(y =>
+                    ({
+                       ...y,
+                       toolDetail: {
+                         ...y?.toolDetail,
+                         fileUrl: !isEmpty(y?.toolDetail?.fileUrl) ? JSON.parse(y?.toolDetail?.fileUrl) : "",
+                       }
+                    }),
+                   ),
               }))
             )
           }))

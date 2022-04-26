@@ -70,10 +70,15 @@ export function update(data = {}) {
   });
 }
 
-export function getStudent(params) {
+export function getStudent(data) {
   return request('/v1/student-infos', {
     method: 'GET',
-    params,
+    params: {
+      ...data,
+      orderBy: 'created_at',
+      sortedBy: 'asc',
+      searchJoin: 'and',
+    },
   });
 }
 
@@ -94,6 +99,8 @@ export function details(params = {}) {
         'marketingProgram',
         'customerTag.tag',
         'ssoAccount',
+        'historyCall',
+        'historyCall.employee',
       ]),
     },
   });
@@ -155,7 +162,7 @@ export function getDistricts(params) {
     method: 'GET',
     params: {
       // ...params,
-      city_id : params.city_id,
+      city_id: params.city_id,
       orderBy: 'name',
     },
   });
@@ -256,9 +263,8 @@ export function updateEvents(data = {}) {
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: data.date,
-          targetValue: Helper.getDate(data.time,  variables.DATE_FORMAT.TIME_FULL),
+          targetValue: Helper.getDate(data.time, variables.DATE_FORMAT.TIME_FULL),
         }),
-    
       }),
       date: Helper.getDateTime({
         value: Helper.setDate({

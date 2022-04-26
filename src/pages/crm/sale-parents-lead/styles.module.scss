@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 .wrapper-modal {
   :global(.ant-modal-footer) {
     display: flex;
@@ -6,31 +6,30 @@
     width: 100%;
     justify-content: space-between;
   }
- 
-    :global(.ant-input[disabled]) {
-      color: #3e4247 !important;
-      background-color: #eef0f4 !important;
-      opacity: 1 !important;
-    }
-    :global(.ant-picker.ant-picker-disabled) {
-      color: #3e4247 !important;
-      background-color: #eef0f4 !important;
-      opacity: 1 !important;
-    }
-    :global(.ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
-      color: #3e4247 !important;
-      background-color: #eef0f4 !important;
-      opacity: 1 !important;
-    }
-    :global(.ant-select-arrow) {
-      color: #eef0f4 !important;
-      opacity: 1 !important;
-    }
-    :global(.ant-picker-input > input[disabled]) {
-      color: #3e4247 !important;
-      opacity: 1 !important;
-    }
 
+  :global(.ant-input[disabled]) {
+    color: #3e4247 !important;
+    background-color: #eef0f4 !important;
+    opacity: 1 !important;
+  }
+  :global(.ant-picker.ant-picker-disabled) {
+    color: #3e4247 !important;
+    background-color: #eef0f4 !important;
+    opacity: 1 !important;
+  }
+  :global(.ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+    color: #3e4247 !important;
+    background-color: #eef0f4 !important;
+    opacity: 1 !important;
+  }
+  :global(.ant-select-arrow) {
+    color: #eef0f4 !important;
+    opacity: 1 !important;
+  }
+  :global(.ant-picker-input > input[disabled]) {
+    color: #3e4247 !important;
+    opacity: 1 !important;
+  }
 }
 
 .wrapper-modal-check {
@@ -125,7 +124,10 @@
     border-radius: 50%;
     color: #c4c4c4;
   }
-  :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle) {
+  :global(.ant-steps-item-custom.ant-steps-item-process
+      .ant-steps-item-icon
+      > .ant-steps-icon
+      .anticon-check-circle) {
     background-color: #3bb54a;
     color: $white;
     border-radius: 50%;
@@ -263,4 +265,18 @@
     font-weight: 700;
     color: white !important;
   }
+}
+
+.phone-input {
+  :global(.ant-input) {
+    border: none;
+    pointer-events: none;
+    padding: 0;
+    font-weight: bold;
+  }
+}
+
+.call-icon {
+  cursor: pointer;
+  margin: 5px 0 0 10px;
 }

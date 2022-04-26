@@ -6,6 +6,7 @@ export default {
     data: [],
     saler: [],
     extensions: [],
+    switchboard: [],
     pagination: {
       total: 0,
     },
@@ -28,6 +29,10 @@ export default {
     SET_EXTENSIONS: (state, { payload }) => ({
       ...state,
       extensions: payload?.parsePayload.map((item) => ({ ...item, name: item.user_id_cmc })),
+    }),
+    SET_SWITCHBOARD: (state, { payload }) => ({
+      ...state,
+      switchboard: payload.map((item) => ({ id: item.number, name: item.number })),
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -81,6 +86,20 @@ export default {
           payload: {
             parsePayload: response.parsePayload,
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_SWITCHBOARD({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSwitchboard, payload);
+        yield saga.put({
+          type: 'SET_SWITCHBOARD',
+          payload: response.payload,
         });
       } catch (error) {
         yield saga.put({

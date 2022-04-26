@@ -1,0 +1,113 @@
+@import "@/assets/styles/mixins.scss";
+
+.dropdown {
+  display: flex;
+  justify-content: center;
+  padding-right: 15px;
+  position: relative;
+  align-items: center;
+  cursor: pointer;
+  &::after {
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+    border-right: 0.3em solid transparent;
+    border-top: 0.3em solid;
+    color: $gray;
+    content: "";
+    display: inline-block;
+    height: 0;
+    margin-left: 0.255em;
+    margin-top: -2px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    vertical-align: 0.255em;
+    width: 0;
+    @include transition-slow();
+  }
+
+  &:hover {
+    color: $blue;
+  }
+}
+
+.menuIcon {
+  margin-right: rem(5);
+}
+
+.content {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  padding: 0 5px;
+  h3 {
+    color: rgba(0, 0, 0, 0.85);
+    font-family: $base__font-family;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 22px;
+    margin-bottom: 0;
+    text-align: left;
+    width: 100%;
+  }
+
+  p {
+    color: rgba(0, 0, 0, 0.85);
+    font-family: $base__font-family;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 18px;
+    margin-bottom: 0;
+    opacity: 0.65;
+    text-align: left;
+  }
+}
+.role {
+  margin-bottom: 0;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: 0.3s all ease;
+  &:hover,
+  &.actived {
+    background: $text-success;
+    cursor: pointer;
+    color: $white;
+  }
+}
+.dropdownUser {
+  min-width: 200px;
+}
+
+.button-cancel {
+  font-family: $base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-form-label;
+  cursor: pointer;
+  text-decoration-line: underline;
+}
+
+.wrapper-modal-check {
+  :global(.ant-modal-body) {
+    padding: 24px 24px 0px 24px;
+  }
+  :global(.card) {
+    margin-bottom: 0px;
+  }
+  :global(.ant-modal-content) {
+    border-radius: 12px;
+  }
+  :global(.ant-modal-header) {
+    border-radius: 12px 12px 0px 0px;
+  }
+  .wrapper-modal-footer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+}

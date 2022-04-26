@@ -6,7 +6,10 @@ export default {
     data: [],
     lead: [],
     potential: [],
-    isCall: false,
+    isClickToCall: false,
+    quickPhoneNumber: '',
+    quickStatus: '',
+    outboundHistory: {},
     pagination: {
       total: 0,
     },
@@ -39,9 +42,16 @@ export default {
       ...state,
       potential: payload.parsePayload,
     }),
-    SET_IS_CALL: (state, { payload }) => ({
+    SET_IS_CLICK: (state, { payload }) => ({
       ...state,
-      isCall: payload,
+      isClickToCall: payload?.isClickToCall,
+      quickPhoneNumber: payload?.quickPhoneNumber,
+      quickStatus: payload?.quickStatus,
+      // outboundHistory: payload?.outboundHistory,
+    }),
+    SET_OUTBOUND_HISTORY: (state, { payload }) => ({
+      ...state,
+      outboundHistory: payload?.outboundHistory,
     }),
   },
   effects: {
@@ -100,12 +110,17 @@ export default {
         });
       }
     },
-    *IS_CALL({ payload, callback }, saga) {
+    *IS_CLICK({ payload }, saga) {
       yield saga.put({
-        type: 'SET_IS_CALL',
+        type: 'SET_IS_CLICK',
         payload,
       });
-      callback();
+    },
+    *OUTBOUND_HISTORY({ payload }, saga) {
+      yield saga.put({
+        type: 'SET_OUTBOUND_HISTORY',
+        payload,
+      });
     },
     *GET_SALER({ payload, callback }, saga) {
       try {

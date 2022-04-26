@@ -148,7 +148,6 @@ const Index = memo(({ classId, branchId }) => {
       ),
     },
   ];
-console.log("listAttendancesByStatus",listAttendancesByStatus)
   const cancelModal = () => {
     setVisible(false);
     setSearch({
@@ -206,7 +205,7 @@ console.log("listAttendancesByStatus",listAttendancesByStatus)
             <TabPane tab={`Không phép (${report?.unpaidLeave})`} key="UNPAID_LEAVE" />
             <TabPane tab={`Có phép (${report?.annualLeave})`} key="ANNUAL_LEAVE" />
           </Tabs>
-          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 555}>
+          <Scrollbars autoHeight autoHeightMax={340}>
             {!isEmpty(listAttendancesByStatus?.data) && (
               <List
                 className={styles['list-container']}

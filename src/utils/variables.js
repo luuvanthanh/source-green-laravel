@@ -36,6 +36,8 @@ export const variables = {
   INPUT_DATE: 'inputDate',
   SWITCH: 'switch',
   AUTO_COMPLETE: 'AutoComplete',
+  DATE_REGISTERS_BIRTHDAY: 'registersBirthDay',
+  DATE_REGISTERS_DAY: 'registersDay',
   // RULES
   RULES: {
     EMPTY: { required: true, message: 'Vui lòng không được để trống trường này' },
@@ -294,10 +296,21 @@ export const variables = {
     INBOUND: 'Cuộc gọi đến',
     OUTBOUND: 'Cuộc gọi đi',
   },
+  DIRECTION_ENG: {
+    INBOUND: 'INBOUND',
+    OUTBOUND: 'OUTBOUND',
+  },
   DIRECTION_TYPE: [
     { id: 'INBOUND', name: 'Cuộc gọi đến' },
     { id: 'OUTBOUND', name: 'Cuộc gọi đi' },
   ],
+  CAUSE_ENG: {
+    NORMAL_CLEARING: 'NORMAL_CLEARING',
+    NORMAL_TEMPORARY_FAILURE: 'NORMAL_TEMPORARY_FAILURE',
+    CALL_REJECTED: 'CALL_REJECTED',
+    NO_ANSWER: 'NO_ANSWER',
+    ORIGINATOR_CANCEL: 'ORIGINATOR_CANCEL',
+  },
   CALL_TYPE: [
     { id: 'CANCELED', name: 'Đã huỷ' },
     { id: 'REJECTED', name: 'Từ chối' },

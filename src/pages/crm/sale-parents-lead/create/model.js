@@ -71,6 +71,10 @@ export default {
         isError: false,
       },
     }),
+    SET_DETAILS_CALL: (state, { payload }) => ({
+      ...state,
+      details: payload.parsePayload,
+    }),
     SET_STUDENT: (state, { payload }) => ({
       ...state,
       details: payload.parsePayload,
@@ -153,7 +157,9 @@ export default {
     }),
     SET_PARENT_POTENTIAL: (state, { payload }) => ({
       ...state,
-      parentPotential: payload.parsePayload.filter( i => i?.status_hard === true && i?.use === false),
+      parentPotential: payload.parsePayload.filter(
+        (i) => i?.status_hard === true && i?.use === false,
+      ),
     }),
     SET_PROGRAM_INTEREST: (state, { payload }) => ({
       ...state,
@@ -234,6 +240,17 @@ export default {
           type: 'SET_DETAILS',
           payload: response,
         });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DETAILS_CALL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.details, payload);
+        callback(response?.parsePayload);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -380,7 +397,7 @@ export default {
         callback(null, error);
       }
     },
-    *GET_EVENTS({ payload , callback}, saga) {
+    *GET_EVENTS({ payload, callback }, saga) {
       try {
         yield saga.put({
           type: 'INIT_STATE',
@@ -574,7 +591,7 @@ export default {
         });
       }
     },
-     *ADD_ACCOUNT({ payload, callback }, saga) {
+    *ADD_ACCOUNT({ payload, callback }, saga) {
       try {
         yield saga.call(services.addAccount, payload);
         callback(payload);

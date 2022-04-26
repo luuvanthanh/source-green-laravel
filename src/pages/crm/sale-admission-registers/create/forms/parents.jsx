@@ -495,7 +495,7 @@ const General = memo(
 
                               );
                             })}
-                            {!status ?
+                            {!status  &&  details?.register_status !== "CANCEL_REGISTER" ?
                               <Pane className="pl20 pb20" >
                                 <Button
                                   color="success"
@@ -517,15 +517,18 @@ const General = memo(
                   </div>
                 </Pane>
                 <Pane className="d-flex justify-content-between align-items-center mb20">
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={loadingSubmit}
-                  >
-                    Lưu
-                  </Button>
+                  {
+                    details?.register_status === "CANCEL_REGISTER" ? "" :
+                      <Button
+                        className="ml-auto px25"
+                        color="success"
+                        htmlType="submit"
+                        size="large"
+                        loading={loadingSubmit}
+                      >
+                        Lưu
+                      </Button>
+                  }
                 </Pane>
               </Pane>
             </Pane >

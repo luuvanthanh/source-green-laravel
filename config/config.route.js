@@ -205,6 +205,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
+          {
+            path: '/chuong-trinh-hoc/tieng-anh',
+            component: './criteria/english',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat',
+            component: './criteria/physical',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
         ],
       },
       // CRITERIA
@@ -1749,6 +1761,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
+          {
+            path: '/quan-ly-nhan-su/cham-cong-thu-cong',
+            component: './hrm/manual-timekeeping',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/quan-ly-nhan-su/cham-cong-thu-cong/tao-moi',
+            component: './hrm/manual-timekeeping/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
         ],
       },
       // HRM
@@ -3088,7 +3112,7 @@ export default [
         routes: [
           {
             path: '/su-phat-trien-cua-tre',
-            redirect: '/su-phat-trien-cua-tre/danh-muc/ky-nang',
+            redirect: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
           },
           {
             path: '/su-phat-trien-cua-tre/danh-muc/ky-nang',
@@ -3171,6 +3195,12 @@ export default [
           {
             path: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
             component: './child-develop/report',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre/:id/chi-tiet',
+            component: './child-develop/report/create',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

@@ -55,4 +55,15 @@ export default class Helpers {
         return 'CN';
     }
   };
+
+  static statusTuition = (type) => {
+    if (type === variables.STATUS.UNPAID) {
+      return <Tag color="danger">{variables.STATUS_TUITION.UNPAID}</Tag>;
+    }
+    if (type === variables.STATUS.PAID) {
+      return <Tag color="success">{variables.STATUS_TUITION.PAID}</Tag>;
+    }
+    return <Tag color="yellow">{variables.STATUS_TUITION.PAYING}</Tag>;
+  };
+
 }

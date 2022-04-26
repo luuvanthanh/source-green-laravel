@@ -11,12 +11,21 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation, useRouteMatch } from 'umi';
-import stylesModule from './styles.module.scss';
 import variablesModule from '../pop-up/variables';
+import stylesModule from './styles.module.scss';
+
+const STATUS_CALL = [
+  { id: 1, type: 'NORMAL_CLEARING', name: 'Đã nhận', direction: 'INBOUND' },
+  { id: 2, type: 'NORMAL_TEMPORARY_FAILURE', name: 'Từ chối', direction: 'INBOUND' },
+  { id: 3, type: 'CALL_REJECTED', name: 'Gọi nhở', direction: 'INBOUND' },
+  { id: 4, type: 'NORMAL_CLEARING', name: 'Đã gọi', direction: 'OUTBOUND' },
+  { id: 5, type: 'NO_ANSWER,ORIGINATOR_CANCEL', name: 'Không bắt máy', direction: 'OUTBOUND' },
+  { id: 6, type: 'CALL_REJECTED', name: 'Máy bận', direction: 'OUTBOUND' },
+];
 
 const Index = () => {
   const [
-    { data, pagination, saler, extensions },
+    { data, pagination, saler, extensions, switchboard },
     loading,
   ] = useSelector(({ loading: { effects }, crmHistoryCall }) => [crmHistoryCall, effects]);
   const { query, pathname } = useLocation();
@@ -32,18 +41,11 @@ const Index = () => {
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
-  const [switchboard, setSwitchBoard] = useState([]);
-
   const onLoad = () => {
     dispatch({
       type: 'crmHistoryCall/GET_DATA',
       payload: {
         ...search,
-      },
-      callback: (response) => {
-        if (response) {
-          setSwitchBoard(response?.meta.switchboard.map((item) => ({ id: item, name: item })));
-        }
       },
     });
     history.push({
@@ -53,7 +55,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    onLoad();
     dispatch({
       type: 'crmHistoryCall/GET_SALER',
       payload: {
@@ -63,6 +64,13 @@ const Index = () => {
     dispatch({
       type: 'crmHistoryCall/GET_EXTENSIONS',
     });
+    dispatch({
+      type: 'crmHistoryCall/GET_SWITCHBOARD',
+    });
+  }, []);
+
+  useEffect(() => {
+    onLoad();
   }, [search]);
 
   const debouncedSearch = debounce((value, type) => {
@@ -79,6 +87,16 @@ const Index = () => {
       ...prev,
       start_date,
       end_date,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    }));
+  }, 300);
+
+  const debouncedSearchStatus = debounce((value) => {
+    setSearch((prev) => ({
+      ...prev,
+      direction: value?.direction,
+      hangup_cause: value?.type,
       page: variables.PAGINATION.PAGE,
       limit: variables.PAGINATION.PAGE_SIZE,
     }));
@@ -104,6 +122,11 @@ const Index = () => {
 
   const onChangeSelect = (e, type) => {
     debouncedSearch(e, type);
+  };
+
+  const onChangeSelectStatus = (e) => {
+    const item = STATUS_CALL.find((i) => i.id === e);
+    debouncedSearchStatus(item);
   };
 
   const changePagination = ({ page, limit }) => {
@@ -236,7 +259,7 @@ const Index = () => {
         title: 'Trạng thái',
         key: 'call_status',
         width: 150,
-        render: (record) => Helper.getStatusCall(record?.call_status),
+        render: (record) => Helper.getStatusCall(record?.direction, record?.hangup_cause),
       },
       {
         title: 'Kết quả cuộc gọi',
@@ -343,9 +366,9 @@ const Index = () => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  data={[{ id: null, name: 'Tất cả trạng thái' }, ...variables.CALL_TYPE]}
+                  data={[{ id: null, name: 'Tất cả trạng thái' }, ...STATUS_CALL]}
                   name="call_status"
-                  onChange={(e) => onChangeSelect(e, 'call_status')}
+                  onChange={(e) => onChangeSelectStatus(e)}
                   type={variables.SELECT}
                   allowClear={false}
                 />

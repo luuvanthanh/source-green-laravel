@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
-import { Form } from 'antd';
-import {  useHistory, useLocation } from 'umi';
+import { Form, notification } from 'antd';
+import { useLocation } from 'umi';
 import classnames from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 
@@ -14,6 +14,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import C3Chart from 'react-c3js';
 import 'c3/c3.css';
+import variablesModule from './variables';
 import styles from './styles.modules.scss';
 
 const General = memo(() => {
@@ -24,8 +25,6 @@ const General = memo(() => {
     dataPipiPupu,
     groupProperty,
     detailsStudent,
-    dataWater,
-    dataHeight,
   ] = useSelector(({ OPProfile }) => [
     OPProfile.branches,
     OPProfile.classes,
@@ -33,8 +32,6 @@ const General = memo(() => {
     OPProfile.dataPipiPupu,
     OPProfile.groupProperty,
     OPProfile.detailsStudent,
-    OPProfile.dataWater,
-    OPProfile.dataHeight,
   ]);
   const dispatch = useDispatch();
   const [loadData, setLoadData] = useState(false);
@@ -42,14 +39,14 @@ const General = memo(() => {
   const [checkStudent, setCheckStudent] = useState(false);
   const [pipi, setPipi] = useState();
   const [pupu, setPupu] = useState([]);
+  const [water, setWater] = useState([]);
   const { query } = useLocation();
+  const [dataHeight, setDataHeight] = useState({});
 
   const [search, setSearch] = useState({
     id: query?.id,
     SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
   });
-
-  const history = useHistory();
 
   const BAR = {
     data: {
@@ -72,9 +69,7 @@ const General = memo(() => {
         ].flat(),
         [
           'Bình nước',
-          dataWater?.length > 0
-            ? dataWater.map((i) => (i?.waterBottle?.type ? i?.waterBottle?.type : ''))
-            : '',
+          water?.length > 0 ? water[0]?.criteriaReportGroupByMonths.map((i) => i?.totalAmount) : '',
         ].flat(),
       ],
       type: 'bar',
@@ -94,9 +89,6 @@ const General = memo(() => {
         label: 'Số lần đi',
       },
       y2: {
-        padding: {
-          bottom: 0,
-        },
         show: true,
         label: 'Bình nước',
       },
@@ -104,26 +96,12 @@ const General = memo(() => {
     color: {
       pattern: ['#27A600', '#3B36DD', '#FF8300'],
     },
-    // legend: {
-    //   show: true,
-    //   position: 'inset',
-    //   inset: {
-    //     anchor: 'top-right',
-    //     x: undefined,
-    //     y: undefined,
-    //     step: undefined,
-    //   },
-    // },
   };
 
   const data = {
     x: 'x',
     groups: [['Pipi', 'Pupu']],
     columns: [
-      // ['x', pipi?.length > 0 ?  pipi[0]?.criteriaReportGroupByMonths.map( i => `${i?.month}/${i.year}` ) : ""].flat(),
-      // ['Pipi',pipi?.length > 0 ?  pipi[0]?.criteriaReportGroupByMonths.map( i => i?.totalAmount) : ""].flat(),
-      // ['Pupu',pupu?.length > 0 ?  pupu[0]?.criteriaReportGroupByMonths.map( i => i?.totalAmount) : ""].flat(),
-      // ['Bình nước',dataWater?.length > 0 ?  dataWater.map( i => i?.waterBottle?.type ? i?.waterBottle?.type : "") : ""].flat(),
     ],
 
     types: {
@@ -131,8 +109,6 @@ const General = memo(() => {
       Pupu: 'area',
     },
     colors: {
-      // UpperBand: "#8A3FFC",
-      // LowerBand: "#005D5D"
       Pipi: '#8A3FFC',
       Pupu: '#005D5D',
     },
@@ -202,7 +178,7 @@ const General = memo(() => {
   };
 
   const onChangeData = () => {
-    const dataPipi = groupProperty.filter((i) => i.code === 'PIPI' || i.code === 'PUPU');
+    const dataPipi = groupProperty.filter((i) => i.code === 'PIPI' || i.code === 'PUPU' || i.code === 'WATERBOTTLE');
     dispatch({
       type: 'OPProfile/GET_DATA',
       payload: { ...search, CriteriaPropertyIds: dataPipi.map((i) => i.id) },
@@ -211,6 +187,7 @@ const General = memo(() => {
           setFormCheck(true);
           setPipi(res?.filter((i) => i?.criteriaGroupProperty?.code === 'PIPI'));
           setPupu(res?.filter((i) => i?.criteriaGroupProperty?.code === 'PUPU'));
+          setWater(res?.filter((i) => i?.criteriaGroupProperty?.code === 'WATERBOTTLE'));
         }
       },
     });
@@ -230,7 +207,100 @@ const General = memo(() => {
     dispatch({
       type: 'OPProfile/GET_HEIGHT',
       payload: search,
+      callback(res) {
+        if (res) {
+          setDataHeight(res);
+        }
+      },
     });
+    setDataHeight({});
+  };
+
+
+  const onchangeMedical = () => {
+    if (detailsStudent?.student?.studentCrmId) {
+      dispatch({
+        type: 'OPProfile/GET_MEDICAL',
+        payload: { student_info_id: detailsStudent?.student?.studentCrmId },
+        callback(res) {
+          if (res?.parsePayload[0]?.medicalInfo?.medicalDeclareInfo?.length > 0) {
+            const win = window.open(`/crm/sale/dang-ky-nhap-hoc/${res?.parsePayload[0]?.id}/chi-tiet?type=medical`, "_blank");
+            win.focus();
+          } if (!res?.parsePayload[0]?.medicalInfo?.medicalDeclareInfo?.length > 0) {
+            notification.error({
+              message: 'THÔNG BÁO',
+              description: `Học sinh ${detailsStudent?.student?.fullName} chưa được khai báo y tế.`,
+            });
+          }
+        },
+      });
+    } else {
+      notification.error({
+        message: 'THÔNG BÁO',
+        description: `Học sinh ${detailsStudent?.student?.fullName} chưa được khai báo y tế.`,
+      });
+    }
+  };
+
+  const onchangeEvaluate = () => {
+    if (detailsStudent?.student?.studentCrmId) {
+      dispatch({
+        type: 'OPProfile/GET_MEDICAL',
+        payload: { student_info_id: detailsStudent?.student?.studentCrmId },
+        callback(res) {
+          if (res?.parsePayload[0]?.childEvaluateInfo?.length > 0) {
+            const win = window.open(`/crm/sale/dang-ky-nhap-hoc/${res?.parsePayload[0]?.id}/chi-tiet?type=childEvaluation`, "_blank");
+            win.focus();
+          } if (!res?.parsePayload[0]?.childEvaluateInfo?.length > 0) {
+            notification.error({
+              message: 'THÔNG BÁO',
+              description: `Học sinh ${detailsStudent?.student?.fullName} chưa được đánh giá.`,
+            });
+          }
+        },
+      });
+    } else {
+      notification.error({
+        message: 'THÔNG BÁO',
+        description: `Học sinh ${detailsStudent?.student?.fullName} chưa được đánh giá.`,
+      });
+    }
+  };
+
+  const onchangeCurriculum = () => {
+    const win = window.open(`/chuong-trinh-hoc/bao-cao-quan-tri-hs/hoc-thuat-theo-tung-goc-giao-cu?FromDate=${search?.FromDate}&ToDate=${search?.ToDate}&branchId=${detailsStudent?.student?.class?.branchId}&ClassId=${detailsStudent?.student?.class?.id}&page=1&limit=10&studentName=${detailsStudent?.student?.fullName}`, "_blank");
+    win.focus();
+  };
+
+  const onchangechilDevelop = () => {
+    const win = window.open(`/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre?key=${detailsStudent?.student?.fullName}`, "_blank");
+    win.focus();
+  };
+
+  const onchangePhysical = () => {
+    const win = window.open(`/chuong-trinh-hoc/the-chat?&BranchId=${detailsStudent?.student?.class?.branchId}&ClassId=${detailsStudent?.student?.class?.id}&FromDate=${search?.FromDate}&ToDate=${search?.ToDate}&StudentId=${detailsStudent?.student?.id}`, "_blank");
+    win.focus();
+  };
+
+  const onchangeEnglish = () => {
+    const win = window.open(`/chuong-trinh-hoc/tieng-anh?&BranchId=${detailsStudent?.student?.class?.branchId}&ClassId=${detailsStudent?.student?.class?.id}&FromDate=${search?.FromDate}&ToDate=${search?.ToDate}&StudentId=${detailsStudent?.student?.id}`, "_blank");
+    win.focus();
+  };
+
+  const getStatus = (status, text = '') => {
+    const nameStatus = variablesModule.STATUS_NAME[status];
+    if (status && status !== 'NORMAL') {
+      return (
+        <span className="text-danger ml5">
+          {`${text ? `${text} ` : ''} ${text ? String(nameStatus).toLowerCase() : nameStatus}`}
+        </span>
+      );
+    }
+    return (
+      <span className="text-success ml5">
+        {nameStatus || variablesModule.STATUS_NAME.NORMAL}
+      </span>
+    );
   };
 
   return (
@@ -369,13 +439,16 @@ const General = memo(() => {
                       </Text>
                       <p className={styles.content}>
                         Cập nhật{' '}
-                        {Helper.getDate(
-                          dataPipiPupu[0]?.criteriaGroupProperty?.lastModificationTime,
+                        {dataHeight?.studentCriterias?.length > 0 && ( dataHeight?.studentCriterias[0]?.lastModificationTime ? 
+                         Helper.getDate(
+                          dataHeight?.studentCriterias[0]?.lastModificationTime,
                           variables.DATE_FORMAT.DATE_TIME,
-                        )}
+                        ) : Helper.getDate(
+                          dataHeight?.studentCriterias[0]?.creationTime,
+                          variables.DATE_FORMAT.DATE_TIME,
+                        ))}
                       </p>
                     </div>
-                    <Button className={styles.btn}>Chi tiết</Button>
                   </div>
                   <div className="d-flex justify-content-between mb15">
                     <div className={classnames(styles['table-content'])}>
@@ -388,8 +461,8 @@ const General = memo(() => {
                         <p className={styles.title}>Chiều cao</p>
                         <h2 className={styles.number}>
                           {JSON.stringify(dataHeight) !== '{}'
-                            ? dataHeight?.studentCriterias[0]?.criteriaGroupProperty?.orderIndex
-                            : 0}{' '}
+                            ? dataHeight?.heightReport[dataHeight?.heightReport?.length - 1]?.value
+                            : 0}
                         </h2>
                       </div>
                     </div>
@@ -403,7 +476,7 @@ const General = memo(() => {
                         <p className={styles.title}>Cân nặng (kg)</p>
                         <h2 className={styles.number}>
                           {JSON.stringify(dataHeight) !== '{}'
-                            ? dataHeight?.studentCriterias[1]?.criteriaGroupProperty?.orderIndex
+                            ? dataHeight?.weightReport[dataHeight?.weightReport?.length - 1]?.value
                             : 0}
                         </h2>
                       </div>
@@ -411,10 +484,9 @@ const General = memo(() => {
                   </div>
 
                   <C3Chart className="multi-chart" data={data} axis={axis} />
-                  <div className={styles['title-table']}>Điểm BMI hiện tại: 22.22</div>
+                  <div className={styles['title-table']}>Điểm BMI hiện tại:  {JSON.stringify(dataHeight) !== '{}' ? (dataHeight?.bmiConclusion?.bmi)?.toFixed(2)?.replace(/\d(?=(\d{3})+\.)/g, '$&,') : 0}</div>
                   <div className={styles['conclude-table']}>
-                    <h3 className={styles.title}>Kết luận:</h3>
-                    <p className={styles.content}>Bé có chỉ số hoàn toàn bình thường</p>
+                    <h3 className={styles.title}>Kết luận: {JSON.stringify(dataHeight) !== '{}' ? (getStatus(dataHeight?.bmiConclusion?.status, 'Học sinh')) : ""}</h3>
                   </div>
                 </div>
               </div>
@@ -428,14 +500,13 @@ const General = memo(() => {
                       <p className={styles.content}>
                         Cập nhập{' '}
                         {Helper.getDate(
-                          dataPipiPupu[0]?.criteriaGroupProperty?.lastModificationTime,
+                          dataPipiPupu[0]?.lasTModificationTime,
                           variables.DATE_FORMAT.DATE_TIME,
                         )}
                       </p>
                     </div>
-                    <Button className={styles.btn}>Chi tiết</Button>
                   </div>
-                  <div className="d-flex justify-content-between mb15 pl10 pr10">
+                  <div className="d-flex justify-content-between pl10 pr10">
                     <div className={classnames(styles['table-content'])}>
                       <img
                         src="/images/objectProfile/pipi.svg"
@@ -458,7 +529,7 @@ const General = memo(() => {
                       <div className="pl15">
                         <p className={styles.title}>Số lần pupu</p>
                         <h2 className={styles.number}>
-                          {pupu?.length > 0 ? pipi[0]?.totalAmount : 0}
+                          {pupu?.length > 0 ? pupu[0]?.totalAmount : 0}
                         </h2>
                       </div>
                     </div>
@@ -471,18 +542,16 @@ const General = memo(() => {
                       <div className="pl15">
                         <p className={styles.title}>Bình nước</p>
                         <h2 className={styles.number}>
-                          {dataWater[dataWater?.length - 1]?.waterBottle?.type
-                            ? dataWater[dataWater?.length - 1]?.waterBottle?.type
-                            : '0'}
+                          {water?.length > 0 ? water[0]?.totalAmount : 0}
                         </h2>
                       </div>
                     </div>
                   </div>
                   <div className={classnames(styles['wraper-table'])}>
-                    <div className="mb15">
+                    <C3Chart {...BAR} />
+                    <div className="mb15 mt15 d-flex  justify-content-center">
                       <h3 className={styles.title}>Biểu đồ tình hình Pipi, Pupu, Uống nước</h3>
                     </div>
-                    <C3Chart {...BAR} />
                   </div>
                 </div>
               </div>
@@ -500,9 +569,7 @@ const General = memo(() => {
                   </div>
                   <Button
                     className={styles.btn}
-                    onClick={() =>
-                      history.push('/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre')
-                    }
+                    onClick={onchangechilDevelop}
                   >
                     Chi tiết
                   </Button>
@@ -516,7 +583,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Khai báo y tế</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn} onClick={onchangeMedical}>Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">
@@ -527,7 +594,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Đánh giá của phụ huynh</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn} onClick={onchangeEvaluate}>Chi tiết</Button>
                 </div>
               </div>
 
@@ -541,7 +608,9 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập giáo cụ</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn}
+                    onClick={onchangeCurriculum}
+                  >Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">
@@ -552,7 +621,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập thể chất</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn}   onClick={onchangePhysical}>Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">
@@ -563,7 +632,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập tiếng Anh</p>
                   </div>
-                  <Button className={styles.btn}>Chi tiết</Button>
+                  <Button className={styles.btn}  onClick={onchangeEnglish}>Chi tiết</Button>
                 </div>
               </div>
             </div>

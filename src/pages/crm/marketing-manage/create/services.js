@@ -157,7 +157,7 @@ export function detailsPosts(params = {}) {
     params:{
       ...params,
       include: Helper.convertIncludes([
-        'postFacebookInfo.articleReactionInfo,postFacebookInfo.articleCommentInfo',
+        'postFacebookInfo.page',
       ]),
     }
   });
@@ -449,5 +449,29 @@ export function removeFacebook(data = {}) {
     data: {
       ...data,
     }
+  });
+}
+
+export function getPostLike(params = {}) {
+  return request('/v1/article-reaction-infos', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params,
+  });
+}
+
+export function getPostComment(params = {}) {
+  return request('/v1/article-comment-infos', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params,
+  });
+}
+
+export function getpostTokenShare(params = {}) {
+  return request('/v1/quantity-shares', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params,
   });
 }
