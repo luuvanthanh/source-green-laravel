@@ -89,6 +89,10 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
             };
         }]);
 
+        if (!empty($attributes['key'])) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
+        }
+
         if (!empty($attributes['limit'])) {
             $manualCalculation = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
         } else {
