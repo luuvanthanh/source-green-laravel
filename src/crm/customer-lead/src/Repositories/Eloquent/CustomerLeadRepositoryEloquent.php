@@ -268,7 +268,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             ])->first();
 
             $data = array();
-            
+
             if (is_null($check)) {
                 $data['employee_id'] = $value['employee_id'];
                 $data['list_customer_lead'][] = ['customer_lead_id' => $value['customer_lead_id']];
@@ -427,12 +427,23 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         $response = Http::withToken($bearerToken)->get($url_email);
         $email = $response->json();
 
-        foreach ($email['data'] as $value) {
+        if (!is_null($email)) {
 
-            if ($value['customer_lead_id'] == $id) {
-                $url = $url_email . $value['id'];
+            foreach ($email['data'] as $value) {
 
-                $response = Http::withToken($bearerToken)->put($url, ['customer_group' => '1']);
+                if ($value['customer_lead_id'] == $id) {
+                    $url = $url_email . $value['id'];
+                    $response = Http::withToken($bearerToken)->put($url, ['customer_group' => '1']);
+
+                    if ($response->failed()) {
+                        $message = 'Có lỗi từ api Email Marketing';
+                     
+                        if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
+                            $message = 'Email Marketing: ' . json_decode($response->body())->error->message;
+                        }
+                        throw new HttpException($response->status(), $message);
+                    }
+                }
             }
         }
 
