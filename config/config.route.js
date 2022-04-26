@@ -1761,6 +1761,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
+          {
+            path: '/quan-ly-nhan-su/cham-cong-thu-cong',
+            component: './hrm/manual-timekeeping',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/quan-ly-nhan-su/cham-cong-thu-cong/tao-moi',
+            component: './hrm/manual-timekeeping/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
         ],
       },
       // HRM
