@@ -165,6 +165,7 @@ export function getAttendanceByStatus(params = {}) {
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
+      limit: 10000,
       include: Helper.convertIncludes([
         'parent',
         'class',

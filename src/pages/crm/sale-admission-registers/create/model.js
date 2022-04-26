@@ -80,7 +80,6 @@ export default {
     }),
     SET_TEST_INPUT: (state, { payload }) => ({
       ...state,
-      details: payload.parsePayload,
       testInputs: payload.parsePayload,
     }),
     SET_RELATIONSHIPS: (state, { payload }) => ({
@@ -449,9 +448,10 @@ export default {
         callback(null, error);
       }
     },
-    *DELETE_REGISTERS({ payload }, saga) {
+    *DELETE_REGISTERS({ payload, callback }, saga) {
       try {
-        yield saga.call(services.addCancelRegisters, payload);
+        const response = yield saga.call(services.addCancelRegisters, payload);
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

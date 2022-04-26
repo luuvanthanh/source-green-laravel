@@ -2,6 +2,7 @@ import { memo } from 'react';
 import PropTypes from 'prop-types';
 import { Helper, variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
+import variablesModules from './variables';
 
 const Index = memo(({ dataLike, hanDleChangeLike, paginationLike }) => {
   const header = () => {
@@ -26,12 +27,7 @@ const Index = memo(({ dataLike, hanDleChangeLike, paginationLike }) => {
         key: 'reaction_type',
         render: (record) => (
           <>
-          {record?.reaction_type === 'LIKE'? "Thích": "" }
-          {record?.reaction_type === 'CARE'? "Thương thương": "" }
-          {record?.reaction_type === 'HAHA'? "Cười": "" }
-          {record?.reaction_type === 'WOA'? "Ngạc nhiên": "" }
-          {record?.reaction_type === 'SAD'? "Buồn": "" }
-          {record?.reaction_type === 'ANGRY'? "Phẩn nộ": "" }
+          {variablesModules?.STATUS[record?.reaction_type]}
           </>
         ),
       },
