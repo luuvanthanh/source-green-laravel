@@ -4,6 +4,7 @@ namespace GGPHP\Crm\AdmissionRegister\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
+use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Category\Transformers\StatusAdmissionRegisterTransformer;
 use GGPHP\Crm\CustomerLead\Transformers\StudentInfoTransformer;
 
@@ -31,7 +32,7 @@ class AdmissionRegisterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'parentInfo', 'statusAdmissionRegister', 'testInput', 'medicalInfo', 'confirmTransporter', 'childEvaluateInfo', 'studentByChargeNow'];
+    protected $availableIncludes = ['studentInfo', 'parentInfo', 'statusAdmissionRegister', 'testInput', 'medicalInfo', 'confirmTransporter', 'childEvaluateInfo', 'studentByChargeNow', 'branch'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -114,5 +115,14 @@ class AdmissionRegisterTransformer extends BaseTransformer
         }
 
         return $this->item($admissionRegister->studentByChargeNow, new StudentInfoTransformer, 'StudentByChargeNow');
+    }
+
+    public function includeBranch(AdmissionRegister $admissionRegister)
+    {
+        if (empty($admissionRegister->branch)) {
+            return;
+        }
+
+        return $this->item($admissionRegister->branch, new BranchTransformer, 'Branch');
     }
 }
