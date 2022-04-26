@@ -137,7 +137,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         } else {
             $testSemester = $this->get();
         }
-        
+
         if (empty($testSemester['data']) && !empty($attributes['classId'])) {
             $testSemester['countStudent'] = Student::where('ClassId', $attributes['classId'])->get()->count();
         }
@@ -272,6 +272,49 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 $arrayClass = explode(',', $attributes['classId']);
                 $query->whereIn('ClassId', $arrayClass);
             });
+        }
+
+        if (!empty($attributes['key'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
+        } else {
+            $student = $this->studentRepositoryEloquent->get();
+        }
+
+        return $student;
+    }
+
+    public function reportTestSemester($attributes)
+    {
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('testSemester', function ($query) use ($attributes) {
+
+            if (!empty($attributes['assessmentPeriodId'])) {
+                $query->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
+            }
+            
+            if (!empty($attributes['status'])) {
+                $query->whereIn('Status', $attributes['status']);
+            }
+        });
+
+        if (!empty($attributes['branchId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent.classes', function ($query) use ($attributes) {
+                $query->where('BranchId', $attributes['branchId']);
+            });
+        }
+
+        if (!empty($attributes['classId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($attributes) {
+                $arrayClass = explode(',', $attributes['classId']);
+                $query->whereIn('ClassId', $arrayClass);
+            });
+        }
+
+        if (!empty($attributes['studentId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Id', $attributes['studentId']);
         }
 
         if (!empty($attributes['key'])) {

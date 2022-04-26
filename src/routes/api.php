@@ -214,6 +214,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
             $router->forBread();
         });
 
+        \GGPHP\ManualCalculation\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
         Route::group(['prefix' => 'crm', 'middleware' => []], function () {
             \GGPHP\ChildDevelop\TestSemester\RouteRegistrar::routes(function ($router) {
                 $router->forCrm();

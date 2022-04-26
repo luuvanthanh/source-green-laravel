@@ -32,6 +32,8 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('test-semesters', 'TestSemesterController');
             \Route::get('test-semester-students','TestSemesterController@testSemesterStudent');
+
+            \Route::get('report-test-semesters', 'TestSemesterController@reportTestSemester');
         });
     }
 
