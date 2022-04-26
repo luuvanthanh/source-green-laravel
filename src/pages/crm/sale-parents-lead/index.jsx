@@ -264,16 +264,25 @@ class Index extends PureComponent {
       payload: {},
     });
     dispatch({
-      type: 'crmSaleParentsLead/GET_EMPLOYEES',
-      payload: {},
-    });
-    dispatch({
       type: 'crmSaleParentsLead/GET_SEARCH',
       payload: {},
     });
     dispatch({
       type: 'crmSaleParentsLead/GET_BRANCH',
       payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsLead/GET_DIVISIONS',
+      payload: {},
+      callback: (res) => {
+        if (res) {
+          const item = res.parsePayload?.find(i => i?.code === 'GD');
+          dispatch({
+            type: 'crmSaleParentsLead/GET_EMPLOYEES',
+            payload: {divisionId: item?.id},
+          });
+        }
+      }
     });
   };
 
@@ -533,7 +542,7 @@ class Index extends PureComponent {
 
   onChangeExcel = () => {
     Helper.exportExcelCRM(
-      `/v1/template-excel-customer-leads`," ", `template-customer-lead.xlsx`,
+      `/v1/template-excel-customer-leads`, " ", `template-customer-lead.xlsx`,
     );
   };
 
@@ -661,7 +670,7 @@ class Index extends PureComponent {
                   >
                     Tạo mới
                   </Button>
-                  <AssignmentComponent dataSource={dataSource} />
+                  <AssignmentComponent dataSource={dataSource} employees={employees}/>
                   {/* <Button
                     color="success"
                     icon="next"
@@ -744,13 +753,13 @@ class Index extends PureComponent {
                       <FormItem
                         name="full_name"
                         data={[
-                          { full_name: 'Chọn tất cả nhân viên', id: null },
-                          { id: 'null', full_name: 'Chưa có nhân viên chăm sóc' },
+                          { fullName: 'Chọn tất cả nhân viên', employeeIdCrm: null },
+                          { employeeIdCrm: 'null', fullName: 'Chưa có nhân viên chăm sóc' },
                           ...employees,
                         ]}
                         onChange={(event) => this.onChangeSelect(event, 'employee_id')}
                         type={variables.SELECT}
-                        options={['id', 'full_name']}
+                        options={['employeeIdCrm', 'fullName']}
                         allowClear={false}
                         placeholder="Chọn nhân viên chăm sóc"
                       />

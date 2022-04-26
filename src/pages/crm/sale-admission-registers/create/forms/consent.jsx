@@ -138,6 +138,14 @@ const Students = memo(() => {
     }));
   };
 
+  const onChangeExcel = () => {
+    Helper.exportExcelCRM(
+      `/v1/export-confirm-transporters`,{
+        admission_register_id: params?.id,
+      }, `GiayDongY.docx`,
+    );
+  };
+
   return (
     <>
       <Pane>
@@ -268,11 +276,11 @@ const Students = memo(() => {
                     </div>
                   </div>
                   <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-                    <Button color="primary" icon="export" className="ml-2">
+                    <Button color="primary" icon="export" className="ml-2"  onClick={onChangeExcel}>
                       Xuất file giấy đồng ý
                     </Button>
                     {
-                      details?.status &&  details?.register_status !== "CANCEL_REGISTER"&& (
+                      details?.register_status !== "CANCEL_REGISTER"&& (
                         <Button
                           color="success"
                           htmlType="submit"

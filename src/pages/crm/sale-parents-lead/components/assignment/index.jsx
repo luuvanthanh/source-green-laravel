@@ -14,13 +14,13 @@ import stylesModule from '../../styles.module.scss';
 
 const Index = memo((props) => {
   // eslint-disable-next-line react/prop-types
-  const { dataSource } = props;
+  const { dataSource, employees } = props;
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [data, setData] = useState([]);
   const [employeeAllotment, setEmployeeAllotment] = useState([]);
-  const [dataUser, setDataUser] = useState([]);
   const dataAssignment = dataSource;
+  const dataEmployees = employees;
   const [employeesId, setEmployeesId] = useState([]);
   const { query } = useLocation();
   const handleChangeEmployee = (val, record) => {
@@ -61,9 +61,9 @@ const Index = memo((props) => {
         <Select
           value={value}
           onChange={(val) => handleChangeEmployee(val, record)}
-          dataSet={dataUser}
+          dataSet={dataEmployees}
           placeholder="Chọn"
-          options={['id', 'full_name']}
+          options={['employeeIdCrm', 'fullName']}
           className="w-100"
         />
       ),
@@ -71,14 +71,6 @@ const Index = memo((props) => {
   ];
 
   const onLoad = () => {
-    dispatch({
-      type: 'crmSaleAssignment/GET_EMPLOYEES',
-      callback: (response) => {
-        if (response) {
-          setDataUser(response?.parsePayload);
-        }
-      },
-    });
     const dataAssignment = dataSource;
     const payload = {
       customer_lead_id: dataAssignment
@@ -129,7 +121,7 @@ const Index = memo((props) => {
       type: 'crmSaleAssignment/ASSIGNMENT',
       payload: employeeAllotment.map((item) => ({
         ...item,
-        employee_info: dataUser.find(({ id }) => id === item.employee_id),
+        employee_info: dataEmployees?.find( id  => id?.employeeIdCrm === item.employee_id),
       })),
       callback: (response) => {
         if (response) {
@@ -229,8 +221,8 @@ const Index = memo((props) => {
                   <Select
                     mode="tags"
                     placeholder="Chọn"
-                    dataSet={dataUser}
-                    options={['id', 'full_name']}
+                    dataSet={dataEmployees}
+                    options={['employeeIdCrm', 'fullName']}
                     style={{ width: '100%' }}
                     onChange={setEmployeesId}
                   />
