@@ -409,9 +409,7 @@ class Index extends PureComponent {
 
   save = () => {
     const { dispatch } = this.props;
-    const payload = {
-      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
-    };
+    const payload = this.state.dataSource.filter((item) => item.isActive).map((item) => item.id);
     dispatch({
       type: 'crmMarketingData/ADD',
       payload,

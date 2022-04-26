@@ -47,7 +47,7 @@ export function add(data = {}) {
   return request(`/v1/move-leads`, {
     method: 'POST',
     data: {
-        data_marketing_id: {...data}
+        data_marketing_id: data
     },
     parse: true,
   });

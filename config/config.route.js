@@ -3112,7 +3112,7 @@ export default [
         routes: [
           {
             path: '/su-phat-trien-cua-tre',
-            redirect: '/su-phat-trien-cua-tre/danh-muc/ky-nang',
+            redirect: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
           },
           {
             path: '/su-phat-trien-cua-tre/danh-muc/ky-nang',
@@ -3195,6 +3195,12 @@ export default [
           {
             path: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
             component: './child-develop/report',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre/:id/chi-tiet',
+            component: './child-develop/report/create',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
