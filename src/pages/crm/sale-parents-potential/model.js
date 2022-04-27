@@ -207,6 +207,17 @@ export default {
         });
       }
     },
+    *GET_DIVISIONS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDivisions, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

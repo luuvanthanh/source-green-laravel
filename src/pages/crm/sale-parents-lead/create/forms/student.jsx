@@ -80,7 +80,7 @@ const Students = memo(() => {
       type: 'crmSaleLeadAdd/ADD_STUDENTS',
       payload,
       callback: (response, error) => {
-        if (response) {
+        if(response){
           dispatch({
             type: 'crmSaleLeadAdd/GET_STUDENTS',
             payload: {
@@ -88,10 +88,10 @@ const Students = memo(() => {
             },
             callback: (response) => {
               if (response) {
-                setStudents(response.parsePayload);
-                setDayOfBirth(moment(response.parsePayload.map((item) => ({
-                  birth_date: moment(item.birth_date),
-                }))));
+                // setStudents(response.parsePayload);
+                // setDayOfBirth(moment(response.parsePayload.map((item) => ({
+                //   birth_date: moment(item.birth_date),
+                // }))));
                 form.setFieldsValue({
                   data: response.parsePayload.map((item) => ({
                     ...item,
@@ -287,7 +287,7 @@ const Students = memo(() => {
                                       className="position-absolute"
                                       style={{ top: 20, right: 20 }}
                                       onClick={() => {
-                                        setDeleteRows((prev) => [...prev, file.id]);
+                                        setDeleteRows((prev) => [...prev, file?.id]);
                                         remove(index);
                                         mountedSet(
                                           setFileImage,
