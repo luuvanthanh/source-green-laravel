@@ -373,6 +373,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorBusinessTravel($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorMaternityLeave($employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff, $countEmployeeHasTimekeeping, $countWorkDeclarationByDate);
+        $responseTimeKeepingUser = $this->calculatorManualCalcualtion($employee, $startDate, $endDate, $responseTimeKeepingUser);
 
         $totalWorks = 0;
         foreach ($responseTimeKeepingUser as $key => &$item) {
@@ -1120,5 +1121,48 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         ];
 
         return $this->excelExporterServices->export('timekeeping_report', $params, $callbacks, $events);
+    }
+
+    public function calculatorManualCalcualtion($employee, $startDate, $endDate, $responseTimeKeepingUser)
+    {
+        $manualCalculation = $employee->manualCalculation()->where('Date', '>=', $startDate)->where('Date', '<=', $endDate)->get();
+
+        foreach ($manualCalculation as $value) {
+            $date = Carbon::parse($value->Date);
+
+            $check = Carbon::parse($date->format('Y-m-d'))->setTimezone('GMT+7')->format('l');
+
+            if ($check === 'Saturday' || $check === 'Sunday') {
+                $timekeepingReport = 0;
+            } else {
+                $timekeepingReport = 1;
+            }
+
+            switch ($value->Type) {
+                case '1':
+                    $type = 'X';
+                    break;
+                case '2':
+                    $type = 'K';
+                    break;
+                case '3':
+                    $type = 'F';
+                    break;
+            }
+
+            foreach ($responseTimeKeepingUser as $key => $valueUser) {
+
+                if ($valueUser['type'] == 'KXD' && $date->format('Y-m-d') == $valueUser['date']) {
+                    unset($responseTimeKeepingUser[$key]);
+                    $responseTimeKeepingUser[$key] = [
+                        'date' => $date->format('Y-m-d'),
+                        'timekeepingReport' => $timekeepingReport,
+                        'type' => $type,
+                    ];
+                }
+            }
+        }
+
+        return $responseTimeKeepingUser;
     }
 }
