@@ -146,7 +146,7 @@ const Index = memo(() => {
         }),
       })),
       changeParameter: {
-        paymentFormId: _.get(paramChanges[0], 'feeId'),
+        paymentFormId:  values?.feeId || _.get(paramChanges[0], 'feeId'),
         duaDate: _.get(paramChanges[0], 'duaDate')
           ? moment(paramChanges[0]?.duaDate, variables.DATE_FORMAT.YEAR_MONTH_DAY).format('DD')
           : values.duaDate,
@@ -438,7 +438,7 @@ const Index = memo(() => {
                 loading={
                   loading['classTypeAdd/GET_DETAILS'] ||
                   loading['schoolyearAdd/UPDATE'] ||
-                  loading['classTypeAdd/ADD']
+                  loading['schoolyearAdd/ADD']
                 }
               >
                 Lưu

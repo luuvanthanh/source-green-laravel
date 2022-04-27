@@ -153,7 +153,7 @@ const Index = memo(() => {
         width: 250,
         className: 'min-width-250',
         align: 'center',
-        render: (record) => record?.manualCalculation?.filter((i) => i.type === 'P').length,
+        render: (record) => record?.manualCalculation?.filter((i) => i.type === 'F').length,
       },
       {
         title: 'Số ngày nghỉ không phép',

@@ -88,6 +88,7 @@ const General = memo(
             student: {
               ...details.student,
               ...values,
+              branchId: details?.student?.branchId || details?.student?.class?.branchId,
               id: params.id,
               fileImage: JSON.stringify(files),
               age,
