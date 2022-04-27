@@ -86,7 +86,7 @@ const General = memo(() => {
                   name="email"
                   label="Email"
                   type={variables.EMAIL}
-                  rules={[variables.RULES.EMAIL]}
+                  rules={[variables.RULES.EMPTY_INPUT, variables.RULES.EMAIL]}
                 />
               </div>
             </div>

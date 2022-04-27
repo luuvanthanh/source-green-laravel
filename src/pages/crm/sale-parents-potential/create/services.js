@@ -69,10 +69,15 @@ export function update(data = {}) {
   });
 }
 
-export function getStudent(params) {
-  return request('/v1/potential-student-infos', {
+export function getStudent(data = {}) {
+  return request(`/v1/student-infos`, {
     method: 'GET',
-    params,
+    params: {
+      ...data,
+      orderBy: 'created_at',
+      sortedBy: 'asc',
+      searchJoin: 'and',
+    },
   });
 }
 

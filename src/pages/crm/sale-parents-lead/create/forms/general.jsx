@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect, useState } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
@@ -17,17 +17,17 @@ import Loading from '@/components/CommonComponent/Loading';
 import stylesModule from '../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
-const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
+const mapStateToProps = ({ loading, crmSaleLeadAdd, crmSaleParentsLead }) => ({
   loading,
   details: crmSaleLeadAdd.details,
   error: crmSaleLeadAdd.error,
   branches: crmSaleLeadAdd.branches,
   classes: crmSaleLeadAdd.classes,
+  employees: crmSaleParentsLead.employees,
 });
-const General = memo(({ loading: { effects }, match: { params }, details, error }) => {
+const General = memo(({ loading: { effects }, match: { params }, details, error, employees }) => {
   const formRef = useRef();
   const mounted = useRef(false);
-  const [dataUser, setDataUser] = useState([]);
   const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
   const dispatch = useDispatch();
   useEffect(() => {
@@ -45,7 +45,7 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
   const onFinish = (values) => {
     dispatch({
       type: 'crmSaleAssignment/ASSIGNMENT',
-      payload: [{ employee_id: values.employee_id, customer_lead_id: params.id, employee_info: dataUser.find((item) => item.id === values.employee_id) }],
+      payload: [{ employee_id: values.employee_id, customer_lead_id: params.id, employee_info: employees.find((item) => item.employeeIdCrm === values.employee_id) }],
       callback: (response, error) => {
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -77,12 +77,17 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
   }, [details]);
   useEffect(() => {
     dispatch({
-      type: 'crmSaleAssignment/GET_EMPLOYEES',
-      callback: (response) => {
-        if (response) {
-          setDataUser(response?.parsePayload);
+      type: 'crmSaleParentsLead/GET_DIVISIONS',
+      payload: {},
+      callback: (res) => {
+        if (res) {
+          const item = res.parsePayload?.find(i => i?.code === 'GD');
+          dispatch({
+            type: 'crmSaleParentsLead/GET_EMPLOYEES',
+            payload: { divisionId: item?.id },
+          });
         }
-      },
+      }
     });
     if (params.id) {
       dispatch({
@@ -128,8 +133,8 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
                   <label className="ant-form-item-required">Nhân viên chăm sóc</label>
                 </div>
                 <FormItem
-                  options={['id', 'full_name']}
-                  data={dataUser}
+                  options={['employeeIdCrm', 'fullName']}
+                  data={employees}
                   name="employee_id"
                   placeholder="Chọn"
                   type={variables.SELECT}
@@ -170,6 +175,7 @@ General.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -180,6 +186,7 @@ General.defaultProps = {
   error: {},
   branches: [],
   classes: [],
+  employees: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));
