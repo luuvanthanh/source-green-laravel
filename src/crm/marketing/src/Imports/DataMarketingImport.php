@@ -32,7 +32,6 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
         if (!is_null($row[1])) {
             $birthDate = Carbon::parse($row[1])->format('Y-m-d');
         }
-
         $searchSource = SearchSource::where('type', $row[5])->first();
         $data = [
             'full_name' => $row[0],
@@ -66,7 +65,7 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
     {
         return [
             '*.1' => [
-                'date_format:d-m-Y'
+                'nullable', 'date_format:d-m-Y'
             ]
         ];
     }

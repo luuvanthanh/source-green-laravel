@@ -83,12 +83,6 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
                 $updateStudentInfo = StudentInfo::find($value['id']);
                 $value['sex'] = StudentInfo::SEX[$value['sex']];
                 $updateStudentInfo->update($value);
-
-                $customerPotetial = CustomerPotential::where('customer_lead_id', $updateStudentInfo->customer_lead_id)->first();
-
-                if (!is_null($customerPotetial)) {
-                    PotentialStudentInfo::where('customer_potential_id', $customerPotetial->id)->first()->update($value);
-                }
             }
         }
 

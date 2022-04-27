@@ -65,18 +65,18 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
     {
         return [
             '*.4' => [
-                'required', 'email'
+                'nullable', 'email'
             ],
             '*.0' => [
                 'required'
             ],
             '*.3' => [
-                'required'
+                'nullable'
             ],
             '*.2' => [
                 'required', 'in:nam,nữ,Nam,Nữ'
             ], '*.1' => [
-                'date_format:d-m-Y'
+                'nullable', 'date_format:d-m-Y'
             ]
         ];
     }
