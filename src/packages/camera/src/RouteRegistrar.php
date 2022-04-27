@@ -31,7 +31,43 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function forBread()
     {
-        \Route::resource('cameras', 'CameraController');
+        \Route::get('cameras', [
+            'comment' => 'Danh sách camera',
+            'uses' => 'CameraController@index',
+            'as' => 'VIEW_CAMERA',
+            'group' => 'Quản lý camera',
+        ])->middleware('permission_for_role:VIEW_CAMERA');
+
+        \Route::post('cameras', [
+            'comment' => 'Thêm mới camera',
+            'uses' => 'CameraController@store',
+            'as' => 'ADD_CAMERA',
+            'group' => 'Quản lý camera',
+        ])->middleware('permission_for_role:ADD_CAMERA');
+
+        \Route::put('cameras/{id}', [
+            'comment' => 'Sửa thông tin camera',
+            'uses' => 'CameraController@update',
+            'as' => 'EDIT_CAMERA',
+            'group' => 'Quản lý camera',
+        ])->middleware('permission_for_role:EDIT_CAMERA');
+
+        \Route::get('cameras/{id}', [
+            'comment' => 'Thông tin camera',
+            'uses' => 'CameraController@show',
+            'as' => 'DETAIL_CAMERA',
+            'group' => 'Quản lý camera',
+        ])->middleware('permission_for_role:DETAIL_CAMERA');
+
+        \Route::delete('cameras/{id}', [
+            'comment' => 'Xóa camera',
+            'uses' => 'CameraController@destroy',
+            'as' => 'DELETE_CAMERA',
+            'group' => 'Quản lý camera',
+        ])->middleware('permission_for_role:DELETE_CAMERA');
+
+        //disconnect
+        \Route::post('cameras/{id}/disconnect', 'CameraController@disconnect');
 
         // Camera collection
         \Route::post('camera-collections', 'CameraCollectionController@store');
@@ -49,8 +85,20 @@ class RouteRegistrar extends CoreRegistrar
         \Route::put('cameras/{id}/on-off-stream', 'CameraController@onOffStream');
 
         \Route::put('cameras/{id}/on-off-ai-service', 'CameraController@onOffAiService');
-        \Route::put('cameras/{id}/update-coordinates-ai-service', 'CameraController@updateCameraAiService');
-        \Route::get('cameras/{id}/ai-service', 'CameraController@cameraAiService');
+
+        \Route::get('cameras/{id}/ai-service', [
+            'comment' => 'Chi tiết cấu hình',
+            'uses' => 'CameraController@cameraAiService',
+            'as' => 'VIEW_SERVICESETTING',
+            'group' => 'Cấu hình dịch vụ',
+        ])->middleware('permission_for_role:VIEW_SERVICESETTING');
+
+        \Route::put('cameras/{id}/update-coordinates-ai-service', [
+            'comment' => 'Hiệu chỉnh cấu hình',
+            'uses' => 'CameraController@updateCameraAiService',
+            'as' => 'EDIT_SERVICESETTING',
+            'group' => 'Cấu hình dịch vụ',
+        ])->middleware('permission_for_role:EDIT_SERVICESETTING');
     }
 
     /**

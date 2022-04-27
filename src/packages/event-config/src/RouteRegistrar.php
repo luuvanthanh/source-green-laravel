@@ -28,7 +28,18 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function forBread()
     {
-        // EventConfig
-        \Route::resource('event-configs', 'EventConfigController');
+        \Route::get('event-configs', [
+            'comment' => 'Chi tiết cấu hình',
+            'uses' => 'EventConfigController@index',
+            'as' => 'VIEW_EVENTSETTING',
+            'group' => 'Cấu hình sự kiện',
+        ])->middleware('permission_for_role:VIEW_EVENTSETTING');
+
+        \Route::post('event-configs', [
+            'comment' => 'Hiệu chỉnh cấu hình',
+            'uses' => 'EventConfigController@store',
+            'as' => 'EDIT_EVENTSETTING',
+            'group' => 'Cấu hình sự kiện',
+        ])->middleware('permission_for_role:EDIT_EVENTSETTING');
     }
 }

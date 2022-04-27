@@ -28,7 +28,18 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function forBread()
     {
-        // NasConfig
-        \Route::resource('nas-configs', 'NasConfigController')->only('index', 'store');
+        \Route::get('nas-configs', [
+            'comment' => 'Chi tiết cấu hình nas',
+            'uses' => 'NasConfigController@index',
+            'as' => 'VIEW_NASSETTING',
+            'group' => 'Cấu hình NAS',
+        ])->middleware('permission_for_role:VIEW_NASSETTING');
+
+        \Route::post('nas-configs', [
+            'comment' => 'Hiệu chỉnh cấu hình',
+            'uses' => 'NasConfigController@store',
+            'as' => 'EDIT_NASSETTING',
+            'group' => 'Cấu hình NAS',
+        ])->middleware('permission_for_role:EDIT_NASSETTING');
     }
 }

@@ -183,7 +183,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                         'height' => $dataResolution['height'],
                         'fps' => 0,
                         'bit_rate' => 0,
-                        'gop' => 12,
+                        'gop' => 30,
                         'max_B_frame' => 0,
                     ],
                 ]),
@@ -243,7 +243,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                         'height' => (int)$dataResolution['height'],
                         'fps' => 0,
                         'bit_rate' => 0,
-                        'gop' => 12,
+                        'gop' => 30,
                         'max_B_frame' => 0,
                     ],
                 ]),
@@ -294,8 +294,8 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
 
     public function getResolutionValue($value)
     {
-        $width = 0;
-        $height = 0;
+        $width = 854;
+        $height = 480;
 
         // switch ($value) {
         //     case 'FULLHD':
@@ -433,7 +433,6 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
     public function cameraChangeLog($attributes)
     {
         $camera = Camera::findOrFail($attributes['came_id']);
-        $attributes['cam_info'] = json_decode($attributes['cam_info'], true);
 
         $statusNow = $camera->status;
         switch ($attributes['status']) {
@@ -441,11 +440,11 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 $attributes['status'] =  Camera::STATUS['STATUS_FAILED'];
                 $camera->update([
                     'status' => $attributes['status'],
-                    'cam_info' => $attributes['cam_info']
                 ]);
 
                 break;
             case 'running':
+                $attributes['cam_info'] = json_decode($attributes['cam_info'], true);
                 $attributes['status'] =  Camera::STATUS['STATUS_RUNNING'];
 
                 $isLiveNow = false;
@@ -622,5 +621,28 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         $cameraServiceRepositoryEloquent = resolve(CameraServiceRepositoryEloquent::class);
 
         return $cameraServiceRepositoryEloquent->parserResult(CameraService::where('camera_id', $id)->get());
+    }
+
+    /**
+     * Delete camera
+     *
+     * @param type $id
+     * @return type
+     */
+    public function disconnect($id)
+    {
+        $camera = Camera::findOrFail($id);
+
+        $camera->update([
+            'status' => Camera::STATUS['STATUS_FAILED']
+        ]);
+        $dataDeleteCamera = [
+            'server_id' => $camera->cameraServer->uuid,
+            'cam_id' =>  $camera->id,
+        ];
+
+        dispatch(new VmsCoreJob($dataDeleteCamera, 'DELETE_CAMERA'));
+
+        return true;
     }
 }

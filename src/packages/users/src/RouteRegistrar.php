@@ -47,7 +47,41 @@ class RouteRegistrar extends CoreRegistrar
         \Route::put('users/me', 'UserController@updateProfile');
         \Route::delete('users/{id}', 'UserController@destroy');
 
-        \Route::resource('users', 'UserController')->except(['destroy']);
+        \Route::get('users', [
+            'comment' => 'Danh sách người dùng',
+            'uses' => 'UserController@index',
+            'as' => 'VIEW_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:VIEW_USER');
+
+        \Route::post('users', [
+            'comment' => 'Thêm mới người dùng',
+            'uses' => 'UserController@store',
+            'as' => 'ADD_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:ADD_USER');
+
+        \Route::put('users/{id}', [
+            'comment' => 'Sửa thông tin người dùng',
+            'uses' => 'UserController@update',
+            'as' => 'EDIT_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:EDIT_USER');
+
+        \Route::get('users/{id}', [
+            'comment' => 'Thông tin người dùng',
+            'uses' => 'UserController@show',
+            'as' => 'DETAIL_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:DETAIL_USER');
+
+        \Route::delete('users/{id}', [
+            'comment' => 'Xóa người dùng',
+            'uses' => 'UserController@destroy',
+            'as' => 'DELETE_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:DELETE_USER');
+
         \Route::get('session', 'AuthController@logged')->name('logged');
         \Route::post('logout', 'AuthController@logout');
         \Route::post('password/change', 'ChangePasswordController@changePassword');

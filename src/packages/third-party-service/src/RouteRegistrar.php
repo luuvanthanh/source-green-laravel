@@ -28,7 +28,23 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function forBread()
     {
-        // ThirdPartyService
-        \Route::resource('third-party-services', 'ThirdPartyServiceController')->only('index', 'update', 'show');
+        \Route::get('third-party-services', [
+            'comment' => 'Danh sách cấu hình third party services',
+            'uses' => 'ThirdPartyServiceController@index',
+            'as' => 'VIEW_3RDSETTING',
+            'group' => 'Cấu hình Third party services',
+        ])->middleware('permission_for_role:VIEW_3RDSETTING');
+
+        \Route::put('third-party-services/{id}', [
+            'comment' => 'Hiệu chỉnh cấu hình',
+            'uses' => 'ThirdPartyServiceController@update',
+            'as' => 'EDIT_3RDSETTING',
+            'group' => 'Cấu hình Third party services',
+        ])->middleware('permission_for_role:EDIT_3RDSETTING');
+
+        \Route::put('third-party-services/{id}', [
+            'comment' => 'Hiệu chỉnh cấu hình',
+            'uses' => 'ThirdPartyServiceController@show',
+        ]);
     }
 }

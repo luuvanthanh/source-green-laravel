@@ -5,6 +5,7 @@ namespace GGPHP\RolePermission\Http\Controllers;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\RolePermission\Http\Requests\RoleAssignPermissionRequest;
 use GGPHP\RolePermission\Http\Requests\RoleCreateRequest;
+use GGPHP\RolePermission\Http\Requests\RoleDeleteRequest;
 use GGPHP\RolePermission\Http\Requests\RoleUpdateRequest;
 use GGPHP\RolePermission\Repositories\Contracts\RoleRepository;
 use Illuminate\Http\Request;
@@ -96,7 +97,7 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(RoleDeleteRequest $request, $id)
     {
         $this->roleRepository->delete($id);
 

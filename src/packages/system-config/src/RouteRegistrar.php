@@ -28,8 +28,19 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function forBread()
     {
-        // SystemConfig
-        \Route::resource('system-configs', 'SystemConfigController');
+        \Route::get('system-configs', [
+            'comment' => 'Chi tiết cấu hình',
+            'uses' => 'SystemConfigController@index',
+            'as' => 'VIEW_SYSTEMSETTING',
+            'group' => 'Cấu hình hệ thống',
+        ])->middleware('permission_for_role:VIEW_SYSTEMSETTING');
+
+        \Route::post('system-configs', [
+            'comment' => 'Hiệu chỉnh cấu hình',
+            'uses' => 'SystemConfigController@store',
+            'as' => 'EDIT_SYSTEMSETTING',
+            'group' => 'Cấu hình hệ thống',
+        ])->middleware('permission_for_role:EDIT_SYSTEMSETTING');
 
         \Route::put('receive-email', 'SystemConfigController@updateReceiveEmail');
 

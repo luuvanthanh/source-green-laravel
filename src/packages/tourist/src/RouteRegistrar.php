@@ -28,8 +28,16 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function forBread()
     {
+        \Route::get('tourists', [
+            'comment' => 'Tra cứu du khách tại khu điểm',
+            'uses' => 'TouristController@index',
+            'as' => 'SEARCH_TOURIST',
+            'group' => 'Quản lý và giám sát đối tượng',
+        ])->middleware('permission_for_role:SEARCH_TOURIST');
+
         // Tourist
-        \Route::resource('tourists', 'TouristController');
+        \Route::resource('tourists', 'TouristController')->except(['index']);
+
         \Route::get('export-tourists', 'TouristController@exportExcelTourists');
     }
 
