@@ -94,6 +94,10 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $this->model = $this->model->where('updated_at', '>=', $attributes['updated_at']);
         }
 
+        if (!empty($attributes['is_image'])) {
+            $this->model = $this->model->has('media');
+        }
+
         if (!empty($attributes['travel_agency_id'])) {
             $travelAgencyId = explode(',', $attributes['travel_agency_id']);
 
@@ -393,5 +397,24 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         }
 
         return [];
+    }
+
+    public function countObjects($attributes)
+    {
+        if (!empty($attributes['updated_at'])) {
+            $this->model = $this->model->where('updated_at', '>=', $attributes['updated_at']);
+        }
+
+        if (!empty($attributes['is_image'])) {
+            $this->model = $this->model->has('media');
+        }
+
+        $tourGuide = $this->count();
+
+        return [
+            'data' => [
+                'count_object' => $tourGuide
+            ]
+        ];
     }
 }

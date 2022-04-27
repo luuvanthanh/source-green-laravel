@@ -91,6 +91,30 @@ class TourGuideController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function countObjects(Request $request)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $type = explode(',', $attributes['type']);
+            $newType = [];
+            foreach ($type as $value) {
+                $newType[] = TourGuide::TYPE[$value];
+            }
+
+            $attributes['type'] = array_values($newType);
+        }
+
+        $tourGuide = $this->tourGuideRepository->countObjects($attributes);
+
+        return $this->success($tourGuide, trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function tourGuidesByImage(Request $request)
     {
         $attributes = $request->all();

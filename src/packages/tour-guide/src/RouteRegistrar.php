@@ -58,6 +58,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::get('objects', 'TourGuideController@index');
+            \Route::get('count-objects', 'TourGuideController@countObjects');
         });
     }
 
