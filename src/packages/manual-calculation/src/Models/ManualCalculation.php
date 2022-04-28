@@ -17,7 +17,7 @@ class ManualCalculation extends UuidModel
     const TYPE = [
         'X' => 1,  //working
         'K' => 2,  //leave work without permission
-        'P' => 3   //leave work with permission
+        'F' => 3   //leave work with permission
     ];
 
     /**
