@@ -1163,6 +1163,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             }
         }
 
-        return $responseTimeKeepingUser;
+        return array_values($responseTimeKeepingUser);
     }
 }
