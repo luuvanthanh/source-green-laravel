@@ -31,4 +31,16 @@ class CreateProfileInfoRequest extends FormRequest
             'create_rows.*.config_profile_info_id' => 'required|exists:config_profile_infos,id'
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'create_rows.*.config_profile_info_id.required'  => 'Loại giấy tờ không được bỏ trống.',
+        ];
+    }
 }

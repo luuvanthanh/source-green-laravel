@@ -105,7 +105,7 @@ class ConfirmTransporterRepositoryEloquent extends BaseRepository implements Con
                 'full_name' => $value->full_name,
                 'id_card' => $value->id_card,
                 'relationship' => is_null($value->categoryRelationship) ? '.....' : $value->categoryRelationship->name,
-                'phone_number' =>  is_null($value->phone_number)  ? '.....' : $value->phone_number
+                'phone_number' =>  is_null($value->phone)  ? '.....' : $value->phone
             ];
         }
 

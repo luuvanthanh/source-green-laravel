@@ -33,6 +33,25 @@ class StudentService
         $token = request()->bearerToken();
 
         $response = Http::withToken($token)->post($url, $attributes);
+
+        if ($response->failed()) {
+            $message = 'Có lỗi từ api CLOVER';
+
+            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
+                $message = 'CLOVER: ' . json_decode($response->body())->error->message;
+            }
+            throw new HttpException($response->status(), $message);
+        }
+
+        return json_decode($response->body());
+    }
+
+    public static function deleteStudent(string $id)
+    {
+        $url = env('SSO_URL') . '/api/students/' . $id;
+        
+        $token = request()->bearerToken();
+        $response = Http::withToken($token)->delete($url);
         
         if ($response->failed()) {
             $message = 'Có lỗi từ api CLOVER';

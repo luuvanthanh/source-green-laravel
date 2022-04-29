@@ -124,26 +124,21 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
     {
         \DB::beginTransaction();
         try {
-            $admissionRegister = AdmissionRegister::where('student_info_id', $attributes['student_info_id'])->where('status', true)->first();
+            $admissionRegister = AdmissionRegister::create($attributes);
 
-            if (!is_null($admissionRegister)) {
-                $attributes['register_status'] = AdmissionRegister::REGISTER_STATUS['NEW_REGISTER'];
-                $attributes['status'] = false;
-                $admissionRegister->update($attributes);
-            } else {
-                $admissionRegister = AdmissionRegister::create($attributes);
+            if (!empty($attributes['parent_info'])) {
+                $admissionRegister->parentInfo()->create($attributes['parent_info']);
+            }
 
-                if (!empty($attributes['parent_info'])) {
-                    $admissionRegister->parentInfo()->create($attributes['parent_info']);
-                }
+            $customerLead = CustomerLead::where('id', $attributes['customer_lead_id'])->first();
 
-                $customerLead = CustomerLead::where('id', $attributes['customer_lead_id'])->first();
-
-                if (!is_null($customerLead)) {
-                    ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
-                    $studentClover = $this->createStudent($attributes, $admissionRegister, $customerLead->id);
-                    $admissionRegister->update(['student_clover_id' => $studentClover->student->id]);
-                }
+            if (!is_null($customerLead)) {
+                ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
+                $studentClover = $this->createStudent($attributes, $admissionRegister, $customerLead->id);
+                $admissionRegister->update([
+                    'student_clover_id' => $studentClover->student->id,
+                    'student_clover_code' => $studentClover->student->code,
+                ]);
             }
 
             $customerPotential = CustomerPotential::where('customer_lead_id', $attributes['customer_lead_id'])->first();
@@ -176,8 +171,14 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
     {
         \DB::beginTransaction();
         try {
-            $admissionRegister = AdmissionRegister::find($id);
+            $admissionRegister = AdmissionRegister::findOrfail($id);
             $admissionRegister->update($attributes);
+
+            if ($admissionRegister->register_status == AdmissionRegister::REGISTER_STATUS['CANCEL_REGISTER']) {
+                if (!is_null($admissionRegister->student_clover_id)) {
+                    StudentService::deleteStudent($admissionRegister->student_clover_id);
+                }
+            }
 
             if (!empty($attributes['parent_info'])) {
                 $parent = ParentInfo::where('admission_register_id', $id)->where('customer_lead_id', null)->first();
@@ -195,7 +196,7 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
     public function createStudent(array $attributes, $admissionRegister, $id)
     {
         $customerLead = CustomerLead::find($id);
-        $studentInfo = $customerLead->studentInfo()->where('id',$attributes['student_info_id'])->first();
+        $studentInfo = $customerLead->studentInfo()->where('id', $attributes['student_info_id'])->first();
         $birthday = Carbon::parse($studentInfo->birth_date);
         $now = Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'));
         $numberOfMonth = $birthday->diffInMonths($now);
@@ -230,7 +231,7 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             'fileImage' => '',
             'branchId' => $admissionRegister->branch->branch_id_hrm,
         ];
-        
+
         return StudentService::createStudent($data);
     }
 }

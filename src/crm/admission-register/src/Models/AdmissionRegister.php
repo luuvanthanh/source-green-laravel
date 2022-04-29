@@ -17,7 +17,7 @@ class AdmissionRegister extends UuidModel
 
     protected $fillable = [
         'student_info_id', 'address', 'date_register', 'parent_wish', 'children_note', 'status_admission_register_id', 'branch_id',
-        'school_year_id', 'status', 'student_clover_id', 'disable_status', 'register_status'
+        'school_year_id', 'status', 'student_clover_id', 'disable_status', 'register_status', 'student_clover_code'
     ];
 
     const STATUS_REGISTER = [
