@@ -40,6 +40,7 @@ const Index = memo(
     const dispatch = useDispatch();
 
     const [content, setContent] = useState('');
+    const [countCheck, setCountCheck] = useState(false);
     const [isReminded, setIsReminded] = useState(false);
     const [isAllClass, setIsAllClass] = useState(false);
     const [isAllStudent, setIsAllStudent] = useState(false);
@@ -49,10 +50,11 @@ const Index = memo(
       total: 0,
       hasMore: true,
       loading: false,
-      branchId: null,
-      class: null,
+      BranchId: null,
+      Class: null,
     });
     const [students, setStudents] = useState([]);
+    const [dataCheck, setDataCheck] = useState([]);
     const [type, setType] = useState('');
     const [errorStudent, setError] = useState(false);
     const [selectClass, setSelectClass] = useState([]);
@@ -71,7 +73,7 @@ const Index = memo(
         setError(true);
         return;
       }
-      let classTimetables = isAllClass ? classes?.map(item => ({ classId: item.id })) : values?.classes?.map(item => ({ classId: item }));
+      let classTimetables = isAllClass ? classes?.map(item => ({ Class: item.id })) : values?.classes?.map(item => ({ Class: item }));
       let parentTimetables = isAllStudent ? [] : students?.filter(item => item.checked)?.map(item => ({ studentId: item.id }));
       if (values?.object === 'forPerson') {
         classTimetables = [];
@@ -80,7 +82,7 @@ const Index = memo(
         parentTimetables = [];
       }
       const startTime = !isEmpty(values?.rangeTime) ? Helper.getDate(values.rangeTime[0], variables.DATE_FORMAT.TIME_FULL) : null;
-      const endTime = !isEmpty(values?.rangeTime) ? Helper.getDate(values.rangeTime[1], variables.DATE_FORMAT.TIME_FULL)  : null;
+      const endTime = !isEmpty(values?.rangeTime) ? Helper.getDate(values.rangeTime[1], variables.DATE_FORMAT.TIME_FULL) : null;
       const payload = {
         ...values,
         isReminded,
@@ -89,7 +91,7 @@ const Index = memo(
         content,
         forClass: values?.object === 'forClass',
         forPerson: values?.object === 'forPerson',
-        classId: values?.classId || null,
+        Class: values?.Class || null,
         classTimetables,
         parentTimetables,
         applyDate: Helper.getDateTime({
@@ -164,6 +166,7 @@ const Index = memo(
     };
 
     const changeCheckboxStudents = (id) => {
+      setCountCheck(true);
       mountedSet(
         setStudents,
         students.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)),
@@ -218,7 +221,21 @@ const Index = memo(
         },
         callback: (response, error) => {
           if (response) {
-            mountedSet(setStudents, students.concat(response.items));
+            let newStudent = response.items || [];
+            if (!isEmpty(dataCheck) && !isEmpty(response.items)) {
+              newStudent = response.items.map(item => {
+                const reuslt = dataCheck.find(obj => obj?.student?.id === item?.id);
+                if (reuslt) {
+                  return {
+                    ...item,
+                    checked: true,
+                  };
+                }
+                return item;
+              });
+            }
+            // mountedSet(setStudents, newStudent);
+            mountedSet(setStudents, students.concat(newStudent));
             mountedSet(setSearchStudents, {
               ...searchStudents,
               total: response.totalCount,
@@ -246,8 +263,14 @@ const Index = memo(
     const onChangeBranch = (branch) => {
       getClasses(branch);
       if (type === 'forPerson') {
-        formRef?.current?.setFieldsValue({ classId: undefined });
-        getStudents({...searchStudents, branchId: branch, classId: '' });
+        formRef?.current?.setFieldsValue({ Class: undefined });
+        getStudents({
+          page: variables.PAGINATION.PAGE,
+          limit: 10,
+          total: 0,
+          hasMore: true,
+          loading: false, BranchId: branch, Class: ''
+        });
       }
     };
 
@@ -263,14 +286,20 @@ const Index = memo(
     };
 
     const onChangeClass = (value) => {
-      getStudents({...searchStudents, class: value });
+      getStudents({
+        page: variables.PAGINATION.PAGE,
+        limit: 10,
+        total: 0,
+        hasMore: true,
+        loading: false, BranchId: searchStudents?.BranchId, Class: value
+      });
     };
 
     const handleChooseAll = (e) => {
       setIsAllStudent(e.target.checked);
       mountedSet(
         setStudents,
-        students.map((item) => ({...item, checked: false})),
+        students.map((item) => ({ ...item, checked: false })),
       );
     };
 
@@ -299,8 +328,8 @@ const Index = memo(
                 applyDate: res?.applyDate ? moment(res?.applyDate) : null,
                 rangeTime: res?.startTime && res?.endTime ? [moment(res?.startTime), moment(res?.endTime)] : null,
                 object: res?.forClass ? 'forClass' : 'forPerson',
-                branchId: res?.branch?.id || null,
-                classId: res?.class?.id || null,
+                BranchId: res?.branch?.id || null,
+                Class: res?.class?.id || null,
                 classes,
               });
               setContent(res?.content || '');
@@ -311,8 +340,9 @@ const Index = memo(
               if (res?.branch?.id) {
                 getClasses(res?.branch?.id);
               }
+              setDataCheck(res?.parentTimetables);
               if (res?.class?.id) {
-                getStudents({...searchStudents, branchId: res?.branch?.id, class: res?.class?.id }, res?.parentTimetables);
+                getStudents({ ...searchStudents, BranchId: res?.branch?.id, Class: res?.class?.id }, res?.parentTimetables);
               }
             }
           }
@@ -323,7 +353,6 @@ const Index = memo(
         payload: params,
       });
     }, []);
-
     return (
       <>
         <Breadcrumbs last={params?.id ? 'Chỉnh sửa thời khóa biểu' : 'Tạo thời khóa biểu'} menu={menuLeft} />
@@ -383,23 +412,29 @@ const Index = memo(
                           onChange={(e) => setIsReminded(e.target.checked)}
                         />
                       </Pane>
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          label="Nhắc trước"
-                          name="remindBefore"
-                          rules={[variables.RULES.EMPTY]}
-                          type={variables.SELECT}
-                          data={convertDate()}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          label="Ghi chú nhắc nhở"
-                          name="note"
-                          rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                          type={variables.TEXTAREA}
-                        />
-                      </Pane>
+                      {
+                        isReminded && (
+                          <>
+                            <Pane className="col-lg-12">
+                              <FormItem
+                                label="Nhắc trước"
+                                name="remindBefore"
+                                rules={[variables.RULES.EMPTY]}
+                                type={variables.SELECT}
+                                data={convertDate()}
+                              />
+                            </Pane>
+                            <Pane className="col-lg-12">
+                              <FormItem
+                                label="Ghi chú nhắc nhở"
+                                name="note"
+                                rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_TEXTAREA]}
+                                type={variables.TEXTAREA}
+                              />
+                            </Pane>
+                          </>
+                        )
+                      }
                     </Pane>
                     <Pane className={csx('row', 'border-bottom', 'mb20')}>
                       <Pane className="col-lg-12">
@@ -418,7 +453,7 @@ const Index = memo(
                       <Pane className="col-lg-6">
                         <FormItem
                           label="Cơ sở"
-                          name="branchId"
+                          name="BranchId"
                           rules={[variables.RULES.EMPTY]}
                           type={variables.SELECT}
                           data={branches}
@@ -429,7 +464,7 @@ const Index = memo(
                         <Pane className="col-lg-6">
                           <FormItem
                             label="Lớp"
-                            name="classId"
+                            name="Class"
                             type={variables.SELECT}
                             data={classes}
                             onChange={onChangeClass}
@@ -489,13 +524,17 @@ const Index = memo(
                             </div>
                           )}
                         </Pane>
-                        {!isAllStudent && (
+                        {!isAllStudent && countCheck ? (
                           <div className="pt15">
                             <Text color="dark" size="normal">
                               Đã chọn {size(students.filter(item => item?.checked))}
                             </Text>
-                          </div>
-                        )}
+                          </div>) : <div className="pt15">
+                          <Text color="dark" size="normal">
+                            Đã chọn {dataCheck?.length}
+                          </Text>
+                        </div>
+                        }
                         {!isAllStudent && errorStudent && size(students.filter(item => item?.checked)) === 0 && (
                           <span className="text-danger mt5">{variables.RULES.EMPTY_INPUT.message}</span>
                         )}

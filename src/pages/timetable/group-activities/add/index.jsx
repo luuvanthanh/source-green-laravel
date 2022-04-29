@@ -43,6 +43,7 @@ const Index = memo(() => {
     if (!isEmpty(details) && get(params, 'id')) {
       formRef.setFieldsValue({
         name: details?.name,
+        isApplyForSingleClass: details?.isApplyForSingleClass,
         timetableActivityDetails: details?.timetableActivityDetails.map((item) => ({
           id: item?.id,
           name: item?.name,
@@ -112,9 +113,11 @@ const Index = memo(() => {
                     </div>
                     <div className="col-lg-5">
                       <FormItem
-                        className="checkbox-row checkbox-small mt30"
                         label="Chỉ áp dụng cho 1 lớp"
-                        type={variables.CHECKBOX_SINGLE}
+                        type={variables.CHECKBOX_FORM}
+                        className="checkbox-row checkbox-small mt30"
+                        name="isApplyForSingleClass"
+                        valuePropName="checked"
                       />
                     </div>
                   </div>

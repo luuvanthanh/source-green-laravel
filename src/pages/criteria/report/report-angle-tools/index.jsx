@@ -121,6 +121,7 @@ class Index extends PureComponent {
       payload: {
         studentName: search?.studentName,
         branchId: search?.branchId,
+        ClassId: search?.ClassId,
         page: search?.page || variables.PAGINATION.PAGE,
         limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
         FromDate: search?.FromDate,
@@ -134,6 +135,7 @@ class Index extends PureComponent {
       payload: {
         studentName: search?.studentName,
         branchId: search?.branchId,
+        ClassId: search?.ClassId,
         page: search?.page || variables.PAGINATION.PAGE,
         limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
         FromDate: search?.FromDate,
@@ -147,6 +149,7 @@ class Index extends PureComponent {
         {
           studentName: search?.studentName,
         branchId: search?.branchId,
+        ClassId: search?.ClassId,
         page: search?.page || variables.PAGINATION.PAGE,
         limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
         FromDate: search?.FromDate,
@@ -760,7 +763,7 @@ class Index extends PureComponent {
       `/curriculum-reviews/export-excel/group-by-branch`,
       {
         studentName: query?.studentName,
-        Class: query?.Class,
+        Class: query?.ClassId,
         ToolGroupId: query?.ToolGroupId,
         ToolDetailId: query?.ToolDetailId,
         branchId: query?.branchId || defaultBranch?.id,
@@ -789,7 +792,7 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search, defaultBranchs } = this.state;
-    const loading = effects['medicalStudentProblem/GET_DATA'];
+    const loading = effects['reportAngleTools/GET_DATA'];
     return (
       <>
         <Helmet title="Báo cáo quản trị học sinh theo góc giáo cụ" />
@@ -797,7 +800,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Báo cáo quản trị học sinh theo góc giáo cụ</Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
               Xuất Excel
             </Button>
           </div>

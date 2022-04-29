@@ -256,13 +256,11 @@ class Index extends PureComponent {
   header = () => {
     const columns = [
       {
-        title: 'Mã ID',
+        title: 'Mã học sinh',
         key: 'index',
-        className: 'min-width-70',
-        width: 70,
-        align: 'center',
-        render: (text, record, index) =>
-          `HS${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
+        className: 'min-width-150',
+        width: 150,
+        render: (record) =>  <Text size="normal">{record.code}</Text>,
       },
       {
         title: 'Họ và Tên',

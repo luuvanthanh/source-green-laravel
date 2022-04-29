@@ -57,6 +57,7 @@ export function details(params = {}) {
         'parentInfo',
         'studentByChargeNow.chargeStudent.tuition.fee,studentByChargeNow.chargeStudent.classType,studentByChargeNow.chargeStudent.schoolYear',
         'studentInfo.chargeStudent.tuition.fee,studentInfo.chargeStudent.tuition.paymentForm,studentInfo.chargeStudent.classType,studentInfo.chargeStudent.schoolYear',
+        'studentInfo.customerLead,parentInfo',
       ]),
     },
   });

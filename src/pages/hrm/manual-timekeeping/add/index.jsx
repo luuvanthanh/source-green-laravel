@@ -19,7 +19,7 @@ const { Option } = Select;
 const timekeepingType = [
   { id: 'X', name: 'X' },
   { id: 'K', name: 'K' },
-  { id: 'P', name: 'P' },
+  { id: 'F', name: 'F' },
 ];
 
 const Index = () => {

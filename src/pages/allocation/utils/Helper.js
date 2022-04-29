@@ -52,4 +52,17 @@ export default class Helpers {
         return 'CN';
     }
   };
+
+  static getStatusTeacher = (value) => {
+    if (value === variables.STATUS_EXTENDED.NOT_DISTRIBUTION) {
+      return <Tag color="danger">{variables.STATUS_EXTENDED_NAME.NOT_DISTRIBUTION}</Tag>;
+    }
+    if (value === variables.STATUS_EXTENDED.CONFIRMED) {
+      return <Tag color="success">{variables.STATUS_EXTENDED_NAME.CONFIRMED}</Tag>;
+    }
+    if (value === variables.STATUS_EXTENDED.REJECTED) {
+      return <Tag color="danger">{variables.STATUS_EXTENDED_NAME.REJECTED}</Tag>;
+    }
+    return <Tag color="yellow">{variables.STATUS_EXTENDED_NAME.WAITING}</Tag>;
+  };
 }

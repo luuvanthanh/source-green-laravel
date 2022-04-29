@@ -306,9 +306,7 @@ class Index extends PureComponent {
         type: 'healthUpdate/WATER_BOTTLES',
         payload: {
           reportDate: moment(),
-          data: values.data
-            .filter((item) => !item.isUsing)
-            .map((item) => ({
+          data: values.data.map((item) => ({
               studentId: student?.id,
               type: item.type,
               applyDate: item.applyDate,
@@ -455,11 +453,7 @@ class Index extends PureComponent {
                                 fieldKey={[field.fieldKey, 'applyDate']}
                                 rules={[variables.RULES.EMPTY]}
                                 type={variables.DATE_PICKER}
-                                disabled={
-                                  itemWaterBottles?.applyDate
-                                    ? moment(itemWaterBottles.applyDate) <= moment().endOf('day')
-                                    : false
-                                }
+                                disabledDate={(current) => current < moment()}
                               />
                             </div>
                             <>

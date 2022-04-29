@@ -208,7 +208,7 @@ const Index = memo(() => {
                   // setConversationCurrent(firstUser);
                   setSelectEmployee(firstUser);
                   setNoteValue(response?.parsePayload[0]?.userFacebookInfo?.note);
-                  users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+                  users[users.findIndex(i => i?.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
                 }
               },
             });
@@ -272,9 +272,9 @@ const Index = memo(() => {
     dispatch({
       type: 'crmFBDevV1/SEND_MESSAGES',
       payload: {
-        page_access_token: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.access_token,
+        page_access_token: pageCurrent?.find(i => i?.id === pageID[0]?.attributes?.page_id_facebook)?.access_token,
         recipient_id: conversationCurrent?.userFacebookInfo?.user_id,
-        page_id: pageCurrent?.find(i => i.id === pageID[0]?.attributes?.page_id_facebook)?.id,
+        page_id: pageCurrent?.find(i => i?.id === pageID[0]?.attributes?.page_id_facebook)?.id,
         message: e?.target?.value,
         url_files: files && file ? dataFile?.map(i => i) : (files && !file ? setFilea?.map(i => i) : (!files && file ? file?.map(i => i) : "")),
       },
@@ -426,7 +426,7 @@ const Index = memo(() => {
                         })),
                       );
                       setConversationCurrent(firstUser);
-                      users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+                      users[users.findIndex(i => i?.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
                     }
                   },
                 });
@@ -449,7 +449,7 @@ const Index = memo(() => {
   const onChangeConversation = (id) => {
     setNoteModal(false);
     setSelectEmployee(undefined);
-    setConversationCurrent(users.find((item) => item.id === id));
+    setConversationCurrent(users.find((item) => item?.id === id));
     setSearchParent({
       page: 1,
       limit: 15,
@@ -469,7 +469,7 @@ const Index = memo(() => {
       callback: () => {
         dispatch({
           type: 'crmFBDevV1/GET_CONVERSATIONSID',
-          payload: { conversation_id: conversationCurrent.id },
+          payload: { conversation_id: conversationCurrent?.id },
           callback: (response) => {
             if (response) {
               const firstUser = head(
@@ -478,7 +478,7 @@ const Index = memo(() => {
                 })),
               );
               setConversationCurrent(firstUser);
-              users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+              users[users.findIndex(i => i?.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
             }
           },
         });
@@ -1025,7 +1025,7 @@ const Index = memo(() => {
                 );
                 setNoteValue(response?.parsePayload[0]?.userFacebookInfo?.note);
                 setConversationCurrent(firstUser);
-                users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+                users[users.findIndex(i => i?.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
                 if (conversationCurrent?.userFacebookInfo?.customer_lead_id) {
                   dispatch({
                     type: 'crmFBDevV1/GET_LEAD',
@@ -1089,7 +1089,7 @@ const Index = memo(() => {
               );
               setConversationCurrent(firstUser);
               setSelectEmployee(firstUser);
-              users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+              users[users.findIndex(i => i?.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
             }
           },
         });
@@ -1113,7 +1113,7 @@ const Index = memo(() => {
               );
               setConversationCurrent(firstUser);
               setSelectEmployee(firstUser);
-              users[users.findIndex(i => i.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
+              users[users.findIndex(i => i?.id === conversationCurrent?.id)] = (response?.parsePayload?.find((item) => ({ ...item })));
             }
           },
         });
@@ -1195,7 +1195,7 @@ const Index = memo(() => {
 
   const changeCheckboxEmployee = (id, name, color_code, types) => {
     if (types === 'tags') {
-      const a = checkbox.find(i => i.id === id);
+      const a = checkbox.find(i => i?.id === id);
       checkbox.splice(checkbox?.indexOf(a), a ? 1 : 0);
       setCheckBox((prev) => (a ? [...prev] : [...prev, { id, name, color_code }]));
     }
@@ -1207,8 +1207,8 @@ const Index = memo(() => {
   };
 
   const changeCheckboxTag = (id, type) => {
-    const a = checkbox.find(i => i.id === id);
-    const b = checkboxUser.find(i => i.id === id);
+    const a = checkbox.find(i => i?.id === id);
+    const b = checkboxUser.find(i => i?.id === id);
     checkbox.splice(checkbox?.indexOf(a), a ? 1 : 0);
     setCheckBox((prev) => [...prev]);
     checkboxUser.splice(checkboxUser?.indexOf(b), b ? 1 : 0);
@@ -2266,7 +2266,7 @@ const Index = memo(() => {
                       className={styles['wrapper-tags']}
                       onChange={(e) => onSelectColor(e)}
                       tagRender={({ label, value, color_code, closable, onClose }) => {
-                        const itemTag = tags.find(item => item.id === value);
+                        const itemTag = tags.find(item => item?.id === value);
                         return (
                           <Tag
                             color={itemTag?.color_code || color_code}
