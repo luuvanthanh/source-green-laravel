@@ -75,9 +75,13 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
             ],
             '*.2' => [
                 'required', 'in:nam,nữ,Nam,Nữ'
-            ], '*.1' => [
+            ],
+            '*.1' => [
                 'nullable', 'date_format:d-m-Y'
-            ]
+            ],
+            '*.5' => [
+                'required'
+            ],
         ];
     }
 
@@ -90,6 +94,18 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
     {
         return [
             'template' => new CustomerLeadImport()
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function customValidationMessages()
+    {
+        return [
+            '*.5.required'  => 'Nguồn tìm kiếm không được bỏ trống.',
+            '*.0.required'  => 'Họ vs tền không được bỏ trống.',
+            '*.2.required'  => 'Giới tính không được bỏ trống.',
         ];
     }
 }

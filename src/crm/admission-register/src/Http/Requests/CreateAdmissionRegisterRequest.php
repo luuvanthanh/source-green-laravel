@@ -35,7 +35,7 @@ class CreateAdmissionRegisterRequest extends FormRequest
                         $q->where('student_info_id', $value);
                     })->first();
 
-                    $admissionRegister = AdmissionRegister::where('student_info_id', $value)->where('status', true)->first();
+                    $admissionRegister = AdmissionRegister::where('student_info_id', $value)->where('status', true)->where('register_status', AdmissionRegister::REGISTER_STATUS['CANCEL_REGISTER'])->first();
 
                     if (is_null($studentInfo)) {
                         return true;
