@@ -18,6 +18,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
+import  HelperModule  from '../utils/Helper';
 import stylesModule from './styles.module.scss';
 
 const { Option } = Select;
@@ -393,7 +394,7 @@ const Index = memo(() => {
         title: 'Trạng thái',
         key: 'status',
         width: 50,
-        render: (record) => Helper.getStatusTeacher(record.status),
+        render: (record) => HelperModule.getStatusTeacher(record.status),
       },
       {
         key: 'action',

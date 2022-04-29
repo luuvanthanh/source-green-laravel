@@ -232,7 +232,7 @@ class Index extends PureComponent {
       title: 'Vai trò',
       key: 'roles',
       className: 'min-width-130',
-      render: () => 'Giáo viên',
+      render: (record) => record.role,
     },
     {
       title: 'Trạng thái',

@@ -155,7 +155,7 @@ const Index = memo(() => {
               ...res,
               range_date,
               age: res?.studentInfo?.age_month || res?.age,
-              name_student: res?.studentInfo?.full_name || res?.name_student,
+              name_student: res?.studentInfo?.full_name ? `${res?.studentInfo?.full_name} (${res?.studentInfo?.customerLead?.full_name})` : res?.name_student,
               date_of_birth: moment(
                 res?.studentInfo?.birth_date || res?.date_of_birth,
                 variables.DATE_FORMAT.YEAR_MONTH_DAY,
@@ -620,7 +620,7 @@ const Index = memo(() => {
                                 allowClear={false}
                                 data={students.map((item) => ({
                                   ...item,
-                                  name: item?.studentInfo?.full_name || '-',
+                                  name: `${item?.studentInfo?.full_name} (${item?.studentInfo?.customerLead?.full_name})` || '-',
                                 }))}
                                 rules={[variables.RULES.EMPTY]}
                                 onChange={selectStudent}

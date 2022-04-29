@@ -348,12 +348,6 @@ class Index extends PureComponent {
           },
         ],
       },
-      {
-        title: 'Kết quả học tập',
-        key: 'date',
-        width: 150,
-        render: (value, record) => <Text size="normal">{record?.weight?.value}</Text>,
-      },
     ];
     return columns;
   };
@@ -367,7 +361,7 @@ class Index extends PureComponent {
     } = this.props;
     const { dataIDSearch } = this.state;
     Helper.exportExcelClover(
-      `/students/export-to-excel/group-by-branch`,
+      `/students/export-to-excel/with-health-criterias-by-condition`,
       {
         KeyWord: query?.KeyWord,
         branchId: query?.branchId || defaultBranch?.id,
@@ -391,7 +385,8 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search, defaultBranchs } = this.state;
-    const loading = effects['medicalStudentProblem/GET_DATA'];
+
+    const loading = effects['OPStudentByBranch/GET_DATA'];
     return (
       <>
         <Helmet title="Danh sách báo cáo quản trị học sinh" />
