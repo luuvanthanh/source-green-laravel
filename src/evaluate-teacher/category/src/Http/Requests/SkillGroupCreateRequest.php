@@ -21,14 +21,7 @@ class SkillGroupCreateRequest extends FormRequest
                 if (!is_null($skillGroup)) {
                     return $fail('Trường đã có trong cơ sở dữ liệu.');
                 }
-            },],
-            'code' => ['string','required', function ($attribute, $value, $fail) {
-                $skillGroup = SkillGroup::where('Code', $value)->first();
-
-                if (!is_null($skillGroup)) {
-                    return $fail('Trường đã có trong cơ sở dữ liệu.');
-                }
-            },],
+            },]
         ];
     }
 }
