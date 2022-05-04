@@ -73,10 +73,20 @@ class SkillGroupRepositoryEloquent extends CoreRepositoryEloquent implements Ski
     {
         \DB::beginTransaction();
         try {
+            $skillGroup = SkillGroup::latest()->first();
+
+            if (is_null($skillGroup)) {
+                $attributes['code'] = SkillGroup::CODE . '1';
+            } else {
+                $columnCode = $skillGroup->Code;
+                $getNumber = substr($columnCode, 3) + 1;
+                $attributes['code'] = SkillGroup::CODE . $getNumber;
+            }
+
             $skillGroup = SkillGroup::create($attributes);
 
             if (!empty($attributes['detail'])) {
-                $this->skillGroupDetail($attributes['detail'], $skillGroup->Id);
+                $this->skillGroupDetail($attributes['detail'], $skillGroup);
             }
 
             \DB::commit();
@@ -88,11 +98,13 @@ class SkillGroupRepositoryEloquent extends CoreRepositoryEloquent implements Ski
         return parent::find($skillGroup->Id);
     }
 
-    public function skillGroupDetail(array $attributes, $id)
+    public function skillGroupDetail(array $attributes, $skillGroup)
     {
         if (!empty($attributes['createRow'])) {
+            $number = 1;
             foreach ($attributes['createRow'] as $value) {
-                $value['SkillGroupId'] = $id;
+                $value['SkillGroupId'] = $skillGroup->Id;
+                $value['code'] = $skillGroup->Code . '.' . $number++;
                 SkillGroupDetail::create($value);
             }
         }

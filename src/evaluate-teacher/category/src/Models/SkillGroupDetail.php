@@ -9,7 +9,7 @@ class SkillGroupDetail extends UuidModel
     protected $table = 'evaluate-teacher.SkillGroupDetails';
 
     protected $fillable = [
-        'SkillGroupId', 'Content'
+        'SkillGroupId', 'Content', 'Code'
     ];
 
     public function skillGroup()

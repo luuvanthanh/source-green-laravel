@@ -8,6 +8,8 @@ class SkillGroup extends UuidModel
 {
     protected $table = 'evaluate-teacher.SkillGroups';
 
+    const CODE = 'NKN';
+    
     protected $fillable = [
         'Code', 'Name', 'Description'
     ];
