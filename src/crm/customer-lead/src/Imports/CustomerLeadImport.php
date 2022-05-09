@@ -104,7 +104,7 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
     {
         return [
             '*.5.required'  => 'Nguồn tìm kiếm không được bỏ trống.',
-            '*.0.required'  => 'Họ vs tền không được bỏ trống.',
+            '*.0.required'  => 'Họ vs tên không được bỏ trống.',
             '*.2.required'  => 'Giới tính không được bỏ trống.',
         ];
     }

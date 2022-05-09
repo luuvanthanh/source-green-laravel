@@ -229,7 +229,7 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             'note' => !empty($admissionRegister->children_note) ? $admissionRegister->children_note : '',
             'parentWish' => !empty($admissionRegister->parent_wish) ? $admissionRegister->parent_wish : '',
             'fileImage' => '',
-            'branchId' => $admissionRegister->branch->branch_id_hrm,
+            'branchId' => $admissionRegister->branch->branch_id_hrm
         ];
 
         return StudentService::createStudent($data);
