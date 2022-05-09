@@ -33,7 +33,6 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const studentStatusArr = [
   { id: 'REGISTED', name: 'Nhập học' },
-  { id: 'DISTRIBUTED', name: 'Nhập môn' },
   { id: 'OFFICAL', name: 'Chính thức' },
   { id: 'WITHDRAW_APPLICATION', name: 'Rút hồ sơ' },
   { id: 'STOP_STUDYING', name: 'Bảo lưu' },
@@ -287,7 +286,7 @@ class Index extends PureComponent {
         key: 'branch',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.branch?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.branch?.name || record?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',

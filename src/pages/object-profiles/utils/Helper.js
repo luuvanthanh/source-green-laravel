@@ -18,9 +18,6 @@ export default class Helpers {
     if (type === variables.STATUS.STORE) {
       return <Tag color="yellow">{variables.STATUS_NAME.STORE}</Tag>;
     }
-    if (type === variables.STATUS.DISTRIBUTED) {
-      return <Tag color="yellow">{variables.STATUS_NAME.DISTRIBUTED}</Tag>;
-    }
     if (type === variables.STATUS.OFFICAL) {
       return <Tag color="success">{variables.STATUS_NAME.OFFICAL}</Tag>;
     }

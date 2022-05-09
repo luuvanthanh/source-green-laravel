@@ -200,7 +200,7 @@ const General = memo(
           ...details.student,
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
           registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
-          branchId: details?.student?.branch?.name,
+          branchId: details?.student?.branch?.name ||  details?.student?.class?.branch?.name,
           status: details?.student?.status,
         });
         mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
@@ -439,17 +439,6 @@ const General = memo(
                         >
                           Bảo lưu
                         </Button>
-                        {details?.student?.status !== variablesModules.STATUS.OFFICAL && (
-                          <Button
-                            color="primary"
-                            size="large"
-                            htmlType="button"
-                            className="mr-3"
-                            onClick={() => handleModalForm(type.STOP_DISTRIBUTED)}
-                          >
-                            Kết thúc nhập môn
-                          </Button>
-                        )}
                       </>
                     )}
                     {details?.student?.status === variablesModules.STATUS.REGISTED && (
