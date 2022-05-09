@@ -1,10 +1,9 @@
 import { Modal } from 'antd';
 import { useDispatch, useSelector } from 'dva';
-import { useLocation } from 'umi';
 import { head, isEmpty } from 'lodash';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
-import { handleOutboundCall, handleInboundCall, stopSession } from './handleCallCenter';
+import { handleOutboundCall, handleInboundCall } from './handleCallCenter';
 import Inbound from './modal/inbound';
 import Outbound from './modal/outbound';
 import Phone from './modal/phone';
@@ -44,7 +43,6 @@ const Test = memo(() => {
     crmManagementCall,
   ]);
   const dispatch = useDispatch();
-  const { pathname } = useLocation();
 
   const { inboundStatus, infoCall, inboundContext } = handleInboundCall();
   const { outboundStatus, outboundContext } = handleOutboundCall();
@@ -92,12 +90,6 @@ const Test = memo(() => {
       },
     });
   }, []);
-
-  useEffect(() => {
-    if (!pathname.includes('crm')) {
-      stopSession();
-    }
-  }, [pathname]);
 
   useEffect(() => {
     // Thông tin số điện thoại GỌI ĐẾN (IN)

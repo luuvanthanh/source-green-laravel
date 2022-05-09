@@ -147,6 +147,21 @@ const handleInboundCall = () => {
         }
       });
 
+      // session.on('refer', (target) => {
+      //   session.bye();
+      //   console.log('target', target);
+      //   console.log('%cCHUYỂN TIẾP', 'color: yellow; font-weight: bold');
+      //   // createNewSessionUI(
+      //   //   target,
+      //   //   ua.invite(target, {
+      //   //     mediaConstraints: {
+      //   //       audio: true,
+      //   //       video: false,
+      //   //     },
+      //   //   }),
+      //   // );
+      // });
+
       setInfoCall(session);
     });
   }, []);
@@ -283,6 +298,7 @@ const handleTransfer = (
   port = 7443,
   path = '',
 ) => {
+  session.hold();
   const configTransfer = {
     displayName: username,
     uri: `sip:${username}@${hostname}`,
@@ -296,19 +312,23 @@ const handleTransfer = (
       },
     },
   };
-  const optionUa = {
-    activeAfterTransfer: false,
-  };
-  const uaTransfer = new UA(configTransfer);
-  ua.on('invite', (session) => {
-    session.refer(uaTransfer, optionUa);
-  });
+  // const newOptions = {
+  //   inviteWithoutSdp: true,
+  //   rel100: C.supported.SUPPORTED,
+  //   activeAfterTransfer: false,
+  // };
+  if (session && session.status === SESSION_STATUS.ANSWERING) {
+    const uaTransfer = new UA(configTransfer);
+    // const replacementSession = ua.invite(uaTransfer);
+    console.log(ua, uaTransfer);
+    // session.refer(replacementSession);
+    // session.refer(sessionTwo);
+  }
 };
 
 const stopSession = () => {
-  if (!isEmpty(ua) || ua?.status === 3) {
-    // ua.stop();
-    ua.unregister();
+  if (ua?.isRegistered()) {
+    ua?.unregister();
   }
 };
 

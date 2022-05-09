@@ -10,6 +10,7 @@ import Phone from './modal/phone';
 import Answer from './modal/answer';
 import InboundResult from './modal/result/inbound';
 import OutboundResult from './modal/result/outbound';
+import AddLead from './modal/addLead';
 import styles from './style.module.scss';
 import variablesModule from './variables';
 
@@ -32,31 +33,38 @@ const Test = memo(() => {
     });
   };
 
-  const [user] = useSelector(({ user, crmCallCenter, crmHistoryCall }) => [
+  const [
+    { user },
+    ,
+    { isClickToCall, quickPhoneNumber, quickStatus, outboundHistory }, // lịch sử GỌI ĐI (OUT)
+  ] = useSelector(({ user, crmCallCenter, crmManagementCall }) => [
     user,
     crmCallCenter,
-    crmHistoryCall,
+    crmManagementCall,
   ]);
   const dispatch = useDispatch();
 
   const { inboundStatus, infoCall, inboundContext } = handleInboundCall();
-  const { outboundStatus, outboundEvent, outboundContext } = handleOutboundCall();
+  const { outboundStatus, outboundContext } = handleOutboundCall();
 
   const [isSaler, setIsSaler] = useState(false); // check người dùng CallCenter
-  const [status, setStatus] = useState(variablesModule.STATUS.idle); // trạng thái điện thoại
+  const [isCalling, setIsCalling] = useState(false); // check đang trong cuộc gọi
+  const [isVisibleAddLead, setIsVisibleAddLead] = useState(false); // check form add lead
 
   const [outboundNumber, setOutboundNumber] = useState(''); // số GỌI ĐI (OUT)
   const [isOutbound, setIsOutbound] = useState(false); // check điều kiện GỌI ĐI (OUT)
   const [infoFromOutbound, setInfoFromOutbound] = useState(''); // số GỌI ĐI có thông tin (OUT)
   const [outboundStatusInfo, setOutboundStatusInfo] = useState(''); // trạng thái GỌI ĐI (OUT)
-  const [outboundHistory, setOutboundHistory] = useState(outboundEvent); // lịch sử GỌI ĐI (OUT)
   const [contentOutbound, setContentOutbound] = useState(''); // nội dung GỌI ĐI (OUT)
+  const [isVisibleAnswer, setIsVisibleAnswer] = useState(false); // check modal GỌI ĐI (OUT)
 
   const [isInbound, setIsInbound] = useState(false); // check điều kiện GỌI ĐẾN (IN)
   const [infoFromInbound, setInfoFromInbound] = useState(''); // số GỌI ĐẾN có thông tin (IN)
   const [inboundStatusInfo, setInboundStatusInfo] = useState(''); // trạng thái GỌI ĐẾN (IN)
   const [inboundHistory, setInboundHistory] = useState({}); // lịch sử GỌI ĐẾN (IN)
   const [contentInbound, setContentInbound] = useState(''); // nội dung GỌI ĐI (IN)
+  const [isVisibleInbound, setIsVisibleInbound] = useState(false); // check modal GỌI ĐẾN (IN)
+  const [inboundId, setInboundId] = useState(''); // check id GỌI ĐẾN (IN)
 
   const audioRef = useRef(null);
 
@@ -81,15 +89,11 @@ const Test = memo(() => {
         }
       },
     });
-    dispatch({
-      type: 'crmHistoryCall/GET_DATA',
-    });
   }, []);
 
   useEffect(() => {
     // Thông tin số điện thoại GỌI ĐẾN (IN)
-    if (!isEmpty(infoCall)) {
-      setStatus(variablesModule.STATUS[infoCall?.type]);
+    if (!isEmpty(infoCall) && !isCalling) {
       dispatch({
         type: 'crmCallCenter/CHECK_PHONE',
         payload: {
@@ -103,37 +107,45 @@ const Test = memo(() => {
           }
         },
       });
-      setIsVisible(true);
+      setIsVisible(false);
+      setIsVisibleInbound(true);
+    }
+    if (isEmpty(inboundId)) {
+      setInboundId(infoCall?.id);
     }
   }, [infoCall]);
 
   // Thông tin số điện thoại GỌI ĐI (OUT)
   useEffect(() => {
-    if (!isEmpty(outboundNumber)) {
+    dispatch({
+      type: 'crmHistoryCall/IS_CLICK',
+    });
+
+    if (!isEmpty(outboundNumber) || !isEmpty(quickPhoneNumber)) {
       dispatch({
         type: 'crmCallCenter/CHECK_PHONE',
         payload: {
-          id: outboundNumber,
+          id: !isEmpty(outboundNumber) ? outboundNumber : quickPhoneNumber,
         },
         callback: (response) => {
           if (response && !isEmpty(response.parsePayload)) {
             setInfoFromOutbound(response.parsePayload);
           } else {
-            setInfoFromOutbound({ number: outboundNumber });
+            setInfoFromOutbound({
+              number: !isEmpty(outboundNumber) ? outboundNumber : quickPhoneNumber,
+            });
           }
+          setIsOutbound(true);
         },
       });
     }
-  }, [outboundNumber]);
+  }, [outboundNumber, quickPhoneNumber]);
 
   // Update trạng thái các state GỌI ĐẾN (IN)
   useEffect(() => {
     if (inboundStatus === variablesModule.STATUS.failed && isEmpty(inboundHistory)) {
-      // reset state
-      setStatus(variablesModule.STATUS.idle);
-      setIsVisible(false);
+      setIsVisibleInbound(false);
       setInfoFromInbound('');
-      // setInfoFromOutbound('');
       setInboundStatusInfo('');
       setIsInbound(false);
 
@@ -152,15 +164,11 @@ const Test = memo(() => {
   // Update trạng thái các state GỌI ĐI (OUT)
   useEffect(() => {
     if (outboundStatus === variablesModule.STATUS.failed && isEmpty(outboundHistory)) {
-      // reset state
-      setStatus(variablesModule.STATUS.idle);
-      setIsVisible(false);
-      // setInfoFromInbound('');
+      setIsVisibleAnswer(false);
       setInfoFromOutbound('');
       setOutboundStatusInfo('');
       setIsOutbound(false);
-
-      setOutboundHistory({});
+      setOutboundNumber('');
     }
 
     if (outboundStatus === variablesModule.STATUS.accepted) {
@@ -169,30 +177,57 @@ const Test = memo(() => {
 
     if (outboundStatus === variablesModule.STATUS.bye) {
       setOutboundStatusInfo(variablesModule.STATUS.bye);
+      setOutboundNumber('');
     }
-  }, [outboundStatus]);
+
+    if (quickStatus === variablesModule.STATUS.failed) {
+      dispatch({
+        type: 'crmManagementCall/IS_CLICK',
+        payload: {
+          isClickToCall: false,
+          quickPhoneNumber: '',
+          quickStatus: '',
+        },
+      });
+      dispatch({
+        type: 'crmManagementCall/OUTBOUND_HISTORY',
+        payload: {
+          outboundHistory: {},
+        },
+      });
+    }
+  }, [outboundStatus, quickStatus]);
 
   useEffect(() => {
-    const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
-      transports: ['websocket'],
-    });
-    socket.on('connect', () => {
-      socket.emit('subscribe', {
-        channel: 'receive-call',
+    try {
+      const socket = io(URL_SOCKET_LIVE, {
+        transports: ['websocket'],
       });
-    });
-    socket.on('receive.call.event', (e, d) => {
-      if (d.data.hangup_cause !== variablesModule.SOCKET_STATUS.originator_cancel) {
-        setInboundHistory(d.data);
-      } else {
-        setInboundHistory({});
-      }
-    });
+      socket.on('connect', () => {
+        socket.emit('subscribe', {
+          channel: 'receive-call',
+        });
+      });
+      socket.on('receive.call.event', (e, d) => {
+        if (d.data.hangup_cause !== variablesModule.SOCKET_STATUS.originator_cancel) {
+          setInboundHistory(d.data);
+        } else {
+          setInboundHistory({});
+        }
+      });
+    } catch (error) {
+      // console.log(error);
+    }
   }, [infoCall.id]);
 
   useEffect(() => {
-    setOutboundHistory(outboundEvent);
-  }, [outboundEvent.callId]);
+    dispatch({
+      type: 'crmManagementCall/OUTBOUND_HISTORY',
+      payload: {
+        outboundHistory,
+      },
+    });
+  }, [outboundHistory?.callId]);
 
   const showModal = () => {
     setIsVisible(true);
@@ -204,9 +239,11 @@ const Test = memo(() => {
 
   // PHONE (OUT)
   const handlePhone = (phone) => {
-    setStatus(variablesModule.STATUS.outbound);
+    setIsVisible(false);
+    setIsVisibleAnswer(true);
     setOutboundNumber(phone);
     setIsOutbound(true);
+    setIsCalling(true);
     outboundContext(phone, audioRef.current);
   };
 
@@ -215,22 +252,49 @@ const Test = memo(() => {
     setContentOutbound(content);
   };
 
+  const handleDetectAddLead = () => {
+    setIsVisibleAddLead(true);
+  };
+
+  const handleAddLead = () => {
+    setIsVisibleAddLead(false);
+  };
+
   // OUTBOUND RESULT (OUT)
   const handleOutboundResult = () => {
-    setStatus(variablesModule.STATUS.idle);
-    setIsVisible(false);
+    setIsVisibleAnswer(false);
     setInfoFromInbound('');
     setInfoFromOutbound('');
     setOutboundStatusInfo('');
     setIsOutbound(false);
+    setIsCalling(false);
 
-    setOutboundHistory({});
+    dispatch({
+      type: 'crmManagementCall/IS_CLICK',
+      payload: {
+        isClickToCall: false,
+        quickPhoneNumber: '',
+        quickStatus: '',
+      },
+    });
+    dispatch({
+      type: 'crmManagementCall/OUTBOUND_HISTORY',
+      payload: {
+        outboundHistory: {},
+      },
+    });
   };
 
   // INBOUND (IN)
-  const handleInbound = (status, condition) => {
-    setStatus(status);
-    setIsInbound(condition);
+  const handleInbound = (status) => {
+    if (status) {
+      setIsVisibleInbound(false);
+    } else {
+      setIsVisibleInbound(false);
+      setIsVisibleAnswer(true);
+      setIsInbound(true);
+      setIsCalling(true);
+    }
   };
 
   // ANSWER (IN)
@@ -240,14 +304,15 @@ const Test = memo(() => {
 
   // INBOUND RESULT (IN)
   const handleInboundResult = () => {
-    setStatus(variablesModule.STATUS.idle);
-    setIsVisible(false);
+    setIsVisibleAnswer(false);
     setInfoFromInbound('');
     setInfoFromOutbound('');
     setInboundStatusInfo('');
     setIsInbound(false);
+    setIsCalling(false);
 
     setInboundHistory({});
+    setInboundId('');
   };
 
   return (
@@ -261,15 +326,53 @@ const Test = memo(() => {
             <img src="/images/icon/phone.svg" alt="logo-call" />
           </div>
 
+          {/* PHONE */}
           <Modal
             mask={false}
             className={styles['phone-simulator']}
             maskClosable={false}
-            footer={null}
+            width={320}
             visible={isVisible}
             onCancel={handleCancel}
+            footer={null}
+          >
+            <div className={styles['modal-phone']}>
+              <Phone handleOnClick={handlePhone} isCalling={isCalling} />
+            </div>
+          </Modal>
+
+          {/* INBOUND */}
+          <Modal
+            mask={false}
+            className={styles['phone-simulator']}
+            maskClosable={false}
+            closable={false}
             width={320}
-            zIndex={1000}
+            visible={isVisibleInbound && !isCalling}
+            onCancel={handleCancel}
+            footer={null}
+          >
+            <div className={styles['modal-inbound']}>
+              <Inbound
+                handleOnClick={handleInbound}
+                audioRef={audioRef}
+                infoFromInbound={infoFromInbound}
+              />
+            </div>
+          </Modal>
+
+          {/* OUTBOUND & ANWSER */}
+          <Modal
+            mask={false}
+            className={styles['phone-simulator']}
+            maskClosable={false}
+            closable={false}
+            footer={null}
+            visible={isVisibleAnswer || isClickToCall}
+            // visible
+            onCancel={handleCancel}
+            width={320}
+            zIndex={900}
             modalRender={(modal) => (
               <Draggable
                 disabled={isDisabled}
@@ -281,13 +384,7 @@ const Test = memo(() => {
             )}
           >
             <div
-              style={{
-                padding: '0 24px 24px 24px',
-                cursor: 'move',
-                width: '100%',
-                zIndex: 1000,
-                marginTop: 40,
-              }}
+              className={styles['modal-answer']}
               onMouseOver={() => {
                 if (isDisabled) setIsDisabled(false);
               }}
@@ -295,55 +392,42 @@ const Test = memo(() => {
               onFocus={() => {}}
               onBlur={() => {}}
             >
-              {/* PHONE */}
-              <div className={status === variablesModule.STATUS.idle ? 'd-block' : 'd-none'}>
-                <Phone handleOnClick={handlePhone} audioRef={audioRef} />
-              </div>
-
               {/* OUTBOUND */}
-              <div
-                className={
-                  status === variablesModule.STATUS.outbound && isOutbound ? 'd-block' : 'd-none'
-                }
-              >
+              <div className={isOutbound ? 'd-block' : 'd-none'}>
                 <Outbound
                   handleOnClick={handleOutbound}
                   infoFromOutbound={infoFromOutbound}
-                  outboundStatusInfo={outboundStatusInfo}
+                  outboundStatusInfo={
+                    !isEmpty(outboundStatusInfo) ? outboundStatusInfo : quickStatus
+                  }
+                  detectAddLead={handleDetectAddLead}
                 />
               </div>
 
               {/* ANSWER */}
-              <div
-                className={
-                  status === variablesModule.STATUS.outbound && isInbound ? 'd-block' : 'd-none'
-                }
-              >
+              <div className={isInbound && !isEmpty(inboundId) ? 'd-block' : 'd-none'}>
                 <Answer
                   handleOnClick={handleAnswer}
                   inboundStatusInfo={inboundStatusInfo}
                   infoFromInbound={infoFromInbound}
                 />
               </div>
-
-              {/* INBOUND */}
-              <div className={status === variablesModule.STATUS.inbound ? 'd-block' : 'd-none'}>
-                <Inbound
-                  handleOnClick={handleInbound}
-                  audioRef={audioRef}
-                  infoFromInbound={infoFromInbound}
-                />
-              </div>
             </div>
           </Modal>
 
+          {/* RESULT */}
           <Modal
             mask={false}
             title="Kết quả cuộc gọi"
             className={styles['call-result-modal']}
             closable={false}
-            visible={!isEmpty(inboundHistory) || !isEmpty(outboundHistory)}
+            visible={
+              (!isEmpty(inboundHistory) &&
+                inboundHistory.call_status !== variablesModule.STATUS.rejected) ||
+              !isEmpty(outboundHistory)
+            }
             width={350}
+            zIndex={900}
             footer={null}
           >
             {/* INBOUND RESULT */}
@@ -357,7 +441,11 @@ const Test = memo(() => {
             </div>
 
             {/* OUTBOUND RESULT */}
-            <div className={!isEmpty(outboundHistory) ? 'd-block' : 'd-none'}>
+            <div
+              className={
+                !isEmpty(outboundHistory) && inboundId === infoCall?.id ? 'd-block' : 'd-none'
+              }
+            >
               <OutboundResult
                 handleOnClick={handleOutboundResult}
                 outboundHistory={outboundHistory}
@@ -367,11 +455,7 @@ const Test = memo(() => {
             </div>
           </Modal>
 
-          {/* {isVisibleAddLead && (
-            <div className={styles['main-form-add-lead']}>
-              <p>FORM THÊM LEAD</p>
-            </div>
-          )} */}
+          {isVisibleAddLead && <AddLead handleOnClick={handleAddLead} />}
         </>
       )}
     </>
