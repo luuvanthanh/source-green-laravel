@@ -172,13 +172,13 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         \DB::beginTransaction();
         try {
             $admissionRegister = AdmissionRegister::findOrfail($id);
-            $admissionRegister->update($attributes);
 
-            if ($admissionRegister->register_status == AdmissionRegister::REGISTER_STATUS['CANCEL_REGISTER']) {
-                if (!is_null($admissionRegister->student_clover_id)) {
+            if (!empty($attributes['register_status'])) {
+                if ($attributes['register_status'] == AdmissionRegister::REGISTER_STATUS['CANCEL_REGISTER'] && !is_null($admissionRegister->student_clover_id)) {
                     StudentService::deleteStudent($admissionRegister->student_clover_id);
                 }
             }
+            $admissionRegister->update($attributes);
 
             if (!empty($attributes['parent_info'])) {
                 $parent = ParentInfo::where('admission_register_id', $id)->where('customer_lead_id', null)->first();
