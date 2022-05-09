@@ -33,9 +33,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const studentStatusArr = [
   { id: 'REGISTED', name: 'Nhập học' },
-  { id: 'OFFICAL', name: 'Chính thức' },
-  { id: 'WITHDRAW_APPLICATION', name: 'Rút hồ sơ' },
-  { id: 'STOP_STUDYING', name: 'Bảo lưu' },
+  { id: 'OFFICAL', name: 'Chính thức' }
 ];
 const mapStateToProps = ({ OPchildren, loading, user }) => ({
   loading,

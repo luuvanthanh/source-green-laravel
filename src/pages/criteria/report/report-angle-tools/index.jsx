@@ -108,6 +108,7 @@ class Index extends PureComponent {
       payload: {
         studentName: search?.studentName,
         branchId: search?.branchId,
+        ClassId: search?.ClassId,
         page: search?.page || variables.PAGINATION.PAGE,
         limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
         FromDate: search?.FromDate,
@@ -763,7 +764,7 @@ class Index extends PureComponent {
       `/curriculum-reviews/export-excel/group-by-branch`,
       {
         studentName: query?.studentName,
-        Class: query?.ClassId,
+        ClassId: query?.ClassId,
         ToolGroupId: query?.ToolGroupId,
         ToolDetailId: query?.ToolDetailId,
         branchId: query?.branchId || defaultBranch?.id,

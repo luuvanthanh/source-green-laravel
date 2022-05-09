@@ -48,7 +48,9 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
     if (isEmpty(details?.student)) {
       return [];
     }
-    if (details?.student?.status === 'STORE') {
+    if (details?.student?.status === 'STORE'
+      || details?.student?.status === 'WITHDRAW_APPLICATION'
+      || details?.student?.status === 'STOP_STUDYING') {
       return items.filter((item) => item.key === 'general');
     }
     return items;
