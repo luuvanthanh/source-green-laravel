@@ -363,25 +363,10 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             'phone_company' => $customerLead->phone_company,
             'career' => $customerLead->career,
             'file_image' => $customerLead->file_image,
-            'customer_lead_id' => $customerLead->id
+            'customer_lead_id' => $customerLead->id,
         ];
         $customerPotential = CustomerPotential::create($data);
         $customerLead->update(['flag_move_potential' => true]);
-
-        $student = StudentInfo::where('customer_lead_id', $customerLead->id)->get();
-        foreach ($student as $value) {
-            $dataStudent = [
-                'full_name' => $value->full_name,
-                'birth_date' => $value->birth_date,
-                'sex' => $value->sex,
-                'month_age' => $value->month_age,
-                'relationship' => $value->relationship,
-                'file_image' => $value->file_image,
-                'customer_potential_id' => $customerPotential->id,
-                'category_relationship_id' => $value->category_relationship_id
-            ];
-            PotentialStudentInfo::create($dataStudent);
-        }
 
         $tag = CustomerTag::where('customer_lead_id', $customerLead->id)->get();
         foreach ($tag as $value) {
@@ -437,7 +422,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
                     if ($response->failed()) {
                         $message = 'Có lỗi từ api Email Marketing';
-                     
+
                         if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
                             $message = 'Email Marketing: ' . json_decode($response->body())->error->message;
                         }

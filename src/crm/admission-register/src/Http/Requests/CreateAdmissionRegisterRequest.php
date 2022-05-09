@@ -4,6 +4,7 @@ namespace GGPHP\Crm\AdmissionRegister\Http\Requests;
 
 use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
 use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
+use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateAdmissionRegisterRequest extends FormRequest
@@ -24,9 +25,20 @@ class CreateAdmissionRegisterRequest extends FormRequest
      * @return array
      */
     public function rules()
-    { 
+    {
         return [
-            'customer_lead_id' => 'exists:customer_leads,id',
+            'customer_lead_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $customerLead = CustomerLead::find($value);
+
+                    if (is_null($customerLead->email) && (is_null($customerLead->phone) || is_null($customerLead->orther_phone))) {
+                        return $fail('Thông tin Email và Số điện thoại không được trống');
+                    } else {
+                        return true;
+                    }
+                }
+            ],
             'student_info_id' => [
                 'required',
                 'exists:student_infos,id',
