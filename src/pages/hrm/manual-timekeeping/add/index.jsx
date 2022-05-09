@@ -133,7 +133,7 @@ const Index = () => {
 
   const changePagination = ({ page, limit }) => {
     setSearch((prev) => ({
-      ...prev.search,
+      ...prev,
       page,
       limit,
     }));
