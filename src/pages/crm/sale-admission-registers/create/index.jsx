@@ -51,7 +51,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   return (
     <div style={{ padding: 20 }}>
       <Helmet title="Chi tiết hồ sơ học sinh" />
-      <Breadcrumbs className="pb20 pt0 pl0" last={params.id ? <>Cập nhập thông tin đăng ký nhập học - {details?.studentInfo?.full_name}</>  : 'thêm mới'} menu={menuLeftCRM} />
+      <Breadcrumbs className="pb20 pt0 pl0" last={params.id ? <>Cập nhập thông tin đăng ký nhập học - {details?.studentInfo?.full_name}</>  : 'Thêm mới'} menu={menuLeftCRM} />
       {params.id ? (
         <div className="row">
           <div className="col-lg-3">

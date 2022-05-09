@@ -12,6 +12,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper, variables } from '@/utils';
+import stylesModule from './styles.module.scss';
 
 import variablesModules from '../variables';
 
@@ -34,7 +35,7 @@ const Index = memo(
         payload: {
           id: params?.id
         },
-        callback: () => {}
+        callback: () => { }
       });
     }, []);
 
@@ -87,7 +88,7 @@ const Index = memo(
                     <Pane className="col-lg-12">
                       <Pane className="ant-col ant-form-item-label">
                         <label>
-                          <span>Nội dung</span>
+                          <span>Nội dung nhắc nhở</span>
                         </label>
                       </Pane>
                       <p className="font-weight-bold">{details?.note || ''}</p>
@@ -138,7 +139,7 @@ const Index = memo(
                         <div className="mb20" key={index}>
                           <AvatarTable
                             className="mt10"
-                            fullName={item?.student?.fullName || ''}
+                            fullName={`${item?.student?.fullName} (${item?.student?.age} Tháng tuổi)` || ''}
                             fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
                             size={40}
                           />
@@ -202,7 +203,7 @@ const Index = memo(
                             <span className="font-weight-bold">Nội dung</span>
                           </label>
                         </Pane>
-                        <div className="mb0" dangerouslySetInnerHTML={{ __html: details?.content }} />
+                        <div  className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
                       </Pane>
                     </Pane>
                   </Pane>

@@ -9,6 +9,7 @@ import Text from '@/components/CommonComponent/Text';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
+import { Helper } from '@/utils';
 import stylesModule from '../../styles.module.scss';
 
 
@@ -96,6 +97,14 @@ const General = memo(() => {
       ),
     },
   ];
+
+  const onChangeExcel = () => {
+    Helper.exportExcelCRM(
+      `/v1/export-medical-infos`,{
+        admission_register_id: params?.id,
+      }, `KhaiBaoYTe.docx`,
+    );
+  };
 
   return (
     <Form layout="vertical" ref={formRef} >
@@ -200,7 +209,7 @@ const General = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="d-flex justify-content-end p20">
-                <Button color="primary" icon="export" className="ml-2">
+                <Button color="primary" icon="export" className="ml-2" onClick={onChangeExcel}>
                   Xuất file khai báo y tế
                 </Button>
               </Pane>

@@ -33,7 +33,6 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const studentStatusArr = [
   { id: 'REGISTED', name: 'Nhập học' },
-  { id: 'DISTRIBUTED', name: 'Nhập môn' },
   { id: 'OFFICAL', name: 'Chính thức' },
   { id: 'WITHDRAW_APPLICATION', name: 'Rút hồ sơ' },
   { id: 'STOP_STUDYING', name: 'Bảo lưu' },
@@ -256,13 +255,11 @@ class Index extends PureComponent {
   header = () => {
     const columns = [
       {
-        title: 'Mã ID',
+        title: 'Mã học sinh',
         key: 'index',
-        className: 'min-width-70',
-        width: 70,
-        align: 'center',
-        render: (text, record, index) =>
-          `HS${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
+        className: 'min-width-150',
+        width: 150,
+        render: (record) =>  <Text size="normal">{record.code}</Text>,
       },
       {
         title: 'Họ và Tên',
@@ -289,7 +286,7 @@ class Index extends PureComponent {
         key: 'branch',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.class?.branch?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.branch?.name || record?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',

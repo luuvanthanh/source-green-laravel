@@ -293,7 +293,7 @@ class Index extends PureComponent {
           if (record?.branch) {
             return (
               <Text size="normal" style={{ color: 'red' }}>
-              {record.total.length === 0 ? 0 : record?.total } học sinh
+              {record?.total?.length === 0 ? 0 : record?.total } học sinh
               </Text>
             );
           }

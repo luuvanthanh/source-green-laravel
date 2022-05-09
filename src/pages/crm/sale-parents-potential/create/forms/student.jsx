@@ -31,6 +31,7 @@ const Students = memo(() => {
     !!mounted?.current && setFunction && setFunction(value);
   const {
     student,
+    details,
     relationships,
   } = useSelector(({ loading, crmSaleParentsPotentialAdd }) => ({
     loading,
@@ -95,31 +96,31 @@ const Students = memo(() => {
   }, []);
 
   useEffect(() => {
-    dispatch({
-      type: 'crmSaleParentsPotentialAdd/GET_RELATIONSHIPS',
-      payload: {},
-    });
-    dispatch({
-      type: 'crmSaleParentsPotentialAdd/GET_STUDENTS',
-      payload: {
-        customer_potential_id: params.id,
-      },
-      callback: (response) => {
-        if (response) {
-          setStudents(response.parsePayload);
-          // setDayOfBirth(moment(response.parsePayload.map((item) => ({
-          //   birth_date: moment(item.birth_date),
-          // }))));
-          form.setFieldsValue({
-            data: response.parsePayload.map((item) => ({
-              ...item,
-              birth_date: item.birth_date ? moment(item?.birth_date) : "",
-            })),
-          });
-        }
-      },
-    });
-  }, [params.id]);
+    if(details?.id){
+      dispatch({
+        type: 'crmSaleParentsPotentialAdd/GET_RELATIONSHIPS',
+        payload: {},
+      });
+      dispatch({
+        type: 'crmSaleParentsPotentialAdd/GET_STUDENTS',
+        payload:{customer_lead_id:  details?.customer_lead_id},
+        callback: (response) => {
+          if (response) {
+            setStudents(response.parsePayload);
+            // setDayOfBirth(moment(response.parsePayload.map((item) => ({
+              //   birth_date: moment(item.birth_date),
+              // }))));
+              form.setFieldsValue({
+                data: response.parsePayload.map((item) => ({
+                  ...item,
+                  birth_date: item.birth_date ? moment(item?.birth_date) : "",
+                })),
+              });
+            }
+          },
+        });
+      }
+  }, [details.id]);
 
   useEffect(() => {
     if (!isEmpty(students)) {

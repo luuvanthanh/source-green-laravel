@@ -27,14 +27,20 @@ const General = memo(() => {
   }, []);
 
   useEffect(() => {
-    if (details) {
+    if (details?.ssoAccount) {
       form.setFieldsValue({
         user_name: details?.ssoAccount?.user_name,
         email: details?.ssoAccount?.email,
-        password : details?.ssoAccount?.password,
+        password: details?.ssoAccount?.password,
       });
     }
-  }, [details]);
+  }, [details?.ssoAccount]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      email: details?.email,
+    });
+  }, []);
 
   const onFinish = (values) => {
     dispatch({
@@ -56,6 +62,7 @@ const General = memo(() => {
       },
     });
   };
+
   return (
     <>
       <Form layout="vertical" form={form} onFinish={onFinish}>
@@ -86,7 +93,7 @@ const General = memo(() => {
                   name="email"
                   label="Email"
                   type={variables.EMAIL}
-                  rules={[variables.RULES.EMAIL]}
+                  rules={[variables.RULES.EMPTY_INPUT, variables.RULES.EMAIL]}
                 />
               </div>
             </div>

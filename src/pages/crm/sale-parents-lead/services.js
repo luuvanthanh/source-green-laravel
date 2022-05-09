@@ -1,4 +1,5 @@
 import request from '@/utils/requestCrm';
+import requestLavarel from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
@@ -73,11 +74,12 @@ export function getStatusLead() {
   });
 }
 
-export function getEmployees() {
-  return request(`/v1/employees`, {
+export function getEmployees(data = {}) {
+  return requestLavarel(`/v1/employees`, {
     method: 'GET',
     params: {
-      orderBy: 'full_name',
+      ...data,
+      orderBy: 'CreationTime',
     },
   });
 }
@@ -119,5 +121,12 @@ export function importExcel(data = {}) {
   return request('/v1/import-excel-customer-leads', {
     method: 'POST',
     data: formData,
+  });
+}
+
+export function getDivisions(params = {}) {
+  return requestLavarel(`/v1/divisions`, {
+    method: 'GET',
+    params,
   });
 }

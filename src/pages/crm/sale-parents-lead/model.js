@@ -9,6 +9,7 @@ export default {
     tags: [],
     lead: [],
     branch: [],
+    divisions: [],
     types: [],
     searchSource: [],
     employees: [],
@@ -67,6 +68,10 @@ export default {
     SET_TYPES: (state, { payload }) => ({
       ...state,
       types: payload.items,
+    }),
+    SET_DIVISIONS: (state, { payload }) => ({
+      ...state,
+      divisions: payload.parsePayload,
     }),
   },
   effects: {
@@ -212,6 +217,21 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_DIVISIONS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDivisions, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_DIVISIONS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

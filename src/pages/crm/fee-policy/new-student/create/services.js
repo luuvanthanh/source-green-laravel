@@ -20,7 +20,9 @@ export function details(params = {}) {
         'tuition.paymentForm,tuition.fee',
         'tuition',
         'schoolYear',
-        'student.classStudent.class'
+        'student.classStudent.class',
+        'branch',
+        'studentInfo.customerLead',
       ]),
     },
   });
@@ -45,7 +47,7 @@ export function getStudents(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo', 'parentInfo']),
+      include: Helper.convertIncludes(['studentInfo','studentInfo.customerLead,parentInfo', 'parentInfo', 'branch']),
     },
   });
 }

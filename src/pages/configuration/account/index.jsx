@@ -46,7 +46,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        filter: query?.filter,
+        KeyWord: query?.KeyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -89,7 +89,7 @@ class Index extends PureComponent {
     this.setStateData(
       {
         search: {
-          filter: '',
+          KeyWord: '',
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
@@ -232,7 +232,7 @@ class Index extends PureComponent {
       title: 'Vai trò',
       key: 'roles',
       className: 'min-width-130',
-      render: () => 'Giáo viên',
+      render: (record) => record.role,
     },
     {
       title: 'Trạng thái',
@@ -286,8 +286,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="filter"
-                    onChange={(event) => this.onChange(event, 'filter')}
+                    name="KeyWord"
+                    onChange={(event) => this.onChange(event, 'KeyWord')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />

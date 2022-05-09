@@ -88,6 +88,7 @@ const General = memo(
             student: {
               ...details.student,
               ...values,
+              branchId: details?.student?.branchId || details?.student?.class?.branchId,
               id: params.id,
               fileImage: JSON.stringify(files),
               age,
@@ -183,6 +184,7 @@ const General = memo(
         });
         formRef.current.setFieldsValue({
           branchId: user?.branchs[0]?.id,
+          registerDate: moment(),
         });
       }
     }, [user?.id]);
@@ -198,7 +200,7 @@ const General = memo(
           ...details.student,
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
           registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
-          branchId: details?.student?.branchId,
+          branchId: details?.student?.branch?.name ||  details?.student?.class?.branch?.name,
           status: details?.student?.status,
         });
         mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
@@ -437,17 +439,6 @@ const General = memo(
                         >
                           Bảo lưu
                         </Button>
-                        {details?.student?.status !== variablesModules.STATUS.OFFICAL && (
-                          <Button
-                            color="primary"
-                            size="large"
-                            htmlType="button"
-                            className="mr-3"
-                            onClick={() => handleModalForm(type.STOP_DISTRIBUTED)}
-                          >
-                            Kết thúc nhập môn
-                          </Button>
-                        )}
                       </>
                     )}
                     {details?.student?.status === variablesModules.STATUS.REGISTED && (

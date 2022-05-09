@@ -110,7 +110,7 @@ const Index = memo(() => {
       dispatch({
         type: 'CRMnewStudentAdd/GET_CLASS',
         payload: {
-          branchId: detailsData?.branch_id,
+          branchId: detailsData?.branch?.branch_id_hrm,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.SIZEMAX,
         },
@@ -144,17 +144,18 @@ const Index = memo(() => {
                 ? Helper.getDate(res?.day_admission, variables.DATE_FORMAT.DATE_VI)
                 : '',
               code: res?.student?.code || '',
-              branchName: res?.student?.classStudent?.class?.branch?.name || '',
+              branch_id: res?.student?.classStudent?.class?.branch?.name || '',
               classType: res?.student?.classStudent?.class?.classType?.name || '',
               className: res?.student?.classStudent?.class?.name || '',
               class_type_id: res?.class_type_id || '',
+              student_info_id: res?.student_info_id,
               expectedToCollectMoney: res?.expectedToCollectMoney || [],
             }));
             formRef.current.setFieldsValue({
               ...res,
               range_date,
               age: res?.studentInfo?.age_month || res?.age,
-              name_student: res?.studentInfo?.full_name || res?.name_student,
+              name_student: res?.studentInfo?.full_name ? `${res?.studentInfo?.full_name} (${res?.studentInfo?.customerLead?.full_name})` : res?.name_student,
               date_of_birth: moment(
                 res?.studentInfo?.birth_date || res?.date_of_birth,
                 variables.DATE_FORMAT.YEAR_MONTH_DAY,
@@ -165,6 +166,7 @@ const Index = memo(() => {
               mother_name: mother?.full_name || res?.mother_name,
               mother_phone: mother?.phone || res?.mother_phone,
               branch_id: res?.branch_id,
+              branch: res?.branch?.name,
               type: 'newStudent',
             });
           }
@@ -173,18 +175,6 @@ const Index = memo(() => {
     }
   }, [params.id]);
 
-  useEffect(() => {
-    if (detailsData.id) {
-      dispatch({
-        type: 'CRMnewStudentAdd/GET_CLASS',
-        payload: {
-          branchId: detailsData?.branch_id,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.SIZEMAX,
-        },
-      });
-    }
-  }, [detailsData.id]);
 
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
@@ -232,13 +222,15 @@ const Index = memo(() => {
         payment_form_id: i?.paymentFormId,
         money: i?.money,
       })),
+      branch_id: details?.branch_id?.id ? details?.branch_id?.id : values?.branch_id,
       expected_to_collect_money: idRes || undefined,
       id: params?.id || undefined,
-      student_info_id: response?.student_info_id || details?.student_info_id,
     };
     dispatch({
       type: params?.id ? 'CRMnewStudentAdd/UPDATE' : 'CRMnewStudentAdd/ADD',
-      payload,
+      payload: params?.id && !details?.student_info_id ?
+        { ...payload } :
+        { ...payload, student_info_id: response?.student_info_id },
       callback: (res) => {
         if (res) {
           history.goBack();
@@ -251,20 +243,6 @@ const Index = memo(() => {
     if (errorFields) {
       checkValidate(tuition, 'tuition');
     }
-  };
-
-  const getMoney = (school_year_id, class_type_id, day_admission, tuition) => {
-    if (_.isEmpty(tuition)) {
-      return;
-    }
-    const newTuition = [...tuition]
-      .filter((obj) => obj?.payment_form_id && obj?.fee_id)
-      .map((item) => ({
-        id: item.id,
-        money: item.money,
-        fee_id: item.fee_id,
-        payment_form_id: item.payment_form_id,
-      }));
   };
 
   const loadTableFees = (value, name) => {
@@ -283,11 +261,7 @@ const Index = memo(() => {
       };
       setDetails(newDetails);
     }
-    const { getFieldsValue, setFieldsValue } = formRef?.current;
-    const { school_year_id, class_type_id, day_admission } = getFieldsValue();
-    if (school_year_id && class_type_id && day_admission) {
-      getMoney(school_year_id, class_type_id, day_admission, tuition);
-    }
+    const { setFieldsValue } = formRef?.current;
     if (name === 'school_year_id') {
       setIdRes([]);
       const response = yearsSchool.find((item) => item.id === value);
@@ -309,9 +283,21 @@ const Index = memo(() => {
         schoolYear?.end_date,
         variables.DATE_FORMAT.DATE_VI,
       );
-      setFieldsValue({ day_admission: '', range_date });
+      setFieldsValue({ range_date });
     }
   };
+  useEffect(() => {
+    if (details.branch_id?.id) {
+      dispatch({
+        type: 'CRMnewStudentAdd/GET_CLASS',
+        payload: {
+          branchId: details?.branch_id?.branch_id_hrm,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.SIZEMAX,
+        },
+      });
+    }
+  }, [details.branch_id?.id]);
 
   const onchangeBranches = (e) => {
     dispatch({
@@ -387,6 +373,13 @@ const Index = memo(() => {
         response?.schoolYear?.end_date,
         variables.DATE_FORMAT.DATE_VI,
       );
+      setDetails((prev) => ({
+        ...prev,
+        day_admission: response.date_register
+          ? Helper.getDate(response.date_register, variables.DATE_FORMAT.DATE_VI)
+          : '',
+        branch_id: response?.branch || '',
+      }));
       formRef.current.setFieldsValue({
         ...response,
         range_date,
@@ -400,7 +393,9 @@ const Index = memo(() => {
           response.studentInfo.birth_date,
           variables.DATE_FORMAT.YEAR_MONTH_DAY,
         ),
-        // day_admission: moment(response.studentInfo.day_admission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        day_admission: moment(response.date_register, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        branch_id: response?.branch?.branch_id_hrm,
+        branch: response?.branch?.name,
         type,
       });
     }
@@ -597,7 +592,7 @@ const Index = memo(() => {
                   <Pane className="p20 border-top">
                     <div className="row">
                       <div className="col-lg-3">
-                        {details?.student_info_id ? (
+                        {details?.student_info_id && params?.id ? (
                           <FormItem
                             className="input-noborder"
                             label="Họ tên học sinh"
@@ -625,7 +620,7 @@ const Index = memo(() => {
                                 allowClear={false}
                                 data={students.map((item) => ({
                                   ...item,
-                                  name: item?.studentInfo?.full_name || '-',
+                                  name: `${item?.studentInfo?.full_name} (${item?.studentInfo?.customerLead?.full_name})` || '-',
                                 }))}
                                 rules={[variables.RULES.EMPTY]}
                                 onChange={selectStudent}
@@ -688,6 +683,11 @@ const Index = memo(() => {
                       </div>
                       <div className="col-lg-3">
                         <FormItem
+                          className={
+                            type === 'oldStudent' || details?.student_info_id
+                              ? 'input-noborder'
+                              : ''
+                          }
                           label="Ngày nhập học"
                           name="day_admission"
                           type={variables.DATE_PICKER}
@@ -702,17 +702,36 @@ const Index = memo(() => {
                           }
                         />
                       </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          options={['branch_id_hrm', 'name']}
-                          label="Cơ sở dự kiến"
-                          name="branch_id"
-                          data={branches}
-                          type={variables.SELECT}
-                          rules={[variables.RULES.EMPTY]}
-                          onChange={onchangeBranches}
-                        />
-                      </div>
+                      {
+                        type === 'oldStudent' || details?.student_info_id ?
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="input-noborder"
+                              label="Cơ sở dự kiến"
+                              name="branch"
+                              type={variables.INPUT}
+                              placeholder="Cơ sở dự kiến"
+                            />
+                          </div>
+                          :
+                          <div className="col-lg-3">
+                            <FormItem
+                              className={
+                                type === 'oldStudent'
+                                  ? 'input-noborder'
+                                  : ''
+                              }
+                              options={['branch_id_hrm', 'name']}
+                              label="Cơ sở dự kiến"
+                              name="branch_id"
+                              data={branches}
+                              type={variables.SELECT}
+                              rules={[variables.RULES.EMPTY]}
+                              onChange={onchangeBranches}
+                            />
+                          </div>
+
+                      }
                       <div className="col-lg-3">
                         <FormItem
                           options={['classTypeCrmId', 'name']}

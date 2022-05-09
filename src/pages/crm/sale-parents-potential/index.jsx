@@ -207,10 +207,6 @@ class Index extends PureComponent {
       payload: {},
     });
     dispatch({
-      type: 'crmSaleParentsPotential/GET_EMPLOYEES',
-      payload: {},
-    });
-    dispatch({
       type: 'crmSaleParentsPotential/GET_SEARCH',
       payload: {},
     });
@@ -221,6 +217,19 @@ class Index extends PureComponent {
     dispatch({
       type: 'crmSaleParentsPotential/GET_POTENTIAL',
       payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_DIVISIONS',
+      payload: {},
+      callback: (res) => {
+        if (res) {
+          const item = res.parsePayload?.find(i => i?.code === 'GD');
+          dispatch({
+            type: 'crmSaleParentsPotential/GET_EMPLOYEES',
+            payload: {divisionId: item?.id},
+          });
+        }
+      }
     });
   };
 
@@ -457,13 +466,13 @@ class Index extends PureComponent {
                   <FormItem
                     name="full_name"
                     data={[
-                      { full_name: 'Chọn tất cả nhân viên' , id: null},
-                          { id: 'null', full_name: 'Chưa có nhân viên chăm sóc' },
+                      { fullName: 'Chọn tất cả nhân viên' , employeeIdCrm: null},
+                          { employeeIdCrm: 'null', fullName: 'Chưa có nhân viên chăm sóc' },
                       ...employees,
                     ]}
                     onChange={(event) => this.onChangeSelect(event, 'employee_id')}
                     type={variables.SELECT}
-                    options={['id', 'full_name']}
+                    options={['employeeIdCrm', 'fullName']}
                     allowClear={false}
                     placeholder="Chọn nhân viên chăm sóc"
                   />

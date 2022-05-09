@@ -35,6 +35,18 @@ export const variables = {
     ARRAGEDEPARTMENT: 'Xếp phòng ban',
     TRANSFERDEPARTMENT: 'Điều chuyển phòng ban',
   },
+  STATUS_EXTENDED: {
+    NOT_DISTRIBUTION: 'NOT_DISTRIBUTION',
+    CONFIRMED: 'CONFIRMED',
+    WAITING: 'WAITING',
+    REJECTED: 'REJECTED',
+  },
+  STATUS_EXTENDED_NAME: {
+    NOT_DISTRIBUTION: 'Chưa phân bổ',
+    CONFIRMED: 'Đã xác nhận',
+    WAITING: 'Chưa xác nhận',
+    REJECTED: 'Từ chối',
+  },
 };
 
 export default variables;
