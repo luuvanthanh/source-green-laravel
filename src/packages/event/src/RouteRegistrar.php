@@ -30,13 +30,33 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('events', 'EventController')->only('index', 'show');
+            \Route::get('events', [
+                'comment' => 'Danh sách sự kiện',
+                'uses' => 'EventController@index',
+                'as' => 'VIEW_EVENT|VIEW_TRACKEDEVENT',
+                'group' => 'Quản lý sự kiện',
+            ])->middleware('permission_for_role:VIEW_EVENT|VIEW_TRACKEDEVENT');
 
-            \Route::post('event-handle/{id}', 'EventController@handleEvent');
+            \Route::get('events/{id}', [
+                'comment' => 'Chi tiết sự kiện',
+                'uses' => 'EventController@show',
+            ]);
 
-            \Route::put('event-handle/{id}', 'EventController@updateHandleEvent');
+            \Route::post('event-handle/{id}', [
+                'comment' => 'Xử lý sự kiện',
+                'uses' => 'EventController@handleEvent',
+                'as' => 'EDIT_EVENT',
+                'group' => 'Quản lý sự kiện',
+            ])->middleware('permission_for_role:EDIT_EVENT');
 
-            \Route::post('event-handle-muti/{id}', 'EventController@handleEventMuti');
+            \Route::put('event-handle/{id}', [
+                'comment' => 'Cập nhật xử lý sự kiện',
+                'uses' => 'EventController@updateHandleEvent',
+                'as' => 'EDIT_TRACKEDEVENT',
+                'group' => 'Quản lý sự kiện',
+            ])->middleware('permission_for_role:EDIT_TRACKEDEVENT');
+
+            \Route::post('event-handle-muti/{id}', 'EventController@handleEventMuti')->middleware('permission_for_role:EDIT_EVENT');
 
             \Route::get('export-excel-events', 'EventController@exportExcel');
 

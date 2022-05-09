@@ -222,4 +222,13 @@ class CameraController extends Controller
 
         return $this->success($response, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function disconnect(Request $request, $id)
+    {
+        if ($this->cameraRepository->disconnect($id)) {
+            return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+        }
+
+        return response()->json(null, 422);
+    }
 }

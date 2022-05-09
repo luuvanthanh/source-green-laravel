@@ -391,7 +391,7 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $offset = (($i - 1)  * $max);
             $start = ($offset == 0 ? 0 : ($offset + 1));
 
-            $legacy = TourGuide::doesntHave('media')->whereNotNull('sync_data_id')->skip($start)->take($max)->get();
+            $legacy = TourGuide::whereNotNull('sync_data_id')->skip($start)->take($max)->get();
 
             dispatch(new ImportTourGuideJob(null, null, 'ADD_IMAGE', $legacy));
         }

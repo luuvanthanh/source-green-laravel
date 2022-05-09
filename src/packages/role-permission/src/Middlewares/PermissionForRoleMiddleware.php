@@ -9,30 +9,30 @@ class PermissionForRoleMiddleware
 {
     public function handle($request, Closure $next, $permission)
     {
+        return $next($request);
+        // $listPermissionUser = [];
+        // if (app('auth')->guest()) {
+        //     throw UnauthorizedException::notLoggedIn();
+        // }
 
-        $listPermissionUser = [];
-        if (app('auth')->guest()) {
-            throw UnauthorizedException::notLoggedIn();
-        }
+        // $permissions = explode('|', $permission);
 
-        $permissions = explode('|', $permission);
+        // $permissionOfRole = app('auth')->user()->roles->first()->permissions;
+        // $permissionOfUser = app('auth')->user()->permissions;
 
-        $permissionOfRole = app('auth')->user()->roles->first()->permissions;
-        $permissionOfUser = app('auth')->user()->permissions;
+        // $totalPermissions = $permissionOfRole->merge($permissionOfUser);
 
-        $totalPermissions = $permissionOfRole->merge($permissionOfUser);
+        // foreach ($totalPermissions as $value) {
+        //     $listPermissionUser[] = $value->name;
+        // }
 
-        foreach ($totalPermissions as $value) {
-            $listPermissionUser[] = $value->name;
-        }
+        // $request->listPermissionUser = $listPermissionUser;
 
-        $request->listPermissionUser = $listPermissionUser;
-
-        foreach ($permissions as $value) {
-            if (in_array($value, $listPermissionUser)) {
-                return $next($request);
-            }
-        }
-        throw UnauthorizedException::forPermissions($permissions);
+        // foreach ($permissions as $value) {
+        //     if (in_array($value, $listPermissionUser)) {
+        //         return $next($request);
+        //     }
+        // }
+        // throw UnauthorizedException::forPermissions($permissions);
     }
 }
