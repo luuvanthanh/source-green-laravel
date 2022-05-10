@@ -241,7 +241,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schoolYearId']);
 
         foreach ($details as $key => $detail) {
-
             $fee = \GGPHP\Fee\Models\Fee::findOrFail($detail->feeId);
             $paymentForm = \GGPHP\Fee\Models\PaymentForm::findOrFail($detail->paymentFormId);
             $dayAdmission = isset($detail->applyDate) ? $detail->applyDate : $attributes['dayAdmission'];
@@ -577,7 +576,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 $feeTuiTion = Fee::find($value['feeId']);
                 $paymentForm = PaymentForm::find($value['paymentFormId']);
                 $value['applyDate'] = Carbon::parse($value['applyDate']);
-
                 $applyDate = $value['applyDate']->format('Y-m');
                 switch ($paymentForm->Code) {
                     case 'NAM':
@@ -673,6 +671,27 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                         }
                         break;
                     case 'HOCKY2':
+                        $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                            ->whereHas('paymentForm', function ($query) {
+                                $query->where('Code', 'HOCKY2');
+                            })->whereMonth('Date', $month->format('m'))->whereYear('Date', $month->format('Y'))->first();
+
+                        if ($applyDate == $month->format('Y-m') && !is_null($isMonth)) {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => $value['money'],
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
+                            ];
+                        } else {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => 0,
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
+                            ];
+                        }
+                        break;
                     case 'HOCKY1_HOCKY2':
                         $dayAdmission = $value['applyDate']->format('Y-m-d');
                         $firstMonthHk1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
@@ -687,11 +706,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             })
                             ->where('Date', '>=', $value['applyDate']->startOfMonth()->format('Y-m-d'))->orderBy('Date', 'ASC')->first();
 
-
                         if ($month->format('Y-m') >= $applyDate) {
-                            if (!is_null($firstMonthHk1)  && ($month->format('Y-m-d') ==  $firstMonthHk1->Date)) {
+                            if (!is_null($firstMonthHk1)  && ($month->format('Y-m') ==  Carbon::parse($firstMonthHk1->Date)->format('Y-m'))) {
                                 $dayAdmission = $month->format('Y-m') == $value['applyDate']->format('Y-m') ? $dayAdmission : $firstMonthHk1->StartDate;
-
+                                $detail = [];
                                 $detail[] = [
                                     'paymentFormId' => PaymentForm::where('Code', 'HOCKY1')->first()->Id,
                                     'feeId' => $feeTuiTion->Id,
@@ -711,8 +729,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'money' => $moneyFeePolicies['money'],
                                     'fee_id_crm' => $feeTuiTion->FeeCrmId
                                 ];
-                            } else if (!is_null($firstMonthHk2)  && ($month->format('Y-m-d') ==  $firstMonthHk2->Date)) {
-                                $dayAdmission = $month->format('Y-m') == $value['applyDate']->format('Y-m') ? $dayAdmission : $firstMonthHk1->StartDate;
+                            } else if (!is_null($firstMonthHk2)  && ($month->format('Y-m') ==  Carbon::parse($firstMonthHk2->Date)->format('Y-m'))) {
+                                $dayAdmission = $month->format('Y-m') == $value['applyDate']->format('Y-m') ? $dayAdmission : $firstMonthHk2->StartDate;
+                                $detail = [];
                                 $detail[] = [
                                     'paymentFormId' => PaymentForm::where('Code', 'HOCKY2')->first()->Id,
                                     'feeId' => $feeTuiTion->Id,
