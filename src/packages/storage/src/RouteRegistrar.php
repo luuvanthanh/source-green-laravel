@@ -47,6 +47,11 @@ class RouteRegistrar
                 'as' => 'storage.manage.upload',
             ]);
 
+            $router->get('/download', [
+                'uses' => 'UploadController@download',
+                'as' => 'storage.manage.download',
+            ]);
+
             $router->delete('/storage', [
                 'uses' => 'UploadController@delete',
                 'as' => 'storage.manage.destroy',
