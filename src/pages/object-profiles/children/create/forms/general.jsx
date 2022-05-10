@@ -141,6 +141,9 @@ const General = memo(
         },
         callback: (response) => {
           if (response) {
+            history.push(
+              `/ho-so-doi-tuong/hoc-sinh`,
+            );
             dispatch({
               type: 'OPchildrenAdd/GET_DETAILS',
               payload: params,
@@ -413,7 +416,6 @@ const General = memo(
                       name="registerDate"
                       label="Ngày vào lớp"
                       type={variables.DATE_PICKER}
-                      disabled
                     />
                   </Pane>
                 </Pane>
