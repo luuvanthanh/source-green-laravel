@@ -83,19 +83,6 @@ const General = memo(
       });
     }, []);
 
-    useEffect(() => {
-      dispatch({
-        type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
-        payload: {
-          customer_lead_id: params.id,
-        },
-      });
-      dispatch({
-        type: 'crmSaleLeadAdd/GET_PARENT_LEAD',
-        payload: {},
-      });
-    }, [params.id]);
-
     const showModal = () => {
       mountedSet(setVisible, true);
       dispatch({
@@ -334,6 +321,7 @@ const General = memo(
       <>
         <Form layout="vertical" form={formRef} onFinish={onFinish}>
           <div className="card">
+          <Loading loading={effects[`crmSaleLeadAdd/GET_DETAILS`]} >
             <div style={{ padding: 20 }} className="pb-0 border-bottom">
               <Heading type="form-title" style={{ marginBottom: 20 }}>
                 Tình trạng chăm sóc phụ huynh lead
@@ -532,7 +520,7 @@ const General = memo(
                   </div>
               }
             </div>
-
+            </Loading>
           </div>
           <div className="card">
             <div style={{ padding: 20 }} className="pb-0 border-bottom">
@@ -546,6 +534,7 @@ const General = memo(
                       columns={header()}
                       dataSource={lead}
                       pagination={false}
+                      loading={effects[`crmSaleLeadAdd/GET_STATUS_LEAD`]}
                       className="table-normal"
                       isEmpty
                       params={{
