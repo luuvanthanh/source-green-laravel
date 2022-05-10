@@ -78,6 +78,8 @@ const General = memo(
     };
 
     const onFinish = (values) => {
+      const wrongDate = moment(values?.registerDate, 'MM/DD/YYYY').year();
+
       const age = moment().diff(moment(values.dayOfBirth), 'month');
       dispatch({
         type: params.id ? 'OPchildrenAdd/UPDATE' : 'OPchildrenAdd/ADD',
@@ -88,6 +90,7 @@ const General = memo(
             student: {
               ...details.student,
               ...values,
+              registerDate: wrongDate === 1 ? moment() : values?.registerDate,
               branchId: details?.student?.branchId || details?.student?.class?.branchId,
               id: params.id,
               fileImage: JSON.stringify(files),
@@ -107,7 +110,7 @@ const General = memo(
         callback: (response, error) => {
           if (response) {
             history.push(
-              `/ho-so-doi-tuong/hoc-sinh/${response?.student?.id}/chi-tiet?type=general`,
+              `/ho-so-doi-tuong/hoc-sinh`,
             );
           }
           if (error) {
@@ -170,7 +173,13 @@ const General = memo(
         dispatch({
           type: 'OPchildrenAdd/STORE_STUDENT',
           payload,
-          callback: () => { },
+          callback: (res) => {
+            if (res) {
+              history.push(
+                `/ho-so-doi-tuong/hoc-sinh`,
+              );
+            }
+          },
         });
       });
       setVisibleModal(false);
@@ -200,7 +209,7 @@ const General = memo(
           ...details.student,
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
           registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
-          branchId: details?.student?.branch?.name ||  details?.student?.class?.branch?.name,
+          branchId: details?.student?.branch?.name || details?.student?.class?.branch?.name,
           status: details?.student?.status,
         });
         mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
@@ -417,9 +426,22 @@ const General = memo(
               </Pane>
 
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-                {params.id && (
+                {params.id && (details?.student?.status === variablesModules.STATUS.STORE ||
+                  details?.student?.status === variablesModules.STATUS.STOP_STUDYING ||
+                  details?.student?.status === variablesModules.STATUS.WITHDRAW_APPLICATION) ?
+                  <Button
+                    color="success"
+                    size="large"
+                    htmlType="button"
+                    className="mr-3"
+                    onClick={updateStatus}
+                    loading={loadingSubmit}
+                  >
+                    Khôi phục
+                  </Button>
+                  :
                   <>
-                    {details?.student?.status !== variablesModules.STATUS.REGISTED && (
+                    {details?.student?.status !== variablesModules.STATUS.REGISTED && params?.id && (
                       <>
                         <Button
                           color="primary"
@@ -441,7 +463,7 @@ const General = memo(
                         </Button>
                       </>
                     )}
-                    {details?.student?.status === variablesModules.STATUS.REGISTED && (
+                    {details?.student?.status === variablesModules.STATUS.REGISTED && params?.id && (
                       <Button
                         color="success"
                         size="large"
@@ -450,13 +472,11 @@ const General = memo(
                         onClick={updateStatus}
                         loading={loadingSubmit}
                       >
-                        {details?.student?.status === variablesModules.STATUS.STORE
-                          ? 'Khôi phục'
-                          : 'Lưu trữ hồ sơ'}
+                        Lưu trữ hồ sơ
                       </Button>
                     )}
                   </>
-                )}
+                }
                 {
                   user?.roleCode === "admin" && !params?.id ? " " :
                     <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>

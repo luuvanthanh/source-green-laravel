@@ -380,7 +380,7 @@ class Index extends PureComponent {
 
                   <div className="row mt-3">
                     <div className="col-lg-6">
-                      <FormItem label="Ngày vào lớp" name="joinDate" type={variables.DATE_PICKER} />
+                      <FormItem label="Ngày vào lớp" name="joinDate" type={variables.DATE_PICKER} rules={[variables.RULES.EMPTY]}/>
                     </div>
                   </div>
                 </div>
