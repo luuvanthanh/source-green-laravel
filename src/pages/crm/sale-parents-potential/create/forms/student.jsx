@@ -9,6 +9,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Text from '@/components/CommonComponent/Text';
 import { UserOutlined } from '@ant-design/icons';
+import Loading from '@/components/CommonComponent/Loading';
 import csx from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -33,6 +34,7 @@ const Students = memo(() => {
     student,
     details,
     relationships,
+    loading: { effects },
   } = useSelector(({ loading, crmSaleParentsPotentialAdd }) => ({
     loading,
     relationships: crmSaleParentsPotentialAdd.relationships,
@@ -50,6 +52,8 @@ const Students = memo(() => {
       fileImage.map((item, index) => (index === position ? file : item)),
     );
   };
+
+  const loading = effects['crmSaleParentsPotentialAdd/GET_STUDENTS'];
 
   const onFinish = (values) => {
     const items = values.data.map((item, index) => ({
@@ -96,30 +100,30 @@ const Students = memo(() => {
   }, []);
 
   useEffect(() => {
-    if(details?.id){
+    if (details?.id) {
       dispatch({
         type: 'crmSaleParentsPotentialAdd/GET_RELATIONSHIPS',
         payload: {},
       });
       dispatch({
         type: 'crmSaleParentsPotentialAdd/GET_STUDENTS',
-        payload:{customer_lead_id:  details?.customer_lead_id},
+        payload: { customer_lead_id: details?.customer_lead_id },
         callback: (response) => {
           if (response) {
             setStudents(response.parsePayload);
             // setDayOfBirth(moment(response.parsePayload.map((item) => ({
-              //   birth_date: moment(item.birth_date),
-              // }))));
-              form.setFieldsValue({
-                data: response.parsePayload.map((item) => ({
-                  ...item,
-                  birth_date: item.birth_date ? moment(item?.birth_date) : "",
-                })),
-              });
-            }
-          },
-        });
-      }
+            //   birth_date: moment(item.birth_date),
+            // }))));
+            form.setFieldsValue({
+              data: response.parsePayload.map((item) => ({
+                ...item,
+                birth_date: item.birth_date ? moment(item?.birth_date) : "",
+              })),
+            });
+          }
+        },
+      });
+    }
   }, [details.id]);
 
   useEffect(() => {
@@ -258,10 +262,12 @@ const Students = memo(() => {
             </Pane>
           </Pane> :
           <div className="card ">
-            <div className={stylesModule['wrapper-admission']}>
-              <h3 className={stylesModule.title}>Danh học sinh</h3>
-              <p className={stylesModule.description}>Chưa có thông tin học sinh</p>
-            </div>
+            <Loading loading={loading} >
+              <div className={stylesModule['wrapper-admission']}>
+                <h3 className={stylesModule.title}>Danh học sinh</h3>
+                <p className={stylesModule.description}>Chưa có thông tin học sinh</p>
+              </div>
+            </Loading>
           </div>
       }
     </>

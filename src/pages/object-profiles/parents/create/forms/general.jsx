@@ -49,7 +49,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         : { ...values, fileImage: JSON.stringify(files) },
       callback: (response, error) => {
         if (response) {
-          history.push(`/ho-so-doi-tuong/phu-huynh/${response?.id}/chi-tiet?type=general`);
+          history.push(
+            `/ho-so-doi-tuong/phu-huynh`,
+          );
         }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
@@ -83,6 +85,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
       },
       callback: (response) => {
         if (response) {
+          history.push(
+            `/ho-so-doi-tuong/phu-huynh`,
+          );
           dispatch({
             type: 'OPParentsAdd/GET_DETAILS',
             payload: params,

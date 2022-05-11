@@ -283,9 +283,9 @@ class Index extends PureComponent {
         width: 100,
         render: (value, record) => (
           <div className='d-flex' >
-            {record.potentialStudentInfo.map((item, index) =>
+            {record?.customerLead?.studentInfo?.map((item, index) =>
               <div size="normal" key={index} className='d-flex'>
-                {item.age_month}{index + 1 === record.potentialStudentInfo.length ? "" : ",  "}
+                {item.age_month}{index + 1 === record?.customerLead?.studentInfo?.length ? "" : ",  "}
               </div>
             )}
           </div>

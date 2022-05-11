@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, DatePicker, Radio } from 'antd';
+import { Form, DatePicker } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import { isEmpty, omit, last, head } from 'lodash';
 
 import Button from '@/components/CommonComponent/Button';
 import Heading from '@/components/CommonComponent/Heading';
 import Pane from '@/components/CommonComponent/Pane';
+import Loading from '@/components/CommonComponent/Loading';
 import moment from 'moment';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -16,8 +17,6 @@ import stylesModule from '../styles.module.scss';
 import variablesModules from '../utils/variables';
 
 
-const { Item: FormItemAntd } = Form;
-const { Group: RadioGroup } = Radio;
 let isMounted = true;
 /**
  * Set isMounted
@@ -213,8 +212,9 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { type } = this.state;
     const loadingSubmit = effects['childDevelopAssessmentPeriodAdd/ADD'] || effects['childDevelopAssessmentPeriodAdd/UPDATE'];
+    const loading = effects['childDevelopAssessmentPeriodAdd/GET_DETAILS'];
+
     return (
       <>
         <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuData} />
@@ -226,108 +226,99 @@ class Index extends PureComponent {
             ref={this.formRef}
             onFinish={this.onFinish}
           >
-
             <div className={styles['content-form']}>
               <Pane className="pl20 pr20 mt20">
                 <Pane className="card">
-                  <Pane className="p20">
-                    <Heading type="form-title" className="mb20">
-                      Thông tin thêm mới
-                    </Heading>
-                    <Pane className="row mt20">
-                      <Pane className="col-lg-12">
-                        <FormItemAntd >
-                          <RadioGroup
-                            options={variablesModules.TYPES}
-                            value={type}
-                            onChange={this.onChangeType}
+                  <Loading loading={loading} >
+                    <Pane className="p20">
+                      <Heading type="form-title" className="mb20">
+                        Thông tin thêm mới
+                      </Heading>
+                      <Pane className="row mt20">
+                        <Pane className="col-lg-6">
+                          <FormItem label="Mã kỳ đánh giá" name="code" type={variables.INPUT} placeholder={" "} disabled />
+                        </Pane>
+                        <Pane className="col-lg-6">
+                          <FormItem
+                            name="nameAssessmentPeriodId"
+                            data={problems}
+                            placeholder="Chọn"
+                            type={variables.SELECT}
+                            label="Tên kỳ đánh giá"
+                            rules={[variables.RULES.EMPTY_INPUT]}
                           />
-                        </FormItemAntd>
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <FormItem label="Mã kỳ đánh giá" name="code" type={variables.INPUT} placeholder={" "} disabled />
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          name="nameAssessmentPeriodId"
-                          data={problems}
-                          placeholder="Chọn"
-                          type={variables.SELECT}
-                          label="Tên kỳ đánh giá"
-                          rules={[variables.RULES.EMPTY_INPUT]}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          name="schoolYearId"
-                          data={schoolYear.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
-                          placeholder="Chọn"
-                          type={variables.SELECT}
-                          label="Năm học"
-                          rules={[variables.RULES.EMPTY_INPUT]}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <div className={styles['form-item']}>
-                          <label htmlFor="userId" className={stylesModule['wrapper-lable']} >Thời gian đánh giá</label>
-                          <Form.Item name="selectDate" style={{ marginBottom: 0 }} rules={[variables.RULES.EMPTY]}>
-                            <DatePicker.RangePicker
-                              format={[variables.DATE_FORMAT.DATE, variables.DATE_FORMAT.DATE]}
-                            />
-                          </Form.Item>
-                        </div>
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          name="branchId"
-                          data={branches}
-                          type={variables.SELECT_MUTILPLE}
-                          rules={[variables.RULES.EMPTY]}
-                          label="Cơ sở áp dụng"
-                        />
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          name="classesId"
-                          data={dataClass}
-                          type={variables.SELECT_MUTILPLE}
-                          rules={[variables.RULES.EMPTY]}
-                          label="Lớp áp dụng"
-                        />
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          valuePropName="checked"
-                          label="Áp dụng"
-                          name="use"
-                          type={variables.SWITCH}
-                        />
+                        </Pane>
+                        <Pane className="col-lg-6">
+                          <FormItem
+                            name="schoolYearId"
+                            data={schoolYear.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
+                            placeholder="Chọn"
+                            type={variables.SELECT}
+                            label="Năm học"
+                            rules={[variables.RULES.EMPTY_INPUT]}
+                          />
+                        </Pane>
+                        <Pane className="col-lg-6">
+                          <div className={styles['form-item']}>
+                            <label htmlFor="userId" className={stylesModule['wrapper-lable']} >Thời gian đánh giá</label>
+                            <Form.Item name="selectDate" style={{ marginBottom: 0 }} rules={[variables.RULES.EMPTY]}>
+                              <DatePicker.RangePicker
+                                format={[variables.DATE_FORMAT.DATE, variables.DATE_FORMAT.DATE]}
+                              />
+                            </Form.Item>
+                          </div>
+                        </Pane>
+                        <Pane className="col-lg-12">
+                          <FormItem
+                            name="branchId"
+                            data={branches}
+                            type={variables.SELECT_MUTILPLE}
+                            rules={[variables.RULES.EMPTY]}
+                            label="Cơ sở áp dụng"
+                          />
+                        </Pane>
+                        <Pane className="col-lg-12">
+                          <FormItem
+                            name="classesId"
+                            data={dataClass}
+                            type={variables.SELECT_MUTILPLE}
+                            rules={[variables.RULES.EMPTY]}
+                            label="Lớp áp dụng"
+                          />
+                        </Pane>
+                        <Pane className="col-lg-6">
+                          <FormItem
+                            valuePropName="checked"
+                            label="Áp dụng"
+                            name="use"
+                            type={variables.SWITCH}
+                          />
+                        </Pane>
                       </Pane>
                     </Pane>
-                  </Pane>
-                  <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                    <p
-                      className="btn-delete"
-                      role="presentation"
-                      loading={loadingSubmit}
-                      onClick={() => history.goBack()}
-                    >
-                      Hủy
-                    </p>
-                    <Button
-                      className="ml-auto px25"
-                      color="success"
-                      htmlType="submit"
-                      size="large"
-                      loading={loadingSubmit}
-                    >
-                      Lưu
-                    </Button>
-                  </Pane>
+                    <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+                        loading={loadingSubmit}
+                        onClick={() => history.goBack()}
+                      >
+                        Hủy
+                      </p>
+                      <Button
+                        className="ml-auto px25"
+                        color="success"
+                        htmlType="submit"
+                        size="large"
+                        loading={loadingSubmit}
+                      >
+                        Lưu
+                      </Button>
+                    </Pane>
+                  </Loading>
                 </Pane>
               </Pane>
             </div>
-
           </Form>
         </Pane>
       </>

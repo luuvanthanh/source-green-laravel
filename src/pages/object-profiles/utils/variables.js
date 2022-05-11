@@ -32,7 +32,7 @@ export const variables = {
     DISTRIBUTED: 'Nhập môn',
     OFFICAL: 'Chính thức',
     WITHDRAW_APPLICATION: 'Rút hồ sơ',
-    STOP_STUDYING: 'Ngưng học',
+    STOP_STUDYING: 'Bảo lưu',
   },
   STATUS_OBJECT_PROFILE: {
     REGISTED: 'REGISTED',
@@ -46,7 +46,8 @@ export const variables = {
     DISTRIBUTED: 'Nhập môn',
     OFFICAL: 'Chính thức',
     WITHDRAW_APPLICATION: 'Rút hồ sơ',
-    STOP_STUDYING: 'Ngưng học'
+    STOP_STUDYING: 'Bảo lưu',
+    STORE: 'Lưu trữ',
   },
   TYPE_USER: {
     RANK: 'rank',

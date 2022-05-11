@@ -1717,13 +1717,13 @@ export async function getLeftMenuFeePolicy() {
           permission: [permissions.HRM],
           pro: true,
         },
-        {
-          title: 'Chi tiết các khoản tiền nộp',
-          key: 'details-of-payments',
-          url: ['/chinh-sach-phi/bao-cao/chi-tiet-cac-khoan-tien-nop'],
-          permission: [permissions.HRM],
-          pro: true,
-        },
+        // {
+        //   title: 'Chi tiết các khoản tiền nộp',
+        //   key: 'details-of-payments',
+        //   url: ['/chinh-sach-phi/bao-cao/chi-tiet-cac-khoan-tien-nop'],
+        //   permission: [permissions.HRM],
+        //   pro: true,
+        // },
         {
           title: 'Lịch nộp tiền học',
           key: 'tuition-payment-schedule',
