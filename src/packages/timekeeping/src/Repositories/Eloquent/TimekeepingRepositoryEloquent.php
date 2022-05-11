@@ -10,6 +10,7 @@ use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\Timekeeping\Presenters\TimekeepingPresenter;
@@ -1139,13 +1140,14 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             }
 
             switch ($value->Type) {
-                case '1':
+                case ManualCalculation::TYPE['X']:
                     $type = 'X';
                     break;
-                case '2':
+                case ManualCalculation::TYPE['K']:
+                    $timekeepingReport = 0;
                     $type = 'K';
                     break;
-                case '3':
+                case ManualCalculation::TYPE['F']:
                     $type = 'F';
                     break;
             }
