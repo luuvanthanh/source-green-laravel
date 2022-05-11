@@ -14,7 +14,6 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import ability from '@/utils/ability';
-import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -227,13 +226,6 @@ class Index extends PureComponent {
         className: 'min-width-150',
         width: 150,
         render: (record) => <Text size="normal">{record.address}</Text>,
-      },
-      {
-        title: 'Trạng thái',
-        key: 'status',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         key: 'actions',
