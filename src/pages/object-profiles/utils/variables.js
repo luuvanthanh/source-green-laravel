@@ -46,7 +46,8 @@ export const variables = {
     DISTRIBUTED: 'Nhập môn',
     OFFICAL: 'Chính thức',
     WITHDRAW_APPLICATION: 'Rút hồ sơ',
-    STOP_STUDYING: 'Bảo lưu'
+    STOP_STUDYING: 'Bảo lưu',
+    STORE: 'Lưu trữ',
   },
   TYPE_USER: {
     RANK: 'rank',
