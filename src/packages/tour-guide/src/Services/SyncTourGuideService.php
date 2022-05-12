@@ -146,6 +146,7 @@ class SyncTourGuideService
                     'full_name' => $item['ten'],
                     'date_of_birth' => $item['ngaySinh'],
                     'card_type_id' => $cardTypeId,
+                    'card_number' => $item['ma'],
                     'sex' => $item['gioiTinh'] >= 0 ? $item['gioiTinh'] : 0,
                     'expiration_date' => $expirationDate,
                     'degree' => $item['bangCap'],
@@ -160,6 +161,10 @@ class SyncTourGuideService
 
 
                 $result[] = $itemDetail;
+            } else {
+                $tourGuide->update([
+                    'card_number' => $item['ma'],
+                ]);
             }
         }
 

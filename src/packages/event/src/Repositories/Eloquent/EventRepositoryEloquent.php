@@ -161,9 +161,9 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
         $event = null;
 
-        // if (!empty($attributes['track_id'])) {
-        //     $event = $this->model()::where('track_id', $attributes['track_id'])->first();
-        // }
+        if (!empty($attributes['track_id'])) {
+            $event = $this->model()::where('track_id', $attributes['track_id'])->first();
+        }
 
         if (is_null($event)) {
             $event = $this->model()::create($attributes);
@@ -319,6 +319,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $params['[camera]'][] = !is_null($event->camera) ? $event->camera->name : null;
             $params['[warning_level]'][] = $this->getConstWarningLevel($event->warning_level);
             $params['[status]'][] =  $this->getConstStatus($event->status);
+            $params['[percent_similarity]'][] =  round($event->percent_similarity * 100, 2) . '%';
             $params['[image]'][] =  null;
         }
 
