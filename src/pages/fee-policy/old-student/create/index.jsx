@@ -10,6 +10,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
+import Loading from '@/components/CommonComponent/Loading';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import stylesModule from '../styles.module.scss';
@@ -362,14 +363,19 @@ const Index = memo(() => {
     }
   }, [params?.id]);
 
+  const dataTest = (e) => {
+    const data = fees.find(k => k?.id === e?.feeId);
+    return data?.name;
+  };
 
   const header = () => {
-    const rowData = fees?.map(i => ({
-      title: i?.name,
+
+    const rowData = dataTuition?.map(i => ({
+      title: dataTest(i),
       width: 150,
       key: 'money',
       render: (record) => {
-        const item = record?.money?.find(k => k?.feeId === i?.id);
+        const item = record?.money?.find(k => k?.feeId === i?.feeId);
         return (
           <>
             {
@@ -512,106 +518,108 @@ const Index = memo(() => {
             onFinishFailed={onFinishFailed}
             initialValues={{ type: 'newStudent' }}
           >
-            <Pane className="card">
-              <Pane className="p20">
-                <Heading type="form-title" className="mb20">
-                  Thông tin chung
-                </Heading>
-              </Pane>
-              <Pane className="p20 border-top">
-                <div className="row">
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Năm học"
-                      name="schoolYearId"
-                      data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
-                      type={variables.SELECT}
-                      rules={[variables.RULES.EMPTY]}
-                      onChange={changeYear}
-                    />
+            <Loading loading={loading['oldStudentAdd/GET_DETAILS']} >
+              <Pane className="card">
+                <Pane className="p20">
+                  <Heading type="form-title" className="mb20">
+                    Thông tin chung
+                  </Heading>
+                </Pane>
+                <Pane className="p20 border-top">
+                  <div className="row">
+                    <div className="col-lg-3">
+                      <FormItem
+                        label="Năm học"
+                        name="schoolYearId"
+                        data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY]}
+                        onChange={changeYear}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <label htmlFor="" className="mb5 font-size-13" >Thời gian hiệu lực</label>
+                      <p className="mb0 font-size-13 mt10 font-weight-bold"> {details?.startDate ? `${details?.startDate} - ${details?.endDate}` : ''}</p>
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        label="Ngày nhập học"
+                        name="dayAdmission"
+                        type={variables.DATE_PICKER}
+                        rules={[variables.RULES.EMPTY]}
+                        allowClear={false}
+                        onChange={chgangeDayAdmission}
+                        disabledDate={(current) => details?.startDate && current < moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf('day')
+                          || details?.endDate && current >= moment(details.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day')
+                        }
+                      />
+                    </div>
                   </div>
-                  <div className="col-lg-3">
-                    <label htmlFor="" className="mb5 font-size-13" >Thời gian hiệu lực</label>
-                    <p className="mb0 font-size-13 mt10 font-weight-bold"> {details?.startDate ? `${details?.startDate} - ${details?.endDate}` : ''}</p>
-                  </div>
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Ngày nhập học"
-                      name="dayAdmission"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                      allowClear={false}
-                      onChange={chgangeDayAdmission}
-                      disabledDate={(current) => details?.startDate && current < moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf('day')
-                        || details?.endDate && current >= moment(details.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day')
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Tên học sinh"
-                      name="studentId"
-                      data={loading['oldStudentAdd/GET_STUDENTS'] ? [] : students.map(item => ({ ...item, name: item?.fullName || '-' }))}
-                      type={variables.SELECT}
-                      rules={[variables.RULES.EMPTY]}
-                      onChange={changeStudent}
-                      onSearch={onSearch}
-                      notFoundContent={loading['oldStudentAdd/GET_STUDENTS'] ? <Spin size="small" /> : null}
-                      filterOption
-                    />
-                  </div>
-                  <div className="col-lg-9">
-                    <div className="row">
-                      <div className="col-lg-3">
-                        <label htmlFor="" className="mb5 font-size-13" >Mã học sinh</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.code || ''}</p>
-                      </div>
-                      <div className="col-lg-3">
-                        <label htmlFor="" className="mb5 font-size-13" >Cơ sở</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.branchName || ''}</p>
-                      </div>
-                      <div className="col-lg-3">
-                        <label htmlFor="" className={`mb5 font-size-13 ${details?.code && !details?.classTypeId ? 'text-danger' : ''}`} >Khối lớp</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.classType || ''}</p>
-                      </div>
-                      <div className="col-lg-3">
-                        <label htmlFor="" className="mb5 font-size-13" >Lớp</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.className || ''}</p>
+                  <div className="row">
+                    <div className="col-lg-3">
+                      <FormItem
+                        className="mb-0"
+                        label="Tên học sinh"
+                        name="studentId"
+                        type={variables.SELECT}
+                        placeholder="Chọn học sinh"
+                        allowClear={false}
+                        data={loading['oldStudentAdd/GET_STUDENTS'] ? [] : students.map(item => ({ ...item, name: item?.fullName || '-' }))}
+                        rules={[variables.RULES.EMPTY]}
+                        onChange={changeStudent}
+                      />
+                    </div>
+                    <div className="col-lg-9">
+                      <div className="row">
+                        <div className="col-lg-3">
+                          <label htmlFor="" className="mb5 font-size-13" >Mã học sinh</label>
+                          <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.code || ''}</p>
+                        </div>
+                        <div className="col-lg-3">
+                          <label htmlFor="" className="mb5 font-size-13" >Cơ sở</label>
+                          <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.branchName || ''}</p>
+                        </div>
+                        <div className="col-lg-3">
+                          <label htmlFor="" className={`mb5 font-size-13 ${details?.code && !details?.classTypeId ? 'text-danger' : ''}`} >Khối lớp</label>
+                          <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.classType || ''}</p>
+                        </div>
+                        <div className="col-lg-3">
+                          <label htmlFor="" className="mb5 font-size-13" >Lớp</label>
+                          <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.className || ''}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Pane>
               </Pane>
-            </Pane>
-            <Pane className="card pb20">
-              <Heading type="form-title" className="heading-tab p20">
-                Các khoản học phí <span className="text-danger">*</span>
-              </Heading>
-              <Tabs onChange={changeTab} activeKey={tab} className="test-12 p20">
-                {tabs().map(({ id, name, component }) => (
-                  <TabPane
-                    tab={<span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>}
-                    key={id}
-                  >
-                    {component}
-                  </TabPane>
-                ))}
-              </Tabs>
-            </Pane>
-            <Pane className="p20 d-flex justify-content-between align-items-center">
-              <Button
-                className="ml-auto px25"
-                color="success"
-                htmlType="submit"
-                size="large"
-                loading={loading['oldStudentAdd/ADD'] || loading['oldStudentAdd/UPDATE']}
-                disabled={!details?.classTypeId || !details?.schoolYearId}
-              >
-                Lưu
-              </Button>
-            </Pane>
+              <Pane className="card pb20">
+                <Heading type="form-title" className="heading-tab p20">
+                  Các khoản học phí <span className="text-danger">*</span>
+                </Heading>
+                <Tabs onChange={changeTab} activeKey={tab} className="test-12 p20">
+                  {tabs().map(({ id, name, component }) => (
+                    <TabPane
+                      tab={<span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>}
+                      key={id}
+                    >
+                      {component}
+                    </TabPane>
+                  ))}
+                </Tabs>
+              </Pane>
+              <Pane className="p20 d-flex justify-content-between align-items-center">
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={loading['oldStudentAdd/ADD'] || loading['oldStudentAdd/UPDATE']}
+                  disabled={!details?.classTypeId || !details?.schoolYearId}
+                >
+                  Lưu
+                </Button>
+              </Pane>
+            </Loading>
           </Form>
         </Pane>
       </Pane>

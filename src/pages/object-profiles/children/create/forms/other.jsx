@@ -7,6 +7,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 
 const { Item: FormItem } = Form;
+const { TextArea } = Input;
 
 const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
   loading,
@@ -92,7 +93,7 @@ const Other = memo(({ dispatch, loading: { effects }, match: { params }, details
           <Pane className="row">
             <Pane className="col">
               <FormItem name="parentWish" label="Mong muốn của phụ huynh">
-                <Input placeholder="Nhập" />
+                <TextArea rows={4}  placeholder="Nhập" />
               </FormItem>
             </Pane>
           </Pane>
@@ -108,7 +109,7 @@ const Other = memo(({ dispatch, loading: { effects }, match: { params }, details
           <Pane className="row">
             <Pane className="col">
               <FormItem name="comments" label="Đóng góp của phụ huynh">
-                <Input placeholder="Nhập" />
+                <TextArea rows={4} placeholder="Nhập" />
               </FormItem>
             </Pane>
           </Pane>

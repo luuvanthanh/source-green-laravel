@@ -16,12 +16,12 @@ import stylesModule from './styles.module.scss';
 
 
 const dataTime = (n) => {
-  const allTime = [];
-  for (let i = 0; i < n + 1; i += 1) {
-      allTime.push({ name: `${i} Năm` });
-  }
+    const allTime = [];
+    for (let i = 0; i < n + 1; i += 1) {
+        allTime.push({ name: `${i} Năm` });
+    }
 
-  return allTime.map((i, id) => ({ id, ...i }));
+    return allTime.map((i, id) => ({ id, ...i }));
 };
 
 let isMounted = true;
@@ -239,8 +239,8 @@ class Index extends PureComponent {
      * @param {object} e event of input
      * @param {string} type key of object search
      */
-    onChangeDate = (e , type) => {
-      this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    onChangeDate = (e, type) => {
+        this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
     };
 
     /**
@@ -264,53 +264,60 @@ class Index extends PureComponent {
      * Function header table
      */
     header = () => {
-        const { search } = this.state;
         const columns = [
-          {
-            title: 'STT',
-            align: 'center',
-            render: (value, _, index) => <>{Helper.serialOrder(search?.page, index, search?.limit)}</>, 
-          },
-          {
-            title: 'Mã NV',
-            key: 'code',
-            render: (record) => <Text size="normal">{record?.employeeCode}</Text>,
-          },
-          {
-            title: 'Tên nhân viên',
-            key: 'name',
-            render: (record) => <Text size="normal">{record?.employeeName}</Text>,
-          },
-          {
-            title: 'Chức vụ',
-            key: 'position',
-            render: (record) => <Text size="normal">{record?.position}</Text>,
-          },
-          {
-            title: 'Cơ sở',
-            key: 'division',
-            render: (record) => <Text size="normal">{record?.branch}</Text>,
-          },
-          {
-            title: 'Thâm niên công tác',
-            children: [
-              {
-                title: 'Ngày bắt đầu làm việc',
-                key: 'start_date',
-                render: (record) => Helper.getDate(record?.contractFrom, variables.DATE_FORMAT.DATE),
-              },
-              {
-                title: 'Số năm làm việc',
-                key: 'year_working',
-                render: (record) => <Text size="normal">{record?.numberYearWork}</Text>,
-              },
-              {
-                title: 'Số tháng làm việc',
-                key: 'month_working',
-                render: (record) => <Text size="normal">{record?.numberMonthWork}</Text>,
-              },
-            ],
-          },
+            {
+                title: 'STT',
+                key: 'text',
+                width: 60,
+                className: 'min-width-60',
+                align: 'center',
+                render: (text, record, index) =>
+                    Helper.sttList(
+                        this.props.pagination?.current_page,
+                        index,
+                        this.props.pagination?.per_page,
+                    ),
+            },
+            {
+                title: 'Mã NV',
+                key: 'code',
+                render: (record) => <Text size="normal">{record?.employeeCode}</Text>,
+            },
+            {
+                title: 'Tên nhân viên',
+                key: 'name',
+                render: (record) => <Text size="normal">{record?.employeeName}</Text>,
+            },
+            {
+                title: 'Chức vụ',
+                key: 'position',
+                render: (record) => <Text size="normal">{record?.position}</Text>,
+            },
+            {
+                title: 'Cơ sở',
+                key: 'division',
+                render: (record) => <Text size="normal">{record?.branch}</Text>,
+            },
+            {
+                title: 'Thâm niên công tác',
+                children: [
+                    {
+                        title: 'Ngày bắt đầu làm việc',
+                        key: 'start_date',
+                        render: (record) => Helper.getDate(record?.contractFrom, variables.DATE_FORMAT.DATE),
+                    },
+                    {
+                        title: 'Số năm làm việc',
+                        key: 'year_working',
+                        render: (record) => <Text size="normal">{record?.numberYearWork}</Text>,
+                    },
+                    {
+                        title: 'Số tháng làm việc',
+                        key: 'month_working',
+                        render: (record) => <Text size="normal">{record?.numberMonthWork}</Text>,
+                    },
+                ],
+            },
         ];
         return columns;
     };
@@ -346,7 +353,7 @@ class Index extends PureComponent {
             loading: { effects },
         } = this.props;
         const { search, } = this.state;
-        const loading = effects['medicalStudentProblem/GET_DATA'];
+        const loading = effects['HRMWorkingSeniority/GET_DATA'];
         return (
             <>
                 <Helmet title="Báo cáo thâm niên công tác" />
@@ -389,7 +396,7 @@ class Index extends PureComponent {
                                 </div>
                                 <div className="col-lg-3">
                                     <FormItem
-                                        data={ dataTime(100)}
+                                        data={dataTime(100)}
                                         name="number_year_work_from"
                                         placeholder="Chọn số năm làm việc từ"
                                         onChange={(event) => this.onChangeSelect(event, 'number_year_work_from')}

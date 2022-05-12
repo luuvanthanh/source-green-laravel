@@ -590,50 +590,50 @@ export default class Helpers {
       return other;
     });
 
-    static exportExcelCRM = async (
-      path,
-      paramSearch,
-      nameFile = 'total.xlsx',
-      prefix = API_URL_CRM,
-    ) => {
-      const params = {
-        ...pickBy(paramSearch, (value) => value),
-      };
-      const url = new URL(`${prefix}${path}`);
-      Object.keys(params).forEach((key) => {
-        if (params[key]) {
-          url.searchParams.append(key, params[key]);
-        }
-      });
-      await fetch(url, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${cookies.get('access_token')}`,
-        },
-      })
-        .then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            const data = nameFile;
-            response.blob().then((blob) => {
-              const link = document.createElement('a');
-              link.href = window.URL.createObjectURL(blob);
-              link.download = data;
-              link.click();
-            });
-          } else {
-            notification.error({
-              message: 'Thất bại',
-              description: 'Bạn đã tải excel không thành công',
-            });
-          }
-        })
-        .catch(() => {
+  static exportExcelCRM = async (
+    path,
+    paramSearch,
+    nameFile = 'total.xlsx',
+    prefix = API_URL_CRM,
+  ) => {
+    const params = {
+      ...pickBy(paramSearch, (value) => value),
+    };
+    const url = new URL(`${prefix}${path}`);
+    Object.keys(params).forEach((key) => {
+      if (params[key]) {
+        url.searchParams.append(key, params[key]);
+      }
+    });
+    await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${cookies.get('access_token')}`,
+      },
+    })
+      .then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          const data = nameFile;
+          response.blob().then((blob) => {
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = data;
+            link.click();
+          });
+        } else {
           notification.error({
             message: 'Thất bại',
             description: 'Bạn đã tải excel không thành công',
           });
+        }
+      })
+      .catch(() => {
+        notification.error({
+          message: 'Thất bại',
+          description: 'Bạn đã tải excel không thành công',
         });
-    };
+      });
+  };
 
   static exportExcel = async (
     path,

@@ -408,13 +408,19 @@ const Index = memo(() => {
     setTab(key);
   };
 
+  const dataTest = (e) => {
+    const data = fees.find(k => k?.id === e?.feeId);
+    return data?.name;
+  };
+
+
   const header = () => {
-    const rowData = fees?.map((i) => ({
-      title: i?.name,
+    const rowData = dataTuition?.map((i) => ({
+      title: dataTest(i),
       width: 150,
       key: 'money',
       render: (record) => {
-        const item = record?.money?.find((k) => k?.feeId === i?.fee_clover_id);
+        const item = record?.money?.find(k => k?.feeId === i?.fee_id_crm);
         return (
           <>{item?.feeId ? <Text size="normal">{Helper.getPrice(item?.money) || 0}</Text> : '0'}</>
         );

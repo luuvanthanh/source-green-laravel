@@ -461,7 +461,7 @@ class Index extends PureComponent {
             children: (
               <div className={stylesModule['table-name']}>
                 {value?.children ?
-                  "" : <>{ Helper.getDate(get(value, 'timeApply'), variables.DATE_FORMAT.DATE)}</>
+                  "" : <>{Helper.getDate(get(value, 'timeApply'), variables.DATE_FORMAT.DATE)}</>
                 }
               </div>
             ),
@@ -562,12 +562,12 @@ class Index extends PureComponent {
       {
         divisionId: query?.divisionId,
         branchId: query?.branchId || defaultBranch?.id,
-        startDate: dataIDSearch?.length > 0 ? 
-        moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
-      : "",
-      endDate: dataIDSearch?.length > 0 ? 
-      moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
-       : "",
+        startDate: dataIDSearch?.length > 0 ?
+          moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
+          : "",
+        endDate: dataIDSearch?.length > 0 ?
+          moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
+          : "",
       },
       `Baocaonhanvienthoiviec.xlsx`,
     );
@@ -580,12 +580,11 @@ class Index extends PureComponent {
       divisions,
       branches,
       pagination,
-      positions,
       match: { params },
       loading: { effects },
     } = this.props;
     const { search, } = this.state;
-    const loading = effects['medicalStudentProblem/GET_DATA'];
+    const loading = effects['HRMEmployeeLeave/GET_DATA'];
     return (
       <>
         <Helmet title="Báo cáo danh sách nhân viên thôi việc" />
@@ -594,8 +593,8 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Báo cáo danh sách nhân viên thôi việc</Text>
             <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
-                            Xuất Excel
-                        </Button>
+              Xuất Excel
+            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -674,7 +673,6 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
-  positions: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
@@ -688,7 +686,6 @@ Index.defaultProps = {
   branches: [],
   error: {},
   divisions: [],
-  positions: [],
   defaultBranch: {},
 };
 

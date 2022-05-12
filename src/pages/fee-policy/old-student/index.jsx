@@ -12,7 +12,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import moment from 'moment';
- 
+
 let isMounted = true;
 /**
  * Set isMounted
@@ -98,7 +98,7 @@ class Index extends PureComponent {
         ...search,
         orderBy: 'CreationTime',
         sortedBy: 'desc',
-        include: Helper.convertIncludes(['student.classStudent.class','schoolYear','tuition']),
+        include: Helper.convertIncludes(['student.classStudent.class', 'schoolYear', 'tuition']),
       },
     });
     history.push({
@@ -179,7 +179,7 @@ class Index extends PureComponent {
    * Function remove items
    * @param {uid} id id of items
    */
-   onRemove = (id) => {
+  onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
     Helper.confirmAction({
@@ -251,7 +251,7 @@ class Index extends PureComponent {
         key: 'dayAdmission',
         width: 150,
         className: 'min-width-150',
-        render: (record) =>Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI)
+        render: (record) => Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI)
       },
       {
         title: 'Chi tiết các loại phí',
@@ -291,7 +291,6 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['oldStudent/GET_DATA'];
-
     return (
       <>
         <Helmet title="Tính phí học sinh cũ" />
