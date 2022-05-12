@@ -20,7 +20,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
   const [check, setCheck] = useState(false);
   const [feeId, setFeeId] = useState(undefined);
 
-  
+
 
 
   const [paymentFormId, setPaymentFormId] = useState(undefined);
@@ -35,6 +35,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
       id: uuidv4(),
       feeId: undefined,
       paymentFormId: undefined,
+      fee_id_crm: undefined,
       money: 0,
     },
   ]);
@@ -46,6 +47,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
           id: i?.id,
           feeId: i?.fee_id,
           paymentFormId: i?.payment_form_id,
+          fee_id_crm: i?.fee?.fee_clover_id,
           money: 0,
         })),
       );
@@ -264,7 +266,7 @@ Index.defaultProps = {
   tuition: [],
   details: {},
   checkSearch: false,
-  hanDleChangeText: () => {},
+  hanDleChangeText: () => { },
 };
 
 export default Index;

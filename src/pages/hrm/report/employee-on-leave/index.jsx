@@ -349,7 +349,7 @@ class Index extends PureComponent {
                                 children: (
                                     <div className={stylesModule['table-name']}>
                                         {value?.children ?
-                                            "" : <>{value?.startDate}</>
+                                            "" : <>{Helper.getDate(value?.startDate, variables.DATE_FORMAT.DATE_VI)}</>
                                         }
                                     </div>
                                 ),
@@ -373,7 +373,7 @@ class Index extends PureComponent {
                                 children: (
                                     <div className={stylesModule['table-name']}>
                                         {value?.children ?
-                                            "" : <>{value?.endDate}</>
+                                            "" : <>{Helper.getDate(value?.endDate, variables.DATE_FORMAT.DATE_VI)}</>
                                         }
                                     </div>
                                 ),
@@ -421,25 +421,25 @@ class Index extends PureComponent {
     onChangeExcel = () => {
         const { dataIDSearch } = this.state;
         const {
-          defaultBranch,
-          location: { query },
+            defaultBranch,
+            location: { query },
         } = this.props;
         Helper.exportExcel(
-          `/v1/export-excel-absents`,
-          {
-            divisionId: query?.divisionId,
-            employeeId: query?.employeeId,
-            branchId: query?.branchId || defaultBranch?.id,
-            startDate: dataIDSearch?.length > 0 ? 
-            moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
-          : "",
-          endDate: dataIDSearch?.length > 0 ? 
-          moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
-           : "",
-          },
-          `Baocaonhanviendangnghi.xlsx`,
+            `/v1/export-excel-absents`,
+            {
+                divisionId: query?.divisionId,
+                employeeId: query?.employeeId,
+                branchId: query?.branchId || defaultBranch?.id,
+                startDate: dataIDSearch?.length > 0 ?
+                    moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
+                    : "",
+                endDate: dataIDSearch?.length > 0 ?
+                    moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
+                    : "",
+            },
+            `Baocaonhanviendangnghi.xlsx`,
         );
-      };
+    };
 
 
     render() {
@@ -453,8 +453,7 @@ class Index extends PureComponent {
             match: { params },
             loading: { effects },
         } = this.props;
-        const { search, } = this.state;
-        const loading = effects['medicalStudentProblem/GET_DATA'];
+        const { search } = this.state;
         return (
             <>
                 <Helmet title="Báo cáo nhân viên đang nghỉ phép" />
@@ -462,7 +461,7 @@ class Index extends PureComponent {
                     {/* FORM SEARCH */}
                     <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
                         <Text color="dark">Báo cáo nhân viên đang nghỉ phép</Text>
-                        <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+                        <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
                             Xuất Excel
                         </Button>
                     </div>
@@ -522,7 +521,7 @@ class Index extends PureComponent {
                             <Table
                                 columns={this.header(params)}
                                 dataSource={data}
-                                loading={loading}
+                                loading={effects['HRMReportEmployeeOnLeave/GET_DATA']}
                                 error={error}
                                 isError={error.isError}
                                 defaultExpandAllRows

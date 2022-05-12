@@ -60,6 +60,21 @@ const Index = memo(() => {
       type: 'classConfiguration/ADD',
       payload,
       callback: (response, error) => {
+        if (response) {
+          dispatch({
+            type: 'classConfiguration/GET_DETAILS',
+            payload: {},
+            callback: (response) => {
+              if (response?.parsePayload.length > 0) {
+                setData(
+                  response.parsePayload.map((item) => ({
+                    ...item,
+                  })),
+                );
+              }
+            },
+          });
+        }
         if (error) {
           if (error?.errors && !isEmpty(error?.errors)) {
             error?.errors.forEach((item) => {
