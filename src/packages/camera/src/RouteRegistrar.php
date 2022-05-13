@@ -108,7 +108,7 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function forVmsCore()
     {
-        \Route::put('cameras-change-log', 'CameraController@cameraChangeLog');
+        \Route::put('camera-change-log', 'CameraController@cameraChangeLog');
     }
 
     /**

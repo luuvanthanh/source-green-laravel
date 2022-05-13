@@ -440,12 +440,13 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 $attributes['status'] =  Camera::STATUS['STATUS_FAILED'];
                 $camera->update([
                     'status' => $attributes['status'],
+                    'is_recording' => false,
+                    'is_streaming' => false
                 ]);
 
                 break;
             case 'running':
                 $attributes['cam_info'] = json_decode($attributes['cam_info'], true);
-                $attributes['status'] =  Camera::STATUS['STATUS_RUNNING'];
 
                 $isLiveNow = false;
                 $isStreamNow = false;
@@ -460,24 +461,27 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
 
                 $isLiveChange = $attributes['cam_info']['capture_living'];
                 $isStreamChange = $attributes['cam_info']['streaming_living'];
-                $isBackupChange = $attributes['cam_info']['capture_living'];
+                $isBackupChange = $attributes['cam_info']['do_backup'];
 
+                $attributes['status'] = $isLiveChange ? Camera::STATUS['STATUS_RUNNING'] : Camera::STATUS['STATUS_FAILED'];
                 $camera->update([
                     'status' => $attributes['status'],
-                    'cam_info' => $attributes['cam_info']
+                    'cam_info' => $attributes['cam_info'],
+                    'is_recording' => $attributes['cam_info']['do_backup'],
+                    'is_streaming' => $attributes['cam_info']['streaming_living']
                 ]);
 
-                if ($isLiveNow != $isLiveChange) {
-                    NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_LIVING, $camera);
-                }
+                // if ($isLiveNow != $isLiveChange) {
+                //     // NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_LIVING, $camera);
+                // }
 
-                if ($isStreamNow != $isStreamChange) {
-                    NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_STREAM, $camera);
-                }
+                // if ($isStreamNow != $isStreamChange) {
+                //     // NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_STREAM, $camera);
+                // }
 
-                if ($isBackupNow != $isBackupChange) {
-                    NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_RECORD, $camera);
-                }
+                // if ($isBackupNow != $isBackupChange) {
+                //     // NotificationService::updateCamera(NotificationService::CAMERA_UPDATE_RECORD, $camera);
+                // }
 
                 break;
         }

@@ -280,19 +280,20 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
     public function tourGuidesByImage($attributes, $parse = true)
     {
         if (!empty($attributes['image_url'])) {
-            $imageUrl = [];
+            $imageUrl = explode(',', $attributes['image_url']);
+            $data = [
+                'face_urls_as_bytes' => json_encode([
+                    'face_urls' => $imageUrl
+                ])
+            ];
 
-            foreach (explode(',', $attributes['image_url']) as $value) {
-                $imageUrl[] = env('IMAGE_URL') . '/' . $value;
-            }
-
-            $response = Http::get(env('AI_URL') . '/watchlist_search_url', [
-                'image_url' => implode(',', $imageUrl),
-            ]);
+            $response = Http::asForm()->post(env('AI_SERVICE_URL') . '/ai_core/search_face', $data);
 
             $attributes['object_id'] = null;
             if ($response->successful()) {
-                $attributes['object_id'] = json_decode($response->body())->uuid_lis;
+                if (!empty(json_decode($response->body())->person_id)) {
+                    $attributes['object_id'] = json_decode($response->body())->person_id;
+                }
             }
 
             if (is_null($attributes['object_id']) || empty($attributes['object_id'])) {
@@ -300,12 +301,18 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
                     'data' => []
                 ];
             } else {
-                $this->model = $this->model->whereIn('id', $attributes['object_id']);
+                $this->model = $this->model->where('id', $attributes['object_id']);
             }
         }
 
         if (!empty($attributes['type'])) {
             $this->model = $this->model->whereIn('type', $attributes['type']);
+        }
+
+        if (!empty($attributes['keyword'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('full_name', $attributes['keyword']);
+            });
         }
 
         $this->model = $this->model->whereHas('event', function ($query) use ($attributes) {

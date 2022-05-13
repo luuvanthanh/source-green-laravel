@@ -86,7 +86,18 @@ class ExcelExporterServices
 
         PhpExcelTemplator::saveToFile($templateFileUrl, $resultFileUrl, $params, $callbacks, $events);
 
-        return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
+        $file = Storage::disk($this->disk)->get($this->resultFolder . '/' . $resultFile);
+        $fileName = $resultFile;
+        $headers = [
+            'Content-type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment;filename=' . $fileName . ';',
+        ];
+
+        return response()->streamDownload(function () use ($file) {
+            echo $file;
+        }, $fileName, $headers);
+
+        // return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
     }
 
     public function makedir($path)

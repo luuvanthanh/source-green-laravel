@@ -2,6 +2,7 @@
 
 namespace GGPHP\CameraServer\Repositories\Eloquent;
 
+use function GuzzleHttp\json_decode;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\CameraServer\Models\CameraServer;
 use GGPHP\CameraServer\Presenters\CameraServerPresenter;
@@ -9,9 +10,8 @@ use GGPHP\CameraServer\Repositories\Contracts\CameraServerRepository;
 use GGPHP\CameraServer\Services\VmsCoreServices;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
-use function GuzzleHttp\json_decode;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class CameraServerRepositoryEloquent.
@@ -160,20 +160,20 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
             $cameras = [];
             foreach ($cameraServer->camera as $key => $camera) {
                 $cameras[] = [
-                    'on' => true,
+                    'on' => false,
                     'rtsp' => $camera->rtsp,
                     'cam_id' => $camera->id,
                     'name' => $camera->name,
                     'backup' => $camera->is_recording,
-                    'streaming' => $camera->is_streaming,
+                    'streaming' => false,
                     'streaming_infor' => [
                         'codec_id' => 27,
                         'profile' => $camera->profile,
-                        'width' => 0,
-                        'height' => 0,
+                        'width' => 854,
+                        'height' => 480,
                         'fps' => 0,
                         'bit_rate' => 0,
-                        'gop' => 12,
+                        'gop' => 30,
                         'max_B_frame' => 0,
                     ],
                 ];

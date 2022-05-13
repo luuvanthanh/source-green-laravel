@@ -732,17 +732,22 @@ class ReportService
 
         foreach ($touristDestinations as $key => $value) {
             $cameraRunning = Camera::where('tourist_destination_id', $value->id)
-                ->whereIn('status', [Camera::STATUS['STATUS_RUNNING']])->count();
+                ->whereIn('status', [Camera::STATUS['STATUS_RUNNING']])->get();
             $cameraFailed = Camera::where('tourist_destination_id', $value->id)
-                ->whereIn('status', [Camera::STATUS['STATUS_FAILED']])->count();
+                ->whereIn('status', [Camera::STATUS['STATUS_FAILED']])->get();
 
-            $totalRunning += $cameraRunning;
-            $totalFail += $cameraFailed;
-            $total += $cameraRunning + $cameraFailed;
+            $countCameraRunning = count($cameraRunning);
+            $countCameraFailed = count($cameraFailed);
+
+            $totalRunning += $countCameraRunning;
+            $totalFail += $countCameraFailed;
+            $total += $countCameraRunning + $countCameraFailed;
             $data[] = [
                 'name' => $value->name,
-                'number_running' => $cameraRunning,
-                'number_failed' => $cameraFailed
+                'number_running' => $countCameraRunning,
+                'number_failed' => $countCameraFailed,
+                'list_cam_run' => $cameraRunning,
+                'list_cam_faild' => $cameraFailed
             ];
         }
 

@@ -2,9 +2,12 @@
 
 namespace GGPHP\Event\Repositories\Eloquent;
 
+use alhimik1986\PhpExcelTemplator\params\CallbackParam;
+use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Category\Models\EventType;
+use GGPHP\Event\Events\EventCreateEvent;
 use GGPHP\Event\Jobs\SendEmailEventCreate;
 use GGPHP\Event\Models\Event;
 use GGPHP\Event\Models\EventHandle;
@@ -15,6 +18,10 @@ use GGPHP\Notification\Services\NotificationService;
 use GGPHP\SystemConfig\Models\SystemConfig;
 use GGPHP\SystemConfig\Models\TeamplateEmail;
 use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Webpatser\Uuid\Uuid;
@@ -168,6 +175,11 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         if (is_null($event)) {
             $event = $this->model()::create($attributes);
 
+            broadcast(new EventCreateEvent([
+                'event_id' => $event->id,
+                'type' => 'EVENT_CREATE'
+            ]));
+
             NotificationService::eventCreated(NotificationService::EVENT, $event);
 
             $teamplateEmail = TeamplateEmail::where('code', $event->eventType->code)->first();
@@ -190,8 +202,12 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
                 $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
             }
         } else {
-            $event->update($attributes);
 
+            $event->update($attributes);
+            broadcast(new EventCreateEvent([
+                'event_id' => $event->id,
+                'type' => 'EVENT_CREATE'
+            ]));
             if (!empty($attributes['image_path'])) {
                 $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
             }
@@ -319,11 +335,44 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $params['[camera]'][] = !is_null($event->camera) ? $event->camera->name : null;
             $params['[warning_level]'][] = $this->getConstWarningLevel($event->warning_level);
             $params['[status]'][] =  $this->getConstStatus($event->status);
-            $params['[percent_similarity]'][] =  round($event->percent_similarity * 100, 2) . '%';
-            $params['[image]'][] =  null;
+            $params['[percent_similarity]'][] = !empty($event->percent_similarity) ? round($event->percent_similarity * 100, 2) . '%' : '';
+
+            $imageMedia = $event->getMedia('image');
+            $imageMedia = $imageMedia->isEmpty() ? null : $imageMedia->first();
+            $image = null;
+            if (!is_null($imageMedia)) {
+                $image = $imageMedia->getPath();
+            }
+            $params['[image]'][] =  $image;
         }
 
-        return  resolve(ExcelExporterServices::class)->export('event', $params);
+        $callbacks = [
+            '[image]' => function (CallbackParam $param) {
+                $row_index = $param->row_index;
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $value = $param->param[$row_index];
+
+                if (\Storage::disk('minio')->exists($value)) {
+                    $fileMinio = \Storage::disk('minio')->get($value);
+                    $name = explode('/', $value);
+                    Storage::disk('local')->put($name[1], $fileMinio);
+
+                    if (Storage::disk('local')->exists($name[1])) {
+                        $drawing = new Drawing();
+                        $drawing->setPath(Storage::disk('local')->path($name[1]));
+                        $drawing->setCoordinates($cell_coordinate);
+                        $drawing->setWorksheet($sheet);
+                        $drawing->setHeight(100);
+                        $sheet->getCell($cell_coordinate)->setValue(null);
+                    }
+                }
+            },
+        ];
+
+        $events = [];
+
+        return  resolve(ExcelExporterServices::class)->export('event', $params, $callbacks, $event);
     }
 
 

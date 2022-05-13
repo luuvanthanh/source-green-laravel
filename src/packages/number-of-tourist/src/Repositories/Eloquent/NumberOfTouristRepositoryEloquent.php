@@ -10,6 +10,7 @@ use GGPHP\EventConfig\Models\EventConfig;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Notification\Models\Notification;
 use GGPHP\Notification\Services\NotificationService;
+use GGPHP\NumberOfTourist\Events\NumberOfTouristCreateEvent;
 use GGPHP\NumberOfTourist\Models\NumberOfTourist;
 use GGPHP\NumberOfTourist\Models\NumberOfTouristHandle;
 use GGPHP\NumberOfTourist\Presenters\NumberOfTouristPresenter;
@@ -256,6 +257,11 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
         $attributes['tourist_destination_id'] = $camera->tourist_destination_id;
 
         $numberOfTourist = NumberOfTourist::create($attributes);
+
+        broadcast(new NumberOfTouristCreateEvent([
+            'date' => Carbon::parse($numberOfTourist->time)->format('Y-m-d'),
+            'type' => 'NUMBER_OF_TOURIST_CREATE'
+        ]));
 
         $eventConfig = EventConfig::first();
 
