@@ -51,7 +51,7 @@ const Index = memo(({ rangeDate }) => {
           month: `Tháng ${(i + 6 >= length) ? moment(data[1]).format('MM') : moment(startDate).add(i + 6, 'days').format('MM')}`,
           numberMonth,
           week: getWeek(i, NumberStartDate),
-          monday: ((i >= length ) || (i < NumberStartDate)) ? '' : moment(startDate).add(i, 'days').format('DD'),
+          monday: ((i >= length) || (i < NumberStartDate)) ? '' : moment(startDate).add(i, 'days').format('DD'),
           tuesday: ((i + 1 >= length) || (i + 1 < NumberStartDate)) ? '' : moment(startDate).add(i + 1, 'days').format('DD'),
           wednesday: ((i + 2 >= length) || (i + 2 < NumberStartDate)) ? '' : moment(startDate).add(i + 2, 'days').format('DD'),
           thursday: ((i + 3 >= length) || (i + 3 < NumberStartDate)) ? '' : moment(startDate).add(i + 3, 'days').format('DD'),
@@ -81,7 +81,7 @@ const Index = memo(({ rangeDate }) => {
       className: 'min-width-250',
       render: (record) => {
         const obj = {
-          children:  record?.month || '',
+          children: record?.month || '',
           props: {
             rowSpan: record?.numberMonth || 0
           }

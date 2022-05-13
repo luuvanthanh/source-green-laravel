@@ -88,7 +88,7 @@ class Index extends PureComponent {
 
   onSelectChange = (e) => {
     this.setStateData((prevState) => ({
-      dataSource: prevState.dataSource.map((item) => ({
+      dataSource: prevState?.dataSource?.map((item) => ({
         ...item,
         isActive: !!e.includes(item.id),
       })),
@@ -98,7 +98,7 @@ class Index extends PureComponent {
   save = () => {
     const { dispatch } = this.props;
     const payload = {
-      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
+      id: this.state.dataSource?.filter((item) => item?.isActive)?.map((item) => item.id),
     };
     dispatch({
       type: 'crmMarketingData/ADD',
@@ -269,8 +269,8 @@ class Index extends PureComponent {
     dispatch({
       type: 'crmMarketingData/ADD_TAGS',
       payload: {
-        tag_id: e.map((i) => (i)),
-        data_marketing_id: record.id,
+        tag_id: e?.map((i) => (i)),
+        data_marketing_id: record?.id,
       },
       callback: () => {
       },
@@ -352,7 +352,7 @@ class Index extends PureComponent {
                 );
               }}
             >
-              {tags.map((item, index) => (
+              {tags?.map((item, index) => (
                 <Option
                   value={item?.id}
                   key={index}
@@ -400,7 +400,7 @@ class Index extends PureComponent {
 
   onSelectChange = (e) => {
     this.setState((prevState) => ({
-      dataSource: prevState.dataSource.map((item) => ({
+      dataSource: prevState.dataSource?.map((item) => ({
         ...item,
         isActive: !!e.includes(item.id),
       })),
@@ -409,7 +409,7 @@ class Index extends PureComponent {
 
   save = () => {
     const { dispatch } = this.props;
-    const payload = this.state.dataSource.filter((item) => item.isActive).map((item) => item.id);
+    const payload = this.state.dataSource.filter((item) => item.isActive)?.map((item) => item.id);
     dispatch({
       type: 'crmMarketingData/ADD',
       payload,

@@ -8,7 +8,7 @@ export function get(data = {}) {
       ...data,
       limit: data.limit,
       page: data.page,
-      orderBy: 'created_at',
+      orderBy: 'created_at;full_name',
       sortedBy: 'desc',
       include: Helper.convertIncludes([
         'city',

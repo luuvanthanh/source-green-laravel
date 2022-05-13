@@ -1,29 +1,30 @@
+import styles from '@/assets/styles/Common/common.scss';
+import FormItem from '@/components/CommonComponent/FormItem';
+import Heading from '@/components/CommonComponent/Heading';
+import Pane from '@/components/CommonComponent/Pane';
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { Helper, variables } from '@/utils';
+import { Form, Tabs } from 'antd';
+import classnames from 'classnames';
+import { useDispatch, useSelector } from 'dva';
+import _ from 'lodash';
+import moment from 'moment';
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Tabs } from 'antd';
-import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
-import classnames from 'classnames';
-import moment from 'moment';
-import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-
-import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import Pane from '@/components/CommonComponent/Pane';
-import Heading from '@/components/CommonComponent/Heading';
-import FormItem from '@/components/CommonComponent/FormItem';
-import styles from '@/assets/styles/Common/common.scss';
-
-import { variables, Helper } from '@/utils';
-import ParametersFixedComponent from './parametersFixed';
 import ParametersChangeComponent from './parametersChange';
+import ParametersFixedComponent from './parametersFixed';
 import ScheduleComponent from './schedule';
+
+
 
 const { TabPane } = Tabs;
 
 const Index = memo(() => {
   const params = useParams();
-  const { menuLeftCRM, fees } = useSelector(({ menu, paymentMethod }) => ({
+  const { menuLeftCRM, fees } = useSelector(({ loading, menu, paymentMethod }) => ({
+    loading: loading.effects,
     menuLeftCRM: menu.menuLeftCRM,
     fees: paymentMethod.data,
   }));
@@ -70,14 +71,14 @@ const Index = memo(() => {
                 : '',
               fee: !_.isEmpty(res?.changeParameter) ? res?.changeParameter[0]?.paymentForm?.id : '',
               fixedParameter,
-              rangeDate: [moment(res.start_date), moment(res.end_date)],
+              rangeDate: [moment(res.startDate), moment(res.endDate)],
               feeId: res?.changeParameter?.paymentFormId,
               duaDate: res?.changeParameter?.duaDate,
             };
             const newChangeParameter = !_.isEmpty(res?.changeParameter?.changeParameterDetail)
               ? res?.changeParameter?.changeParameterDetail?.map((item) => ({
                 ...item,
-                rangeDate: [moment(item.start_date), moment(item.end_date)],
+                rangeDate: [moment(item.startDate), moment(item.endDate)],
                 fee: res?.changeParameter?.paymentForm?.name || '',
                 feeId: res?.changeParameter?.paymentForm?.id || '',
               }))
@@ -130,8 +131,8 @@ const Index = memo(() => {
     const data = {
       ...values,
       rangeDate: undefined,
-      start_date: values.rangeDate[0],
-      end_date: values.rangeDate[1],
+      startDate: values.rangeDate[0],
+      endDate: values.rangeDate[1],
       fixedParameter: values?.fixedParameter.map((item) => ({
         paymentFormId: item.paymentFormId,
         duaDate: Helper.getDateTime({
@@ -144,7 +145,7 @@ const Index = memo(() => {
         }),
       })),
       changeParameter: {
-        paymentFormId: _.get(paramChanges[0], 'feeId'),
+        paymentFormId: values?.feeId || _.get(paramChanges[0], 'feeId'),
         duaDate: _.get(paramChanges[0], 'duaDate')
           ? moment(paramChanges[0]?.duaDate, variables.DATE_FORMAT.YEAR_MONTH_DAY).format('DD')
           : values.duaDate,
@@ -166,7 +167,7 @@ const Index = memo(() => {
             format: variables.DATE_FORMAT.DATE_TIME_UTC,
             isUTC: false,
           }),
-          start_date: Helper.getDateTime({
+          startDate: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
               originValue: moment(item.rangeDate[0], variables.DATE_FORMAT.DATE_AFTER),
@@ -174,7 +175,7 @@ const Index = memo(() => {
             format: variables.DATE_FORMAT.DATE_TIME_UTC,
             isUTC: false,
           }),
-          end_date: Helper.getDateTime({
+          endDate: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
               originValue: moment(item.rangeDate[1], variables.DATE_FORMAT.DATE_AFTER),
@@ -260,9 +261,9 @@ const Index = memo(() => {
       : duaDate;
 
     if (name === 'rangeDate' && newDuaDate && newPaymentFormId) {
-      const start_date = moment(rangeDate[0]).startOf('month');
-      const end_date = moment(rangeDate[1]).endOf('month');
-      const length = moment(end_date).diff(moment(start_date), 'month') + 1;
+      const startDate = moment(rangeDate[0]).startOf('month');
+      const endDate = moment(rangeDate[1]).endOf('month');
+      const length = moment(endDate).diff(moment(startDate), 'month') + 1;
       if (length) {
         const data = renderData(
           length,
@@ -338,12 +339,12 @@ const Index = memo(() => {
               </Heading>
 
               <Pane className={classnames('row')}>
-                <Pane className="col-lg-3">
+                <Pane className="col-lg-2">
                   <FormItem
                     label="Từ năm"
-                    name="year_from"
+                    name="yearFrom"
                     type={variables.INPUT_COUNT}
-                    onChange={(e) => getDetail(e, 'year_from')}
+                    onChange={(e) => getDetail(e, 'yearFrom')}
                     rules={[
                       {
                         ...variables.RULES.EMPTY,
@@ -352,12 +353,12 @@ const Index = memo(() => {
                         validator(_, value) {
                           if (
                             value &&
-                            getFieldValue('year_to') &&
+                            getFieldValue('yearTo') &&
                             value >= getFieldValue('yearTo')
                           ) {
                             return Promise.reject(new Error(variables.RULES.YEAR_FROM));
                           }
-                          setFields([{ name: 'year_to', errors: '' }]);
+                          setFields([{ name: 'yearTo', errors: '' }]);
                           return Promise.resolve();
                         },
                       }),
@@ -365,12 +366,12 @@ const Index = memo(() => {
                   />
                 </Pane>
 
-                <Pane className="col-lg-3">
+                <Pane className="col-lg-2">
                   <FormItem
                     label="Đến năm"
-                    name="year_to"
+                    name="yearTo"
                     type={variables.INPUT_COUNT}
-                    onChange={(e) => getDetail(e, 'year_to')}
+                    onChange={(e) => getDetail(e, 'yearTo')}
                     rules={[
                       {
                         ...variables.RULES.EMPTY,
@@ -379,12 +380,12 @@ const Index = memo(() => {
                         validator(_, value) {
                           if (
                             value &&
-                            getFieldValue('year_from') &&
-                            getFieldValue('year_from') >= value
+                            getFieldValue('yearFrom') &&
+                            getFieldValue('yearFrom') >= value
                           ) {
                             return Promise.reject(new Error(variables.RULES.YEAR_TO));
                           }
-                          setFields([{ name: 'year_from', errors: '' }]);
+                          setFields([{ name: 'yearFrom', errors: '' }]);
                           return Promise.resolve();
                         },
                       }),
@@ -400,14 +401,14 @@ const Index = memo(() => {
                     rules={[variables.RULES.EMPTY]}
                     onChange={(e) => getDetail(e, 'rangeDate')}
                     disabledDate={(current) =>
-                      Helper.disabledYear(current, formRef, { key: 'start_date', compare: '<' }) ||
-                      Helper.disabledYear(current, formRef, { key: 'end_date' })
+                      Helper.disabledYear(current, formRef, { key: 'yearFrom', compare: '<' }) ||
+                      Helper.disabledYear(current, formRef, { key: 'yearTo' })
                     }
                   />
                 </Pane>
               </Pane>
             </Pane>
-            {/* <Pane className="card mb0">
+            <Pane className="card mb0">
               <Heading type="form-title" className="p20 border-bottom">
                 Chi tiết
               </Heading>
@@ -426,22 +427,7 @@ const Index = memo(() => {
                   </TabPane>
                 ))}
               </Tabs>
-            </Pane> */}
-            {/* <Pane className="p20 d-flex justify-content-between align-items-center">
-              <Button
-                className="ml-auto px25"
-                color="success"
-                htmlType="submit"
-                size="large"
-                loading={
-                  loading['classTypeAdd/GET_DETAILS'] ||
-                  loading['CRMschoolyearAdd/UPDATE'] ||
-                  loading['classTypeAdd/ADD']
-                }
-              >
-                Lưu
-              </Button>
-            </Pane> */}
+            </Pane>
           </Form>
         </Pane>
       </Pane>

@@ -1,4 +1,4 @@
-import request from '@/utils/requestCrm';
+import request from '@/utils/requestLavarel';
 
 export function add(data = {}) {
   return request('/v1/fee-policies', {
@@ -10,13 +10,13 @@ export function add(data = {}) {
 export function details(params = {}) {
   return request(`/v1/fee-policies/${params.id}`, {
     method: 'GET',
-    params
+    params,
   });
 }
 
 export function update(data = {}) {
   return request(`/v1/fee-policies/${data.id}`, {
     method: 'PUT',
-    data
+    data,
   });
 }

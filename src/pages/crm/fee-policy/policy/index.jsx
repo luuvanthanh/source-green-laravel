@@ -205,6 +205,11 @@ class Index extends PureComponent {
           ? `${Helper.getDate(record?.schoolYear.start_date, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record?.schoolYear.end_date, variables.DATE_FORMAT.DATE_VI)}` : ''
       },
       {
+        title: 'Cơ sở',
+        key: 'number',
+        className: 'min-width-130',
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -212,7 +217,7 @@ class Index extends PureComponent {
           <div className={styles['list-button']}>
             <Button
               color="success"
-              onClick={() => history.push(`/crm/chinh-sach-phi/tien-dong/${record?.id}/chi-tiet`)}
+              onClick={() => history.push(`/crm/chinh-sach-phi/tien-dong/${record?.fee_policie_clover_id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
