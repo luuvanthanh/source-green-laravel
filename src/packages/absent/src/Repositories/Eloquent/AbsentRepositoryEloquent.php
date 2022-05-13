@@ -301,14 +301,14 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         if (!empty($attributes['employeeId'])) {
             $employee = User::where('Id', $attributes['employeeId'])->first();
         }
-        $startDate = 'ngày-tháng-năm';
-        $endDate = 'ngày-tháng-năm';
+        $startDate = 'ngày/tháng/năm';
+        $endDate = 'ngày/tháng/năm';
         if (isset($attributes['startDate'])) {
-            $startDate = Carbon::parse($attributes['startDate'])->format('d-m-Y');
+            $startDate = Carbon::parse($attributes['startDate'])->format('d/m/Y');
         }
 
         if (isset($attributes['endDate'])) {
-            $endDate = Carbon::parse($attributes['endDate'])->format('d-m-Y');
+            $endDate = Carbon::parse($attributes['endDate'])->format('d/m/Y');
         }
         $number = 0;
         $params['{time}'] = $startDate . ' -- ' . $endDate;
@@ -338,8 +338,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     $params['[stt]'][] = $number += 1;
                     $params['[code]'][] = $value['employeeCode'];
                     $params['[fullName]'][] = $value['employeeName'];
-                    $params['[startDate]'][] = $value['startDate'];
-                    $params['[endDate]'][] = $value['endDate'];
+                    $params['[startDate]'][] = Carbon::parse($value['startDate'])->format('d/m/Y');
+                    $params['[endDate]'][] = Carbon::parse($value['endDate'])->format('d/m/Y');
                     $params['[reason]'][] = $value['reason'];
                 }
                 $number = 0;

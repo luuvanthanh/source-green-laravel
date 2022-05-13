@@ -281,14 +281,14 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
         if (!empty($attributes['employeeId'])) {
             $employee = User::where('Id', $attributes['employeeId'])->first();
         }
-        $startDate = 'ngày-tháng-năm';
-        $endDate = 'ngày-tháng-năm';
+        $startDate = 'ngày/tháng/năm';
+        $endDate = 'ngày/tháng/năm';
         if (isset($attributes['startDate'])) {
-            $startDate = Carbon::parse($attributes['startDate'])->format('d-m-Y');
+            $startDate = Carbon::parse($attributes['startDate'])->format('d/m/Y');
         }
 
         if (isset($attributes['endDate'])) {
-            $endDate = Carbon::parse($attributes['endDate'])->format('d-m-Y');
+            $endDate = Carbon::parse($attributes['endDate'])->format('d/m/Y');
         }
         $number = 0;
         $params['{time}'] = $startDate . ' -- ' . $endDate;
@@ -339,10 +339,10 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
                     $params['[position]'][] = $value['position'];
                     $params['[branch]'][] = $value['branch'];
                     $params['[division]'][] = $value['division'];
-                    $params['[decisionDate]'][] = $value['decisionDate'];
+                    $params['[decisionDate]'][] = Carbon::parse($value['decisionDate'])->format('d/m/Y');
                     $params['[decisionNumber]'][] = $value['decisionNumber'];
-                    $params['[timeApply]'][] = $value['timeApply'];
-                    $params['[payEndDate]'][] = $value['payEndDate'];
+                    $params['[timeApply]'][] = Carbon::parse($value['timeApply'])->format('d/m/Y');
+                    $params['[payEndDate]'][] = Carbon::parse($value['payEndDate'])->format('d/m/Y');
                     $params['[reason]'][] = $value['reason'];
                     $params['[note]'][] = $value['note'];
                 }
