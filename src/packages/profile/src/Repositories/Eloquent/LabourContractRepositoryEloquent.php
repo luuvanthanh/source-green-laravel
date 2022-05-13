@@ -437,6 +437,11 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $this->model = $this->model->whereIn('BranchId', $branchId);
+        }
+
         $labourContracts = $this->model->get();
         $numberYearWork = 0;
         $numberMonthWork = 0;
@@ -526,7 +531,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             $employee = User::where('Id', $attributes['employeeId'])->first();
         }
 
-        $params['{time}'] = Carbon::parse($attributes['date'])->format('d-m-Y');
+        $params['{time}'] = Carbon::parse($attributes['date'])->format('d/m/Y');
         $params['{branch_name}'] = is_null($branch) ? '--Tất cả--' : $branch->Name;
         $params['{number_year_work_from}'] = isset($attributes['number_year_work_from']) ? $attributes['number_year_work_from'] . ' ' . 'năm' : '';
         $params['{number_year_work_to}'] = isset($attributes['number_year_work_to']) ? $attributes['number_year_work_to'] . ' ' . 'năm' : '';
@@ -538,7 +543,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             $params['[fullName]'][] = $value['employeeName'];
             $params['[position]'][] = $value['position'];
             $params['[branch]'][] = $value['branch'];
-            $params['[contractFrom]'][] = $value['contractFrom'];
+            $params['[contractFrom]'][] = Carbon::parse($value['contractFrom'])->format('d/m/Y');
             $params['[numberYearWork]'][] = $value['numberYearWork'];
             $params['[numberMonthWork]'][] = $value['numberMonthWork'];
         }
