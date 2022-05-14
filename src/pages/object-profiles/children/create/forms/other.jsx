@@ -85,7 +85,7 @@ const Other = memo(({ dispatch, loading: { effects }, match: { params }, details
           <Pane className="row">
             <Pane className="col">
               <FormItem name="note" label="Lưu ý về trẻ">
-                <Input placeholder="Nhập" />
+                <TextArea rows={4} placeholder="Nhập" />
               </FormItem>
             </Pane>
           </Pane>
@@ -93,7 +93,7 @@ const Other = memo(({ dispatch, loading: { effects }, match: { params }, details
           <Pane className="row">
             <Pane className="col">
               <FormItem name="parentWish" label="Mong muốn của phụ huynh">
-                <TextArea rows={4}  placeholder="Nhập" />
+                <TextArea rows={4} placeholder="Nhập" />
               </FormItem>
             </Pane>
           </Pane>

@@ -1,91 +1,19 @@
-import { memo, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import _, { isEmpty } from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
-
-import Pane from '@/components/CommonComponent/Pane';
-import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
+import Pane from '@/components/CommonComponent/Pane';
 import Table from '@/components/CommonComponent/Table';
-
-import { variables, Helper } from '@/utils';
-
+import { Helper, variables } from '@/utils';
+import _ from 'lodash';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import { memo } from 'react';
 import variablesModules from '../variables';
+
+
+
 
 const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, checkValidate }) => {
   const { getFieldsValue } = formRef?.current;
   const { rangeDate } = getFieldsValue();
-
-  const [disableApply, setDiableApply] = useState(true);
-
-  const renderData = (length, values) => {
-    const datasTable = [];
-    for (let i = 0; i < length; i += 1) {
-      const startMonth = moment(rangeDate[0])
-        .add(i - 1, 'month')
-        .set('date', values?.duaDate);
-      const endMonth = moment(rangeDate[0]).add(i, 'month').set('date', 1);
-      datasTable.push({
-        id: uuidv4(),
-        fee: [...fees].find((item) => item.id === values?.feeId)?.code,
-        feeId: [...fees].find((item) => item.id === values?.feeId)?.id,
-        date: moment(rangeDate[0])
-          .add(i, 'month')
-          .set('date', 1)
-          .format(variables.DATE_FORMAT.DATE_AFTER),
-        duaDate:
-          moment(startMonth).diff(endMonth, 'days') < 0
-            ? startMonth.format(variables.DATE_FORMAT.DATE_AFTER)
-            : startMonth.add(-1, 'month').endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
-        rangeDate: null,
-        paymentFormId: null,
-        schoolDay: '',
-        fullMonth: null,
-        actualWeek: '',
-      });
-    }
-    return datasTable;
-  };
-
-  const handleApply = () => {
-    const { getFieldsValue } = formRef?.current;
-    const values = getFieldsValue();
-    let data = [];
-    if (!isEmpty(paramChanges)) {
-      data = [...paramChanges].map((item) => {
-        const endMonth = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).endOf('month');
-        const valueDuaDate = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).set(
-          'date',
-          values?.duaDate,
-        );
-        return {
-          ...item,
-          duaDate:
-            moment(valueDuaDate).diff(moment(endMonth), 'days') + 1 <= 0
-              ? moment(valueDuaDate).format(variables.DATE_FORMAT.DATE_AFTER)
-              : moment(endMonth).format(variables.DATE_FORMAT.DATE_AFTER),
-        };
-      });
-      setParamChanges(data);
-    } else {
-      const startDate = moment(rangeDate[0]).startOf('month');
-      const endDate = moment(rangeDate[1]).endOf('month');
-      const result = moment(endDate).diff(moment(startDate), 'month') + 1;
-      if (result) {
-        data = renderData(result, values);
-        setParamChanges(data);
-      }
-    }
-  };
-
-  useEffect(() => {
-    const { getFieldsValue } = formRef?.current;
-    const { feeId, duaDate } = getFieldsValue();
-    if (feeId && duaDate) {
-      setDiableApply(false);
-    }
-  }, []);
 
   const onChange = (value, record, name) => {
     const index = _.findIndex(paramChanges, (item) => item.id === record?.id);
@@ -233,13 +161,10 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
 
   const changeForm = () => {
     const values = getFieldsValue();
-    if (values?.fee && values?.duaDate) {
-      setDiableApply(false);
-    } else {
+    if (!values?.fee && !values?.duaDate) {
       const feeResult = fees
         .filter((item) => item.type === 'TD')
         .find((item) => item.id === values.feeId);
-      setDiableApply(true);
       setParamChanges(
         paramChanges.map((item) => ({
           ...item,
@@ -282,26 +207,13 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
               () => ({
                 validator(_, value) {
                   if (value === 0 || (value && (value > 31 || value < 1))) {
-                    setDiableApply(true);
                     return Promise.reject(new Error(variables.RULES.INVALID_DATE));
                   }
-                  setDiableApply(false);
                   return Promise.resolve();
                 },
               }),
             ]}
           />
-        </div>
-        <div className="col-lg-3">
-          <Button
-            className="px25 btn-small"
-            color="success"
-            size="large"
-            onClick={handleApply}
-            disabled={disableApply}
-          >
-            Áp dụng
-          </Button>
         </div>
       </div>
       <Table
@@ -338,9 +250,9 @@ Index.defaultProps = {
   formRef: {},
   fees: [],
   paramChanges: [],
-  setParamChanges: () => {},
+  setParamChanges: () => { },
   error: false,
-  checkValidate: () => {},
+  checkValidate: () => { },
 };
 
 export default Index;

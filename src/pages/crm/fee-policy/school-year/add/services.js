@@ -1,4 +1,5 @@
 import request from '@/utils/requestCrm';
+import requestClover from '@/utils/requestLavarel';
 
 export function add(data = {}) {
   return request('/v1/school-years', {
@@ -8,7 +9,7 @@ export function add(data = {}) {
 }
 
 export function details(data = {}) {
-  return request(`/v1/school-years/${data?.id}`, {
+  return requestClover(`/v1/school-years/${data?.id}`, {
     method: 'GET',
   });
 }

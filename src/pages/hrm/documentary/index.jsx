@@ -153,7 +153,7 @@ function Index() {
           `CV${Helper.serialOrder(search?.page, index, search?.limit)}`,
       },
       {
-        title: 'Thời gian gởi',
+        title: 'Thời gian gửi',
         key: 'date',
         dataIndex: 'creationTime',
         className: 'min-width-150',
@@ -161,14 +161,14 @@ function Index() {
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
       },
       {
-        title: 'BP gởi',
+        title: 'BP gửi',
         key: 'sentDivisionId',
         className: 'min-width-120',
         width: 120,
         render: (record) => <Text size="normal">{get(record, 'sentDivision.name')}</Text>,
       },
       {
-        title: 'Người gởi',
+        title: 'Người gửi',
         key: 'name',
         className: 'min-width-220',
         width: 220,

@@ -227,7 +227,7 @@ const renderChildren = (
       disabled={disabled}
       allowClear={allowClear}
       disabledDate={disabledDate}
-      format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD/MM/YYYY', 'DD/MM/YYYY']}
+      format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD/MM/YYYY', 'DD/MM/YYYY', 'D/M/YYYY']}
       onChange={onChange}
       placeholder="ngày/tháng/năm"
       value={value}
@@ -501,16 +501,16 @@ FormItem.defaultProps = {
   rules: [],
   placeholder: '',
   data: [],
-  handleScroll: () => {},
-  onChange: () => {},
-  onSearch: () => {},
-  onBlur: () => {},
+  handleScroll: () => { },
+  onChange: () => { },
+  onSearch: () => { },
+  onBlur: () => { },
   disabled: null,
   disabledDate: () => false,
   fieldNames: { label: 'name', value: 'id', children: 'children' },
   maxTagCount: 20,
   dropdownRender: null,
-  onSelect: () => {},
+  onSelect: () => { },
   allowClear: true,
   picker: 'date',
   disabledHours: null,
