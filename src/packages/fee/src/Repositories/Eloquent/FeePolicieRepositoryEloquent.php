@@ -501,8 +501,25 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             if (!is_null($feeDetail)) {
                                 $money = $feeDetail->Money;
                                 $result = $money;
+
+                                switch ($paymentForm->Code) {
+                                    case 'THANG':
+                                        $moneyMonth = $result;
+                                        break;
+                                }
+                                break;
                             }
                             break;
+                        case 'XEBUS':
+                            if (isset($detail->money)) {
+                                $result = $detail->money;
+                                switch ($paymentForm->Code) {
+                                    case 'THANG':
+                                        $moneyMonth = $result;
+                                        break;
+                                }
+                                break;
+                            }
                     }
                 }
             }
@@ -683,6 +700,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'money' => $value['money'],
                                 'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
+                            $totalMoneyMonth += $value['money'];
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
