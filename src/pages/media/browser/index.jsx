@@ -65,13 +65,15 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
+          if (response?.status === 204) {
+            setVisibleProgress(false);
+          } else {
+            setVisibleProgress(true);
+          }
           if (isEmpty(images)) {
             if (response?.data?.status === 'finished') {
               setInProgessSuccess(true);
             }
-          }
-          if (response?.data?.status !== 'starting' && response?.data?.status !== 'finished') {
-            setVisibleProgress(true);
           }
         }
       },
@@ -124,7 +126,7 @@ const Index = memo(() => {
     dispatch({
       type: 'mediaBrowser/CLASSIFY',
       payload: images.filter((item) => item.status === localVariables.CLASSIFY_STATUS.PENDING),
-      callback: () => {},
+      callback: () => { },
     });
   };
 
@@ -177,7 +179,7 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    setUpSignalRConnection().then(() => {});
+    setUpSignalRConnection().then(() => { });
   }, []);
 
   return (

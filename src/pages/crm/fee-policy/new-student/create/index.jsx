@@ -66,6 +66,9 @@ const Index = memo(() => {
   const [idRes, setIdRes] = useState();
   const [dataTuition, setDataTuition] = useState([]);
   const [checkSearch, setCheckSearch] = useState(false);
+  const [data, setData] = useState([]);
+
+  const [checkData, setCheckData] = useState(true);
 
   const [errorTable, setErrorTable] = useState({
     tuition: false,
@@ -105,6 +108,41 @@ const Index = memo(() => {
       },
     });
   }, []);
+
+  const sumArray = (e) => {
+    let sum = 0;
+    e?.map((value) => {
+      sum += JSON.parse(value?.money);
+    });
+    return sum;
+  };
+
+
+  const sumArrayMain = (e) => {
+    let sum = 0;
+    e?.map((value) => {
+      sum += value?.total_money_month;
+    });
+    return sum;
+  };
+
+  const sumItem = (e) => {
+    const result = _(e)
+      .groupBy('fee_id')
+      .map((items, fee_id, _money) => ({ fee_id, money: sumArray(items) })).value();
+    return result;
+  };
+
+
+  const flattenArr = (arr) => {
+    let sum = [];
+    _.forEachRight(arr, (value) => {
+      sum = sum?.concat(value?.fee);
+    });
+    return sumItem(sum);
+  };
+
+
   useEffect(() => {
     if (params.id) {
       dispatch({
@@ -122,6 +160,7 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res?.id) {
+            setCheckData(false);
             setTuition(res?.tuition);
             setIdRes(res?.expected_to_collect_money);
             const pather = res?.admissionRegister?.parentInfo?.find((i) => i.sex === 'MALE');
@@ -223,7 +262,7 @@ const Index = memo(() => {
         money: i?.money,
       })),
       branch_id: details?.branch_id?.id ? details?.branch_id?.id : values?.branch_id,
-      expected_to_collect_money: idRes || undefined,
+      expected_to_collect_money: data || undefined,
       id: params?.id || undefined,
     };
     dispatch({
@@ -413,6 +452,25 @@ const Index = memo(() => {
     return data?.name;
   };
 
+  const onChangeBus = (e, record, id) => {
+    const dataItem = {
+      month: record?.month,
+      total_money_month: record?.total_money_month,
+      fee: record?.fee?.map(i => ({
+        ...i,
+        money: i?.fee_id_crm === id ? e : i?.money,
+      }))
+    };
+
+    const a = data?.map(i => (
+      {
+        ...i,
+        fee: i.month === dataItem?.month ? dataItem?.fee : i?.fee,
+        total_money_month: i.month === dataItem?.month ? sumArray(dataItem?.fee) : i?.total_money_month
+      }));
+    return e > 0 ? setData(a) : "";
+  };
+
 
   const header = () => {
     const rowData = dataTuition?.map((i) => ({
@@ -420,9 +478,23 @@ const Index = memo(() => {
       width: 150,
       key: 'money',
       render: (record) => {
-        const item = record?.money?.find(k => k?.feeId === i?.fee_id_crm);
+        const item = record?.fee?.find(k => k?.fee_id === i?.fee_id_crm);
+        const checkBus = fees.find(k => k?.id === i?.feeId);
         return (
-          <>{item?.feeId ? <Text size="normal">{Helper.getPrice(item?.money) || 0}</Text> : '0'}</>
+          <>{
+            item?.fee_id && checkBus?.code === 'BUS' && item?.money > 0 && !item?.check ?
+              <FormItem
+                className="mb-0"
+                type={variables.INPUT_NUMBER}
+                rules={[variables.RULES.EMPTY]}
+                value={item?.money}
+                onChange={(e) => onChangeBus(e, record, i?.feeId)}
+              />
+              :
+              <Text size="normal">
+                {Helper.getPrice(item?.money) || 0}
+              </Text>
+          }</>
         );
       },
     }));
@@ -433,7 +505,7 @@ const Index = memo(() => {
         className: 'min-width-150',
         width: 200,
         render: (record) => (
-          <Text size="normal">{Helper.getDate(record.date, variables.DATE_FORMAT.DATE_MONTH)}</Text>
+          <Text size="normal">{Helper.getDate(record.month, variables.DATE_FORMAT.DATE_MONTH)}</Text>
         ),
       },
       {
@@ -453,60 +525,35 @@ const Index = memo(() => {
       {
         title: 'Tổng tiền (đ)',
         key: 'total',
-        fixed: 'right',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getPrice(record?.total) || 0}</Text>,
+        render: (record) => <Text size="normal">{Helper.getPrice(record?.total_money_month) || 0}</Text>,
       },
     ];
     columns.splice(1, 0, ...rowData);
     return columns;
   };
 
-  const sumArray = (e) => {
-    let sum = 0;
-    e?.map((value) => {
-      sum += value?.money;
-    });
-
-    return sum;
-  };
-
-  const sumArrayMain = (e) => {
-    let sum = 0;
-    e.map((value) => {
-      sum += value?.total;
-    });
-    return sum;
-  };
-
-  const sumItem = (e) => {
-    const result = _(e)
-      .groupBy('feeId')
-      .map((items, feeId, _money) => ({ feeId, money: sumArray(items) }))
-      .value();
-    return result;
-  };
-
-  const flattenArr = (arr) => {
-    let sum = [];
-    _.forEachRight(arr, (value) => {
-      sum = sum?.concat(value?.money);
-    });
-    return sumItem(sum);
-  };
-
-  const data = idRes?.map((i) => ({
-    date: i?.month,
-    total: sumArray(i?.fee),
-    money: i?.fee?.map((k) => ({
+  const datas = idRes?.map(i =>
+  ({
+    month: i?.month,
+    total_money_month: sumArray(i?.fee),
+    fee: i?.fee?.map(k =>
+    ({
       money: k?.money,
       fee_name: k?.fee_name,
-      feeId: k?.fee_id,
-    })),
+      fee_id: k?.fee_id,
+      fee_id_crm: k?.fee_id_crm,
+    })
+    )
   }));
 
-  data?.push({ total: sumArrayMain(data), money: flattenArr(data) });
+  useEffect(() => {
+    if (datas?.length > 0) {
+      setData([...datas]);
+    }
+  }, [datas?.length, checkData]);
+
 
   const hanDleChangeText = (childData, k, data, deleteId) => {
     if (childData?.length > 0 || deleteId) {
@@ -514,6 +561,7 @@ const Index = memo(() => {
       setIdRes(childData);
     }
     setDataTuition(data);
+    setCheckData(k);
   };
 
   const tabs = () => [
@@ -553,6 +601,44 @@ const Index = memo(() => {
                 bordered
                 rowKey={(record) => record?.month}
                 scroll={{ x: '100%' }}
+                summary={(pageData) => {
+                  const total = sumArrayMain(pageData);
+                  const moneyDetail = flattenArr(pageData);
+                  return (
+                    <>
+                      <Table.Summary.Row>
+                        <Table.Summary.Cell colSpan={1}>
+                          <Text size="normal" style={{ fontWeight: 'bold' }}>
+                            Tổng tiền
+                          </Text>
+                        </Table.Summary.Cell>
+                        {
+                          moneyDetail?.map(i =>
+                          (<Table.Summary.Cell>
+                            <Text size="normal" style={{ fontWeight: 'bold' }}>
+                              {i?.money === 0 ? '0 đ' : Helper.getPrice(i?.money)}
+                            </Text>
+                          </Table.Summary.Cell>))
+                        }
+                        <Table.Summary.Cell>
+                          <Text size="normal" style={{ fontWeight: 'bold' }}>
+                            {Helper.getPrice("0")}
+                          </Text>
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell>
+                          <Text size="normal" style={{ fontWeight: 'bold' }}>
+                            {Helper.getPrice("0")}
+                          </Text>
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell>
+                          <Text size="normal" style={{ fontWeight: 'bold' }}>
+                            {total === 0 ? '0 đ' : Helper.getPrice(total)}
+                          </Text>
+                        </Table.Summary.Cell>
+                      </Table.Summary.Row>
+                    </>
+                  );
+                }}
               />
             </div>
           )}
