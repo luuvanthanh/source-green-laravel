@@ -98,7 +98,8 @@
             "GGPHP\\WorkOnline\\": "hrm/work-online/src",
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
             "GGPHP\\EvaluateTeacher\\Category\\": "evaluate-teacher/category/src/",
-            "GGPHP\\EvaluateTeacher\\EvaluateTeacher\\": "evaluate-teacher/evaluate-teacher/src/"
+            "GGPHP\\EvaluateTeacher\\EvaluateTeacher\\": "evaluate-teacher/evaluate-teacher/src/",
+            "GGPHP\\TrainingTeacher\\Category\\": "training-teacher/category/src/"
         },
         "classmap": [
             "database/seeds",
