@@ -55,7 +55,7 @@ class CoreRepositoryEloquent extends BaseRepository
         $this->resetModel();
 
         event(new RepositoryEntityCreated($this, $model));
-
+        
         return $this->parserResult($model);
     }
 

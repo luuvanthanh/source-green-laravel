@@ -131,7 +131,7 @@ class SkillGroupRepositoryEloquent extends CoreRepositoryEloquent implements Ski
             $skillGroup->update($attributes);
 
             if (!empty($attributes['detail'])) {
-                $this->skillGroupDetail($attributes['detail'], $id);
+                $this->skillGroupDetail($attributes['detail'], $skillGroup);
             }
 
             \DB::commit();
