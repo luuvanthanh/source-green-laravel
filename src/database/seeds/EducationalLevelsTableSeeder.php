@@ -12,25 +12,31 @@ class EducationalLevelsTableSeeder extends Seeder
      */
     public function run()
     {
+        
 
-        \DB::table('EducationalLevels')->truncate();
-
-        \DB::table('EducationalLevels')->insert(array(
-            0 => array(
-                'Id' => '9315c5c0-9786-4f81-85e1-da3e1393e7d0',
+        \DB::table('EducationalLevels')->delete();
+        
+        \DB::table('EducationalLevels')->insert(array (
+            0 => 
+            array (
+                'Id' => '947c6b67-03e4-45f9-9169-2156518097f2',
+                'Code' => 'DH',
+                'Name' => 'Đại học',
+                'CreationTime' => '2022-03-29 03:15:42',
+                'LastModificationTime' => '2022-03-29 03:15:42',
+                'DeletionTime' => NULL,
+            ),
+            1 => 
+            array (
+                'Id' => '39c284d2-37d2-4bd0-afff-d521c4fd0df7',
                 'Code' => '12/12',
                 'Name' => '12/12',
-                'CreationTime' => '2021-04-19 08:46:40',
-                'LastModificationTime' => '2021-04-19 08:46:40',
-            ),
-            1 => array(
-                'Id' => 'ac3419ca-8f1b-435a-b740-a01b2c60859d',
-                'Code' => 'ĐH',
-                'Name' => 'Đại học',
-                'CreationTime' => '2021-04-19 08:46:57',
-                'LastModificationTime' => '2021-04-19 08:46:57',
+                'CreationTime' => '2022-03-29 03:15:51',
+                'LastModificationTime' => '2022-03-29 03:15:51',
+                'DeletionTime' => NULL,
             ),
         ));
-
+        
+        
     }
 }

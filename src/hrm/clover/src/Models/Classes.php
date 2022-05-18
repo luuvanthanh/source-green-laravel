@@ -11,8 +11,8 @@ class Classes extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'origination.Classes';
-
+    protected $table = 'distribution.Classes';
+    
     /**
      * The attributes that are mass assignable.
      *

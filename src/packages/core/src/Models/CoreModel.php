@@ -12,7 +12,7 @@ class CoreModel extends Model implements Presentable
 {
     const CREATED_AT = 'CreationTime';
     const UPDATED_AT = 'LastModificationTime';
-    const DELETED_AT = 'DeletedAt';
+    const DELETED_AT = 'DeletionTime';
 
     use CastDatetimeFormatTrait, BootPresentTrait;
     use SoftDeletes;

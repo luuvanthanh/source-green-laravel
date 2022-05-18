@@ -1,0 +1,388 @@
+<?php
+
+use Illuminate\Database\Seeder;
+
+class WorkOnlineDetailsTableSeeder extends Seeder
+{
+
+    /**
+     * Auto generated seed file
+     *
+     * @return void
+     */
+    public function run()
+    {
+        
+
+        \DB::table('WorkOnlineDetails')->delete();
+        
+        \DB::table('WorkOnlineDetails')->insert(array (
+            0 => 
+            array (
+                'Id' => '4e79895b-af28-4e7a-a90d-71e24586f630',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '4d3c5cbe-fa25-49d9-8549-97599db9bbc0',
+                'CreationTime' => '2022-05-10 07:52:46',
+                'LastModificationTime' => '2022-05-10 07:52:46',
+                'DeletionTime' => NULL,
+            ),
+            1 => 
+            array (
+                'Id' => 'bad55f65-9f20-48a1-9b30-536f43f9b3b3',
+                'Date' => '2022-05-12',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '4d3c5cbe-fa25-49d9-8549-97599db9bbc0',
+                'CreationTime' => '2022-05-10 07:52:46',
+                'LastModificationTime' => '2022-05-10 07:52:46',
+                'DeletionTime' => NULL,
+            ),
+            2 => 
+            array (
+                'Id' => '58e25732-c29c-435a-926c-df7f128fdb38',
+                'Date' => '2022-05-11',
+                'StartTime' => '04:04:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '248106a5-dee9-4d79-acb2-1bcb5ffeec2e',
+                'CreationTime' => '2022-05-11 01:20:07',
+                'LastModificationTime' => '2022-05-11 01:49:50',
+                'DeletionTime' => '2022-05-11 01:49:50',
+            ),
+            3 => 
+            array (
+                'Id' => '8ed290ab-4cc0-42a4-8673-fbcb36cf40c1',
+                'Date' => '2022-05-12',
+                'StartTime' => '07:07:00',
+                'EndTime' => '08:06:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '248106a5-dee9-4d79-acb2-1bcb5ffeec2e',
+                'CreationTime' => '2022-05-11 01:20:07',
+                'LastModificationTime' => '2022-05-11 01:49:50',
+                'DeletionTime' => '2022-05-11 01:49:50',
+            ),
+            4 => 
+            array (
+                'Id' => 'ca8aca29-25c2-45e6-998f-093c39d44a8f',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '09:30:00',
+                'ShiftCode' => 'Ca sáng',
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '248106a5-dee9-4d79-acb2-1bcb5ffeec2e',
+                'CreationTime' => '2022-05-11 01:49:50',
+                'LastModificationTime' => '2022-05-11 01:49:50',
+                'DeletionTime' => NULL,
+            ),
+            5 => 
+            array (
+                'Id' => 'f29e6404-1bfa-4469-81f6-38cdc7711419',
+                'Date' => '2022-05-12',
+                'StartTime' => '01:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => 'Ca chiều',
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '248106a5-dee9-4d79-acb2-1bcb5ffeec2e',
+                'CreationTime' => '2022-05-11 01:49:50',
+                'LastModificationTime' => '2022-05-11 01:49:50',
+                'DeletionTime' => NULL,
+            ),
+            6 => 
+            array (
+                'Id' => '5baafe77-49b7-45cd-8d4f-86ac119e7f7a',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '79e25a99-9da8-473d-bd4c-b7f0f3d6a777',
+                'CreationTime' => '2022-05-10 08:31:41',
+                'LastModificationTime' => '2022-05-11 01:49:56',
+                'DeletionTime' => '2022-05-11 01:49:56',
+            ),
+            7 => 
+            array (
+                'Id' => 'b128f1e2-9f8e-435a-b7e8-18afb0cc6a29',
+                'Date' => '2022-05-12',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '79e25a99-9da8-473d-bd4c-b7f0f3d6a777',
+                'CreationTime' => '2022-05-10 08:31:41',
+                'LastModificationTime' => '2022-05-11 01:49:56',
+                'DeletionTime' => '2022-05-11 01:49:56',
+            ),
+            8 => 
+            array (
+                'Id' => '1c0e0099-7ada-418e-90e7-466536fb58c4',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '09:30:00',
+                'ShiftCode' => 'Ca sáng',
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 01:40:41',
+                'LastModificationTime' => '2022-05-11 03:49:41',
+                'DeletionTime' => '2022-05-11 03:49:41',
+            ),
+            9 => 
+            array (
+                'Id' => '1b98fce4-3bb1-456e-a41b-377768375e7f',
+                'Date' => '2022-05-12',
+                'StartTime' => '01:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => 'Ca chiều',
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 01:40:41',
+                'LastModificationTime' => '2022-05-11 03:49:41',
+                'DeletionTime' => '2022-05-11 03:49:41',
+            ),
+            10 => 
+            array (
+                'Id' => '5ac475f5-b2d9-4b6b-837a-9ff8b8e650ec',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '09:30:00',
+                'ShiftCode' => 'Ca sáng',
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 03:49:41',
+                'LastModificationTime' => '2022-05-11 03:49:45',
+                'DeletionTime' => '2022-05-11 03:49:45',
+            ),
+            11 => 
+            array (
+                'Id' => '29ea7e8e-dd9a-4058-91f6-7a72cbcfbd2c',
+                'Date' => '2022-05-12',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 03:49:41',
+                'LastModificationTime' => '2022-05-11 03:49:45',
+                'DeletionTime' => '2022-05-11 03:49:45',
+            ),
+            12 => 
+            array (
+                'Id' => '056c7e5f-2351-4a4c-af24-28daf5cc110d',
+                'Date' => '2022-05-13',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 03:49:41',
+                'LastModificationTime' => '2022-05-11 03:49:45',
+                'DeletionTime' => '2022-05-11 03:49:45',
+            ),
+            13 => 
+            array (
+                'Id' => 'f48709a3-5284-4299-b5fc-357ef3af245f',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '79e25a99-9da8-473d-bd4c-b7f0f3d6a777',
+                'CreationTime' => '2022-05-11 01:49:56',
+                'LastModificationTime' => '2022-05-11 03:51:52',
+                'DeletionTime' => '2022-05-11 03:51:52',
+            ),
+            14 => 
+            array (
+                'Id' => 'b250bccf-a42c-441f-b59f-6e3bb01458cb',
+                'Date' => '2022-05-12',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '79e25a99-9da8-473d-bd4c-b7f0f3d6a777',
+                'CreationTime' => '2022-05-11 01:49:56',
+                'LastModificationTime' => '2022-05-11 03:51:52',
+                'DeletionTime' => '2022-05-11 03:51:52',
+            ),
+            15 => 
+            array (
+                'Id' => 'b2e925f4-4aaa-44cd-b88c-3da45853137d',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '09:30:00',
+                'ShiftCode' => 'Ca sáng',
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '79e25a99-9da8-473d-bd4c-b7f0f3d6a777',
+                'CreationTime' => '2022-05-11 03:51:52',
+                'LastModificationTime' => '2022-05-11 03:51:52',
+                'DeletionTime' => NULL,
+            ),
+            16 => 
+            array (
+                'Id' => '4a933cea-3786-4bbc-b5f6-9520a4dc125a',
+                'Date' => '2022-05-12',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '79e25a99-9da8-473d-bd4c-b7f0f3d6a777',
+                'CreationTime' => '2022-05-11 03:51:52',
+                'LastModificationTime' => '2022-05-11 03:51:52',
+                'DeletionTime' => NULL,
+            ),
+            17 => 
+            array (
+                'Id' => '37a28bef-db51-4a28-b2cd-3e0a40faa0b0',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '09:30:00',
+                'ShiftCode' => 'Ca sáng',
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 03:49:45',
+                'LastModificationTime' => '2022-05-11 07:10:41',
+                'DeletionTime' => '2022-05-11 07:10:41',
+            ),
+            18 => 
+            array (
+                'Id' => 'b62d43b6-d422-4975-9976-3dc3fb46f3fe',
+                'Date' => '2022-05-12',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 03:49:45',
+                'LastModificationTime' => '2022-05-11 07:10:41',
+                'DeletionTime' => '2022-05-11 07:10:41',
+            ),
+            19 => 
+            array (
+                'Id' => '95a6649a-75be-419b-9fd2-1b65398772df',
+                'Date' => '2022-05-13',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 03:49:45',
+                'LastModificationTime' => '2022-05-11 07:10:41',
+                'DeletionTime' => '2022-05-11 07:10:41',
+            ),
+            20 => 
+            array (
+                'Id' => '8c776e48-e1a8-4f6d-9821-20194c9805ad',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 07:10:41',
+                'LastModificationTime' => '2022-05-12 14:01:54',
+                'DeletionTime' => '2022-05-12 14:01:54',
+            ),
+            21 => 
+            array (
+                'Id' => '1ced0361-75b8-46cd-8bd2-d00b4e039c66',
+                'Date' => '2022-05-12',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 07:10:41',
+                'LastModificationTime' => '2022-05-12 14:01:54',
+                'DeletionTime' => '2022-05-12 14:01:54',
+            ),
+            22 => 
+            array (
+                'Id' => 'd7e2b147-45cd-4f7f-b100-94abcf675c32',
+                'Date' => '2022-05-13',
+                'StartTime' => '00:15:00',
+                'EndTime' => '09:30:00',
+                'ShiftCode' => 'Ca sáng',
+                'TotalHour' => NULL,
+                'IsFullDate' => false,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-11 07:10:41',
+                'LastModificationTime' => '2022-05-12 14:01:54',
+                'DeletionTime' => '2022-05-12 14:01:54',
+            ),
+            23 => 
+            array (
+                'Id' => 'a0036010-a695-499a-8267-12108e50d474',
+                'Date' => '2022-05-11',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-12 14:01:54',
+                'LastModificationTime' => '2022-05-12 14:01:54',
+                'DeletionTime' => NULL,
+            ),
+            24 => 
+            array (
+                'Id' => 'd663b644-8c91-4dd1-a507-05c64452f45e',
+                'Date' => '2022-05-12',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-12 14:01:54',
+                'LastModificationTime' => '2022-05-12 14:01:54',
+                'DeletionTime' => NULL,
+            ),
+            25 => 
+            array (
+                'Id' => '8c0c2b3e-3786-4907-8fa8-00d38d68ed82',
+                'Date' => '2022-05-13',
+                'StartTime' => '00:15:00',
+                'EndTime' => '23:00:00',
+                'ShiftCode' => NULL,
+                'TotalHour' => NULL,
+                'IsFullDate' => true,
+                'WorkOnlineId' => '3e11a1d1-96f0-4d7c-92f8-f556c729e336',
+                'CreationTime' => '2022-05-12 14:01:54',
+                'LastModificationTime' => '2022-05-12 14:01:54',
+                'DeletionTime' => NULL,
+            ),
+        ));
+        
+        
+    }
+}

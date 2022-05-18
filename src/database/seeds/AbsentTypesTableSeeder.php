@@ -1,3 +1,5 @@
+
+
 <?php
 
 use Illuminate\Database\Seeder;
@@ -12,65 +14,73 @@ class AbsentTypesTableSeeder extends Seeder
      */
     public function run()
     {
+        
 
-        \DB::table('AbsentTypes')->truncate();
-
-        \DB::table('AbsentTypes')->insert(array(
-            0 => array(
-                'Id' => '245c003c-c88a-4c75-a25d-64c0251b7e5f',
-                'Name' => 'Nghỉ phép',
+        \DB::table('AbsentTypes')->delete();
+        
+        \DB::table('AbsentTypes')->insert(array (
+            0 => 
+            array (
+                'Id' => '008a6a90-523b-47ce-a039-dc12cadb5d60',
+                'Name' => 'test',
                 'Status' => 'ON',
                 'Type' => 'ABSENT',
-                'CreationTime' => '2021-04-22 02:12:46',
-                'LastModificationTime' => '2021-04-22 02:12:46',
-                'Code' => 'F',
+                'Code' => 'TEST',
+                'IsTimeKeeping' => true,
+                'CreationTime' => '2022-04-29 08:19:19',
+                'LastModificationTime' => '2022-04-29 08:24:56',
+                'DeletionTime' => '2022-04-29 08:24:56',
             ),
-            1 => array(
-                'Id' => '2ee21279-fb27-44fb-b0f3-a8eb6f8ad620',
+            1 => 
+            array (
+                'Id' => 'b754e785-a5b9-45fa-9371-3708b13a908b',
+                'Name' => 'Nghỉ có phép',
+                'Status' => 'ON',
+                'Type' => 'ABSENT',
+                'Code' => 'F',
+                'IsTimeKeeping' => true,
+                'CreationTime' => '2022-05-12 13:56:05',
+                'LastModificationTime' => '2022-05-12 13:56:05',
+                'DeletionTime' => NULL,
+            ),
+            2 => 
+            array (
+                'Id' => 'c17d5ae7-cb7b-41c5-b4da-8d9610a53798',
                 'Name' => 'Nghỉ không phép',
                 'Status' => 'ON',
                 'Type' => 'ABSENT',
-                'CreationTime' => '2021-04-22 02:12:35',
-                'LastModificationTime' => '2021-04-22 02:12:35',
                 'Code' => 'K',
+                'IsTimeKeeping' => false,
+                'CreationTime' => '2022-05-12 13:56:44',
+                'LastModificationTime' => '2022-05-12 13:56:44',
+                'DeletionTime' => NULL,
             ),
-            2 => array(
-                'Id' => '37bc24d8-f25b-4939-b54b-df9bbfb3e182',
-                'Name' => 'Nhân viên nghỉ thai sản',
-                'Status' => 'ON',
-                'Type' => 'MATERNITY_LEAVE',
-                'CreationTime' => '2021-05-12 05:11:31',
-                'LastModificationTime' => '2021-05-12 05:11:31',
-                'Code' => 'TS',
-            ),
-            3 => array(
-                'Id' => '1816e2c6-95a2-41d7-8944-72965d3a2a1d',
+            3 => 
+            array (
+                'Id' => '720ba36f-634e-4d5f-90c1-b83eece17e31',
                 'Name' => 'Công tác',
                 'Status' => 'ON',
                 'Type' => 'BUSINESS_TRAVEL',
-                'CreationTime' => '2021-05-12 05:11:56',
-                'LastModificationTime' => '2021-05-12 05:11:56',
                 'Code' => 'CT',
+                'IsTimeKeeping' => true,
+                'CreationTime' => '2022-04-29 08:22:55',
+                'LastModificationTime' => '2022-05-12 13:58:53',
+                'DeletionTime' => NULL,
             ),
-            4 => array(
-                'Id' => '7674d46f-96d1-4232-a295-0f194f06e1d4',
+            4 => 
+            array (
+                'Id' => '5010e623-7e74-4600-9c07-32420914384a',
                 'Name' => 'Đi ra ngoài',
                 'Status' => 'ON',
                 'Type' => 'GO_OUT',
-                'CreationTime' => '2021-05-12 05:12:42',
-                'LastModificationTime' => '2021-05-12 05:12:42',
-                'Code' => 'RN',
-            ),
-            5 => array(
-                'Id' => 'b8c2ab59-b1e7-4091-b071-a865b8caf2d0',
-                'Name' => 'Làm thêm giờ',
-                'Status' => 'ON',
-                'Type' => 'ADD_TIME',
-                'CreationTime' => '2021-05-12 05:13:09',
-                'LastModificationTime' => '2021-05-12 05:13:09',
-                'Code' => 'OT',
+                'Code' => 'DRN',
+                'IsTimeKeeping' => false,
+                'CreationTime' => '2022-04-29 08:41:09',
+                'LastModificationTime' => '2022-05-12 13:59:04',
+                'DeletionTime' => NULL,
             ),
         ));
-
+        
+        
     }
 }

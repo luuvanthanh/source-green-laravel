@@ -20,7 +20,7 @@ class CreateOtherDeclarationsTable extends Migration
             $table->integer('NumberOfWorkdays');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0);
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

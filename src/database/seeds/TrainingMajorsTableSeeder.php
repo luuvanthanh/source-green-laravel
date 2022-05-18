@@ -12,25 +12,49 @@ class TrainingMajorsTableSeeder extends Seeder
      */
     public function run()
     {
+        
 
-        \DB::table('TrainingMajors')->truncate();
-
-        \DB::table('TrainingMajors')->insert(array(
-            0 => array(
-                'Id' => 'd64f2741-b904-4f7f-bf6a-a8e4fa42d27d',
-                'Code' => 'CNTT',
-                'Name' => 'Công nhệ thông tin',
-                'CreationTime' => '2021-04-19 08:48:31',
-                'LastModificationTime' => '2021-04-19 08:48:31',
+        \DB::table('TrainingMajors')->delete();
+        
+        \DB::table('TrainingMajors')->insert(array (
+            0 => 
+            array (
+                'Id' => '610e7e68-ae32-4b44-98b0-d7bc92dd1c98',
+                'Code' => 'TA',
+                'Name' => 'Tiếng Anh sư phạm',
+                'CreationTime' => '2022-03-23 03:36:36',
+                'LastModificationTime' => '2022-03-29 03:04:05',
+                'DeletionTime' => NULL,
             ),
-            1 => array(
-                'Id' => 'c318963f-82f3-4e97-84b9-27a60071660a',
-                'Code' => 'TEST',
-                'Name' => 'Test',
-                'CreationTime' => '2021-04-19 08:48:54',
-                'LastModificationTime' => '2021-04-19 08:48:54',
+            1 => 
+            array (
+                'Id' => '69b15ee6-9c3d-4453-b860-aeb176c1ba1a',
+                'Code' => 'NV',
+                'Name' => 'Ngữ Văn',
+                'CreationTime' => '2022-03-29 03:04:17',
+                'LastModificationTime' => '2022-03-29 03:04:17',
+                'DeletionTime' => NULL,
+            ),
+            2 => 
+            array (
+                'Id' => '803de363-4368-43c9-8e08-322c147dda4b',
+                'Code' => 'CNTT',
+                'Name' => 'Công nghệ thông tin',
+                'CreationTime' => '2022-03-29 03:04:29',
+                'LastModificationTime' => '2022-03-29 03:04:29',
+                'DeletionTime' => NULL,
+            ),
+            3 => 
+            array (
+                'Id' => '41026444-1d76-48ff-a1dc-6c2e6ba6d459',
+                'Code' => 'MT',
+                'Name' => 'Mỹ Thuật',
+                'CreationTime' => '2022-03-29 03:05:18',
+                'LastModificationTime' => '2022-03-29 03:05:18',
+                'DeletionTime' => NULL,
             ),
         ));
-
+        
+        
     }
 }
