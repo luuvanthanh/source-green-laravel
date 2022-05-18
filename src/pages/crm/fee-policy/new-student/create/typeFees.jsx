@@ -52,7 +52,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
         })),
       );
     }
-  }, [tuition?.length]);
+  }, [tuition]);
 
   useEffect(() => {
     dispatch({
@@ -104,7 +104,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
     setData((prev) =>
       prev.map((item) =>
         item.test === record.test && item.id === record.id
-          ? { ...item, paymentFormId: e }
+          ? { ...item, paymentFormId: e, money : 0 }
           : { ...item },
       ),
     );
@@ -226,7 +226,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
       render: (record) => (
         <>
           {
-            (record?.check) || (record?.money) ? (
+            (record?.check) || (record?.money > 0) ? (
               <FormItem
                 className="mb-0"
                 type={variables.INPUT_NUMBER}

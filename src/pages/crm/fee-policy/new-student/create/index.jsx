@@ -593,6 +593,7 @@ const Index = memo(() => {
                 pagination={false}
                 className="table-normal"
                 isEmpty
+                loading={loading['CRMnewStudentAdd/GET_MONEY_FEE']}
                 childrenColumnName="children"
                 params={{
                   header: header(),
