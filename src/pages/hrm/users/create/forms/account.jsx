@@ -18,10 +18,11 @@ const mapStateToProps = ({ loading, HRMusersAdd }) => ({
   loading,
   details: HRMusersAdd.detailsAccount,
   error: HRMusersAdd.error,
+  dataDetails: HRMusersAdd.details,
   roles: HRMusersAdd.roles,
 });
 const Index = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, roles }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, roles, dataDetails }) => {
     const formRef = useRef();
     const formRefModal = useRef();
 
@@ -39,6 +40,12 @@ const Index = memo(
     const showModal = () => {
       setVisible(true);
     };
+
+    useEffect(() => {
+      formRef.current.setFieldsValue({
+        email: dataDetails?.email,
+      });
+    }, []);
 
     /**
      * Function submit form modal
@@ -246,7 +253,7 @@ const Index = memo(
                       <Form.Item label=" ">
                         <Button color="success" ghost onClick={register}>
                           {details?.faceImageStatus === variablesModules.STATUS.NO_IMAGE ||
-                          details?.faceImageStatus === variablesModules.STATUS.HANDLING_IMAGE_FAILED
+                            details?.faceImageStatus === variablesModules.STATUS.HANDLING_IMAGE_FAILED
                             ? 'Đăng ký'
                             : 'Đăng ký lại'}
                         </Button>
@@ -294,15 +301,17 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   roles: PropTypes.arrayOf(PropTypes.any),
+  dataDetails: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   roles: [],
+  dataDetails: {},
 };
 
 export default withRouter(connect(mapStateToProps)(Index));

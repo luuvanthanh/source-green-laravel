@@ -90,7 +90,7 @@ class Index extends PureComponent {
         ...search,
         orderBy: 'CreationTime',
         sortedBy: 'desc',
-        include: Helper.convertIncludes(['schoolYear']),
+        include: Helper.convertIncludes(['schoolYear', 'branch']),
       },
     });
     history.push({
@@ -208,6 +208,7 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'number',
         className: 'min-width-130',
+        render: (record) => record?.branch?.name || ''
       },
       {
         key: 'action',

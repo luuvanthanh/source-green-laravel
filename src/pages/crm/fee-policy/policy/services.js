@@ -9,9 +9,7 @@ export function get(params = {}) {
       limit: params.limit,
       from: params.from,
       to: params.to,
-      include: Helper.convertIncludes([
-        'schoolYear',
-      ]),
+      include: Helper.convertIncludes(['schoolYear', 'branch']),
     },
   });
 }

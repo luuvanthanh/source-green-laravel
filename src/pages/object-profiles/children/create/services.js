@@ -57,3 +57,10 @@ export function storeStudent(data = {}) {
     data,
   });
 }
+
+export function updateStatusRestore(data = {}) {
+  return request(`/students/restore-student/${data.id}?restoredDate=${data?.restoredDate}`, {
+    method: 'PUT',
+    data,
+  });
+}
