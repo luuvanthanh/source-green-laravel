@@ -99,7 +99,8 @@
             "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
             "GGPHP\\EvaluateTeacher\\Category\\": "evaluate-teacher/category/src/",
             "GGPHP\\EvaluateTeacher\\EvaluateTeacher\\": "evaluate-teacher/evaluate-teacher/src/",
-            "GGPHP\\TrainingTeacher\\Category\\": "training-teacher/category/src/"
+            "GGPHP\\TrainingTeacher\\Category\\": "training-teacher/category/src/",
+            "GGPHP\\TeacherAssignment\\": "hrm/teacher-assignment/src"
         },
         "classmap": [
             "database/seeds",
