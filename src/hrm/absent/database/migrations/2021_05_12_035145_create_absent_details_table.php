@@ -26,7 +26,7 @@ class CreateAbsentDetailsTable extends Migration
             $table->uuid('ShiftId')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0);
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

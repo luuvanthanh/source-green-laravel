@@ -23,7 +23,7 @@ class CreateFingerprintTimekeeperTable extends Migration
             $table->boolean('Status')->default(false);
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0);
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

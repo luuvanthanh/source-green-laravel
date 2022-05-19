@@ -26,7 +26,7 @@ class CreateWorkOnlineDetailsTable extends Migration
             $table->foreign('WorkOnlineId')->references('Id')->on('WorkOnlines')->onDelete('cascade');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0);
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

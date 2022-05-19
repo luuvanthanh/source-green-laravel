@@ -22,7 +22,7 @@ class CreateTableZkSyncsTable extends Migration
             $table->index(['SubjectId', 'SubjectType'], 'Subject');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0);
+            $table->softDeletes('DeletionTime', 0);
         });
         Schema::create('ZkDeviceSyncTimes', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
@@ -32,7 +32,7 @@ class CreateTableZkSyncsTable extends Migration
             $table->bigInteger('ZkSyncId')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0);
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 
