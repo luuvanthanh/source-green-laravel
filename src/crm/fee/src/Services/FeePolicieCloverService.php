@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Fee\Services;
 
+use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Fee\Models\FeePolicie;
 use GGPHP\Crm\Fee\Models\SchoolYear;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -57,14 +58,15 @@ class FeePolicieCloverService
         if (empty($data['data'])) {
             return [];
         }
-        
+
         $data = $data['data'];
         $creates = [];
 
         foreach ($data as $items) {
             $check = FeePolicie::where('fee_policie_clover_id', $items['id'])->first();
             $schoolYear = SchoolYear::where('school_year_clover_id', $items['attributes']['schoolYearId'])->first();
-
+            $branch = Branch::where('branch_id_hrm', $items['attributes']['branchId'])->first();
+            
             if (is_null($check) && !is_null($schoolYear)) {
                 $creates[] = [
                     'id' => Str::uuid(4),
@@ -72,6 +74,7 @@ class FeePolicieCloverService
                     'decision_date' => $items['attributes']['decisionDate'],
                     'decision_number' => $items['attributes']['decisionNumber'],
                     'school_year_id' => $schoolYear->id,
+                    'branch_id' => $branch->id,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
