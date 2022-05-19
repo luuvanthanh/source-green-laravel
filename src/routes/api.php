@@ -144,8 +144,8 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
             $router->forBread();
         });
 
-        // GGPHP\TeacherAssignment\RouteRegistrar::routes(function ($router) {
-        //     $router->forBread();
-        // });
+        GGPHP\TeacherAssignment\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });
