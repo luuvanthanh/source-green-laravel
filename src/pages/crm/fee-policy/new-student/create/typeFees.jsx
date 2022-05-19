@@ -48,11 +48,11 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
           feeId: i?.fee_id,
           paymentFormId: i?.payment_form_id,
           fee_id_crm: i?.fee?.fee_clover_id,
-          money: 0,
+          money: i?.money,
         })),
       );
     }
-  }, [tuition?.length]);
+  }, [tuition]);
 
   useEffect(() => {
     dispatch({
@@ -76,13 +76,24 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
     if (record?.paymentFormId) {
       setPaymentFormId(record?.paymentFormId);
     }
-    setData((prev) =>
-      prev.map((item) =>
-        item.test === record.test && item.id === record.id
-          ? { ...item, feeId: e, money: 0 }
-          : { ...item, money: 0 },
-      ),
-    );
+    const datas = fees?.find(i => i?.id === e);
+    if (datas?.code === 'BUS') {
+      setData((prev) =>
+        prev.map((item) =>
+          item.test === record.test && item.id === record.id
+            ? { ...item, feeId: e, check: true, fee_id_crm: datas?.fee_clover_id }
+            : { ...item },
+        ),
+      );
+    } else {
+      setData((prev) =>
+        prev.map((item) =>
+          item.test === record.test && item.id === record.id
+            ? { ...item, feeId: e, fee_id_crm: datas?.fee_clover_id }
+            : { ...item },
+        ),
+      );
+    }
     // getMoney(e, record,data);
   };
   const onChangeContent = (e, record) => {
@@ -93,8 +104,8 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
     setData((prev) =>
       prev.map((item) =>
         item.test === record.test && item.id === record.id
-          ? { ...item, paymentFormId: e, money: 0 }
-          : { ...item, money: 0 },
+          ? { ...item, paymentFormId: e, money : 0 }
+          : { ...item },
       ),
     );
   };
@@ -110,11 +121,11 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
         details?.day_admission)
     ) {
       const { school_year_id, class_type_id, day_admission } = details;
-      const detailss = data?.map((i) => ({
+      const dataPayload = data?.map((i) => ({
         id: i?.id,
         payment_form_id: i?.paymentFormId,
         fee_id: i?.feeId,
-        money: 0,
+        money: i?.money,
       }));
       dispatch({
         type: 'CRMnewStudentAdd/GET_MONEY_FEE',
@@ -129,7 +140,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
             format: variables.DATE_FORMAT.DATE_AFTER,
             isUTC: false,
           }),
-          details: JSON.stringify(detailss),
+          details: JSON.stringify(dataPayload),
           student: 'new',
         },
         callback: (res) => {
@@ -138,7 +149,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
             setFeeId(undefined);
             setDeleteId(false);
             setDataItem(res?.data_details);
-            setCheck(false);
+            setCheck(!check);
             if (res?.payload <= 0) {
               setData([
                 {
@@ -152,7 +163,25 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
         },
       });
     }
-  }, [feeId, paymentFormId, deleteId, checkSearch]);
+  }, [feeId, paymentFormId, deleteId, checkSearch, check]);
+
+  const onChangeBus = (e, record) => {
+    if (e > 0) {
+      setTimeout(() => {
+        setCheck(!check);
+        setPaymentFormId(record?.paymentFormId);
+        setFeeId(record?.feeId);
+      }, 1500);
+      clearTimeout(1500);
+      setData((prev) =>
+        prev.map((item) =>
+          item.test === record.test && item.id === record.id
+            ? { ...item, money: e, check: true }
+            : { ...item },
+        ),
+      );
+    }
+  };
 
   const columns = [
     {
@@ -189,6 +218,25 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
           rules={[variables.RULES.EMPTY]}
         />
       ),
+    },
+    {
+      title: 'Số tiền',
+      key: 'content',
+      lassName: 'min-width-100',
+      render: (record) => (
+        <>
+          {
+            (record?.check) || (record?.money > 0) ? (
+              <FormItem
+                className="mb-0"
+                type={variables.INPUT_NUMBER}
+                rules={[variables.RULES.EMPTY]}
+                value={record?.money}
+                onChange={(e) => onChangeBus(e, record)}
+              />
+            ) : ""}
+        </>
+      )
     },
     {
       key: 'action',

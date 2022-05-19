@@ -470,6 +470,7 @@ class Index extends PureComponent {
                         label="Ngày vào lớp"
                         name="startDate"
                         type={variables.DATE_PICKER}
+                        rules={[variables.RULES.EMPTY]}
                         disabledDate={(current) => current < moment().add(-1, 'day')}
                       />
                     </div>

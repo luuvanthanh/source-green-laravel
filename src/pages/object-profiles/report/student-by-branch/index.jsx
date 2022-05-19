@@ -244,7 +244,7 @@ class Index extends PureComponent {
         width: 120,
         className: 'min-width-120',
         render: (value, _, index) => {
-          if (value?.branch) {
+          if (value?.branch && value?.children) {
             return <Text size="normal">Cơ sở</Text>;
           }
           if (value?.class && value?.children) {
@@ -258,7 +258,7 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value, record) => {
-          if (record?.branch) {
+          if (record?.branch && value?.children) {
             return <Text size="normal">{record?.branch?.name}</Text>;
           }
           if (record?.class && value?.children) {
@@ -324,9 +324,9 @@ class Index extends PureComponent {
         key: 'latestWaterBottle',
         width: 150,
         render: (value) => (
-          
-            value?.latestWaterBottle?.type ? <Text size="normal"> {value?.latestWaterBottle?.type} ml </Text> : ''
-          
+
+          value?.latestWaterBottle?.type ? <Text size="normal"> {value?.latestWaterBottle?.type} ml </Text> : ''
+
         ),
       },
       {
@@ -474,7 +474,7 @@ class Index extends PureComponent {
                   header: this.header(),
                   type: 'table',
                 }}
-                rowKey={(record) => record?.branch?.name || record?.id}
+                rowKey={(record) => record?.id}
                 scroll={{ x: '100%', y: '60vh' }}
               />
             </div>
