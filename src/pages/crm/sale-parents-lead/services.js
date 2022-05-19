@@ -78,7 +78,7 @@ export function getEmployees(data = {}) {
   return requestLavarel(`/v1/employees`, {
     method: 'GET',
     params: {
-      ...data,
+      divisionId: `${[data?.map((i) => i?.id)]}`,
       orderBy: 'CreationTime',
     },
   });

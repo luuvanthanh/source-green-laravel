@@ -493,42 +493,47 @@ function Index() {
                   </Pane>
                   {!isAllEmployees && (
                     <Pane className="border-bottom">
-                      <Scrollbars autoHeight autoHeightMax="40vh">
-                        <InfiniteScroll
-                          hasMore={!searchEmployee.loading && searchEmployee.hasMore}
-                          initialLoad={searchEmployee.loading}
-                          loadMore={handleInfiniteOnLoad}
-                          pageStart={0}
-                          useWindow={false}
-                        >
-                          {employees?.map(({ id, fullName, positionLevel, fileImage }) => {
-                            const checked = employeesActive.find((item) => item.id === id);
+                      <Loading
+                        loading={loading['HRMdocumentaryAdd/GET_EMPLOYEES']}
 
-                            return (
-                              <List.Item key={id} className="border-bottom">
-                                <Pane className="px20 w-100 d-flex align-items-center">
-                                  <Checkbox
-                                    defaultChecked={checked}
-                                    className="mr15"
-                                    onChange={() => changeCheckboxEmployee(id)}
-                                  />
-                                  <Pane className="d-flex align-items-center">
-                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                    <Pane className="ml15">
-                                      <h3 className="font-weight-bold" style={{ fontSize: '14px' }}>
-                                        {fullName}
-                                      </h3>
-                                      <Text size="small" style={{ color: '#7a7e84' }}>
-                                        {head(positionLevel)?.position?.name}
-                                      </Text>
+                      >
+                        <Scrollbars autoHeight autoHeightMax="40vh">
+                          <InfiniteScroll
+                            hasMore={!searchEmployee.loading && searchEmployee.hasMore}
+                            initialLoad={searchEmployee.loading}
+                            loadMore={handleInfiniteOnLoad}
+                            pageStart={0}
+                            useWindow={false}
+                          >
+                            {employees?.map(({ id, fullName, positionLevel, fileImage }) => {
+                              const checked = employeesActive.find((item) => item.id === id);
+
+                              return (
+                                <List.Item key={id} className="border-bottom">
+                                  <Pane className="px20 w-100 d-flex align-items-center">
+                                    <Checkbox
+                                      defaultChecked={checked}
+                                      className="mr15"
+                                      onChange={() => changeCheckboxEmployee(id)}
+                                    />
+                                    <Pane className="d-flex align-items-center">
+                                      <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                      <Pane className="ml15">
+                                        <h3 className="font-weight-bold" style={{ fontSize: '14px' }}>
+                                          {fullName}
+                                        </h3>
+                                        <Text size="small" style={{ color: '#7a7e84' }}>
+                                          {head(positionLevel)?.position?.name}
+                                        </Text>
+                                      </Pane>
                                     </Pane>
                                   </Pane>
-                                </Pane>
-                              </List.Item>
-                            );
-                          })}
-                        </InfiniteScroll>
-                      </Scrollbars>
+                                </List.Item>
+                              );
+                            })}
+                          </InfiniteScroll>
+                        </Scrollbars>
+                      </Loading>
                     </Pane>
                   )}
                 </Pane>

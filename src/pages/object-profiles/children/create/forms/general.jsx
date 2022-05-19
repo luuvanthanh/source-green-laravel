@@ -212,6 +212,9 @@ const General = memo(
           ...details.student,
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
           registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
+          stopStudyingDate: details?.student?.stopStudyingDate && moment(details?.student?.stopStudyingDate)
+            || details?.student?.withdrawApplicationDate && moment(details?.student?.withdrawApplicationDate),
+          restoredDate: "",
           branchId: details?.student?.branch?.name || details?.student?.class?.branch?.name,
           status: details?.student?.status,
         });
@@ -236,6 +239,36 @@ const General = memo(
 
     const disabledDate = (current) =>
       current && current > moment().endOf('day').subtract(1, 'days');
+
+    const updateStatusRestore = () => {
+      formRef.current.validateFields().then((values) => {
+        dispatch({
+          type: 'OPchildrenAdd/UPDATE_STATUS_RESTORE',
+          payload: {
+            id: params.id,
+            restoredDate: Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: values?.restoredDate,
+              }),
+              format: variables.DATE_FORMAT.DATE_AFTER,
+              isUTC: false,
+            }),
+          },
+          callback: (response) => {
+            if (response) {
+              history.push(
+                `/ho-so-doi-tuong/hoc-sinh`,
+              );
+              dispatch({
+                type: 'OPchildrenAdd/GET_DETAILS',
+                payload: params,
+              });
+            }
+          },
+        });
+      });
+    };
 
     return (
       <>
@@ -425,6 +458,29 @@ const General = memo(
                     <FormItem name="address" label="Địa chỉ" type={variables.INPUT} />
                   </Pane>
                 </Pane>
+                {
+                  params?.id && (details?.student?.status === variablesModules.STATUS.STOP_STUDYING ||
+                    details?.student?.status === variablesModules.STATUS.WITHDRAW_APPLICATION) && (
+                    <Pane className="row">
+                      <Pane className="col-lg-4">
+                        <FormItem
+                          name="stopStudyingDate"
+                          label="Ngày bắt đầu thôi học"
+                          type={variables.DATE_PICKER}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-4">
+                        <FormItem
+                          name="restoredDate"
+                          label="Ngày kết thúc thôi học"
+                          type={variables.DATE_PICKER}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </Pane>
+                    </Pane>
+                  )
+                }
               </Pane>
 
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
@@ -436,7 +492,7 @@ const General = memo(
                     size="large"
                     htmlType="button"
                     className="mr-3"
-                    onClick={updateStatus}
+                    onClick={updateStatusRestore}
                     loading={loadingSubmit}
                   >
                     Khôi phục

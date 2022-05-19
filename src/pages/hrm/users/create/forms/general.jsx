@@ -271,7 +271,7 @@ const General = memo(() => {
                   name="idCard"
                   label="Số CMND"
                   type={variables.INPUT}
-                  rules={[variables.RULES.EMPTY, variables.RULES.NUMBER]}
+                  rules={[variables.RULES.EMPTY]}
                 />
               </div>
               <div className="col-lg-4">
