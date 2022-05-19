@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Fee\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Fee\Models\FeePolicie;
 
 /**
@@ -29,7 +30,7 @@ class FeePolicieTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['schoolYear'];
+    protected $availableIncludes = ['schoolYear', 'branch'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -51,5 +52,14 @@ class FeePolicieTransformer extends BaseTransformer
         }
 
         return $this->item($feePolicie->schoolYear, new SchoolYearTransformer, 'SchoolYear');
+    }
+
+    public function includeBranch(FeePolicie $feePolicie)
+    {
+        if ($feePolicie->loadCount('branch')->branch_count < 1) {
+            return null;
+        }
+
+        return $this->item($feePolicie->branch, new BranchTransformer, 'Branch');
     }
 }
