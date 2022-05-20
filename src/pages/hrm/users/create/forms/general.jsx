@@ -29,12 +29,14 @@ const General = memo(() => {
     loading: { effects },
     trainningMajors,
     trainningSchool,
-  } = useSelector(({ loading, HRMusersAdd }) => ({
+    branches,
+  } = useSelector(({ loading, HRMusersAdd, HRMusers }) => ({
     loading,
     details: HRMusersAdd.details,
     degrees: HRMusersAdd.degrees,
     trainningMajors: HRMusersAdd.trainningMajors,
     trainningSchool: HRMusersAdd.trainningSchool,
+    branches: HRMusers.branches,
     error: HRMusersAdd.error,
   }));
   const dispatch = useDispatch();
@@ -143,6 +145,10 @@ const General = memo(() => {
       type: 'HRMusersAdd/GET_DEGREES',
       payload: params,
     });
+    dispatch({
+      type: 'HRMusers/GET_BRANCHES',
+      payload: {},
+    });
   }, []);
 
   /**
@@ -167,9 +173,11 @@ const General = memo(() => {
 
   useEffect(() => {
     if (!isEmpty(details) && params.id) {
+      const detailBranh = details?.branchDefault?.find(i => i?.type === "DEFAULT");
       formRef.current.setFieldsValue({
         ...details,
         ...head(details.positionLevel),
+        branchId: detailBranh?.branchId,
         startDate:
           head(details.positionLevel)?.startDate && moment(head(details.positionLevel)?.startDate),
         dateOfBirth: details.dateOfBirth && moment(details.dateOfBirth),
@@ -190,7 +198,6 @@ const General = memo(() => {
   const uploadFiles = (file) => {
     mountedSet(setFiles, (prev) => [...prev, file]);
   };
-
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
       <div className="card">
@@ -338,6 +345,26 @@ const General = memo(() => {
               <div className="col-lg-4">
                 <FormItem name="address" label="Chổ ở hiện tại" type={variables.INPUT} />
               </div>
+              {
+                details?.positionLevel?.length > 0 ?
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={branches}
+                      name="branchId"
+                      label="Cơ sở ban đầu"
+                      type={variables.SELECT}
+                      disabled
+                    />
+                  </div> :
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={branches}
+                      name="branchId"
+                      label="Cơ sở ban đầu"
+                      type={variables.SELECT}
+                    />
+                  </div>
+              }
             </div>
           </div>
           <div style={{ padding: 20 }} className="pb-0 border-bottom">
