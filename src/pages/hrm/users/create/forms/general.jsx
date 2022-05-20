@@ -346,7 +346,7 @@ const General = memo(() => {
                 <FormItem name="address" label="Chổ ở hiện tại" type={variables.INPUT} />
               </div>
               {
-                details?.positionLevel?.length > 0 ?
+                details?.positionLevel?.length > 0 && params?.id ?
                   <div className="col-lg-4">
                     <FormItem
                       data={branches}
