@@ -44,7 +44,9 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation'
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel',
+        'classTeacher', 'positionLevelNow', 'businessCard', 'degree',
+        'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation', 'branchDefault'
     ];
 
     /**
@@ -202,5 +204,10 @@ class UserTransformer extends BaseTransformer
     public function includeManualCalculation(User $employee)
     {
         return $this->collection($employee->manualCalculation, new ManualCalculationTransformer, 'ManualCalculation');
+    }
+
+    public function includeBranchDefault(User $employee)
+    {
+        return $this->collection($employee->branchDefault, new PositionLevelTransformer, 'PositionLevel');
     }
 }

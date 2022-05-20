@@ -116,12 +116,15 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         \DB::beginTransaction();
         try {
             $user = User::create($attributes);
+            $this->created($attributes, $user);
+            
             $data = [
                 'full_name' => $user->FullName,
                 'employee_id_hrm' => $user->Id,
                 'file_image' => $user->FileImage,
                 'code' => $user->Code
             ];
+
             $employeeCrm = CrmService::createEmployee($data);
 
             if (isset($employeeCrm->data->id)) {
@@ -157,6 +160,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             if (!is_null($employeeAccountant)) {
                 $user->update(['AccountantId' => $employeeAccountant->id]);
             }
+
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -164,6 +168,19 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         return parent::parserResult($user);
+    }
+
+    public function created($attributes, $model)
+    {
+        if (!empty($attributes['branchId'])) {
+            $model->probationaryContract()->create(['BranchId' => $attributes['branchId']]);
+
+            $model->positionLevel()->create([
+                'BranchId' => $attributes['branchId'],
+                'StartDate' => now()->format('Y-m-d'),
+                'Type' => 'DEFAULT'
+            ]);
+        }
     }
 
     public function update(array $attributes, $id)
