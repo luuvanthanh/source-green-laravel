@@ -66,7 +66,7 @@ class FeePolicieCloverService
             $check = FeePolicie::where('fee_policie_clover_id', $items['id'])->first();
             $schoolYear = SchoolYear::where('school_year_clover_id', $items['attributes']['schoolYearId'])->first();
             $branch = Branch::where('branch_id_hrm', $items['attributes']['branchId'])->first();
-            
+
             if (is_null($check) && !is_null($schoolYear)) {
                 $creates[] = [
                     'id' => Str::uuid(4),
@@ -74,10 +74,14 @@ class FeePolicieCloverService
                     'decision_date' => $items['attributes']['decisionDate'],
                     'decision_number' => $items['attributes']['decisionNumber'],
                     'school_year_id' => $schoolYear->id,
-                    'branch_id' => $branch->id,
+                    'branch_id' => !is_null($branch) ? $branch->id : null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
+            }
+
+            if (!is_null($check) && !is_null($branch)) {
+                $check->update(['branch_id' => $branch->id]);
             }
         }
 
