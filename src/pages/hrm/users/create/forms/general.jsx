@@ -54,15 +54,21 @@ const General = memo(() => {
     effects[`HRMusersAdd/UPDATE`] ||
     effects[`HRMusersAdd/UPDATE_STATUS`];
   const loading =
-    effects[`HRMusersAdd/GET_DETAILS`] ||
-    effects[`HRMusersAdd/GET_DEGREES`] ||
-    effects[`HRMusersAdd/GET_TRAINNING_MAJORS`] ||
-    effects[`HRMusersAdd/GET_TRAINNING_SCHOOLS`];
+    effects[`HRMusersAdd/GET_DETAILS`];
 
   /**
    * Function submit form modal
    * @param {object} values values of form
    */
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+  }, []);
+
   const onFinish = (values) => {
     dispatch({
       type: params.id ? 'HRMusersAdd/UPDATE' : 'HRMusersAdd/ADD',
@@ -70,7 +76,7 @@ const General = memo(() => {
         ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files) }
         : { ...values, fileImage: JSON.stringify(files), status: 'WORKING' },
       callback: (response, error) => {
-        if (response) {
+        if (response && !params?.id) {
           history.goBack();
         }
         if (error) {
@@ -201,7 +207,7 @@ const General = memo(() => {
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
       <div className="card">
-        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
+        <Loading loading={loading} isError={error.isError}>
           <div style={{ padding: 20 }} className="pb-0 border-bottom">
             <Heading type="form-title" style={{ marginBottom: 20 }}>
               Thông tin cơ bản
