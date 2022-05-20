@@ -41,7 +41,7 @@ class LabourContractCreateRequest extends FormRequest
                         return $fail('Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất ' . $labourContract->ContractDate->format('d-m-Y'));
                     }
 
-                    if (is_null($probationaryContract->ContractDate)) {
+                    if (!is_null($probationaryContract) && is_null($probationaryContract->ContractDate)) {
                         return $fail('Chưa hoàn tất hợp đồng đã tạo trước đó');
                     }
 
@@ -64,7 +64,7 @@ class LabourContractCreateRequest extends FormRequest
                         return $fail('Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng lao động gần nhất ' . $labourContract->ContractTo->format('d-m-Y'));
                     }
 
-                    if (is_null($probationaryContract->ContractFrom)) {
+                    if (!is_null($probationaryContract) && is_null($probationaryContract->ContractFrom)) {
                         return $fail('Chưa hoàn tất hợp đồng đã tạo trước đó');
                     }
 
