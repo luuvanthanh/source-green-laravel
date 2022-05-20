@@ -32,9 +32,7 @@ class FeePolicieCloverService
     {
         $url = self::url() . '/api/v1/fee-policies';
 
-        $params = [
-            'feePolicieCrm' => true
-        ];
+        $params = [];
 
         $data = Http::withToken(self::getToken())->get($url, $params);
 
@@ -45,7 +43,7 @@ class FeePolicieCloverService
                 $message = 'Clover: ' . json_decode($data->body())->errors[0]->detail;
             }
 
-            throw new HttpException($data->status(), $data->body());
+            throw new HttpException($data->status(), $message);
         }
 
         $data = json_decode($data->body(), true);
