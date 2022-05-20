@@ -47,7 +47,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
-                    if (is_null($probationaryContract->ContractDate)) {
+                    if (!is_null($probationaryContract) && is_null($probationaryContract->ContractDate)) {
                         return $fail('Chưa hoàn tất hợp đồng đã tạo trước đó');
                     }
 
@@ -68,7 +68,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('ContractDate', 'DESC')->first();
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
-                    if (is_null($probationaryContract->ContractTo)) {
+                    if (!is_null($probationaryContract) && is_null($probationaryContract->ContractTo)) {
                         return $fail('Chưa hoàn tất hợp đồng đã tạo trước đó');
                     }
 
