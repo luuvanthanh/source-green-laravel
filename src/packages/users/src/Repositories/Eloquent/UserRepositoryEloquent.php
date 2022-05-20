@@ -117,7 +117,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         try {
             $user = User::create($attributes);
             $this->created($attributes, $user);
-            
+
             $data = [
                 'full_name' => $user->FullName,
                 'employee_id_hrm' => $user->Id,
@@ -189,6 +189,8 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         try {
             $user = User::findOrFail($id);
             $user->update($attributes);
+            $this->updated($attributes,$user);
+
             $data = [
                 'full_name' => $user->FullName,
                 'employee_id_hrm' => $user->Id,
@@ -238,6 +240,21 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         return parent::parserResult($user);
+    }
+
+    public function updated($attributes, $model)
+    {
+        if (!empty($attributes['branchId'])) {
+            if ($model->loadCount('positionLevel')->position_level_count < 1) {
+                $model->probationaryContract()->create(['BranchId' => $attributes['branchId']]);
+
+                $model->positionLevel()->create([
+                    'BranchId' => $attributes['branchId'],
+                    'StartDate' => now()->format('Y-m-d'),
+                    'Type' => 'DEFAULT'
+                ]);
+            }
+        }
     }
 
     public function sendEmployeeAccountant()

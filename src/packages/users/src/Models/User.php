@@ -352,6 +352,6 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
 
     public function branchDefault()
     {
-        return $this->hasMany(PositionLevel::class, 'EmployeeId')->where('Type', 'Default')->latest();
+        return $this->hasMany(PositionLevel::class, 'EmployeeId')->where('Type', 'DEFAULT')->latest();
     }
 }
