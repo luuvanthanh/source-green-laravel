@@ -24,7 +24,6 @@ import Text from '@/components/CommonComponent/Text';
 import EditorToolbar, { modules, formats } from "./EditorToolbar";
 
 import variablesModules from '../variables';
-import file from '@/pages/crm/sale-admission-registers/create/forms/file';
 
 const { Item: ListItem } = List;
 
@@ -62,6 +61,7 @@ const Index = memo(
     const [errorStudent, setError] = useState(false);
     const [selectClass, setSelectClass] = useState([]);
     const [fileImage, setFileImage] = useState([]);
+    const [isTime, setIsTime] = useState(false);
 
     const loadingSubmit = effects[`timeTablesScheduleAdd/ADD`];
     const formRef = useRef();
@@ -71,7 +71,7 @@ const Index = memo(
         setError(true);
       }
     };
-    console.log("fileImage", fileImage);
+
     const onFinish = (values) => {
       if (type === 'forPerson' && !isAllStudent && size(students.filter(item => item?.checked)) === 0) {
         setError(true);
@@ -111,8 +111,8 @@ const Index = memo(
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: values.time,
-            targetValue: startTime,
           }),
+          format: variables.DATE_FORMAT.HOUR,
           isUTC: false,
         }),
         applyDate: Helper.getDateTime({
@@ -334,6 +334,10 @@ const Index = memo(
       formRef?.current?.setFieldsValue({ classes: undefined });
     };
 
+    const onSetFileImage = (fileImage) => {
+      setFileImage(Helper.isJSON(fileImage) ? JSON.parse(fileImage) : []);
+    };
+
     useEffect(() => {
       if (params?.id) {
         dispatch({
@@ -347,12 +351,16 @@ const Index = memo(
               formRef?.current?.setFieldsValue({
                 ...res,
                 applyDate: res?.applyDate ? moment(res?.applyDate) : null,
+                scheduleSendingDate: res?.scheduleSendingDate ? moment(res?.scheduleSendingDate) : null,
                 rangeTime: res?.startTime && res?.endTime ? [moment(res?.startTime), moment(res?.endTime)] : null,
+                time: moment(res?.scheduleSendingTime, variables.DATE_FORMAT.HOUR),
                 object: res?.forClass ? 'forClass' : 'forPerson',
                 BranchId: res?.branch?.id || null,
                 Class: res?.class?.id || null,
                 classes,
               });
+              setIsTime(res?.isScheduled);
+              onSetFileImage(res?.fileAttach);
               setContent(res?.content || '');
               setIsReminded(res?.isReminded || false);
               setType(res?.forClass ? 'forClass' : 'forPerson');
@@ -720,21 +728,29 @@ const Index = memo(
                               name="isScheduled"
                               type={variables.CHECKBOX_FORM}
                               valuePropName="checked"
+                              onChange={(e) => setIsTime(e.target.checked)}
                             />
                           </Pane>
-                          <Pane className='mr15 ml15'>
-                            <FormItem
-                              name="scheduleSendingDate"
-                              type={variables.DATE_PICKER}
-                              rules={[variables.RULES.EMPTY]}
-                            />
-                          </Pane>
-                          <Pane >
-                            <FormItem
-                              name="time"
-                              type={variables.TIME_PICKER}
-                            />
-                          </Pane>
+                          {
+                            isTime && (
+                              <>
+                                <Pane className='mr15 ml15'>
+                                  <FormItem
+                                    name="scheduleSendingDate"
+                                    type={variables.DATE_PICKER}
+                                    rules={[variables.RULES.EMPTY]}
+                                  />
+                                </Pane>
+                                <Pane >
+                                  <FormItem
+                                    name="time"
+                                    type={variables.TIME_PICKER}
+                                    rules={[variables.RULES.EMPTY]}
+                                  />
+                                </Pane>
+                              </>
+                            )
+                          }
                         </Pane>
                       </Pane>
                     </Pane>

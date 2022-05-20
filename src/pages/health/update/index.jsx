@@ -95,7 +95,7 @@ const Index = memo(() => {
       dispatch({
         type: 'healthUpdate/GET_CRITERIA_GROUP_PROPERTIES',
         payload: {},
-        callback: () => {},
+        callback: () => { },
       });
       dispatch({
         type: 'healthUpdate/GET_WATER_BOTTLES',
@@ -103,7 +103,7 @@ const Index = memo(() => {
           ...params,
           ...location.query,
         },
-        callback: () => {},
+        callback: () => { },
       });
     }
   }, [params.id]);
@@ -192,9 +192,9 @@ const Index = memo(() => {
           initialValues={{
             data: !isEmpty(waterBottles)
               ? waterBottles.map((item) => ({
-                  ...item,
-                  applyDate: moment(item.applyDate),
-                }))
+                ...item,
+                applyDate: moment(item.applyDate),
+              }))
               : [{}],
           }}
         >
@@ -462,11 +462,11 @@ const Index = memo(() => {
                                         data={
                                           Helper.isJSON(criteria.criteriaDataType.value)
                                             ? JSON.parse(criteria.criteriaDataType.value).map(
-                                                (item) => ({
-                                                  value: item,
-                                                  label: item,
-                                                }),
-                                              )
+                                              (item) => ({
+                                                value: item,
+                                                label: item,
+                                              }),
+                                            )
                                             : []
                                         }
                                         type={variables.RADIO}
@@ -502,7 +502,7 @@ const Index = memo(() => {
                                     </Pane>
                                   </Pane>
                                 )}
-                                {criteria.criteriaDataType.isHasNote && (
+                                {criteria.criteriaDataType.type !== 'textbox' && (
                                   <Pane className="row">
                                     <Pane className="col-lg-12">
                                       <FormItem

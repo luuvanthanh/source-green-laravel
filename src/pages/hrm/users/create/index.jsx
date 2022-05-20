@@ -7,7 +7,6 @@ import { useSelector, useDispatch } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
-import { isEmpty } from 'lodash';
 import GeneralForm from './forms/general';
 import CertificateForm from './forms/certificate';
 import ContactForm from './forms/contact';
@@ -75,9 +74,6 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   }, [params.id]);
 
   const menuStore = (items) => {
-    if (isEmpty(details)) {
-      return [];
-    }
     if (details?.status === 'STORE') {
       return items.filter((item) => item.key === 'general');
     }

@@ -318,11 +318,11 @@ const Index = memo(() => {
                                         data={
                                           Helper.isJSON(criteria.criteriaDataType.value)
                                             ? JSON.parse(criteria.criteriaDataType.value).map(
-                                                (item) => ({
-                                                  value: item,
-                                                  label: item,
-                                                }),
-                                              )
+                                              (item) => ({
+                                                value: item,
+                                                label: item,
+                                              }),
+                                            )
                                             : []
                                         }
                                         type={variables.RADIO}
@@ -358,7 +358,7 @@ const Index = memo(() => {
                                     </Pane>
                                   </Pane>
                                 )}
-                                {criteria.criteriaDataType.isHasNote && (
+                                {criteria.criteriaDataType.type !== 'textbox' && (
                                   <Pane className="row">
                                     <Pane className="col-lg-12">
                                       <FormItem

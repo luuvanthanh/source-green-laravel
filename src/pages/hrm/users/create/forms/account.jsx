@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Modal } from 'antd';
+import { Form, Modal, notification } from 'antd';
 import { connect, withRouter } from 'umi';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -42,9 +42,12 @@ const Index = memo(
     };
 
     useEffect(() => {
-      formRef.current.setFieldsValue({
-        email: dataDetails?.email,
-      });
+      if (params.id) {
+        dispatch({
+          type: 'HRMusersAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
     }, []);
 
     /**
@@ -52,27 +55,35 @@ const Index = memo(
      * @param {object} values values of form
      */
     const onFinish = (values) => {
-      dispatch({
-        type: details?.user?.id ? 'HRMusersAdd/UPDATE_ACCOUNT' : 'HRMusersAdd/ADD_ACCOUNT',
-        payload: {
-          id: params.id,
-          ...values,
-        },
-        callback: (response, error) => {
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
+      if (!dataDetails?.email) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Bạn cần bổ sung email ở thông tin cơ bản',
+        });
+      } else {
+        dispatch({
+          type: details?.user?.id ? 'HRMusersAdd/UPDATE_ACCOUNT' : 'HRMusersAdd/ADD_ACCOUNT',
+          payload: {
+            id: params.id,
+            ...values,
+            email: dataDetails?.email,
+          },
+          callback: (response, error) => {
+            if (error) {
+              if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                error?.validationErrors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: head(item.members),
+                      errors: [item.message],
+                    },
+                  ]);
+                });
+              }
             }
-          }
-        },
-      });
+          },
+        });
+      }
     };
 
     const register = () => {
@@ -203,7 +214,7 @@ const Index = memo(
                 </Heading>
 
                 <Pane className="row">
-                  <Pane className="col-lg-4">
+                  <Pane className="col-lg-6">
                     <FormItem
                       name="userName"
                       label="Tên tài khoản"
@@ -211,16 +222,8 @@ const Index = memo(
                       rules={[variables.RULES.EMPTY_INPUT]}
                     />
                   </Pane>
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name="email"
-                      label="Email"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
-                    />
-                  </Pane>
                   {!details?.userName && (
-                    <Pane className="col-lg-4">
+                    <Pane className="col-lg-6">
                       <FormItem
                         name="password"
                         label="Mật khẩu"
