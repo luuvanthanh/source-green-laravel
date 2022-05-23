@@ -197,14 +197,9 @@ class Index extends PureComponent {
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="success"
-              icon="copy"
-              onClick={() => history.push(`/crm/chinh-sach-phi/nam-hoc/${record?.id}/chi-tiet?type=ban-sao`)}
-            />
-            <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push(`/crm/chinh-sach-phi/nam-hoc/${record?.id}/chi-tiet`)}
+              onClick={() => history.push(`/crm/chinh-sach-phi/nam-hoc/${record?.school_year_clover_id}/chi-tiet`)}
             />
           </div>
         ),

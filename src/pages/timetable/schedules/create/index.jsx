@@ -1,8 +1,8 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, List, Checkbox, message } from 'antd';
+import { Form, List, Checkbox, message, Upload } from 'antd';
 import csx from 'classnames';
 import { connect, history, withRouter } from 'umi';
-import { head, isEmpty, size } from 'lodash';
+import { head, isEmpty, size, last } from 'lodash';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'dva';
 import moment from 'moment';
@@ -19,7 +19,9 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Quill from '@/components/CommonComponent/Quill';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/information.module.scss';
+import stylesForm from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
+import EditorToolbar, { modules, formats } from "./EditorToolbar";
 
 import variablesModules from '../variables';
 
@@ -50,14 +52,16 @@ const Index = memo(
       total: 0,
       hasMore: true,
       loading: false,
-      BranchId: null,
-      Class: null,
+      branchId: null,
+      class: null,
     });
     const [students, setStudents] = useState([]);
     const [dataCheck, setDataCheck] = useState([]);
     const [type, setType] = useState('');
     const [errorStudent, setError] = useState(false);
     const [selectClass, setSelectClass] = useState([]);
+    const [fileImage, setFileImage] = useState([]);
+    const [isTime, setIsTime] = useState(false);
 
     const loadingSubmit = effects[`timeTablesScheduleAdd/ADD`];
     const formRef = useRef();
@@ -73,7 +77,7 @@ const Index = memo(
         setError(true);
         return;
       }
-      let classTimetables = isAllClass ? classes?.map(item => ({ Class: item.id })) : values?.classes?.map(item => ({ Class: item }));
+      let classTimetables = isAllClass ? classes?.map(item => ({ ClassId: item.id })) : values?.classes?.map(item => ({ ClassId: item }));
       let parentTimetables = isAllStudent ? [] : students?.filter(item => item.checked)?.map(item => ({ studentId: item.id }));
       if (values?.object === 'forPerson') {
         classTimetables = [];
@@ -89,11 +93,28 @@ const Index = memo(
         isAllClass,
         isAllStudent,
         content,
+        fileAttach: !isEmpty(fileImage) ? JSON.stringify(fileImage) : undefined,
         forClass: values?.object === 'forClass',
         forPerson: values?.object === 'forPerson',
         Class: values?.Class || null,
         classTimetables,
         parentTimetables,
+        scheduleSendingDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.scheduleSendingDate,
+            targetValue: '00:00:00',
+          }),
+          isUTC: false,
+        }),
+        scheduleSendingTime: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.time,
+          }),
+          format: variables.DATE_FORMAT.HOUR,
+          isUTC: false,
+        }),
         applyDate: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -269,7 +290,7 @@ const Index = memo(
           limit: 10,
           total: 0,
           hasMore: true,
-          loading: false, BranchId: branch, Class: ''
+          loading: false, branchId: branch, class: ''
         });
       }
     };
@@ -291,7 +312,7 @@ const Index = memo(
         limit: 10,
         total: 0,
         hasMore: true,
-        loading: false, BranchId: searchStudents?.BranchId, Class: value
+        loading: false, branchId: searchStudents?.branchId, class: value
       });
     };
 
@@ -313,6 +334,10 @@ const Index = memo(
       formRef?.current?.setFieldsValue({ classes: undefined });
     };
 
+    const onSetFileImage = (fileImage) => {
+      setFileImage(Helper.isJSON(fileImage) ? JSON.parse(fileImage) : []);
+    };
+
     useEffect(() => {
       if (params?.id) {
         dispatch({
@@ -326,12 +351,16 @@ const Index = memo(
               formRef?.current?.setFieldsValue({
                 ...res,
                 applyDate: res?.applyDate ? moment(res?.applyDate) : null,
+                scheduleSendingDate: res?.scheduleSendingDate ? moment(res?.scheduleSendingDate) : null,
                 rangeTime: res?.startTime && res?.endTime ? [moment(res?.startTime), moment(res?.endTime)] : null,
+                time: moment(res?.scheduleSendingTime, variables.DATE_FORMAT.HOUR),
                 object: res?.forClass ? 'forClass' : 'forPerson',
                 BranchId: res?.branch?.id || null,
                 Class: res?.class?.id || null,
                 classes,
               });
+              setIsTime(res?.isScheduled);
+              onSetFileImage(res?.fileAttach);
               setContent(res?.content || '');
               setIsReminded(res?.isReminded || false);
               setType(res?.forClass ? 'forClass' : 'forPerson');
@@ -353,6 +382,40 @@ const Index = memo(
         payload: params,
       });
     }, []);
+
+    const onRemoveFile = () => {
+      setFileImage(null);
+    };
+
+    const onUpload = (files) => {
+      dispatch({
+        type: 'upload/UPLOAD',
+        payload: files,
+        callback: (response) => {
+          if (response) {
+            setFileImage([head(response.results)?.fileInfo]);
+          }
+        },
+      });
+    };
+
+    const props = {
+      beforeUpload() {
+        return null;
+      },
+      customRequest({ file }) {
+        const { name } = file;
+        const allowTypes = ['pdf', 'docx', 'xlsx'];
+        if (!allowTypes.includes(last(name.split('.')))) {
+          message.error('Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb');
+          return;
+        }
+        onUpload(file);
+      },
+      showUploadList: false,
+      fileList: [],
+    };
+
     return (
       <>
         <Breadcrumbs last={params?.id ? 'Chỉnh sửa thời khóa biểu' : 'Tạo thời khóa biểu'} menu={menuLeft} />
@@ -453,7 +516,7 @@ const Index = memo(
                       <Pane className="col-lg-6">
                         <FormItem
                           label="Cơ sở"
-                          name="BranchId"
+                          name="branchId"
                           rules={[variables.RULES.EMPTY]}
                           type={variables.SELECT}
                           data={branches}
@@ -464,7 +527,7 @@ const Index = memo(
                         <Pane className="col-lg-6">
                           <FormItem
                             label="Lớp"
-                            name="Class"
+                            name="class"
                             type={variables.SELECT}
                             data={classes}
                             onChange={onChangeClass}
@@ -614,7 +677,80 @@ const Index = memo(
                               <span>Nội dung</span>
                             </label>
                           </Pane>
-                          <Quill onChange={onChangeEditor} value={content} />
+                          <EditorToolbar />
+                          <Quill
+                            theme="snow"
+                            value={content}
+                            onChange={onChangeEditor}
+                            modules={modules}
+                            formats={formats}
+                          />
+                        </Pane>
+                        <Pane className="col-lg-12 mt15 mb15">
+                          <div>
+                            <label className="ant-col ant-form-item-label d-flex">
+                              <span>Tài liệu đính kèm</span>
+                            </label>
+                            <Upload {...props} className={stylesForm['upload-file']}>
+                              <Button color="transparent" icon="upload1">
+                                Tải lên
+                              </Button>
+                              <i>Chỉ hỗ trợ định dạng .xlsx. Dung lượng không được quá 5mb</i>
+                            </Upload>
+                          </div>
+                        </Pane>
+                        <Pane className="col-lg-12 border-top border-bottom">
+                          {!isEmpty(fileImage) && (
+                            <div className={csx(stylesForm['files-container'], 'mt5')}>
+                              {fileImage.map((item) => (
+                                <div className={stylesForm.item} key={item.id}>
+                                  <a href={`${API_UPLOAD}${item.url}`} target="_blank" rel="noreferrer">
+                                    {item?.name}
+                                  </a>
+                                  <span
+                                    role="presentation"
+                                    className="icon-cross"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onRemoveFile();
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </Pane>
+                        <Pane className="col-lg-12 mt20 d-flex p0">
+                          <Pane className="ml15">
+                            <FormItem
+                              className="checkbox-row checkbox-small p0"
+                              label="Đặt hẹn giờ gửi"
+                              name="isScheduled"
+                              type={variables.CHECKBOX_FORM}
+                              valuePropName="checked"
+                              onChange={(e) => setIsTime(e.target.checked)}
+                            />
+                          </Pane>
+                          {
+                            isTime && (
+                              <>
+                                <Pane className='mr15 ml15'>
+                                  <FormItem
+                                    name="scheduleSendingDate"
+                                    type={variables.DATE_PICKER}
+                                    rules={[variables.RULES.EMPTY]}
+                                  />
+                                </Pane>
+                                <Pane >
+                                  <FormItem
+                                    name="time"
+                                    type={variables.TIME_PICKER}
+                                    rules={[variables.RULES.EMPTY]}
+                                  />
+                                </Pane>
+                              </>
+                            )
+                          }
                         </Pane>
                       </Pane>
                     </Pane>

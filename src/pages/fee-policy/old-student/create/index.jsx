@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Spin, Tabs, Table } from 'antd';
+import { Form, Tabs, Table } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import moment from 'moment';
@@ -10,6 +10,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
+import Loading from '@/components/CommonComponent/Loading';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import stylesModule from '../styles.module.scss';
@@ -40,8 +41,6 @@ const Index = memo(() => {
   const [tab, setTab] = useState('tuition');
   const [tuition, setTuition] = useState([]);
 
-  const [YearsDetail, setYearsDetail] = useState([]);
-  const [idYear, setIdYear] = useState();
   const [idRes, setIdRes] = useState();
   const [dataTuition, setDataTuition] = useState([]);
 
@@ -51,7 +50,7 @@ const Index = memo(() => {
   const [errorTable, setErrorTable] = useState({
     tuition: false,
   });
-
+  const [data, setData] = useState([]);
 
   const [details, setDetails] = useState({
     schoolYearId: '',
@@ -94,9 +93,7 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res) {
-            setIdYear(res?.schoolYearId);
             setCheckData(false);
-            setYearsDetail(res?.expectedToCollectMoney);
             setIdRes(res?.expectedToCollectMoney);
             getStudents(res?.student?.code);
             setTuition(res?.tuition);
@@ -126,9 +123,7 @@ const Index = memo(() => {
       getStudents();
     }
   }, []);
-  // if (idRes?.length === YearsDetail?.length) {
-  //   idRes?.splice(idRes?.length - 1, 1);
-  // }
+
   const hanDleChangeText = (childData, k, data, deleteId) => {
     if (childData?.length > 0 || deleteId) {
       setIdRes(childData);
@@ -156,42 +151,7 @@ const Index = memo(() => {
     return pass;
   };
 
-  const getMoney = (details) => {
-    if (_.isEmpty(tuition)) {
-      return;
-    }
-    const newTuition = [...tuition].filter(obj => obj?.paymentFormId && obj?.feeId).map(item => ({
-      id: item.id,
-      money: item.money,
-      feeId: item.feeId,
-      paymentFormId: item.paymentFormId
-    }));
-    dispatch({
-      type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
-      payload: {
-        details: JSON.stringify(newTuition),
-        classTypeId: details?.classTypeId,
-        schoolYearId: details?.schoolYearId,
-        dayAdmission: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(details?.dayAdmission, variables.DATE_FORMAT.DATE_VI),
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
-        student: 'old'
-      },
-      callback: (res) => {
-        if (!_.isEmpty(res)) {
-          setTuition(res);
-        }
-      },
-    });
-  };
-
   const changeYear = (value) => {
-    setIdYear(value);
     formRef.current.setFieldsValue({
       dayAdmission: undefined,
     });
@@ -255,11 +215,6 @@ const Index = memo(() => {
     }
   };
 
-  const onSearch = _.debounce((val) => {
-    getStudents(val);
-  }, 300);
-
-
   const chgangeDayAdmission = (value) => {
     const newDetails = {
       ...details,
@@ -273,58 +228,55 @@ const Index = memo(() => {
     setTab(key);
   };
 
-  const dataYear = yearsSchool?.filter((p) => (idYear === p.id ? (p) : ""));
-
   const sumArray = (e) => {
     let sum = 0;
     e?.map((value) => {
-      sum += value?.money;
+      sum += JSON.parse(value?.money);
     });
-
     return sum;
   };
 
   const sumArrayMain = (e) => {
     let sum = 0;
-    e.map((value) => {
-      sum += value?.total;
+    e?.map((value) => {
+      sum += value?.total_money_month;
     });
     return sum;
   };
 
   const sumItem = (e) => {
     const result = _(e)
-      .groupBy('feeId')
-      .map(function (items, feeId, money) {
-        return { feeId: feeId, money: sumArray(items) };
-      }).value();
+      .groupBy('fee_id')
+      .map((items, fee_id, _money) => ({ fee_id, money: sumArray(items) })).value();
     return result;
   };
 
   const flattenArr = (arr) => {
     let sum = [];
-    _.forEachRight(arr, function (value) {
-      sum = sum?.concat(value?.money)
-    })
+    _.forEachRight(arr, (value) => {
+      sum = sum?.concat(value?.fee);
+    });
     return sumItem(sum);
   };
 
-  const data = idRes?.map(i =>
+  const datas = idRes?.map(i =>
   ({
-    date: i?.month,
-    total: sumArray(i?.fee),
-    money: i?.fee?.map(k =>
+    month: i?.month,
+    total_money_month: sumArray(i?.fee),
+    fee: i?.fee?.map(k =>
     ({
       money: k?.money,
       fee_name: k?.fee_name,
-      feeId: k?.fee_id,
+      fee_id: k?.fee_id,
     })
     )
   }));
 
-
-  data?.push({ total: sumArrayMain(data), money: flattenArr(data) });
-
+  useEffect(() => {
+    if (datas?.length > 0) {
+      setData([...datas]);
+    }
+  }, [datas?.length, checkData]);
 
   useEffect(() => {
     dispatch({
@@ -362,23 +314,54 @@ const Index = memo(() => {
     }
   }, [params?.id]);
 
+  const dataTest = (e) => {
+    const data = fees.find(k => k?.id === e?.feeId);
+    return data?.name;
+  };
 
+
+  const onChangeBus = (e, record, id) => {
+    const dataItem = {
+      month: record?.month,
+      total_money_month: record?.total_money_month,
+      fee: record?.fee?.map(i => ({
+        ...i,
+        money: i?.fee_id === id ? e : i?.money,
+      }))
+    };
+
+    const a = data?.map(i => (
+      {
+        ...i,
+        fee: i.month === dataItem?.month ? dataItem?.fee : i?.fee,
+        total_money_month: i.month === dataItem?.month ? sumArray(dataItem?.fee) : i?.total_money_month
+      }));
+    return e > 0 ? setData(a) : "";
+  };
   const header = () => {
-    const rowData = fees?.map(i => ({
-      title: i?.name,
+    const rowData = dataTuition?.map(i => ({
+      title: dataTest(i),
       width: 150,
       key: 'money',
       render: (record) => {
-        const item = record?.money?.find(k => k?.feeId === i?.id);
+        const item = record?.fee?.find(k => k?.
+          fee_id === i?.feeId);
+        const checkBus = fees.find(k => k?.id === i?.feeId);
         return (
           <>
             {
-              item?.feeId ?
+              item?.fee_id && checkBus?.code === 'BUS' && item?.money > 0 && !item?.check ?
+                <FormItem
+                  className="mb-0"
+                  type={variables.INPUT_NUMBER}
+                  rules={[variables.RULES.EMPTY]}
+                  value={item?.money}
+                  onChange={(e) => onChangeBus(e, record, i?.feeId)}
+                />
+                :
                 <Text size="normal">
                   {Helper.getPrice(item?.money) || 0}
                 </Text>
-                :
-                "0"
             }
           </>
         );
@@ -392,7 +375,7 @@ const Index = memo(() => {
         width: 200,
         render: (record) => (
           <Text size="normal">
-            {Helper.getDate(record.date, variables.DATE_FORMAT.DATE_MONTH)}
+            {Helper.getDate(record.month, variables.DATE_FORMAT.DATE_MONTH)}
           </Text>
         ),
       },
@@ -413,12 +396,11 @@ const Index = memo(() => {
       {
         title: 'Tổng tiền (đ)',
         key: 'total',
-        fixed: 'right',
         width: 150,
         className: 'min-width-150',
         render: (record) =>
           <Text size="normal">
-            {Helper.getPrice(record?.total) || 0}
+            {Helper.getPrice(record?.total_money_month) || 0}
           </Text>
       },
     ];
@@ -456,6 +438,7 @@ const Index = memo(() => {
                   pagination={false}
                   className="table-normal"
                   isEmpty
+                  loading={loading['oldStudentAdd/GET_MONEY_FEE_POLICIES']}
                   childrenColumnName="children"
                   params={{
                     header: header(),
@@ -464,6 +447,44 @@ const Index = memo(() => {
                   bordered
                   rowKey={(record) => record?.id}
                   scroll={{ x: '100%' }}
+                  summary={(pageData) => {
+                    const total = sumArrayMain(pageData);
+                    const moneyDetail = flattenArr(pageData);
+                    return (
+                      <>
+                        <Table.Summary.Row>
+                          <Table.Summary.Cell colSpan={1}>
+                            <Text size="normal" style={{ fontWeight: 'bold' }}>
+                              Tổng tiền
+                            </Text>
+                          </Table.Summary.Cell>
+                          {
+                            moneyDetail?.map(i =>
+                            (<Table.Summary.Cell>
+                              <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                {i?.money === 0 ? '0 đ' : Helper.getPrice(i?.money)}
+                              </Text>
+                            </Table.Summary.Cell>))
+                          }
+                          <Table.Summary.Cell>
+                            <Text size="normal" style={{ fontWeight: 'bold' }}>
+                              {Helper.getPrice("0")}
+                            </Text>
+                          </Table.Summary.Cell>
+                          <Table.Summary.Cell>
+                            <Text size="normal" style={{ fontWeight: 'bold' }}>
+                              {Helper.getPrice("0")}
+                            </Text>
+                          </Table.Summary.Cell>
+                          <Table.Summary.Cell>
+                            <Text size="normal" style={{ fontWeight: 'bold' }}>
+                              {total === 0 ? '0 đ' : Helper.getPrice(total)}
+                            </Text>
+                          </Table.Summary.Cell>
+                        </Table.Summary.Row>
+                      </>
+                    );
+                  }}
                 />
               </div>
             )
@@ -476,7 +497,7 @@ const Index = memo(() => {
     const payload = {
       schoolYearId: values?.schoolYearId || undefined,
       studentId: values?.studentId || undefined,
-      expectedToCollectMoney: idRes || undefined,
+      expectedToCollectMoney: data || undefined,
       tuition: dataTuition,
       id: (params?.id && !isCopy) ? params?.id : undefined,
       dayAdmission: Helper.getDateTime({
@@ -512,106 +533,108 @@ const Index = memo(() => {
             onFinishFailed={onFinishFailed}
             initialValues={{ type: 'newStudent' }}
           >
-            <Pane className="card">
-              <Pane className="p20">
-                <Heading type="form-title" className="mb20">
-                  Thông tin chung
-                </Heading>
-              </Pane>
-              <Pane className="p20 border-top">
-                <div className="row">
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Năm học"
-                      name="schoolYearId"
-                      data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
-                      type={variables.SELECT}
-                      rules={[variables.RULES.EMPTY]}
-                      onChange={changeYear}
-                    />
+            <Loading loading={loading['oldStudentAdd/GET_DETAILS']} >
+              <Pane className="card">
+                <Pane className="p20">
+                  <Heading type="form-title" className="mb20">
+                    Thông tin chung
+                  </Heading>
+                </Pane>
+                <Pane className="p20 border-top">
+                  <div className="row">
+                    <div className="col-lg-3">
+                      <FormItem
+                        label="Năm học"
+                        name="schoolYearId"
+                        data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY]}
+                        onChange={changeYear}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <label htmlFor="" className="mb5 font-size-13" >Thời gian hiệu lực</label>
+                      <p className="mb0 font-size-13 mt10 font-weight-bold"> {details?.startDate ? `${details?.startDate} - ${details?.endDate}` : ''}</p>
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        label="Ngày nhập học"
+                        name="dayAdmission"
+                        type={variables.DATE_PICKER}
+                        rules={[variables.RULES.EMPTY]}
+                        allowClear={false}
+                        onChange={chgangeDayAdmission}
+                        disabledDate={(current) => details?.startDate && current < moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf('day')
+                          || details?.endDate && current >= moment(details.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day')
+                        }
+                      />
+                    </div>
                   </div>
-                  <div className="col-lg-3">
-                    <label htmlFor="" className="mb5 font-size-13" >Thời gian hiệu lực</label>
-                    <p className="mb0 font-size-13 mt10 font-weight-bold"> {details?.startDate ? `${details?.startDate} - ${details?.endDate}` : ''}</p>
-                  </div>
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Ngày nhập học"
-                      name="dayAdmission"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                      allowClear={false}
-                      onChange={chgangeDayAdmission}
-                      disabledDate={(current) => details?.startDate && current < moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf('day')
-                        || details?.endDate && current >= moment(details.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day')
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Tên học sinh"
-                      name="studentId"
-                      data={loading['oldStudentAdd/GET_STUDENTS'] ? [] : students.map(item => ({ ...item, name: item?.fullName || '-' }))}
-                      type={variables.SELECT}
-                      rules={[variables.RULES.EMPTY]}
-                      onChange={changeStudent}
-                      onSearch={onSearch}
-                      notFoundContent={loading['oldStudentAdd/GET_STUDENTS'] ? <Spin size="small" /> : null}
-                      filterOption
-                    />
-                  </div>
-                  <div className="col-lg-9">
-                    <div className="row">
-                      <div className="col-lg-3">
-                        <label htmlFor="" className="mb5 font-size-13" >Mã học sinh</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.code || ''}</p>
-                      </div>
-                      <div className="col-lg-3">
-                        <label htmlFor="" className="mb5 font-size-13" >Cơ sở</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.branchName || ''}</p>
-                      </div>
-                      <div className="col-lg-3">
-                        <label htmlFor="" className={`mb5 font-size-13 ${details?.code && !details?.classTypeId ? 'text-danger' : ''}`} >Khối lớp</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.classType || ''}</p>
-                      </div>
-                      <div className="col-lg-3">
-                        <label htmlFor="" className="mb5 font-size-13" >Lớp</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.className || ''}</p>
+                  <div className="row">
+                    <div className="col-lg-3">
+                      <FormItem
+                        className="mb-0"
+                        label="Tên học sinh"
+                        name="studentId"
+                        type={variables.SELECT}
+                        placeholder="Chọn học sinh"
+                        allowClear={false}
+                        data={loading['oldStudentAdd/GET_STUDENTS'] ? [] : students.map(item => ({ ...item, name: item?.fullName || '-' }))}
+                        rules={[variables.RULES.EMPTY]}
+                        onChange={changeStudent}
+                      />
+                    </div>
+                    <div className="col-lg-9">
+                      <div className="row">
+                        <div className="col-lg-3">
+                          <label htmlFor="" className="mb5 font-size-13" >Mã học sinh</label>
+                          <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.code || ''}</p>
+                        </div>
+                        <div className="col-lg-3">
+                          <label htmlFor="" className="mb5 font-size-13" >Cơ sở</label>
+                          <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.branchName || ''}</p>
+                        </div>
+                        <div className="col-lg-3">
+                          <label htmlFor="" className={`mb5 font-size-13 ${details?.code && !details?.classTypeId ? 'text-danger' : ''}`} >Khối lớp</label>
+                          <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.classType || ''}</p>
+                        </div>
+                        <div className="col-lg-3">
+                          <label htmlFor="" className="mb5 font-size-13" >Lớp</label>
+                          <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.className || ''}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Pane>
               </Pane>
-            </Pane>
-            <Pane className="card pb20">
-              <Heading type="form-title" className="heading-tab p20">
-                Các khoản học phí <span className="text-danger">*</span>
-              </Heading>
-              <Tabs onChange={changeTab} activeKey={tab} className="test-12 p20">
-                {tabs().map(({ id, name, component }) => (
-                  <TabPane
-                    tab={<span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>}
-                    key={id}
-                  >
-                    {component}
-                  </TabPane>
-                ))}
-              </Tabs>
-            </Pane>
-            <Pane className="p20 d-flex justify-content-between align-items-center">
-              <Button
-                className="ml-auto px25"
-                color="success"
-                htmlType="submit"
-                size="large"
-                loading={loading['oldStudentAdd/ADD'] || loading['oldStudentAdd/UPDATE']}
-                disabled={!details?.classTypeId || !details?.schoolYearId}
-              >
-                Lưu
-              </Button>
-            </Pane>
+              <Pane className="card pb20">
+                <Heading type="form-title" className="heading-tab p20">
+                  Các khoản học phí <span className="text-danger">*</span>
+                </Heading>
+                <Tabs onChange={changeTab} activeKey={tab} className="test-12 p20">
+                  {tabs().map(({ id, name, component }) => (
+                    <TabPane
+                      tab={<span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>}
+                      key={id}
+                    >
+                      {component}
+                    </TabPane>
+                  ))}
+                </Tabs>
+              </Pane>
+              <Pane className="p20 d-flex justify-content-between align-items-center">
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={loading['oldStudentAdd/ADD'] || loading['old	StudentAdd/UPDATE']}
+                  disabled={!details?.classTypeId || !details?.schoolYearId}
+                >
+                  Lưu
+                </Button>
+              </Pane>
+            </Loading>
           </Form>
         </Pane>
       </Pane>

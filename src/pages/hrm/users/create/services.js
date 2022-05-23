@@ -94,7 +94,7 @@ export function details(data = {}) {
   return requestLavarel(`/v1/employees/${data.id}`, {
     method: 'GET',
     params: {
-      include: Helper.convertIncludes(['positionLevel']),
+      include: Helper.convertIncludes(['positionLevel', 'branchDefault']),
     },
   });
 }

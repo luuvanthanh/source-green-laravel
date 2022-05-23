@@ -216,7 +216,6 @@ const General = memo(() => {
     setDataHeight({});
   };
 
-
   const onchangeMedical = () => {
     if (detailsStudent?.student?.studentCrmId) {
       dispatch({
@@ -461,7 +460,7 @@ const General = memo(() => {
                         <p className={styles.title}>Chiều cao</p>
                         <h2 className={styles.number}>
                           {JSON.stringify(dataHeight) !== '{}'
-                            ? dataHeight?.heightReport[dataHeight?.heightReport?.length - 1]?.value
+                            ? dataHeight?.studentCriterias[0]?.value
                             : 0}
                         </h2>
                       </div>
@@ -476,7 +475,7 @@ const General = memo(() => {
                         <p className={styles.title}>Cân nặng (kg)</p>
                         <h2 className={styles.number}>
                           {JSON.stringify(dataHeight) !== '{}'
-                            ? dataHeight?.weightReport[dataHeight?.weightReport?.length - 1]?.value
+                            ? dataHeight?.studentCriterias[1]?.value
                             : 0}
                         </h2>
                       </div>

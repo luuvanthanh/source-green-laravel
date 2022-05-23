@@ -23,7 +23,7 @@ export default {
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
-    })
+    }),
   },
   effects: {
     *GET_DETAILS({ payload, callback }, saga) {

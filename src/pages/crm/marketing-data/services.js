@@ -8,15 +8,14 @@ export function get(data = {}) {
       ...data,
       limit: data.limit,
       page: data.page,
-      orderBy: 'created_at',
+      orderBy: 'created_at;full_name',
       sortedBy: 'desc',
-      searchJoin: 'and',
       include: Helper.convertIncludes([
         'city',
         'district',
         'search',
         'searchSource',
-        'marketingProgram', 
+        'marketingProgram',
         'tag',
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
@@ -47,7 +46,7 @@ export function add(data = {}) {
   return request(`/v1/move-leads`, {
     method: 'POST',
     data: {
-        data_marketing_id: data
+      data_marketing_id: data,
     },
     parse: true,
   });
@@ -56,7 +55,7 @@ export function add(data = {}) {
 export function getSearch() {
   return request(`/v1/search-sources`, {
     method: 'GET',
-    params: {  
+    params: {
       orderBy: 'name',
     },
   });

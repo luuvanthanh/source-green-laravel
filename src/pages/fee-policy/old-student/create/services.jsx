@@ -55,3 +55,12 @@ export function getStudent(params = {}) {
     },
   });
 }
+
+export function get(params = {}) {
+  return request('/v1/fees', {
+    method: 'GET',
+    params: {
+      ...params
+    },
+  });
+}

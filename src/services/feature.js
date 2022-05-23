@@ -27,13 +27,13 @@ export const feature = {
       url: '/phan-bo',
       permission: [permissions.PB],
     },
-    {
-      title: 'Trao đổi',
-      src: '/images/home/speech.svg',
-      animation: animationImage.communication,
-      url: '/trao-doi',
-      permission: [permissions.TD],
-    },
+    // {
+    //   title: 'Trao đổi',
+    //   src: '/images/home/speech.svg',
+    //   animation: animationImage.communication,
+    //   url: '/trao-doi',
+    //   permission: [permissions.TD],
+    // },
     {
       title: 'Hình ảnh',
       src: '/images/home/movies.svg',

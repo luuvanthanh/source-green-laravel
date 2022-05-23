@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Modal } from 'antd';
+import { Form, Modal, notification } from 'antd';
 import { connect, withRouter } from 'umi';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -18,10 +18,11 @@ const mapStateToProps = ({ loading, HRMusersAdd }) => ({
   loading,
   details: HRMusersAdd.detailsAccount,
   error: HRMusersAdd.error,
+  dataDetails: HRMusersAdd.details,
   roles: HRMusersAdd.roles,
 });
 const Index = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, roles }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, roles, dataDetails }) => {
     const formRef = useRef();
     const formRefModal = useRef();
 
@@ -40,32 +41,49 @@ const Index = memo(
       setVisible(true);
     };
 
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'HRMusersAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, []);
+
     /**
      * Function submit form modal
      * @param {object} values values of form
      */
     const onFinish = (values) => {
-      dispatch({
-        type: details?.user?.id ? 'HRMusersAdd/UPDATE_ACCOUNT' : 'HRMusersAdd/ADD_ACCOUNT',
-        payload: {
-          id: params.id,
-          ...values,
-        },
-        callback: (response, error) => {
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
+      if (!dataDetails?.email) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Bạn cần bổ sung email ở thông tin cơ bản',
+        });
+      } else {
+        dispatch({
+          type: details?.user?.id ? 'HRMusersAdd/UPDATE_ACCOUNT' : 'HRMusersAdd/ADD_ACCOUNT',
+          payload: {
+            id: params.id,
+            ...values,
+            email: dataDetails?.email,
+          },
+          callback: (response, error) => {
+            if (error) {
+              if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                error?.validationErrors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: head(item.members),
+                      errors: [item.message],
+                    },
+                  ]);
+                });
+              }
             }
-          }
-        },
-      });
+          },
+        });
+      }
     };
 
     const register = () => {
@@ -196,7 +214,7 @@ const Index = memo(
                 </Heading>
 
                 <Pane className="row">
-                  <Pane className="col-lg-4">
+                  <Pane className="col-lg-6">
                     <FormItem
                       name="userName"
                       label="Tên tài khoản"
@@ -204,16 +222,8 @@ const Index = memo(
                       rules={[variables.RULES.EMPTY_INPUT]}
                     />
                   </Pane>
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name="email"
-                      label="Email"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
-                    />
-                  </Pane>
                   {!details?.userName && (
-                    <Pane className="col-lg-4">
+                    <Pane className="col-lg-6">
                       <FormItem
                         name="password"
                         label="Mật khẩu"
@@ -246,7 +256,7 @@ const Index = memo(
                       <Form.Item label=" ">
                         <Button color="success" ghost onClick={register}>
                           {details?.faceImageStatus === variablesModules.STATUS.NO_IMAGE ||
-                          details?.faceImageStatus === variablesModules.STATUS.HANDLING_IMAGE_FAILED
+                            details?.faceImageStatus === variablesModules.STATUS.HANDLING_IMAGE_FAILED
                             ? 'Đăng ký'
                             : 'Đăng ký lại'}
                         </Button>
@@ -294,15 +304,17 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   roles: PropTypes.arrayOf(PropTypes.any),
+  dataDetails: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   roles: [],
+  dataDetails: {},
 };
 
 export default withRouter(connect(mapStateToProps)(Index));
