@@ -72,6 +72,12 @@ class DocumentManagementRepositoryEloquent extends CoreRepositoryEloquent implem
                 ->whereDate('CreationTime', '<=', $attributes['endDate']);
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->where('Id', $attributes['employeeId']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $documentManagement = $this->paginate($attributes['limit']);
         } else {
