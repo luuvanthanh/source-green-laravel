@@ -501,8 +501,25 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             if (!is_null($feeDetail)) {
                                 $money = $feeDetail->Money;
                                 $result = $money;
+
+                                switch ($paymentForm->Code) {
+                                    case 'THANG':
+                                        $moneyMonth = $result;
+                                        break;
+                                }
+                                break;
                             }
                             break;
+                        case 'XEBUS':
+                            if (isset($detail->money)) {
+                                $result = $detail->money;
+                                switch ($paymentForm->Code) {
+                                    case 'THANG':
+                                        $moneyMonth = $result;
+                                        break;
+                                }
+                                break;
+                            }
                     }
                 }
             }
@@ -683,6 +700,60 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'money' => $value['money'],
                                 'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
+                            $totalMoneyMonth += $value['money'];
+                        } else {
+                            $fee[] = [
+                                'fee_id' => $feeTuiTion->Id,
+                                'fee_name' => $feeTuiTion->Name,
+                                'money' => 0,
+                                'fee_id_crm' => $feeTuiTion->FeeCrmId
+                            ];
+                        }
+                        break;
+                    case 'HOCKY1_HOCKY2' && $feeTuiTion->Type == 'XEBUS':
+                        $detail = json_decode($attributes['details']);
+                        $getMoney = array_column($detail, 'money');
+                        $getValue = (array_filter($getMoney, function ($v, $k) {
+                            return $v != null;
+                        }, ARRAY_FILTER_USE_BOTH));
+                        $money = array_values($getValue);
+
+                        $dayAdmission = $value['applyDate']->format('Y-m-d');
+                        $firstMonthHk1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                            ->whereHas('paymentForm', function ($query) {
+                                $query->where('Code', 'HOCKY1');
+                            })
+                            ->where('Date', '>=', $value['applyDate']->startOfMonth()->format('Y-m-d'))->orderBy('Date', 'ASC')->first();
+
+                        $firstMonthHk2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                            ->whereHas('paymentForm', function ($query) {
+                                $query->where('Code', 'HOCKY2');
+                            })
+                            ->where('Date', '>=', $value['applyDate']->startOfMonth()->format('Y-m-d'))->orderBy('Date', 'ASC')->first();
+
+                        if ($month->format('Y-m') >= $applyDate) {
+                            if (!is_null($firstMonthHk1)  && ($month->format('Y-m') ==  Carbon::parse($firstMonthHk1->Date)->format('Y-m'))) {
+                                $fee[] = [
+                                    'fee_id' => $feeTuiTion->Id,
+                                    'fee_name' => $feeTuiTion->Name,
+                                    'money' => $money[0],
+                                    'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                ];
+                            } else if (!is_null($firstMonthHk2)  && ($month->format('Y-m') ==  Carbon::parse($firstMonthHk2->Date)->format('Y-m'))) {
+                                $fee[] = [
+                                    'fee_id' => $feeTuiTion->Id,
+                                    'fee_name' => $feeTuiTion->Name,
+                                    'money' => $money[0],
+                                    'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                ];
+                            } else {
+                                $fee[] = [
+                                    'fee_id' => $feeTuiTion->Id,
+                                    'fee_name' => $feeTuiTion->Name,
+                                    'money' => 0,
+                                    'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                ];
+                            }
                         } else {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
