@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\TrainingTeacher\Category;
+namespace GGPHP\TeacherAssignment;
 
 use GGPHP\Core\RouteRegistrar as CoreRegistrar;
 
@@ -9,7 +9,7 @@ class RouteRegistrar extends CoreRegistrar
     /**
      * The namespace implementation.
      */
-    protected static $namespace = '\GGPHP\TrainingTeacher\Category\Http\Controllers';
+    protected static $namespace = '\GGPHP\TeacherAssignment\Http\Controllers';
 
     /**
      * Register routes for bread.
@@ -30,9 +30,8 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::group(['middleware' => []], function () {
-                \Route::resource('training-forms', 'TrainingFormController');
-                \Route::resource('training-skills', 'TrainingSkillController');
-                \Route::resource('training-modules', 'TrainingModuleController');
+                //teacher assignment
+                \Route::resource('teacher-assignments', 'TeacherAssignmentController');
             });
         });
     }

@@ -4,7 +4,7 @@ namespace GGPHP\TrainingTeacher\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TrainingSkillCreateRequest extends FormRequest
+class TrainingModuleUpdateRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -23,12 +23,6 @@ class TrainingSkillCreateRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'code' => 'required|check_unique:evaluate-teacher.TrainingSkills,Code',
-            'name' => 'required|string',
-            'detail.*.createRows' => 'array',
-            'detail.*.updateRows' => 'array',
-            'detail.*.deleteRows' => 'array',
-        ];
+        return [];
     }
 }

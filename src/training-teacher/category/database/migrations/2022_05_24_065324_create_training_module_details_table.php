@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTrainingSkillsTable extends Migration
+class CreateTrainingModuleDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreateTrainingSkillsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TrainingSkills', function (Blueprint $table) {
+        Schema::create('evaluate-teacher.TrainingModuleDetails', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('Code');
-            $table->string('Name');
-            $table->text('Note')->nullable();
+            $table->uuid('TrainingModulelId');
+            $table->uuid('TrainingSkillDetailId');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
+            $table->foreign('TrainingModulelId')->references('Id')->on('evaluate-teacher.TrainingModules')->onDelete('cascade');
         });
     }
 
@@ -32,6 +32,6 @@ class CreateTrainingSkillsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TrainingSkills');
+        Schema::dropIfExists('evaluate-teacher.TrainingModuleDetails');
     }
 }

@@ -13,6 +13,8 @@ use GGPHP\Fee\Observers\FeePolicieObserver;
 use GGPHP\Fee\Observers\PaymentFormObserver;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -59,6 +61,16 @@ class AppServiceProvider extends ServiceProvider
                     'pageName' => $pageName,
                 ]
             );
+        });
+
+        Validator::extend('check_unique', function ($attribute, $value, $parameters, $validator) {
+            $data = DB::table($parameters[0])->where($parameters[1], $value)->first();
+
+            if (!is_null($data)) {
+                return false;
+            }
+
+            return true;
         });
     }
 }
