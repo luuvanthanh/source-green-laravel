@@ -23,11 +23,7 @@ export function details(data = {}) {
     method: 'GET',
     params: {
       ...data,
-      include: Helper.convertIncludes([
-        'classes',
-        'branch',
-        'schoolYear'
-      ]),
+      include: Helper.convertIncludes(['classes', 'branch', 'schoolYear']),
     },
   });
 }
@@ -43,7 +39,7 @@ export function getSchooolYear(params) {
   return request('/v1/school-years', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
     },
   });
 }
@@ -55,12 +51,13 @@ export function getBranches(params) {
   });
 }
 
-export function getClass(params) {
+export function getClass(data) {
   return requestApi('/classes', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
-      ...Helper.getPagination(params.page, params.limit),
+      bracnh: `${[data?.map((i) => i)]}`,
+      ...omit(data, 'page', 'limit'),
+      ...Helper.getPagination(data.page, data.limit),
     },
   });
 }

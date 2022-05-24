@@ -245,6 +245,7 @@ const Students = memo(() => {
                                           fieldKey={[field.fieldKey, 'birth_date']}
                                           type={variables.DATE_PICKER}
                                           onChange={(e) => onChaneDate(e, index)}
+                                          disabledDate={(current) => current > moment()}
                                         />
                                       </Pane>
                                       <Pane className="col-lg-4">

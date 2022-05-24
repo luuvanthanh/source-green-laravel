@@ -255,3 +255,14 @@ export function getCountProbationaryContract(params = {}) {
     params,
   });
 }
+
+export function getEmployee(params = {}) {
+  return requestLaravel('/v1/employees', {
+    method: 'GET',
+    params: {
+      ...params,
+      limit: 1000,
+      include: Helper.convertIncludes(['positionLevel']),
+    },
+  });
+}

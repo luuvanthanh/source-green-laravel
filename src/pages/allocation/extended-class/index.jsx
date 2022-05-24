@@ -18,7 +18,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
-import  HelperModule  from '../utils/Helper';
+import HelperModule from '../utils/Helper';
 import stylesModule from './styles.module.scss';
 
 const { Option } = Select;
@@ -119,7 +119,7 @@ const Index = memo(() => {
       payload: {
         date: moment(search.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
       },
-      callback: () => {},
+      callback: () => { },
     });
   }, []);
 
@@ -129,7 +129,7 @@ const Index = memo(() => {
       payload: {
         date: moment(val).format(variables.DATE_FORMAT.DATE_AFTER),
       },
-      callback: () => {},
+      callback: () => { },
     });
   };
 
@@ -213,11 +213,9 @@ const Index = memo(() => {
         if (extendedExits) {
           notification.error({
             message: 'THÔNG BÁO',
-            description: `Giáo viên ${
-              teachers.find((item) => item.id === teacherId)?.fullName
-            } đã được phân bổ vào lớp ${
-              classes.find((item) => item.id === classId)?.name
-            } xin vui lòng thử lại lớp khác.`,
+            description: `Giáo viên ${teachers.find((item) => item.id === teacherId)?.fullName
+              } đã được phân bổ vào lớp ${classes.find((item) => item.id === classId)?.name
+              } xin vui lòng thử lại lớp khác.`,
           });
           return;
         }
@@ -246,11 +244,11 @@ const Index = memo(() => {
                         )
                           ? item.extendedClassAssignments
                           : [
-                              ...item.extendedClassAssignments,
-                              {
-                                employee: teachers.find((item) => item.id === teacherId),
-                              },
-                            ],
+                            ...item.extendedClassAssignments,
+                            {
+                              employee: teachers.find((item) => item.id === teacherId),
+                            },
+                          ],
                       };
                     }
                     return item;
@@ -295,9 +293,8 @@ const Index = memo(() => {
       date,
       fromTime: value.fromTime,
       toTime: value.toTime,
-      time: `${moment(date).format(variables.DATE_FORMAT.DATE)}, ${value.fromTime} : ${
-        value.toTime
-      }`,
+      time: `${moment(date).format(variables.DATE_FORMAT.DATE)}, ${value.fromTime} : ${value.toTime
+        }`,
       branchId: value.class?.branchId,
       classId: value.class?.id,
       branch: value.class?.branch.name || value?.branch?.name,

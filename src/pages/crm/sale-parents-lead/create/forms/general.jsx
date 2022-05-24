@@ -81,10 +81,10 @@ const General = memo(({ loading: { effects }, match: { params }, details, error,
       payload: {},
       callback: (res) => {
         if (res) {
-          const item = res.parsePayload?.find(i => i?.code === 'GD');
+          const item = res.parsePayload?.filter(i => i?.code === 'GD' || i?.code === 'MKT');
           dispatch({
             type: 'crmSaleParentsLead/GET_EMPLOYEES',
-            payload: { divisionId: item?.id },
+            payload: item,
           });
         }
       }
