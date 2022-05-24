@@ -3,6 +3,7 @@
 namespace GGPHP\Attendance\Transformers;
 
 use GGPHP\Attendance\Models\Attendance;
+use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Clover\Transformers\StudentTransporterTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 
@@ -18,7 +19,7 @@ class AttendanceTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['attendanceReason', 'attendanceLog', 'studentTransporter'];
+    protected $defaultIncludes = ['attendanceReason', 'attendanceLog', 'studentTransporter', 'student'];
     protected $availableIncludes = [];
 
     /**
@@ -78,5 +79,14 @@ class AttendanceTransformer extends BaseTransformer
     {
 
         return $this->collection($attendance->attendanceLog, new AttendanceLogTransformer, 'AttendanceLog');
+    }
+
+    public function includeStudent(Attendance $attendance)
+    {
+        if (empty($attendance->student)) {
+            return;
+        }
+
+        return $this->item($attendance->student, new StudentTransformer, 'Student');
     }
 }
