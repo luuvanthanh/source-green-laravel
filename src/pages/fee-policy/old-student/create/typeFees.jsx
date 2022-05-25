@@ -125,7 +125,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
 
   useEffect(() => {
     if ((feeId && paymentFormId || deleteId) || (checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission)) {
-      const { schoolYearId, classTypeId, dayAdmission } = details;
+      const { schoolYearId, classTypeId, dayAdmission, branchId } = details;
       const dataPayload = data?.map(i =>
       ({
         paymentFormId: i?.paymentFormId,
@@ -137,6 +137,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
         payload: {
           classTypeId,
           schoolYearId,
+          branchId,
           dayAdmission: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,

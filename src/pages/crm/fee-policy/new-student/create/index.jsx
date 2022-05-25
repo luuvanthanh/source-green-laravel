@@ -67,6 +67,7 @@ const Index = memo(() => {
   const [dataTuition, setDataTuition] = useState([]);
   const [checkSearch, setCheckSearch] = useState(false);
   const [data, setData] = useState([]);
+  const [dataClass, setDataClass] = useState([]);
 
   const [checkData, setCheckData] = useState(true);
 
@@ -102,6 +103,13 @@ const Index = memo(() => {
     });
     dispatch({
       type: 'CRMnewStudentAdd/GET_BRANCHES',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
+    dispatch({
+      type: 'CRMnewStudentAdd/GET_CLASS',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
@@ -145,14 +153,6 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (params.id) {
-      dispatch({
-        type: 'CRMnewStudentAdd/GET_CLASS',
-        payload: {
-          branchId: detailsData?.branch?.branch_id_hrm,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.SIZEMAX,
-        },
-      });
       dispatch({
         type: 'CRMnewStudentAdd/GET_DETAILS',
         payload: {
@@ -205,6 +205,7 @@ const Index = memo(() => {
               mother_name: mother?.full_name || res?.mother_name,
               mother_phone: mother?.phone || res?.mother_phone,
               branch_id: res?.branch_id,
+              // class_type_id: res?.
               branch: res?.branch?.name,
               type: 'newStudent',
             });
@@ -339,14 +340,7 @@ const Index = memo(() => {
   }, [details.branch_id?.id]);
 
   const onchangeBranches = (e) => {
-    dispatch({
-      type: 'CRMnewStudentAdd/GET_CLASS',
-      payload: {
-        branchId: e,
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.SIZEMAX,
-      },
-    });
+
   };
 
   const getClassByAge = (age = 0) => {
@@ -372,16 +366,26 @@ const Index = memo(() => {
     if (!date) {
       return;
     }
+    formRef.current.setFieldsValue({
+      class_type_id: undefined
+    });
     const age = moment().diff(date, 'months');
     getClassByAge(age);
+    const checkClass = classes?.map(i => (
+      +i?.from <= age &&
+      +i?.to > age && (i)
+    ));
+    const a = checkClass?.filter(i => i?.id);
+    setDataClass(a);
     formRef.current.setFieldsValue({
       age,
     });
   };
 
-  const s = (e) => {
+  const onchangeStudent = (e) => {
     formRef.current.resetFields();
     setTuition([]);
+    setDataClass([]);
     const { value } = e.target;
     formRef.current.setFieldsValue({
       type: value,
@@ -403,9 +407,18 @@ const Index = memo(() => {
     if (value && isEmpty(students)) {
       return;
     }
+    formRef.current.setFieldsValue({
+      class_type_id: undefined
+    });
     const response = students.find((item) => item.id === value);
     const pather = response?.parentInfo?.find((i) => i?.sex === 'MALE');
     const mother = response?.parentInfo?.find((i) => i?.sex === 'FEMALE');
+    const checkClass = classes?.map(i => (
+      +i?.from <= response?.studentInfo?.age_month &&
+      +i?.to > response?.studentInfo?.age_month && (i)
+    ));
+    const a = checkClass?.filter(i => i?.id);
+    setDataClass(a);
     if (response?.id) {
       const range_date = Helper.getDateRank(
         response?.schoolYear?.start_date,
@@ -678,7 +691,7 @@ const Index = memo(() => {
                         data={radios}
                         rules={[variables.RULES.EMPTY]}
                         name="type"
-                        onChange={s}
+                        onChange={onchangeStudent}
                       />
                     )}
                   </Pane>
@@ -778,7 +791,7 @@ const Index = memo(() => {
                         <FormItem
                           className={
                             type === 'oldStudent' || details?.student_info_id
-                              ? 'input-noborder'
+                              ? ''
                               : ''
                           }
                           label="Ngày nhập học"
@@ -795,42 +808,28 @@ const Index = memo(() => {
                           }
                         />
                       </div>
-                      {
-                        type === 'oldStudent' || details?.student_info_id ?
-                          <div className="col-lg-3">
-                            <FormItem
-                              className="input-noborder"
-                              label="Cơ sở dự kiến"
-                              name="branch"
-                              type={variables.INPUT}
-                              placeholder="Cơ sở dự kiến"
-                            />
-                          </div>
-                          :
-                          <div className="col-lg-3">
-                            <FormItem
-                              className={
-                                type === 'oldStudent'
-                                  ? 'input-noborder'
-                                  : ''
-                              }
-                              options={['branch_id_hrm', 'name']}
-                              label="Cơ sở dự kiến"
-                              name="branch_id"
-                              data={branches}
-                              type={variables.SELECT}
-                              rules={[variables.RULES.EMPTY]}
-                              onChange={onchangeBranches}
-                            />
-                          </div>
-
-                      }
+                      <div className="col-lg-3">
+                        <FormItem
+                          className={
+                            type === 'oldStudent'
+                              ? 'input-noborder'
+                              : ''
+                          }
+                          options={['id', 'name']}
+                          label="Cơ sở dự kiến"
+                          name="branch_id"
+                          data={branches}
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                          onChange={onchangeBranches}
+                        />
+                      </div>
                       <div className="col-lg-3">
                         <FormItem
                           options={['classTypeCrmId', 'name']}
                           label="Lớp học dự kiến"
                           name="class_type_id"
-                          data={classes}
+                          data={dataClass}
                           type={variables.SELECT}
                           rules={[variables.RULES.EMPTY]}
                           onChange={(e) => loadTableFees(e, 'class_type_id')}

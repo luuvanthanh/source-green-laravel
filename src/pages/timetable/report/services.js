@@ -14,9 +14,12 @@ export function remove(id = {}) {
   });
 }
 
-export function getEvents(params = {}) {
+export function getEvents() {
   return request(`/time-tables/events`, {
     method: 'GET',
-    params,
+    params: {
+      skipCount: 1,
+      maxResultCount: 1000,
+    },
   });
 }

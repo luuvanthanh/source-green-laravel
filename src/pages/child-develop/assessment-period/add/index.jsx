@@ -85,10 +85,6 @@ class Index extends PureComponent {
       payload: {},
     });
     dispatch({
-      type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
-      payload: {},
-    });
-    dispatch({
       type: 'childDevelopAssessmentPeriodAdd/GET_PROBLEMS',
       payload: {},
     });
@@ -201,6 +197,14 @@ class Index extends PureComponent {
     this.setStateData({ type: event.target.value });
   };
 
+  onChangeBranch = (e) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
+      payload: e,
+    });
+  };
+
   render() {
     const {
 
@@ -275,6 +279,7 @@ class Index extends PureComponent {
                             type={variables.SELECT_MUTILPLE}
                             rules={[variables.RULES.EMPTY]}
                             label="Cơ sở áp dụng"
+                            onChange={this.onChangeBranch}
                           />
                         </Pane>
                         <Pane className="col-lg-12">

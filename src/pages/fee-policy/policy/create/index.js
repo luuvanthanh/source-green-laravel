@@ -19,7 +19,7 @@ import { variables, Helper } from '@/utils';
 import TuitionTable from './tables/tuition';
 import FoodTable from './tables/food';
 import OtherTable from './tables/other';
-import BusTable from './tables/bus';
+// import BusTable from './tables/bus';
 
 const { TabPane } = Tabs;
 
@@ -33,7 +33,7 @@ const Index = memo(() => {
       loading: loading.effects,
       menuLeftFeePolicy: menu.menuLeftFeePolicy,
       yearsSchool: schoolYear.data,
-      branches: OPchildren.branches
+      branches: OPchildren.branches,
     }),
   );
 
@@ -61,7 +61,6 @@ const Index = memo(() => {
       },
     });
   }, []);
-
 
   useEffect(() => {
     if (params?.id) {
@@ -215,18 +214,18 @@ const Index = memo(() => {
         />
       ),
     },
-    {
-      id: 'buss',
-      name: 'Tiền xe bus',
-      component: (
-        <BusTable
-          moneyMeal={moneyBus}
-          setMoneyMeal={setMoneyBus}
-          error={errorTable.food}
-          checkValidate={checkValidate}
-        />
-      ),
-    },
+    // {
+    //   id: 'buss',
+    //   name: 'Tiền xe bus',
+    //   component: (
+    //     <BusTable
+    //       moneyMeal={moneyBus}
+    //       setMoneyMeal={setMoneyBus}
+    //       error={errorTable.food}
+    //       checkValidate={checkValidate}
+    //     />
+    //   ),
+    // },
     {
       id: 'other',
       name: 'Chi tiết phí khác',

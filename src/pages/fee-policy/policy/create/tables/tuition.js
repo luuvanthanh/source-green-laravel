@@ -13,12 +13,9 @@ import { variables } from '@/utils';
 
 const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
   const dispatch = useDispatch();
-  const {
-    classes,
-    paymentForm
-  } = useSelector(({ classType, paymentMethod }) => ({
+  const { classes, paymentForm } = useSelector(({ classType, paymentMethod }) => ({
     classes: classType.data,
-    paymentForm: paymentMethod.data
+    paymentForm: paymentMethod.data,
   }));
 
   useEffect(() => {
@@ -47,7 +44,7 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
     const newFeeDetail = [...feeDetail];
     newFeeDetail[index] = {
       ...record,
-      [name]: value
+      [name]: value,
     };
     if (error) {
       checkValidate(newFeeDetail, 'tuition');
@@ -56,7 +53,7 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
   };
 
   const removeLine = (record) => {
-    const newFeeDetail = [...feeDetail].filter(item => item.id !== record.id);
+    const newFeeDetail = [...feeDetail].filter((item) => item.id !== record.id);
     setFeeDetail(newFeeDetail);
   };
 
@@ -77,11 +74,11 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
             value={record?.classTypeId}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !(record?.classTypeId) && (
+          {error && !record?.classTypeId && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
-      )
+      ),
     },
     {
       title: 'Hình thức',
@@ -99,11 +96,11 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
             value={record?.paymentFormId}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !(record?.paymentFormId) && (
+          {error && !record?.paymentFormId && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
-      )
+      ),
     },
     {
       title: 'Nội dung',
@@ -118,11 +115,11 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
             value={record?.content}
             onChange={(e) => onChange(e, record, 'content')}
           />
-          {error && !(record?.content) && (
+          {error && !record?.content && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
-      )
+      ),
     },
     {
       title: 'Thời gian hiệu lực',
@@ -141,7 +138,7 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
-      )
+      ),
     },
     {
       title: 'Học sinh cũ (đ)',
@@ -156,11 +153,11 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
             value={record?.oldStudent}
             onChange={(e) => onChange(e, record, 'oldStudent')}
           />
-          {error && !(record?.oldStudent) && (
+          {error && !record?.oldStudent && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
-      )
+      ),
     },
     {
       title: 'Học sinh mới (đ)',
@@ -175,11 +172,11 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
             value={record?.newStudent}
             onChange={(e) => onChange(e, record, 'newStudent')}
           />
-          {error && !(record?.newStudent) && (
+          {error && !record?.newStudent && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
-      )
+      ),
     },
     {
       title: '',
@@ -192,8 +189,8 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
             removeLine(record);
           }}
         />
-      )
-    }
+      ),
+    },
   ]);
 
   const addLine = () => {
@@ -201,13 +198,13 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
       ...feeDetail,
       {
         id: uuidv4(),
-        classTypeId: "",
-        paymentFormId: "",
-        content: "",
+        classTypeId: '',
+        paymentFormId: '',
+        content: '',
         rangeDate: [],
-        oldStudent: "",
-        newStudent: ""
-      }
+        oldStudent: '',
+        newStudent: '',
+      },
     ]);
   };
 
@@ -224,12 +221,7 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
         scroll={{ x: '100%' }}
       />
       <Pane className="m20">
-        <Button
-          className="btn-create"
-          color="success"
-          icon="plus"
-          onClick={addLine}
-        >
+        <Button className="btn-create" color="success" icon="plus" onClick={addLine}>
           Thêm dòng
         </Button>
       </Pane>

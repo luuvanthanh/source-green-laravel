@@ -342,11 +342,24 @@ class Index extends PureComponent {
 
   handleCancel = () => this.setStateData({ visible: false });
 
+  onChangDataSelect = () => {
+    const { event } = this.props;
+    let sum = [];
+    _.forEachRight(event, (value) => {
+      sum = sum?.concat(value?.eventTimetables);
+    });
+    const a = sum?.map((i, index) => (
+      <Option value={i?.id} key={index}>
+        {i?.title}
+      </Option>
+    ));
+    return a;
+  };
+
   render() {
     const {
       data,
       error,
-      event,
       pagination,
       match: { params },
       loading: { effects },
@@ -371,13 +384,7 @@ class Index extends PureComponent {
                 onChange={(e) => this.onChangeSelectSearch(e)}
                 className="w-100"
               >
-                {event.map((item, index) =>
-                  item?.eventTimetables?.map((i) => (
-                    <Option value={i?.id} key={index}>
-                      {i?.title}
-                    </Option>
-                  )),
-                )}
+                {this.onChangDataSelect()}
               </Select>
 
               {

@@ -203,9 +203,26 @@ const Index = memo(
                             <span className="font-weight-bold">Nội dung</span>
                           </label>
                         </Pane>
-                        <div  className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
+                        <div className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
                       </Pane>
                     </Pane>
+                    {
+                      details?.isScheduled && (
+                        <Pane className={csx('row', 'border-bottom', 'py15')}>
+                          <Pane className="col-lg-12">
+                            <Pane className="ant-col ant-form-item-label">
+                              <label>
+                                <span className="font-weight-bold">Hẹn giờ gửi</span>
+                              </label>
+                            </Pane>
+                            <div className='d-flex'>
+                              <p className="mb0">  {Helper.getDate(details.scheduleSendingDate, variables.DATE_FORMAT.DATE)},</p>
+                              <p className="mb0 ml5">{details.scheduleSendingTime}</p>
+                            </div>
+                          </Pane>
+                        </Pane>
+                      )
+                    }
                   </Pane>
                 </Pane>
               </Pane>

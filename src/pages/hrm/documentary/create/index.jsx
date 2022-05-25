@@ -19,7 +19,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 const { Item: FormItemAntd } = Form;
-
+const { Item: ListItem } = List;
 function Index() {
   const [formRef] = Form.useForm();
   const dispatch = useDispatch();
@@ -51,27 +51,25 @@ function Index() {
     branchId: null,
     divisionId: null,
   });
+  const [search, setSearch] = useState({
+    branchId: null,
+    divisionId: null,
+  });
 
   const onChangeEditor = (value) => {
     setContent(value);
   };
 
-  const debouncedSearchKeyWorkEmployee = debounce((value) => {
-    setSearchEmployee({ ...searchEmployee, loading: true });
+  const debouncedSearchKeyWorkEmployee = debounce((e) => {
+    console.log("searchEmployee", searchEmployee);
     dispatch({
       type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
-      payload: {
-        fullName: value?.trim(),
-      },
-      callback: (response) => {
-        if (response) {
-          setEmployees(response?.parsePayload);
-          setSearchEmployee({
-            ...searchEmployee,
-            total: response.totalCount,
-            page: variables.PAGINATION.PAGE,
-            limit: variables.PAGINATION.PAGE_SIZE,
-          });
+      payload: { fullName: e, branchId: searchEmployee?.branchId, divisionId: searchEmployee?.divisionId },
+      callback: (res) => {
+        if (res) {
+          setEmployees(res?.parsePayload?.map(k => ({
+            ...k,
+          })));
         }
       },
     });
@@ -95,25 +93,34 @@ function Index() {
 
   useEffect(() => {
     setSearchEmployee({ ...searchEmployee, loading: true });
-    if (!params.id) {
-      dispatch({
-        type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
-        payload: {
-          ...searchEmployee,
-        },
-        callback: (response) => {
-          if (response) {
-            setEmployees(response?.parsePayload);
-            setSearchEmployee({
-              ...searchEmployee,
-              total: response.pagination.total,
-              loading: false,
-            });
-          }
-        },
-      });
-    }
-  }, []);
+    dispatch({
+      type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
+      payload: {
+        ...searchEmployee,
+      },
+      callback: (response) => {
+        if (response) {
+          setEmployees(response?.parsePayload);
+          setSearchEmployee({
+            ...searchEmployee,
+            total: response.pagination.total,
+            loading: false,
+          });
+        }
+      },
+    });
+  }, [search]);
+  useEffect(() => {
+    dispatch({
+      type: 'HRMdocumentaryAdd/GET_EMPLOYEE',
+      payload: {},
+      callback: (response) => {
+        if (response) {
+          setSentEmployees(response?.parsePayload);
+        }
+      },
+    });
+  }, [params?.id]);
 
   const changeCheckboxEmployee = (id) => {
     setEmployees(
@@ -169,7 +176,7 @@ function Index() {
     setSearchEmployee({ ...searchEmployee, loading: true });
     if (value) {
       dispatch({
-        type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
+        type: 'HRMdocumentaryAdd/GET_EMPLOYEE',
         payload: {
           divisionId: value,
         },
@@ -183,29 +190,8 @@ function Index() {
   };
 
   const onChangeBranch = (value) => {
-    setSearchEmployee({ ...searchEmployee, loading: true });
-    dispatch({
-      type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
-      payload: {
-        ...searchEmployee,
-        branchId: value,
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.PAGE_SIZE,
-      },
-      callback: (response) => {
-        if (response) {
-          setEmployees(response.parsePayload.filter((item) => item.checked).map((item) => item.id));
-          setSearchEmployee({
-            ...searchEmployee,
-            page: variables.PAGINATION.PAGE,
-            limit: variables.PAGINATION.PAGE_SIZE,
-            branchId: value,
-            total: response.pagination.total,
-            loading: false,
-          });
-        }
-      },
-    });
+    setSearch({ ...search, branchId: value });
+    setSearchEmployee({ ...searchEmployee, loading: true, branchId: value, page: 1, limit: 10, total: 0 });
     setEmployees(
       employees?.map((item) => {
         const itemEmloyee = employeesActive?.find((itemE) => itemE.id === item.id);
@@ -218,29 +204,8 @@ function Index() {
   };
 
   const onChangeDivision = (value) => {
-    setSearchEmployee({ ...searchEmployee, loading: true });
-    dispatch({
-      type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
-      payload: {
-        ...searchEmployee,
-        divisionId: value,
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.PAGE_SIZE,
-      },
-      callback: (response) => {
-        if (response) {
-          setEmployees(response.parsePayload);
-          setSearchEmployee({
-            ...searchEmployee,
-            page: variables.PAGINATION.PAGE,
-            limit: variables.PAGINATION.PAGE_SIZE,
-            divisionId: value,
-            total: response.pagination.total,
-            loading: false,
-          });
-        }
-      },
-    });
+    setSearch({ ...search, divisionId: value });
+    setSearchEmployee({ ...searchEmployee, loading: true, divisionId: value, page: 1, limit: 10, total: 0 });
   };
 
   const onRemoveFile = () => {
@@ -319,50 +284,21 @@ function Index() {
         type: 'HRMdocumentaryAdd/GET_DETAILS',
         payload: params,
         callback: (response) => {
-          if (response.parsePayload?.sentDivisionId) {
-            dispatch({
-              type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
-              payload: {},
-              callback: (response) => {
-                if (response) {
-                  setSentEmployees(response.parsePayload);
-                }
-              },
-            });
-          }
-          if (response.parsePayload?.receiveDivisionId && response.parsePayload?.branchId) {
-            dispatch({
-              type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
-              payload: {
-                ...searchEmployee,
-                divisionId: response.parsePayload?.receiveDivisionId,
-                branchId: response.parsePayload?.receiveDivisionId,
-                page: variables.PAGINATION.PAGE,
-                limit: variables.PAGINATION.PAGE_SIZE,
-              },
-              callback: (response) => {
-                if (response) {
-                  setEmployees(response.parsePayload);
-                  setSearchEmployee({
-                    ...searchEmployee,
-                    page: variables.PAGINATION.PAGE,
-                    limit: variables.PAGINATION.PAGE_SIZE,
-                    divisionId: response.parsePayload?.receiveDivisionId,
-                    branchId: response.parsePayload?.receiveDivisionId,
-                    total: response.pagination.total,
-                    loading: false,
-                  });
-                }
-              },
-            });
-          }
-          if (response.parsePayload?.receiveDivisionId) {
-            onChangeDivision(response.parsePayload?.receiveDivisionId);
-          }
-          if (response.parsePayload?.branchId) {
-            onChangeBranch(response.parsePayload?.branchId);
-          }
           if (response) {
+            const check = response?.parsePayload?.employee;
+            dispatch({
+              type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
+              payload: { branchId: response?.parsePayload?.branchId, divisionId: response?.parsePayload?.receiveDivisionId, loading: false, },
+              callback: (res) => {
+                if (res) {
+                  setEmployees(res?.parsePayload?.map(k => ({
+                    ...k,
+                    checked: check?.filter(i => i?.id === k?.id)?.length > 0,
+                  })));
+                  setSearchEmployee({ ...searchEmployee, branchId: response?.parsePayload?.branchId, divisionId: response?.parsePayload?.receiveDivisionId, });
+                }
+              },
+            });
             formRef.setFieldsValue({
               typeOfDocument: response.parsePayload?.typeOfDocument,
               topic: response.parsePayload?.topic,
@@ -380,18 +316,6 @@ function Index() {
       });
     }
   }, [params.id]);
-
-  useEffect(() => {
-    setEmployees(
-      employees?.map((item) => {
-        const itemEmloyee = employeesActive?.find((itemE) => itemE.id === item.id);
-        return {
-          ...item,
-          checked: !!itemEmloyee,
-        };
-      }),
-    );
-  }, [params.id && !isEmpty(employeesActive) && !isEmpty(employees)]);
 
   return (
     <>
@@ -493,47 +417,43 @@ function Index() {
                   </Pane>
                   {!isAllEmployees && (
                     <Pane className="border-bottom">
-                      <Loading
-                        loading={loading['HRMdocumentaryAdd/GET_EMPLOYEES']}
-
-                      >
-                        <Scrollbars autoHeight autoHeightMax="40vh">
-                          <InfiniteScroll
-                            hasMore={!searchEmployee.loading && searchEmployee.hasMore}
-                            initialLoad={searchEmployee.loading}
-                            loadMore={handleInfiniteOnLoad}
-                            pageStart={0}
-                            useWindow={false}
-                          >
-                            {employees?.map(({ id, fullName, positionLevel, fileImage }) => {
-                              const checked = employeesActive.find((item) => item.id === id);
-
-                              return (
-                                <List.Item key={id} className="border-bottom">
-                                  <Pane className="px20 w-100 d-flex align-items-center">
-                                    <Checkbox
-                                      defaultChecked={checked}
-                                      className="mr15"
-                                      onChange={() => changeCheckboxEmployee(id)}
-                                    />
-                                    <Pane className="d-flex align-items-center">
-                                      <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                      <Pane className="ml15">
-                                        <h3 className="font-weight-bold" style={{ fontSize: '14px' }}>
-                                          {fullName}
-                                        </h3>
-                                        <Text size="small" style={{ color: '#7a7e84' }}>
-                                          {head(positionLevel)?.position?.name}
-                                        </Text>
-                                      </Pane>
+                      <Scrollbars autoHeight autoHeightMax="40vh">
+                        <InfiniteScroll
+                          hasMore={!searchEmployee.loading && searchEmployee.hasMore}
+                          initialLoad={searchEmployee.loading}
+                          loadMore={handleInfiniteOnLoad}
+                          pageStart={0}
+                          useWindow={false}
+                        >
+                          <List
+                            rules={[variables.RULES.EMPTY]}
+                            loading={searchEmployee.loading}
+                            dataSource={employees}
+                            renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
+                              <ListItem key={id} className={styles.listItem}>
+                                <Pane className="w-100 d-flex align-items-center">
+                                  <Checkbox
+                                    defaultChecked={checked}
+                                    className="mr15 ml15"
+                                    onChange={() => changeCheckboxEmployee(id)}
+                                  />
+                                  <Pane className="d-flex align-items-center">
+                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                    <Pane className="ml15">
+                                      <h3 className="font-weight-bold" style={{ fontSize: '14px' }}>
+                                        {fullName}
+                                      </h3>
+                                      <Text size="small" style={{ color: '#7a7e84' }}>
+                                        {head(positionLevel)?.position?.name}
+                                      </Text>
                                     </Pane>
                                   </Pane>
-                                </List.Item>
-                              );
-                            })}
-                          </InfiniteScroll>
-                        </Scrollbars>
-                      </Loading>
+                                </Pane>
+                              </ListItem>
+                            )}
+                          />
+                        </InfiniteScroll>
+                      </Scrollbars>
                     </Pane>
                   )}
                 </Pane>

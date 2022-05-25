@@ -59,6 +59,7 @@ const Index = memo(() => {
     dayAdmission: '',
     code: '',
     branchName: '',
+    branchId: "",
     classType: '',
     className: '',
     classTypeId: '',
@@ -109,6 +110,7 @@ const Index = memo(() => {
               className: res?.student?.classStudent?.class?.name || '',
               classTypeId: res?.student?.classStudent?.class?.classType?.id || '',
               expectedToCollectMoney: res?.expectedToCollectMoney || [],
+              branchId: res?.student?.classStudent?.class?.branchId || '',
             }));
             formRef.current.setFieldsValue({
               ...res,
