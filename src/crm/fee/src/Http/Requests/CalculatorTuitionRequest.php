@@ -26,9 +26,10 @@ class CalculatorTuitionRequest extends FormRequest
         return [
             'class_type_id' => 'required|uuid|exists:class_types,id',
             'school_year_id' => 'required|uuid|exists:school_years,id',
+            'branch_id' => 'nullable|exists:branches,id',
             'day_admission' => 'required|date|date_format:Y-m-d',
             'details' => 'required|string',
-            'student' => 'required|in:new,old',
+            'student' => 'required|in:new,old'
         ];
     }
 }
