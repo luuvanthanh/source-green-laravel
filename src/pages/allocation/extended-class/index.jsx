@@ -16,6 +16,7 @@ import { useHistory, useLocation } from 'umi';
 import { v4 as uuidv4 } from 'uuid';
 import { SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import Loading from '@/components/CommonComponent/Loading';
 import styles from '@/assets/styles/Common/common.scss';
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
 import HelperModule from '../utils/Helper';
@@ -39,8 +40,9 @@ const Index = memo(() => {
   const [listTeacher, setListTeacher] = useState([]);
   const [listStudent, setListStudent] = useState([]);
 
-  const [{ classes, branches }, { defaultBranch }] = useSelector(({ extendedClass, user }) => [
+  const [{ classes, branches }, loading, { defaultBranch }] = useSelector(({ extendedClass, user, loading: { effects } }) => [
     extendedClass,
+    effects,
     user,
   ]);
 
@@ -143,7 +145,7 @@ const Index = memo(() => {
           dispatch({
             type: 'categories/GET_TEACHERS',
             payload: {
-              hasClass: 'false',
+              // hasClass: 'false',
               include: Helper.convertIncludes(['positionLevelNow']),
               branchId: search.branchId,
               positionId: pos.id,
@@ -618,41 +620,43 @@ const Index = memo(() => {
                 </div>
               )}
               {!isEmpty(teachers) && (
-                <Droppable droppableId="TEACHER">
-                  {(provided) => (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className={stylesModule.sidebar__list}
-                    >
-                      {formatTextSearch.map((item, index) => (
-                        <Draggable key={item.id} draggableId={item.id} index={index}>
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <div className={stylesModule.sidebar__item}>
-                                <Avatar
-                                  size={32}
-                                  shape="circle"
-                                  src={
-                                    Helper.getPathAvatarJson(item?.fileImage)
-                                      ? `${API_UPLOAD}${Helper.getPathAvatarJson(item?.fileImage)}`
-                                      : '/images/avatar-default.png'
-                                  }
-                                />
-                                <p className={stylesModule.sidebar_norm}>{item.fullName}</p>
+                <Loading loading={loading['categories/GET_TEACHERS']} params={{ type: 'container' }}>
+                  <Droppable droppableId="TEACHER">
+                    {(provided) => (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className={stylesModule.sidebar__list}
+                      >
+                        {formatTextSearch.map((item, index) => (
+                          <Draggable key={item.id} draggableId={item.id} index={index}>
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <div className={stylesModule.sidebar__item}>
+                                  <Avatar
+                                    size={32}
+                                    shape="circle"
+                                    src={
+                                      Helper.getPathAvatarJson(item?.fileImage)
+                                        ? `${API_UPLOAD}${Helper.getPathAvatarJson(item?.fileImage)}`
+                                        : '/images/avatar-default.png'
+                                    }
+                                  />
+                                  <p className={stylesModule.sidebar_norm}>{item.fullName}</p>
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </Loading>
               )}
             </div>
             <div className={stylesModule.main}>

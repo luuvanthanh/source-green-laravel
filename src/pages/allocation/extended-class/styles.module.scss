@@ -1,4 +1,4 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 .wrapper {
   display: flex;
@@ -6,11 +6,13 @@
 
 .sidebar {
   width: 220px;
+  height: auto;
+  min-height: 500px;
   min-width: 200px;
   border-radius: 2px;
   background-color: $background-white;
   &__title {
-    font-family: 'ProximaNovaBold';
+    font-family: "ProximaNovaBold";
     font-size: 14px;
     line-height: 22px;
     padding: 15px 20px;
@@ -164,7 +166,7 @@
       text-align: center;
       border: 1px solid #dfe3ec;
       padding: 3px;
-      font-family: 'ProximaNovaBold';
+      font-family: "ProximaNovaBold";
     }
     .schedule__subTitle {
       font-weight: 600;
@@ -207,7 +209,7 @@
       background-color: #ffffff;
     }
     &__title {
-      font-family: 'ProximaNovaBold';
+      font-family: "ProximaNovaBold";
       font-size: 13px;
       line-height: 18px;
     }

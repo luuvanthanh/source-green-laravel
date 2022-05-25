@@ -164,8 +164,7 @@ const Index = memo(() => {
     const tuition = checkValidate(feeDetail, 'tuition');
     const food = checkValidate(moneyMeal, 'food');
     const other = checkValidate(otherMoneyDetail, 'other');
-    const bus = checkValidate(moneyBus, 'bus');
-    if (!!tuition || !!food || !!other || !!bus) {
+    if (!!tuition || !!food || !!other) {
       return;
     }
     dispatch({
