@@ -152,7 +152,7 @@ const Index = memo(() => {
 
 
   useEffect(() => {
-    if (params.id) {
+    if (params.id && classes?.length > 0) {
       dispatch({
         type: 'CRMnewStudentAdd/GET_DETAILS',
         payload: {
@@ -162,6 +162,12 @@ const Index = memo(() => {
           if (res?.id) {
             setCheckData(false);
             setTuition(res?.tuition);
+            const checkClass = classes?.map(i => (
+              +i?.from <= res?.studentInfo?.age_month &&
+              +i?.to > res?.studentInfo?.age_month && (i)
+            ));
+            const a = checkClass?.filter(i => i?.id);
+            setDataClass(a);
             setIdRes(res?.expected_to_collect_money);
             const pather = res?.admissionRegister?.parentInfo?.find((i) => i.sex === 'MALE');
             const mother = res?.admissionRegister?.parentInfo?.find((i) => i.sex === 'FEMALE');
@@ -213,7 +219,7 @@ const Index = memo(() => {
         },
       });
     }
-  }, [params.id]);
+  }, [params.id, classes]);
 
 
   const checkProperties = (object) => {
