@@ -25,6 +25,11 @@ class ClassType extends UuidModel
 
     public function classes()
     {
-        return $this->hasMany(Classes::class,'ClassTypeId');
+        return $this->hasMany(Classes::class, 'ClassTypeId');
+    }
+
+    public function chargeOldStudent()
+    {
+        return $this->hasMany(ChargeOldStudent::class, 'ClassTypeId');
     }
 }

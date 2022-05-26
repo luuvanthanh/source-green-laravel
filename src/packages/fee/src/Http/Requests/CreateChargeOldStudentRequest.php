@@ -29,13 +29,16 @@ class CreateChargeOldStudentRequest extends FormRequest
             'studentId' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $chargeOldStudent = ChargeOldStudent::where('StudentId', $value)->where('SchoolYearId', request()->schoolYearId)->first();
+                    $chargeOldStudent = ChargeOldStudent::where('StudentId', $value)->where('SchoolYearId', request()->schoolYearId)
+                        ->where('ClassTypeId', $this->classTypeId)->first();
 
                     if (!is_null($chargeOldStudent)) {
-                        return $fail('Học sinh chỉ có thể tạo được một lần cho một năm học.');
+                        return $fail('Học sinh đã được tính phí theo cở sở này trong năm.');
                     }
                 },
             ],
+            'branchId' => 'required',
+            'classTypeId' => 'required'
         ];
     }
 }

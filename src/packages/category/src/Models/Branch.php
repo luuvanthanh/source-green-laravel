@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\ChargeOldStudent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Branch extends UuidModel
@@ -30,4 +31,9 @@ class Branch extends UuidModel
      * @var array
      */
     protected $hidden = [];
+
+    public function chargeOldStudent()
+    {
+        return $this->hasMany(ChargeOldStudent::class, 'BranchId');
+    }
 }
