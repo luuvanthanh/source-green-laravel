@@ -380,7 +380,7 @@ const Index = memo(() => {
         width: 200,
         render: (record) => (
           <Text size="normal">
-            {Helper.getDate(record.month, variables.DATE_FORMAT.DATE_MONTH)}
+            {Helper.getDate(record.month, variables.DATE_FORMAT.MONTH_YEAR)}
           </Text>
         ),
       },
