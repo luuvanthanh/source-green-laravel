@@ -13,7 +13,7 @@ use GGPHP\Fee\Models\ClassType;
  */
 class ClassTypeTransformer extends BaseTransformer
 {
-    protected $availableIncludes = ['classes'];
+    protected $availableIncludes = ['classes', 'chargeOldStudent'];
 
     protected $defaultIncludes = [];
 
@@ -25,5 +25,10 @@ class ClassTypeTransformer extends BaseTransformer
     public function includeClasses(ClassType $classType)
     {
         return $this->collection($classType->classes, new ClassesTransformer, 'Classes');
+    }
+
+    public function includeChargeOldStudent(ClassType $classType)
+    {
+        return $this->collection($classType->chargeOldStudent, new ChargeOldStudentTransformer, 'ChargeOldStudent');
     }
 }

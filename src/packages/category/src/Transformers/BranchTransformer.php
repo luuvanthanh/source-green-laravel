@@ -4,6 +4,7 @@ namespace GGPHP\Category\Transformers;
 
 use GGPHP\Category\Models\Branch;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\ChargeOldStudentTransformer;
 
 /**
  * Class BranchTransformer.
@@ -19,4 +20,11 @@ class BranchTransformer extends BaseTransformer
      * @var array
      */
     protected $defaultIncludes = [];
+
+    protected $availableIncludes = ['chargeOldStudent'];
+
+    public function includeChargeOldStudent(Branch $model)
+    {
+        return $this->collection($model->chargeOldStudent, new ChargeOldStudentTransformer, 'ChargeOldStudent');
+    }
 }
