@@ -519,7 +519,7 @@ const Index = memo(() => {
         className: 'min-width-150',
         width: 200,
         render: (record) => (
-          <Text size="normal">{Helper.getDate(record.month, variables.DATE_FORMAT.DATE_MONTH)}</Text>
+          <Text size="normal">{Helper.getDate(record.month, variables.DATE_FORMAT.MONTH_YEAR)}</Text>
         ),
       },
       {
