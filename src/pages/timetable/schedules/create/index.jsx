@@ -105,7 +105,7 @@ const Index = memo(
             originValue: values.scheduleSendingDate,
             targetValue: '00:00:00',
           }),
-          isUTC: false,
+          isUTC: true,
         }),
         scheduleSendingTime: Helper.getDateTime({
           value: Helper.setDate({
@@ -312,7 +312,7 @@ const Index = memo(
         limit: 10,
         total: 0,
         hasMore: true,
-        loading: false, branchId: searchStudents?.branchId, class: value
+        loading: false, branchId: searchStudents?.BranchId, class: value
       });
     };
 
@@ -355,8 +355,8 @@ const Index = memo(
                 rangeTime: res?.startTime && res?.endTime ? [moment(res?.startTime), moment(res?.endTime)] : null,
                 time: moment(res?.scheduleSendingTime, variables.DATE_FORMAT.HOUR),
                 object: res?.forClass ? 'forClass' : 'forPerson',
-                BranchId: res?.branch?.id || null,
-                Class: res?.class?.id || null,
+                branchId: res?.branch?.id || null,
+                classId: res?.class?.id || null,
                 classes,
               });
               setIsTime(res?.isScheduled);
@@ -527,7 +527,7 @@ const Index = memo(
                         <Pane className="col-lg-6">
                           <FormItem
                             label="Lớp"
-                            name="class"
+                            name="classId"
                             type={variables.SELECT}
                             data={classes}
                             onChange={onChangeClass}

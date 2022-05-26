@@ -100,7 +100,7 @@ export const QuillToolbar = () => (
       </select>
     </span>
     <span className="ql-formats">
-      <button className="ql-bold" type />
+      <button className="ql-bold" />
       <button className="ql-italic" />
       <button className="ql-underline" />
       <button className="ql-strike" />

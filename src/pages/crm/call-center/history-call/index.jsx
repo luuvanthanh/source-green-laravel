@@ -155,8 +155,8 @@ const Index = () => {
           <p
             className={
               record?.call_status === variablesModule.STATUS.canceled &&
-              record?.direction === variablesModule.STATUS.inbound &&
-              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                record?.direction === variablesModule.STATUS.inbound &&
+                record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
                 ? stylesModule['reminder-bg']
                 : ''
             }
@@ -173,8 +173,8 @@ const Index = () => {
           <p
             className={
               record?.call_status === variablesModule.STATUS.canceled &&
-              record?.direction === variablesModule.STATUS.inbound &&
-              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                record?.direction === variablesModule.STATUS.inbound &&
+                record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
                 ? stylesModule['reminder-bg']
                 : ''
             }
@@ -185,14 +185,14 @@ const Index = () => {
       },
       {
         title: 'Loại cuộc gọi',
-        key: 'call_type',
+        key: 'direction',
         width: 150,
         render: (record) => (
           <p
             className={
               record?.call_status === variablesModule.STATUS.canceled &&
-              record?.direction === variablesModule.STATUS.inbound &&
-              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                record?.direction === variablesModule.STATUS.inbound &&
+                record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
                 ? stylesModule['reminder-bg']
                 : ''
             }
@@ -209,8 +209,8 @@ const Index = () => {
           <p
             className={
               record?.call_status === variablesModule.STATUS.canceled &&
-              record?.direction === variablesModule.STATUS.inbound &&
-              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                record?.direction === variablesModule.STATUS.inbound &&
+                record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
                 ? stylesModule['reminder-bg']
                 : ''
             }
@@ -233,8 +233,8 @@ const Index = () => {
           <p
             className={
               record?.call_status === variablesModule.STATUS.canceled &&
-              record?.direction === variablesModule.STATUS.inbound &&
-              record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
+                record?.direction === variablesModule.STATUS.inbound &&
+                record?.hangup_cause === variablesModule.SOCKET_STATUS.originator_cancel
                 ? stylesModule['reminder-bg']
                 : ''
             }
@@ -305,7 +305,7 @@ const Index = () => {
               switchboard: query?.switchboard || null,
               extension_id: query?.extension_id || null,
               employee_id: query?.employee || null,
-              call_type: query?.call_type || null,
+              direction: query?.direction || null,
               call_status: query?.call || null,
             }}
             layout="vertical"
@@ -358,8 +358,8 @@ const Index = () => {
               <div className="col-lg-3">
                 <FormItem
                   data={[{ id: null, name: 'Tất cả cuộc gọi' }, ...variables.DIRECTION_TYPE]}
-                  name="call_type"
-                  onChange={(e) => onChangeSelect(e, 'call_type')}
+                  name="direction"
+                  onChange={(e) => onChangeSelect(e, 'direction')}
                   type={variables.SELECT}
                   allowClear={false}
                 />

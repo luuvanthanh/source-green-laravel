@@ -145,7 +145,7 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          if(type) {
+          if (type) {
             setSearch((prev) => ({
               ...prev,
               classId: head(response)?.id,
@@ -296,7 +296,7 @@ const Index = memo(() => {
             groupClass.timetableDetailActivityGroupByDayOfWeeks.forEach((itemDay) => {
               objectDataDay[itemDay.dayOfWeek].data = objectDataDay[itemDay.dayOfWeek].data.concat({
                 startTime: item?.startTime,
-                endTime: item?.endTime,
+
                 class: itemDay.timetableActivityDetail,
               });
             });
@@ -317,9 +317,9 @@ const Index = memo(() => {
                 moment(Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY)).isBefore(
                   moment(betweenYear?.toDate),
                 ) &&
-                moment(Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY)).isAfter(
-                  moment(betweenYear?.fromDate),
-                )
+                  moment(Helper.getDate(time, variables.DATE_FORMAT.YEAR_MONTH_DAY)).isAfter(
+                    moment(betweenYear?.fromDate),
+                  )
                   ? objectDataDay[dayName[i].value].data
                   : [],
             };
@@ -739,7 +739,7 @@ const Index = memo(() => {
               dataIndex: 'Saturday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: () => {},
+              render: () => { },
             },
             {
               title: (
@@ -752,7 +752,7 @@ const Index = memo(() => {
               dataIndex: 'Sunday',
               width: 100,
               className: classnames('min-width-100', styles.calendar),
-              render: () => {},
+              render: () => { },
             },
             {
               title: (
@@ -765,7 +765,7 @@ const Index = memo(() => {
               dataIndex: 'acction',
               width: 40,
               className: 'max-width-40',
-              render: () => {},
+              render: () => { },
             },
           ];
           if (!showColumn) {

@@ -119,6 +119,7 @@ const General = memo(() => {
           },
           callback: (response, error) => {
             if (response) {
+              history.push('/quan-ly-nhan-su/nhan-vien');
               dispatch({
                 type: 'HRMusersAdd/GET_DETAILS',
                 payload: params,

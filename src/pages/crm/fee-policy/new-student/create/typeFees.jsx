@@ -104,7 +104,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
     setData((prev) =>
       prev.map((item) =>
         item.test === record.test && item.id === record.id
-          ? { ...item, paymentFormId: e, money : 0 }
+          ? { ...item, paymentFormId: e, money: 0 }
           : { ...item },
       ),
     );
@@ -130,6 +130,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
       dispatch({
         type: 'CRMnewStudentAdd/GET_MONEY_FEE',
         payload: {
+          branch_id: details?.branch_id,
           class_type_id,
           school_year_id,
           day_admission: Helper.getDateTime({
