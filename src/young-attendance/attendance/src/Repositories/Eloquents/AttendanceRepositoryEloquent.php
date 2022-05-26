@@ -361,7 +361,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             });
         }
 
-        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
+        //$this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '=', Student::OFFICAL);
         if (!empty($attributes['excel']) && $attributes['excel'] == 'true') {
             $inOutHistories = $this->studentRepositoryEloquent->model->get()->sortByDesc('CreationTime');
             return $inOutHistories;
@@ -677,7 +678,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
     {
         $student = Student::query();
 
-        $student->where('Status', '!=', Student::STORE);
+        //$student->where('Status', '!=', Student::STORE);
+        $student->where('Status', '=', Student::OFFICAL);
 
         if (!empty($attributes['classId'])) {
             $classId = explode(',', $attributes['classId']);
@@ -726,7 +728,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         $class = $queryClass->where('IsDeleted', false)->get();
 
         $class->map(function ($item) use ($attributes) {
-            $student = Student::where('ClassId', $item->Id)->where('Status', '!=', Student::STORE)->get();
+            //$student = Student::where('ClassId', $item->Id)->where('Status', '!=', Student::STORE)->get();
+            $student = Student::where('ClassId', $item->Id)->where('Status', '=', Student::OFFICAL)->get();
 
             $attendanceHaveIn = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
                 $query->where('Status', Attendance::STATUS['HAVE_IN']);
