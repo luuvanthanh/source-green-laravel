@@ -32,6 +32,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::group(['middleware' => []], function () {
                 \Route::resource('training-forms', 'TrainingFormController');
                 \Route::resource('training-skills', 'TrainingSkillController');
+                \Route::resource('training-modules', 'TrainingModuleController');
             });
         });
     }
