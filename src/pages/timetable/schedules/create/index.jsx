@@ -105,7 +105,7 @@ const Index = memo(
             originValue: values.scheduleSendingDate,
             targetValue: '00:00:00',
           }),
-          isUTC: false,
+          isUTC: true,
         }),
         scheduleSendingTime: Helper.getDateTime({
           value: Helper.setDate({

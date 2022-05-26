@@ -67,7 +67,6 @@ const Index = memo(() => {
   const [dataTuition, setDataTuition] = useState([]);
   const [checkSearch, setCheckSearch] = useState(false);
   const [data, setData] = useState([]);
-  const [dataClass, setDataClass] = useState([]);
 
   const [checkData, setCheckData] = useState(true);
 
@@ -162,12 +161,6 @@ const Index = memo(() => {
           if (res?.id) {
             setCheckData(false);
             setTuition(res?.tuition);
-            const checkClass = classes?.map(i => (
-              +i?.from <= res?.studentInfo?.age_month &&
-              +i?.to > res?.studentInfo?.age_month && (i)
-            ));
-            const a = checkClass?.filter(i => i?.id);
-            setDataClass(a);
             setIdRes(res?.expected_to_collect_money);
             const pather = res?.admissionRegister?.parentInfo?.find((i) => i.sex === 'MALE');
             const mother = res?.admissionRegister?.parentInfo?.find((i) => i.sex === 'FEMALE');
@@ -189,7 +182,7 @@ const Index = memo(() => {
                 ? Helper.getDate(res?.day_admission, variables.DATE_FORMAT.DATE_VI)
                 : '',
               code: res?.student?.code || '',
-              branch_id: res?.student?.classStudent?.class?.branch?.name || '',
+              branch_id: res?.branch_id || '',
               classType: res?.student?.classStudent?.class?.classType?.name || '',
               className: res?.student?.classStudent?.class?.name || '',
               class_type_id: res?.class_type_id || '',
@@ -332,22 +325,7 @@ const Index = memo(() => {
       setFieldsValue({ range_date });
     }
   };
-  useEffect(() => {
-    if (details.branch_id?.id) {
-      dispatch({
-        type: 'CRMnewStudentAdd/GET_CLASS',
-        payload: {
-          branchId: details?.branch_id?.branch_id_hrm,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.SIZEMAX,
-        },
-      });
-    }
-  }, [details.branch_id?.id]);
 
-  const onchangeBranches = (e) => {
-
-  };
 
   const getClassByAge = (age = 0) => {
     dispatch({
@@ -382,7 +360,11 @@ const Index = memo(() => {
       +i?.to > age && (i)
     ));
     const a = checkClass?.filter(i => i?.id);
-    setDataClass(a);
+    if (a?.length > 0) {
+      formRef.current.setFieldsValue({
+        class_type_id: a[0]?.classTypeCrmId,
+      });
+    }
     formRef.current.setFieldsValue({
       age,
     });
@@ -391,7 +373,6 @@ const Index = memo(() => {
   const onchangeStudent = (e) => {
     formRef.current.resetFields();
     setTuition([]);
-    setDataClass([]);
     const { value } = e.target;
     formRef.current.setFieldsValue({
       type: value,
@@ -409,6 +390,11 @@ const Index = memo(() => {
     }
   };
 
+  const onchangeBranches = (e) => {
+    setCheckSearch(true);
+    setDetails({ ...details, branch_id: e });
+  };
+
   const selectStudent = (value) => {
     if (value && isEmpty(students)) {
       return;
@@ -421,10 +407,19 @@ const Index = memo(() => {
     const mother = response?.parentInfo?.find((i) => i?.sex === 'FEMALE');
     const checkClass = classes?.map(i => (
       +i?.from <= response?.studentInfo?.age_month &&
-      +i?.to > response?.studentInfo?.age_month && (i)
+      response?.studentInfo?.age_month < +i?.to && (i)
     ));
     const a = checkClass?.filter(i => i?.id);
-    setDataClass(a);
+    if (a?.length > 0) {
+      formRef.current.setFieldsValue({
+        class_type_id: a[0]?.classTypeCrmId,
+      });
+      const newDetails = {
+        ...details,
+        class_type_id: a[0]?.classTypeCrmId || '',
+      };
+      setDetails(newDetails);
+    }
     if (response?.id) {
       const range_date = Helper.getDateRank(
         response?.schoolYear?.start_date,
@@ -436,7 +431,7 @@ const Index = memo(() => {
         day_admission: response.date_register
           ? Helper.getDate(response.date_register, variables.DATE_FORMAT.DATE_VI)
           : '',
-        branch_id: response?.branch || '',
+        branch_id: response?.branch?.id || '',
       }));
       formRef.current.setFieldsValue({
         ...response,
@@ -452,7 +447,7 @@ const Index = memo(() => {
           variables.DATE_FORMAT.YEAR_MONTH_DAY,
         ),
         day_admission: moment(response.date_register, variables.DATE_FORMAT.YEAR_MONTH_DAY),
-        branch_id: response?.branch?.branch_id_hrm,
+        branch_id: response?.branch?.id,
         branch: response?.branch?.name,
         type,
       });
@@ -835,7 +830,7 @@ const Index = memo(() => {
                           options={['classTypeCrmId', 'name']}
                           label="Lớp học dự kiến"
                           name="class_type_id"
-                          data={dataClass}
+                          data={classes}
                           type={variables.SELECT}
                           rules={[variables.RULES.EMPTY]}
                           onChange={(e) => loadTableFees(e, 'class_type_id')}

@@ -1,6 +1,5 @@
 import request from '@/utils/requestLavarel';
 import requestApi from '@/utils/request';
-import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function add(data = {}) {
@@ -51,14 +50,10 @@ export function getBranches(params) {
   });
 }
 
-export function getClass(data) {
-  return requestApi('/classes', {
+export function getClass(params) {
+  return requestApi('/classes/by-branches', {
     method: 'GET',
-    params: {
-      bracnh: `${[data?.map((i) => i)]}`,
-      ...omit(data, 'page', 'limit'),
-      ...Helper.getPagination(data.page, data.limit),
-    },
+    params,
   });
 }
 
