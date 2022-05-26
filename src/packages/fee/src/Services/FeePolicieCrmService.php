@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Services;
 
+use GGPHP\Category\Models\Branch;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -36,10 +37,17 @@ class FeePolicieCrmService
 
     public static function update($data, $id, $token)
     {
+        if (!is_null($data->BranchId)) {
+            $branch = Branch::find($data->BranchId);
+
+            $branchIdCrm = !is_null($branch) ? $branch->BranchIdCrm : null;
+        }
+
         $params = [
             'school_year_id' => $data->SchoolYearId,
             'decision_number' => $data->DecisionNumber,
             'decision_date' => $data->DecisionDate,
+            'branch_id' => $branchIdCrm ?? null
         ];
 
         $result = Http::withToken($token)->put(self::url() . '/' . $id, $params);
