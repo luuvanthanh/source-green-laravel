@@ -96,6 +96,8 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
                 $params['dayAdmission'] = $chargeStudent->day_admission;
                 $params['expectedToCollectMoney'] = $chargeStudent->expected_to_collect_money;
                 $params['chargeStudentIdCrm'] = $chargeStudent->id;
+                $params['branchId'] = $chargeStudent->branch->branch_id_hrm;
+                $params['classTypeId'] = $chargeStudent->classType->class_type_clover_id;
 
                 $tuitions = $chargeStudent->tuition->map(function ($item) {
                     return [
@@ -144,6 +146,8 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
                 $params['dayAdmission'] = $chargeStudent->day_admission;
                 $params['expectedToCollectMoney'] = $chargeStudent->expected_to_collect_money;
                 $params['chargeStudentIdCrm'] = $chargeStudent->id;
+                $params['branchId'] = $chargeStudent->branch->branch_id_hrm;
+                $params['classTypeId'] = $chargeStudent->classType->class_type_clover_id;
 
                 $tuitions = $chargeStudent->tuition->map(function ($item) {
                     return [
