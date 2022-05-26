@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { connect, NavLink } from 'umi';
 import { Form, List, Checkbox, Spin, message } from 'antd';
 import classnames from 'classnames';
+import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -96,9 +97,11 @@ class Index extends PureComponent {
 
   fetchStudents = () => {
     const { dispatch } = this.props;
+    const { searchStudents } = this.state;
     dispatch({
       type: 'categories/GET_STUDENTS',
       payload: {
+        ...searchStudents,
         classStatus: 'NO_CLASS',
         ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
       },
@@ -219,6 +222,35 @@ class Index extends PureComponent {
     });
   };
 
+  /**
+ * Function debounce search
+ * @param {string} value value of object search
+ * @param {string} type key of object search
+ */
+  debouncedSearch = debounce((value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        searchStudents: {
+          ...prevState.searchStudents,
+          [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.fetchStudents(),
+    );
+  }, 300);
+
+  /**
+ * Function change input
+ * @param {object} e event of input
+ * @param {string} type key of object search
+ */
+  onChange = (e, type) => {
+    this.debouncedSearch(e.target.value, type);
+  };
+
+
   render() {
     const {
       loading: { effects },
@@ -280,8 +312,15 @@ class Index extends PureComponent {
                     Danh sách trẻ chưa xếp lớp
                   </Text>
                 </div>
-
-                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
+                <div className="col-lg-12 mt15">
+                  <FormItem
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    placeholder="Nhập từ khóa tìm kiếm"
+                    type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 390}>
                   <InfiniteScroll
                     hasMore={!loading && hasMore}
                     initialLoad={false}
@@ -292,7 +331,7 @@ class Index extends PureComponent {
                     <List
                       className={stylesAllocation.list}
                       dataSource={students}
-                      renderItem={({ id, fullName, age, fileImage }) => (
+                      renderItem={({ id, fullName, age, fileImage, branch, branchId, registerDate }) => (
                         <List.Item key={id}>
                           <Checkbox
                             className={stylesAllocation.checkbox}
@@ -301,8 +340,8 @@ class Index extends PureComponent {
                           <div className={stylesAllocation['group-info']}>
                             <AvatarTable
                               fileImage={Helper.getPathAvatarJson(fileImage)}
-                              fullName={fullName}
-                              description={`${age} tháng tuổi`}
+                              fullName={`${fullName} ${branchId ? ` - ${branch?.name}` : ""}`}
+                              description={`${age} tháng tuổi ${registerDate ? ` - ${Helper.getDate(registerDate, variables.DATE_FORMAT.DATE)}` : ""}`}
                             />
                           </div>
                         </List.Item>
@@ -380,7 +419,7 @@ class Index extends PureComponent {
 
                   <div className="row mt-3">
                     <div className="col-lg-6">
-                      <FormItem label="Ngày vào lớp" name="joinDate" type={variables.DATE_PICKER} rules={[variables.RULES.EMPTY]}/>
+                      <FormItem label="Ngày vào lớp" name="joinDate" type={variables.DATE_PICKER} />
                     </div>
                   </div>
                 </div>

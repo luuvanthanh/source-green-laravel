@@ -112,6 +112,7 @@ class Index extends PureComponent {
   componentDidUpdate(prevProps) {
     const {
       details,
+      dispatch,
       match: { params },
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && params.id) {
@@ -129,6 +130,11 @@ class Index extends PureComponent {
             moment(details?.startDate),
             moment(details?.endDate),
           ],
+      });
+      dispatch({
+        type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
+        payload: { branchIds: details.branch?.map(i => i?.id) },
+        callback: () => { },
       });
     }
   }
@@ -201,7 +207,14 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
-      payload: e,
+      payload: { branchIds: e },
+      callback: (response) => {
+        if (response) {
+          this.formRef.current.setFieldsValue({
+            classesId: [],
+          });
+        }
+      },
     });
   };
 

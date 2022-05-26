@@ -40,7 +40,7 @@ export default {
     }),
     SET_CLASS: (state, { payload }) => ({
       ...state,
-      dataClass: payload.items,
+      dataClass: payload,
     }),
     SET_PROBLEMS: (state, { payload }) => ({
       ...state,
@@ -116,9 +116,10 @@ export default {
         });
       }
     },
-    *GET_CLASS({ payload }, saga) {
+    *GET_CLASS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getClass, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_CLASS',
           payload: response,
