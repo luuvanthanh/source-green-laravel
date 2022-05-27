@@ -3,6 +3,7 @@
 namespace GGPHP\Clover\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\ChargeOldStudent;
 
 class Classes extends UuidModel
 {
@@ -41,5 +42,10 @@ class Classes extends UuidModel
     public function student()
     {
         return $this->hasMany(\GGPHP\Clover\Models\Student::class, 'ClassId');
+    }
+
+    public function chargeOldStudent()
+    {
+        return $this->hasMany(ChargeOldStudent::class, 'ClassId');
     }
 }

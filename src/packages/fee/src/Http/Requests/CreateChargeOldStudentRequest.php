@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Http\Requests;
 
+use GGPHP\Clover\Models\Classes;
 use GGPHP\Fee\Models\ChargeOldStudent;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -38,7 +39,19 @@ class CreateChargeOldStudentRequest extends FormRequest
                 },
             ],
             'branchId' => 'required',
-            'classTypeId' => 'required'
+            'classTypeId' => 'required',
+            'classId' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    $class = Classes::find($value);
+
+                    if (!is_null($class)) {
+                        return true;
+                    }
+
+                    return $fail('Giá trị đã chọn trong trường không hợp lệ.');
+                }
+            ]
         ];
     }
 }
