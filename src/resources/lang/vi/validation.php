@@ -109,6 +109,7 @@ return [
     'unique' => 'Trường đã có trong cơ sở dữ liệu.',
     'uploaded' => 'Trường tải lên thất bại.',
     'url' => 'Trường không giống với định dạng một URL.',
+    'check_exists' => 'Trường :attribute không hợp lệ.',
 
     /*
     |--------------------------------------------------------------------------
@@ -138,7 +139,6 @@ return [
     |
      */
 
-    'attributes' => [
-    ],
+    'attributes' => [],
 
 ];
