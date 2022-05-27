@@ -6,6 +6,7 @@ use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\TrainingTeacher\Category\Http\Requests\TrainingFormCreateRequest;
 use GGPHP\TrainingTeacher\Category\Http\Requests\TrainingFormDeleteRequest;
 use GGPHP\TrainingTeacher\Category\Http\Requests\TrainingFormUpdateRequest;
+use GGPHP\TrainingTeacher\Category\Models\TrainingForm;
 use GGPHP\TrainingTeacher\Category\Repositories\Contracts\TrainingFormRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -47,7 +48,9 @@ class TrainingFormController extends Controller
      */
     public function store(TrainingFormCreateRequest $request)
     {
-        $trainingForm = $this->trainingFormRepository->create($request->all());
+        $attributes = $request->all();
+        $attributes['type'] = TrainingForm::TYPE_TRAINING[$attributes['type']];
+        $trainingForm = $this->trainingFormRepository->create($attributes);
 
         return $this->success($trainingForm, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }

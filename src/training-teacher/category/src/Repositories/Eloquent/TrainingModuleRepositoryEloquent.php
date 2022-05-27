@@ -83,9 +83,9 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
 
             $trainingModule = TrainingModule::create($attributes);
 
-            $trainingModule->trainingModuleTrainingSkill()->sync($attributes['trainingSkill']);
+            $trainingModule->trainingModuleTrainingSkill()->sync($attributes['trainingModuleTrainingSkill']);
 
-            foreach ($attributes['trainingModuleDetail'] as $value) {
+            foreach ($attributes['trainingModuleDetail']['createRows'] as $value) {
                 $trainingModule->trainingModuleDetail()->create(['TrainingSkillDetailId' => $value]);
             }
             DB::commit();
@@ -109,9 +109,12 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
             }
 
             if (!empty($attributes['trainingModuleDetail'])) {
-                $trainingModule->trainingModuleDetail()->delete();
 
-                foreach ($attributes['trainingModuleDetail'] as $value) {
+                if (!empty($attributes['trainingModuleDetail']['deleteRows'])) {
+                    $trainingModule->trainingModuleDetail()->whereIn('Id', $attributes['trainingModuleDetail']['deleteRows'])->delete();
+                }
+
+                foreach ($attributes['trainingModuleDetail']['createRows'] as $value) {
                     $trainingModule->trainingModuleDetail()->create(['TrainingSkillDetailId' => $value]);
                 }
             }

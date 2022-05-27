@@ -28,7 +28,7 @@ class TrainingSkillCreateRequest extends FormRequest
             'name' => 'required|string',
             'detail.*.createRows' => 'array',
             'detail.*.updateRows' => 'array',
-            'detail.*.deleteRows' => 'array',
+            'detail.*.deleteRows' => 'array,',
         ];
     }
 }

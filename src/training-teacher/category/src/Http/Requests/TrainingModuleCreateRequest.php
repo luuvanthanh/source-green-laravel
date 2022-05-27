@@ -25,7 +25,7 @@ class TrainingModuleCreateRequest extends FormRequest
     {
         return [
             'itemId' => 'required',
-            'trainingSkill' => 'array|required',
+            'trainingModuleTrainingSkill' => 'array|required',
             'trainingModuleDetail' => 'array|required',
         ];
     }

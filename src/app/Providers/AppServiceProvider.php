@@ -72,5 +72,15 @@ class AppServiceProvider extends ServiceProvider
 
             return true;
         });
+
+        Validator::extend('check_exists ', function ($attribute, $value, $parameters, $validator) {
+            $data = DB::table($parameters[0])->where($parameters[1], $value)->first();
+
+            if (is_null($data)) {
+                return false;
+            }
+
+            return true;
+        });
     }
 }

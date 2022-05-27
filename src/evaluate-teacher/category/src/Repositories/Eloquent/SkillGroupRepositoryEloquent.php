@@ -60,6 +60,11 @@ class SkillGroupRepositoryEloquent extends CoreRepositoryEloquent implements Ski
             $this->model = $this->model->whereLike('Name', $attributes['key']);
         }
 
+        if (!empty($attributes['id'])) {
+            $arrId = explode(',', $attributes['id']);
+            $this->model = $this->model->whereIn('Id', $arrId);
+        }
+
         if (!empty($attributes['limit'])) {
             $skillGroup = $this->paginate($attributes['limit']);
         } else {
@@ -101,10 +106,16 @@ class SkillGroupRepositoryEloquent extends CoreRepositoryEloquent implements Ski
     public function skillGroupDetail(array $attributes, $skillGroup)
     {
         if (!empty($attributes['createRow'])) {
-            $number = 1;
+            $number = 0;
+
+            if (count($skillGroup->skillGroupDetail) != 0) {
+                $lastRecord = $skillGroup->skillGroupDetail()->orderBy('Code', 'desc')->first();
+                $number = substr($lastRecord->Code, strpos($lastRecord->Code, '.') + 1);
+            }
+
             foreach ($attributes['createRow'] as $value) {
                 $value['SkillGroupId'] = $skillGroup->Id;
-                $value['code'] = $skillGroup->Code . '.' . $number++;
+                $value['code'] = $skillGroup->Code . '.' . ++$number;
                 SkillGroupDetail::create($value);
             }
         }
