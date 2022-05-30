@@ -371,7 +371,7 @@ const Index = memo(
               }
               setDataCheck(res?.parentTimetables);
               if (res?.class?.id) {
-                getStudents({ ...searchStudents, BranchId: res?.branch?.id, Class: res?.class?.id }, res?.parentTimetables);
+                getStudents({ ...searchStudents, branchId: res?.branch?.id, class: res?.class?.id }, res?.parentTimetables);
               }
             }
           }
