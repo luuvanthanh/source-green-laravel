@@ -3,6 +3,7 @@
 namespace GGPHP\Fee\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Refund\Models\Refund;
 
 class SchoolYear extends UuidModel
 {
@@ -56,5 +57,10 @@ class SchoolYear extends UuidModel
     public function timetable()
     {
         return $this->hasMany(Timetable::class, 'SchoolYearId');
+    }
+
+    public function refund()
+    {
+        return $this->hasOne(Refund::class, 'SchoolYearId');
     }
 }

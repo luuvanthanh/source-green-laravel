@@ -4,6 +4,7 @@ namespace GGPHP\Fee\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\SchoolYear;
+use GGPHP\Refund\Transformers\RefundTransformer;
 
 /**
  * Class SchoolYearTransformer.
@@ -13,14 +14,12 @@ use GGPHP\Fee\Models\SchoolYear;
 class SchoolYearTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['refund'];
     protected $defaultIncludes = ['fixedParameter', 'changeParameter', 'timetable'];
 
     public function customAttributes($model): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     /**
@@ -55,5 +54,14 @@ class SchoolYearTransformer extends BaseTransformer
     public function includeTimetable(SchoolYear $schoolYear)
     {
         return $this->collection($schoolYear->timetable, new TimetableTransformer, 'Timetable');
+    }
+
+    public function includeRefund(SchoolYear $schoolYear)
+    {
+        if (empty($schoolYear->refund)) {
+            return null;
+        }
+
+        return $this->item($schoolYear->refund, new RefundTransformer, 'Refund');
     }
 }

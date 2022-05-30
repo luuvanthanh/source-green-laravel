@@ -5,6 +5,7 @@ namespace GGPHP\Fee\Transformers;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use GGPHP\Category\Transformers\BranchTransformer;
+use GGPHP\Clover\Transformers\ClassesTransformer;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\ChargeOldStudent;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 class ChargeOldStudentTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['student', 'tuition', 'schoolYear', 'detailPaymentAccountant'];
+    protected $availableIncludes = ['student', 'tuition', 'schoolYear', 'detailPaymentAccountant', 'branch', 'classType', 'class'];
     protected $defaultIncludes = [];
 
     public function customAttributes($model): array
@@ -94,5 +95,32 @@ class ChargeOldStudentTransformer extends BaseTransformer
     public function includeDetailPaymentAccountant(ChargeOldStudent $chargeOldStudent)
     {
         return $this->collection($chargeOldStudent->detailPaymentAccountant, new DetailPaymentAccountantTransformer, 'DetailPaymentAccountant');
+    }
+
+    public function includeBranch(ChargeOldStudent $chargeOldStudent)
+    {
+        if (empty($chargeOldStudent->branch)) {
+            return;
+        }
+
+        return $this->item($chargeOldStudent->branch, new BranchTransformer, 'Branch');
+    }
+
+    public function includeClassType(ChargeOldStudent $chargeOldStudent)
+    {
+        if (empty($chargeOldStudent->classType)) {
+            return;
+        }
+
+        return $this->item($chargeOldStudent->classType, new ClassTypeTransformer, 'ClassType');
+    }
+
+    public function includeClass(ChargeOldStudent $chargeOldStudent)
+    {
+        if (empty($chargeOldStudent->class)) {
+            return;
+        }
+
+        return $this->item($chargeOldStudent->class, new ClassesTransformer, 'Class');
     }
 }

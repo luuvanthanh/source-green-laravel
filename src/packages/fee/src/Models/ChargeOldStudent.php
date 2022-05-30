@@ -2,6 +2,8 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\Category\Models\Branch;
+use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Models\UuidModel;
 
 class ChargeOldStudent extends UuidModel
@@ -25,7 +27,8 @@ class ChargeOldStudent extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'StudentId', 'SchoolYearId',  'TotalMoney', 'DayAdmission', 'ExpectedToCollectMoney', 'PaymentStatus', 'ChargeStudentIdCrm'
+        'StudentId', 'SchoolYearId',  'TotalMoney', 'DayAdmission', 'ExpectedToCollectMoney',
+        'PaymentStatus', 'ChargeStudentIdCrm', 'BranchId', 'ClassTypeId', 'ClassId'
     ];
 
     protected $casts = [
@@ -61,5 +64,20 @@ class ChargeOldStudent extends UuidModel
     public function detailPaymentAccountant()
     {
         return $this->hasMany(DetailPaymentAccountant::class, 'ChargeOldStudentId');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'BranchId');
+    }
+
+    public function classType()
+    {
+        return $this->belongsTo(ClassType::class, 'ClassTypeId');
+    }
+
+    public function class()
+    {
+        return $this->belongsTo(Classes::class, 'ClassId');
     }
 }

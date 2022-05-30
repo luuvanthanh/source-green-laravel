@@ -223,5 +223,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
                 $router->forCrm();
             });
         });
+
+        \GGPHP\Refund\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });

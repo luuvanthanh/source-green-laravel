@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Http\Requests;
 
+use GGPHP\Clover\Models\Classes;
 use GGPHP\Fee\Models\ChargeOldStudent;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -29,13 +30,28 @@ class CreateChargeOldStudentRequest extends FormRequest
             'studentId' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $chargeOldStudent = ChargeOldStudent::where('StudentId', $value)->where('SchoolYearId', request()->schoolYearId)->first();
+                    $chargeOldStudent = ChargeOldStudent::where('StudentId', $value)->where('SchoolYearId', request()->schoolYearId)
+                        ->where('ClassTypeId', $this->classTypeId)->first();
 
                     if (!is_null($chargeOldStudent)) {
-                        return $fail('Học sinh chỉ có thể tạo được một lần cho một năm học.');
+                        return $fail('Học sinh đã được tính phí theo cở sở này trong năm.');
                     }
                 },
             ],
+            'branchId' => 'required',
+            'classTypeId' => 'required',
+            'classId' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    $class = Classes::find($value);
+
+                    if (!is_null($class)) {
+                        return true;
+                    }
+
+                    return $fail('Giá trị đã chọn trong trường không hợp lệ.');
+                }
+            ]
         ];
     }
 }

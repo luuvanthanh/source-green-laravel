@@ -5,6 +5,7 @@ namespace GGPHP\Clover\Transformers;
 use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\ChargeOldStudentTransformer;
 use GGPHP\Fee\Transformers\ClassTypeTransformer;
 use GGPHP\Users\Transformers\UserTransformer;
 
@@ -33,7 +34,7 @@ class ClassesTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'teacher', 'student'
+        'teacher', 'student', 'chargeOldStudent'
     ];
 
     /**
@@ -94,5 +95,10 @@ class ClassesTransformer extends BaseTransformer
     public function includeStudent(Classes $classes)
     {
         return $this->collection($classes->student, new StudentTransformer, 'Student');
+    }
+
+    public function includeChargeOldStudent(Classes $classes)
+    {
+        return $this->collection($classes->chargeOldStudent, new ChargeOldStudentTransformer, 'ChargeOldStudent');
     }
 }

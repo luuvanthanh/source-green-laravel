@@ -115,7 +115,8 @@
             "GGPHP\\ChildDevelop\\TestSemester\\": "child-develop/test-semester/src",
             "GGPHP\\Tariff\\PaymentPlan\\": "tariff/payment-plan/src",
             "GGPHP\\Bio\\": "packages/bio/src/",
-            "GGPHP\\ManualCalculation\\": "packages/manual-calculation/src/"
+            "GGPHP\\ManualCalculation\\": "packages/manual-calculation/src/",
+            "GGPHP\\Refund\\": "packages/refund/src/"
         },
         "classmap": [
             "database/seeds",

@@ -14,10 +14,16 @@ class Student extends UuidModel
      */
     protected $table = 'object.Students';
 
-    const REGIST = 0;
-    const JOIN_CLASS = 1;
-    const LEAVE_SCHOOL = 2;
-    const STORE = 3;
+    // const REGIST = 0;
+    // const JOIN_CLASS = 1;
+    // const LEAVE_SCHOOL = 2;
+    // const STORE = 3;
+
+    const REGISTED = 0;
+    const OFFICAL = 2;
+    const WITHDRAW_APPLICATION = 3;
+    const STOP_STUDYING = 4;
+    const STORE = 5;
 
     /**
      * The attributes that are mass assignable.
