@@ -71,7 +71,7 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
 
             if (!empty($attributes['employeeId'])) {
                 $employeeId = explode(',', $attributes['employeeId']);
-                $query->where('EmployeeId', $employeeId);
+                $query->whereIn('EmployeeId', $employeeId);
             }
 
             if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
@@ -105,7 +105,11 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
     public function create(array $attributes)
     {
         $date = Carbon::parse($attributes['date'])->format('Y-m-d');
-        $attributes['type'] = ManualCalculation::TYPE[$attributes['type']];
+
+        if (!empty($attributes['type'])) {
+            $attributes['type'] = ManualCalculation::TYPE[$attributes['type']];
+        }
+
         $manualCalculation = $this->model->where('EmployeeId', $attributes['employeeId'])->where('Date', $date)->first();
 
         if (is_null($manualCalculation)) {
@@ -115,5 +119,32 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
         }
 
         return $this->parserResult($manualCalculation);
+    }
+
+    public function copyManualCalculation(array $attributes)
+    {
+        $model = $this->model->whereIn('EmployeeId', $attributes['employeeId'])
+            ->whereDate('Date', '>=', $attributes['startDate'])
+            ->whereDate('Date', '<=', $attributes['endDate'])->get();
+
+        foreach ($model as $value) {
+
+            if (is_null($value->Type)) {
+                continue;
+            }
+
+            $date = Carbon::parse($value->Date)->format('d');
+            $newDate = Carbon::parse($attributes['month'])->format('Y-m') . '-' . $date;
+
+            $data = [
+                'employeeId' => $value->EmployeeId,
+                'date' => $newDate,
+                'type' => array_search($value->Type, ManualCalculation::TYPE)
+            ];
+
+            $this->create($data);
+        }
+
+        return Parent::all();
     }
 }

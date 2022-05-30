@@ -41,7 +41,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('manual-calculations', [
                 'uses' => 'ManualCalculationController@store',
             ]);
-           
+
+            \Route::post('copy-manual-calculations', [
+                'uses' => 'ManualCalculationController@copyManualCalculation',
+            ]);
         });
     }
 }
