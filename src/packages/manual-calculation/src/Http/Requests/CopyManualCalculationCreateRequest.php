@@ -4,7 +4,7 @@ namespace GGPHP\ManualCalculation\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ManualCalculationCreateRequest extends FormRequest
+class CopyManualCalculationCreateRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -24,9 +24,10 @@ class ManualCalculationCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'employeeId' => 'required|exists:Employees,Id',
-            'date' => 'required|date_format:Y-m-d',
-            'type' => 'nullable|in:X,F,K',
+            'employeeId' => 'array|required|exists:ManualCalculations,EmployeeId',
+            'month' => 'required|date_format:Y-m-d',
+            'startDate' => 'required|date_format:Y-m-d',
+            'endDate' => 'required|date_format:Y-m-d|after:startDate'
         ];
     }
 }
