@@ -2,8 +2,8 @@
 
 namespace GGPHP\ManualCalculation\Repositories\Eloquent;
 
-use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\ManualCalculation\Presenters\ManualCalculationPresenter;
@@ -141,6 +141,16 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
                 $newDate =  $dateMonth->subMonth()->format('Y-m') . '-' . $date;
             }
 
+            if ($this->isValidDate($newDate) == false) {
+                continue;
+            }
+
+            $checkDay = Carbon::parse($newDate);
+
+            if ($checkDay->dayOfWeek == Carbon::SUNDAY || $checkDay->dayOfWeek == Carbon::SATURDAY) {
+                continue;
+            }
+
             $data = [
                 'employeeId' => $value->EmployeeId,
                 'date' => $newDate,
@@ -151,5 +161,12 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
         }
 
         return $this->parserResult($model);
+    }
+
+    function isValidDate($string, $format = 'Y-m-d')
+    {
+        $dateTime = DateTime::createFromFormat($format, $string);
+
+        return $dateTime && $dateTime->format($format) == $string;
     }
 }
