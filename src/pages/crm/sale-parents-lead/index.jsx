@@ -276,10 +276,10 @@ class Index extends PureComponent {
       payload: {},
       callback: (res) => {
         if (res) {
-          const item = res.parsePayload?.find(i => i?.code === 'GD');
+          const item = res.parsePayload?.filter(i => i?.code === 'GD' || i?.code === 'MKT');
           dispatch({
             type: 'crmSaleParentsLead/GET_EMPLOYEES',
-            payload: {divisionId: item?.id},
+            payload: item,
           });
         }
       }
@@ -670,7 +670,7 @@ class Index extends PureComponent {
                   >
                     Tạo mới
                   </Button>
-                  <AssignmentComponent dataSource={dataSource} employees={employees}/>
+                  <AssignmentComponent dataSource={dataSource} employees={employees} />
                   {/* <Button
                     color="success"
                     icon="next"

@@ -1,6 +1,5 @@
 import request from '@/utils/requestLavarel';
 import requestApi from '@/utils/request';
-import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function add(data = {}) {
@@ -23,11 +22,7 @@ export function details(data = {}) {
     method: 'GET',
     params: {
       ...data,
-      include: Helper.convertIncludes([
-        'classes',
-        'branch',
-        'schoolYear'
-      ]),
+      include: Helper.convertIncludes(['classes', 'branch', 'schoolYear']),
     },
   });
 }
@@ -43,7 +38,7 @@ export function getSchooolYear(params) {
   return request('/v1/school-years', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
     },
   });
 }
@@ -56,12 +51,9 @@ export function getBranches(params) {
 }
 
 export function getClass(params) {
-  return requestApi('/classes', {
+  return requestApi('/classes/by-branches', {
     method: 'GET',
-    params: {
-      ...omit(params, 'page', 'limit'),
-      ...Helper.getPagination(params.page, params.limit),
-    },
+    params,
   });
 }
 

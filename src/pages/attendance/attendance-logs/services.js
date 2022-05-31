@@ -27,7 +27,11 @@ export function get(data = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      include: Helper.convertIncludes(['employee.positionLevelNow', 'employee.classTeacher.class']),
+      include: Helper.convertIncludes([
+        'employee.positionLevelNow',
+        'employee.classTeacher.class',
+        'attendance',
+      ]),
       search: Helper.convertParamSearchConvert({}),
     },
   });

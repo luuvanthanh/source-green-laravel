@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
@@ -260,11 +261,18 @@ class Index extends PureComponent {
    */
   header = () => [
     {
+      title: 'Học sinh',
+      key: 'branch',
+      className: 'min-width-180',
+      width: 180,
+      render: (record) => record?.attendance?.student?.fullName,
+    },
+    {
       title: 'Thời gian',
       key: 'date',
-      width: 150,
-      className: 'min-width-150',
-      render: (record) => Helper.getDate(record.creationTime),
+      width: 170,
+      className: 'min-width-170',
+      render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME),
     },
     {
       title: 'Cơ sở',
@@ -281,7 +289,23 @@ class Index extends PureComponent {
       render: (record) => record?.employee?.classTeacher?.class?.name,
     },
     {
-      title: 'Nhân viên',
+      title: 'Hình thức',
+      key: 'employee',
+      className: 'min-width-180',
+      width: 180,
+      render: (record) => record?.type === "HANDMADE" ? "Thủ công" : "Tự động",
+    },
+    {
+      title: 'Hình ảnh',
+      key: 'employee',
+      className: 'min-width-100',
+      width: 100,
+      render: (record) => <AvatarTable
+        fileImage={Helper.getPathAvatarJson(record?.attendance?.student?.fileImage)}
+      />
+    },
+    {
+      title: 'Người chấm',
       key: 'employee',
       className: 'min-width-180',
       width: 180,
@@ -293,12 +317,6 @@ class Index extends PureComponent {
       className: 'min-width-180',
       width: 180,
       render: (record) => record?.action,
-    },
-    {
-      title: 'Lý do',
-      key: 'description',
-      className: 'min-width-200',
-      render: (record) => record.reason,
     },
   ];
 

@@ -124,8 +124,8 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
   };
 
   useEffect(() => {
-    if ((feeId && paymentFormId || deleteId) || (checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission)) {
-      const { schoolYearId, classTypeId, dayAdmission } = details;
+    if (((feeId && paymentFormId || deleteId) || (checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission)) && !details?.chargeStudentIdCrm) {
+      const { schoolYearId, classTypeId, dayAdmission, branchId } = details;
       const dataPayload = data?.map(i =>
       ({
         paymentFormId: i?.paymentFormId,
@@ -137,6 +137,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
         payload: {
           classTypeId,
           schoolYearId,
+          branchId,
           dayAdmission: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
@@ -230,22 +231,28 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
       width: 100,
       fixed: 'right',
       render: (record) => (
-        <div >
-          <Button
-            onClick={() => {
-              setData(
-                data.filter(
-                  (val) =>
-                    (val.key || val.id || val.test) !== (record.key || record.id || record.test),
-                ),
-              );
-              setDeleteId(true);
-            }}
-            type="button"
-            color="danger"
-            icon="remove"
-          />
-        </div>
+        <>
+          {
+            !details?.chargeStudentIdCrm && (
+              <div >
+                <Button
+                  onClick={() => {
+                    setData(
+                      data.filter(
+                        (val) =>
+                          (val.key || val.id || val.test) !== (record.key || record.id || record.test),
+                      ),
+                    );
+                    setDeleteId(true);
+                  }}
+                  type="button"
+                  color="danger"
+                  icon="remove"
+                />
+              </div>
+            )
+          }
+        </>
       ),
     },
   ];
@@ -267,22 +274,28 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
             rowKey="id"
             scroll={{ x: '100%' }}
             footer={(item, index) => (
-              <Button
-                key={index}
-                onClick={() =>
-                  setData([
-                    ...data,
-                    {
-                      key: '',
-                      test: uuidv4(),
-                    },
-                  ])
+              <>
+                {
+                  !details?.chargeStudentIdCrm && (
+                    <Button
+                      key={index}
+                      onClick={() =>
+                        setData([
+                          ...data,
+                          {
+                            key: '',
+                            test: uuidv4(),
+                          },
+                        ])
+                      }
+                      color="transparent-success"
+                      icon="plus"
+                    >
+                      Thêm
+                    </Button>
+                  )
                 }
-                color="transparent-success"
-                icon="plus"
-              >
-                Thêm
-              </Button>
+              </>
             )}
           />
         )

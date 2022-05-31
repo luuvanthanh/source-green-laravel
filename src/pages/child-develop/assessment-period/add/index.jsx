@@ -85,10 +85,6 @@ class Index extends PureComponent {
       payload: {},
     });
     dispatch({
-      type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
-      payload: {},
-    });
-    dispatch({
       type: 'childDevelopAssessmentPeriodAdd/GET_PROBLEMS',
       payload: {},
     });
@@ -116,6 +112,7 @@ class Index extends PureComponent {
   componentDidUpdate(prevProps) {
     const {
       details,
+      dispatch,
       match: { params },
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && params.id) {
@@ -133,6 +130,11 @@ class Index extends PureComponent {
             moment(details?.startDate),
             moment(details?.endDate),
           ],
+      });
+      dispatch({
+        type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
+        payload: { branchIds: details.branch?.map(i => i?.id) },
+        callback: () => { },
       });
     }
   }
@@ -199,6 +201,21 @@ class Index extends PureComponent {
 
   onChangeType = (event) => {
     this.setStateData({ type: event.target.value });
+  };
+
+  onChangeBranch = (e) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'childDevelopAssessmentPeriodAdd/GET_CLASS',
+      payload: { branchIds: e },
+      callback: (response) => {
+        if (response) {
+          this.formRef.current.setFieldsValue({
+            classesId: [],
+          });
+        }
+      },
+    });
   };
 
   render() {
@@ -275,6 +292,7 @@ class Index extends PureComponent {
                             type={variables.SELECT_MUTILPLE}
                             rules={[variables.RULES.EMPTY]}
                             label="Cơ sở áp dụng"
+                            onChange={this.onChangeBranch}
                           />
                         </Pane>
                         <Pane className="col-lg-12">

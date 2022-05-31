@@ -29,12 +29,14 @@ const General = memo(() => {
     loading: { effects },
     trainningMajors,
     trainningSchool,
-  } = useSelector(({ loading, HRMusersAdd }) => ({
+    branches,
+  } = useSelector(({ loading, HRMusersAdd, HRMusers }) => ({
     loading,
     details: HRMusersAdd.details,
     degrees: HRMusersAdd.degrees,
     trainningMajors: HRMusersAdd.trainningMajors,
     trainningSchool: HRMusersAdd.trainningSchool,
+    branches: HRMusers.branches,
     error: HRMusersAdd.error,
   }));
   const dispatch = useDispatch();
@@ -52,15 +54,21 @@ const General = memo(() => {
     effects[`HRMusersAdd/UPDATE`] ||
     effects[`HRMusersAdd/UPDATE_STATUS`];
   const loading =
-    effects[`HRMusersAdd/GET_DETAILS`] ||
-    effects[`HRMusersAdd/GET_DEGREES`] ||
-    effects[`HRMusersAdd/GET_TRAINNING_MAJORS`] ||
-    effects[`HRMusersAdd/GET_TRAINNING_SCHOOLS`];
+    effects[`HRMusersAdd/GET_DETAILS`];
 
   /**
    * Function submit form modal
    * @param {object} values values of form
    */
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+  }, []);
+
   const onFinish = (values) => {
     dispatch({
       type: params.id ? 'HRMusersAdd/UPDATE' : 'HRMusersAdd/ADD',
@@ -68,7 +76,7 @@ const General = memo(() => {
         ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files) }
         : { ...values, fileImage: JSON.stringify(files), status: 'WORKING' },
       callback: (response, error) => {
-        if (response) {
+        if (response && !params?.id) {
           history.goBack();
         }
         if (error) {
@@ -111,6 +119,7 @@ const General = memo(() => {
           },
           callback: (response, error) => {
             if (response) {
+              history.push('/quan-ly-nhan-su/nhan-vien');
               dispatch({
                 type: 'HRMusersAdd/GET_DETAILS',
                 payload: params,
@@ -143,6 +152,10 @@ const General = memo(() => {
       type: 'HRMusersAdd/GET_DEGREES',
       payload: params,
     });
+    dispatch({
+      type: 'HRMusers/GET_BRANCHES',
+      payload: {},
+    });
   }, []);
 
   /**
@@ -167,9 +180,11 @@ const General = memo(() => {
 
   useEffect(() => {
     if (!isEmpty(details) && params.id) {
+      const detailBranh = details?.branchDefault?.find(i => i?.type === "DEFAULT");
       formRef.current.setFieldsValue({
         ...details,
         ...head(details.positionLevel),
+        branchId: detailBranh?.branchId,
         startDate:
           head(details.positionLevel)?.startDate && moment(head(details.positionLevel)?.startDate),
         dateOfBirth: details.dateOfBirth && moment(details.dateOfBirth),
@@ -190,11 +205,10 @@ const General = memo(() => {
   const uploadFiles = (file) => {
     mountedSet(setFiles, (prev) => [...prev, file]);
   };
-
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
       <div className="card">
-        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
+        <Loading loading={loading} isError={error.isError}>
           <div style={{ padding: 20 }} className="pb-0 border-bottom">
             <Heading type="form-title" style={{ marginBottom: 20 }}>
               Thông tin cơ bản
@@ -271,7 +285,7 @@ const General = memo(() => {
                   name="idCard"
                   label="Số CMND"
                   type={variables.INPUT}
-                  rules={[variables.RULES.EMPTY, variables.RULES.NUMBER]}
+                  rules={[variables.RULES.EMPTY]}
                 />
               </div>
               <div className="col-lg-4">
@@ -338,6 +352,26 @@ const General = memo(() => {
               <div className="col-lg-4">
                 <FormItem name="address" label="Chổ ở hiện tại" type={variables.INPUT} />
               </div>
+              {
+                details?.positionLevel?.length > 0 && params?.id ?
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={branches}
+                      name="branchId"
+                      label="Cơ sở ban đầu"
+                      type={variables.SELECT}
+                      disabled
+                    />
+                  </div> :
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={branches}
+                      name="branchId"
+                      label="Cơ sở ban đầu"
+                      type={variables.SELECT}
+                    />
+                  </div>
+              }
             </div>
           </div>
           <div style={{ padding: 20 }} className="pb-0 border-bottom">

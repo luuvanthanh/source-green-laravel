@@ -59,6 +59,7 @@ const Index = memo(() => {
     dayAdmission: '',
     code: '',
     branchName: '',
+    branchId: "",
     classType: '',
     className: '',
     classTypeId: '',
@@ -92,6 +93,7 @@ const Index = memo(() => {
           include: Helper.convertIncludes(['student.classStudent.class']),
         },
         callback: (res) => {
+          console.log("res", res);
           if (res) {
             setCheckData(false);
             setIdRes(res?.expectedToCollectMoney);
@@ -99,6 +101,7 @@ const Index = memo(() => {
             setTuition(res?.tuition);
             setDetails((prev) => ({
               ...prev,
+              chargeStudentIdCrm: res?.chargeStudentIdCrm,
               startDate: res?.schoolYear?.startDate ? Helper.getDate(res?.schoolYear?.startDate, variables.DATE_FORMAT.DATE_VI) : '',
               endDate: res?.schoolYear?.endDate ? Helper.getDate(res?.schoolYear?.endDate, variables.DATE_FORMAT.DATE_VI) : '',
               schoolYearId: res?.schoolYearId || '',
@@ -109,6 +112,7 @@ const Index = memo(() => {
               className: res?.student?.classStudent?.class?.name || '',
               classTypeId: res?.student?.classStudent?.class?.classType?.id || '',
               expectedToCollectMoney: res?.expectedToCollectMoney || [],
+              branchId: res?.student?.classStudent?.class?.branchId || '',
             }));
             formRef.current.setFieldsValue({
               ...res,
@@ -141,7 +145,7 @@ const Index = memo(() => {
     }
     return false;
   };
-
+  console.log("details", details);
   const checkValidate = (data, name) => {
     const pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : true;
     setErrorTable((prev) => ({
@@ -198,6 +202,7 @@ const Index = memo(() => {
       const newDetails = {
         ...details,
         code: student?.code || '',
+        branchId: student?.class?.branchId,
         branchName: student?.class?.branch?.name || '',
         classType: student?.class?.classType?.name || '',
         className: student?.class?.name || '',
@@ -375,7 +380,7 @@ const Index = memo(() => {
         width: 200,
         render: (record) => (
           <Text size="normal">
-            {Helper.getDate(record.month, variables.DATE_FORMAT.DATE_MONTH)}
+            {Helper.getDate(record.month, variables.DATE_FORMAT.MONTH_YEAR)}
           </Text>
         ),
       },
@@ -623,16 +628,20 @@ const Index = memo(() => {
                 </Tabs>
               </Pane>
               <Pane className="p20 d-flex justify-content-between align-items-center">
-                <Button
-                  className="ml-auto px25"
-                  color="success"
-                  htmlType="submit"
-                  size="large"
-                  loading={loading['oldStudentAdd/ADD'] || loading['old	StudentAdd/UPDATE']}
-                  disabled={!details?.classTypeId || !details?.schoolYearId}
-                >
-                  Lưu
-                </Button>
+                {
+                  !details?.chargeStudentIdCrm && (
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      htmlType="submit"
+                      size="large"
+                      loading={loading['oldStudentAdd/ADD'] || loading['old	StudentAdd/UPDATE']}
+                      disabled={!details?.classTypeId || !details?.schoolYearId}
+                    >
+                      Lưu
+                    </Button>
+                  )
+                }
               </Pane>
             </Loading>
           </Form>
