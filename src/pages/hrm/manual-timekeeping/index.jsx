@@ -8,7 +8,7 @@ import { Helper, variables } from '@/utils';
 import { Form, Modal } from 'antd';
 import classnames from 'classnames';
 import { useDispatch, useSelector } from 'dva';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import moment from 'moment';
 import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
@@ -36,9 +36,10 @@ const Index = memo(() => {
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [dataCopy, setDataCopy] = useState([]);
-  const [isLoadDataCopy, setIsLoadDataCopy] = useState(true);
+  const [isLoadDataCopy, setIsLoadDataCopy] = useState(false);
 
   const onLoad = () => {
+    setIsLoadDataCopy(true);
     dispatch({
       type: 'manualTimekeeping/GET_DATA',
       payload: {
@@ -46,7 +47,11 @@ const Index = memo(() => {
         endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
         startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
       },
-      callback: () => {},
+      callback: (response) => {
+        if (response) {
+          setIsLoadDataCopy(false);
+        }
+      },
     });
     history.push(
       `${pathname}?${Helper.convertParamSearchConvert(
@@ -131,7 +136,7 @@ const Index = memo(() => {
       type: 'manualTimekeeping/GET_DATA',
       payload: {
         endDate: Helper.getDate(
-          moment(modalRef.getFieldValue().endDate).startOf('month').add(24, 'days'),
+          moment(modalRef.getFieldValue().startDate).startOf('month').add(24, 'days'),
           variables.DATE_FORMAT.DATE_AFTER,
         ),
         startDate: Helper.getDate(
@@ -166,7 +171,9 @@ const Index = memo(() => {
           moment(values.endDate).subtract(1, 'months').add(25, 'days'),
           variables.DATE_FORMAT.DATE_AFTER,
         ),
-        employeeId: dataCopy.map((item) => item.id),
+        employeeId: !isEmpty(dataCopy)
+          ? dataCopy.map((item) => item.id)
+          : data.map((item) => item.id),
       };
 
       dispatch({
@@ -185,8 +192,8 @@ const Index = memo(() => {
       {
         title: 'STT',
         key: 'stt',
-        className: 'min-width-50',
-        width: 50,
+        className: 'min-width-60',
+        width: 60,
         align: 'center',
         render: (text, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
       },
@@ -262,7 +269,13 @@ const Index = memo(() => {
           </div>
         }
       >
-        <Form form={modalRef} layout="vertical">
+        <Form
+          form={modalRef}
+          layout="vertical"
+          initialValues={{
+            startDate: moment(),
+          }}
+        >
           <div className="row">
             <div className="col-lg-6">
               <FormItem
@@ -279,6 +292,21 @@ const Index = memo(() => {
                 name="endDate"
                 type={variables.MONTH_PICKER}
                 allowClear={false}
+              />
+            </div>
+            <div className="col-lg-12">
+              <Table
+                bordered
+                isEmpty
+                columns={header(params)}
+                dataSource={data}
+                pagination={paginationFunction(pagination)}
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%', y: '40vh' }}
               />
             </div>
           </div>

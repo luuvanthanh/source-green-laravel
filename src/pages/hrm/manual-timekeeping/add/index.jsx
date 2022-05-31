@@ -158,7 +158,7 @@ const Index = () => {
     const payload = {
       employeeId: record.id,
       date: moment(time).format('YYYY-MM-DD'),
-      type: !isEmpty(e) ? e : null,
+      type: !isEmpty(e) ? e : 'N',
     };
     dispatch({
       type: 'manualTimekeepingAdd/ADD',
@@ -233,7 +233,7 @@ const Index = () => {
     if (manualUser) {
       return (
         <Select
-          defaultValue={manualUser.type !== 'ManualCalculation' ? manualUser.type : null}
+          defaultValue={manualUser.type}
           onChange={(e) => updateManualTimekeeping(dayOfWeek, user, e)}
           disabled={moment() < moment(dayOfWeek)}
           allowClear
