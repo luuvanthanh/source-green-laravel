@@ -127,14 +127,21 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
             ->whereDate('Date', '>=', $attributes['startDate'])
             ->whereDate('Date', '<=', $attributes['endDate'])->get();
 
+        $newDate = Carbon::parse($attributes['startDate'])->format('d');
+
         foreach ($model as $value) {
 
             if (is_null($value->Type)) {
                 continue;
             }
 
+            $dateMonth = Carbon::parse($attributes['month']);
             $date = Carbon::parse($value->Date)->format('d');
-            $newDate = Carbon::parse($attributes['month'])->format('Y-m') . '-' . $date;
+            $newDate = $dateMonth->format('Y-m') . '-' . $date;
+
+            if ($date >= $newDate) {
+                $newDate =  $dateMonth->subMonth()->format('Y-m') . '-' . $date;
+            }
 
             $data = [
                 'employeeId' => $value->EmployeeId,
@@ -145,6 +152,6 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
             $this->create($data);
         }
 
-        return Parent::all();
+        return $this->parserResult($model);
     }
 }
