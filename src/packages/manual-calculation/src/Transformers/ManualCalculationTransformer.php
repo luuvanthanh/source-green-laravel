@@ -30,7 +30,7 @@ class ManualCalculationTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            'Type' => array_search($model->Type, ManualCalculation::TYPE)
+            'Type' => array_search($model->Type, ManualCalculation::TYPE) ? array_search($model->Type, ManualCalculation::TYPE) : null
         ];
     }
 
