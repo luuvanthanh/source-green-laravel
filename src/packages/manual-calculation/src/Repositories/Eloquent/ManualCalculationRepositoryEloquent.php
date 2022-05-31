@@ -114,6 +114,8 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
 
         if (is_null($manualCalculation)) {
             $manualCalculation = $this->model->create($attributes);
+        } elseif (!is_null($manualCalculation) && $attributes['type'] == ManualCalculation::TYPE['N']) {
+            $manualCalculation->delete();
         } else {
             $manualCalculation->update($attributes);
         }
@@ -130,10 +132,6 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
         $newDate = Carbon::parse($attributes['startDate'])->format('d');
 
         foreach ($model as $value) {
-
-            if (is_null($value->Type)) {
-                continue;
-            }
 
             $dateMonth = Carbon::parse($attributes['month']);
             $date = Carbon::parse($value->Date)->format('d');
