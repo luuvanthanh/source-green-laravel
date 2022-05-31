@@ -21,3 +21,10 @@ export function getEmployees(params = {}) {
     },
   });
 }
+
+export function copy(data = {}) {
+  return request('/v1/copy-manual-calculations', {
+    method: 'POST',
+    data,
+  });
+}
