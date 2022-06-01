@@ -108,6 +108,7 @@ const Index = () => {
     setSearch((prev) => ({
       ...prev,
       [`${type}`]: value,
+      forManualCalculation: true,
       page: variables.PAGINATION.PAGE,
       limit: variables.PAGINATION.PAGE_SIZE,
     }));
