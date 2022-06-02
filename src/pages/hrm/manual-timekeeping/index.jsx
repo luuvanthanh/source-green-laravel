@@ -1,27 +1,29 @@
 import styles from '@/assets/styles/Common/common.scss';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { Helper, variables } from '@/utils';
-import { Form } from 'antd';
+import { Form, Modal } from 'antd';
 import classnames from 'classnames';
 import { useDispatch, useSelector } from 'dva';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
+import moment from 'moment';
 import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { history, useLocation, useParams } from 'umi';
-import moment from 'moment';
 
 const Index = memo(() => {
   const [formRef] = Form.useForm();
+  const [modalRef] = Form.useForm();
   const { query, pathname } = useLocation();
   const { params } = useParams();
   const dispatch = useDispatch();
   const [{ data, pagination, employees }] = useSelector(({ manualTimekeeping }) => [
     manualTimekeeping,
   ]);
+
   const [search, setSearch] = useState({
     key: query?.key,
     page: query?.page || variables.PAGINATION.PAGE,
@@ -32,13 +34,23 @@ const Index = memo(() => {
       ? moment(query?.startDate)
       : moment().startOf('month').subtract(1, 'months').add(25, 'days'),
   });
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [dataCopy, setDataCopy] = useState([]);
+  const [isLoadDataCopy, setIsLoadDataCopy] = useState(false);
+
   const onLoad = () => {
+    setIsLoadDataCopy(true);
     dispatch({
       type: 'manualTimekeeping/GET_DATA',
       payload: {
         ...search,
         endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
         startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
+      },
+      callback: (response) => {
+        if (response) {
+          setIsLoadDataCopy(false);
+        }
       },
     });
     history.push(
@@ -110,13 +122,78 @@ const Index = memo(() => {
       },
     });
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const onChangeDateModal = () => {
+    setIsLoadDataCopy(true);
+    dispatch({
+      type: 'manualTimekeeping/GET_DATA',
+      payload: {
+        endDate: Helper.getDate(
+          moment(modalRef.getFieldValue().startDate).startOf('month').add(24, 'days'),
+          variables.DATE_FORMAT.DATE_AFTER,
+        ),
+        startDate: Helper.getDate(
+          moment(modalRef.getFieldValue().startDate)
+            .startOf('month')
+            .subtract(1, 'months')
+            .add(25, 'days'),
+          variables.DATE_FORMAT.DATE_AFTER,
+        ),
+      },
+      callback: (response) => {
+        if (response) {
+          setDataCopy(response);
+          setIsLoadDataCopy(false);
+        }
+      },
+    });
+  };
+
+  const handleOk = () => {
+    modalRef.validateFields().then((values) => {
+      const payload = {
+        startDate: Helper.getDate(
+          moment(values.startDate).startOf('month').subtract(1, 'months').add(25, 'days'),
+          variables.DATE_FORMAT.DATE_AFTER,
+        ),
+        endDate: Helper.getDate(
+          moment(values.startDate).startOf('month').add(24, 'days'),
+          variables.DATE_FORMAT.DATE_AFTER,
+        ),
+        month: Helper.getDate(
+          moment(values.endDate).subtract(1, 'months').add(25, 'days'),
+          variables.DATE_FORMAT.DATE_AFTER,
+        ),
+        employeeId: !isEmpty(dataCopy)
+          ? dataCopy.map((item) => item.id)
+          : data.map((item) => item.id),
+      };
+
+      dispatch({
+        type: 'manualTimekeeping/COPY',
+        payload,
+        callback: () => {
+          modalRef.resetFields();
+        },
+      });
+    });
+    setIsModalVisible(false);
+  };
+
   const header = () => {
     const columns = [
       {
         title: 'STT',
         key: 'stt',
-        className: 'min-width-50',
-        width: 50,
+        className: 'min-width-60',
+        width: 60,
         align: 'center',
         render: (text, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
       },
@@ -170,12 +247,84 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Chấm công thủ công" />
+      <Modal
+        centered
+        title="Tạo bản sao"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={
+          <div className="d-flex justify-content-between align-items-center">
+            <p key="back" role="presentation" onClick={handleCancel}>
+              Hủy
+            </p>
+            <Button
+              key="submit"
+              color="success"
+              type="primary"
+              onClick={handleOk}
+              disabled={isLoadDataCopy}
+            >
+              Lưu
+            </Button>
+          </div>
+        }
+      >
+        <Form
+          form={modalRef}
+          layout="vertical"
+          initialValues={{
+            startDate: moment(),
+          }}
+        >
+          <div className="row">
+            <div className="col-lg-6">
+              <FormItem
+                label="Tháng muốn sao chép"
+                name="startDate"
+                onChange={(event) => onChangeDateModal(event)}
+                type={variables.MONTH_PICKER}
+                allowClear={false}
+              />
+            </div>
+            <div className="col-lg-6">
+              <FormItem
+                label="Tháng cần sao chép"
+                name="endDate"
+                type={variables.MONTH_PICKER}
+                allowClear={false}
+              />
+            </div>
+            <div className="col-lg-12">
+              <Table
+                bordered
+                isEmpty
+                columns={header(params)}
+                dataSource={data}
+                pagination={paginationFunction(pagination)}
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%', y: '40vh' }}
+              />
+            </div>
+          </div>
+        </Form>
+      </Modal>
       <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-        <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-          <Text color="dark">Chấm công thủ công</Text>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-            Chấm công
-          </Button>
+        <div className="row d-flex justify-content-between align-items-center mt-4 mb-4 w-100">
+          <div className="col-lg-3">
+            <Text color="dark">Chấm công thủ công</Text>
+          </div>
+          <div className="col-lg-6 p0 d-flex justify-content-end">
+            <Button color="yellow" icon="file" onClick={showModal} className="mr10">
+              Tạo bản sao
+            </Button>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Chấm công
+            </Button>
+          </div>
         </div>
         <div className={styles['block-table']}>
           <Form
