@@ -90,6 +90,12 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $this->model = $this->model->status(User::STATUS['WORKING']);
         }
 
+        if (!empty($attributes['branchId']) && !empty($attributes['forManualCalculation']) && $attributes['forManualCalculation'] == true) {
+            $this->model = $this->model->whereHas('positionLevelNow', function ($query) use ($attributes) {
+                $query->where('BranchId', $attributes['branchId']);
+            });
+        }
+
         $this->model = $this->model->tranferHistory($attributes);
 
         if (!empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == 'true') {

@@ -2,8 +2,8 @@
 
 namespace GGPHP\ManualCalculation\Repositories\Eloquent;
 
-use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\ManualCalculation\Presenters\ManualCalculationPresenter;
@@ -71,7 +71,7 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
 
             if (!empty($attributes['employeeId'])) {
                 $employeeId = explode(',', $attributes['employeeId']);
-                $query->where('EmployeeId', $employeeId);
+                $query->whereIn('EmployeeId', $employeeId);
             }
 
             if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
@@ -105,15 +105,68 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
     public function create(array $attributes)
     {
         $date = Carbon::parse($attributes['date'])->format('Y-m-d');
-        $attributes['type'] = ManualCalculation::TYPE[$attributes['type']];
+
+        if (!empty($attributes['type'])) {
+            $attributes['type'] = ManualCalculation::TYPE[$attributes['type']];
+        }
+
         $manualCalculation = $this->model->where('EmployeeId', $attributes['employeeId'])->where('Date', $date)->first();
 
         if (is_null($manualCalculation)) {
             $manualCalculation = $this->model->create($attributes);
+        } elseif (!is_null($manualCalculation) && $attributes['type'] == ManualCalculation::TYPE['N']) {
+            $manualCalculation->delete();
         } else {
             $manualCalculation->update($attributes);
         }
 
         return $this->parserResult($manualCalculation);
+    }
+
+    public function copyManualCalculation(array $attributes)
+    {
+        $model = $this->model->whereIn('EmployeeId', $attributes['employeeId'])
+            ->whereDate('Date', '>=', $attributes['startDate'])
+            ->whereDate('Date', '<=', $attributes['endDate'])->get();
+
+        $newDate = Carbon::parse($attributes['startDate'])->format('d');
+
+        foreach ($model as $value) {
+
+            $dateMonth = Carbon::parse($attributes['month']);
+            $date = Carbon::parse($value->Date)->format('d');
+            $newDate = $dateMonth->format('Y-m') . '-' . $date;
+
+            if ($date >= $newDate) {
+                $newDate =  $dateMonth->subMonth()->format('Y-m') . '-' . $date;
+            }
+
+            if ($this->isValidDate($newDate) == false) {
+                continue;
+            }
+
+            $checkDay = Carbon::parse($newDate);
+
+            if ($checkDay->dayOfWeek == Carbon::SUNDAY || $checkDay->dayOfWeek == Carbon::SATURDAY) {
+                continue;
+            }
+
+            $data = [
+                'employeeId' => $value->EmployeeId,
+                'date' => $newDate,
+                'type' => array_search($value->Type, ManualCalculation::TYPE)
+            ];
+
+            $this->create($data);
+        }
+
+        return $this->parserResult($model);
+    }
+
+    function isValidDate($string, $format = 'Y-m-d')
+    {
+        $dateTime = DateTime::createFromFormat($format, $string);
+
+        return $dateTime && $dateTime->format($format) == $string;
     }
 }
