@@ -93,4 +93,15 @@ class ChildEvaluateInfoController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function exportChildEvaluateInfo(Request $request)
+    {
+        $export = $this->childEvaluateInfoRepository->exportChildEvaluateInfo($request->all());
+
+        if (is_string($export)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $export;
+    }
 }

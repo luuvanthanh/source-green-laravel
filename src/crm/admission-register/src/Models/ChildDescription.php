@@ -9,7 +9,7 @@ class ChildDescription extends UuidModel
     protected $table = 'child_descriptions';
 
     protected $fillable = [
-        'question', 'answer', 'category-child-issue_id', 'child_evaluate_info_id'
+        'question', 'answer', 'category_child_issue_id', 'child_evaluate_info_id'
     ];
 
     public function childEvaluateInfo()
