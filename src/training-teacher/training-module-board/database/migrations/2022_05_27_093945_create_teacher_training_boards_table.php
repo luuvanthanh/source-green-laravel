@@ -16,7 +16,7 @@ class CreateTeacherTrainingBoardsTable extends Migration
         Schema::create('evaluate-teacher.TeacherTrainingBoards', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('EmployeeId'); //only user id with type teacher 
+            $table->uuid('EmployeeId'); //only user id with type teacher 
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
