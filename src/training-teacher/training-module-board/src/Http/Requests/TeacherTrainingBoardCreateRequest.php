@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\TrainingTeacher\Category\Http\Requests;
+namespace GGPHP\TrainingTeacher\TrainingModuleBoard\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TrainingFormCreateRequest extends FormRequest
+class TeacherTrainingBoardCreateRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -24,9 +24,10 @@ class TrainingFormCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|string',
-            'name' => 'required|string',
-            'type' => 'required|in:SEFT_LEARNING,TRAINING_ONINE,TRAINING_OFFLINE,PRACTICE'
+            'employeeId' => 'required|exists:Employees,Id',
+            'detail.*.createRows' => 'array',
+            'detail.*.updateRows' => 'array',
+            'detail.*.deleteRows' => 'array',
         ];
     }
 }

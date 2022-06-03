@@ -12,13 +12,20 @@ class TrainingForm extends UuidModel
      */
     protected $table = 'evaluate-teacher.TrainingForms';
 
+    const TYPE_TRAINING = [
+        'SEFT_LEARNING' => 1,
+        'TRAINING_ONINE' => 2,
+        'TRAINING_OFFLINE' => 3,
+        'PRACTICE' => 4
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Note'
+        'Code', 'Name', 'Note', 'Type'
     ];
 
     /**
