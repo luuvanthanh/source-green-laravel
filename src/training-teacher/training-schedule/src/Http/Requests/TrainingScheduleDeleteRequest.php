@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\TrainingTeacher\TrainingModuleBoard\Http\Requests;
+namespace GGPHP\TrainingTeacher\TrainingSchedule\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TeacherTrainingBoardDeleteRequest extends FormRequest
+class TrainingScheduleDeleteRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.

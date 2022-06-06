@@ -16,12 +16,14 @@ class CreateTrainingScheduleDetailsTable extends Migration
         Schema::create('evaluate-teacher.TrainingScheduleDetails', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('TrainingModuleId');
-            $table->uuid('TeacherTrainingBoardId');
+            $table->date('DateTraining');
+            $table->time('TimeTraining');
+            $table->string('Location')->nullable();
+            $table->uuid('TrainingScheduleId');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
-            $table->foreign('TeacherTrainingBoardId')->references('Id')->on('evaluate-teacher.TeacherTrainingBoards')->onDelete('cascade');
+            $table->foreign('TrainingScheduleId')->references('Id')->on('evaluate-teacher.TrainingSchedules')->onDelete('cascade');
         });
     }
 

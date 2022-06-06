@@ -16,7 +16,7 @@ class CreateTeacherTrainingBoardDetailChildrensTable extends Migration
         Schema::create('evaluate-teacher.TeacherTrainingBoardDetailChildrens', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('TrainingModuleDetailId');
+            $table->uuid('TrainingModuleDetailId');
             $table->date('Date');
             $table->uuid('TeacherTrainingBoardDetailId');
             $table->timestamp('CreationTime', 0)->nullable();

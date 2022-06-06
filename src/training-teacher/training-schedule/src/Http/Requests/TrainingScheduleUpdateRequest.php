@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\TrainingTeacher\TrainingModuleBoard\Http\Requests;
+namespace GGPHP\TrainingTeacher\TrainingSchedule\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TeacherTrainingBoardCreateRequest extends FormRequest
+class TrainingScheduleUpdateRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -23,11 +23,6 @@ class TeacherTrainingBoardCreateRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'employeeId' => 'required|exists:Employees,Id',
-            'detail.*.createRows' => 'array',
-            'detail.*.updateRows' => 'array',
-            'detail.*.deleteRows' => 'array',
-        ];
+        return [];
     }
 }
