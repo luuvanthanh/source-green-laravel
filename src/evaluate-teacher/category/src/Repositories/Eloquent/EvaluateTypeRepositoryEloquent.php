@@ -99,7 +99,7 @@ class EvaluateTypeRepositoryEloquent extends CoreRepositoryEloquent implements E
             foreach ($attributes['createRow'] as $value) {
                 $value['evaluateTypeId'] = $id;
                 $evaluateTypeDetail = EvaluateTypeDetail::create($value);
-                $evaluateTypeDetail->ratingLevel()->sync($value['RatingLevelId']);
+                $evaluateTypeDetail->ratingLevel()->sync($value['ratingLevelId']);
             }
         }
 
@@ -108,9 +108,9 @@ class EvaluateTypeRepositoryEloquent extends CoreRepositoryEloquent implements E
                 $evaluateTypeDetail = EvaluateTypeDetail::find($value['id']);
                 $evaluateTypeDetail->update($value);
 
-                if (!empty($value['RatingLevelId'])) {
+                if (!empty($value['ratingLevelId'])) {
                     $evaluateTypeDetail->ratingLevel()->detach();
-                    $evaluateTypeDetail->ratingLevel()->sync($value['RatingLevelId']);
+                    $evaluateTypeDetail->ratingLevel()->sync($value['ratingLevelId']);
                 }
             }
         }

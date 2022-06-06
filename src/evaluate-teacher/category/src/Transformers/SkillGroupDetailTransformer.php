@@ -21,7 +21,7 @@ class SkillGroupDetailTransformer extends BaseTransformer
 
     protected $availableIncludes = ['skillGroup'];
 
-    public function includeAbsentType(SkillGroupDetail $skillGroupDetail)
+    public function includeSkillGroup(SkillGroupDetail $skillGroupDetail)
     {
         if (empty($skillGroupDetail->skillGroup)) {
             return;

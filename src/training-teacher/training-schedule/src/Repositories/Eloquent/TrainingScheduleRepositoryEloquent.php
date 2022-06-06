@@ -3,12 +3,14 @@
 namespace GGPHP\TrainingTeacher\TrainingSchedule\Repositories\Eloquent;
 
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\TrainingTeacher\Category\Repositories\Eloquent\TrainingModuleRepositoryEloquent;
 use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingSchedule;
 use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingScheduleDetail;
 use GGPHP\TrainingTeacher\TrainingSchedule\Presenters\TrainingSchedulePresenter;
 use GGPHP\TrainingTeacher\TrainingSchedule\Repositories\Contracts\TrainingScheduleRepository;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Container\Container;
 
 /**
  * Class TrainingFormRepositoryEloquent.
@@ -21,6 +23,14 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
         'Id',
         'CreationTime',
     ];
+
+    public function __construct(
+        TrainingModuleRepositoryEloquent $trainingModuleRepositoryEloquent,
+        Container $app
+    ) {
+        parent::__construct($app);
+        $this->trainingModuleRepositoryEloquent = $trainingModuleRepositoryEloquent;
+    }
 
     /**
      * Specify Model class name
@@ -50,42 +60,60 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
         return TrainingSchedulePresenter::class;
     }
 
+    /**
+     * getAll
+     *
+     * @param  mixed $attributes
+     * @return void
+     */
     public function getAll(array $attributes)
     {
         if (!empty($attributes['limit'])) {
-            $TeacherTrainingBoard = $this->paginate($attributes['limit']);
+            $TeacherTrainingBoard = $this->trainingModuleRepositoryEloquent->paginate($attributes['limit']);
         } else {
-            $TeacherTrainingBoard = $this->get();
+            $TeacherTrainingBoard = $this->trainingModuleRepositoryEloquent->get();
         }
 
         return $TeacherTrainingBoard;
     }
 
+    /**
+     * createAll
+     *
+     * @param  mixed $attributes
+     * @return void
+     */
     public function createAll(array $attributes)
     {
         DB::beginTransaction();
         try {
             if (!empty($attributes['data'])) {
                 foreach ($attributes['data'] as $value) {
-                    $TrainingSchedule = $this->model->create($value);
+                    $trainingSchedule = $this->model->create($value);
                     if (!empty($value['employeeId'])) {
-                        $TrainingSchedule->employee()->sync($value['employeeId']);
+                        $trainingSchedule->employee()->sync($value['employeeId']);
                     }
 
                     if (!empty($value['detail'])) {
-                        $this->forDetail($value['detail'], $TrainingSchedule);
+                        $this->forDetail($value['detail'], $trainingSchedule);
                     }
                 }
             }
             DB::commit();
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollBack();
         }
 
-        return $this->parserResult($TrainingSchedule);
+        return $this->parserResult($trainingSchedule);
     }
 
+    /**
+     * forDetail
+     *
+     * @param  mixed $attributes
+     * @param  mixed $model
+     * @return void
+     */
     public function forDetail($attributes, $model)
     {
         foreach ($attributes['createRows'] as $valueCreate) {
@@ -97,6 +125,7 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
 
         foreach ($attributes['updateRows'] as $valueUpdate) {
             $dataUpdate = $model->trainingScheduleDetail()->find($valueUpdate['id']);
+            dd($dataUpdate);
 
             if (!is_null($dataUpdate)) {
                 $dataUpdate->update($valueUpdate);
@@ -104,15 +133,32 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
         }
     }
 
-    public function updateAll(array $attributes, $id)
+    public function updateTrainingModule(array $attributes, $id)
     {
+        $trainingmodule = $this->trainingModuleRepositoryEloquent->model->find($id);
         DB::beginTransaction();
         try {
-            $TrainingSchedule = $this->model->find($id);
-            dd($TrainingSchedule);
+            if (!empty($attributes['data'])) {
+                foreach ($attributes['data'] as $key => $value) {
+                    $trainingSchedule = $trainingmodule->trainingschedule()->find($value['id']);
+                    $trainingSchedule->update($value);
+
+                    if (!empty($value['employeeId'])) {
+                        $trainingSchedule->employee()->detach();
+                        $trainingSchedule->employee()->sync($value['employeeId']);
+                    }
+
+                    if (!empty($value['detail'])) {
+                        $this->forDetail($value['detail'], $trainingSchedule);
+                    }
+                }
+            }
+
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
         }
+
+        return $this->parserResult($trainingmodule);
     }
 }

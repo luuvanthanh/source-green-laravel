@@ -3,6 +3,7 @@
 namespace GGPHP\TrainingTeacher\TrainingSchedule\Http\Controllers;
 
 use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\TrainingTeacher\Category\Repositories\Contracts\TrainingModuleRepository;
 use GGPHP\TrainingTeacher\TrainingSchedule\Http\Requests\teacherTrainingBoardUpdateRequest;
 use GGPHP\TrainingTeacher\TrainingSchedule\Repositories\Contracts\TrainingScheduleRepository;
 use Illuminate\Http\Request;
@@ -15,13 +16,16 @@ class TrainingScheduleController extends Controller
      */
     protected $trainingScheduleRepository;
 
+    protected $trainingModuleRepository;
+
     /**
      * UserController constructor.
      * @param TypeTeacherRepository $typeTeacherRepository
      */
-    public function __construct(TrainingScheduleRepository $trainingScheduleRepository)
+    public function __construct(TrainingScheduleRepository $trainingScheduleRepository, TrainingModuleRepository $trainingModuleRepository)
     {
         $this->trainingScheduleRepository = $trainingScheduleRepository;
+        $this->trainingModuleRepository = $trainingModuleRepository;
     }
 
     /**
@@ -88,5 +92,12 @@ class TrainingScheduleController extends Controller
         $this->trainingScheduleRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function updateTrainingModule(Request $request, $id)
+    {
+        $trainingmodule = $this->trainingScheduleRepository->updateTrainingModule($request->all(), $id);
+
+        return $this->success($trainingmodule, trans('lang::messages.common.modifySuccess'));
     }
 }

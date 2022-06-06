@@ -32,6 +32,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::group(['middleware' => []], function () {
                 \Route::resource('training-schedules', 'TrainingScheduleController');
             });
+
+            \Route::put('update-training-modules/{id}', [
+                'uses' => 'TrainingScheduleController@updateTrainingModule',
+            ]);
         });
     }
 }
