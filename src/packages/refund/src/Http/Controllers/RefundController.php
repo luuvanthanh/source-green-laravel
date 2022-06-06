@@ -95,4 +95,11 @@ class RefundController extends Controller
         
         return $this->success($refund, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }
+
+    public function createMany(RefundCreateRequest $request)
+    {
+        $refund = $this->refundRepository->createMany($request->all());
+
+        return $this->success($refund, trans('lang::messages.common.createSuccess'));
+    }
 }
