@@ -151,5 +151,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         GGPHP\TrainingTeacher\TrainingModuleBoard\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        GGPHP\TrainingTeacher\TrainingSchedule\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });

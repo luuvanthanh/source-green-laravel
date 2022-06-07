@@ -3,6 +3,7 @@
 namespace GGPHP\TrainingTeacher\TrainingModuleBoard\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Users\Models\User;
 
 class TeacherTrainingBoard extends UuidModel
 {
@@ -30,5 +31,10 @@ class TeacherTrainingBoard extends UuidModel
     public function teacherTrainingBoardDetail()
     {
         return $this->hasMany(TeacherTrainingBoardDetail::class, 'TeacherTrainingBoardId');
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 }

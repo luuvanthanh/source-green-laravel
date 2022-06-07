@@ -5,6 +5,7 @@ namespace GGPHP\TrainingTeacher\Category\Transformers;
 use GGPHP\Clover\Transformers\ItemTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\TrainingTeacher\Category\Models\TrainingModule;
+use GGPHP\TrainingTeacher\TrainingSchedule\Transformers\TrainingScheduleTransformer;
 
 /**
  * Class TrainingFormTransformer.
@@ -13,7 +14,7 @@ use GGPHP\TrainingTeacher\Category\Models\TrainingModule;
  */
 class TrainingModuleTransformer extends BaseTransformer
 {
-    protected $availableIncludes = ['item', 'trainingModuleDetail', 'trainingModuleTrainingSkill'];
+    protected $availableIncludes = ['item', 'trainingModuleDetail', 'trainingModuleTrainingSkill', 'trainingSchedule'];
 
     public function includeItem(TrainingModule $trainingModule)
     {
@@ -32,5 +33,10 @@ class TrainingModuleTransformer extends BaseTransformer
     public function includeTrainingModuleTrainingSkill(TrainingModule $trainingModule)
     {
         return $this->collection($trainingModule->trainingModuleTrainingSkill, new TrainingSkillTransformer, 'TrainingModuleTrainingSkill');
+    }
+
+    public function includeTrainingSchedule(TrainingModule $trainingModule)
+    {
+        return $this->collection($trainingModule->trainingSchedule, new TrainingScheduleTransformer, 'TrainingSchedule');
     }
 }

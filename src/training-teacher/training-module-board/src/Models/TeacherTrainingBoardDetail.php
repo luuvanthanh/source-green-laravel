@@ -3,6 +3,7 @@
 namespace GGPHP\TrainingTeacher\TrainingModuleBoard\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\TrainingTeacher\Category\Models\TrainingModule;
 
 class TeacherTrainingBoardDetail extends UuidModel
 {
@@ -28,5 +29,10 @@ class TeacherTrainingBoardDetail extends UuidModel
     public function teacherTraining()
     {
         return $this->belongsTo(TeacherTrainingBoard::class, 'TeacherTrainingBoardId');
+    }
+
+    public function trainingModule()
+    {
+        return $this->belongsTo(TrainingModule::class, 'TrainingModuleId');
     }
 }

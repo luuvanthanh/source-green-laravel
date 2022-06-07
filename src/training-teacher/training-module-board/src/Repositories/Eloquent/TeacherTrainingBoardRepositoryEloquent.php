@@ -54,9 +54,8 @@ class TeacherTrainingBoardRepositoryEloquent extends CoreRepositoryEloquent impl
     public function getAll(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where(function ($query) use ($attributes) {
-                $query->orWhereLike('Name', $attributes['key']);
-                $query->orWhereLike('Code', $attributes['key']);
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['key']);
             });
         }
 

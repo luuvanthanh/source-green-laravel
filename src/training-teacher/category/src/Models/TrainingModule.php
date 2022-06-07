@@ -4,6 +4,7 @@ namespace GGPHP\TrainingTeacher\Category\Models;
 
 use GGPHP\Clover\Models\Item;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingSchedule;
 
 class TrainingModule extends UuidModel
 {
@@ -43,5 +44,10 @@ class TrainingModule extends UuidModel
     public function item()
     {
         return $this->belongsTo(Item::class, 'ItemId');
+    }
+
+    public function trainingSchedule()
+    {
+        return $this->hasMany(TrainingSchedule::class, 'TrainingModuleId');
     }
 }

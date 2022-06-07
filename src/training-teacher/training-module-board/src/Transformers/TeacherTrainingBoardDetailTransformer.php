@@ -3,6 +3,7 @@
 namespace GGPHP\TrainingTeacher\TrainingModuleBoard\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\TrainingTeacher\Category\Transformers\TrainingModuleTransformer;
 use GGPHP\TrainingTeacher\TrainingModuleBoard\Models\TeacherTrainingBoardDetail;
 
 /**
@@ -12,10 +13,15 @@ use GGPHP\TrainingTeacher\TrainingModuleBoard\Models\TeacherTrainingBoardDetail;
  */
 class TeacherTrainingBoardDetailTransformer extends BaseTransformer
 {
-    protected $availableIncludes = ['teacherTrainingBoardDetailChildren'];
+    protected $availableIncludes = ['teacherTrainingBoardDetailChildren', 'trainingModule'];
 
     public function includeTeacherTrainingBoardDetailChildren(TeacherTrainingBoardDetail $teacherTrainingBoardDetail)
     {
-        return $this->collection($teacherTrainingBoardDetail->teacherTrainingBoardDetailChildren,new TeacherTrainingBoardDetailChildrenTransformer, 'TeacherTrainingBoardDetailChildrenTransformer');
+        return $this->collection($teacherTrainingBoardDetail->teacherTrainingBoardDetailChildren, new TeacherTrainingBoardDetailChildrenTransformer, 'TeacherTrainingBoardDetailChildrenTransformer');
+    }
+
+    public function includeTrainingModule(TeacherTrainingBoardDetail $teacherTrainingBoardDetail)
+    {
+        return $this->item($teacherTrainingBoardDetail->trainingModule, new TrainingModuleTransformer, 'TrainingModule');
     }
 }

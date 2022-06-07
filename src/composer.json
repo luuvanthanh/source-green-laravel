@@ -101,7 +101,8 @@
             "GGPHP\\EvaluateTeacher\\EvaluateTeacher\\": "evaluate-teacher/evaluate-teacher/src/",
             "GGPHP\\TrainingTeacher\\Category\\": "training-teacher/category/src/",
             "GGPHP\\TeacherAssignment\\": "hrm/teacher-assignment/src",
-            "GGPHP\\TrainingTeacher\\TrainingModuleBoard\\": "training-teacher/training-module-board/src/"
+            "GGPHP\\TrainingTeacher\\TrainingModuleBoard\\": "training-teacher/training-module-board/src/",
+            "GGPHP\\TrainingTeacher\\TrainingSchedule\\": "training-teacher/training-schedule/src/"
         },
         "classmap": [
             "database/seeds",
