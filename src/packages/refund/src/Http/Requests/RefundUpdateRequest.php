@@ -24,7 +24,7 @@ class RefundUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'SchoolYearId' => 'nullable|uuid|check_exists:fee.SchoolYears,Id',
+            'schoolYearId' => 'nullable|uuid|check_exists:fee.SchoolYears,Id',
             'createRefundDetailRows' => 'nullable|array',
             'createRefundDetailRows.*.feeId' => 'required_with:createRefundDetailRows.*.configRefund|uuid|check_exists:fee.Fees,Id',
             'createRefundDetailRows.*.configRefund' => 'required_with:createRefundDetailRows.*.feeId',

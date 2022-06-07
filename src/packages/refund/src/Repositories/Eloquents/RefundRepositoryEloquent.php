@@ -67,6 +67,25 @@ class RefundRepositoryEloquent extends CoreRepositoryEloquent implements RefundR
         return $results;
     }
 
+    public function createMany(array $attributes)
+    {
+        try {
+            $model = $this->model->create($attributes);
+
+            if (!empty($attributes['createRefundDetailRows'])) {
+                collect($attributes['createRefundDetailRows'])->each(function ($item) use ($model) {
+                    $refundDetail = $this->refundDetailCreate($item, $model);
+
+                    $this->refundDetailCreated($item['configRefund'], $refundDetail);
+                });
+            }
+        } catch (Throwable $th) {
+            throw new Exception($th->getMessage(), $th->getCode());
+        }
+
+        return $this->parserResult($model);
+    }
+
     public function updateMany(array $attributes, $id)
     {
         try {
@@ -97,7 +116,6 @@ class RefundRepositoryEloquent extends CoreRepositoryEloquent implements RefundR
         } catch (Throwable $th) {
             throw new Exception($th->getMessage(), $th->getCode());
         }
-
 
         return $this->parserResult($model);
     }
@@ -137,6 +155,7 @@ class RefundRepositoryEloquent extends CoreRepositoryEloquent implements RefundR
                 }
             }
         }
+        
         $model->configRefund()->createMany($attributes);
     }
 }
