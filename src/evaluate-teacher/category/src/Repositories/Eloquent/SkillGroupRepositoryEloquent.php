@@ -65,6 +65,10 @@ class SkillGroupRepositoryEloquent extends CoreRepositoryEloquent implements Ski
             $this->model = $this->model->whereIn('Id', $arrId);
         }
 
+        if (!empty($attributes['isEmpty']) && $attributes['isEmpty'] == true) {
+            return ['data' => []];
+        }
+
         if (!empty($attributes['limit'])) {
             $skillGroup = $this->paginate($attributes['limit']);
         } else {
