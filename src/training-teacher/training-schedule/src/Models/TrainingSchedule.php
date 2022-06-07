@@ -22,6 +22,16 @@ class TrainingSchedule extends UuidModel
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'StartDate' => 'date_format:Y-m-d',
+        'EndDate' => 'date_format:Y-m-d',
+    ];
+
+    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array

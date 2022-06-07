@@ -5,6 +5,9 @@ namespace GGPHP\TrainingTeacher\TrainingSchedule\Http\Controllers;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\TrainingTeacher\Category\Repositories\Contracts\TrainingModuleRepository;
 use GGPHP\TrainingTeacher\TrainingSchedule\Http\Requests\teacherTrainingBoardUpdateRequest;
+use GGPHP\TrainingTeacher\TrainingSchedule\Http\Requests\TrainingScheduleCreateRequest;
+use GGPHP\TrainingTeacher\TrainingSchedule\Http\Requests\TrainingScheduleDeleteRequest;
+use GGPHP\TrainingTeacher\TrainingSchedule\Http\Requests\TrainingScheduleUpdateRequest;
 use GGPHP\TrainingTeacher\TrainingSchedule\Repositories\Contracts\TrainingScheduleRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -47,7 +50,7 @@ class TrainingScheduleController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TrainingScheduleCreateRequest $request)
     {
         $trainingSchedule = $this->trainingScheduleRepository->createAll($request->all());
 
@@ -74,7 +77,7 @@ class TrainingScheduleController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TrainingScheduleUpdateRequest $request, $id)
     {
         $trainingSchedule = $this->trainingScheduleRepository->updateAll($request->all(), $id);
 
@@ -87,7 +90,7 @@ class TrainingScheduleController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(TrainingScheduleDeleteRequest $request, $id)
     {
         $this->trainingScheduleRepository->delete($id);
 

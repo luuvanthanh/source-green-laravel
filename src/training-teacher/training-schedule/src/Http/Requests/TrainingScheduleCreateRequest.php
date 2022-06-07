@@ -24,8 +24,13 @@ class TrainingScheduleCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'employeeId' => 'required|exists:Employees,Id',
-            'detail.*.createRows' => 'array',
+            'data.*.employeeId' => 'array|exists:Employees,Id',
+            'data.*.trainingModuleId' => 'check_exists:evaluate-teacher.TrainingModules,Id',
+            'data.*.trainingModuleDetailId' => 'check_exists:evaluate-teacher.TrainingModuleDetails,Id',
+            'data.*.startDate' => 'required|date_format:Y-m-d',
+            'data.*.endDate' => 'nullable|date_format:Y-m-d|after_or_equal:data.*.startDate',
+            'data.detail.createRows.*.employeeId' => 'nullable|array|exists:Employees,Id',
+            'data.detail.createRows.*.trainer' => 'nullable|array|exists:Employees,Id',
             'detail.*.updateRows' => 'array',
             'detail.*.deleteRows' => 'array',
         ];

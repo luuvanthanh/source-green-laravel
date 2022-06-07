@@ -68,6 +68,16 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
      */
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['key'])) {
+            $this->trainingModuleRepositoryEloquent->model = $this->trainingModuleRepositoryEloquent->model->whereHas('trainingSchedule.employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['key']);
+            })->orWhereHas('trainingSchedule.trainingScheduleDetail.employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['key']);
+            })->orWhereHas('trainingSchedule.trainingScheduleDetail.trainer', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['key']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $TeacherTrainingBoard = $this->trainingModuleRepositoryEloquent->paginate($attributes['limit']);
         } else {
@@ -124,22 +134,42 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
         }
 
         foreach ($attributes['updateRows'] as $valueUpdate) {
-            $dataUpdate = $model->trainingScheduleDetail()->find($valueUpdate['id']);
-            dd($dataUpdate);
+            $dataDetail = $model->trainingScheduleDetail()->find($valueUpdate['id']);
 
-            if (!is_null($dataUpdate)) {
-                $dataUpdate->update($valueUpdate);
+            if (!is_null($dataDetail)) {
+                $dataDetail->update($valueUpdate);
+
+                if (!empty($valueUpdate['trainerId'])) {
+                    $dataDetail->trainer()->detach();
+                    $dataDetail->trainer()->sync($valueUpdate['trainerId']);
+                }
+
+                if (!empty($valueUpdate['employeeId'])) {
+                    $dataDetail->trainer()->detach();
+                    $dataDetail->trainer()->sync($valueUpdate['employeeId']);
+                }
             }
+        }
+
+        if (!empty($attributes['deleteRows'])) {
+            $model->trainingScheduleDetail()->whereIn('Id', $attributes['deleteRows'])->delete();
         }
     }
 
+    /**
+     * updateTrainingModule
+     *
+     * @param  mixed $attributes
+     * @param  mixed $id
+     * @return void
+     */
     public function updateTrainingModule(array $attributes, $id)
     {
         $trainingmodule = $this->trainingModuleRepositoryEloquent->model->find($id);
         DB::beginTransaction();
         try {
             if (!empty($attributes['data'])) {
-                foreach ($attributes['data'] as $key => $value) {
+                foreach ($attributes['data'] as $value) {
                     $trainingSchedule = $trainingmodule->trainingschedule()->find($value['id']);
                     $trainingSchedule->update($value);
 

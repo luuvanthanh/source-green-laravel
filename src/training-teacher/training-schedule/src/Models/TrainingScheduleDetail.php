@@ -22,6 +22,16 @@ class TrainingScheduleDetail extends UuidModel
         'DateTraining', 'TimeTraining', 'Location', 'TrainingScheduleId'
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'DateTraining' => 'date_format:Y-m-d',
+        'TimeTraining' => 'datetime:H:i:s',
+    ];
+
     public function employee()
     {
         return $this->belongsToMany(User::class, 'evaluate-teacher.TrainingScheduleDetailEmployees', 'TrainingScheduleDetailId', 'EmployeeId');
