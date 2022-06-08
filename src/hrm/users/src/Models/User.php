@@ -10,6 +10,7 @@ use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
+use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
 use GGPHP\Timekeeping\Models\Timekeeping;
@@ -340,5 +341,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function trainingSchool()
     {
         return $this->belongsTo(TrainingSchool::class, 'TrainingSchoolId');
+    }
+
+    public function manualCalculation()
+    {
+        return $this->hasMany(ManualCalculation::class, 'EmployeeId');
     }
 }
