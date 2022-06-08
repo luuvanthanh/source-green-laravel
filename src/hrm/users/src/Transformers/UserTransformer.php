@@ -11,6 +11,7 @@ use GGPHP\Category\Transformers\TrainingSchoolTransformer;
 use GGPHP\Clover\Transformers\ClassTeacherTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
+use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
 use GGPHP\Profile\Transformers\LabourContractTransformer;
 use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
@@ -42,7 +43,8 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool', 'labourContract'
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
+        'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation'
     ];
 
     /**
@@ -204,5 +206,10 @@ class UserTransformer extends BaseTransformer
     public function includeLabourContract(User $employee)
     {
         return $this->collection($employee->labourContract, new LabourContractTransformer, 'LabourContract');
+    }
+
+    public function includeManualCalculation(User $employee)
+    {
+        return $this->collection($employee->manualCalculation, new ManualCalculationTransformer, 'ManualCalculation');
     }
 }

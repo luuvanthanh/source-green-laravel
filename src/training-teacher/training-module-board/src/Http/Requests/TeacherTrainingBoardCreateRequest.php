@@ -25,7 +25,8 @@ class TeacherTrainingBoardCreateRequest extends FormRequest
     {
         return [
             'employeeId' => 'required|exists:Employees,Id',
-            'detail.*.createRows' => 'array',
+            'detail.createRows.*.trainingModuleId' => 'nullable|check_exists:evaluate-teacher.TrainingModules,Id',
+            'detail.createRows.trainingModuleDetail.trainingModuleDetailId' => 'nullable|check_exists:evaluate-teacher.TrainingModuleDetails,Id',
             'detail.*.updateRows' => 'array',
             'detail.*.deleteRows' => 'array',
         ];
