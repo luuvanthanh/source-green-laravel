@@ -46,8 +46,11 @@ class StudentTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-
-        return [];
+        return [
+            'refund' => $model->refund,
+            'dateOff' => $model->dateOff,
+            'numberDayOff' => $model->numberDayOff
+        ];
     }
 
     /**

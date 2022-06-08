@@ -110,6 +110,7 @@ return [
     'uploaded' => 'Trường tải lên thất bại.',
     'url' => 'Trường không giống với định dạng một URL.',
     'check_exists' => 'Trường :attribute không hợp lệ.',
+    'check_unique' => 'Trường :attribute đã tồn tại.',
 
     /*
     |--------------------------------------------------------------------------

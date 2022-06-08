@@ -8,6 +8,7 @@ use GGPHP\Refund\Presenters\RefundPresenter;
 use GGPHP\Refund\Repositories\Contracts\RefundRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Refund\Models\RefundDetail;
+use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Throwable;
 
@@ -67,9 +68,33 @@ class RefundRepositoryEloquent extends CoreRepositoryEloquent implements RefundR
         return $results;
     }
 
+    public function createMany(array $attributes)
+    {
+        try {
+            DB::beginTransaction();
+            $model = $this->model->create($attributes);
+
+            if (!empty($attributes['createRefundDetailRows'])) {
+                collect($attributes['createRefundDetailRows'])->each(function ($item) use ($model) {
+                    $refundDetail = $this->refundDetailCreate($item, $model);
+
+                    $this->refundDetailCreated($item['configRefund'], $refundDetail);
+                });
+            }
+
+            DB::commit();
+        } catch (Throwable $th) {
+            DB::rollBack();
+            throw new Exception($th->getMessage(), $th->getCode());
+        }
+
+        return $this->parserResult($model);
+    }
+
     public function updateMany(array $attributes, $id)
     {
         try {
+            DB::beginTransaction();
             $model = $this->model->findOrFail($id);
 
             $model->update($attributes);
@@ -94,10 +119,12 @@ class RefundRepositoryEloquent extends CoreRepositoryEloquent implements RefundR
             if (!empty($attributes['deleteRefundDetailRows'])) {
                 $model->refundDetail()->whereIn('Id', $attributes['deleteRefundDetailRows'])->delete();
             }
+
+            DB::commit();
         } catch (Throwable $th) {
+            DB::rollBack();
             throw new Exception($th->getMessage(), $th->getCode());
         }
-
 
         return $this->parserResult($model);
     }
@@ -137,6 +164,7 @@ class RefundRepositoryEloquent extends CoreRepositoryEloquent implements RefundR
                 }
             }
         }
+
         $model->configRefund()->createMany($attributes);
     }
 }

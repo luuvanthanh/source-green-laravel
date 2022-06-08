@@ -90,6 +90,12 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $this->model = $this->model->status(User::STATUS['WORKING']);
         }
 
+        if (!empty($attributes['branchId']) && !empty($attributes['forManualCalculation']) && $attributes['forManualCalculation'] == true) {
+            $this->model = $this->model->whereHas('positionLevelNow', function ($query) use ($attributes) {
+                $query->where('BranchId', $attributes['branchId']);
+            });
+        }
+
         $this->model = $this->model->tranferHistory($attributes);
 
         if (!empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == 'true') {
@@ -99,6 +105,16 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 $query->where('ContractTo', '>', $now);
             })->whereDoesntHave('probationaryContract', function ($query) use ($now) {
                 $query->where('ContractTo', '>', $now);
+            });
+        }
+
+        if (!empty($attributes['unexpiredContract']) && $attributes['unexpiredContract'] == true) {
+            $now = Carbon::now()->format('Y-m-d');
+
+            $this->model = $this->model->whereHas('labourContract', function ($query) use ($now) {
+                $query->whereDate('ContractTo', '>=', $now);
+            })->whereHas('probationaryContract', function ($query) use ($now) {
+                $query->whereDate('ContractTo', '>=', $now);
             });
         }
 
@@ -189,7 +205,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         try {
             $user = User::findOrFail($id);
             $user->update($attributes);
-            $this->updated($attributes,$user);
+            $this->updated($attributes, $user);
 
             $data = [
                 'full_name' => $user->FullName,

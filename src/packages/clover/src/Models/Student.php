@@ -4,6 +4,7 @@ namespace GGPHP\Clover\Models;
 
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\ChargeOldStudent;
 
 class Student extends UuidModel
 {
@@ -34,6 +35,7 @@ class Student extends UuidModel
         'Source', 'ParentWish', 'ParentWith', 'FullName', 'Note', 'LaborNumber', 'Sex', 'DayOfBirth', 'Age', 'Address', 'Health', 'ClassId',
         'FartherId', 'MotherId', 'CreatorId', 'LastModifierId', 'ConcurrencyStamp', 'DeleterId', 'DeletionTime', 'ExtraProperties', 'IsDeleted',
         'CardNumber', 'Code', 'Comments', 'StudentId', 'RegisterDate', 'StartDate', 'Status', 'FileImage', 'City', 'District', 'Street', 'Ward',
+        'WithdrawApplicationDate', 'WithdrawApplicationNote', 'WithdrawApplicationReason', 'RestoredDate'
     ];
 
     /**
@@ -95,5 +97,10 @@ class Student extends UuidModel
     public function testSemester()
     {
         return $this->hasMany(TestSemester::class, 'StudentId');
+    }
+
+    public function chargeOldStudent()
+    {
+        return $this->hasMany(ChargeOldStudent::class, 'StudentId');
     }
 }

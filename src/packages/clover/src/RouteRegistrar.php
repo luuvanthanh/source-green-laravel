@@ -38,6 +38,8 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::post('import-student', 'StudentController@importStudent')->name('import');
             \Route::post('import-timekeeping', 'StudentController@importTimekeeping');
+
+            \Route::get('student-refund', 'StudentController@studentRefund');
         });
     }
 

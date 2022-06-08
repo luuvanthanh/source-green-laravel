@@ -17,7 +17,7 @@ class ConfigRefund extends UuidModel
      *
      * @var array
      */
-    protected $fillable = ['RefundDetailId', 'PaymentFormId', 'Type'];
+    protected $fillable = ['RefundDetailId', 'RefundForm', 'Type'];
 
     public function refundDetail()
     {

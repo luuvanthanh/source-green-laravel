@@ -2,8 +2,8 @@
 
 namespace GGPHP\ManualCalculation\Repositories\Eloquent;
 
-use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\ManualCalculation\Presenters\ManualCalculationPresenter;
@@ -114,6 +114,8 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
 
         if (is_null($manualCalculation)) {
             $manualCalculation = $this->model->create($attributes);
+        } elseif (!is_null($manualCalculation) && $attributes['type'] == ManualCalculation::TYPE['N']) {
+            $manualCalculation->delete();
         } else {
             $manualCalculation->update($attributes);
         }
@@ -127,14 +129,27 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
             ->whereDate('Date', '>=', $attributes['startDate'])
             ->whereDate('Date', '<=', $attributes['endDate'])->get();
 
+        $newDate = Carbon::parse($attributes['startDate'])->format('d');
+
         foreach ($model as $value) {
 
-            if (is_null($value->Type)) {
+            $dateMonth = Carbon::parse($attributes['month']);
+            $date = Carbon::parse($value->Date)->format('d');
+            $newDate = $dateMonth->format('Y-m') . '-' . $date;
+
+            if ($date >= $newDate) {
+                $newDate =  $dateMonth->subMonth()->format('Y-m') . '-' . $date;
+            }
+
+            if ($this->isValidDate($newDate) == false) {
                 continue;
             }
 
-            $date = Carbon::parse($value->Date)->format('d');
-            $newDate = Carbon::parse($attributes['month'])->format('Y-m') . '-' . $date;
+            $checkDay = Carbon::parse($newDate);
+
+            if ($checkDay->dayOfWeek == Carbon::SUNDAY || $checkDay->dayOfWeek == Carbon::SATURDAY) {
+                continue;
+            }
 
             $data = [
                 'employeeId' => $value->EmployeeId,
@@ -145,6 +160,13 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
             $this->create($data);
         }
 
-        return Parent::all();
+        return $this->parserResult($model);
+    }
+
+    function isValidDate($string, $format = 'Y-m-d')
+    {
+        $dateTime = DateTime::createFromFormat($format, $string);
+
+        return $dateTime && $dateTime->format($format) == $string;
     }
 }

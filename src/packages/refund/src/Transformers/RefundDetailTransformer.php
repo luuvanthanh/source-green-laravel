@@ -2,10 +2,9 @@
 
 namespace GGPHP\Refund\Transformers;
 
-use GGPHP\Refund\Models\Refund;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\FeeTransformer;
 use GGPHP\Refund\Models\RefundDetail;
-use GGPHP\Users\Transformers\UserTransformer;
 
 /**
  * Class RefundTransformer.
@@ -19,7 +18,7 @@ class RefundDetailTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['configRefund'];
+    protected $availableIncludes = ['configRefund', 'fee'];
 
     /**
      * Transform the custom field entity.
@@ -34,5 +33,14 @@ class RefundDetailTransformer extends BaseTransformer
     public function includeConfigRefund(RefundDetail $model)
     {
         return $this->collection($model->configRefund, new ConfigRefundTransformer, 'ConfigRefund');
+    }
+
+    public function includeFee(RefundDetail $model)
+    {
+        if (empty($model->fee)) {
+            return null;
+        }
+
+        return $this->item($model->fee, new FeeTransformer, 'Fee');
     }
 }
