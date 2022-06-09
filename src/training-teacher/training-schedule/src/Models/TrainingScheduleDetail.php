@@ -19,7 +19,7 @@ class TrainingScheduleDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'DateTraining', 'TimeTraining', 'Location', 'TrainingScheduleId'
+        'DateTraining', 'StartTime', 'EndTime', 'Location', 'TrainingScheduleId'
     ];
 
     /**
@@ -28,8 +28,7 @@ class TrainingScheduleDetail extends UuidModel
      * @var array
      */
     protected $casts = [
-        'DateTraining' => 'date_format:Y-m-d',
-        'TimeTraining' => 'datetime:H:i:s',
+        'DateTraining' => 'date_format:Y-m-d'
     ];
 
     public function employee()

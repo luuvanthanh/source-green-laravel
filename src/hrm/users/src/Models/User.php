@@ -14,6 +14,8 @@ use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
 use GGPHP\Timekeeping\Models\Timekeeping;
+use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingSchedule;
+use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingScheduleDetail;
 use GGPHP\WorkOnline\Models\WorkOnline;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
@@ -346,5 +348,15 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function manualCalculation()
     {
         return $this->hasMany(ManualCalculation::class, 'EmployeeId');
+    }
+
+    public function trainingSchedule()
+    {
+        return $this->belongsToMany(TrainingSchedule::class, 'evaluate-teacher.TrainingScheduleEmployees', 'EmployeeId', 'TrainingScheduleId');
+    }
+
+    public function trainingScheduleDetail()
+    {
+        return $this->belongsToMany(TrainingScheduleDetail::class, 'evaluate-teacher.TrainingScheduleDetailEmployees', 'EmployeeId', 'TrainingScheduleDetailId');
     }
 }
