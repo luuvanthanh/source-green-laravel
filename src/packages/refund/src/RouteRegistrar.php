@@ -29,8 +29,9 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('refunds', 'RefundController')->except('destroy');
+            \Route::resource('refunds', 'RefundController')->except('destroy', 'store');
             \Route::put('refund-update-many/{id}', 'RefundController@updateMany');
+            \Route::post('refund-create-many', 'RefundController@createMany');
         });
     }
 }
