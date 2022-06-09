@@ -8,6 +8,7 @@ use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingSchedule;
 use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingScheduleDetail;
 use GGPHP\TrainingTeacher\TrainingSchedule\Presenters\TrainingSchedulePresenter;
 use GGPHP\TrainingTeacher\TrainingSchedule\Repositories\Contracts\TrainingScheduleRepository;
+use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Illuminate\Container\Container;
@@ -26,10 +27,12 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
 
     public function __construct(
         TrainingModuleRepositoryEloquent $trainingModuleRepositoryEloquent,
+        UserRepositoryEloquent $userRepositoryEloquent,
         Container $app
     ) {
         parent::__construct($app);
         $this->trainingModuleRepositoryEloquent = $trainingModuleRepositoryEloquent;
+        $this->userRepositoryEloquent = $userRepositoryEloquent;
     }
 
     /**
@@ -190,5 +193,36 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
         }
 
         return $this->parserResult($trainingmodule);
+    }
+
+    public function scheduleTeacher(array $attributes)
+    {
+        $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->whereHas('trainingScheduleDetail', function ($q) use ($attributes) {
+
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $q->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
+            }
+
+            $q->orderBy('CreationTime', 'DESC');
+        })->with(['trainingScheduleDetail' => function ($q01) use ($attributes) {
+
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $q01->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
+            }
+
+            $q01->orderBy('CreationTime', 'DESC');
+        }])->when(!empty($attributes['key']), function ($query01) use ($attributes) {
+            $query01->whereLike('FullName', $attributes['key']);
+        })->when(!empty($attributes['id']), function ($query02) use ($attributes) {
+            $query02->where('Id', $attributes['id']);
+        });
+
+        if (!empty($attributes['limit'])) {
+            $employee = $this->userRepositoryEloquent->paginate($attributes['limit']);
+        } else {
+            $employee = $this->userRepositoryEloquent->get();
+        }
+
+        return $employee;
     }
 }

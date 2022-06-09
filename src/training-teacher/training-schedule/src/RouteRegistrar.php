@@ -36,6 +36,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::put('update-training-modules/{id}', [
                 'uses' => 'TrainingScheduleController@updateTrainingModule',
             ]);
+
+            \Route::get('schedule-teachers',
+                ['uses' => 'TrainingScheduleController@scheduleTeacher']
+            );
         });
     }
 }

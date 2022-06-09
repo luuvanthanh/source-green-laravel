@@ -17,7 +17,8 @@ class CreateTrainingScheduleDetailsTable extends Migration
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->date('DateTraining');
-            $table->time('TimeTraining');
+            $table->time('StartTime');
+            $table->time('EndTime')->nullable();
             $table->string('Location')->nullable();
             $table->uuid('TrainingScheduleId');
             $table->timestamp('CreationTime', 0)->nullable();

@@ -103,4 +103,11 @@ class TrainingScheduleController extends Controller
 
         return $this->success($trainingmodule, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function scheduleTeacher(Request $request)
+    {
+        $trainingmodule = $this->trainingScheduleRepository->scheduleTeacher($request->all());
+
+        return $this->success($trainingmodule, trans('lang::messages.common.getListSuccess'));
+    }
 }
