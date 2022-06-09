@@ -5,6 +5,7 @@ namespace GGPHP\Timekeeping\Repositories\Eloquent;
 use alhimik1986\PhpExcelTemplator\params\CallbackParam;
 use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
+use Exception;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\HolidayDetail;
@@ -213,6 +214,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         if (!is_null($contract)) {
+            if (!$contract->ContractFrom) {
+                throw new Exception('Vui lòng hoàn thành hợp đồng của ' . $contract->employee->FullName, 500);
+            }
+            
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
         }
         // thoi gian cham cong
