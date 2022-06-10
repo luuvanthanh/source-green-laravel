@@ -16,20 +16,8 @@ class EvaluateTypeCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['string','required', function ($attribute, $value, $fail) {
-                $evaluateType = EvaluateType::where('Name', $value)->first();
-
-                if (!is_null($evaluateType)) {
-                    return $fail('Trường đã có trong cơ sở dữ liệu.');
-                }
-            },],
-            'code' => ['string','required', function ($attribute, $value, $fail) {
-                $evaluateType = EvaluateType::where('Code', $value)->first();
-
-                if (!is_null($evaluateType)) {
-                    return $fail('Trường đã có trong cơ sở dữ liệu.');
-                }
-            },],
+            'name' => 'string|check_unique:evaluate-teacher.EvaluateTypes,Name',
+            'code' => 'string|check_unique:evaluate-teacher.EvaluateTypes,Code',
         ];
     }
 }

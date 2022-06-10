@@ -26,21 +26,9 @@ class EvaluateStepCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['string', 'required', function ($attribute, $value, $fail) {
-                $evaluateStep = EvaluateStep::where('Name', $value)->first();
-
-                if (!is_null($evaluateStep)) {
-                    return $fail('Trường đã có trong cơ sở dữ liệu.');
-                }
-            }],
-            'code' => ['string', 'required', function ($attribute, $value, $fail) {
-                $evaluateStep = EvaluateStep::where('Code', $value)->first();
-
-                if (!is_null($evaluateStep)) {
-                    return $fail('Trường đã có trong cơ sở dữ liệu.');
-                }
-            }],
-            'evaluateTypeId' => 'required|array'
+            'name' => 'string|check_unique:evaluate-teacher.EvaluateSteps,Name',
+            'code' => 'string|check_unique:evaluate-teacher.EvaluateSteps,Code',
+            'evaluateTypeId' => 'required|array|check_exists:evaluate-teacher.EvaluateTypes,Id'
         ];
     }
 }
