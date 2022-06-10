@@ -25,6 +25,10 @@ class WordExporterServices
             'template' => 'medical_info.docx',
             'result' => 'medical_info.docx',
         ],
+        'report_child_evaluate_info' => [
+            'template' => 'report_child_evaluate_info.docx',
+            'result' => 'report_child_evaluate_info.docx',
+        ]
     ];
 
     public function __construct()
@@ -84,7 +88,7 @@ class WordExporterServices
         $templateProcessor->setValues(Arr::except($param, ['detail']));
 
         $dataUser = Arr::only($param, ['detail']);
-
+        
         $templateProcessor->cloneRowAndSetValues('number', $dataUser['detail']);
 
         $templateProcessor->saveAs($resultFileUrl);
