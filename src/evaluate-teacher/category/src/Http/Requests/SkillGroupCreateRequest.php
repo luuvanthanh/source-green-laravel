@@ -15,13 +15,7 @@ class SkillGroupCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['string','required', function ($attribute, $value, $fail) {
-                $skillGroup = SkillGroup::where('Name', $value)->first();
-
-                if (!is_null($skillGroup)) {
-                    return $fail('Trường đã có trong cơ sở dữ liệu.');
-                }
-            },]
+            'name' => 'string|check_unique:evaluate-teacher.SkillGroups,Name',
         ];
     }
 }

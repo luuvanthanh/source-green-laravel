@@ -61,6 +61,11 @@ class EvaluateTypeRepositoryEloquent extends CoreRepositoryEloquent implements E
             $this->model = $this->model->whereLike('Name', $attributes['key']);
         }
 
+        if (!empty($attributes['id'])) {
+            $arrId = explode(',', $attributes['id']);
+            $this->model = $this->model->whereIn('Id', $arrId);
+        }
+
         if (!empty($attributes['limit'])) {
             $evaluateType = $this->paginate($attributes['limit']);
         } else {

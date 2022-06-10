@@ -15,20 +15,8 @@ class RatingLevelCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['string','required', function ($attribute, $value, $fail) {
-                $ratingLevel = RatingLevel::where('Name', $value)->first();
-
-                if (!is_null($ratingLevel)) {
-                    return $fail('Trường đã có trong cơ sở dữ liệu.');
-                }
-            },],
-            'code' => ['string','required', function ($attribute, $value, $fail) {
-                $ratingLevel = RatingLevel::where('Code', $value)->first();
-
-                if (!is_null($ratingLevel)) {
-                    return $fail('Trường đã có trong cơ sở dữ liệu.');
-                }
-            },],
+            'name' => 'string|check_unique:evaluate-teacher.RatingLevels,Name',
+            'code' => 'string|check_unique:evaluate-teacher.RatingLevels,Code',
         ];
     }
 }
