@@ -51,11 +51,11 @@ class EvaluateTeacherTransformer extends BaseTransformer
 
     public function includeTeacherAreEvaluate(EvaluateTeacher $evaluateTeacher)
     {
-        if (empty($evaluateTeacher->teacherEvaluate)) {
+        if (empty($evaluateTeacher->teacherAreEvaluate)) {
             return;
         }
 
-        return $this->item($evaluateTeacher->teacherEvaluate, new UserTransformer, 'TeacherAreEvaluate');
+        return $this->item($evaluateTeacher->teacherAreEvaluate, new UserTransformer, 'TeacherAreEvaluate');
     }
 
     public function includeEvaluateTeacherDetail(EvaluateTeacher $evaluateTeacher)
