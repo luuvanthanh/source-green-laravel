@@ -15,6 +15,7 @@ use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
 use GGPHP\Profile\Transformers\LabourContractTransformer;
+use GGPHP\Profile\Transformers\ProbationaryContractTransformer;
 use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
 use GGPHP\Timekeeping\Transformers\TimekeepingTransformer;
 use GGPHP\Users\Models\User;
@@ -46,7 +47,7 @@ class UserTransformer extends BaseTransformer
     protected $availableIncludes = [
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel',
         'classTeacher', 'positionLevelNow', 'businessCard', 'degree',
-        'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation', 'branchDefault'
+        'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation', 'branchDefault', 'probationaryContract'
     ];
 
     /**
@@ -209,5 +210,10 @@ class UserTransformer extends BaseTransformer
     public function includeBranchDefault(User $employee)
     {
         return $this->collection($employee->branchDefault, new PositionLevelTransformer, 'PositionLevel');
+    }
+
+    public function includeProbationaryContract(User $employee)
+    {
+        return $this->collection($employee->probationaryContract, new ProbationaryContractTransformer, 'ProbationaryContract');
     }
 }
