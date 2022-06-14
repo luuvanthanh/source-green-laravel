@@ -10,6 +10,7 @@ use GGPHP\Category\Transformers\TrainingMajorTransformer;
 use GGPHP\Category\Transformers\TrainingSchoolTransformer;
 use GGPHP\Clover\Transformers\ClassTeacherTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\EvaluateTeacher\Category\Transformers\TypeTeacherTransformer;
 use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
 use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
@@ -47,7 +48,7 @@ class UserTransformer extends BaseTransformer
     protected $availableIncludes = [
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
         'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool',
-        'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail'
+        'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail', 'typeTeacher'
     ];
 
     /**
@@ -67,20 +68,12 @@ class UserTransformer extends BaseTransformer
             }
         }
 
-        $category = null;
-
-        foreach (User::CATEGORY as $key => $value) {
-            if ($value == $model->Category) {
-                $category = $key;
-            }
-        }
-
         $attributes = [
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'totalWorks' => $model->totalWorks,
             'responseInvalid' => $model->responseInvalid,
             'Status' => $status,
-            'Category' => $category,
+            'Category' => array_search($model->Category, User::CATEGORY) ? array_search($model->Category, User::CATEGORY) : null,
             'workHourSummary' => $model->workHourSummary,
             'totalWorkHourSummary' => $model->totalWorkHourSummary,
             'totalWorkWeekday' => $model->totalWorkWeekday,
@@ -224,5 +217,10 @@ class UserTransformer extends BaseTransformer
     public function includeTrainingScheduleDetail(User $employee)
     {
         return $this->collection($employee->trainingScheduleDetail, new TrainingScheduleDetailTransformer, 'TrainingScheduleDetail');
+    }
+
+    public function includeTypeTeacher(User $employee)
+    {
+        return $this->collection($employee->typeTeacher, new TypeTeacherTransformer, 'TypeTeacher');
     }
 }

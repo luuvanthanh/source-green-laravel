@@ -132,6 +132,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             //     $user->EmployeeIdCrm = $employeeCrm->data->id;
             //     $user->update();
             // }
+
+            if (!empty($attributes['typeTeacher'])) {
+                $user->typeTeacher()->attach($attributes['typeTeacher']);
+            }
+
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -159,6 +164,10 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             // if (!is_null($employeeIdCrm)) {
             //     CrmService::updateEmployee($data, $employeeIdCrm);
             // }
+
+            if (!empty($attributes['typeTeacher'])) {
+                $user->typeTeacher()->attach($attributes['typeTeacher']);
+            }
 
             \DB::commit();
         } catch (\Throwable $th) {
