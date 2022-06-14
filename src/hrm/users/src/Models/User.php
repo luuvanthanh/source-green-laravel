@@ -9,6 +9,7 @@ use GGPHP\Category\Models\TrainingMajor;
 use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\EvaluateTeacher\Category\Models\TypeTeacher;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
@@ -47,8 +48,8 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     ];
 
     const CATEGORY = [
-        'EMPLOYEE' => 0,
-        'TEACHER' => 1
+        'EMPLOYEE' => 1,
+        'TEACHER' => 2
     ];
 
     /**
@@ -358,5 +359,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function trainingScheduleDetail()
     {
         return $this->belongsToMany(TrainingScheduleDetail::class, 'evaluate-teacher.TrainingScheduleDetailEmployees', 'EmployeeId', 'TrainingScheduleDetailId');
+    }
+
+    public function typeTeacher()
+    {
+        return $this->belongsToMany(TypeTeacher::class, 'EmployeeTypeTeacher', 'EmployeeId', 'TypeTeacherId');
     }
 }

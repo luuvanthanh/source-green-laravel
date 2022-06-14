@@ -69,6 +69,13 @@ class EvaluateTeacherRepositoryEloquent extends CoreRepositoryEloquent implement
             });
         }
 
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->whereLike('TeacherEvaluate', $attributes['key'])
+                    ->orWhereLike('TeacherAreEvaluate', $attributes['key']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $degree = $this->paginate($attributes['limit']);
         } else {
