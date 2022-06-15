@@ -110,7 +110,7 @@ class Index extends PureComponent {
       this.onSetDetail(details.otherDeclarationDetail);
       this.onSetDetailContract(details.changeContractParameter);
       this.onSetParamaterValues(head(details.otherDeclarationDetail));
-      if(head(details.changeContractParameter)){
+      if (head(details.changeContractParameter)) {
         this.onSetParamaterValuesContract(head(details.changeContractParameter));
       }
     }
@@ -222,7 +222,7 @@ class Index extends PureComponent {
           ...prevState.detail,
           {
             employee,
-            detail: paramaterValues,
+            detail: paramaterValues.map((i) => ({ ...i, value: 0 })),
           },
         ],
       }));
@@ -249,7 +249,7 @@ class Index extends PureComponent {
           ...prevState.detailContract,
           {
             employee,
-            detail: paramaterValuesContract,
+            detail: paramaterValuesContract.map((i) => ({ ...i, value: 0 })),
           },
         ],
       }));
@@ -263,6 +263,14 @@ class Index extends PureComponent {
         ...(value
           ? value.map((item) => {
               const itemParamaterValues = categories.paramaterValues.find(({ id }) => id === item);
+              const currentParamaterValues = prevState.paramaterValues.find(
+                (item) => item.id === itemParamaterValues.id,
+              );
+
+              if (currentParamaterValues) {
+                return currentParamaterValues;
+              }
+
               return itemParamaterValues;
             })
           : []),
@@ -271,10 +279,18 @@ class Index extends PureComponent {
         ...item,
         detail: value
           ? [
-              ...value.map((item) => {
+              ...value.map((itemValue) => {
                 const itemParamaterValues = categories.paramaterValues.find(
-                  ({ id }) => id === item,
+                  ({ id }) => id === itemValue,
                 );
+                const currentParamaterValues = item.detail.find(
+                  (item) => item.id === itemParamaterValues.id,
+                );
+
+                if (currentParamaterValues) {
+                  return currentParamaterValues;
+                }
+
                 return itemParamaterValues;
               }),
             ]
@@ -289,10 +305,18 @@ class Index extends PureComponent {
       paramaterValuesContract: [
         ...(value
           ? value.map((item) => {
-              const itemParamaterValues = categories.paramaterContract.find(
+              const itemParamaterContract = categories.paramaterContract.find(
                 ({ id }) => id === item,
               );
-              return itemParamaterValues;
+              const currentParamaterContract = prevState.paramaterValuesContract.find(
+                (item) => item.id === itemParamaterContract.id,
+              );
+
+              if (currentParamaterContract) {
+                return currentParamaterContract;
+              }
+
+              return itemParamaterContract;
             })
           : []),
       ],
@@ -300,11 +324,19 @@ class Index extends PureComponent {
         ...item,
         detail: value
           ? [
-              ...value.map((item) => {
-                const itemParamaterValues = categories.paramaterContract.find(
-                  ({ id }) => id === item,
+              ...value.map((itemValue) => {
+                const itemParamaterContract = categories.paramaterContract.find(
+                  ({ id }) => id === itemValue,
                 );
-                return itemParamaterValues;
+                const currentParamaterContract = item.detail.find(
+                  (item) => item.id === itemParamaterContract.id,
+                );
+
+                if (currentParamaterContract) {
+                  return currentParamaterContract;
+                }
+
+                return itemParamaterContract;
               }),
             ]
           : [],
