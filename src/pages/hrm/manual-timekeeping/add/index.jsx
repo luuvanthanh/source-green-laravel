@@ -26,7 +26,7 @@ const Index = () => {
   const [
     { error, holidays, branches },
     loading,
-    { pagination, data },
+    { pagination, data, employees },
     { menuLeftHRM },
   ] = useSelector(({ works, loading: { effects }, manualTimekeepingAdd, menu }) => [
     works,
@@ -63,6 +63,12 @@ const Index = () => {
       type: 'works/GET_EMPLOYEES',
       payload: {},
     });
+    dispatch({
+      type: 'manualTimekeepingAdd/GET_EMPLOYEES',
+      payload: {
+        unexpiredContract: true,
+      },
+    });
   };
 
   const loadHolidays = () => {
@@ -81,6 +87,7 @@ const Index = () => {
         ...search,
         endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
         startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
+        unexpiredContract: true,
       },
     });
     history.push(
@@ -124,12 +131,26 @@ const Index = () => {
     }));
   }, 500);
 
+  const debouncedSearchMultiple = debounce((value, type) => {
+    setSearch((prev) => ({
+      ...prev,
+      [`${type}`]: value.map((i) => i).join(','),
+      forManualCalculation: true,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    }));
+  }, 500);
+
   const onChangeSelect = (e, type) => {
     debouncedSearch(e, type);
   };
 
   const onChangeMonth = (e) => {
     debouncedSearchMonth(e);
+  };
+
+  const onChangeSelectMultiple = (e, type) => {
+    debouncedSearchMultiple(e, type);
   };
 
   const changePagination = ({ page, limit }) => {
@@ -349,6 +370,15 @@ const Index = () => {
                   onChange={(event) => onChangeMonth(event, 'date')}
                   type={variables.MONTH_PICKER}
                   allowClear={false}
+                />
+              </div>
+
+              <div className="col-lg-3">
+                <FormItem
+                  data={employees}
+                  name="employeeId"
+                  onChange={(event) => onChangeSelectMultiple(event, 'employeeId')}
+                  type={variables.SELECT_MUTILPLE}
                 />
               </div>
             </div>
