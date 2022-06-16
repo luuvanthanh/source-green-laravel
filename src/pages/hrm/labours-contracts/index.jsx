@@ -232,7 +232,7 @@ class Index extends PureComponent {
 
   export = () => {
     const { idTable, isModalRadio } = this.state;
-    Helper.exportExcel(`/v1/${isModalRadio}/${idTable}`,{}, `HopDongLaoDong.docx`);
+    Helper.exportExcel(`/v1/${isModalRadio}/${idTable}`, {}, `HopDongLaoDong.docx`);
     this.setState({ isModalVisible: false });
   };
 
