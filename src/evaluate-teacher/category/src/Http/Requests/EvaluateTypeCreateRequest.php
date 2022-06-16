@@ -16,8 +16,8 @@ class EvaluateTypeCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|check_unique:evaluate-teacher.EvaluateTypes,Name',
-            'code' => 'string|check_unique:evaluate-teacher.EvaluateTypes,Code',
+            'name' => 'string|check_unique:evaluate_teacher.EvaluateTypes,Name',
+            'code' => 'string|check_unique:evaluate_teacher.EvaluateTypes,Code',
         ];
     }
 }

@@ -15,8 +15,8 @@ class RatingLevelCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|check_unique:evaluate-teacher.RatingLevels,Name',
-            'code' => 'string|check_unique:evaluate-teacher.RatingLevels,Code',
+            'name' => 'string|check_unique:evaluate_teacher.RatingLevels,Name',
+            'code' => 'string|check_unique:evaluate_teacher.RatingLevels,Code',
         ];
     }
 }

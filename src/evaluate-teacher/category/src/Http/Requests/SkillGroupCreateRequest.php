@@ -15,7 +15,7 @@ class SkillGroupCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|check_unique:evaluate-teacher.SkillGroups,Name',
+            'name' => 'string|check_unique:evaluate_teacher.SkillGroups,Name',
         ];
     }
 }
