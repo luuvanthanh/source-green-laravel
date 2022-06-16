@@ -26,9 +26,9 @@ class EvaluateStepCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|check_unique:evaluate-teacher.EvaluateSteps,Name',
-            'code' => 'string|check_unique:evaluate-teacher.EvaluateSteps,Code',
-            'evaluateTypeId' => 'required|array|check_exists:evaluate-teacher.EvaluateTypes,Id'
+            'name' => 'string|check_unique:evaluate_teacher.EvaluateSteps,Name',
+            'code' => 'string|check_unique:evaluate_teacher.EvaluateSteps,Code',
+            'evaluateTypeId' => 'required|array|check_exists:evaluate_teacher.EvaluateTypes,Id'
         ];
     }
 }

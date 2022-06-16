@@ -26,11 +26,11 @@ class TypeTeacherCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|check_unique:evaluate-teacher.TypeTeachers,Name',
-            'code' => 'string|check_unique:evaluate-teacher.TypeTeachers,Code',
+            'name' => 'string|check_unique:evaluate_teacher.TypeTeachers,Name',
+            'code' => 'string|check_unique:evaluate_teacher.TypeTeachers,Code',
             'typeOfContractId' => 'required|exists:TypeOfContracts,Id',
-            'ratingLevelFrom' => 'check_exists:evaluate-teacher.RatingLevels,Id',
-            'ratingLevelTo' => 'check_exists:evaluate-teacher.RatingLevels,Id'
+            'ratingLevelFrom' => 'check_exists:evaluate_teacher.RatingLevels,Id',
+            'ratingLevelTo' => 'check_exists:evaluate_teacher.RatingLevels,Id'
         ];
     }
 }

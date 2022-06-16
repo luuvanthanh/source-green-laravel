@@ -24,7 +24,7 @@ class TrainingSkillCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|check_unique:evaluate-teacher.TrainingSkills,Code',
+            'code' => 'required|check_unique:evaluate_teacher.TrainingSkills,Code',
             'name' => 'required|string',
             'detail.*.createRows' => 'array',
             'detail.*.updateRows' => 'array',
