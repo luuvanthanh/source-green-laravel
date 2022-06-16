@@ -12,7 +12,7 @@ class EvaluateStep extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.EvaluateSteps';
+    protected $table = 'evaluate_teacher.EvaluateSteps';
 
     /**
      * The attributes that are mass assignable.
@@ -32,6 +32,6 @@ class EvaluateStep extends UuidModel
 
     public function evaluateType()
     {
-        return $this->belongsToMany(EvaluateType::class, 'evaluate-teacher.EvaluateStepEvaluateType', 'EvaluateStepId', 'EvaluateTypeId');
+        return $this->belongsToMany(EvaluateType::class, 'evaluate_teacher.EvaluateStepEvaluateType', 'EvaluateStepId', 'EvaluateTypeId');
     }
 }

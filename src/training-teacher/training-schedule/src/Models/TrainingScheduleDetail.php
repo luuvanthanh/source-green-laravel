@@ -11,7 +11,7 @@ class TrainingScheduleDetail extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.TrainingScheduleDetails';
+    protected $table = 'evaluate_teacher.TrainingScheduleDetails';
 
     /**
      * The attributes that are mass assignable.
@@ -33,11 +33,11 @@ class TrainingScheduleDetail extends UuidModel
 
     public function employee()
     {
-        return $this->belongsToMany(User::class, 'evaluate-teacher.TrainingScheduleDetailEmployees', 'TrainingScheduleDetailId', 'EmployeeId');
+        return $this->belongsToMany(User::class, 'evaluate_teacher.TrainingScheduleDetailEmployees', 'TrainingScheduleDetailId', 'EmployeeId');
     }
 
     public function trainer()
     {
-        return $this->belongsToMany(User::class, 'evaluate-teacher.TrainingScheduleDetailTrainers', 'TrainingScheduleDetailId', 'TrainerId');
+        return $this->belongsToMany(User::class, 'evaluate_teacher.TrainingScheduleDetailTrainers', 'TrainingScheduleDetailId', 'TrainerId');
     }
 }

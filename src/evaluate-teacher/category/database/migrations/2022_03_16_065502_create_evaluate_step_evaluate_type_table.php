@@ -13,11 +13,11 @@ class CreateEvaluateStepEvaluateTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.EvaluateStepEvaluateType', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.EvaluateStepEvaluateType', function (Blueprint $table) {
             $table->uuid('EvaluateStepId');
             $table->uuid('EvaluateTypeId');
-            $table->foreign('EvaluateStepId')->references('Id')->on('evaluate-teacher.EvaluateSteps')->onDelete('cascade');
-            $table->foreign('EvaluateTypeId')->references('Id')->on('evaluate-teacher.EvaluateTypes')->onDelete('cascade');
+            $table->foreign('EvaluateStepId')->references('Id')->on('evaluate_teacher.EvaluateSteps')->onDelete('cascade');
+            $table->foreign('EvaluateTypeId')->references('Id')->on('evaluate_teacher.EvaluateTypes')->onDelete('cascade');
         });
     }
 
@@ -28,6 +28,6 @@ class CreateEvaluateStepEvaluateTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.EvaluateStepEvaluateType');
+        Schema::dropIfExists('evaluate_teacher.EvaluateStepEvaluateType');
     }
 }

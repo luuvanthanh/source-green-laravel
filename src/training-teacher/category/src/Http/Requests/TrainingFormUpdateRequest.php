@@ -23,6 +23,8 @@ class TrainingFormUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'type' => 'nullable|in:SEFT_LEARNING,TRAINING_ONINE,TRAINING_OFFLINE,PRACTICE'
+        ];
     }
 }

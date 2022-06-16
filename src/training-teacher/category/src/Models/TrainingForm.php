@@ -10,7 +10,7 @@ class TrainingForm extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.TrainingForms';
+    protected $table = 'evaluate_teacher.TrainingForms';
 
     const TYPE_TRAINING = [
         'SEFT_LEARNING' => 1,

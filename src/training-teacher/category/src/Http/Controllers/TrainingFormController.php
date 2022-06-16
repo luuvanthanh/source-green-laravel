@@ -77,7 +77,9 @@ class TrainingFormController extends Controller
      */
     public function update(TrainingFormUpdateRequest $request, $id)
     {
-        $trainingForm = $this->trainingFormRepository->update($request->all(), $id);
+        $attributes = $request->all();
+        $attributes['type'] = TrainingForm::TYPE_TRAINING[$attributes['type']];
+        $trainingForm = $this->trainingFormRepository->update($attributes, $id);
 
         return $this->success($trainingForm, trans('lang::messages.common.modifySuccess'));
     }

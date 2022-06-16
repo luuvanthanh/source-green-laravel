@@ -13,10 +13,10 @@ class CreateTrainingScheduleDetailTrainersTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TrainingScheduleDetailTrainers', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.TrainingScheduleDetailTrainers', function (Blueprint $table) {
             $table->uuid('TrainingScheduleDetailId');
             $table->uuid('TrainerId'); // Only employee with type teacher and N6
-            $table->foreign('TrainingScheduleDetailId')->references('Id')->on('evaluate-teacher.TrainingScheduleDetails')->onDelete('cascade');
+            $table->foreign('TrainingScheduleDetailId')->references('Id')->on('evaluate_teacher.TrainingScheduleDetails')->onDelete('cascade');
         });
     }
 
@@ -27,6 +27,6 @@ class CreateTrainingScheduleDetailTrainersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TrainingScheduleDetailTrainers');
+        Schema::dropIfExists('evaluate_teacher.TrainingScheduleDetailTrainers');
     }
 }

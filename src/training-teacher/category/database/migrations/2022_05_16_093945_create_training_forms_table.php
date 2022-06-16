@@ -13,12 +13,13 @@ class CreateTrainingFormsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TrainingForms', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.TrainingForms', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Code');
             $table->string('Name');
             $table->text('Note')->nullable();
+            $table->integer('Type')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
@@ -32,6 +33,6 @@ class CreateTrainingFormsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TrainingForms');
+        Schema::dropIfExists('evaluate_teacher.TrainingForms');
     }
 }

@@ -6,7 +6,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class SkillGroup extends UuidModel
 {
-    protected $table = 'evaluate-teacher.SkillGroups';
+    protected $table = 'evaluate_teacher.SkillGroups';
 
     const CODE = 'NKN';
     

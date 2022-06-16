@@ -6,7 +6,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class SkillGroupDetail extends UuidModel
 {
-    protected $table = 'evaluate-teacher.SkillGroupDetails';
+    protected $table = 'evaluate_teacher.SkillGroupDetails';
 
     protected $fillable = [
         'SkillGroupId', 'Content', 'Code'

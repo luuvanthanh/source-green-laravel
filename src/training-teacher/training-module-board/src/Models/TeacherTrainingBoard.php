@@ -10,7 +10,7 @@ class TeacherTrainingBoard extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.TeacherTrainingBoards';
+    protected $table = 'evaluate_teacher.TeacherTrainingBoards';
 
     /**
      * The attributes that are mass assignable.

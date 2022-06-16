@@ -15,7 +15,7 @@ class EvaluateTeacher extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.EvaluateTeachers';
+    protected $table = 'evaluate_teacher.EvaluateTeachers';
 
     /**
      * The attributes that are mass assignable.

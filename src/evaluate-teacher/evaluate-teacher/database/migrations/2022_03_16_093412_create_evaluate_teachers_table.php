@@ -13,7 +13,7 @@ class CreateEvaluateTeachersTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.EvaluateTeachers', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.EvaluateTeachers', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->uuid('EvaluateStepId');
@@ -35,6 +35,6 @@ class CreateEvaluateTeachersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.EvaluateTeachers');
+        Schema::dropIfExists('evaluate_teacher.EvaluateTeachers');
     }
 }

@@ -13,7 +13,7 @@ class CreateSkillGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.SkillGroups', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.SkillGroups', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Code');
@@ -32,6 +32,6 @@ class CreateSkillGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.SkillGroups');
+        Schema::dropIfExists('evaluate_teacher.SkillGroups');
     }
 }
