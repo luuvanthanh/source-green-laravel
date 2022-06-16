@@ -6,7 +6,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class EvaluateTypeDetail extends UuidModel
 {
-    protected $table = 'evaluate-teacher.EvaluateTypeDetails';
+    protected $table = 'evaluate_teacher.EvaluateTypeDetails';
 
     protected $fillable = [
         'EvaluateTypeId', 'SkillGroupDetailId'
@@ -14,7 +14,7 @@ class EvaluateTypeDetail extends UuidModel
 
     public function ratingLevel()
     {
-        return $this->belongsToMany(RatingLevel::class, 'evaluate-teacher.EvaluateTypeDetailRatingLevels', 'EvaluateTypeDetailId', 'RatingLevelId');
+        return $this->belongsToMany(RatingLevel::class, 'evaluate_teacher.EvaluateTypeDetailRatingLevels', 'EvaluateTypeDetailId', 'RatingLevelId');
     }
 
     public function evaluateType()

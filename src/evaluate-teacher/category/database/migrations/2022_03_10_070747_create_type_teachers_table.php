@@ -13,7 +13,7 @@ class CreateTypeTeachersTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TypeTeachers', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.TypeTeachers', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Code');
@@ -24,6 +24,7 @@ class CreateTypeTeachersTable extends Migration
             $table->string('WorkExperience')->nullable();
             $table->uuid('RatingLevelFrom');
             $table->uuid('RatingLevelTo')->nullable();
+            $table->text('Experience')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
@@ -37,6 +38,6 @@ class CreateTypeTeachersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TypeTeachers');
+        Schema::dropIfExists('evaluate_teacher.TypeTeachers');
     }
 }

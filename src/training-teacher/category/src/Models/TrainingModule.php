@@ -11,7 +11,7 @@ class TrainingModule extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.TrainingModules';
+    protected $table = 'evaluate_teacher.TrainingModules';
 
     const CODE = 'MD';
 
@@ -38,7 +38,7 @@ class TrainingModule extends UuidModel
 
     public function trainingModuleTrainingSkill()
     {
-        return $this->belongsToMany(TrainingSkill::class, 'evaluate-teacher.TrainingModuleTrainingSkills', 'TrainingModuleId', 'TrainingSkillId');
+        return $this->belongsToMany(TrainingSkill::class, 'evaluate_teacher.TrainingModuleTrainingSkills', 'TrainingModuleId', 'TrainingSkillId');
     }
 
     public function item()

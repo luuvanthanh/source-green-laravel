@@ -13,11 +13,11 @@ class CreateEvaluateTypeDetailRatingLevelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.EvaluateTypeDetailRatingLevels', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.EvaluateTypeDetailRatingLevels', function (Blueprint $table) {
             $table->uuid('EvaluateTypeDetailId');
-            $table->foreign('EvaluateTypeDetailId')->references('Id')->on('evaluate-teacher.EvaluateTypeDetails')->onDelete('cascade');
+            $table->foreign('EvaluateTypeDetailId')->references('Id')->on('evaluate_teacher.EvaluateTypeDetails')->onDelete('cascade');
             $table->uuid('RatingLevelId');
-            $table->foreign('RatingLevelId')->references('Id')->on('evaluate-teacher.RatingLevels')->onDelete('cascade');
+            $table->foreign('RatingLevelId')->references('Id')->on('evaluate_teacher.RatingLevels')->onDelete('cascade');
         });
     }
 
@@ -28,6 +28,6 @@ class CreateEvaluateTypeDetailRatingLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.EvaluateTypeDetailRatingLevels');
+        Schema::dropIfExists('evaluate_teacher.EvaluateTypeDetailRatingLevels');
     }
 }

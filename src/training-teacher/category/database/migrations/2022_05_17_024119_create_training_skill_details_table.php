@@ -13,23 +13,23 @@ class CreateTrainingSkillDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TrainingSkillDetails', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.TrainingSkillDetails', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Skill');
             $table->string('Content')->nullable();
             $table->uuid('TrainingFormId')->nullable();
             $table->integer('TrainingHuman');
-            $table->date('TheoryTrainingTime')->nullable();
+            $table->float('TheoryTrainingTime')->nullable();
             $table->string('TheoreticalTrainingGoal')->nullable();
-            $table->date('PracticalTrainingTime')->nullable();
+            $table->float('PracticalTrainingTime')->nullable();
             $table->string('PracticalTrainingGoal')->nullable();
             $table->boolean('IsUse')->default(false);
             $table->uuid('TrainingSkillId');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
-            $table->foreign('TrainingSkillId')->references('Id')->on('evaluate-teacher.TrainingSkills')->onDelete('cascade');
+            $table->foreign('TrainingSkillId')->references('Id')->on('evaluate_teacher.TrainingSkills')->onDelete('cascade');
         });
     }
 
@@ -40,6 +40,6 @@ class CreateTrainingSkillDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TrainingSkillDetails');
+        Schema::dropIfExists('evaluate_teacher.TrainingSkillDetails');
     }
 }

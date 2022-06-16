@@ -13,7 +13,7 @@ class CreateTeacherTrainingBoardDetailChildrensTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TeacherTrainingBoardDetailChildrens', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.TeacherTrainingBoardDetailChildrens', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->uuid('TrainingModuleDetailId');
@@ -22,7 +22,7 @@ class CreateTeacherTrainingBoardDetailChildrensTable extends Migration
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
-            $table->foreign('TeacherTrainingBoardDetailId')->references('Id')->on('evaluate-teacher.TeacherTrainingBoardDetails')->onDelete('cascade');
+            $table->foreign('TeacherTrainingBoardDetailId')->references('Id')->on('evaluate_teacher.TeacherTrainingBoardDetails')->onDelete('cascade');
         });
     }
 
@@ -33,6 +33,6 @@ class CreateTeacherTrainingBoardDetailChildrensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TeacherTrainingBoardDetailChildrens');
+        Schema::dropIfExists('evaluate_teacher.TeacherTrainingBoardDetailChildrens');
     }
 }

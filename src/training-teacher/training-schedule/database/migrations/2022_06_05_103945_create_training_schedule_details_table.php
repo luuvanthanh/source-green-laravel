@@ -13,7 +13,7 @@ class CreateTrainingScheduleDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TrainingScheduleDetails', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.TrainingScheduleDetails', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->date('DateTraining');
@@ -24,7 +24,7 @@ class CreateTrainingScheduleDetailsTable extends Migration
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
-            $table->foreign('TrainingScheduleId')->references('Id')->on('evaluate-teacher.TrainingSchedules')->onDelete('cascade');
+            $table->foreign('TrainingScheduleId')->references('Id')->on('evaluate_teacher.TrainingSchedules')->onDelete('cascade');
         });
     }
 
@@ -35,6 +35,6 @@ class CreateTrainingScheduleDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TrainingScheduleDetails');
+        Schema::dropIfExists('evaluate_teacher.TrainingScheduleDetails');
     }
 }

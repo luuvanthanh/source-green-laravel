@@ -12,7 +12,7 @@ class TypeTeacher extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.TypeTeachers';
+    protected $table = 'evaluate_teacher.TypeTeachers';
 
     /**
      * The attributes that are mass assignable.

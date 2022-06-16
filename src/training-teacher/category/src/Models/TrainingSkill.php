@@ -9,7 +9,7 @@ class TrainingSkill extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'evaluate-teacher.TrainingSkills';
+    protected $table = 'evaluate_teacher.TrainingSkills';
 
     /**
      * The attributes that are mass assignable.

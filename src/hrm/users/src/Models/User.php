@@ -353,12 +353,12 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
 
     public function trainingSchedule()
     {
-        return $this->belongsToMany(TrainingSchedule::class, 'evaluate-teacher.TrainingScheduleEmployees', 'EmployeeId', 'TrainingScheduleId');
+        return $this->belongsToMany(TrainingSchedule::class, 'evaluate_teacher.TrainingScheduleEmployees', 'EmployeeId', 'TrainingScheduleId');
     }
 
     public function trainingScheduleDetail()
     {
-        return $this->belongsToMany(TrainingScheduleDetail::class, 'evaluate-teacher.TrainingScheduleDetailEmployees', 'EmployeeId', 'TrainingScheduleDetailId');
+        return $this->belongsToMany(TrainingScheduleDetail::class, 'evaluate_teacher.TrainingScheduleDetailEmployees', 'EmployeeId', 'TrainingScheduleDetailId');
     }
 
     public function typeTeacher()

@@ -13,7 +13,7 @@ class CreateRatingLevelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.RatingLevels', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.RatingLevels', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Code');
@@ -34,6 +34,6 @@ class CreateRatingLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.RatingLevels');
+        Schema::dropIfExists('evaluate_teacher.RatingLevels');
     }
 }

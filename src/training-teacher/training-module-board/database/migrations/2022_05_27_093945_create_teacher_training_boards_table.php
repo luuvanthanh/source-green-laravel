@@ -13,7 +13,7 @@ class CreateTeacherTrainingBoardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('evaluate-teacher.TeacherTrainingBoards', function (Blueprint $table) {
+        Schema::create('evaluate_teacher.TeacherTrainingBoards', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->uuid('EmployeeId'); //only user id with type teacher 
@@ -30,6 +30,6 @@ class CreateTeacherTrainingBoardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluate-teacher.TeacherTrainingBoards');
+        Schema::dropIfExists('evaluate_teacher.TeacherTrainingBoards');
     }
 }

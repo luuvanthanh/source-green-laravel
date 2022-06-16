@@ -6,7 +6,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class RatingLevel extends UuidModel
 {
-    protected $table = 'evaluate-teacher.RatingLevels';
+    protected $table = 'evaluate_teacher.RatingLevels';
 
     protected $fillable = [
         'Code', 'Name', 'Description', 'Type', 'Number'
