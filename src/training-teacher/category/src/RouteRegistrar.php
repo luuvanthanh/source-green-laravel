@@ -33,6 +33,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('training-forms', 'TrainingFormController');
                 \Route::resource('training-skills', 'TrainingSkillController');
                 \Route::resource('training-modules', 'TrainingModuleController');
+                \Route::post('sort-training-modules', 'TrainingModuleController@sortTrainingModule');
             });
         });
     }
