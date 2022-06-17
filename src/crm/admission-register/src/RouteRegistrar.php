@@ -41,6 +41,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('export-confirm-transporters', 'ConfirmTransporterController@exportConfirmTransporter');
             \Route::get('export-medical-infos', 'MedicalInfoController@exportMedicalInfo');
             \Route::get('export-child-evaluate-infos', 'ChildEvaluateInfoController@exportChildEvaluateInfo');
+            \Route::get('export-test-inputs', 'TestInputController@exportTestInput');
         });
     }
 }

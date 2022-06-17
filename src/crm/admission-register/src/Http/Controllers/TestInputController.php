@@ -134,4 +134,11 @@ class TestInputController extends Controller
 
         return $this->success(['data' => $testInput], trans('lang::messages.common.getInfoSuccess'));
     }
+
+    public function exportTestInput(Request $request)
+    {
+        $testInput = $this->testInputRepository->exportTestInput($request->all());
+
+        return $this->success(['data' => $testInput], trans('lang::messages.common.getInfoSuccess'));
+    }
 }

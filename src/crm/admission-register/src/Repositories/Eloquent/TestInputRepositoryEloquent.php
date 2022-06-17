@@ -4,7 +4,6 @@ namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
-use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
 use GGPHP\Crm\AdmissionRegister\Models\TestInput;
 use GGPHP\Crm\AdmissionRegister\Models\TestInputDetail;
 use GGPHP\Crm\AdmissionRegister\Models\TestInputDetailChildren;
@@ -12,14 +11,14 @@ use GGPHP\Crm\AdmissionRegister\Presenters\TestInputPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
 use GGPHP\Crm\AdmissionRegister\Services\StudentService;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
-use GGPHP\Crm\CustomerLead\Models\CustomerLead;
-use GGPHP\Crm\CustomerLead\Models\StudentInfo;
+use GGPHP\Crm\ChildDevelop\Models\ChildEvaluate;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
-use GGPHP\Crm\Fee\Models\ClassType;
-use GGPHP\Crm\SsoAccount\Models\SsoAccount;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
 
 /**
  * Class CustomerLeadRepositoryEloquent.
@@ -34,6 +33,16 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
     protected $fieldSearchable = [
         'created_at',
     ];
+
+    public function __construct(
+        ExcelExporterServices $excelExporterServices,
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+        $this->excelExporterServices = $excelExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -236,5 +245,55 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         $result = StudentService::moveStudentToOfficial($data);
 
         return $result;
+    }
+
+    public function exportTestInput(array $attributes)
+    {
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+
+        $testInput = $this->model->where('admission_register_id', $attributes['admission_register_id'])->first();
+        $birthday = Carbon::parse($testInput->admissionRegister->studentInfo->birth_date);
+        $numberOfMonth = $birthday->diffInMonths($now);
+
+        $param = [
+            'full_name' => $testInput->admissionRegister->studentInfo->full_name,
+            'sex' => $testInput->admissionRegister->studentInfo->sex,
+            'birth_date' => $testInput->admissionRegister->studentInfo->birth_date,
+            'now' => $now->format('Y-m-d'),
+            'month_age' => $numberOfMonth,
+            'parent_name' => $testInput->admissionRegister->studentInfo->customerLead->full_name,
+            'phone_number' => $testInput->admissionRegister->studentInfo->customerLead->phone_number ?? null,
+            'email' => $testInput->admissionRegister->studentInfo->customerLead->email,
+            'address' => $testInput->admissionRegister->studentInfo->customerLead->address,
+            'teacher' => $testInput->employee->full_name,
+            'day' => $now->format('d'),
+            'month' => $now->format('m'),
+            'year' => $now->format('Y'),
+            'strength' => $testInput->strength,
+            'encourage' => $testInput->encourage,
+            'class' => !is_null($testInput->classType) ? $testInput->classType->name : ''
+        ];
+
+        foreach ($testInput->testInputDetail as $key => $value) {
+            $skill['number'] = 'Stt';
+            $skill['age_month'] = 'Tháng Tuổi';
+            $skill['skill' . ++$key] = $value->categorySkill->name;
+
+            foreach ($value->testInputDetailChildren as $valueChildren) {
+                $name[$value->categorySkill->name]['number'] = $key;
+                $name[$value->categorySkill->name]['age_month'] = array_search($valueChildren->childEvaluate->age, ChildEvaluate::MONTH) . ' Tháng';
+                $name[$value->categorySkill->name]['skill' . $key] = !empty($valueChildren->childEvaluateDetail->name_criteria) ? $valueChildren->childEvaluateDetail->name_criteria : '';
+            }
+            $keyForValue['skill' . $key++] = '';
+        }
+
+        foreach (array_values($name) as $key => $value) {
+            $result[] = $value + $keyForValue;
+        }
+        $arraySkill[] = $skill;
+        $skillOutput = array_merge($arraySkill, $result);
+        $param['detail'] = $skillOutput;
+
+        return $this->wordExporterServices->multipleExportWord('test_input', $param);
     }
 }
