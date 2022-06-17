@@ -19,3 +19,12 @@ export function get(params = {}) {
     },
   });
 }
+
+export function getEmployees(params = {}) {
+  return request('/v1/employees', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
