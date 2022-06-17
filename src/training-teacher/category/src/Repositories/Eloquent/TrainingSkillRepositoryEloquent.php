@@ -52,6 +52,11 @@ class TrainingSkillRepositoryEloquent extends CoreRepositoryEloquent implements 
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['id'])) {
+            $arrayId = explode(',', $attributes['id']);
+            $this->model = $this->model->whereIn('Id', $arrayId);
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->where(function ($query) use ($attributes) {
                 $query->orWhereLike('Name', $attributes['key']);

@@ -17,13 +17,6 @@ class TrainingModuleDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'TrainingModulelId', 'TrainingSkillDetailId'
+        'TrainingModulelId', 'TrainingSkillDetailId', 'IsActive'
     ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [];
 }

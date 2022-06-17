@@ -90,4 +90,11 @@ class TrainingModuleController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function sortTrainingModule(Request $request)
+    {
+        $trainingModule = $this->trainingModuleRepository->sortTrainingModule($request->all());
+
+        return $this->success($trainingModule, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
 }

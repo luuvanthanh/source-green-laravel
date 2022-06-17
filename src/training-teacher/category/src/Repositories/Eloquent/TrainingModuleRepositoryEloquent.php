@@ -4,6 +4,7 @@ namespace GGPHP\TrainingTeacher\Category\Repositories\Eloquent;
 
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\TrainingTeacher\Category\Models\TrainingModule;
+use GGPHP\TrainingTeacher\Category\Models\TrainingModuleDetail;
 use GGPHP\TrainingTeacher\Category\Presenters\TrainingModulePresenter;
 use GGPHP\TrainingTeacher\Category\Repositories\Contracts\TrainingModuleRepository;
 use Illuminate\Support\Facades\DB;
@@ -70,7 +71,7 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
     {
         DB::beginTransaction();
         try {
-            $trainingModule = TrainingModule::latest('Code')->first();
+            $trainingModule = $this->model->latest('Code')->first();
 
             if (is_null($trainingModule)) {
                 $attributes['code'] = TrainingModule::CODE . 1;
@@ -81,12 +82,13 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
                 $attributes['serialNumber'] = ++$trainingModule->SerialNumber;
             }
 
-            $trainingModule = TrainingModule::create($attributes);
+            $trainingModule = $this->model->create($attributes);
 
             $trainingModule->trainingModuleTrainingSkill()->sync($attributes['trainingModuleTrainingSkill']);
 
             foreach ($attributes['trainingModuleDetail']['createRows'] as $value) {
-                $trainingModule->trainingModuleDetail()->create(['TrainingSkillDetailId' => $value]);
+                $value['TrainingModulelId'] = $trainingModule->Id;
+                TrainingModuleDetail::create($value);
             }
             DB::commit();
         } catch (\Throwable $th) {
@@ -115,7 +117,13 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
                 }
 
                 foreach ($attributes['trainingModuleDetail']['createRows'] as $value) {
-                    $trainingModule->trainingModuleDetail()->create(['TrainingSkillDetailId' => $value]);
+                    $value['TrainingModulelId'] = $trainingModule->Id;
+                    TrainingModuleDetail::create($value);
+                }
+
+                foreach ($attributes['trainingModuleDetail']['updateRows'] as $value) {
+                    $trainingModuleDetail = TrainingModuleDetail::find($value['id']);
+                    $trainingModuleDetail->update($value);
                 }
             }
             DB::commit();
@@ -124,5 +132,18 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
         }
 
         return $this->parserResult($trainingModule);
+    }
+
+    public function sortTrainingModule(array $attributes)
+    {
+        $arrayId = explode(',', $attributes['id']);
+
+        foreach ($arrayId as $key => $value) {
+            $firstUpdate = $this->model->find($value);
+            $firstUpdate->update(['SerialNumber' => ++$key]);
+        }
+        $result = $this->model->orderBy('SerialNumber')->get();
+
+        return parent::parserResult($result);
     }
 }
