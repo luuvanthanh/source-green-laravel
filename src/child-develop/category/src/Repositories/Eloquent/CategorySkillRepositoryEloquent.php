@@ -6,6 +6,7 @@ use GGPHP\ChildDevelop\Category\Models\CategorySkill;
 use GGPHP\ChildDevelop\Category\Presenters\CategorySkillPresenter;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategorySkillRepository;
 use GGPHP\ChildDevelop\Category\Services\ChildDevelopCategoryCrmServices;
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -54,6 +55,12 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['childEvaluateAge']) && !empty($attributes['use'])) {
+            $this->model = $this->model->whereHas('childEvaluate', function ($query) use ($attributes) {
+                $query->where('Age', ChildEvaluate::MONTH[$attributes['childEvaluateAge']])->where('Use', $attributes['use']);
+            });
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereLike('Name', $attributes['key']);
         }
@@ -110,13 +117,13 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
         $arrCrmId = [];
         $paramId = [];
         $listId = explode(',', $attributes['id']);
-        
+
         foreach ($listId as $key => $value) {
             $fisrtValue = CategorySkill::find($value);
             $fisrtValue->update(['NumericalSkill' => $key + 1]);
             $arrCrmId[] = $fisrtValue->CategorySkillCrmId;
         }
-       
+
         $paramId['id'] = implode(',', $arrCrmId);
         ChildDevelopCategoryCrmServices::sortCategorySkillCrm($paramId);
 
