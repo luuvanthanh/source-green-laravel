@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\ChildDevelop\Repositories\Eloquent;
 
 use GGPHP\Crm\ChildDevelop\Models\CategorySkill;
+use GGPHP\Crm\ChildDevelop\Models\ChildEvaluate;
 use GGPHP\Crm\ChildDevelop\Presenters\CategorySkillPresenter;
 use GGPHP\Crm\ChildDevelop\Repositories\Contracts\CategorySkillRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -52,6 +53,12 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['childEvaluateAge']) && !empty($attributes['use'])) {
+            $this->model = $this->model->whereHas('childEvaluate', function ($query) use ($attributes) {
+                $query->where('age', ChildEvaluate::MONTH[$attributes['childEvaluateAge']])->where('use', $attributes['use']);
+            });
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereLike('name', $attributes['key']);
         }
