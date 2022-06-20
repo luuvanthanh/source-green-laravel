@@ -164,7 +164,7 @@ class RefundRepositoryEloquent extends CoreRepositoryEloquent implements RefundR
                 }
             }
         }
-
+        
         $model->configRefund()->createMany($attributes);
     }
 }
