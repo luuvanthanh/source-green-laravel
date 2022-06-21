@@ -16,12 +16,13 @@ class CreateTrainingModuleDetailsTable extends Migration
         Schema::create('evaluate_teacher.TrainingModuleDetails', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->uuid('TrainingModulelId');
+            $table->uuid('TrainingModuleId');
             $table->uuid('TrainingSkillDetailId');
+            $table->boolean('IsActive')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
-            $table->foreign('TrainingModulelId')->references('Id')->on('evaluate_teacher.TrainingModules')->onDelete('cascade');
+            $table->foreign('TrainingModuleId')->references('Id')->on('evaluate_teacher.TrainingModules')->onDelete('cascade');
         });
     }
 

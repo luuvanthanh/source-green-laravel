@@ -9,6 +9,7 @@ use GGPHP\TrainingTeacher\Category\Presenters\TrainingSkillPresenter;
 use GGPHP\TrainingTeacher\Category\Repositories\Contracts\TrainingSkillRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class TrainingFormRepositoryEloquent.
@@ -64,6 +65,10 @@ class TrainingSkillRepositoryEloquent extends CoreRepositoryEloquent implements 
             });
         }
 
+        if (!empty($attributes['isEmpty']) && $attributes['isEmpty'] == true) {
+            return ['data' => []];
+        }
+
         if (!empty($attributes['limit'])) {
             $trainingSkill = $this->paginate($attributes['limit']);
         } else {
@@ -75,7 +80,7 @@ class TrainingSkillRepositoryEloquent extends CoreRepositoryEloquent implements 
 
     public function create(array $attributes)
     {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $trainingSkill = TrainingSkill::create($attributes);
 
@@ -83,9 +88,9 @@ class TrainingSkillRepositoryEloquent extends CoreRepositoryEloquent implements 
                 $this->forDetail($attributes['detail'], $trainingSkill);
             }
 
-            \DB::commit();
+            DB::commit();
         } catch (\Throwable $th) {
-            \DB::rollback();
+            DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
 
@@ -125,7 +130,7 @@ class TrainingSkillRepositoryEloquent extends CoreRepositoryEloquent implements 
 
     public function update(array $attributes, $id)
     {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $trainingSkill = TrainingSkill::find($id);
             $trainingSkill->update($attributes);
@@ -134,9 +139,9 @@ class TrainingSkillRepositoryEloquent extends CoreRepositoryEloquent implements 
                 $this->forDetail($attributes['detail'], $trainingSkill);
             }
 
-            \DB::commit();
+            DB::commit();
         } catch (\Throwable $th) {
-            \DB::rollback();
+            DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
 

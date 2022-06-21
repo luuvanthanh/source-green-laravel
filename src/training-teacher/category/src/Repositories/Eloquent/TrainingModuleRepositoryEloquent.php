@@ -87,7 +87,7 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
             $trainingModule->trainingModuleTrainingSkill()->sync($attributes['trainingModuleTrainingSkill']);
 
             foreach ($attributes['trainingModuleDetail']['createRows'] as $value) {
-                $value['TrainingModulelId'] = $trainingModule->Id;
+                $value['TrainingModuleId'] = $trainingModule->Id;
                 TrainingModuleDetail::create($value);
             }
             DB::commit();
@@ -102,7 +102,7 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
     {
         DB::beginTransaction();
         try {
-            $trainingModule = TrainingModule::findorFail($id);
+            $trainingModule = TrainingModule::findOrFail($id);
             $trainingModule->update($attributes);
 
             if (!empty($attributes['trainingSkill'])) {
@@ -117,7 +117,7 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
                 }
 
                 foreach ($attributes['trainingModuleDetail']['createRows'] as $value) {
-                    $value['TrainingModulelId'] = $trainingModule->Id;
+                    $value['TrainingModuleId'] = $trainingModule->Id;
                     TrainingModuleDetail::create($value);
                 }
 

@@ -17,6 +17,11 @@ class TrainingModuleDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'TrainingModulelId', 'TrainingSkillDetailId', 'IsActive'
+        'TrainingModuleId', 'TrainingSkillDetailId', 'IsActive'
     ];
+
+    public function trainingSkillDetail()
+    {
+        return $this->belongsTo(TrainingSkillDetail::class, 'TrainingSkillDetailId');
+    }
 }
