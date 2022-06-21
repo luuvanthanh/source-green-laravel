@@ -2,6 +2,7 @@
 
 namespace GGPHP\TourGuide\Repositories\Eloquent;
 
+use alhimik1986\PhpExcelTemplator\params\CallbackParam;
 use Carbon\Carbon;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\TourGuide\Jobs\ImportTourGuideJob;
@@ -11,8 +12,9 @@ use GGPHP\TourGuide\Presenters\TourGuidePresenter;
 use GGPHP\TourGuide\Repositories\Contracts\TourGuideRepository;
 use GGPHP\TourGuide\Services\SyncTourGuideService;
 use GGPHP\WordExporter\Services\WordExporterServices;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -351,18 +353,51 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         $params = [];
 
         $key = 0;
+        $fileRemove = [];
         foreach ($tourGuides as $key => $tourGuide) {
-
             foreach ($tourGuide->event as $keyEvent => $event) {
                 $params['[number]'][] = ++$key;
                 $params['[full_name]'][] = $tourGuide->full_name;
                 $params['[tourist_destination]'][] = $event->touristDestination->name;
                 $params['[time]'][] = Carbon::parse($event->time)->format('d-m-Y H:i:s');
-                $params['[camera]'][] = $event->camera->name;
+                $params['[camera]'][] = $event->camera ? $event->camera->name : null;
+                $imageMedia = $event->getMedia('image');
+                $imageMedia = $imageMedia->isEmpty() ? null : $imageMedia->first();
+                $image = null;
+                if (!is_null($imageMedia)) {
+                    $image = $imageMedia->getPath();
+                    $name = explode('/', $image);
+                    $fileRemove[] =  $name[1];
+                }
+                $params['[image]'][] = $image;
             }
         }
 
-        return  resolve(ExcelExporterServices::class)->export('object_image', $params);
+        $callbacks = [
+            '[image]' => function (CallbackParam $param) {
+                $row_index = $param->row_index;
+                $cell_coordinate = $param->coordinate;
+                $sheet = $param->sheet;
+                $value = $param->param[$row_index];
+
+                if (\Storage::disk('minio')->exists($value)) {
+                    $fileMinio = \Storage::disk('minio')->get($value);
+                    $name = explode('/', $value);
+                    Storage::disk('local')->put($name[1], $fileMinio);
+
+                    if (Storage::disk('local')->exists($name[1])) {
+                        $drawing = new Drawing();
+                        $drawing->setPath(Storage::disk('local')->path($name[1]));
+                        $drawing->setCoordinates($cell_coordinate);
+                        $drawing->setWorksheet($sheet);
+                        $drawing->setHeight(100);
+                        $sheet->getCell($cell_coordinate)->setValue(null);
+                    }
+                }
+            },
+        ];
+        $events = [];
+        return  resolve(ExcelExporterServices::class)->export('object_image', $params, $callbacks, $event, $fileRemove);
     }
 
     public function syncTourGuide()

@@ -319,4 +319,11 @@ class EventController extends Controller
 
         return $this->success($event, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function handleEventFlow(Request $request, $id)
+    {
+        $event = $this->eventRepository->handleEventFlow($request->all(), $id);
+
+        return $this->success($event, trans('lang::messages.common.modifySuccess'));
+    }
 }

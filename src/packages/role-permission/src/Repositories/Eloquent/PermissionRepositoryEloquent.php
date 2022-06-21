@@ -47,28 +47,28 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
      */
     public function getPermission(array $attributes)
     {
-        $dataPermission = [];
+        // $dataPermission = [];
 
-        foreach (Route::getRoutes()->getRoutes() as $route) {
-            if (strpos($route->uri, 'api') !== false) {
-                $action = $route->getAction();
-                if (array_key_exists('as', $action) && array_key_exists('comment', $action)) {
-                    $dataPermission[] = [
-                        'name' => $action['as'],
-                        'description' => $action['comment'],
-                        'guard_name' => 'api',
-                        'is_system' => isset($action['is_system']) ? $action['is_system'] : false,
-                        'group' => isset($action['group']) ? $action['group'] : 'Khác',
-                    ];
-                }
-            }
-        }
+        // foreach (Route::getRoutes()->getRoutes() as $route) {
+        //     if (strpos($route->uri, 'api') !== false) {
+        //         $action = $route->getAction();
+        //         if (array_key_exists('as', $action) && array_key_exists('comment', $action)) {
+        //             $dataPermission[] = [
+        //                 'name' => $action['as'],
+        //                 'description' => $action['comment'],
+        //                 'guard_name' => 'api',
+        //                 'is_system' => isset($action['is_system']) ? $action['is_system'] : false,
+        //                 'group' => isset($action['group']) ? $action['group'] : 'Khác',
+        //             ];
+        //         }
+        //     }
+        // }
 
-        foreach ($dataPermission as $permission) {
-            Permission::updateOrCreate(['name' => $permission['name']], $permission);
-        }
+        // foreach ($dataPermission as $permission) {
+        //     Permission::updateOrCreate(['name' => $permission['name']], $permission);
+        // }
 
-        $this->resetModel();
+        // // $this->resetModel();
 
         if (!empty($attributes['limit'])) {
             $permission = $this->paginate($attributes['limit']);

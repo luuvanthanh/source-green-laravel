@@ -69,6 +69,10 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'DELETE_ROLE',
                 'group' => 'Vai trò',
             ])->middleware('permission_for_role:DELETE_ROLE');
+
+            \Route::post('permissions-import', [
+                'uses' => 'PermissionController@import',
+            ]);
         });
     }
 }

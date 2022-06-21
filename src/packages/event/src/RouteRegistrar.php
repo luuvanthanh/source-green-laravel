@@ -63,6 +63,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('event-export-word/{id}', 'EventController@exportWord');
 
             \Route::post('event-add-object/{id}', 'EventController@addObject');
+
+            \Route::post('event-handle-flow/{id}', 'EventController@handleEventFlow');
         });
     }
 

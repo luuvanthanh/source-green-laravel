@@ -69,26 +69,36 @@ class Event extends UuidModel implements HasMedia
 
     public function eventType()
     {
-        return $this->belongsTo(\GGPHP\Category\Models\EventType::class);
+        return $this->belongsTo(\GGPHP\Category\Models\EventType::class)->withTrashed();
     }
 
     public function touristDestination()
     {
-        return $this->belongsTo(\GGPHP\Category\Models\TouristDestination::class);
+        return $this->belongsTo(\GGPHP\Category\Models\TouristDestination::class)->withTrashed();
     }
 
     public function camera()
     {
-        return $this->belongsTo(\GGPHP\Camera\Models\Camera::class);
+        return $this->belongsTo(\GGPHP\Camera\Models\Camera::class)->withTrashed();
     }
 
     public function tourGuide()
     {
-        return $this->belongsTo(\GGPHP\TourGuide\Models\TourGuide::class);
+        return $this->belongsTo(\GGPHP\TourGuide\Models\TourGuide::class)->withTrashed();
     }
 
     public function eventHandle()
     {
         return $this->hasOne(\GGPHP\Event\Models\EventHandle::class);
+    }
+
+    public function eventHandleResult()
+    {
+        return $this->hasOne(\GGPHP\Event\Models\EventHandleResult::class);
+    }
+
+    public function objectHandelFlow()
+    {
+        return $this->hasOne(\GGPHP\Event\Models\ObjectHandelFlow::class);
     }
 }

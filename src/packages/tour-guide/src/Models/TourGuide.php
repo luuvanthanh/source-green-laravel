@@ -3,12 +3,14 @@
 namespace GGPHP\TourGuide\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class TourGuide extends UuidModel implements HasMedia
 {
     use InteractsWithMedia;
+    use SoftDeletes;
 
     /**
      * Declare the table name

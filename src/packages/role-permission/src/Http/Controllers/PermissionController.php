@@ -5,9 +5,13 @@ namespace GGPHP\RolePermission\Http\Controllers;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\RolePermission\Http\Requests\PermissionCreateRequest;
 use GGPHP\RolePermission\Http\Requests\PermissionUpdateRequest;
+use GGPHP\RolePermission\Imports\PermissionImport;
+use GGPHP\RolePermission\Models\Permission;
+use GGPHP\RolePermission\Models\Role;
 use GGPHP\RolePermission\Repositories\Contracts\PermissionRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PermissionController extends Controller
 {
@@ -92,5 +96,20 @@ class PermissionController extends Controller
         $this->permissionRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function import()
+    {
+        $permission = Permission::pluck('id')->toArray();
+
+        $role = Role::first();
+
+        dd($role->permissions()->sync($permission));
+        Excel::import(new PermissionImport, request()->file('file'));
+
+        return $this->success([], trans('lang::messages.common.importExcelSuccess'));
     }
 }

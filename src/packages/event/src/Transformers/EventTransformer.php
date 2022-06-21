@@ -22,7 +22,10 @@ class EventTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventHandle', 'eventType', 'touristDestination', 'camera', 'tourGuide'];
+    protected $availableIncludes = [
+        'eventHandle', 'eventType', 'touristDestination',
+        'camera', 'tourGuide', 'eventHandleResult'
+    ];
 
     /**
      * Transform the custom field entity.
@@ -102,6 +105,19 @@ class EventTransformer extends BaseTransformer
         }
 
         return $this->item($event->eventHandle, new EventHandleTransformer, 'EventHandle');
+    }
+
+    /**
+     * Include EventAdditionalInformation
+     * @param Event $fault
+     */
+    public function includeEventHandleResult(Event $event)
+    {
+        if (is_null($event->eventHandleResult)) {
+            return;
+        }
+
+        return $this->item($event->eventHandleResult, new EventHandleResultTransformer, 'EventHandleResult');
     }
 
     /**

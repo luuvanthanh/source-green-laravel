@@ -124,8 +124,13 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $user->roles()->sync($attributes['role_id']);
         }
 
-        $user->touristDestination()->sync($attributes['tourist_destination_id']);
-        $user->camera()->sync($attributes['camera_id']);
+        if (!empty($attributes['tourist_destination_id'])) {
+            $user->touristDestination()->sync($attributes['tourist_destination_id']);
+        }
+
+        if (!empty($attributes['camera_id'])) {
+            $user->camera()->sync($attributes['camera_id']);
+        }
 
         // send mail
         $dataMail = [
@@ -165,21 +170,12 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $user->roles()->sync($attributes['role_id']);
         }
 
-        if (!empty($attributes['permission_id'])) {
-            $data = [];
-            foreach ($attributes['permission_id'] as  $permission) {
-                $data[] = [
-                    'permission_id' => $permission,
-                    'model_type' => User::class,
-                    'model_id' => $id,
-                    'collection_id' => '00000000-0000-0000-0000-000000000000',
-                ];
-            }
-            \DB::table('model_has_permissions')
-                ->where('model_id', $id)
-                ->where('model_type', User::class)
-                ->where('collection_id', '00000000-0000-0000-0000-000000000000')->delete();
-            \DB::table('model_has_permissions')->insert($data);
+        if (!empty($attributes['tourist_destination_id'])) {
+            $user->touristDestination()->sync($attributes['tourist_destination_id']);
+        }
+
+        if (!empty($attributes['camera_id'])) {
+            $user->camera()->sync($attributes['camera_id']);
         }
 
         return $this->parserResult($user);

@@ -69,7 +69,7 @@ class ExcelExporterServices
      *
      * @return path
      */
-    public function export($type, $params, $callbacks = [], $events = [])
+    public function export($type, $params, $callbacks = [], $events = [], $fileRemove = [])
     {
         $templateFile = $this->configs[$type]['template'];
         $resultFile = $this->configs[$type]['result'] ?? $templateFile;
@@ -85,6 +85,12 @@ class ExcelExporterServices
         }
 
         PhpExcelTemplator::saveToFile($templateFileUrl, $resultFileUrl, $params, $callbacks, $events);
+
+        if (!empty($fileRemove)) {
+            collect($fileRemove)->each(function ($item) {
+                Storage::disk('local')->delete($item);
+            });
+        }
 
         $file = Storage::disk($this->disk)->get($this->resultFolder . '/' . $resultFile);
         $fileName = $resultFile;

@@ -7,17 +7,22 @@ use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Category\Models\EventType;
+use GGPHP\Category\Models\Unit;
 use GGPHP\Event\Events\EventCreateEvent;
 use GGPHP\Event\Jobs\SendEmailEventCreate;
 use GGPHP\Event\Models\Event;
 use GGPHP\Event\Models\EventHandle;
+use GGPHP\Event\Models\EventHandleResult;
+use GGPHP\Event\Models\ObjectHandelFlow;
 use GGPHP\Event\Presenters\EventPresenter;
 use GGPHP\Event\Repositories\Contracts\EventRepository;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Notification\Services\NotificationService;
 use GGPHP\SystemConfig\Models\SystemConfig;
 use GGPHP\SystemConfig\Models\TeamplateEmail;
+use GGPHP\Users\Models\User;
 use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
@@ -120,6 +125,15 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         if (!empty($attributes['is_follow'])) {
             $attributes['is_follow'] = $attributes['is_follow'] == 'true' ? true : false;
             $this->model = $this->model->where('is_follow', $attributes['is_follow']);
+
+            $user = Auth::user();
+            $this->model = $this->model->whereHas('objectHandelFlow', function ($query) use ($user) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('object_id', $user->id)->where('object_type', User::class);
+                })->orWhere(function ($q) use ($user) {
+                    $q->where('object_id', $user->unit_id)->where('object_type', Unit::class);
+                });
+            });
         }
 
         if (!empty($attributes['date'])) {
@@ -244,20 +258,44 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
     public function handleEvent(array $attributes, $id)
     {
         $event = $this->model()::findOrFail($id);
+        \DB::beginTransaction();
+        try {
+            $attributes['is_follow'] = false;
+            if ($attributes['status_detail'] == $this->model()::STATUS_DETAIL['HANDLE_FOLLOW']) {
+                $attributes['is_follow'] = true;
 
-        $attributes['is_follow'] = false;
-        if ($attributes['status_detail'] == $this->model()::STATUS_DETAIL['HANDLE_FOLLOW']) {
-            $attributes['is_follow'] = true;
+                switch ($attributes['type_handle']) {
+                    case 'INTERNAL':
+                        $dataObject = [
+                            'event_id' => $id,
+                            'object_id' => $attributes['object_id'],
+                            'object_type' => User::class
+                        ];
+                        ObjectHandelFlow::create($dataObject);
+                        break;
+                    case 'OTHER_UNIT':
+                        $dataObject = [
+                            'event_id' => $id,
+                            'object_id' => $attributes['object_id'],
+                            'object_type' => Unit::class
+                        ];
+                        ObjectHandelFlow::create($dataObject);
+                        break;
+                }
+            }
+
+            $event->update([
+                'status' => $attributes['status'],
+                'status_detail' => $attributes['status_detail'],
+                'is_follow' => $attributes['is_follow']
+            ]);
+
+            $attributes['event_id'] = $id;
+            EventHandle::create($attributes);
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
         }
-
-        $event->update([
-            'status' => $attributes['status'],
-            'status_detail' => $attributes['status_detail'],
-            'is_follow' => $attributes['is_follow']
-        ]);
-
-        $attributes['event_id'] = $id;
-        EventHandle::create($attributes);
 
         return parent::find($id);
     }
@@ -271,6 +309,24 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $attributes['is_follow'] = false;
             if ($attributes['status_detail'] == $this->model()::STATUS_DETAIL['HANDLE_FOLLOW']) {
                 $attributes['is_follow'] = true;
+                switch ($attributes['type_handle']) {
+                    case 'INTERNAL':
+                        $dataObject = [
+                            'event_id' => $id,
+                            'object_id' => $attributes['object_id'],
+                            'object_type' => User::class
+                        ];
+                        ObjectHandelFlow::create($dataObject);
+                        break;
+                    case 'OTHER_UNIT':
+                        $dataObject = [
+                            'event_id' => $id,
+                            'object_id' => $attributes['object_id'],
+                            'object_type' => Unit::class
+                        ];
+                        ObjectHandelFlow::create($dataObject);
+                        break;
+                }
             }
 
             $idHandle = Uuid::generate(4)->string;
@@ -304,8 +360,6 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             \Log::error($th);
             \DB::rollback();
         }
-
-
 
         return parent::find($id);
     }
@@ -441,5 +495,42 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         }
 
         return $result;
+    }
+
+    public function handleEventFlow(array $attributes, $id)
+    {
+        $event = $this->model()::findOrFail($id);
+        \DB::beginTransaction();
+        try {
+            $event->update([
+                'status' => Event::STATUS['DONE'],
+            ]);
+
+            $eventHandleResult = EventHandleResult::where('event_id', $id)->first();
+
+            if (is_null($eventHandleResult)) {
+                EventHandleResult::create([
+                    'event_id' => $id,
+                    'content' => $attributes['content'],
+                    'user_handle' =>  $attributes['user_handle'],
+                ]);
+            } else {
+                $eventHandleResult->update([
+                    'content' => $attributes['content'],
+                    'user_handle' =>  $attributes['user_handle'],
+                ]);
+            }
+
+            if (!empty($attributes['files'])) {
+                $eventHandleResult->addMediaToEntity($eventHandleResult, $attributes['files'], 'files');
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+        }
+
+
+        return parent::find($id);
     }
 }

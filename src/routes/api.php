@@ -57,7 +57,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
     });
 
-    Route::group(['middleware' => ['auth:api']], function () {
+    Route::group(['middleware' => ['auth:api', 'check_view_permission']], function () {
         \GGPHP\Users\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
