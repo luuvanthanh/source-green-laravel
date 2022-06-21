@@ -12,7 +12,7 @@ use GGPHP\TrainingTeacher\Category\Models\TrainingSkillDetail;
  */
 class TrainingSkillDetailTransformer extends BaseTransformer
 {
-    protected $availableIncludes = ['trainingForm'];
+    protected $availableIncludes = ['trainingForm', 'trainingSkill'];
 
     public function customAttributes($model): array
     {
@@ -28,5 +28,10 @@ class TrainingSkillDetailTransformer extends BaseTransformer
         }
 
         return $this->item($trainingSkillDetail->trainingForm, new TrainingFormTransformer, 'TrainingForm');
+    }
+
+    public function includeTrainingSkill(TrainingSkillDetail $trainingSkillDetail)
+    {
+        return $this->item($trainingSkillDetail->trainingSkill, new TrainingSkillTransformer, 'TrainingSkill');
     }
 }

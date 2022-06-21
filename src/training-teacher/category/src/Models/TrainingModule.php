@@ -33,7 +33,7 @@ class TrainingModule extends UuidModel
 
     public function trainingModuleDetail()
     {
-        return $this->hasMany(TrainingModuleDetail::class, 'TrainingModulelId');
+        return $this->hasMany(TrainingModuleDetail::class, 'TrainingModuleId');
     }
 
     public function trainingModuleTrainingSkill()

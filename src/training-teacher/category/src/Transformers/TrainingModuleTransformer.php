@@ -27,7 +27,7 @@ class TrainingModuleTransformer extends BaseTransformer
 
     public function includeTrainingModuleDetail(TrainingModule $trainingModule)
     {
-        return $this->collection($trainingModule->trainingModuleDetail, new TrainingModuleTransformer, 'TrainingModuleDetail');
+        return $this->collection($trainingModule->trainingModuleDetail, new TrainingModuleDetailTransformer, 'TrainingModuleDetail');
     }
 
     public function includeTrainingModuleTrainingSkill(TrainingModule $trainingModule)
