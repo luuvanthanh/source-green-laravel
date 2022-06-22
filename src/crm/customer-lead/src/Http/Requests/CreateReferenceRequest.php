@@ -28,7 +28,7 @@ class CreateReferenceRequest extends FormRequest
             'birth_date' => 'date_format:Y-m-d',
             'phone' => 'required',
             'address' => 'string',
-            'status_parent_lead_id' => 'required|exists:status_parent_leads,id',
+            'status_parent_lead_id' => 'nullable|exists:status_parent_leads,id',
             'customer_lead_id' => 'required|exists:customer_leads,id'
         ];
     }
