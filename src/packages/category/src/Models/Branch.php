@@ -4,6 +4,7 @@ namespace GGPHP\Category\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use GGPHP\Refund\Models\RefundStudent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Branch extends UuidModel
@@ -35,5 +36,10 @@ class Branch extends UuidModel
     public function chargeOldStudent()
     {
         return $this->hasMany(ChargeOldStudent::class, 'BranchId');
+    }
+
+    public function refundStudent()
+    {
+        return $this->hasMany(RefundStudent::class, 'BranchId');
     }
 }

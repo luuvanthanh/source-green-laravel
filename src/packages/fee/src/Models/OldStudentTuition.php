@@ -39,4 +39,9 @@ class OldStudentTuition extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Fee\Models\Fee::class, 'FeeId');
     }
+
+    public function chargeOldStudent()
+    {
+        return $this->belongsTo(ChargeOldStudent::class,'ChargeOldStudentId');
+    }
 }

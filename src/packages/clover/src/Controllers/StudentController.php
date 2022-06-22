@@ -7,9 +7,11 @@ use GGPHP\Clover\Imports\StudentImport;
 use GGPHP\Clover\Imports\TimekeepingImport;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Contracts\StudentRepository;
+use GGPHP\Clover\Requests\CalculatorRefundRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 
 class StudentController extends Controller
 {
@@ -68,5 +70,12 @@ class StudentController extends Controller
         Excel::import(new TimekeepingImport, request()->file('file'));
 
         return back();
+    }
+
+    public function studentRefund(CalculatorRefundRequest $request)
+    {
+        $student = $this->studentRepository->studentRefund($request->all());
+
+        return $this->success($student, trans('lang::messages.common.getListSuccess'));
     }
 }

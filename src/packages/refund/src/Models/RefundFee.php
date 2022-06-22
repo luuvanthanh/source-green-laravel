@@ -5,25 +5,25 @@ namespace GGPHP\Refund\Models;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\Fee;
 
-class RefundDetail extends UuidModel
+class RefundFee extends UuidModel
 {
+    public $timestamps = false;
+
     /**
      * Declare the table name
      */
-    protected $table = 'fee.RefundDetails';
+    protected $table = 'fee.RefundFees';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [
-        'RefundId', 'FeeId', 'StartDate', 'EndDate'
-    ];
+    protected $fillable = ['FeeId', 'StudentRefundDetailId', 'FeeRefund', 'FeePaid', 'FeeStudied'];
 
-    public function configRefund()
+    public function studentRefundDetail()
     {
-        return $this->hasMany(ConfigRefund::class, 'RefundDetailId');
+        return $this->belongsTo(StudentRefundDetail::class, 'StudentRefundDetailId');
     }
 
     public function fee()

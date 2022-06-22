@@ -3,8 +3,12 @@
 namespace GGPHP\Refund\Providers;
 
 use GGPHP\Refund\Repositories\Contracts\RefundDetailRepository;
+use GGPHP\Refund\Repositories\Contracts\StudentRefundDetailRepository;
+use GGPHP\Refund\Repositories\Contracts\RefundStudentRepository;
 use GGPHP\Refund\Repositories\Contracts\RefundRepository;
 use GGPHP\Refund\Repositories\Eloquents\RefundDetailRepositoryEloquent;
+use GGPHP\Refund\Repositories\Eloquents\StudentRefundDetailRepositoryEloquent;
+use GGPHP\Refund\Repositories\Eloquents\RefundStudentRepositoryEloquent;
 use GGPHP\Refund\Repositories\Eloquents\RefundRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,5 +36,7 @@ class RefundServiceProvider extends ServiceProvider
     {
         $this->app->bind(RefundRepository::class, RefundRepositoryEloquent::class);
         $this->app->bind(RefundDetailRepository::class, RefundDetailRepositoryEloquent::class);
+        $this->app->bind(RefundStudentRepository::class, RefundStudentRepositoryEloquent::class);
+        $this->app->bind(StudentRefundDetailRepository::class, StudentRefundDetailRepositoryEloquent::class);
     }
 }
