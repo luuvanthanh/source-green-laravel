@@ -29,7 +29,7 @@ class RefundCreateRequest extends FormRequest
             'createRefundDetailRows.*.feeId' => 'required_with:createRefundDetailRows.*.configRefund|uuid|check_exists:fee.Fees,Id',
             'createRefundDetailRows.*.configRefund' => 'required_with:createRefundDetailRows.*.feeId',
             'createRefundDetailRows.*.configRefund.*.refundForm' => 'required_with:createRefundDetailRows.*.configRefund.*.type',
-            'createRefundDetailRows.*.configRefund.*.type' => 'required_with:createRefundDetailRows.*.configRefund.*.refundForm|in:TEMPORARY,LEAVE',
+            'createRefundDetailRows.*.configRefund.*.type' => 'required_with:createRefundDetailRows.*.configRefund.*.refundForm|in:STORE,LEAVE',
             'createRefundDetailRows.*.startDate' => 'required_with:createRefundDetailRows.*.feeId|date|date_format:Y-m-d|before:createRefundDetailRows.*.endDate',
             'createRefundDetailRows.*.endDate' => 'required_with:createRefundDetailRows.*.startDate|date|date_format:Y-m-d|after:createRefundDetailRows.*.startDate',
         ];
