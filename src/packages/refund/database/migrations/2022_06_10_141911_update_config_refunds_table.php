@@ -14,7 +14,6 @@ class UpdateConfigRefundsTable extends Migration
     public function up()
     {
         Schema::table('fee.ConfigRefunds', function (Blueprint $table) {
-            $table->dropForeign('PaymentFormId');
             $table->dropColumn('PaymentFormId');
             $table->string('RefundForm', 20);
         });
@@ -27,6 +26,8 @@ class UpdateConfigRefundsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('fee.ConfigRefunds', function (Blueprint $table) {
+            $table->dropColumn('RefundForm');
+        });
     }
 }
