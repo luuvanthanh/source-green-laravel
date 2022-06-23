@@ -81,9 +81,10 @@ function Index() {
         contractFrom: details.contractFrom && moment(details.contractFrom),
         contractTo: details.contractTo && moment(details.contractTo),
       });
-      
+
       if (details.contractFrom && details.contractTo) {
-        if(moment(details.contractTo).diff(moment(details.contractFrom), 'days') > 366) {
+        console.log(moment(details.contractTo).diff(moment(details.contractFrom), 'days'));
+        if (moment(details.contractTo).diff(moment(details.contractFrom), 'days') > 366) {
           setIsValid(true);
           formRef.setFields([
             {
@@ -215,9 +216,30 @@ function Index() {
     const payload = {
       ...values,
       id: params.id,
-      contractDate: moment(values.contractDate),
-      contractFrom: values.contractFrom && moment(values.contractFrom),
-      contractTo: values.contractTo && moment(values.contractTo),
+      contractDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.contractDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      contractFrom: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.contractFrom,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      contractTo: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.contractTo,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
       detail: (parameterValues || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
         value: valueDefault,
@@ -514,14 +536,14 @@ function Index() {
                     />
                   </div>
                 )}
-                 <div className="col-lg-8">
-                 <FormItem
-                      data={Staff}
-                      options={['id', 'fullName']}
-                      label="Đại diện ký hợp đồng bên Clover"
-                      name="representId"
-                      type={variables.SELECT}
-                    />
+                <div className="col-lg-8">
+                  <FormItem
+                    data={Staff}
+                    options={['id', 'fullName']}
+                    label="Đại diện ký hợp đồng bên Clover"
+                    name="representId"
+                    type={variables.SELECT}
+                  />
                 </div>
               </div>
               {!isEmpty(parameterValues) && (
