@@ -93,7 +93,6 @@ const Index = memo(() => {
           include: Helper.convertIncludes(['student.classStudent.class']),
         },
         callback: (res) => {
-          console.log("res", res);
           if (res) {
             setCheckData(false);
             setIdRes(res?.expectedToCollectMoney);
@@ -145,7 +144,7 @@ const Index = memo(() => {
     }
     return false;
   };
-  console.log("details", details);
+
   const checkValidate = (data, name) => {
     const pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : true;
     setErrorTable((prev) => ({
