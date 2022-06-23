@@ -82,7 +82,7 @@ const Index = memo(() => {
       title: 'Cơ sở',
       key: 'branch',
       className: 'min-width-200',
-      with: 200,
+      width: 200,
       render: (record) => record?.student?.class?.branch?.name || '',
     },
     {
