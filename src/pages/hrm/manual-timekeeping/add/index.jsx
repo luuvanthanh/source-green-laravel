@@ -235,7 +235,7 @@ const Index = () => {
         <Select
           defaultValue={manualUser.type}
           onChange={(e) => updateManualTimekeeping(dayOfWeek, user, e)}
-        // disabled={moment() < moment(dayOfWeek)}
+          disabled={moment() < moment(dayOfWeek)}
         >
           {timekeepingType.map((item) => (
             <Option value={item.id} key={item.id}>
@@ -248,7 +248,7 @@ const Index = () => {
     return (
       <Select
         onChange={(e) => updateManualTimekeeping(dayOfWeek, user, e)}
-      // disabled={moment() < moment(dayOfWeek)}
+        disabled={moment() < moment(dayOfWeek)}
       >
         {timekeepingType.map((item) => (
           <Option value={item.id} key={item.id}>
