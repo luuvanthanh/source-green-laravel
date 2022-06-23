@@ -18,7 +18,8 @@ class ManualCalculation extends UuidModel
         'X' => 1,  //working
         'K' => 2,  //leave work without permission
         'F' => 3,  //leave work with permission
-        'N' => 4   //define to delete records
+        'N' => 4,   //define to delete records
+        'X/2' => 5  //working half day
     ];
 
     /**

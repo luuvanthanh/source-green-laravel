@@ -26,7 +26,7 @@ class ManualCalculationCreateRequest extends FormRequest
         return [
             'employeeId' => 'required|exists:Employees,Id',
             'date' => 'required|date_format:Y-m-d',
-            'type' => 'required|in:X,F,K,N',
+            'type' => 'required|in:X,F,K,N,X/2',
         ];
     }
 }
