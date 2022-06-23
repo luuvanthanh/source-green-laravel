@@ -21,6 +21,10 @@ class TrainingModuleDetailTransformer extends BaseTransformer
 
     public function includeTrainingSkillDetail(TrainingModuleDetail $trainingModuleDetail)
     {
+        if (is_null($trainingModuleDetail->trainingSkillDetail)) {
+            return null;
+        }
+
         return $this->item($trainingModuleDetail->trainingSkillDetail, new TrainingSkillDetailTransformer, 'TrainingSkillDetail');
     }
 }
