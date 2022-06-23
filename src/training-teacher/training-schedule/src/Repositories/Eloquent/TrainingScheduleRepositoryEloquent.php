@@ -166,7 +166,7 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
      * @param  mixed $id
      * @return void
      */
-    public function updateTrainingModule(array $attributes, $id)
+    public function updateAll(array $attributes, $id)
     {
         $trainingmodule = $this->trainingModuleRepositoryEloquent->model->find($id);
         DB::beginTransaction();
