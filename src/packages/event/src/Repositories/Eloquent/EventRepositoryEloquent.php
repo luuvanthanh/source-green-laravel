@@ -509,7 +509,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $eventHandleResult = EventHandleResult::where('event_id', $id)->first();
 
             if (is_null($eventHandleResult)) {
-                EventHandleResult::create([
+                $eventHandleResult = EventHandleResult::create([
                     'event_id' => $id,
                     'content' => $attributes['content'],
                     'user_handle' =>  $attributes['user_handle'],
