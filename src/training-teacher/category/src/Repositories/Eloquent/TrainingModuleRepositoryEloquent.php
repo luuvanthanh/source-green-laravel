@@ -105,9 +105,9 @@ class TrainingModuleRepositoryEloquent extends CoreRepositoryEloquent implements
             $trainingModule = TrainingModule::findOrFail($id);
             $trainingModule->update($attributes);
 
-            if (!empty($attributes['trainingSkill'])) {
+            if (!empty($attributes['trainingModuleTrainingSkill'])) {
                 $trainingModule->trainingModuleTrainingSkill()->detach();
-                $trainingModule->trainingModuleTrainingSkill()->sync($attributes['trainingSkill']);
+                $trainingModule->trainingModuleTrainingSkill()->sync($attributes['trainingModuleTrainingSkill']);
             }
 
             if (!empty($attributes['trainingModuleDetail'])) {
