@@ -2851,7 +2851,7 @@ export default [
             path: '/crm/chat/facebook',
             component: './crm/messages/facebook-dev-v1',
             wrappers: ['@/wrappers/auth'],
-            authority: [],
+            authority: [permissions.CRM],
           },
           {
             path: '/crm/chat/zalo',
