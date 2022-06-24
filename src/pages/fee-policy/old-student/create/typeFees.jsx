@@ -122,9 +122,10 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
       );
     }
   };
-
   useEffect(() => {
-    if (((feeId && paymentFormId || deleteId) || (checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission)) && !details?.chargeStudentIdCrm) {
+    if (
+      ((feeId && paymentFormId || deleteId) || (checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission))
+      && !details?.chargeStudentIdCrm) {
       const { schoolYearId, classTypeId, dayAdmission, branchId } = details;
       const dataPayload = data?.map(i =>
       ({

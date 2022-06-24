@@ -3231,7 +3231,7 @@ export default [
         routes: [
           {
             path: '/bieu-phi',
-            redirect: '/bieu-phi/tinh-phi-hoc-sinh-cu',
+            redirect: '/bieu-phi/ke-hoach-dong-phi',
           },
           {
             path: '/bieu-phi/tinh-phi-hoc-sinh-cu',

@@ -282,6 +282,24 @@ class Index extends PureComponent {
         ),
       },
       {
+        title: 'Ngày bắt đầu thôi học',
+        key: 'status',
+        className: 'min-width-150',
+        render: (record) =>
+          <Text size="normal">
+            {Helper.getDate(record?.stopStudyingDate, variables.DATE_FORMAT.DATE)}
+          </Text>
+      },
+      {
+        title: 'Ngày kết thúc thôi học',
+        key: 'status',
+        className: 'min-width-150',
+        render: (record) =>
+          <Text size="normal">
+            {Helper.getDate(record?.restoredDate, variables.DATE_FORMAT.DATE)}
+          </Text>
+      },
+      {
         title: 'Trạng thái',
         key: 'status',
         className: 'min-width-150',
