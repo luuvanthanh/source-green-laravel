@@ -68,7 +68,7 @@ request.interceptors.response.use(
             'Lỗi hệ thống vui lòng kiểm tra lại',
         });
       }
-      if (response.status >= 200 && response.status <= 300  && !optionsRoot?.cancelNotification) {
+      if (response.status >= 200 && response.status <= 300 && !optionsRoot?.cancelNotification) {
         if (optionsRoot.isLogin) {
           notification.success({
             message: 'Thông báo',

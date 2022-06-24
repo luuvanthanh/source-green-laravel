@@ -2483,20 +2483,20 @@ export async function getLeftMenuCurrency() {
       icon: 'icon icon-list',
       permission: [permissions.BIEUPHI],
       children: [
-        {
-          title: 'Tính phí học sinh cũ',
-          key: 'old-student',
-          url: ['/bieu-phi/tinh-phi-hoc-sinh-cu', '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet'],
-          permission: [permissions.BIEUPHI],
-          pro: true,
-        },
-        {
-          title: 'Tính phí học sinh mới',
-          key: 'new-student',
-          url: ['/bieu-phi/tinh-phi-hoc-sinh-moi', '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet'],
-          permission: [permissions.BIEUPHI],
-          pro: true,
-        },
+        // {
+        //   title: 'Tính phí học sinh cũ',
+        //   key: 'old-student',
+        //   url: ['/bieu-phi/tinh-phi-hoc-sinh-cu', '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet'],
+        //   permission: [permissions.BIEUPHI],
+        //   pro: true,
+        // },
+        // {
+        //   title: 'Tính phí học sinh mới',
+        //   key: 'new-student',
+        //   url: ['/bieu-phi/tinh-phi-hoc-sinh-moi', '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet'],
+        //   permission: [permissions.BIEUPHI],
+        //   pro: true,
+        // },
         {
           title: 'Kế hoạch đóng phí',
           key: 'payment-plan',

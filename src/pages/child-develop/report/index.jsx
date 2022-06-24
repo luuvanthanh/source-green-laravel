@@ -54,7 +54,7 @@ class Index extends PureComponent {
                 page: query?.page || variables.PAGINATION.PAGE,
                 limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
                 branchId: query?.branchId || defaultBranch?.id,
-                classId: query?.classId || defaultBranch?.id,
+                classId: query?.classId,
             },
         };
         setIsMounted(true);

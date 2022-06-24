@@ -209,9 +209,9 @@ class Index extends PureComponent {
             <TileLayer
               url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
               attribution='&copy; <a href="//osm.org/copyright">OpenStreetMap</a>'
-              // maxNativeZoom="23"
-              // minZoom="0"
-              // maxZoom="23"
+            // maxNativeZoom="23"
+            // minZoom="0"
+            // maxZoom="23"
             />
             <Marker position={position} icon={iconStudent} />
           </Map>
@@ -231,10 +231,10 @@ Index.propTypes = {
 
 Index.defaultProps = {
   visible: false,
-  handleCancel: () => {},
+  handleCancel: () => { },
   loading: {},
   position: [],
-  dispatch: () => {},
+  dispatch: () => { },
 };
 
 export default withRouter(Index);
