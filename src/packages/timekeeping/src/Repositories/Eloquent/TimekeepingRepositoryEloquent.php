@@ -217,7 +217,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             if (!$contract->ContractFrom) {
                 throw new Exception('Vui lòng hoàn thành hợp đồng của ' . $contract->employee->FullName, 500);
             }
-            
+
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
         }
         // thoi gian cham cong
@@ -1154,6 +1154,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     break;
                 case ManualCalculation::TYPE['F']:
                     $type = 'F';
+                    break;
+                case ManualCalculation::TYPE['X/2']:
+                    $timekeepingReport = 0.5;
+                    $type = 'X/2';
                     break;
             }
 

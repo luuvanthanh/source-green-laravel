@@ -28,8 +28,8 @@ class RefundCreateRequest extends FormRequest
             'createRefundDetailRows' => 'nullable|array',
             'createRefundDetailRows.*.feeId' => 'required_with:createRefundDetailRows.*.configRefund|uuid|check_exists:fee.Fees,Id',
             'createRefundDetailRows.*.configRefund' => 'required_with:createRefundDetailRows.*.feeId',
-            'createRefundDetailRows.*.configRefund.*.paymentFormId' => 'required_with:createRefundDetailRows.*.configRefund.*.type|check_exists:fee.PaymentForms,Id',
-            'createRefundDetailRows.*.configRefund.*.type' => 'required_with:createRefundDetailRows.*.configRefund.*.paymentFormId|in:TEMPORARY,LEAVE',
+            'createRefundDetailRows.*.configRefund.*.refundForm' => 'required_with:createRefundDetailRows.*.configRefund.*.type',
+            'createRefundDetailRows.*.configRefund.*.type' => 'required_with:createRefundDetailRows.*.configRefund.*.refundForm|in:STORE,LEAVE',
             'createRefundDetailRows.*.startDate' => 'required_with:createRefundDetailRows.*.feeId|date|date_format:Y-m-d|before:createRefundDetailRows.*.endDate',
             'createRefundDetailRows.*.endDate' => 'required_with:createRefundDetailRows.*.startDate|date|date_format:Y-m-d|after:createRefundDetailRows.*.startDate',
         ];

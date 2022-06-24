@@ -108,6 +108,16 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             });
         }
 
+        if (!empty($attributes['unexpiredContract']) && $attributes['unexpiredContract'] == true) {
+            $now = Carbon::now()->format('Y-m-d');
+
+            $this->model = $this->model->whereHas('labourContract', function ($query) use ($now) {
+                $query->whereDate('ContractTo', '>=', $now);
+            })->whereHas('probationaryContract', function ($query) use ($now) {
+                $query->whereDate('ContractTo', '>=', $now);
+            });
+        }
+
         if (empty($attributes['limit'])) {
             $users = $this->get();
         } else {
@@ -195,7 +205,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         try {
             $user = User::findOrFail($id);
             $user->update($attributes);
-            $this->updated($attributes,$user);
+            $this->updated($attributes, $user);
 
             $data = [
                 'full_name' => $user->FullName,

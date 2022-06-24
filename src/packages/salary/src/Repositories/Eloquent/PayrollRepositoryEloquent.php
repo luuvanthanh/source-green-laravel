@@ -1493,9 +1493,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $keyBasicSalaryAllowance = array_search($value, array_column($basicSalaryAllowanceEmployee, 'name'));
 
                 if ($keyBasicSalaryAllowance) {
-                    $valueBasicSalaryAllowance[] = $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value;
+                    $valueBasicSalaryAllowance[] = $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value ?? 0;
 
-                    $totalBsa[$basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->code] += $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value;
+                    $totalBsa[$basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->code] += $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value ?? 0;
                 } else {
                     $valueBasicSalaryAllowance[] = 0;
                 };
@@ -1507,9 +1507,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $keyColumnIncurredAllowance = array_search($value, array_column($incurredAllowanceEmployee, 'name'));
 
                 if ($keyColumnIncurredAllowance) {
-                    $valueIncurredAllowance[] = $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value;
+                    $valueIncurredAllowance[] = $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value ?? 0;
 
-                    $totalAi[$incurredAllowanceEmployee[$keyColumnIncurredAllowance]->code] += $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value;
+                    $totalAi[$incurredAllowanceEmployee[$keyColumnIncurredAllowance]->code] += $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value ?? 0;
                 } else {
                     $valueIncurredAllowance[] = 0;
                 };
