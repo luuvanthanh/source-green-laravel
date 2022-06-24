@@ -33,7 +33,7 @@ services:
     image: postgres:12
     command: postgres -c 'max_connections=500'
     volumes:
-      - ${PATH_TO_STORAGE}/postgresql:/var/lib/postgresql
+      - ${PATH_TO_STORAGE}/var/lib/postgresql:/var/lib/postgresql
     environment:
       POSTGRES_DB: ${MYSQL_DATABASE}
       POSTGRES_USER: ${MYSQL_USER}
