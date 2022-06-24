@@ -20,6 +20,7 @@ const timekeepingType = [
   { id: 'X', name: 'X' },
   { id: 'K', name: 'K' },
   { id: 'F', name: 'F' },
+  { id: 'X/2', name: 'X/2' },
 ];
 
 const Index = () => {
@@ -259,9 +260,10 @@ const Index = () => {
           onChange={(e) => updateManualTimekeeping(dayOfWeek, user, e)}
           // disabled={moment() < moment(dayOfWeek)}
           allowClear
+          style={{ width: 65 }}
         >
           {timekeepingType.map((item) => (
-            <Option value={item.id} key={item.id}>
+            <Option value={item.id} key={item.id} style={{ textAlign: 'center' }}>
               {item.name}
             </Option>
           ))}
@@ -273,9 +275,10 @@ const Index = () => {
         onChange={(e) => updateManualTimekeeping(dayOfWeek, user, e)}
         // disabled={moment() < moment(dayOfWeek)}
         allowClear
+        style={{ width: 65 }}
       >
         {timekeepingType.map((item) => (
-          <Option value={item.id} key={item.id}>
+          <Option value={item.id} key={item.id} style={{ textAlign: 'center' }}>
             {item.name}
           </Option>
         ))}
