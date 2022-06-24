@@ -96,13 +96,26 @@ const General = memo(() => {
         />
       ),
     },
+    {
+      title: 'Ghi  chú',
+      key: 'note',
+      width: 200,
+      dataIndex: 'note',
+      render: (value, record) => (
+        <Input.TextArea
+          value={record.note}
+          autoSize={{ minRows: 1, maxRows: 1 }}
+          placeholder="Nhập"
+        />
+      ),
+    },
   ];
 
   const onChangeExcel = () => {
     Helper.exportExcelCRM(
-      `/v1/export-medical-infos`,{
-        admission_register_id: params?.id,
-      }, `KhaiBaoYTe.docx`,
+      `/v1/export-medical-infos`, {
+      admission_register_id: params?.id,
+    }, `KhaiBaoYTe.docx`,
     );
   };
 

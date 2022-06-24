@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty } from 'lodash';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -45,8 +45,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        from: query?.from || null,
-        to: query?.to || null,
+        key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -104,13 +103,12 @@ class Index extends PureComponent {
    * @param {string} value value of object search
    * @param {string} type key of object search
    */
-  debouncedSearch = debounce((value) => {
+  debouncedSearch = debounce((value, type) => {
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          from: !isEmpty(value) ? moment(value[0]).format('YYYY') : null,
-          to: !isEmpty(value) ? moment(value[1]).format('YYYY') : null,
+          [`${type}`]: value,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
@@ -156,7 +154,7 @@ class Index extends PureComponent {
     const {
       location: { query },
     } = this.props;
-    return Helper.paginationNet({
+    return Helper.paginationLavarel({
       pagination,
       query,
       callback: (response) => {
@@ -185,13 +183,24 @@ class Index extends PureComponent {
         key: 'year',
         className: classnames('min-width-200', 'max-width-300'),
         width: 300,
-        render: (record) => record?.year || '',
+        render: (record) =>
+        (<>
+          {record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}
+        </>)
       },
       {
         title: 'Thời gian hiệu lực',
         key: 'detail',
         className: 'min-width-130',
-        render: (record) => record?.time || ''
+        render: (record) => (
+          <>
+            {
+              Helper.getDate(record?.schoolYear?.startDate, variables.DATE_FORMAT.DATE_VI)
+            } - {
+              Helper.getDate(record?.schoolYear?.endDate, variables.DATE_FORMAT.DATE_VI)
+            }
+          </>
+        )
       },
       {
         key: 'action',
@@ -250,6 +259,7 @@ class Index extends PureComponent {
                     name="key"
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
+                    onChange={(e) => this.onChange(e.target.value, 'key')}
                   />
                 </div>
               </div>

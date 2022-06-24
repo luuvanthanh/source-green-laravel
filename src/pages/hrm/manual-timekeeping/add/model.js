@@ -11,6 +11,7 @@ export default {
     },
     divistions: [],
     shifts: [],
+    employees: [],
     pagination: {
       total: 0,
     },
@@ -39,6 +40,10 @@ export default {
       ...state,
       shifts: payload.parsePayload,
     }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload?.parsePayload.map((i) => ({ ...i, name: i.fullName })),
+    }),
   },
   effects: {
     *GET_DIVISIONS({ payload }, saga) {
@@ -60,6 +65,20 @@ export default {
         const response = yield saga.call(categroies.getShifts, payload);
         yield saga.put({
           type: 'SET_SHIFTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
           payload: response,
         });
       } catch (error) {

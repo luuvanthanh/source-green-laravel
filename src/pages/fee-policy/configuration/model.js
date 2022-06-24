@@ -1,24 +1,9 @@
+import * as services from './services';
 
 export default {
   namespace: 'feePolicyConfiguration',
   state: {
-    data: [
-      {
-        id: 1,
-        year: '2021 - 2022',
-        time: '25/08/2021 - 31/05/2022',
-      },
-      {
-        id: 2,
-        year: '2021 - 2022',
-        time: '01/08/2020 - 31/05/2021',
-      },
-      {
-        id: 3,
-        year: '2021 - 2022',
-        time: '01/08/2019 - 31/05/2020',
-      }
-    ],
+    data: [{ id: 1 }],
     pagination: {
       total: 0,
     },
@@ -28,8 +13,42 @@ export default {
     },
   },
   reducers: {
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    SET_DATA: (state, { payload }) => ({
+      ...state,
+      data: payload.parsePayload,
+      pagination: payload.pagination,
+    }),
+    SET_ERROR: (state, { payload }) => ({
+      ...state,
+      error: {
+        isError: true,
+        data: {
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: {
+            parsePayload: response.parsePayload,
+            pagination: {
+              total: response.pagination.total,
+            },
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };
