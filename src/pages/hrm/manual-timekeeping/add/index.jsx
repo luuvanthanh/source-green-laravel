@@ -67,7 +67,7 @@ const Index = () => {
     dispatch({
       type: 'manualTimekeepingAdd/GET_EMPLOYEES',
       payload: {
-        unexpiredContract: true,
+        // unexpiredContract: true,
       },
     });
   };
@@ -88,7 +88,7 @@ const Index = () => {
         ...search,
         endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
         startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
-        unexpiredContract: true,
+        // unexpiredContract: true,
       },
     });
     history.push(
