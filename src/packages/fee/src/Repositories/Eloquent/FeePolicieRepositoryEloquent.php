@@ -617,7 +617,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                         }
                         break;
                     case 'THANG':
-                        $detailFeePolicie = $feePolicie->feeDetail->where('PaymentFormId', $paymentForm->Id);
+                        $detailFeePolicie = $feePolicie->feeDetail->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $attributes['classTypeId']);
 
                         if ($applyDate <= $month->format('Y-m')) {
                             $dataDate = [];
