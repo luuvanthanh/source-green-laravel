@@ -46,5 +46,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ListConfigTeamplateEmailTableSeeder::class);
         $this->call(TeamplateEmailVariableTableSeeder::class);
         $this->call(PermissionsTableSeeder::class);
+        $this->call(VerificationCodesTableSeeder::class);
     }
 }

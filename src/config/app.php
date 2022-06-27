@@ -204,6 +204,7 @@ return [
         GGPHP\ApiShare\Providers\ApiShareServiceProvider::class,
         GGPHP\NasConfig\Providers\NasConfigServiceProvider::class,
         GGPHP\SystemConfig\Providers\SystemConfigServiceProvider::class,
+        GGPHP\VerificationCode\Providers\VerificationCodeServiceProvider::class,
     ],
 
     /*

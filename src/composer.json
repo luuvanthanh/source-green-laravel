@@ -86,7 +86,8 @@
             "GGPHP\\ThirdPartyService\\": "packages/third-party-service/src/",
             "GGPHP\\ApiShare\\": "packages/api-share/src/",
             "GGPHP\\NasConfig\\": "packages/nas-config/src/",
-            "GGPHP\\SystemConfig\\": "packages/system-config/src/"
+            "GGPHP\\SystemConfig\\": "packages/system-config/src/",
+            "GGPHP\\VerificationCode\\": "packages/verification-code/src/"
         },
         "classmap": [
             "database/seeds",
