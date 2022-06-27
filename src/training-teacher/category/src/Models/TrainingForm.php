@@ -13,8 +13,8 @@ class TrainingForm extends UuidModel
     protected $table = 'evaluate_teacher.TrainingForms';
 
     const TYPE_TRAINING = [
-        'SEFT_LEARNING' => 1,
-        'TRAINING_ONINE' => 2,
+        'SELF_LEARNING' => 1,
+        'TRAINING_ONLINE' => 2,
         'TRAINING_OFFLINE' => 3,
         'PRACTICE' => 4
     ];
