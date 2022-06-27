@@ -310,4 +310,24 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
 
         return parent::parserResult($dataMarketing);
     }
+
+    //Hoán đổi email và số điện thoại
+    public function exchangeEmailPhone()
+    {
+        $dataMarketing = DataMarketing::get();
+        foreach ($dataMarketing as $key => $value) {
+            if (!is_null($value->email) && !filter_var($value->email, FILTER_VALIDATE_EMAIL) && is_null($value->phone)) {
+                $newPhone = $value->email;
+                $newEmail = $value->phone;
+                $data = [
+                    'phone' => $newPhone,
+                    'email' => $newEmail
+                ];
+
+                $value->update($data);
+            }
+        }
+
+        return parent::parserResult($dataMarketing);
+    }
 }

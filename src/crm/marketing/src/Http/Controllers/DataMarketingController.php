@@ -183,4 +183,11 @@ class DataMarketingController extends Controller
     {
         return Storage::disk('local')->download('excel-exporter/templates' . '/' . 'template-data-marketing.xlsx');
     }
+
+    public function exchangeEmailPhone(Request $request)
+    {
+        $dataMarketing = $this->dataMarketingRepository->exchangeEmailPhone();
+
+        return $this->success($dataMarketing, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
 }
