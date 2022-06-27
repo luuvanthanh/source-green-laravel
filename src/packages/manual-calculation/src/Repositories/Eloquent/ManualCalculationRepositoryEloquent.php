@@ -3,13 +3,18 @@
 namespace GGPHP\ManualCalculation\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use DateInterval;
+use DatePeriod;
 use DateTime;
+use GGPHP\Category\Models\Holiday;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\ManualCalculation\Presenters\ManualCalculationPresenter;
 use GGPHP\ManualCalculation\Repositories\Contracts\ManualCalculationRepository;
+use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container;
+use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -168,5 +173,45 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
         $dateTime = DateTime::createFromFormat($format, $string);
 
         return $dateTime && $dateTime->format($format) == $string;
+    }
+
+    public function fastManualCalculation(array $attributes)
+    {
+        DB::beginTransaction();
+        try {
+            foreach ($attributes['data'] as $value) {
+
+                $year = Carbon::parse(end($value['listOfDate'])['date'])->format('Y');
+                $holiday = Holiday::where('Name', $year)->first();
+
+                if (!is_null($holiday)) {
+                    foreach ($holiday->holidayDetail as $valueHolidayDetail) {
+
+                        $start_date = date_create($valueHolidayDetail->StartDate);
+                        $end_date   = date_create($valueHolidayDetail->EndDate);
+                        $interval = DateInterval::createFromDateString('1 day');
+                        $dateRange = new DatePeriod($start_date, $interval, $end_date);
+
+                        foreach ($dateRange as $date) {
+
+                            if (array_search($date->format('Y-m-d'), array_column($value['listOfDate'], 'date'))) {
+                                $location = array_search($date->format('Y-m-d'), array_column($value['listOfDate'], 'date'));
+                                unset($value['listOfDate'][$location]);
+                            }
+                        }
+                    }
+                }
+
+                foreach ($value['listOfDate'] as $data) {
+                    $data['employeeId'] = $value['employeeId'];
+                    $result = $this->create($data);
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+        }
+
+        return $result;
     }
 }
