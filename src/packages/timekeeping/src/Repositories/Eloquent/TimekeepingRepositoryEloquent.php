@@ -379,7 +379,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorBusinessTravel($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorMaternityLeave($employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff, $countEmployeeHasTimekeeping, $countWorkDeclarationByDate);
-        $responseTimeKeepingUser = $this->calculatorManualCalcualtion($employee, $startDate, $endDate, $responseTimeKeepingUser);
+        $responseTimeKeepingUser = $this->calculatorManualCalculation($employee, $startDate, $endDate, $responseTimeKeepingUser);
 
         $totalWorks = 0;
         foreach ($responseTimeKeepingUser as $key => &$item) {
@@ -1129,7 +1129,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         return $this->excelExporterServices->export('timekeeping_report', $params, $callbacks, $events);
     }
 
-    public function calculatorManualCalcualtion($employee, $startDate, $endDate, $responseTimeKeepingUser)
+    public function calculatorManualCalculation($employee, $startDate, $endDate, $responseTimeKeepingUser)
     {
         $manualCalculation = $employee->manualCalculation()->where('Date', '>=', $startDate)->where('Date', '<=', $endDate)->get();
 
@@ -1156,8 +1156,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     $type = 'F';
                     break;
                 case ManualCalculation::TYPE['X/2']:
-                    $timekeepingReport = 0.5;
                     $type = 'X/2';
+                    break;
+                case ManualCalculation::TYPE['F/2']:
+                    $timekeepingReport = 0.5;
+                    $type = 'F/2';
+                    break;
+                case ManualCalculation::TYPE['K/2']:
+                    $timekeepingReport = 0.5;
+                    $type = 'K/2';
                     break;
             }
 

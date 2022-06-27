@@ -15,11 +15,13 @@ class ManualCalculation extends UuidModel
     protected $table = 'ManualCalculations';
 
     const TYPE = [
-        'X' => 1,  //working
-        'K' => 2,  //leave work without permission
-        'F' => 3,  //leave work with permission
-        'N' => 4,   //define to delete records
-        'X/2' => 5  //working half day
+        'X' => 1,  //Working
+        'K' => 2,  //Leave work without permission
+        'F' => 3,  //Leave work with permission
+        'N' => 4,   //Define to delete records
+        'X/2' => 5,  //working half day and half day leave
+        'K/2' => 6, //Working half a day, day off without leave
+        'F/2' => 7  //Half day leave, half-day unpaid leave
     ];
 
     /**
