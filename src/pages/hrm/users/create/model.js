@@ -832,6 +832,14 @@ export default {
         callback(null, error);
       }
     },
+    *WORKING({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.working, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
     // transfers
   },
   subscriptions: {},
