@@ -123,8 +123,13 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
     public function delete($id)
     {
         $resignationDecision = ResignationDecision::findOrFail($id);
+        $employee = User::find($resignationDecision->EmployeeId);
 
-        $employee = User::where('Id', $resignationDecision->EmployeeId)->update(['DateOff' => null]);
+        if (!is_null($employee)) {
+            $employee->update(['DateOff' => null]);
+            $employee->labourContract()->update(['IsEffect' => true]);
+            $employee->probationaryContract()->update(['IsEffect' => true]);
+        }
 
         return $resignationDecision->delete();
     }
