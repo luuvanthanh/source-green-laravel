@@ -1243,7 +1243,7 @@ export default class Helpers {
     return tmp;
   };
 
-  static getStatusContracts = (contractFrom, contractTo) => {
+  static getStatusContracts = (contractFrom, contractTo, record) => {
     const diffSignDate = moment(
       moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
     ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
@@ -1261,6 +1261,9 @@ export default class Helpers {
           Gần hết hạn
         </Tag>
       );
+    }
+    if (record?.isEffect === false) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
     }
     if (diffExpirationDate < 0) {
       return <Tag color="danger">Đã hết hạn</Tag>;
@@ -1324,7 +1327,7 @@ export default class Helpers {
     return '';
   };
 
-  static getStatusProbationaryContracts = (contractFrom, contractTo) => {
+  static getStatusProbationaryContracts = (contractFrom, contractTo, record) => {
     const diffSignDate = moment(
       moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
     ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
@@ -1342,6 +1345,9 @@ export default class Helpers {
           Gần hết hạn
         </Tag>
       );
+    }
+    if (record?.isEffect === false) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
     }
     if (diffExpirationDate < 0) {
       return <Tag color="danger">Đã hết hạn</Tag>;

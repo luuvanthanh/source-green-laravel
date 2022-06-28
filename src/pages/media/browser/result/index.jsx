@@ -106,9 +106,9 @@ const Index = memo(() => {
           prev.map((post) =>
             post.id === postId
               ? {
-                  ...post,
-                  files: (post?.files || []).filter((file) => file.id !== image.id),
-                }
+                ...post,
+                files: (post?.files || []).filter((file) => file.id !== image.id),
+              }
               : post,
           ),
         );
@@ -121,9 +121,9 @@ const Index = memo(() => {
       prev.map((post) =>
         post.id === postId
           ? {
-              ...post,
-              description: e?.target?.value,
-            }
+            ...post,
+            description: e?.target?.value,
+          }
           : post,
       ),
     );
@@ -215,6 +215,7 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           fetchMedia();
+          setGroupIds([]);
         }
       },
     });
@@ -300,7 +301,7 @@ const Index = memo(() => {
       {isEmpty(groupIds) ||
         (groupIds.length >= 1 && <Menu.Item key="SEND_CHOOSE">Gửi ghi nhận đã chọn</Menu.Item>)}
       {isEmpty(groupIds) ||
-        (groupIds.length <= 2 && <Menu.Item key="MERGE_CHOOSE">Gộp ghi nhận đã chọn</Menu.Item>)}
+        (groupIds.length >= 2 && <Menu.Item key="MERGE_CHOOSE">Gộp ghi nhận đã chọn</Menu.Item>)}
       {isEmpty(groupIds) ||
         (groupIds.length >= 1 && <Menu.Item key="REMOVE_CHOOSE">Xóa ghi nhận đã chọn</Menu.Item>)}
       <Menu.Item key="REMOVE_ALL">Xóa tất cả ghi nhận</Menu.Item>

@@ -337,6 +337,7 @@ class Index extends PureComponent {
           Helper.getStatusProbationaryContracts(
             moment(record?.contractFrom),
             moment(record?.contractTo),
+            record
           ),
       },
       {

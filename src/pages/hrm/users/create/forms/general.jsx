@@ -112,7 +112,7 @@ const General = memo(() => {
           : 'Bạn có muốn khôi phục nhân viên này. Nếu khôi phục sẽ ảnh hưởng đến dữ liệu đang có. Bạn có chắc chắn?',
       onOk() {
         dispatch({
-          type: 'HRMusersAdd/STORAGE',
+          type: details?.status === 'WORKING' ? 'HRMusersAdd/STORAGE' : 'HRMusersAdd/WORKING',
           payload: {
             id: params.id,
             status: details?.status === 'WORKING' ? 'STORE' : 'WORKING',

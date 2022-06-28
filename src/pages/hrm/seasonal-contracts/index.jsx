@@ -197,7 +197,7 @@ function Index() {
         width: 150,
         className: 'min-width-150',
         render: (record) =>
-          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo)),
+          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo), record),
       },
       {
         title: 'Thao tác',

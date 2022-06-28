@@ -21,6 +21,8 @@ const timekeepingType = [
   { id: 'K', name: 'K' },
   { id: 'F', name: 'F' },
   { id: 'X/2', name: 'X/2' },
+  { id: 'K/2', name: 'K/2' },
+  { id: 'F/2', name: 'F/2' },
 ];
 
 const Index = () => {
