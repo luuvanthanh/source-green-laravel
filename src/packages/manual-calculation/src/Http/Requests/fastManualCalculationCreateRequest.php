@@ -28,7 +28,6 @@ class fastManualCalculationCreateRequest extends FormRequest
     {
         return [
             'data' => 'array',
-            'data.*.employeeId' => 'required|exists:ManualCalculations,EmployeeId',
         ];
     }
 
