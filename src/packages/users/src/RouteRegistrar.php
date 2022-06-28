@@ -74,6 +74,10 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'UserController@syncEmployee',
                 'as' => 'employees.show',
             ]);
+
+            \Route::put('update-status-employees/{id}', [
+                'uses' => 'UserController@updateStatusEmployee',
+            ]);
         });
     }
 

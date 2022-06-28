@@ -330,4 +330,12 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         return $this->parserResult($employees);
     }
+
+    public function updateStatusEmployee(array $attributes, $id)
+    {
+        $this->model = $this->model->find($id);
+        $this->model->update(['status' => User::STATUS[$attributes['status']]]);
+
+        return parent::find($id);
+    }
 }
