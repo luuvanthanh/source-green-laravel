@@ -35,11 +35,11 @@ const Index = memo(() => {
       : moment().startOf('month').subtract(1, 'months').add(25, 'days'),
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [dataCopy, setDataCopy] = useState([]);
-  const [isLoadDataCopy, setIsLoadDataCopy] = useState(false);
+  // const [dataCopy, setDataCopy] = useState([]);
+  // const [isLoadDataCopy, setIsLoadDataCopy] = useState(false);
 
   const onLoad = () => {
-    setIsLoadDataCopy(true);
+    // setIsLoadDataCopy(true);
     dispatch({
       type: 'manualTimekeeping/GET_DATA',
       payload: {
@@ -49,7 +49,7 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          setIsLoadDataCopy(false);
+          // setIsLoadDataCopy(false);
         }
       },
     });
@@ -64,7 +64,7 @@ const Index = memo(() => {
       )}`,
     );
   };
-  console.log(employees);
+
   useEffect(() => {
     dispatch({
       type: 'manualTimekeeping/GET_EMPLOYEES',
@@ -131,7 +131,7 @@ const Index = memo(() => {
   };
 
   const onChangeDateModal = () => {
-    setIsLoadDataCopy(true);
+    // setIsLoadDataCopy(true);
     dispatch({
       type: 'manualTimekeeping/GET_DATA',
       payload: {
@@ -149,8 +149,8 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          setDataCopy(response);
-          setIsLoadDataCopy(false);
+          // setDataCopy(response);
+          // setIsLoadDataCopy(false);
         }
       },
     });
