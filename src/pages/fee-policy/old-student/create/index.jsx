@@ -211,8 +211,6 @@ const Index = memo(() => {
     }
   };
 
-
-
   const onFinishFailed = ({ errorFields }) => {
     if (errorFields) {
       checkValidate(tuition, 'tuition');
