@@ -31,7 +31,7 @@ class CalculatorRefundRequest extends FormRequest
                 'required',
                 'date_format:Y-m',
                 function ($attribute, $value, $fail) {
-                    $refund = Refund::find($this->refundId);
+                    $refund = Refund::findOrFail($this->refundId);
                     $schoolYear = $refund->schoolYear;
 
                     $startDate = Carbon::parse($schoolYear->StartDate)->format('Y-m');

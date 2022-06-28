@@ -46,8 +46,8 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('positions', 'PositionController');
                 \Route::resource('holidays', 'HolidayController');
                 \Route::post('sync-branch', 'BranchController@syncBranch');
+                \Route::get('report-refund', 'BranchController@reportRefund');
             });
-
         });
     }
 }

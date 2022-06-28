@@ -14,7 +14,15 @@ use GGPHP\Refund\Transformers\RefundStudentTransformer;
  */
 class BranchTransformer extends BaseTransformer
 {
-
+    public function customAttributes($model): array
+    {
+        return [
+            'students' => $model->students,
+            'totalFeePaidByBranch' => $model->totalFeePaidByBranch,
+            'totalFeeStudiedByBranch' => $model->totalFeeStudiedByBranch,
+            'totalFeeRefundByBranch' => $model->totalFeeRefundByBranch,
+        ];
+    }
     /**
      * List of resources possible to include
      *
