@@ -15,6 +15,8 @@ export function get(params = {}) {
       ...params,
       limit: params.limit,
       page: params.page,
+      forManualCalculation: true,
+      getLimitUser: true,
       include: Helper.convertIncludes(['manualCalculation', 'positionLevelNow']),
     },
   });

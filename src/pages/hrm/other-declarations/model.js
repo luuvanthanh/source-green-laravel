@@ -11,7 +11,23 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
+      data: payload.parsePayload?.map((i) => ({
+        ...i,
+        children: _(i?.changeContractParameter.concat(i?.otherDeclarationDetail))
+          .groupBy('employeeId')
+          .map((items, id, _money) => ({
+            ...items[0],
+            id,
+            detail: items?.map((k) => ({
+              ...k,
+              total: k?.detail?.reduce(
+                (accumulator, object) => accumulator + JSON.parse(object.valueDefault),
+                0,
+              ),
+            })),
+          }))
+          .value(),
+      })),
       pagination: payload.pagination,
     }),
     SET_PARAMATER_VALUES: (state, { payload }) => ({
@@ -48,6 +64,7 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
+        console.log('repo', response);
         if (response) {
           yield saga.put({
             type: 'SET_DATA',

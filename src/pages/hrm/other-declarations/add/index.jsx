@@ -81,21 +81,21 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && params?.id) {
       const paramaterValues = !isEmpty(head(details.otherDeclarationDetail)?.detail)
         ? [
-            ...new Map(
-              head(details.otherDeclarationDetail)
-                ?.detail?.map((item) => item.id)
-                .map((item) => [item, item]),
-            ).values(),
-          ]
+          ...new Map(
+            head(details.otherDeclarationDetail)
+              ?.detail?.map((item) => item.id)
+              .map((item) => [item, item]),
+          ).values(),
+        ]
         : [];
       const paramaterValuesContract = !isEmpty(head(details.changeContractParameter)?.detail)
         ? [
-            ...new Map(
-              head(details.changeContractParameter)
-                ?.detail?.map((item) => item.id)
-                .map((item) => [item, item]),
-            ).values(),
-          ]
+          ...new Map(
+            head(details.changeContractParameter)
+              ?.detail?.map((item) => item.id)
+              .map((item) => [item, item]),
+          ).values(),
+        ]
         : [];
       this.formRef.current.setFieldsValue({
         ...details,
@@ -262,8 +262,28 @@ class Index extends PureComponent {
       paramaterValues: [
         ...(value
           ? value.map((item) => {
-              const itemParamaterValues = categories.paramaterValues.find(({ id }) => id === item);
-              const currentParamaterValues = prevState.paramaterValues.find(
+            const itemParamaterValues = categories.paramaterValues.find(({ id }) => id === item);
+            const currentParamaterValues = prevState.paramaterValues.find(
+              (item) => item.id === itemParamaterValues.id,
+            );
+
+            if (currentParamaterValues) {
+              return currentParamaterValues;
+            }
+
+            return itemParamaterValues;
+          })
+          : []),
+      ],
+      detail: prevState.detail.map((item) => ({
+        ...item,
+        detail: value
+          ? [
+            ...value.map((itemValue) => {
+              const itemParamaterValues = categories.paramaterValues.find(
+                ({ id }) => id === itemValue,
+              );
+              const currentParamaterValues = item.detail.find(
                 (item) => item.id === itemParamaterValues.id,
               );
 
@@ -272,28 +292,8 @@ class Index extends PureComponent {
               }
 
               return itemParamaterValues;
-            })
-          : []),
-      ],
-      detail: prevState.detail.map((item) => ({
-        ...item,
-        detail: value
-          ? [
-              ...value.map((itemValue) => {
-                const itemParamaterValues = categories.paramaterValues.find(
-                  ({ id }) => id === itemValue,
-                );
-                const currentParamaterValues = item.detail.find(
-                  (item) => item.id === itemParamaterValues.id,
-                );
-
-                if (currentParamaterValues) {
-                  return currentParamaterValues;
-                }
-
-                return itemParamaterValues;
-              }),
-            ]
+            }),
+          ]
           : [],
       })),
     }));
@@ -305,10 +305,30 @@ class Index extends PureComponent {
       paramaterValuesContract: [
         ...(value
           ? value.map((item) => {
+            const itemParamaterContract = categories.paramaterContract.find(
+              ({ id }) => id === item,
+            );
+            const currentParamaterContract = prevState.paramaterValuesContract.find(
+              (item) => item.id === itemParamaterContract.id,
+            );
+
+            if (currentParamaterContract) {
+              return currentParamaterContract;
+            }
+
+            return itemParamaterContract;
+          })
+          : []),
+      ],
+      detailContract: prevState.detailContract.map((item) => ({
+        ...item,
+        detail: value
+          ? [
+            ...value.map((itemValue) => {
               const itemParamaterContract = categories.paramaterContract.find(
-                ({ id }) => id === item,
+                ({ id }) => id === itemValue,
               );
-              const currentParamaterContract = prevState.paramaterValuesContract.find(
+              const currentParamaterContract = item.detail.find(
                 (item) => item.id === itemParamaterContract.id,
               );
 
@@ -317,34 +337,14 @@ class Index extends PureComponent {
               }
 
               return itemParamaterContract;
-            })
-          : []),
-      ],
-      detailContract: prevState.detailContract.map((item) => ({
-        ...item,
-        detail: value
-          ? [
-              ...value.map((itemValue) => {
-                const itemParamaterContract = categories.paramaterContract.find(
-                  ({ id }) => id === itemValue,
-                );
-                const currentParamaterContract = item.detail.find(
-                  (item) => item.id === itemParamaterContract.id,
-                );
-
-                if (currentParamaterContract) {
-                  return currentParamaterContract;
-                }
-
-                return itemParamaterContract;
-              }),
-            ]
+            }),
+          ]
           : [],
       })),
     }));
   };
 
-  onChangeNumber = (value, record, paramaterValue) => {
+  onChangeNumber = (valueDefault, record, paramaterValue) => {
     this.setStateData((prevState) => ({
       detail: prevState.detail.map((item) => {
         if (item?.employee?.id === record?.employee?.id) {
@@ -354,7 +354,7 @@ class Index extends PureComponent {
               if (itemDetail.id === paramaterValue.id) {
                 return {
                   ...itemDetail,
-                  value,
+                  valueDefault,
                 };
               }
               return itemDetail;
@@ -464,7 +464,7 @@ class Index extends PureComponent {
             className={classnames('input-number', styles['input-number-container'])}
             formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
             placeholder="Nhập"
-            value={itemParamater?.value || 0}
+            value={itemParamater?.valueDefault || 0}
             onChange={(value) => this.onChangeNumber(value, record, item)}
           />
         );
@@ -716,7 +716,7 @@ Index.propTypes = {
 Index.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   categories: {},
   menuData: [],
   loading: {},

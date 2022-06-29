@@ -12,6 +12,8 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import stylesModule from './styles.module.scss';
+
 
 let isMounted = true;
 /**
@@ -67,7 +69,7 @@ class Index extends PureComponent {
   componentWillUnmount() {
     setIsMounted(false);
   }
- 
+
   /**
    * Set state properties
    * @param {object} data the data input
@@ -230,7 +232,7 @@ class Index extends PureComponent {
         key: 'time',
         className: 'min-width-200',
         width: 200,
-        render: (record) => Helper.getDate(record.time, variables.DATE_FORMAT.MONTH_FULL),
+        render: (record) => Helper.getDate(record.time, variables.DATE_FORMAT.MONTH_FULL) || record?.employee?.fullName,
       },
       {
         title: 'Số công chuẩn',
@@ -240,10 +242,43 @@ class Index extends PureComponent {
         render: (record) => record.numberOfWorkdays,
       },
       {
+        title: 'Tổng tăng giảm theo tháng',
+        key: 'numberOfWorkdays',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => {
+          if (record?.children) {
+            return "";
+          }
+          const a = record?.detail?.find(i => i?.type === 'OtherDeclarationDetail');
+          return (
+            <>
+              {Helper.getPrice(a?.total) || "0 đ"}
+            </>
+          );
+        },
+      },
+      {
+        title: 'Tổng tăng giảm theo hợp đồng',
+        key: 'numberOfWorkdays',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => {
+          if (record?.children) {
+            return "";
+          }
+          const a = record?.detail?.find(i => i?.type === 'ChangeContractParameter');
+          return (
+            <>
+              {Helper.getPrice(a?.total) || "0 đ"}
+            </>
+          );
+        },
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
-        fixed: 'right',
         render: (record) => {
           if (record.otherDeclarationDetail) {
             return (
@@ -261,7 +296,7 @@ class Index extends PureComponent {
         },
       },
     ];
-    
+
     return columns;
   };
 
@@ -327,20 +362,22 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
-              bordered
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              pagination={this.pagination(pagination)}
-              childrenColumnName="otherDeclarationDetail"
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
+            <div className={stylesModule['wrapper-table']}>
+              <Table
+                bordered
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                pagination={this.pagination(pagination)}
+                childrenColumnName="children"
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
+            </div>
           </div>
         </div>
       </>
