@@ -115,14 +115,16 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
             $attributes['type'] = ManualCalculation::TYPE[$attributes['type']];
         }
 
-        $manualCalculation = $this->model->where('EmployeeId', $attributes['employeeId'])->where('Date', $date)->first();
+        $manualCalculation = $this->model->where('EmployeeId', $attributes['employeeId'])->whereDate('Date', $date)->first();
 
         if (is_null($manualCalculation)) {
             $manualCalculation = $this->model->create($attributes);
-        } elseif (!is_null($manualCalculation) && $attributes['type'] == ManualCalculation::TYPE['N']) {
-            $manualCalculation->delete();
         } else {
             $manualCalculation->update($attributes);
+        }
+
+        if (!is_null($manualCalculation) && $attributes['type'] == ManualCalculation::TYPE['N']) {
+            $manualCalculation->delete();
         }
 
         return $this->parserResult($manualCalculation);
