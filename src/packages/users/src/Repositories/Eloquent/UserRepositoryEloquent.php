@@ -110,10 +110,10 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $now = Carbon::now()->format('Y-m-d');
 
             $this->model = $this->model->whereDoesntHave('labourContract', function ($query) use ($now) {
-                $query->where('ContractTo', '<', $now);
+                $query->where('ContractTo', '<', $now)->where('IsEffect', false);
             })->whereDoesntHave('probationaryContract', function ($query) use ($now) {
-                $query->where('ContractTo', '<', $now);
-            })->where('DateOff', null);
+                $query->where('ContractTo', '<', $now)->where('IsEffect', false);
+            });
         }
 
         if (empty($attributes['limit'])) {
