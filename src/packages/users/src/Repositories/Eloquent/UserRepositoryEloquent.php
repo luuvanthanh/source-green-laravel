@@ -116,6 +116,24 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             })->where('DateOff', null);
         }
 
+        if (!empty('resignationDecision')) {
+            $this->model = $this->model->when(!empty($attributes['endDate']), function ($query) use ($attributes) {
+                $arr = explode('-', $attributes['endDate']);
+                $year = $arr[0];
+                $month = $arr[1];
+                
+                return $query->where(function ($query) use ($year, $month) {
+                    $query->whereDoesntHave('labourContract', function ($query) use ($year, $month) {
+                        $query->whereYear('ContractTo', '<', $year)->whereMonth('ContractTo', '<', $month);
+                    })->whereDoesntHave('probationaryContract', function ($query) use ($year, $month) {
+                        $query->whereYear('ContractTo', '<', $year)->whereMonth('ContractTo', '<', $month);
+                    })->whereDoesntHave('resignationDecision', function ($query) use ($year, $month) {
+                        $query->whereYear('TimeApply', '<', $year)->whereMonth('TimeApply', '<', $month);
+                    });
+                });
+            });
+        }
+
         if (empty($attributes['limit'])) {
             $users = $this->get();
         } else {
