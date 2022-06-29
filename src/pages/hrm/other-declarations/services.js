@@ -28,7 +28,9 @@ export function get(data = {}) {
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['employee', 'otherDeclarationDetail.employee']),
+      include: Helper.convertIncludes([
+        'otherDeclarationDetail.employee,changeContractParameter.employee',
+      ]),
       fullName: data.fullName,
       search: Helper.convertParamSearchConvert({
         type: data.type,
