@@ -168,21 +168,34 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
      */
     public function updateAll(array $attributes, $id)
     {
-        $trainingmodule = $this->trainingModuleRepositoryEloquent->model->find($id);
+        $trainingModule = $this->trainingModuleRepositoryEloquent->model->find($id);
         DB::beginTransaction();
         try {
             if (!empty($attributes['data'])) {
                 foreach ($attributes['data'] as $value) {
-                    $trainingSchedule = $trainingmodule->trainingschedule()->find($value['id']);
-                    $trainingSchedule->update($value);
 
-                    if (!empty($value['employeeId'])) {
-                        $trainingSchedule->employee()->detach();
-                        $trainingSchedule->employee()->sync($value['employeeId']);
-                    }
+                    if (!empty($value['id'])) {
+                        $trainingSchedule = $trainingModule->trainingSchedule()->find($value['id']);
+                        $trainingSchedule->update($value);
 
-                    if (!empty($value['detail'])) {
-                        $this->forDetail($value['detail'], $trainingSchedule);
+                        if (!empty($value['employeeId'])) {
+                            $trainingSchedule->employee()->detach();
+                            $trainingSchedule->employee()->sync($value['employeeId']);
+                        }
+
+                        if (!empty($value['detail'])) {
+                            $this->forDetail($value['detail'], $trainingSchedule);
+                        }
+                    } else {
+                        $trainingSchedule = $this->model->create($value);
+
+                        if (!empty($value['employeeId'])) {
+                            $trainingSchedule->employee()->sync($value['employeeId']);
+                        }
+
+                        if (!empty($value['detail'])) {
+                            $this->forDetail($value['detail'], $trainingSchedule);
+                        }
                     }
                 }
             }
@@ -192,7 +205,7 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
             DB::rollBack();
         }
 
-        return $this->parserResult($trainingmodule);
+        return parent::find($trainingModule->trainingSchedule->first()->Id);
     }
 
     public function scheduleTeacher(array $attributes)
