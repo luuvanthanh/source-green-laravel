@@ -815,11 +815,11 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'paymentFormId' => PaymentForm::where('Code', 'HOCKY1')->first()->Id,
                                     'feeId' => $feeTuiTion->Id,
                                 ];
-
                                 $dataAttributes = [
                                     'classTypeId' => $attributes['classTypeId'],
                                     'schoolYearId' => $attributes['schoolYearId'],
                                     'student' => $attributes['student'],
+                                    'branchId' => $attributes['branchId'],
                                     'dayAdmission' => $dayAdmission,
                                     'details' => json_encode($detail)
                                 ];
@@ -842,6 +842,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'classTypeId' => $attributes['classTypeId'],
                                     'schoolYearId' => $attributes['schoolYearId'],
                                     'student' => $attributes['student'],
+                                    'branchId' => $attributes['branchId'],
                                     'dayAdmission' => $dayAdmission,
                                     'details' => json_encode($detail)
                                 ];
