@@ -70,7 +70,7 @@ class SeasonalContractTransformer extends BaseTransformer
      * @param LabourContract $labourContract
      * @return mixed
      */
-    public function includeRepresent(LabourContract $model)
+    public function includeRepresent(SeasonalContract $model)
     {
         if (empty($model->represent)) {
             return;
