@@ -2,6 +2,9 @@
 
 namespace GGPHP\OtherDeclaration\Repositories\Eloquent;
 
+use Carbon\Carbon;
+use GGPHP\Category\Models\HolidayDetail;
+use GGPHP\Clover\Repositories\Contracts\StudentRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\OtherDeclaration\Models\OtherDeclaration;
 use GGPHP\OtherDeclaration\Presenters\OtherDeclarationPresenter;
@@ -125,5 +128,38 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
         }
 
         return parent::find($otherDeclaration->Id);
+    }
+
+    public function calculatorWork(array $attributes)
+    {
+        $numberHolidays = resolve(StudentRepository::class)->holidays($attributes['startDate'], $attributes['endDate']);
+
+        $totalWork = $this->numberDay($attributes['startDate'], $attributes['endDate']);
+
+        $holidayByTime = HolidayDetail::whereDate('StartDate', '>=', $attributes['startDate'])
+            ->whereDate('EndDate', '<=', $attributes['endDate'])->get();
+
+        $totalHolidayInTimeSpace = $holidayByTime->map(function ($item) {
+            $numberDay = $this->numberDay($item->StartDate, $item->EndDate);
+
+            return $numberDay;
+        })->sum();
+
+        $work = $totalWork - $numberHolidays - $totalHolidayInTimeSpace;
+
+        $result = ['totalWork' => $work];
+
+        return ['data' => $result];
+    }
+
+    public function numberDay($firstMonth = null, $secondMonth)
+    {
+        if ($firstMonth === null) $firstMonth = Carbon::today()->startOfMonth();
+
+        $firstMonth = Carbon::parse($firstMonth);
+
+        $secondMonth = Carbon::parse($secondMonth);
+
+        return $secondMonth->diffInDays($firstMonth) + 1;
     }
 }

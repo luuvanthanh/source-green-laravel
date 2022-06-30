@@ -16,6 +16,7 @@ use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
 use GGPHP\Profile\Transformers\LabourContractTransformer;
 use GGPHP\Profile\Transformers\ProbationaryContractTransformer;
+use GGPHP\ResignationDecision\Transformers\ResignationDecisionTransformer;
 use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
 use GGPHP\Timekeeping\Transformers\TimekeepingTransformer;
 use GGPHP\Users\Models\User;
@@ -47,7 +48,8 @@ class UserTransformer extends BaseTransformer
     protected $availableIncludes = [
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel',
         'classTeacher', 'positionLevelNow', 'businessCard', 'degree',
-        'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation', 'branchDefault', 'probationaryContract'
+        'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation', 'branchDefault', 'probationaryContract',
+        'resignationDecision'
     ];
 
     /**
@@ -215,5 +217,14 @@ class UserTransformer extends BaseTransformer
     public function includeProbationaryContract(User $employee)
     {
         return $this->collection($employee->probationaryContract, new ProbationaryContractTransformer, 'ProbationaryContract');
+    }
+
+    public function includeResignationDecision(User $employee)
+    {
+        if (empty($employee->resignationDecision)) {
+            return null;
+        }
+
+        return $this->item($employee->resignationDecision, new ResignationDecisionTransformer, 'ResignationDecision');
     }
 }

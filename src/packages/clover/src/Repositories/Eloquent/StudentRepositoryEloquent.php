@@ -457,8 +457,14 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
 
         $nextMonth = Carbon::parse($nextMonth);
 
+        $dayHoliday = 0;
+
+        if ($nextMonth->isSunday() || $nextMonth->isSaturday()) {
+            $dayHoliday = 1;
+        }
+
         return $month->diffInDaysFiltered(function ($date) {
             return $date->isSunday() || $date->isSaturday();
-        }, $nextMonth);
+        }, $nextMonth) + $dayHoliday;
     }
 }
