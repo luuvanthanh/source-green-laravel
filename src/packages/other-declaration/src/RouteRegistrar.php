@@ -54,6 +54,8 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'OtherDeclarationController@destroy',
                 'as' => 'other-declarations.destroy',
             ]);
+
+            \Route::get('calculator-work', 'OtherDeclarationController@calculatorWork');
         });
     }
 }
