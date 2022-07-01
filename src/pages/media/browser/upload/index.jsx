@@ -11,7 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import Text from '@/components/CommonComponent/Text';
 import FormItem from '@/components/CommonComponent/FormItem';
 
-import { imageUploadProps } from '@/utils/upload';
+import { imageUploadProps, imageUploadProp } from '@/utils/upload';
 import { variables, Helper } from '@/utils';
 import styles from './style.module.scss';
 import imageStyles from '../style.module.scss';
@@ -35,7 +35,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   const [type, setType] = useState(DEFAULT_TYPE);
 
   const addFile = ({ file }) => {
-    const { beforeUpload } = imageUploadProps;
+    const { beforeUpload } = imageUploadProp;
     const result = beforeUpload(file);
     if (result) {
       setFileList((prev) => [...prev, result]);
@@ -131,16 +131,25 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
         ref={formRef}
         onFinish={upload}
       >
-        <Pane>
-          <FormItem
-            name="uploadType"
-            label="Loại tải lên"
-            type={variables.RADIO}
-            radioInline
-            data={uploadTypes}
-            onChange={({ target: { value } }) => setType(value)}
-          />
-        </Pane>
+        <div className='row'>
+          <Pane className="col-lg-6">
+            <FormItem
+              name="uploadType"
+              label="Loại tải lên"
+              type={variables.RADIO}
+              radioInline
+              data={uploadTypes}
+              onChange={({ target: { value } }) => setType(value)}
+            />
+          </Pane>
+          {
+            fileList?.length > 0 && (
+              <Pane className={csx('col-lg-6', styles['wrapper-delete'])} onClick={() => setFileList([])}>
+                <h3 className={styles.title}>Xoá tất cả</h3>
+              </Pane>
+            )
+          }
+        </div>
 
         {type === 'TARGET' && (
           <>
@@ -220,8 +229,8 @@ Index.propTypes = {
 };
 
 Index.defaultProps = {
-  onOk: () => {},
-  onCancel: () => {},
+  onOk: () => { },
+  onCancel: () => { },
 };
 
 export default Index;

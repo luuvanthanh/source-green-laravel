@@ -83,7 +83,6 @@ function Index() {
       });
 
       if (details.contractFrom && details.contractTo) {
-        console.log(moment(details.contractTo).diff(moment(details.contractFrom), 'days'));
         if (moment(details.contractTo).diff(moment(details.contractFrom), 'days') > 366) {
           setIsValid(true);
           formRef.setFields([
@@ -180,7 +179,7 @@ function Index() {
   };
 
   const onAddValues = () => {
-    setParameterValues((prev) => [...prev, { index: last(prev)?.index + 1 }]);
+    setParameterValues((prev) => [...prev, { index: last(prev)?.index + 1, valueDefault: 0 }]);
   };
 
   const onChangeEmployee = (value) => {
@@ -567,9 +566,15 @@ function Index() {
                         rowKey="index"
                         scroll={{ x: '100%' }}
                         footer={() => (
-                          <Button color="success" ghost icon="plus" onClick={onAddValues}>
-                            Thêm dòng
-                          </Button>
+                          <div className='d-flex justify-content-between'>
+                            <Button color="success" ghost icon="plus" onClick={onAddValues}>
+                              Thêm dòng
+                            </Button>
+                            <div className={styles['text-sum']}>
+                              <p className={styles.title}>Tổng cộng: </p>
+                              <h3 className={styles.number}>{Helper.getPrice(parameterValues?.reduce((total, item) => total + JSON.parse(item?.valueDefault), 0))}</h3>
+                            </div>
+                          </div>
                         )}
                       />
                     </TabPane>

@@ -63,6 +63,16 @@ request.interceptors.response.use(
         status: 201,
       };
     }
+    if (
+      optionsRoot?.editNotification === true &&
+      optionsRoot?.parse === true &&
+      response.status >= 200 &&
+      response.status <= 300
+    ) {
+      return {
+        status: 201,
+      };
+    }
     const dataRoot = await response.clone().json();
     if (variables.method.includes(optionsRoot?.method?.toLowerCase())) {
       if (response.status >= 400 && response.status <= 500) {

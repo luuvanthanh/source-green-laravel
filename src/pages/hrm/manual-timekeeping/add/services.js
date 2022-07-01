@@ -17,7 +17,11 @@ export function get(params = {}) {
       page: params.page,
       forManualCalculation: true,
       getLimitUser: true,
-      include: Helper.convertIncludes(['manualCalculation', 'positionLevelNow']),
+      include: Helper.convertIncludes([
+        'manualCalculation',
+        'positionLevelNow',
+        'probationaryContract,labourContract,resignationDecision',
+      ]),
     },
   });
 }
