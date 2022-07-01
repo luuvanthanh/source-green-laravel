@@ -147,9 +147,9 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
                     $dataDetail->trainer()->sync($valueUpdate['trainerId']);
                 }
 
-                if (!empty($valueUpdate['employeeId'])) {
-                    $dataDetail->trainer()->detach();
-                    $dataDetail->trainer()->sync($valueUpdate['employeeId']);
+                if (!empty($valueUpdate['employeeId'])) {   
+                    $dataDetail->employee()->detach();
+                    $dataDetail->employee()->sync($valueUpdate['employeeId']);
                 }
             }
         }
