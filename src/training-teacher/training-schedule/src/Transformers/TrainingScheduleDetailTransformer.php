@@ -22,6 +22,6 @@ class TrainingScheduleDetailTransformer extends BaseTransformer
 
     public function includeTrainer(TrainingScheduleDetail $trainingScheduleDetail)
     {
-        return $this->collection($trainingScheduleDetail->employee, new UserTransformer, 'trainer');
+        return $this->collection($trainingScheduleDetail->trainer, new UserTransformer, 'trainer');
     }
 }
