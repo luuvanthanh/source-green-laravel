@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -98,6 +99,10 @@ export default {
       try {
         const response = yield saga.call(services.removeRecordFiles, payload);
         callback(response);
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã xoá thành công dữ liệu',
+        });
       } catch (error) {
         callback(null, error);
       }
@@ -106,6 +111,10 @@ export default {
       try {
         const response = yield saga.call(services.removeAll, payload);
         callback(response);
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã xoá thành công dữ liệu',
+        });
       } catch (error) {
         callback(null, error);
       }

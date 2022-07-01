@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 import { size, isEmpty, includes } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
-import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt } from 'antd';
+import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt, notification } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -146,6 +146,10 @@ const Index = memo(() => {
       payload: req,
       callback: () => {
         fetchMedia();
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã gửi thành công dữ liệu',
+        });
       },
     });
   };
@@ -241,6 +245,11 @@ const Index = memo(() => {
       payload: req,
       callback: () => {
         history.push('/hinh-anh/duyet-hinh');
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã gửi thành công dữ liệu',
+        });
+        fetchMedia();
       },
     });
   };
@@ -256,10 +265,12 @@ const Index = memo(() => {
         return dispatch({
           type: 'mediaResult/VALIDATE_ALL',
           payload,
-          callback: (response) => {
-            if (response) {
-              fetchMedia();
-            }
+          callback: () => {
+            fetchMedia();
+            notification.success({
+              message: 'Thông báo',
+              description: 'Bạn đã gửi thành công dữ liệu',
+            });
           },
         });
       }).finally(() => {

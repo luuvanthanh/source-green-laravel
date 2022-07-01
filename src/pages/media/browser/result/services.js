@@ -12,6 +12,9 @@ export function validate(data) {
   return request('/posts/send', {
     method: 'PUT',
     data,
+    parse: true,
+    editNotification: true,
+    cancelNotification: true,
   });
 }
 
@@ -32,6 +35,8 @@ export function removeAll(data) {
     method: 'DELETE',
     data,
     parse: true,
+    editNotification: true,
+    cancelNotification: true,
   });
 }
 
@@ -58,6 +63,8 @@ export function removeRecordFiles(data) {
     method: 'DELETE',
     data,
     parse: true,
+    editNotification: true,
+    cancelNotification: true,
   });
 }
 
