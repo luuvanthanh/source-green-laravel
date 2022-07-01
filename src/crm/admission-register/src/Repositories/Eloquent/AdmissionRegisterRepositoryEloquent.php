@@ -11,6 +11,7 @@ use GGPHP\Crm\AdmissionRegister\Services\ParentInfoService;
 use GGPHP\Crm\AdmissionRegister\Services\StudentService;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
@@ -135,10 +136,13 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             if (!is_null($customerLead)) {
                 ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
                 $studentClover = $this->createStudent($attributes, $admissionRegister, $customerLead->id);
+
                 $admissionRegister->update([
                     'student_clover_id' => $studentClover->student->id,
                     'student_clover_code' => $studentClover->student->code,
                 ]);
+
+                $customerLead->update(['parent_clover_id' => $studentClover->fartherId]);
             }
 
             $customerPotential = CustomerPotential::where('customer_lead_id', $attributes['customer_lead_id'])->first();
@@ -202,16 +206,14 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         $numberOfMonth = $birthday->diffInMonths($now);
 
         switch ($studentInfo->sex) {
-            case 0:
+            case StudentInfo::SEX['FEMALE']:
                 $studentInfoSex = 'FEMALE';
                 break;
-            case 1:
+            case StudentInfo::SEX['MALE']:
                 $studentInfoSex = 'MALE';
                 break;
-            case 2:
+            case StudentInfo::SEX['OTHER']:
                 $studentInfoSex = 'OTHER';
-                break;
-            default:
                 break;
         }
 
@@ -231,6 +233,29 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             'fileImage' => '',
             'branchId' => $admissionRegister->branch->branch_id_hrm
         ];
+
+        switch ($studentInfo->customerLead->sex) {
+            case CustomerLead::SEX['FEMALE']:
+                $customerLeadSex = 'FEMALE';
+                break;
+            case CustomerLead::SEX['MALE']:
+                $customerLeadSex = 'MALE';
+                break;
+            case CustomerLead::SEX['OTHER']:
+                $customerLeadSex = 'OTHER';
+                break;
+        }
+
+        if (!empty($studentInfo->customerLead->parent_clover_id)) {
+            $data['fartherId'] = $studentInfo->customerLead->parent_clover_id;
+        } else {
+            $data['farther'] = [
+                'fullName' => $studentInfo->customerLead->full_name,
+                'sex' => $customerLeadSex,
+                'phone' => $studentInfo->customerLead->phone,
+                'email' => $studentInfo->customerLead->email,
+            ];
+        }
 
         return StudentService::createStudent($data);
     }
