@@ -91,6 +91,6 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
             StudentInfo::whereIn('id', $attributes['deleteRows'])->delete();
         }
 
-        return parent::all();
+        return parent::find(StudentInfo::latest()->first()->id);
     }
 }
