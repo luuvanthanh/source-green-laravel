@@ -30,10 +30,7 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
         }
 
         if (!is_null($row[1])) {
-            $dateConvert = $dateConvert = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[1])->format('d-m-Y');
-
-            $newDate = date("d-m-Y", strtotime($dateConvert));
-            $birthDate = Carbon::parse($newDate)->format('Y-m-d');
+            $birthDate = Carbon::parse($row[1])->format('Y-m-d');
         }
         $searchSource = SearchSource::where('type', $row[5])->first();
         $data = [
@@ -68,7 +65,7 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
     {
         return [
             '*.1' => [
-                'nullable', 'date_multi_format:d/m/Y,d-m-Y'
+                'nullable', 'date_multi_format:d-m-Y,d/m/Y'
             ]
         ];
     }
@@ -83,5 +80,18 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
         return [
             'template' => new DataMarketingImport()
         ];
+    }
+
+    /**
+     * Tweak the data slightly before sending it to the validator
+     * @param $data
+     * @param $index
+     * @return mixed
+     */
+    public function prepareForValidation($data, $index)
+    {
+        $data[1] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[1])->format('d-m-Y');
+
+        return $data;
     }
 }
