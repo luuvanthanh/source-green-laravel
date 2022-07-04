@@ -30,7 +30,8 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
         }
 
         if (!is_null($row[1])) {
-            $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+            $newDate = date("d-m-Y", strtotime($row[1]));
+            $birthDate = Carbon::parse($newDate)->format('Y-m-d');
         }
         $searchSource = SearchSource::where('type', $row[5])->first();
         $data = [
@@ -65,7 +66,7 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
     {
         return [
             '*.1' => [
-                'nullable', 'date_format:d-m-Y'
+                'nullable', 'date_multi_format:d/m/Y,d-m-Y'
             ]
         ];
     }
