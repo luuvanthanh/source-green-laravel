@@ -30,7 +30,9 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
         }
 
         if (!is_null($row[1])) {
-            $newDate = date("d-m-Y", strtotime($row[1]));
+            $dateConvert = $dateConvert = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[1])->format('d-m-Y');
+
+            $newDate = date("d-m-Y", strtotime($dateConvert));
             $birthDate = Carbon::parse($newDate)->format('Y-m-d');
         }
         $searchSource = SearchSource::where('type', $row[5])->first();
