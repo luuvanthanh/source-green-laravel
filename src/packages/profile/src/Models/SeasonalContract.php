@@ -12,7 +12,8 @@ class SeasonalContract extends UuidModel
         'ContractNumber', 'TypeOfContractId', 'EmployeeId',
         'Month', 'Date', 'DivisionId', 'PositionId',
         'WorkDetail', 'WorkTime', 'NameProject', 'JoinSocialInsurance', 'Project',
-        'BranchId', 'ContractDate', 'ContractFrom', 'ContractTo', 'RepresentId'
+        'BranchId', 'ContractDate', 'ContractFrom', 'ContractTo', 'RepresentId',
+        'OrdinalNumber', 'NumberForm'
     ];
 
     protected $dateTimeFields = [
