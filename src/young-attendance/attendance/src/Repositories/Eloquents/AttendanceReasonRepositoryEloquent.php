@@ -42,4 +42,19 @@ class AttendanceReasonRepositoryEloquent extends CoreRepositoryEloquent implemen
     {
         return AttendanceReasonPresenter::class;
     }
+
+    public function getAll(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('Content', $attributes['key']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $attendanceReason = $this->paginate($attributes['limit']);
+        } else {
+            $attendanceReason = $this->get();
+        }
+
+        return $attendanceReason;
+    }
 }
