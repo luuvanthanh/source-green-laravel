@@ -210,6 +210,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       data,
+      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['feePolicyRefundstakeABreak/GET_DATA'];
@@ -219,6 +220,13 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Danh sách hoàn phí học sinh tạm nghỉ</Text>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
+              Tạo mới
+            </Button>
           </div>
           <div className={styles['block-table']}>
             <Form

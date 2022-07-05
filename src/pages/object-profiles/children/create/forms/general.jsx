@@ -107,12 +107,7 @@ const General = memo(
               registerDate: moment(),
             },
           },
-        callback: (response, error) => {
-          if (response) {
-            history.push(
-              `/ho-so-doi-tuong/hoc-sinh`,
-            );
-          }
+        callback: (error) => {
           if (error) {
             if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
               error?.validationErrors.forEach((item) => {

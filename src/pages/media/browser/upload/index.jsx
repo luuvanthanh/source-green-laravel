@@ -28,8 +28,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   const formRef = useRef();
 
   const dispatch = useDispatch();
-  const [loading] = useSelector(({ loading: { effects } }) => [effects]);
-
+  const [loading, defaultBranch] = useSelector(({ loading: { effects }, user }) => [effects, user]);
   const [fileList, setFileList] = useState([]);
   const [students, setStudents] = useState([]);
   const [type, setType] = useState(DEFAULT_TYPE);
@@ -96,6 +95,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
     dispatch({
       type: 'categories/GET_STUDENTS',
       payload: {
+        branchId: defaultBranch?.defaultBranch?.id,
         ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
       },
       callback: (res) => {

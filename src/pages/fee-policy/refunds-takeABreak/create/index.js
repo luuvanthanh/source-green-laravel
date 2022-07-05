@@ -1,7 +1,7 @@
-import { memo, useRef, useState, useMemo } from 'react';
+import { memo, useRef, useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Table } from 'antd';
-import { useSelector } from 'dva';
+import { useSelector, useDispatch } from 'dva';
 import { useParams, history, useLocation } from 'umi';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -9,6 +9,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import { DeleteOutlined } from '@ant-design/icons';
 import TableCus from '@/components/CommonComponent/Table';
 import Loading from '@/components/CommonComponent/Loading';
+import moment from 'moment';
 
 import Button from '@/components/CommonComponent/Button';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -20,14 +21,18 @@ const Index = memo(() => {
   const formRef = useRef();
   const params = useParams();
 
-  const { menuLeftFeePolicy, data } = useSelector(
-    ({ loading, menu, feePolicyRefundstakeABreakAdd }) => ({
+  const { menuLeftFeePolicy, data, refund, branches, loading } = useSelector(
+    ({ loading, menu, feePolicyRefundstakeABreakAdd, OPchildren }) => ({
       loading: loading.effects,
       menuLeftFeePolicy: menu.menuLeftFeePolicy,
       data: feePolicyRefundstakeABreakAdd?.data,
+      refund: feePolicyRefundstakeABreakAdd.refund,
+      branches: OPchildren.branches,
     }),
   );
   const { query } = useLocation();
+  const dispatch = useDispatch();
+  const [dataYear, setDataYear] = useState(undefined);
 
   const [search] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
@@ -85,8 +90,47 @@ const Index = memo(() => {
     },
   ]);
 
+  useEffect(() => {
+    dispatch({
+      type: 'feePolicyRefundstakeABreakAdd/GET_REFUND',
+      payload: {
+        include: Helper.convertIncludes(['schoolYear']),
+      },
+    });
+    dispatch({
+      type: 'OPchildren/GET_BRANCHES',
+      payload: {},
+    });
+  }, []);
+
+  const onFinish = (value) => {
+    dispatch({
+      type: 'feePolicyRefundstakeABreakAdd/GET_DATA',
+      payload: {
+        ...value,
+        date: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: value.date,
+          }),
+          format: variables.DATE_FORMAT.YEAR_MONTH,
+          isUTC: false,
+        }),
+      },
+    });
+  };
+
+  const changeYear = (value) => {
+    const data = refund?.find((i) => i?.id === value);
+    setDataYear(data);
+    formRef?.current?.setFieldsValue({
+      date: undefined,
+      branchId: undefined,
+    });
+  };
+  console.log(data);
   return (
-    <Form layout="vertical" colon={false} ref={formRef}>
+    <Form layout="vertical" colon={false} ref={formRef} onFinish={onFinish}>
       <Breadcrumbs
         className="pb0"
         last={params?.id ? 'Chi tiết' : 'Thêm mới'}
@@ -105,22 +149,59 @@ const Index = memo(() => {
               <div className="col-lg-3">
                 <FormItem
                   className="mb-2"
-                  label="Tháng tính hoàn phí"
-                  name="feePolicyRefundstakeABreakAddId"
-                  type={variables.DATE_PICKER}
+                  label="Năm tính hoàn phí"
+                  data={refund.map((item) => ({
+                    ...item,
+                    name: `${item?.schoolYear?.yearFrom} - ${item?.schoolYear?.yearTo}`,
+                  }))}
+                  name="refundId"
+                  type={variables.SELECT}
                   placeholder="Chọn năm"
+                  allowClear={false}
+                  rules={[variables.RULES.EMPTY]}
+                  onChange={changeYear}
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  className="mb-2"
+                  label="Tháng tính hoàn phí"
+                  type={variables.MONTH_PICKER}
+                  name="date"
+                  placeholder="Chọn năm"
+                  allowClear={false}
+                  rules={[variables.RULES.EMPTY]}
+                  disabledDate={(current) =>
+                    (dataYear?.schoolYear?.startDate &&
+                      current < moment(dataYear?.schoolYear?.startDate).startOf('day')) ||
+                    (dataYear?.schoolYear?.endDate &&
+                      current >= moment(dataYear?.schoolYear?.endDate).endOf('day'))
+                  }
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  label="Cơ sở"
+                  name="branchId"
+                  type={variables.SELECT}
+                  data={branches}
                   allowClear={false}
                   rules={[variables.RULES.EMPTY]}
                 />
               </div>
               <div className="col-lg-3 pt30">
-                <Button color="primary" className="ml-2">
+                <Button
+                  color="primary"
+                  className="ml-2"
+                  htmlType="submit"
+                  loading={loading['feePolicyRefundstakeABreakAdd/GET_DATA']}
+                >
                   Tính phí hoàn
                 </Button>
               </div>
-              <div className="col-lg-6">
-              <p className={stylesModule['wrapper-btn']}>Xem chi tiết điểm danh học sinh</p>
-              </div>
+              {/* <div className="col-lg-6">
+                <p className={stylesModule['wrapper-btn']}>Xem chi tiết điểm danh học sinh</p>
+              </div> */}
             </Pane>
           </Pane>
           <>
@@ -158,24 +239,25 @@ const Index = memo(() => {
                 </div>
               </Pane>
             </Pane>
-            <Pane className="pt20 pb20 d-flex justify-content-between align-items-center">
-              <p
-                className="btn-delete"
-                role="presentation"
-                onClick={() => history.push('/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc')}
-              >
-                Hủy
-              </p>
-              <Button
-                className="ml-auto px25"
-                color="success"
-                htmlType="submit"
-                size="large"
-                // loading={loading['classTypeAdd/GET_DETAILS']}
-              >
-                Lưu
-              </Button>
-            </Pane>
+            {data?.length > 0 && (
+              <Pane className="pt20 pb20 d-flex justify-content-between align-items-center">
+                <p
+                  className="btn-delete"
+                  role="presentation"
+                  onClick={() => history.push('/chinh-sach-phi/hoan-phi-hoc-sinh-nghi-hoc')}
+                >
+                  Hủy
+                </p>
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  size="large"
+                  // loading={loading['classTypeAdd/GET_DETAILS']}
+                >
+                  Lưu
+                </Button>
+              </Pane>
+            )}
           </>
         </Loading>
       </Pane>

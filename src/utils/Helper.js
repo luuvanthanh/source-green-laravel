@@ -1271,6 +1271,29 @@ export default class Helpers {
     return '';
   };
 
+  static getUserContracts = (contractFrom, contractTo, record) => {
+    const diffSignDate = moment(
+      moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDate = moment(
+      moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
+      return { ...record, status: true };
+    }
+    if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
+      return { ...record, status: true };
+    }
+    if (record?.isEffect === false) {
+      return { ...record, status: false };
+    }
+    if (diffExpirationDate < 0) {
+      return { ...record, status: false };
+    }
+    return '';
+  };
+
   static getStatusCall = (direction, cause) => {
     if (direction === variables.DIRECTION_ENG.OUTBOUND) {
       if (cause === variables.CAUSE_ENG.NORMAL_CLEARING) {

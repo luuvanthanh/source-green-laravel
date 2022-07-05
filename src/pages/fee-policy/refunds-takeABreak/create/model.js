@@ -1,75 +1,10 @@
+import * as services from './services';
 
 export default {
   namespace: 'feePolicyRefundstakeABreakAdd',
   state: {
-    data: [
-      {
-        id: 1,
-        name: 'Nguyễn Văn A',
-        day: '15/08/2021',
-        feeType : [
-          {
-            id: 1,
-            name: 'Tiền học phí',
-          },
-          {
-            id: 1,
-            name: 'Phí tiền ăn',
-          },
-          {
-            id: 1,
-            name: 'Phí tiền bus',
-          },
-        ],
-        money: [
-          {
-            id: 1,
-            name: '40.000.000',
-          },
-          {
-            id: 1,
-            name: '15.000.000',
-          },
-          {
-            id: 1,
-            name: '5.000.000',
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: 'Nguyễn Văn A',
-        day: '15/08/2021',
-        feeType : [
-          {
-            id: 1,
-            name: 'Tiền học phí',
-          },
-          {
-            id: 1,
-            name: 'Phí tiền ăn',
-          },
-          {
-            id: 1,
-            name: 'Phí tiền bus',
-          },
-        ],
-        money: [
-          {
-            id: 1,
-            name: '40.000.000',
-          },
-          {
-            id: 1,
-            name: '15.000.000',
-          },
-          {
-            id: 1,
-            name: '5.000.000',
-          },
-        ],
-      },
-    ],
+    data: [],
+    refund: [],
     pagination: {
       total: 0,
     },
@@ -79,8 +14,49 @@ export default {
     },
   },
   reducers: {
+    SET_REFUND: (state, { payload }) => ({
+      ...state,
+      refund: payload,
+    }),
+    SET_DATA: (state, { payload }) => ({
+      ...state,
+      data: payload,
+    }),
   },
   effects: {
+    *GET_REFUND({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRefund, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_REFUND',
+            payload: response?.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getData, payload);
+        console.log('res', response);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response?.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

@@ -112,6 +112,7 @@ export const variables = {
     ONLY_DATE: 'D',
     ONLY_MINUTES: 'mm',
     WEEK: 'W',
+    YEAR_MONTH: 'YYYY-MM',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
