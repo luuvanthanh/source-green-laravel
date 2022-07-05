@@ -20,8 +20,9 @@ const Index = memo(() => {
   const { query, pathname } = useLocation();
   const { params } = useParams();
   const dispatch = useDispatch();
-  const [{ data, pagination, employees }] = useSelector(({ manualTimekeeping }) => [
+  const [{ data, pagination, employees }, loading] = useSelector(({ manualTimekeeping, loading: { effects } }) => [
     manualTimekeeping,
+    effects,
   ]);
 
   const [search, setSearch] = useState({
@@ -361,6 +362,7 @@ const Index = memo(() => {
             isEmpty
             columns={header(params)}
             dataSource={data}
+            loading={loading['manualTimekeeping/GET_DATA']}
             pagination={paginationFunction(pagination)}
             params={{
               header: header(),

@@ -198,7 +198,7 @@ const renderChildren = (
     <DatePicker.RangePicker
       disabledDate={disabledDate}
       disabled={disabled}
-      format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD/MM/YYYY', 'DD/MM/YYYY']}
+      format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD/MM/YYYY', 'DD/MM/YYYY', 'D/M/YYYY']}
       onChange={onChange}
       placeholder={picker === 'year' ? ['Từ năm', 'Đến năm'] : ['ngày/tháng/năm', 'ngày/tháng/năm']}
       value={value}

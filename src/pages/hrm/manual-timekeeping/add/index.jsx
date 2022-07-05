@@ -179,6 +179,29 @@ const Index = () => {
     return null;
   };
 
+  const getUserContracts = (contractFrom, contractTo, record, time) => {
+    const diffSignDate = moment(
+      moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment(time).format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDate = moment(
+      moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment(time).format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
+      return { ...record, status: true };
+    }
+    if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
+      return { ...record, status: true };
+    }
+    if (record?.isEffect === false) {
+      return { ...record, status: false };
+    }
+    if (diffExpirationDate < 0) {
+      return { ...record, status: false };
+    }
+    return '';
+  };
+
   const updateManualTimekeeping = (time, record, e) => {
     const payload = {
       employeeId: record.id,
@@ -214,6 +237,18 @@ const Index = () => {
         Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
         Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
     );
+
+    const dataUser = user?.labourContract?.map(i => getUserContracts(moment(i?.contractFrom), moment(i?.contractTo), i, dayOfWeek));
+    const userFilter = dataUser?.find(i => i?.status);
+
+    if (moment(dayOfWeek).isoWeekday() >= 6) {
+      return (
+        <div className={classnames(styles['item-schedules'], [styles[`cell-heading-weekend`]])}>
+          -
+        </div>
+      );
+    }
+
     const manualUser = user.manualCalculation?.find(
       (i) =>
         moment(i.date).format(variables.DATE_FORMAT.DATE_AFTER) ===
@@ -252,6 +287,22 @@ const Index = () => {
           color="#00B24D"
         >
           <>L</>
+        </Tooltip>
+      );
+    }
+    if (userFilter === undefined) {
+      return (
+        <Tooltip
+          title={
+            <div className={styles['tooltip-container']}>
+
+              <br />
+
+            </div>
+          }
+          color="#00B24D"
+        >
+          <></>
         </Tooltip>
       );
     }

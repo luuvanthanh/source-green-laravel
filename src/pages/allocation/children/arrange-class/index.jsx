@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { connect, NavLink } from 'umi';
 import { Form, List, Checkbox, Spin, message } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -261,7 +261,6 @@ class Index extends PureComponent {
       selectedStudents,
       categories: { students, branches, classes },
     } = this.state;
-
     const submitLoading = effects['allocationArrangeClass/ADD'];
     const loading = effects['allocationArrangeClass/GET_STUDENTS'];
 
@@ -392,7 +391,7 @@ class Index extends PureComponent {
                         name="branch"
                         rules={[variables.RULES.EMPTY]}
                         type={variables.SELECT}
-                        data={branches}
+                        data={isEmpty(defaultBranch) ? branches : [defaultBranch]}
                         onChange={this.selectBranch}
                         allowClear={false}
                       />

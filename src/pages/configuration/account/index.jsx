@@ -288,7 +288,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="KeyWord"
                     onChange={(event) => this.onChange(event, 'KeyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm"
+                    placeholder="Nhập tên tài khoản"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>

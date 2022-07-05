@@ -410,6 +410,7 @@ class Index extends PureComponent {
       location: { pathname },
       categories,
     } = this.props;
+    console.log("dataa", data)
     const { search, isModalVisible, type } = this.state;
     const loading = effects['laboursContracts/GET_DATA'];
     return (

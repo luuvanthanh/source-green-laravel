@@ -74,7 +74,7 @@ const Index = memo(() => {
       width: 120,
       className: 'min-width-120',
       render: (record) => (
-        <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
+        <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name || record?.studentMaster?.student?.branch?.name}</Text>
       ),
     },
     {
@@ -242,7 +242,7 @@ const Index = memo(() => {
   useEffect(() => {
     fetchBranches();
   }, []);
-
+  console.log("data", data);
   return (
     <>
       <Helmet title="Danh sách hình ảnh" />
