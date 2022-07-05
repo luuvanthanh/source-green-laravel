@@ -400,6 +400,25 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         $intervalDate = new \DateInterval('P1D');
         $periodDate = new \DatePeriod($begin, $intervalDate, $end);
 
+        if ($periodDate->start == $periodDate->end) {
+            $date = $periodDate->start;
+            $attendance = Attendance::where('StudentId', $absent->StudentId)->where('Date', $date->format('Y-m-d'))->first();
+            
+            if (is_null($attendance)) {
+                $attendance = Attendance::create([
+                    'StudentId' => $absent->StudentId,
+                    'Date' => $date->format('Y-m-d'),
+                    'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                ]);
+            } else {
+                $attendance->update([
+                    'StudentId' => $absent->StudentId,
+                    'Date' => $date->format('Y-m-d'),
+                    'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                ]);
+            }
+        }
+
         foreach ($periodDate as $date) {
             $attendance = Attendance::where('StudentId', $absent->StudentId)->where('Date', $date->format('Y-m-d'))->first();
             if (is_null($attendance)) {
