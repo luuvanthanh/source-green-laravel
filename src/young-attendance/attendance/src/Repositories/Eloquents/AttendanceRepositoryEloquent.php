@@ -364,9 +364,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         //$this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '=', Student::OFFICAL);
         if (!empty($attributes['excel']) && $attributes['excel'] == 'true') {
-            $inOutHistories = $this->studentRepositoryEloquent->model->get()->sortByDesc('CreationTime');
+            $inOutHistories = $this->studentRepositoryEloquent->model->orderBy('CreationTime', 'desc')->get();
             return $inOutHistories;
         }
+
         if (!empty($attributes['limit'])) {
             $inOutHistories = $this->studentRepositoryEloquent->paginate($attributes['limit']);
         } else {
@@ -827,17 +828,22 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $quantityHaveIn = 0;
             $quantityUnpaidLeave = 0;
             $quantityAnnualLeave = 0;
+
             if (!empty($student->attendance)) {
                 foreach ($student->attendance as $item) {
-                    if ($item->Status == '1') {
-                        $values[$item->Date->format('Y-m-d')] = 'F';
-                        $quantityUnpaidLeave += 1;
-                    } elseif ($item->Status == '2') {
-                        $values[$item->Date->format('Y-m-d')] = 'K';
-                        $quantityAnnualLeave += 1;
-                    } elseif ($item->Status == '3') {
-                        $values[$item->Date->format('Y-m-d')] = 'X';
-                        $quantityHaveIn += 1;
+                    switch ($item->Status) {
+                        case Attendance::STATUS['ANNUAL_LEAVE']:
+                            $values[$item->Date->format('Y-m-d')] = 'F';
+                            $quantityUnpaidLeave += 1;
+                            break;
+                        case Attendance::STATUS['UNPAID_LEAVE']:
+                            $values[$item->Date->format('Y-m-d')] = 'K';
+                            $quantityAnnualLeave += 1;
+                            break;
+                        case Attendance::STATUS['HAVE_IN']:
+                            $values[$item->Date->format('Y-m-d')] = 'X';
+                            $quantityHaveIn += 1;
+                            break;
                     }
                 }
             }
