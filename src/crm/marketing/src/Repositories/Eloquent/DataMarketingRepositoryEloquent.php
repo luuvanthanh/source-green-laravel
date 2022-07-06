@@ -165,7 +165,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
 
     public function moveLead($attributes)
     {
-        $dataMarketing = DataMarketing::whereIn('id', $attributes['data_marketing_id'])->get();
+        $dataMarketing = DataMarketing::whereIn('id', $attributes['data_marketing_id'])->where('status', DataMarketing::STATUS['NOT_MOVE'])->get();
         foreach ($dataMarketing as $key => $value) {
             $data = [
                 'code' => $value->code,
@@ -195,13 +195,13 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 'town_ward_id' => $value->town_ward_id
             ];
             $CustomerLead = CustomerLead::create($data);
+            $value->update(['status' => DataMarketing::STATUS['MOVE']]);
+            
             $dataStatusLead = [
                 'customer_lead_id' => $CustomerLead->id,
                 'status' => StatusLead::STATUS_LEAD['LEAD_NEW']
             ];
             StatusLead::create($dataStatusLead);
-            $value->status = DataMarketing::STATUS['MOVE'];
-            $value->update();
             $studentInfo = DataMarketingStudentInfo::where('data_marketing_id', $value->id)->get();
             foreach ($studentInfo as $key => $values) {
                 $dataStudent = [
