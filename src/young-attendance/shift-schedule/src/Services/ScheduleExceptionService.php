@@ -1,4 +1,5 @@
 <?php
+
 namespace GGPHP\YoungAttendance\ShiftSchedule\Services;
 
 use GGPHP\YoungAttendance\ShiftSchedule\Models\ScheduleException;
@@ -26,7 +27,7 @@ class ScheduleExceptionService
             }
         }
 
-        return $scheduleException;
+        return true;
     }
 
     /**
