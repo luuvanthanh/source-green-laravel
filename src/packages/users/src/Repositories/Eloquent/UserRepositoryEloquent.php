@@ -121,7 +121,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 $arr = explode('-', $attributes['endDate']);
                 $year = $arr[0];
                 $month = $arr[1];
-                
+
                 return $query->where(function ($query) use ($year, $month) {
                     $query->whereDoesntHave('labourContract', function ($query) use ($year, $month) {
                         $query->whereYear('ContractTo', '<', $year)->whereMonth('ContractTo', '<', $month);
@@ -223,14 +223,6 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $user->update($attributes);
             $this->updated($attributes, $user);
 
-            $data = [
-                'full_name' => $user->FullName,
-                'employee_id_hrm' => $user->Id,
-                'file_image' => $user->FileImage,
-                'code' => $user->Code
-            ];
-            $employeeIdCrm = $user->EmployeeIdCrm;
-            $employeeCrm = CrmService::updateEmployee($data, $employeeIdCrm);
             $dataAccountant = [
                 "application" => 1,
                 "businessObjectGroupCode" => "NV",
@@ -258,8 +250,16 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             ];
 
             if (!is_null($user->AccountantId)) {
-                $employeeAccountant = AccountantService::updateEmployee($dataAccountant);
+                AccountantService::updateEmployee($dataAccountant);
             }
+
+            $data = [
+                'full_name' => $user->FullName,
+                'employee_id_hrm' => $user->Id,
+                'file_image' => $user->FileImage,
+                'code' => $user->Code
+            ];
+            $employeeIdCrm = $user->EmployeeIdCrm;
 
             if (!is_null($employeeIdCrm)) {
                 CrmService::updateEmployee($data, $employeeIdCrm);
