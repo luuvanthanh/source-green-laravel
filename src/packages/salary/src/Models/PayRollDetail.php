@@ -23,7 +23,7 @@ class PayRollDetail extends UuidModel
         'TotalIncome', 'KpiBonus', 'OtTax', 'OtNoTax', 'UnpaidLeave', 'TotalWork', 'TotalIncomeMonth', 'SocialInsuranceEmployee',
         'SocialInsuranceAdjustedEmployee', 'SocialInsuranceCompany', 'SocialInsuranceAdjustedCompany', 'HealthInsuranceEmployee', 'HealthInsuranceCompany',
         'UnemploymentInsuranceEmployee', 'UnemploymentInsuranceCompany', 'UnionDues', 'DependentPerson', 'Eeduce', 'Charity', 'TotalReduce', 'RentalIncome',
-        'PersonalIncomeTax', 'SocialInsurancePayment', 'Advance', 'ActuallyReceived', 'Note', 'SalaryByHour', 'OtWeekday', 'OtWeekend', 'OtHoliday'
+        'PersonalIncomeTax', 'SocialInsurancePayment', 'Advance', 'ActuallyReceived', 'Note', 'SalaryByHour', 'OtWeekday', 'OtWeekend', 'OtHoliday', 'BusAllowance', 'TotalBusRegistration'
     ];
 
     protected $dateTimeFields = [];
