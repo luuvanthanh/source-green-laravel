@@ -143,10 +143,16 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         $detail = $transfer->transferDetails->first();
         $employee = $detail->employee;
         $labourContract = $employee->labourContract->last();
+        
+        if ($labourContract) {
+            $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
+        } else {
+            $contractNumber = '........';
+        }
 
         $params = [
             'decisionNumber' => $transfer->DecisionNumber,
-            'decisionNumberLabourContract' => $labourContract ? $labourContract->ContractNumber : '........',
+            'decisionNumberLabourContract' => $contractNumber,
             'date' => $labourContract ? $labourContract->ContractDate->format('d') : '.......',
             'month' => $labourContract ? $labourContract->ContractDate->format('m') : '.......',
             'year' => $labourContract ? $labourContract->ContractDate->format('Y') : '.......',

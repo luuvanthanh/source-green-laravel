@@ -123,6 +123,8 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
         try {
             $seasonalContract = SeasonalContract::create($attributes);
 
+            resolve(LabourContractRepository::class)->created($seasonalContract, $attributes);
+
             foreach ($attributes['detail'] as $value) {
                 $seasonalContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
@@ -141,6 +143,9 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
         \DB::beginTransaction();
         try {
             $seasonalContract->update($attributes);
+
+            resolve(LabourContractRepository::class)->updated($seasonalContract->refresh(), $attributes);
+
             $seasonalContract->parameterValues()->detach();
 
             foreach ($attributes['detail'] as $value) {
@@ -167,7 +172,7 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
     public function exportWord($id)
     {
         $labourContract = SeasonalContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $salary = $labourContract->BasicSalary;
         $allowance =  $labourContract->TotalAllowance;
@@ -175,7 +180,7 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
         $total = $salary + $allowance;
         $employee = $labourContract->employee;
         $params = [
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
@@ -211,13 +216,13 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
     public function exportWordEnglish($id)
     {
         $labourContract = SeasonalContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $employee = $labourContract->employee;
         $params = [
             'typeVn' => 'THỜI VỤ',
             'typeEnglish' => 'SEASONAL',
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
@@ -248,13 +253,13 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
     public function exportWordAuthority($id)
     {
         $labourContract = SeasonalContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $employee = $labourContract->employee;
         $params = [
             'typeVn' => 'THỜI VỤ',
             'typeEnglish' => 'SEASONAL',
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),

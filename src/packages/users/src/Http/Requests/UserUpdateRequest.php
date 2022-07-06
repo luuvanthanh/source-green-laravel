@@ -23,18 +23,6 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules()
     {
-
-        return [
-            'name' => [
-                'string',
-                function ($attribute, $value, $fail) {
-                    $shift = LabourContract::where('ContractNumber', $value)->where('Id', '!=', request()->id)->first();
-
-                    if (!is_null($shift)) {
-                        return $fail('Số hợp đồng đã tồn tại.');
-                    }
-                },
-            ],
-        ];
+        return [];
     }
 }
