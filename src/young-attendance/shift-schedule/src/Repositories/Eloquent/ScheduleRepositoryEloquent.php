@@ -127,6 +127,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
         if (isset($attributes['repeatBy'])) {
             $attributes['count'] = $this::getCountRepeat($attributes['repeatBy'], $attributes['startDate'], $dateEndYear);
         }
+
         $attributes['endDate'] = $this::getDayEnd($attributes);
         $schedule = $this->model()::create($attributes);
 
@@ -137,12 +138,12 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
 
         $listDaySchedule = $this::getDayRepeat($schedule);
         //Kiểm tra và tạo ngoại lệ cho các lịch có sẵn
-        $oldschedule = $this->model()::whereNotIn('Id', [$schedule->Id])->where('StudentId', $attributes['studentId'])->where(function ($query) use ($attributes, $dateEndYear) {
+        $oldSchedule = $this->model()::whereNotIn('Id', [$schedule->Id])->where('StudentId', $attributes['studentId'])->where(function ($query) use ($attributes, $dateEndYear) {
             $query->where([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $dateEndYear]]);
         })->get();
 
         if (isset($attributes['repeatBy']) && $attributes['repeatBy'] === 'daily') {
-            foreach ($oldschedule as $value) {
+            foreach ($oldSchedule as $value) {
                 if ($value->StartDate->format('Y-m-d') >= Carbon::parse($attributes['startDate'])->format('Y-m-d')) {
                     $value->delete();
                 } else {
@@ -150,8 +151,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
                 }
             }
         } else {
-
-            foreach ($oldschedule as $value) {
+            foreach ($oldSchedule as $value) {
                 if (empty($value->scheduleRepeat)) {
                     $dayValue = $this::getDayRepeat($value);
                     if (in_array($dayValue, $listDaySchedule)) {
