@@ -342,31 +342,31 @@ export async function getLeftMenuSchedules() {
       permission: [permissions.DD],
       pro: true,
       children: [
+        // {
+        //   title: 'Lịch học trẻ',
+        //   key: 'schedules',
+        //   url: ['/diem-danh/lich-hoc-tre'],
+        //   permission: [permissions.DD],
+        //   pro: true,
+        // },
         {
-          title: 'Lịch học trẻ',
-          key: 'schedules',
-          url: ['/diem-danh/lich-hoc-tre'],
-          permission: [permissions.DD],
-          pro: true,
-        },
-        {
-          title: 'Lịch sử vào ra lớp',
+          title: 'Lịch sử ra vào lớp theo (Theo AI)',
           key: 'in-out-histories',
           url: ['/diem-danh/lich-su-vao-ra-lop'],
           permission: [permissions.DD],
           pro: true,
         },
-        {
-          title: 'Cấu hình lịch học',
-          key: 'shift-students',
-          url: [
-            '/diem-danh/cau-hinh-lich-hoc',
-            '/diem-danh/cau-hinh-lich-hoc/tao-moi',
-            '/diem-danh/cau-hinh-lich-hoc/:id/chi-tiet',
-          ],
-          permission: [permissions.DD],
-          pro: true,
-        },
+        // {
+        //   title: 'Cấu hình lịch học',
+        //   key: 'shift-students',
+        //   url: [
+        //     '/diem-danh/cau-hinh-lich-hoc',
+        //     '/diem-danh/cau-hinh-lich-hoc/tao-moi',
+        //     '/diem-danh/cau-hinh-lich-hoc/:id/chi-tiet',
+        //   ],
+        //   permission: [permissions.DD],
+        //   pro: true,
+        // },
       ],
     },
     {

@@ -296,9 +296,10 @@ const Index = memo(() => {
                     <FormItem
                       name="branchId"
                       type={variables.SELECT}
-                      data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
+                      data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...category?.branches]}
                       onChange={(value) => changeFilterBranch('branchId', value)}
                       allowClear={false}
+                      loading={loading['categories/GET_BRANCHES']}
                     />
                   </Pane>
                 )}
@@ -310,6 +311,7 @@ const Index = memo(() => {
                       data={[defaultBranch]}
                       onChange={(value) => changeFilterBranch('branchId', value)}
                       allowClear={false}
+                      loading
                     />
                   </Pane>
                 )}

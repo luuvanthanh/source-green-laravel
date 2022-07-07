@@ -18,7 +18,6 @@ export function getEmployees(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      status: 'WORKING',
     },
   });
 }

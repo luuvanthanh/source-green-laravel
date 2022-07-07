@@ -112,7 +112,8 @@ class Index extends PureComponent {
     });
     this.props.dispatch({
       type: 'works/GET_EMPLOYEES',
-      payload: {},
+      payload: {
+      },
     });
   };
 

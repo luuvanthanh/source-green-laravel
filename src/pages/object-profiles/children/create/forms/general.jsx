@@ -396,7 +396,7 @@ const General = memo(
                     />
                   </Pane>
                   <Pane className="col-lg-2">
-                    <Form.Item label="Tuổi(tháng)">
+                    <Form.Item label="Tuổi (tháng)">
                       {dayOfBirth && moment().diff(moment(dayOfBirth), 'month')}
                     </Form.Item>
                   </Pane>

@@ -96,13 +96,14 @@ class Index extends PureComponent {
   };
 
   fetchStudents = () => {
-    const { dispatch } = this.props;
+    const { dispatch, defaultBranch } = this.props;
     const { searchStudents } = this.state;
     dispatch({
       type: 'categories/GET_STUDENTS',
       payload: {
         ...searchStudents,
         classStatus: 'NO_CLASS',
+        branchId: defaultBranch?.id,
         ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
       },
       callback: (res) => {
@@ -119,7 +120,7 @@ class Index extends PureComponent {
   };
 
   fetchBranches = () => {
-    const { dispatch } = this.props;
+    const { dispatch, defaultBranch } = this.props;
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
@@ -133,6 +134,24 @@ class Index extends PureComponent {
         }
       },
     });
+    if (defaultBranch?.id) {
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: defaultBranch?.id,
+        },
+        callback: (res) => {
+          if (res) {
+            this.setStateData(({ categories }) => ({
+              categories: {
+                ...categories,
+                classes: res?.items || [],
+              },
+            }));
+          }
+        },
+      });
+    }
   };
 
   fetchClasses = (branchId) => {
@@ -156,6 +175,9 @@ class Index extends PureComponent {
   };
 
   handleInfiniteOnLoad = () => {
+    const {
+      defaultBranch,
+    } = this.props;
     const { categories, searchStudents } = this.state;
     if (categories?.students?.length >= searchStudents.totalCount) {
       message.warning('Danh sách đã hiển thị tất cả.');
@@ -168,6 +190,7 @@ class Index extends PureComponent {
       type: 'allocationChangeClass/GET_STUDENTS',
       payload: {
         ...searchStudents,
+        branchId: defaultBranch?.id,
         page: searchStudents.page + 1,
       },
       callback: (response, error) => {

@@ -1,5 +1,5 @@
 import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Upload, Image, Spin } from 'antd';
+import { Upload, Image, Spin, notification } from 'antd';
 import { CloudUploadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'dva';
 import { get } from 'lodash';
@@ -39,19 +39,25 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
       multiple: true,
       beforeUpload: () => null,
       customRequest({ file }) {
-        const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
+        const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'image/jpg'];
         const maxSize = 20 * 2 ** 20;
         const { type, size } = file;
 
         if (!allowImageTypes.includes(type)) {
-          return;
+          return notification.error({
+            message: 'Thông báo',
+            description: 'Chỉ hỗ trợ định dạng jpeg, png, jpg, webp',
+          });
         }
 
         if (size > maxSize) {
-          return;
+          return notification.error({
+            message: 'Thông báo',
+            description: 'Chỉ hỗ trợ định dạng jpeg, png, jpg, webp',
+          });
         }
 
-        uploadAction(file);
+        return uploadAction(file);
       },
     }),
     [uploadAction],
@@ -150,7 +156,7 @@ ImageUpload.propTypes = {
 
 ImageUpload.defaultProps = {
   callback: null,
-  removeFiles: () => {},
+  removeFiles: () => { },
   files: [],
 };
 

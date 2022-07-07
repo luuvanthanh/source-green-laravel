@@ -84,6 +84,10 @@ const Index = () => {
   };
 
   const onLoad = () => {
+
+    const endTime = new Date(search.endDate);
+    const startTime = new Date(search.startDate);
+    const time = new Date();
     dispatch({
       type: 'manualTimekeepingAdd/GET_DATA',
       payload: {
@@ -91,6 +95,9 @@ const Index = () => {
         endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
         startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
         // unexpiredContract: true,
+
+        getLimitUser: endTime.getTime() > time.getTime() && startTime.getTime() < time.getTime() || endTime.getTime() > time.getTime() && startTime.getTime() > time.getTime() ? true : undefined,
+        forManualCalculation: endTime.getTime() > time.getTime() && startTime.getTime() < time.getTime() || endTime.getTime() > time.getTime() && startTime.getTime() > time.getTime() ? true : undefined,
       },
     });
     history.push(
@@ -118,7 +125,6 @@ const Index = () => {
     setSearch((prev) => ({
       ...prev,
       [`${type}`]: value,
-      forManualCalculation: true,
       page: variables.PAGINATION.PAGE,
       limit: variables.PAGINATION.PAGE_SIZE,
     }));
@@ -138,7 +144,6 @@ const Index = () => {
     setSearch((prev) => ({
       ...prev,
       [`${type}`]: value.map((i) => i).join(','),
-      forManualCalculation: true,
       page: variables.PAGINATION.PAGE,
       limit: variables.PAGINATION.PAGE_SIZE,
     }));

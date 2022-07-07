@@ -15,8 +15,7 @@ export function get(params = {}) {
       ...params,
       limit: params.limit,
       page: params.page,
-      forManualCalculation: true,
-      getLimitUser: true,
+      orderBy: 'FullName;CreationTime',
       include: Helper.convertIncludes([
         'manualCalculation',
         'positionLevelNow',
