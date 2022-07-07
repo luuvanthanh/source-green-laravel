@@ -308,7 +308,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     {
         $labourContract = LabourContract::findOrFail($id);
         $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
-        
+
         $employee = $labourContract->employee;
         $params = [
             'contractNumber' => $contractNumber,
@@ -345,6 +345,16 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $employee = $labourContract->employee;
+
+        $represent = $labourContract->represent;
+        if (is_null($represent)) {
+            $nameSigner = $this->model()::SIGNER_DEFAULT;
+            $positionRepresent = $this->model()::POSITION_DEFAULT;
+        } else {
+            $nameSigner = $represent->FullName;
+            $positionRepresent = $represent->positionLevelNow ? $employee->positionLevelNow->position->Name : '........';
+        }
+
         $params = [
             'typeVn' => 'LAO ĐỘNG',
             'typeEnglish' => 'LABOUR',
@@ -371,6 +381,8 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => number_format($labourContract->BasicSalary),
+            'signer' => $nameSigner,
+            'position' => $positionRepresent
         ];
 
         return $this->wordExporterServices->exportWord('contract_english', $params);
