@@ -62,7 +62,8 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'Nation', 'IdCard', 'DateOfIssueIdCard', 'PlaceOfIssueIdCard', 'Religion', 'WorkDate',
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
-        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'AccountantId', 'Description'
+        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'AccountantId', 'Description',
+        'FileAttached'
     ];
 
     protected $dateTimeFields = [
@@ -75,6 +76,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'DateOfBirth' => 'datetime',
         'DateOfIssueIdCard' => 'datetime',
         'DateOff' => 'datetime',
+        'FileAttached' => 'array'
     ];
 
     /**
