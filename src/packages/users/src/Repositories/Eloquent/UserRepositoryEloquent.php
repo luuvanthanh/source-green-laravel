@@ -116,7 +116,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             });
         }
 
-        if (!empty('resignationDecision')) {
+        if (!empty('timekeeping')) {
             $this->model = $this->model->when(!empty($attributes['endDate']), function ($query) use ($attributes) {
                 $arr = explode('-', $attributes['endDate']);
                 $year = $arr[0];
