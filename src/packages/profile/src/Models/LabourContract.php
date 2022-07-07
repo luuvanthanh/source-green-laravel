@@ -8,6 +8,9 @@ class LabourContract extends UuidModel
 {
     public $incrementing = false;
 
+    const SIGNER_DEFAULT = 'NGUYỄN HUỲNH THU TRÚC';
+    const POSITION_DEFAULT = 'GIÁM ĐỐC';
+
     protected $table = 'LabourContracts';
 
     protected $fillable = [
