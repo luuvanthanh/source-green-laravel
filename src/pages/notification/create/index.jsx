@@ -44,6 +44,7 @@ const Index = memo(() => {
 
   const [content, setContent] = useState('');
   const [isAllEmployees, setIsAllEmployees] = useState(false);
+  const [checkTime, setCheckTime] = useState(undefined);
   const [isAllParents, setIsAllParents] = useState(false);
   const [type, setType] = useState(variablesModules.TYPE.EMPLOYEE);
   const [searchEmployee, setSearchEmployee] = useState({
@@ -340,18 +341,32 @@ const Index = memo(() => {
   const onFinish = (values) => {
     const payload = {
       ...values,
-      RemindDate: Helper.getDateTime({
+      RemindDate: checkTime ? Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: values.RemindDate,
         }),
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
+      }) : Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: moment(),
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
       }),
-      RemindTime: Helper.getDateTime({
+      RemindTime: checkTime ? Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: values.RemindTime,
+        }),
+        format: variables.DATE_FORMAT.HOUR,
+        isUTC: false,
+      }) : Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: moment(),
         }),
         format: variables.DATE_FORMAT.HOUR,
         isUTC: false,
@@ -411,9 +426,9 @@ const Index = memo(() => {
               branchId: response?.branch?.id,
               divisionId: response?.division?.id,
               ClassId: response?.class?.id,
-              IsReminded : response?.isReminded,
-              RemindTime :   moment(response?.remindTime, variables.DATE_FORMAT.HOUR),
-              RemindDate:  moment(response.remindDate),
+              IsReminded: response?.isReminded,
+              RemindTime: moment(response?.remindTime, variables.DATE_FORMAT.HOUR),
+              RemindDate: moment(response.remindDate),
             });
             mountedSet(
               setParents,
@@ -467,6 +482,10 @@ const Index = memo(() => {
     !isEmpty(parents) &&
     searchParent.hasMore,
   ]);
+
+  const onchangCheck = (e) => {
+    setCheckTime(e.target.checked);
+  };
 
   return (
     <Form
@@ -741,19 +760,21 @@ const Index = memo(() => {
                       name="IsReminded"
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"
+                      onClick={onchangCheck}
                     />
                   </Pane>
-                  <Pane  className='mr15'>
+                  <Pane className='mr15'>
                     <FormItem
                       name="RemindDate"
                       type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
+                      rules={checkTime ? [variables.RULES.EMPTY] : []}
                     />
                   </Pane>
                   <Pane >
                     <FormItem
                       name="RemindTime"
                       type={variables.TIME_PICKER}
+                      rules={checkTime ? [variables.RULES.EMPTY] : []}
                     />
                   </Pane>
                 </Pane>

@@ -274,13 +274,13 @@ const Index = memo(() => {
               <FormItem
                 className="mb-0"
                 type={variables.INPUT_COUNT}
-                rules={[variables.RULES.EMPTY]}
+                // rules={[variables.RULES.EMPTY]}
                 value={record?.height?.new || ''}
                 onChange={(e) => onChange(e, record, 'height')}
               />
-              {errorTable && !(record?.height?.new) && (
+              {/* {errorTable && !(record?.height?.new) && (
                 <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-              )}
+              )} */}
             </>
           )
         },
@@ -308,13 +308,13 @@ const Index = memo(() => {
               <FormItem
                 className="mb-0"
                 type={variables.INPUT_COUNT}
-                rules={[variables.RULES.EMPTY]}
+                // rules={[variables.RULES.EMPTY]}
                 value={record?.weight?.new || ''}
                 onChange={(e) => onChange(e, record, 'weight')}
               />
-              {errorTable && !(record?.weight?.new) && (
+              {/* {errorTable && !(record?.weight?.new) && (
                 <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-              )}
+              )} */}
             </>
           )
         },
@@ -338,13 +338,13 @@ const Index = memo(() => {
   }, [reLoadData]);
 
   const onFinish = () => {
-    const errorStudentsPost = !isEmpty(studentsPost) ?
-      !!(studentsPost.find(item => !item?.height?.new || !item?.weight?.new))
-      : true;
-    setErrorTable(errorStudentsPost);
-    if (errorStudentsPost) {
-      return true;
-    }
+    // const errorStudentsPost = !isEmpty(studentsPost) ?
+    //   !!(studentsPost.find(item => !item?.height?.new || !item?.weight?.new))
+    //   : true;
+    // setErrorTable(errorStudentsPost);
+    // if (errorStudentsPost) {
+    //   return true;
+    // }
     const payload = [];
     [...studentsPost].forEach(item => {
       if (item?.weight?.new) {
