@@ -160,10 +160,10 @@ const Index = memo(() => {
   const handleOk = () => {
     modalRef.validateFields().then((values) => {
       const dataDay = Helper.convertArrayDays(Helper.getDate(
-        moment(values.startDate).startOf('month').subtract(1, 'months').add(25, 'days'),
+        moment(values.startDate).startOf('month').subtract(1, 'months').add(26, 'days'),
         variables.DATE_FORMAT.DATE_AFTER),
         Helper.getDate(
-          moment(values.startDate).startOf('month').add(24, 'days'),
+          moment(values.startDate).startOf('month').add(25, 'days'),
           variables.DATE_FORMAT.DATE_AFTER,
         ));
       const check = (i) => moment(i).day() !== 0 && moment(i).day() !== 1;

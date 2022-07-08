@@ -629,7 +629,7 @@ export default [
         routes: [
           {
             path: '/diem-danh',
-            redirect: '/diem-danh/lich-hoc-tre',
+            redirect: '/diem-danh/lich-su-vao-ra-lop',
           },
           {
             path: '/diem-danh/lich-hoc-tre',

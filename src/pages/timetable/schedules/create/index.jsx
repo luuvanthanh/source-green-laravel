@@ -41,7 +41,6 @@ const Index = memo(
     const mounted = useRef(false);
     const mountedSet = (action, value) => mounted?.current && action(value);
     const dispatch = useDispatch();
-    console.log(defaultBranch);
     const [content, setContent] = useState('');
     const [countCheck, setCountCheck] = useState(false);
     const [isReminded, setIsReminded] = useState(false);

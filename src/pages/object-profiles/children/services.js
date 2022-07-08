@@ -34,4 +34,11 @@ export function remove(id) {
   });
 }
 
+export function removeStudent(id) {
+  return request(`/students/delete-by-conditional/${id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}
+
 export default get;

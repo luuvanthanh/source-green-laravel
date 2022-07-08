@@ -339,10 +339,10 @@ const Index = memo(() => {
 
   const onFinish = () => {
     const errorStudentsPost = !isEmpty(studentsPost) ?
-      !!(studentsPost.find(item => !item?.height?.new || !item?.weight?.new ))
+      !!(studentsPost.find(item => !item?.height?.new || !item?.weight?.new))
       : true;
     setErrorTable(errorStudentsPost);
-    if(errorStudentsPost) {
+    if (errorStudentsPost) {
       return true;
     }
     const payload = [];

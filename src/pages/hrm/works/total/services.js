@@ -8,8 +8,8 @@ export function get(data = {}) {
       ...data,
       limit: data.limit,
       page: data.page,
+      orderBy: 'Employees:EmployeeId|Employees.FullName',
       searchJoin: 'and',
-      orderBy: 'CreationTime',
       sortedBy: 'desc',
       startDate: Helper.getDateTime({
         value: Helper.setDate({
