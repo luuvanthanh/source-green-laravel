@@ -223,14 +223,14 @@ const Index = memo(() => {
               <div className="mb15">
                 <img className={styles['img-bmi']} src="/images/bmi.svg" alt="bmi" />
               </div>
-              <div className={styles['result-bmi']}>
+              {/* <div className={styles['result-bmi']}>
                 <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, '')}</p>
                 {details?.bmiConclusion?.status && details?.bmiConclusion?.status !== 'NORMAL' ? (
                   <p className="font-size-15 mb0">Cân nặng cần đạt được: <span className="text-danger mx5">{details?.bmiConclusion?.ideaWeight.toFixed(1) || 0}</span>kg</p>
                 ) : (
                   <p className="font-size-15 mb0">Cần giữ chế độ ăn uống hiện tại của trẻ</p>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
