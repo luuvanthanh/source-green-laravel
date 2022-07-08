@@ -14,7 +14,7 @@ class ProbationaryContract extends UuidModel
         'ContractNumber', 'ContractDate', 'TypeOfContractId', 'EmployeeId', 'SalaryRatio',
         'Month', 'DivisionId', 'ContractFrom', 'ContractTo', 'PositionId', 'Work',
         'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary', 'IsSocialInsurance', 'IsEffect',
-        'RepresentId'
+        'RepresentId', 'OrdinalNumber', 'NumberForm'
     ];
 
     protected $dateTimeFields = [

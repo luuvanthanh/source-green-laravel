@@ -4,6 +4,7 @@ namespace GGPHP\ManualCalculation\Http\Controllers;
 
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\ManualCalculation\Http\Requests\CopyManualCalculationCreateRequest;
+use GGPHP\ManualCalculation\Http\Requests\fastManualCalculationCreateRequest;
 use GGPHP\ManualCalculation\Http\Requests\ManualCalculationCreateRequest;
 use GGPHP\ManualCalculation\Repositories\Contracts\ManualCalculationRepository;
 use Illuminate\Http\Request;
@@ -66,6 +67,13 @@ class ManualCalculationController extends Controller
     public function copyManualCalculation(CopyManualCalculationCreateRequest $request)
     {
         $manualCalculation = $this->manualCalculationRepository->copyManualCalculation($request->all());
+
+        return $this->success($manualCalculation, trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function fastManualCalculation(fastManualCalculationCreateRequest $request)
+    {
+        $manualCalculation = $this->manualCalculationRepository->fastManualCalculation($request->all());
 
         return $this->success($manualCalculation, trans('lang::messages.common.getListSuccess'));
     }

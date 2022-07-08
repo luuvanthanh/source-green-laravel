@@ -3,7 +3,10 @@
 namespace GGPHP\Profile\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Profile\Http\Rules\ContractCreateRule;
+use GGPHP\Profile\Http\Rules\NumberFormContractRule;
 use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\NumberFormContract;
 use GGPHP\Profile\Models\ProbationaryContract;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -28,7 +31,6 @@ class LabourContractCreateRequest extends FormRequest
     {
         return [
             'employeeId' => 'required|exists:Employees,Id',
-            'contractNumber' => 'required|string|unique:LabourContracts,ContractNumber',
             'contractDate' => [
                 'required', 'date',
                 function ($attribute, $value, $fail) {
@@ -78,6 +80,25 @@ class LabourContractCreateRequest extends FormRequest
             'work' => 'required|string',
             'workTime' => 'required|string',
             'branchId' => 'required|exists:Branches,Id',
+            'numberForm' => 'required|exists:NumberFormContracts,NumberForm',
+            'type' => 'required|in:' . NumberFormContract::TYPE['LABOUR'],
+            'numberFormContractId' => 'required|uuid|exists:NumberFormContracts,Id',
+            'ordinalNumber' => [
+                'required',
+                'string',
+                new ContractCreateRule($this->numberFormContractId)
+            ]
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+
+        if (!empty($data['type'])) {
+            $data['type'] = array_key_exists($data['type'], NumberFormContract::TYPE) ? NumberFormContract::TYPE[$data['type']] : 0;
+        }
+
+        return $data;
     }
 }

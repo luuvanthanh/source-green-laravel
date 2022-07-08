@@ -123,8 +123,13 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
     public function delete($id)
     {
         $resignationDecision = ResignationDecision::findOrFail($id);
+        $employee = User::find($resignationDecision->EmployeeId);
 
-        $employee = User::where('Id', $resignationDecision->EmployeeId)->update(['DateOff' => null]);
+        if (!is_null($employee)) {
+            $employee->update(['DateOff' => null]);
+            $employee->labourContract()->update(['IsEffect' => true]);
+            $employee->probationaryContract()->update(['IsEffect' => true]);
+        }
 
         return $resignationDecision->delete();
     }
@@ -132,14 +137,19 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
     public function exportWord($id)
     {
         $resignationDecision = ResignationDecision::findOrFail($id);
-        $now = Carbon::now();
 
         $employee = $resignationDecision->employee;
         $labourContract = $employee->labourContract->last();
 
+        if ($labourContract) {
+            $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
+        } else {
+            $contractNumber = '........';
+        }
+
         $params = [
             'decisionNumber' => $resignationDecision->DecisionNumber,
-            'decisionNumberLabourContract' => $labourContract ? $labourContract->ContractNumber : '........',
+            'decisionNumberLabourContract' => $contractNumber,
             'date' => $labourContract ? $labourContract->ContractDate->format('d') : '........',
             'month' => $labourContract ? $labourContract->ContractDate->format('m') : '........',
             'year' => $labourContract ? $labourContract->ContractDate->format('Y') : '........',

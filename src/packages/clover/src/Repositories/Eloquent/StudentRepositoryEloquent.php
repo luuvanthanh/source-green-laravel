@@ -30,10 +30,6 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
 
     const FEE_STUDENT_LEAVE = ['TIENAN', 'HP', 'XEBUS'];
 
-    const PHI_TIENAN = 'TIENAN';
-    const PHI_XE_BUYT = 'BUS';
-    const HINHTHUC_THANG = 'THANG';
-
     const STUDENT_LEAVE = 'LEAVE';
     const STUDENT_STORE = 'STORE';
 
@@ -133,7 +129,7 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
         })->when($attributes['type'] == self::STUDENT_STORE, function ($query) use ($attributes) {
             $query->whereYear('StopStudyingDate', $attributes['year']);
             $query->whereMonth('StopStudyingDate', $attributes['month']);
-            $query->where('Status', $this->model()::STORE);
+            $query->where('Status', $this->model()::STOP_STUDYING);
             $query->whereNotNull('RestoredDate');
             $query->whereColumn('RestoredDate', '>=', 'StopStudyingDate');
         })->whereHas('chargeOldStudent', function ($query) use ($attributes) {
@@ -457,8 +453,14 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
 
         $nextMonth = Carbon::parse($nextMonth);
 
+        $dayHoliday = 0;
+
+        if ($nextMonth->isSunday() || $nextMonth->isSaturday()) {
+            $dayHoliday = 1;
+        }
+
         return $month->diffInDaysFiltered(function ($date) {
             return $date->isSunday() || $date->isSaturday();
-        }, $nextMonth);
+        }, $nextMonth) + $dayHoliday;
     }
 }

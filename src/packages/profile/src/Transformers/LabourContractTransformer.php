@@ -9,7 +9,6 @@ use GGPHP\Category\Transformers\TypeOfContractTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Users\Transformers\UserTransformer;
-use Illuminate\Http\Client\Request;
 use Illuminate\Support\Carbon;
 
 /**

@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Profile\Http\Rules\ContractUpdateRule;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Profile\Models\ProbationaryContract;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,6 +27,8 @@ class LabourContractUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $labourContract = LabourContract::findOrFail($this->labours_contract);
+
         return [
             'employeeId' => [
                 'exists:Employees,Id',
@@ -35,16 +38,6 @@ class LabourContractUpdateRequest extends FormRequest
 
                     if (!is_null($labourContract)  && $labourContract->Id != request()->id) {
                         return $fail('Hợp đồng không phải là mới nhất, không được phép chỉnh sửa.');
-                    }
-                },
-            ],
-            'contractNumber' => [
-                'string',
-                function ($attribute, $value, $fail) {
-                    $shift = LabourContract::where('ContractNumber', $value)->where('Id', '!=', request()->labours_contract)->where('IsEffect', true)->where('EmployeeId', request()->employeeId)->first();
-
-                    if (!is_null($shift)) {
-                        return $fail('Số hợp đồng đã tồn tại.');
                     }
                 },
             ],
@@ -65,6 +58,13 @@ class LabourContractUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'contractDate' => 'required|date|date_format:Y-m-d',
+            'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
+            'ordinalNumber' => [
+                'nullable',
+                'string',
+                new ContractUpdateRule($labourContract, $this->numberForm, $this->labours_contract)
+            ]
         ];
     }
 }

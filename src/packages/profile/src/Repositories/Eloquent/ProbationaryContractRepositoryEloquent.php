@@ -8,6 +8,7 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Profile\Presenters\ProbationaryContractPresenter;
+use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
@@ -152,6 +153,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         \DB::beginTransaction();
         try {
             $probationaryContract = ProbationaryContract::create($attributes);
+
+            resolve(LabourContractRepository::class)->created($probationaryContract, $attributes);
             $totalAllowance = 0;
             $basicSalary = 0;
 
@@ -217,6 +220,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         \DB::beginTransaction();
         try {
             $probationaryContract->update($attributes);
+
+            resolve(LabourContractRepository::class)->updated($probationaryContract->refresh(), $attributes);
 
             $probationaryContract->parameterValues()->detach();
 
@@ -293,7 +298,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
     public function exportWord($id)
     {
         $labourContract = ProbationaryContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $salary = $labourContract->BasicSalary;
         $allowance =  $labourContract->TotalAllowance;
@@ -301,7 +306,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         $total = $salary + $allowance;
         $employee = $labourContract->employee;
         $params = [
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
@@ -336,13 +341,13 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
     public function exportWordEnglish($id)
     {
         $labourContract = ProbationaryContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $employee = $labourContract->employee;
         $params = [
             'typeVn' => 'THỬ VIỆC',
             'typeEnglish' => 'PROBATIONARY',
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
@@ -373,13 +378,13 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
     public function exportWordAuthority($id)
     {
         $labourContract = ProbationaryContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $employee = $labourContract->employee;
         $params = [
             'typeVn' => 'THỬ VIỆC',
             'typeEnglish' => 'PROBATIONARY',
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),

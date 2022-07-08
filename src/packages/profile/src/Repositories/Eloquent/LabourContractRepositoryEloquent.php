@@ -9,6 +9,7 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\NumberFormContract;
 use GGPHP\Profile\Presenters\LabourContractPresenter;
 use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
@@ -93,7 +94,10 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                     $now = Carbon::now();
                     $addMonth = Carbon::now()->addMonth();
 
-                    $this->model = $this->model->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $addMonth->format('Y-m-d'));
+                    $this->model = $this->model->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $addMonth->format('Y-m-d'))
+                        ->orWhereHas('typeOfContract', function ($query) {
+                            $query->where('IsUnlimited', true);
+                        });
                     break;
                 case 'GAN_HET_HAN':
                     $now = Carbon::now();
@@ -172,6 +176,9 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $labourContract = LabourContract::create($attributes);
+
+            $this->created($labourContract, $attributes);
+
             $totalAllowance = 0;
             $basicSalary = 0;
 
@@ -235,6 +242,9 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $labourContract->update($attributes);
+
+            $this->updated($labourContract->refresh(), $attributes);
+
             $labourContract->parameterValues()->detach();
             $totalAllowance = 0;
             $basicSalary = 0;
@@ -300,11 +310,11 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     public function exportWord($id)
     {
         $labourContract = LabourContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $employee = $labourContract->employee;
         $params = [
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
@@ -335,13 +345,23 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     public function exportWordEnglish($id)
     {
         $labourContract = LabourContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $employee = $labourContract->employee;
+
+        $represent = $labourContract->represent;
+        if (is_null($represent)) {
+            $nameSigner = $this->model()::SIGNER_DEFAULT;
+            $positionRepresent = $this->model()::POSITION_DEFAULT;
+        } else {
+            $nameSigner = $represent->FullName;
+            $positionRepresent = $represent->positionLevelNow ? $employee->positionLevelNow->position->Name : '........';
+        }
+
         $params = [
             'typeVn' => 'LAO ĐỘNG',
             'typeEnglish' => 'LABOUR',
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
@@ -364,6 +384,8 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => number_format($labourContract->BasicSalary),
+            'signer' => $nameSigner,
+            'position' => $positionRepresent
         ];
 
         return $this->wordExporterServices->exportWord('contract_english', $params);
@@ -372,13 +394,13 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     public function exportWordAuthority($id)
     {
         $labourContract = LabourContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
         $employee = $labourContract->employee;
         $params = [
             'typeVn' => 'LAO ĐỘNG',
             'typeEnglish' => 'LABOUR',
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
@@ -549,5 +571,23 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         }
 
         return $this->excelExporterServices->export('work_seniority', $params);
+    }
+
+    public function created($model, $attributes)
+    {
+        $numberFormContract = NumberFormContract::findOrFail($attributes['numberFormContractId']);
+
+        $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
+    }
+
+    public function updated($model, $attributes)
+    {
+        $typeContract = NumberFormContract::TYPE[$attributes['type']];
+
+        $numberFormContract = NumberFormContract::whereDate('StartDate', '<=', $model->ContractDate)
+            ->whereDate('EndDate', '>=', $model->ContractDate)
+            ->where('Type', $typeContract)->firstOrFail();
+
+        $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
     }
 }

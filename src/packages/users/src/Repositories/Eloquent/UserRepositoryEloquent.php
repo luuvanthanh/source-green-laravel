@@ -96,25 +96,45 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             });
         }
 
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate']) && !empty($attributes['forManualCalculation']) && $attributes['forManualCalculation'] == true) {
+            $this->model = $this->model->whereHas('manualCalculation', function ($q) use ($attributes) {
+                $q->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            })->with(['manualCalculation' => function ($query) use ($attributes) {
+                $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            }]);
+        }
+
         $this->model = $this->model->tranferHistory($attributes);
 
-        if (!empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == 'true') {
-            $now = Carbon::now()->format('Y-m-d');
-
-            $this->model = $this->model->whereDoesntHave('labourContract', function ($query) use ($now) {
-                $query->where('ContractTo', '>', $now);
-            })->whereDoesntHave('probationaryContract', function ($query) use ($now) {
-                $query->where('ContractTo', '>', $now);
+        if (!empty($attributes['startDate']) && !empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == true) {
+            $this->model = $this->model->whereHas('labourContract', function ($query01) use ($attributes) {
+                $query01->where(function ($q2) use ($attributes) {
+                    $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]])->where('IsEffect', true);
+                });
+            })->orWhereHas('labourContract.typeOfContract', function ($query02) {
+                $query02->where('IsUnlimited', true);
+            })->orWhereHas('probationaryContract', function ($query03) use ($attributes) {
+                $query03->where(function ($q2) use ($attributes) {
+                    $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]])->where('IsEffect', true);
+                });
             });
         }
 
-        if (!empty($attributes['unexpiredContract']) && $attributes['unexpiredContract'] == true) {
-            $now = Carbon::now()->format('Y-m-d');
+        if (!empty('timekeeping')) {
+            $this->model = $this->model->when(!empty($attributes['endDate']), function ($query) use ($attributes) {
+                $arr = explode('-', $attributes['endDate']);
+                $year = $arr[0];
+                $month = $arr[1];
 
-            $this->model = $this->model->whereHas('labourContract', function ($query) use ($now) {
-                $query->whereDate('ContractTo', '>=', $now);
-            })->whereHas('probationaryContract', function ($query) use ($now) {
-                $query->whereDate('ContractTo', '>=', $now);
+                return $query->where(function ($query) use ($year, $month) {
+                    $query->whereDoesntHave('labourContract', function ($query) use ($year, $month) {
+                        $query->whereYear('ContractTo', '<', $year)->whereMonth('ContractTo', '<', $month);
+                    })->whereDoesntHave('probationaryContract', function ($query) use ($year, $month) {
+                        $query->whereYear('ContractTo', '<', $year)->whereMonth('ContractTo', '<', $month);
+                    })->whereDoesntHave('resignationDecision', function ($query) use ($year, $month) {
+                        $query->whereYear('TimeApply', '<', $year)->whereMonth('TimeApply', '<', $month);
+                    });
+                });
             });
         }
 
@@ -207,14 +227,6 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $user->update($attributes);
             $this->updated($attributes, $user);
 
-            $data = [
-                'full_name' => $user->FullName,
-                'employee_id_hrm' => $user->Id,
-                'file_image' => $user->FileImage,
-                'code' => $user->Code
-            ];
-            $employeeIdCrm = $user->EmployeeIdCrm;
-            $employeeCrm = CrmService::updateEmployee($data, $employeeIdCrm);
             $dataAccountant = [
                 "application" => 1,
                 "businessObjectGroupCode" => "NV",
@@ -242,8 +254,16 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             ];
 
             if (!is_null($user->AccountantId)) {
-                $employeeAccountant = AccountantService::updateEmployee($dataAccountant);
+                AccountantService::updateEmployee($dataAccountant);
             }
+
+            $data = [
+                'full_name' => $user->FullName,
+                'employee_id_hrm' => $user->Id,
+                'file_image' => $user->FileImage,
+                'code' => $user->Code
+            ];
+            $employeeIdCrm = $user->EmployeeIdCrm;
 
             if (!is_null($employeeIdCrm)) {
                 CrmService::updateEmployee($data, $employeeIdCrm);
@@ -329,5 +349,13 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         return $this->parserResult($employees);
+    }
+
+    public function updateStatusEmployee(array $attributes, $id)
+    {
+        $this->model = $this->model->find($id);
+        $this->model->update(['status' => User::STATUS[$attributes['status']]]);
+
+        return parent::find($id);
     }
 }

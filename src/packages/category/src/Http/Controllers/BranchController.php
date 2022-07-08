@@ -5,6 +5,7 @@ namespace GGPHP\Category\Http\Controllers;
 use GGPHP\Category\Http\Requests\BranchCreateRequest;
 use GGPHP\Category\Http\Requests\BranchUpdateRequest;
 use GGPHP\Category\Http\Requests\BranchDeleteRequest;
+use GGPHP\Category\Http\Requests\BranchReportRefundRequest;
 use GGPHP\Category\Repositories\Contracts\BranchRepository;
 use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -98,5 +99,12 @@ class BranchController extends Controller
         $branch = $this->branchRepository->syncBranch();
 
         return $this->success($branch, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function reportRefund(BranchReportRefundRequest $request)
+    {
+        $branch = $this->branchRepository->reportRefund($request->all());
+
+        return $this->success($branch, trans('lang::messages.common.getListSuccess'));
     }
 }

@@ -154,4 +154,137 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
         }
         return $this->parserResult($branchs);
     }
+
+    public function reportRefund(array $attributes)
+    {
+        $branches = $this->studentRefundByBranch($attributes);
+
+        foreach ($branches as $branch) {
+            $listStudent = $branch->refundStudent->map(function ($refundStudent) {
+                $detail = $refundStudent->studentRefundDetail->groupBy('StudentId')->map(function ($item) use ($refundStudent) {
+                    $listFee = $item->map(function ($item) use ($refundStudent) {
+                        $item->refundFee = $item->refundFee->load('fee');
+                        $item->dateOff = $item->DateOff;
+                        $item->numberDayOff = $item->NumberDayOff;
+                        $item->type = $refundStudent->Type;
+                        return $item;
+                    })->values();
+
+                    $studentRefundDetail = $item->first();
+                    $student = $studentRefundDetail->student;
+                    $listFee = $listFee->map(function ($item) {
+                        return $item->only(['refundFee', 'dateOff', 'numberDayOff', 'type']);
+                    })->values();
+
+                    $totalFeePaid = $listFee->sum(function ($item) {
+                        return $item['refundFee']->sum('FeePaid');
+                    });
+
+                    $totalFeeStudied = $listFee->sum(function ($item) {
+                        return $item['refundFee']->sum('FeeStudied');
+                    });
+
+                    $totalFeeRefund = $listFee->sum(function ($item) {
+                        return $item['refundFee']->sum('FeeRefund');
+                    });
+
+                    $student->listRefund = $listFee;
+                    $student->totalFeePaid = $totalFeePaid;
+                    $student->totalFeeStudied = $totalFeeStudied;
+                    $student->totalFeeRefund = $totalFeeRefund;
+
+                    return $student;
+                })->flatten();
+
+                return $detail;
+            })->flatten(1);
+
+            $totalFeePaidByBranch = $listStudent->sum(function ($item) {
+                return $item->totalFeePaid;
+            });
+
+            $totalFeeStudiedByBranch = $listStudent->sum(function ($item) {
+                return $item->totalFeeStudied;
+            });
+
+            $totalFeeRefundByBranch = $listStudent->sum(function ($item) {
+                return $item->totalFeeRefund;
+            });
+
+            $branch->students = $listStudent;
+            $branch->totalFeePaidByBranch = $totalFeePaidByBranch;
+            $branch->totalFeeStudiedByBranch = $totalFeeStudiedByBranch;
+            $branch->totalFeeRefundByBranch = $totalFeeRefundByBranch;
+        }
+
+        return $this->parserResult($branches);
+    }
+
+    public function studentRefundByBranch(array $attributes)
+    {
+        $branches = $this->model->when(!empty($attributes['branchId']), function ($query, $attributes) {
+            return $query->whereHas('refundStudent', function ($query) use ($attributes) {
+                $query->where('BranchId', $attributes['branchId']);
+            });
+        }, function ($query) {
+            return $query->has('refundStudent');
+        })->when(!empty($attributes['startDate']) && !empty($attributes['endDate']), function ($query) use ($attributes) {
+            return $query->whereHas('refundStudent.studentRefundDetail', function ($query) use ($attributes) {
+                $query->whereDate('DateOff', '>=', $attributes['startDate'])->whereDate('DateOff', '<=', $attributes['endDate']);
+            });
+        })->when(!empty($attributes['type']), function ($query) use ($attributes) {
+            return $query->whereHas('refundStudent', function ($query) use ($attributes) {
+                $query->where('Type', $attributes['type']);
+            });
+        })->when(!empty($attributes['studentId']), function ($query) use ($attributes) {
+            return $query->whereHas('refundStudent.studentRefundDetail', function ($query) use ($attributes) {
+                $students = explode(',', $attributes['studentId']);
+                $query->whereIn('StudentId', $students);
+            });
+        })->with([
+            'refundStudent' => function ($query) use ($attributes) {
+                // Lấy theo cơ sở
+                $query->when(!empty($attributes['branchId']), function ($query, $attributes) {
+                    return $query->where('BranchId', $attributes['branchId']);
+                });
+
+                // Check có theo ngày và chỉ lấy trong khoảng thời gian đó
+                $query->when(!empty($attributes['startDate']) && !empty($attributes['endDate']), function ($query) use ($attributes) {
+                    return $query->whereHas('studentRefundDetail', function ($query) use ($attributes) {
+                        $query->whereDate('DateOff', '>=', $attributes['startDate']);
+                        $query->whereDate('DateOff', '<=', $attributes['endDate']);
+                    });
+                });
+
+                // Lấy theo loại học sinh
+                $query->when(!empty($attributes['type']), function ($query) use ($attributes) {
+                    return $query->where('Type', $attributes['type']);
+                });
+
+                // Check có học sinh
+                $query->when(!empty($attributes['studentId']), function ($query) use ($attributes) {
+                    return $query->whereHas('studentRefundDetail', function ($query) use ($attributes) {
+                        $students = explode(',', $attributes['studentId']);
+                        $query->whereIn('StudentId', $students);
+                    });
+                });
+
+                $query->with([
+                    'studentRefundDetail' => function ($query) use ($attributes) {
+                        if (!empty($attributes['startDate'] && !empty($attributes['endDate']))) {
+                            $query->whereDate('DateOff', '>=', $attributes['startDate']);
+                            $query->whereDate('DateOff', '<=', $attributes['endDate']);
+                        }
+
+                        if (!empty($attributes['studentId'])) {
+                            $students = explode(',', $attributes['studentId']);
+                            $query->whereIn('StudentId', $students);
+                        }
+                    }
+                ]);
+            }
+        ])->get();
+
+        return $branches;
+    }
 }

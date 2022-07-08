@@ -34,15 +34,7 @@ class AttendanceReasonController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-        if ($limit == config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $attendanceReason = $this->attendanceReasonRepository->all();
-        } else {
-            $attendanceReason = $this->attendanceReasonRepository->paginate($limit);
-        }
+        $attendanceReason = $this->attendanceReasonRepository->getAll($request->all());
 
         return $this->success($attendanceReason, trans('lang::messages.common.getListSuccess'));
     }

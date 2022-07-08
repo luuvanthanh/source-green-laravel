@@ -8,13 +8,16 @@ class LabourContract extends UuidModel
 {
     public $incrementing = false;
 
+    const SIGNER_DEFAULT = 'NGUYỄN HUỲNH THU TRÚC';
+    const POSITION_DEFAULT = 'GIÁM ĐỐC';
+
     protected $table = 'LabourContracts';
 
     protected $fillable = [
         'ContractNumber', 'ContractDate', 'TypeOfContractId', 'EmployeeId', 'Year',
         'Month', 'DivisionId', 'ContractFrom', 'ContractTo', 'PositionId', 'Work',
         'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary', 'IsSocialInsurance', 'IsEffect',
-        'RepresentId'
+        'RepresentId', 'OrdinalNumber', 'NumberForm'
     ];
 
     protected $dateTimeFields = [

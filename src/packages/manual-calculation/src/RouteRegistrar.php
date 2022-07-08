@@ -45,6 +45,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('copy-manual-calculations', [
                 'uses' => 'ManualCalculationController@copyManualCalculation',
             ]);
+
+            \Route::post('fast-manual-calculations', [
+                'uses' => 'ManualCalculationController@fastManualCalculation',
+            ]);
         });
     }
 }

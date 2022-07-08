@@ -4,6 +4,8 @@ namespace GGPHP\Fee\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use DateInterval;
+use DatePeriod;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Fee\Models\Fee;
 use GGPHP\Fee\Models\FeePolicie;
@@ -235,10 +237,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
     {
         $details = json_decode($attributes['details']);
         $data = [];
-        $feePolicie = FeePolicie::when(!empty($attributes['branchId']), function ($query) use ($attributes) {
-            $query->where('BranchId', $attributes['branchId']);
-        })->where('SchoolYearId', $attributes['schoolYearId'])->first();
+        $feePolicie = FeePolicie::where('BranchId', $attributes['branchId'])->where('SchoolYearId', $attributes['schoolYearId'])->first();
+
         $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schoolYearId']);
+
 
         foreach ($details as $key => $detail) {
             $fee = \GGPHP\Fee\Models\Fee::findOrFail($detail->feeId);
@@ -367,6 +369,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $feeDetail = $feePolicie->moneyMeal()
                                 ->where('ClassTypeId', $attributes['classTypeId'])
                                 ->where('PaymentFormId', $detail->paymentFormId)->first();
+
                             if (!is_null($feeDetail)) {
                                 $money = $feeDetail->Money;
                                 switch ($paymentForm->Code) {
@@ -532,7 +535,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 'moneyMonth' => $moneyMonth,
                 'applyDate' => $attributes['dayAdmission']
             ];
-
             if ($isInternal) {
                 return $result;
             }
@@ -540,7 +542,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             $data[] = $result;
         }
 
-        $detailData = $this->expectedToCollectMoney($attributes, $schooleYear, $data);
+        $detailData = $this->expectedToCollectMoney($attributes, $schooleYear, $data, $feePolicie);
 
         return [
             'data' => $data,
@@ -576,7 +578,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         }
     }
 
-    public function expectedToCollectMoney($attributes, $schooleYear, $dataTuition)
+    public function expectedToCollectMoney($attributes, $schooleYear, $dataTuition, $feePolicie)
     {
         $startDate = $schooleYear->StartDate;
         $endDate = $schooleYear->EndDate;
@@ -586,11 +588,12 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
         $data = [];
 
-        foreach ($rangeMonth as $keyMonth => $month) {
+        foreach ($rangeMonth as $month) {
             $fee = [];
             $totalMoneyMonth = 0;
-            foreach ($tuition as $key => $value) {
+            foreach ($tuition as $value) {
                 $feeTuiTion = Fee::find($value['feeId']);
+
                 $paymentForm = PaymentForm::find($value['paymentFormId']);
                 $value['applyDate'] = Carbon::parse($value['applyDate']);
                 $applyDate = $value['applyDate']->format('Y-m');
@@ -614,53 +617,80 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                         }
                         break;
                     case 'THANG':
-                        if ($applyDate <= $month->format('Y-m')) {
-                            if ($applyDate ==  $month->format('Y-m')) {
-                                $fee[] = [
-                                    'fee_id' => $feeTuiTion->Id,
-                                    'fee_name' => $feeTuiTion->Name,
-                                    'money' => $value['money'],
-                                    'fee_id_crm' => $feeTuiTion->FeeCrmId
-                                ];
-                                $totalMoneyMonth += $value['money'];
-                            } else {
-                                switch ($feeTuiTion->Type) {
-                                    case 'TIENAN':
-                                        $timetable = $schooleYear->timetable->where('Month', 'Tháng ' . $month->format('m') . '/' . $month->format('Y'))->where('Week', 1)->first();
-                                        $dayAdmission = $timetable->StartDate;
-                                        $endMonth = Carbon::parse($timetable->EndDate)->endOfMonth();
-                                        $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
 
-                                        $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
-
-                                        $result = ($daysLeftInMonth - $totalDayWeekend) * $value['moneyMonth'];
-                                        $totalMoneyMonth += $result;
-
-                                        $fee[] = [
-                                            'fee_id' => $feeTuiTion->Id,
-                                            'fee_name' => $feeTuiTion->Name,
-                                            'money' => $result,
-                                            'fee_id_crm' => $feeTuiTion->FeeCrmId
-                                        ];
-                                        break;
-                                    default:
-                                        $fee[] = [
-                                            'fee_id' => $feeTuiTion->Id,
-                                            'fee_name' => $feeTuiTion->Name,
-                                            'money' => $value['moneyMonth'],
-                                            'fee_id_crm' => $feeTuiTion->FeeCrmId
-                                        ];
-                                        $totalMoneyMonth += $value['moneyMonth'];
-                                        break;
-                                }
-                            }
-                        } else {
+                        if ($applyDate ==  $month->format('Y-m')) {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
-                                'money' => 0,
+                                'money' => $value['money'],
                                 'fee_id_crm' => $feeTuiTion->FeeCrmId
                             ];
+                            $totalMoneyMonth += $value['money'];
+                        } else {
+                            switch ($feeTuiTion->Type) {
+                                case 'TIENAN':
+                                    $timetable = $schooleYear->timetable()->where('Month', 'Tháng ' . $month->format('m') . '/' . $month->format('Y'))->where('Week', 1)->first();
+
+                                    $dayAdmission = $timetable->StartDate;
+                                    $endMonth = Carbon::parse($timetable->EndDate)->endOfMonth();
+                                    $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
+
+                                    $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
+
+                                    $result = ($daysLeftInMonth - $totalDayWeekend) * $value['moneyMonth'];
+                                    $totalMoneyMonth += $result;
+
+                                    $fee[] = [
+                                        'fee_id' => $feeTuiTion->Id,
+                                        'fee_name' => $feeTuiTion->Name,
+                                        'money' => $result,
+                                        'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                    ];
+                                    break;
+                                case 'HP':
+                                    $detailFeePolicie = $feePolicie->feeDetail->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $attributes['classTypeId']);
+                                    $dataDate = [];
+                                    foreach ($detailFeePolicie as $value) {
+                                        $start_date = date_create($value->ApplyStartTime);
+                                        $end_date   = date_create($value->ApplyEndTime);
+                                        $interval = DateInterval::createFromDateString('1 day');
+                                        $dateRange = new DatePeriod($start_date, $interval, $end_date);
+
+                                        foreach ($dateRange as $date) {
+                                            if (!array_key_exists($date->format('Y-m'), $dataDate)) {
+                                                $dataDate[$date->format('Y-m')] = $value->OldStudent;
+                                            }
+                                        }
+                                    }
+
+                                    if (array_key_exists($month->format('Y-m'), $dataDate)) {
+                                        $fee[] = [
+                                            'fee_id' => $feeTuiTion->Id,
+                                            'fee_name' => $feeTuiTion->Name,
+                                            'money' => $dataDate[$month->format('Y-m')],
+                                            'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                        ];
+                                        $totalMoneyMonth += $dataDate[$month->format('Y-m')];
+                                    } else {
+                                        $fee[] = [
+                                            'fee_id' => $feeTuiTion->Id,
+                                            'fee_name' => $feeTuiTion->Name,
+                                            'money' => 0,
+                                            'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                        ];
+                                    }
+
+                                    break;
+                                default:
+                                    $fee[] = [
+                                        'fee_id' => $feeTuiTion->Id,
+                                        'fee_name' => $feeTuiTion->Name,
+                                        'money' => 0,
+                                        'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                    ];
+                                    $totalMoneyMonth += $value['moneyMonth'];
+                                    break;
+                            }
                         }
 
                         break;
@@ -785,11 +815,11 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'paymentFormId' => PaymentForm::where('Code', 'HOCKY1')->first()->Id,
                                     'feeId' => $feeTuiTion->Id,
                                 ];
-
                                 $dataAttributes = [
                                     'classTypeId' => $attributes['classTypeId'],
                                     'schoolYearId' => $attributes['schoolYearId'],
                                     'student' => $attributes['student'],
+                                    'branchId' => $attributes['branchId'],
                                     'dayAdmission' => $dayAdmission,
                                     'details' => json_encode($detail)
                                 ];
@@ -812,6 +842,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'classTypeId' => $attributes['classTypeId'],
                                     'schoolYearId' => $attributes['schoolYearId'],
                                     'student' => $attributes['student'],
+                                    'branchId' => $attributes['branchId'],
                                     'dayAdmission' => $dayAdmission,
                                     'details' => json_encode($detail)
                                 ];

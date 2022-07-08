@@ -32,6 +32,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements PayrollRepository
 {
+    const CODE_BUS = 'PC_BUS';
+    const NAME_BUS = 'Phụ cấp bus';
     protected $fieldSearchable = [
         'Id',
         'CreationTime',
@@ -108,7 +110,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $payroll = Payroll::findOrFail($attributes['id']);
         $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
         $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
-
         $dataInsert = [];
         $numberOfWorkdays = 0;
         $columnBasicSalaryAndAllowance = [];
@@ -116,7 +117,21 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $employees = User::with(['workHours' => function ($query) use ($startDate, $endDate) {
             $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
-        }])->where('Status', User::STATUS['WORKING'])->get();
+        }])->where('Status', User::STATUS['WORKING'])->with(['busRegistrations' => function ($query) use ($startDate, $endDate) {
+            $query->with(['busRegistrationDetail' => function ($q) use ($startDate, $endDate) {
+                $q->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
+            }]);
+        }])->when($endDate, function ($query, $endDate) {
+            return $query->where(function ($query) use ($endDate) {
+                $query->wherehas('labourContract', function ($query) use ($endDate) {
+                    $query->where('ContractFrom', '<=', $endDate)->where('ContractTo', '>=', $endDate);
+                })->wherehas('probationaryContract', function ($query) use ($endDate) {
+                    $query->where('ContractFrom', '<=', $endDate)->where('ContractTo', '>=', $endDate);
+                })->whereDoesntHave('resignationDecision', function ($query) use ($endDate) {
+                    $query->where('TimeApply', '<', $endDate);
+                });
+            });
+        })->get();
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
 
@@ -188,6 +203,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             'startDate' => $startDate,
             'endDate' => $endDate,
         ])->totalWorks;
+
         $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail->where('EmployeeId', $employee->Id)->first();
 
         $overtime = $this->workHourRepositoryEloquent->calculatorWorkHourReport($employee, $holiday);
@@ -225,47 +241,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $isMaternity = true;
         }
 
-        if (!is_null($otherDeclarationDetail)) {
-            if (!is_null($otherDeclarationDetail->Detail)) {
-                $incurredAllowance = json_decode($otherDeclarationDetail->Detail);
-                foreach ($incurredAllowance as $itemIncurredAllowance) {
-                    $value = isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
-
-                    if ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_NLD') {
-                        $parameter['DIEU_CHINH_BHXH_NLD'] = $value;
-                        $socialInsuranceAdjustedEmployee = $value;
-                    } elseif ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_CTT') {
-                        $parameter['DIEU_CHINH_BHXH_CTT'] = $value;
-                        $socialInsuranceAdjustedCompany = $value;
-                    } elseif ($itemIncurredAllowance->code === 'DONG_GOP_TU_THIEN') {
-                        $parameter['DONG_GOP_TU_THIEN'] = $value;
-                        $charity = $value;
-                    } elseif ($itemIncurredAllowance->code === 'THANH_TOAN_TU_BHXH') {
-                        $parameter['THANH_TOAN_TU_BHXH'] = $value;
-                        $socialInsurancePayment = $value;
-                    } elseif ($itemIncurredAllowance->code === 'SO_TIEN_TAM_UNG') {
-                        $parameter['SO_TIEN_TAM_UNG'] = $value;
-                        $advance = $value;
-                    } elseif (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
-                        $columnIncurredAllowance[$itemIncurredAllowance->code] = [
-                            'code' => $itemIncurredAllowance->code,
-                            'name' => $itemIncurredAllowance->name,
-                        ];
-                    }
-
-                    $parameter[$itemIncurredAllowance->code] = isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
-                }
-            }
-        }
-
-        $incurredAllowance = json_encode($incurredAllowance);
-
         $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
             'startDate' => $startDate,
             'endDate' => $endDate,
         ])->totalBusRegistration;
-
-        $isProbation = false;
 
         $contract = $employee->labourContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
 
@@ -275,6 +254,23 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $isProbation = true;
             }
         }
+
+        // phụ cấp xe bus
+        $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
+        $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
+
+        $busAllowance = 0;
+        $formularBusAllowance = ParamaterFormula::where('Code', 'PC_BUS')->first();
+
+        if (!is_null($formularBusAllowance)) {
+            $busAllowance = $this->getFormular(json_decode($formularBusAllowance->Recipe), $contract, $parameter);
+            $busAllowance = eval('return ' . $busAllowance . ';');
+        }
+
+        $parameter['PC_BUS'] = $busAllowance;
+
+        $isProbation = false;
+
         $dateStartWork = null;
 
         if (!is_null($contract) && $totalWorks > 0) {
@@ -282,9 +278,68 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
             $parameterValues = $contract->parameterValues;
 
-            $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
-            $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
+
             $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = $totalWorks;
+
+            if (!is_null($otherDeclarationDetail)) {
+                if (!is_null($otherDeclarationDetail->Detail)) {
+                    $incurredAllowance = json_decode($otherDeclarationDetail->Detail);
+
+                    foreach ($incurredAllowance as $itemIncurredAllowance) {
+                        $value = isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
+
+                        if ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_NLD') {
+                            $parameter['DIEU_CHINH_BHXH_NLD'] = $value;
+                            $socialInsuranceAdjustedEmployee = $value;
+                        } elseif ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_CTT') {
+                            $parameter['DIEU_CHINH_BHXH_CTT'] = $value;
+                            $socialInsuranceAdjustedCompany = $value;
+                        } elseif ($itemIncurredAllowance->code === 'DONG_GOP_TU_THIEN') {
+                            $parameter['DONG_GOP_TU_THIEN'] = $value;
+                            $charity = $value;
+                        } elseif ($itemIncurredAllowance->code === 'THANH_TOAN_TU_BHXH') {
+                            $parameter['THANH_TOAN_TU_BHXH'] = $value;
+                            $socialInsurancePayment = $value;
+                        } elseif ($itemIncurredAllowance->code === 'SO_TIEN_TAM_UNG') {
+                            $parameter['SO_TIEN_TAM_UNG'] = $value;
+                            $advance = $value;
+                        } elseif ($itemIncurredAllowance->code === 'SO_GIO_DI_XE_BUS') {
+
+                            $columnIncurredAllowance[$itemIncurredAllowance->code] = [
+                                'code' => $itemIncurredAllowance->code,
+                                'name' => $itemIncurredAllowance->name,
+                            ];
+
+                            $columnIncurredAllowance['PC_BUS'] = [
+                                'code' => 'PC_BUS',
+                                'name' => 'Phụ cấp bus',
+                            ];
+                            $item = array_search('SO_GIO_DI_XE_BUS', array_column($incurredAllowance, 'code'));
+                            $incurredAllowance[$item]->value = $totalBusRegistration;
+
+                            $incurredAllowance[] = (object)[
+                                'code' => self::CODE_BUS,
+                                'name' => self::NAME_BUS,
+                                'applyDate' => $itemIncurredAllowance->applyDate,
+                                'valueDefault' => $busAllowance,
+                                'note' => $itemIncurredAllowance->note,
+                                'type' => $itemIncurredAllowance->type,
+                                'value' => $busAllowance
+                            ];
+                        } elseif (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
+                            $columnIncurredAllowance[$itemIncurredAllowance->code] = [
+                                'code' => $itemIncurredAllowance->code,
+                                'name' => $itemIncurredAllowance->name,
+                            ];
+                        }
+
+
+                        $parameter[$itemIncurredAllowance->code] = isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
+                    }
+                }
+            }
+
+            $incurredAllowance = json_encode($incurredAllowance);
 
             //Lương cơ bản và phụ cấp
             $basicSalaryAndAllowance = [];
@@ -467,16 +522,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             }
             $parameter['PHI_CONG_DOAN'] = $unionDues;
 
-            // phụ cấp xe bus
-            $busAllowance = 0;
-            $formularBusAllowance = ParamaterFormula::where('Code', 'PC_BUS')->first();
-
-            if (!is_null($formularBusAllowance)) {
-                $busAllowance = $this->getFormular(json_decode($formularBusAllowance->Recipe), $contract, $parameter);
-                $busAllowance = eval('return ' . $busAllowance . ';');
-            }
-            $parameter['PC_BUS'] = $busAllowance;
-
             // phụ cấp theo hd
             $contractAllowance = 0;
             $formularContractAllowance = ParamaterFormula::where('Code', 'PC_THEOHD')->first();
@@ -642,6 +687,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'OtWeekday' => $otWeekday,
                 'OtWeekend' => $otWeekend,
                 'OtHoliday' => $otHoliday,
+                'BusAllowance' => $busAllowance,
+                'TotalBusRegistration' => $totalBusRegistration
             ];
         }
 
@@ -944,6 +991,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'OtWeekday' => $otWeekday,
                     'OtWeekend' => $otWeekend,
                     'OtHoliday' => $otHoliday,
+                    'BusAllowance' => $busAllowance,
+                    'TotalBusRegistration' => $totalBusRegistration
                 ];
             }
         } else {
@@ -1196,6 +1245,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'OtWeekday' => $otWeekday,
                     'OtWeekend' => $otWeekend,
                     'OtHoliday' => $otHoliday,
+                    'BusAllowance' => $busAllowance,
+                    'TotalBusRegistration' => $totalBusRegistration
 
                 ];
             }
@@ -1372,6 +1423,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $columnIncurredAllowance = [];
         $ai = [];
         $totalAi = [];
+
         if (!empty(json_decode($payroll->ColumnIncurredAllowance))) {
 
             foreach (json_decode($payroll->ColumnIncurredAllowance) as $columnIncurredAllowanceValue) {
@@ -1503,6 +1555,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
             $incurredAllowanceEmployee = json_decode($payrollDetail->IncurredAllowance);
             $valueIncurredAllowance = [];
+
             foreach ($columnIncurredAllowance as $value) {
                 $keyColumnIncurredAllowance = array_search($value, array_column($incurredAllowanceEmployee, 'name'));
 
@@ -1616,7 +1669,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $params['{total_social_insurance_payment}'] = number_format($total_social_insurance_payment);
         $params['{total_advance}'] = number_format($total_advance);
         $params['{total_actually_received}'] = number_format($total_actually_received);
-
         $endColumnBasicSalaryAllowance = null;
         $listMerge = [];
         $callbacks = [
@@ -2325,6 +2377,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             '[[total_value_allowances_incurred]]' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getNumberFormat()
+                    ->setFormatCode('#,##0');
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
                 $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
