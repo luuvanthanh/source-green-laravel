@@ -94,7 +94,10 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                     $now = Carbon::now();
                     $addMonth = Carbon::now()->addMonth();
 
-                    $this->model = $this->model->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $addMonth->format('Y-m-d'));
+                    $this->model = $this->model->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $addMonth->format('Y-m-d'))
+                        ->orWhereHas('typeOfContract', function ($query) {
+                            $query->where('IsUnlimited', true);
+                        });
                     break;
                 case 'GAN_HET_HAN':
                     $now = Carbon::now();
