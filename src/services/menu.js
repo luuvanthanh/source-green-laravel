@@ -1303,6 +1303,16 @@ export async function getLeftMenuHRM() {
               ],
               permission: [permissions.HRM],
             },
+            {
+              title: 'Khai báo mẫu số hợp đồng',
+              key: 'contract-model-number',
+              url: [
+                '/quan-ly-nhan-su/khai-bao-mau-so-hop-dong',
+                '/quan-ly-nhan-su/khai-bao-mau-so-hop-dong/tao-moi',
+                '/quan-ly-nhan-su/khai-bao-mau-so-hop-dong/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+            },
           ],
         },
         {

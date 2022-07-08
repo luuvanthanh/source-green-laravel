@@ -243,7 +243,8 @@ const Index = () => {
         Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
     );
 
-    const dataUser = user?.labourContract?.map(i => getUserContracts(moment(i?.contractFrom), moment(i?.contractTo), i, dayOfWeek));
+    const data = user?.labourContract?.concat(user?.probationaryContract);
+    const dataUser = data?.map(i => getUserContracts(moment(i?.contractFrom), moment(i?.contractTo), i, dayOfWeek));
     const userFilter = dataUser?.find(i => i?.status);
 
     if (moment(dayOfWeek).isoWeekday() >= 6) {
