@@ -538,3 +538,11 @@ export function addHealthInsurances(params = {}) {
   });
 }
 // health-insurances
+
+export function working(params = {}) {
+  return requestLavarel(`/v1/update-status-employees/${params.id}`, {
+    method: 'PUT',
+    params,
+    parse: true,
+  });
+}

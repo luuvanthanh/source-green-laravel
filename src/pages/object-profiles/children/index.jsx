@@ -248,6 +248,30 @@ class Index extends PureComponent {
   };
 
   /**
+ * Function remove items
+ * @param {uid} id id of items
+ */
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'OPchildren/REMOVE_STUDENT',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
@@ -257,7 +281,7 @@ class Index extends PureComponent {
         key: 'index',
         className: 'min-width-150',
         width: 150,
-        render: (record) =>  <Text size="normal">{record.code}</Text>,
+        render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
         title: 'Họ và Tên',
@@ -312,20 +336,22 @@ class Index extends PureComponent {
         render: (record) => HelperModules.tagStatus(record.status),
       },
       {
-        key: 'actions',
-        className: 'min-width-100',
-        width: 100,
+        key: 'action',
+        width: 125,
         fixed: 'right',
         render: (record) => (
-          <div className={styles['list-button']}>
+          <div className="d-flex justify-content-end">
+            {
+              record?.status !== 'OFFICAL' && (
+                <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+              )
+            }
             <Button
-              color="success"
-              ghost
+              color="primary"
+              icon="edit"
+              className='ml10'
               onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`)}
-              permission="HSDT"
-            >
-              Chi tiết
-            </Button>
+            />
           </div>
         ),
       },
@@ -440,13 +466,6 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              onRow={(record) => ({
-                onClick: () => {
-                  if (ability.can('HSDT', 'HSDT')) {
-                    history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`);
-                  }
-                },
-              })}
               bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%', y: '60vh' }}

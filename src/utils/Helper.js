@@ -828,7 +828,7 @@ export default class Helpers {
       .format(variables.DATE_FORMAT.TIME_FULL)}`;
 
   static getPathAvatarJson = (fileImage) => {
-    const allowTypes = ['jpeg', 'jpg', 'png', 'heic'];
+    const allowTypes = ['jpeg', 'jpg', 'png', 'heic', 'webp'];
     if (this.isJSON(fileImage)) {
       const files = JSON.parse(fileImage);
       if (!isEmpty(files) && isArray(files)) {
@@ -1243,7 +1243,7 @@ export default class Helpers {
     return tmp;
   };
 
-  static getStatusContracts = (contractFrom, contractTo) => {
+  static getStatusContracts = (contractFrom, contractTo, record) => {
     const diffSignDate = moment(
       moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
     ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
@@ -1262,8 +1262,34 @@ export default class Helpers {
         </Tag>
       );
     }
+    if (record?.isEffect === false) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
+    }
     if (diffExpirationDate < 0) {
       return <Tag color="danger">Đã hết hạn</Tag>;
+    }
+    return '';
+  };
+
+  static getUserContracts = (contractFrom, contractTo, record) => {
+    const diffSignDate = moment(
+      moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDate = moment(
+      moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
+      return { ...record, status: true };
+    }
+    if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
+      return { ...record, status: true };
+    }
+    if (record?.isEffect === false) {
+      return { ...record, status: false };
+    }
+    if (diffExpirationDate < 0) {
+      return { ...record, status: false };
     }
     return '';
   };
@@ -1324,7 +1350,7 @@ export default class Helpers {
     return '';
   };
 
-  static getStatusProbationaryContracts = (contractFrom, contractTo) => {
+  static getStatusProbationaryContracts = (contractFrom, contractTo, record) => {
     const diffSignDate = moment(
       moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
     ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
@@ -1342,6 +1368,9 @@ export default class Helpers {
           Gần hết hạn
         </Tag>
       );
+    }
+    if (record?.isEffect === false) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
     }
     if (diffExpirationDate < 0) {
       return <Tag color="danger">Đã hết hạn</Tag>;

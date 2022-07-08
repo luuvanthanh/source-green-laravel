@@ -97,6 +97,7 @@ class Index extends PureComponent {
       type: 'OPStudentByBranch/GET_DATA',
       payload: {
         ...search,
+        SearchDate: Helper.getDate(search.SearchDate, variables.DATE_FORMAT.DATE_AFTER),
       },
     });
     history.push(

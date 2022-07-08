@@ -50,6 +50,7 @@ const renderChildren = (
   filterOption,
   disabledOptions,
   showCount,
+  loading,
 ) => ({
   input: (
     <Input
@@ -124,6 +125,7 @@ const renderChildren = (
       options={options}
       disabled={disabled}
       value={value}
+      loading={loading}
       disabledOptions={disabledOptions}
     />
   ),
@@ -198,7 +200,7 @@ const renderChildren = (
     <DatePicker.RangePicker
       disabledDate={disabledDate}
       disabled={disabled}
-      format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD/MM/YYYY', 'DD/MM/YYYY']}
+      format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD/MM/YYYY', 'DD/MM/YYYY', 'D/M/YYYY']}
       onChange={onChange}
       placeholder={picker === 'year' ? ['Từ năm', 'Đến năm'] : ['ngày/tháng/năm', 'ngày/tháng/năm']}
       value={value}
@@ -425,6 +427,7 @@ export default function FormItem({
   filterOption,
   disabledOptions,
   showCount,
+  loading,
   ...rest
 }) {
   return (
@@ -456,6 +459,7 @@ export default function FormItem({
           filterOption,
           disabledOptions,
           showCount,
+          loading,
         )[type]
       }
     </Form.Item>
@@ -492,6 +496,7 @@ FormItem.propTypes = {
   filterOption: PropTypes.bool,
   disabledOptions: PropTypes.arrayOf(PropTypes.any),
   showCount: PropTypes.bool,
+  loading: PropTypes.string,
 };
 
 FormItem.defaultProps = {
@@ -524,6 +529,7 @@ FormItem.defaultProps = {
   filterOption: false,
   disabledOptions: [],
   showCount: true,
+  loading: "",
 };
 
 FormItem.displayName = 'Form';

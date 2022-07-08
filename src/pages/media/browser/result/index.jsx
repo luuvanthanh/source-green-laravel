@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 import { size, isEmpty, includes } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
-import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt } from 'antd';
+import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt, notification } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -106,9 +106,9 @@ const Index = memo(() => {
           prev.map((post) =>
             post.id === postId
               ? {
-                  ...post,
-                  files: (post?.files || []).filter((file) => file.id !== image.id),
-                }
+                ...post,
+                files: (post?.files || []).filter((file) => file.id !== image.id),
+              }
               : post,
           ),
         );
@@ -121,9 +121,9 @@ const Index = memo(() => {
       prev.map((post) =>
         post.id === postId
           ? {
-              ...post,
-              description: e?.target?.value,
-            }
+            ...post,
+            description: e?.target?.value,
+          }
           : post,
       ),
     );
@@ -146,6 +146,10 @@ const Index = memo(() => {
       payload: req,
       callback: () => {
         fetchMedia();
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã gửi thành công dữ liệu',
+        });
       },
     });
   };
@@ -215,6 +219,7 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           fetchMedia();
+          setGroupIds([]);
         }
       },
     });
@@ -240,6 +245,11 @@ const Index = memo(() => {
       payload: req,
       callback: () => {
         history.push('/hinh-anh/duyet-hinh');
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã gửi thành công dữ liệu',
+        });
+        fetchMedia();
       },
     });
   };
@@ -255,10 +265,12 @@ const Index = memo(() => {
         return dispatch({
           type: 'mediaResult/VALIDATE_ALL',
           payload,
-          callback: (response) => {
-            if (response) {
-              fetchMedia();
-            }
+          callback: () => {
+            fetchMedia();
+            notification.success({
+              message: 'Thông báo',
+              description: 'Bạn đã gửi thành công dữ liệu',
+            });
           },
         });
       }).finally(() => {
@@ -300,7 +312,7 @@ const Index = memo(() => {
       {isEmpty(groupIds) ||
         (groupIds.length >= 1 && <Menu.Item key="SEND_CHOOSE">Gửi ghi nhận đã chọn</Menu.Item>)}
       {isEmpty(groupIds) ||
-        (groupIds.length <= 2 && <Menu.Item key="MERGE_CHOOSE">Gộp ghi nhận đã chọn</Menu.Item>)}
+        (groupIds.length >= 2 && <Menu.Item key="MERGE_CHOOSE">Gộp ghi nhận đã chọn</Menu.Item>)}
       {isEmpty(groupIds) ||
         (groupIds.length >= 1 && <Menu.Item key="REMOVE_CHOOSE">Xóa ghi nhận đã chọn</Menu.Item>)}
       <Menu.Item key="REMOVE_ALL">Xóa tất cả ghi nhận</Menu.Item>

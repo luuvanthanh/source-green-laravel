@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, List, Checkbox, message, Upload } from 'antd';
+import { Form, List, Checkbox, message, Upload, notification } from 'antd';
 import csx from 'classnames';
 import { connect, history, withRouter } from 'umi';
 import { head, isEmpty, size, last } from 'lodash';
@@ -27,20 +27,20 @@ import variablesModules from '../variables';
 
 const { Item: ListItem } = List;
 
-const mapStateToProps = ({ timeTablesScheduleAdd, loading, menu }) => ({
+const mapStateToProps = ({ timeTablesScheduleAdd, loading, menu, user }) => ({
   loading,
   branches: timeTablesScheduleAdd.branches,
   classes: timeTablesScheduleAdd.classes,
   error: timeTablesScheduleAdd.error,
   menuLeft: menu.menuLeftTimeTable,
+  defaultBranch: user.defaultBranch,
 });
 
 const Index = memo(
-  ({ loading: { effects }, match: { params }, branches, error, menuLeft, classes }) => {
+  ({ loading: { effects }, match: { params }, branches, error, menuLeft, classes, defaultBranch }) => {
     const mounted = useRef(false);
     const mountedSet = (action, value) => mounted?.current && action(value);
     const dispatch = useDispatch();
-
     const [content, setContent] = useState('');
     const [countCheck, setCountCheck] = useState(false);
     const [isReminded, setIsReminded] = useState(false);
@@ -63,7 +63,7 @@ const Index = memo(
     const [fileImage, setFileImage] = useState([]);
     const [isTime, setIsTime] = useState(false);
 
-    const loadingSubmit = effects[`timeTablesScheduleAdd/ADD`];
+    const loadingSubmit = effects[`timeTablesScheduleAdd/ADD`] || effects['timeTablesScheduleAdd/UPDATE'];
     const formRef = useRef();
 
     const onFinishFailed = () => {
@@ -339,6 +339,11 @@ const Index = memo(
     };
 
     useEffect(() => {
+      formRef?.current?.setFieldsValue({ branchId: defaultBranch?.id });
+      getClasses(defaultBranch?.id);
+    }, [defaultBranch]);
+
+    useEffect(() => {
       if (params?.id) {
         dispatch({
           type: 'timeTablesScheduleDetails/GET_DETAILS',
@@ -407,7 +412,10 @@ const Index = memo(
         const { name } = file;
         const allowTypes = ['pdf', 'docx', 'xlsx'];
         if (!allowTypes.includes(last(name.split('.')))) {
-          message.error('Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb');
+          notification.error({
+            message: 'Thông báo',
+            description: 'Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb',
+          });
           return;
         }
         onUpload(file);
@@ -519,7 +527,7 @@ const Index = memo(
                           name="branchId"
                           rules={[variables.RULES.EMPTY]}
                           type={variables.SELECT}
-                          data={branches}
+                          data={isEmpty(defaultBranch) ? branches : [defaultBranch]}
                           onChange={onChangeBranch}
                         />
                       </Pane>
@@ -695,7 +703,7 @@ const Index = memo(
                               <Button color="transparent" icon="upload1">
                                 Tải lên
                               </Button>
-                              <i>Chỉ hỗ trợ định dạng .xlsx. Dung lượng không được quá 5mb</i>
+                              <i>Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb</i>
                             </Upload>
                           </div>
                         </Pane>
@@ -784,6 +792,7 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   menuLeft: PropTypes.arrayOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -793,6 +802,7 @@ Index.defaultProps = {
   branches: [],
   menuLeft: [],
   error: {},
+  defaultBranch: {},
 };
 
 export default withRouter(connect(mapStateToProps)(Index));

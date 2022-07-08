@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { connect, NavLink } from 'umi';
 import { Form, List, Checkbox, Spin, message } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -96,13 +96,14 @@ class Index extends PureComponent {
   };
 
   fetchStudents = () => {
-    const { dispatch } = this.props;
+    const { dispatch, defaultBranch } = this.props;
     const { searchStudents } = this.state;
     dispatch({
       type: 'categories/GET_STUDENTS',
       payload: {
         ...searchStudents,
         classStatus: 'NO_CLASS',
+        branchId: defaultBranch?.id,
         ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
       },
       callback: (res) => {
@@ -119,7 +120,7 @@ class Index extends PureComponent {
   };
 
   fetchBranches = () => {
-    const { dispatch } = this.props;
+    const { dispatch, defaultBranch } = this.props;
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
@@ -133,6 +134,24 @@ class Index extends PureComponent {
         }
       },
     });
+    if (defaultBranch?.id) {
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: defaultBranch?.id,
+        },
+        callback: (res) => {
+          if (res) {
+            this.setStateData(({ categories }) => ({
+              categories: {
+                ...categories,
+                classes: res?.items || [],
+              },
+            }));
+          }
+        },
+      });
+    }
   };
 
   fetchClasses = (branchId) => {
@@ -156,6 +175,9 @@ class Index extends PureComponent {
   };
 
   handleInfiniteOnLoad = () => {
+    const {
+      defaultBranch,
+    } = this.props;
     const { categories, searchStudents } = this.state;
     if (categories?.students?.length >= searchStudents.totalCount) {
       message.warning('Danh sách đã hiển thị tất cả.');
@@ -168,6 +190,7 @@ class Index extends PureComponent {
       type: 'allocationChangeClass/GET_STUDENTS',
       payload: {
         ...searchStudents,
+        branchId: defaultBranch?.id,
         page: searchStudents.page + 1,
       },
       callback: (response, error) => {
@@ -261,7 +284,6 @@ class Index extends PureComponent {
       selectedStudents,
       categories: { students, branches, classes },
     } = this.state;
-
     const submitLoading = effects['allocationArrangeClass/ADD'];
     const loading = effects['allocationArrangeClass/GET_STUDENTS'];
 
@@ -392,7 +414,7 @@ class Index extends PureComponent {
                         name="branch"
                         rules={[variables.RULES.EMPTY]}
                         type={variables.SELECT}
-                        data={branches}
+                        data={isEmpty(defaultBranch) ? branches : [defaultBranch]}
                         onChange={this.selectBranch}
                         allowClear={false}
                       />

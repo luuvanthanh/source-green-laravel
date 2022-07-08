@@ -233,14 +233,6 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'Thời gian tạo',
-        key: 'creationTime',
-        dataIndex: 'creationTime',
-        className: 'min-width-160',
-        width: 160,
-        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
-      },
-      {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
@@ -268,21 +260,6 @@ class Index extends PureComponent {
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Thông tin hợp đồng',
-        key: 'contract_category',
-        dataIndex: 'typeOfContract',
-        className: 'min-width-120',
-        width: 120,
-        render: (value) => value?.name,
-      },
-      {
-        title: 'Số tháng thử việc',
-        key: 'contract_category',
-        dataIndex: 'month',
-        className: 'min-width-150',
-        width: 150,
-      },
-      {
         title: 'Thời hạn HĐ từ',
         key: 'date',
         dataIndex: 'contractFrom',
@@ -297,20 +274,6 @@ class Index extends PureComponent {
         className: 'min-width-150',
         width: 150,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Lương cơ bản',
-        key: 'salary',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.basicSalary),
-      },
-      {
-        title: 'Tổng phụ cấp',
-        key: 'payment',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.totalAllowance),
       },
       {
         title: 'Nơi làm việc',
@@ -329,6 +292,43 @@ class Index extends PureComponent {
         render: (value) => value?.name,
       },
       {
+        title: 'Số tháng thử việc',
+        key: 'contract_category',
+        dataIndex: 'month',
+        className: 'min-width-150',
+        width: 150,
+      },
+      {
+        title: 'Lương cơ bản',
+        key: 'salary',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => Helper.getPrice(record.basicSalary),
+      },
+      {
+        title: 'Tổng phụ cấp',
+        key: 'payment',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => Helper.getPrice(record.totalAllowance),
+      },
+      {
+        title: 'Thông tin hợp đồng',
+        key: 'contract_category',
+        dataIndex: 'typeOfContract',
+        className: 'min-width-160',
+        width: 160,
+        render: (value) => value?.name,
+      },
+      {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        width: 160,
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Trạng thái',
         key: 'status',
         width: 150,
@@ -337,6 +337,7 @@ class Index extends PureComponent {
           Helper.getStatusProbationaryContracts(
             moment(record?.contractFrom),
             moment(record?.contractTo),
+            record
           ),
       },
       {

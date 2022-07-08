@@ -26,7 +26,10 @@ const Index = memo(() => {
       paginationExpected,
     },
     { effects },
-  ] = useSelector(({ timetableAsymptotic, loading }) => [timetableAsymptotic, loading]);
+    {
+      defaultBranch,
+    }
+  ] = useSelector(({ timetableAsymptotic, loading, user }) => [timetableAsymptotic, loading, user]);
   const dispatch = useDispatch();
   const { pathname, query } = useLocation();
   const history = useHistory();
@@ -35,10 +38,9 @@ const Index = memo(() => {
     id: item.id,
     name: `Năm học  ${item.fromYear} - ${item.toYear}`,
   }));
-
   const [search, setSearch] = useState({
     keyWord: query?.keyWord,
-    branchId: query?.branchId,
+    branchId: query?.branchId || defaultBranch?.id,
     timetableSettingId: query?.timetableSettingId,
     classId: query?.classId,
     status: 'EXPECTED',
@@ -123,7 +125,7 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            if(type) {
+            if (type) {
               formRef.setFieldsValue({
                 classId: idBranch,
               });
@@ -401,7 +403,7 @@ const Index = memo(() => {
                       <div className="col-lg-3">
                         <FormItem
                           className="ant-form-item-row"
-                          data={[{ id: null, name: 'Chọn tất cả các cơ sở' }, ...branches]}
+                          data={isEmpty(defaultBranch) ? [{ id: null, name: 'Chọn tất cả các cơ sở' }, ...branches] : [defaultBranch]}
                           name="branchId"
                           onChange={(event) => onChangeExpected(event, 'branchId')}
                           type={variables.SELECT}

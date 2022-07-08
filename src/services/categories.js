@@ -97,7 +97,7 @@ export function getUsers(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['positionLevel']),
+      include: Helper.convertIncludes(['positionLevel', 'positionLevelNow.division']),
     },
   });
 }

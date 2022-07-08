@@ -15,7 +15,12 @@ export function get(params = {}) {
       ...params,
       limit: params.limit,
       page: params.page,
-      include: Helper.convertIncludes(['manualCalculation', 'positionLevelNow']),
+      orderBy: 'FullName;CreationTime',
+      include: Helper.convertIncludes([
+        'manualCalculation',
+        'positionLevelNow',
+        'probationaryContract,labourContract,resignationDecision',
+      ]),
     },
   });
 }

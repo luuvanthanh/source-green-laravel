@@ -358,11 +358,11 @@ class Index extends PureComponent {
     const loading = effects['inOutHistories/GET_DATA'];
     return (
       <>
-        <Helmet title="Lịch sử vào ra lớp" />
+        <Helmet title="Lịch sử ra vào lớp theo (Theo AI)" />
         <div className={classnames(styles['content-form'], styles['content-form-inOutHistories'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Lịch sử vào ra lớp</Text>
+            <Text color="dark">Lịch sử ra vào lớp theo (Theo AI)</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

@@ -5,9 +5,9 @@ import { useSelector, useDispatch } from 'dva';
 import { useParams } from 'umi';
 import { head, isEmpty, omit } from 'lodash';
 import classnames from 'classnames';
-import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 import Pane from '@/components/CommonComponent/Pane';
+import Text from '@/components/CommonComponent/Text';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils';
@@ -17,7 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
-  const [{ menuLeftSchedules }, loading] = useSelector(({ menu, loading: { effects } }) => [
+  const [loading] = useSelector(({ menu, loading: { effects } }) => [
     menu,
     effects,
   ]);
@@ -210,8 +210,8 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Thời gian xin phép" />
-      <Breadcrumbs menu={menuLeftSchedules} />
-      <Pane style={{ padding: 20, paddingTop: 0 }}>
+      <Pane style={{ padding: 20 }}>
+        <Text color="dark">Thời gian xin phép</Text>
         <Pane className="row">
           <Pane className="col-lg-8 offset-lg-2">
             <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>

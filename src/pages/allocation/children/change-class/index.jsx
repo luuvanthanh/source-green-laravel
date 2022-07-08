@@ -100,7 +100,7 @@ class Index extends PureComponent {
   };
 
   fetchBranches = () => {
-    const { dispatch } = this.props;
+    const { dispatch, defaultBranch } = this.props;
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
@@ -114,6 +114,24 @@ class Index extends PureComponent {
         }
       },
     });
+    if (defaultBranch?.id) {
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: defaultBranch?.id,
+        },
+        callback: (res) => {
+          if (res) {
+            this.setStateData(({ categories }) => ({
+              categories: {
+                ...categories,
+                filterClasses: res?.items || [],
+              },
+            }));
+          }
+        },
+      });
+    }
   };
 
   fetchClasses = (branchId, classesType = 'classes') => {

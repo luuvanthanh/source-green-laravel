@@ -118,6 +118,20 @@ export default {
         });
       }
     },
+    *REMOVE_STUDENT({ payload }, saga) {
+      try {
+        yield saga.call(services.removeStudent, payload.id);
+        yield saga.put({
+          type: 'GET_DATA',
+          payload: payload.pagination,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

@@ -21,6 +21,8 @@ const timekeepingType = [
   { id: 'K', name: 'K' },
   { id: 'F', name: 'F' },
   { id: 'X/2', name: 'X/2' },
+  { id: 'K/2', name: 'K/2' },
+  { id: 'F/2', name: 'F/2' },
 ];
 
 const Index = () => {
@@ -82,6 +84,10 @@ const Index = () => {
   };
 
   const onLoad = () => {
+
+    const endTime = new Date(search.endDate);
+    const startTime = new Date(search.startDate);
+    const time = new Date();
     dispatch({
       type: 'manualTimekeepingAdd/GET_DATA',
       payload: {
@@ -89,6 +95,9 @@ const Index = () => {
         endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
         startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
         // unexpiredContract: true,
+
+        getLimitUser: endTime.getTime() > time.getTime() && startTime.getTime() < time.getTime() || endTime.getTime() > time.getTime() && startTime.getTime() > time.getTime() ? true : undefined,
+        forManualCalculation: endTime.getTime() > time.getTime() && startTime.getTime() < time.getTime() || endTime.getTime() > time.getTime() && startTime.getTime() > time.getTime() ? true : undefined,
       },
     });
     history.push(
@@ -116,7 +125,6 @@ const Index = () => {
     setSearch((prev) => ({
       ...prev,
       [`${type}`]: value,
-      forManualCalculation: true,
       page: variables.PAGINATION.PAGE,
       limit: variables.PAGINATION.PAGE_SIZE,
     }));
@@ -136,7 +144,6 @@ const Index = () => {
     setSearch((prev) => ({
       ...prev,
       [`${type}`]: value.map((i) => i).join(','),
-      forManualCalculation: true,
       page: variables.PAGINATION.PAGE,
       limit: variables.PAGINATION.PAGE_SIZE,
     }));
@@ -177,6 +184,29 @@ const Index = () => {
     return null;
   };
 
+  const getUserContracts = (contractFrom, contractTo, record, time) => {
+    const diffSignDate = moment(
+      moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment(time).format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDate = moment(
+      moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment(time).format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
+      return { ...record, status: true };
+    }
+    if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
+      return { ...record, status: true };
+    }
+    if (record?.isEffect === false) {
+      return { ...record, status: false };
+    }
+    if (diffExpirationDate < 0) {
+      return { ...record, status: false };
+    }
+    return '';
+  };
+
   const updateManualTimekeeping = (time, record, e) => {
     const payload = {
       employeeId: record.id,
@@ -212,6 +242,18 @@ const Index = () => {
         Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
         Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
     );
+
+    const dataUser = user?.labourContract?.map(i => getUserContracts(moment(i?.contractFrom), moment(i?.contractTo), i, dayOfWeek));
+    const userFilter = dataUser?.find(i => i?.status);
+
+    if (moment(dayOfWeek).isoWeekday() >= 6) {
+      return (
+        <div className={classnames(styles['item-schedules'], [styles[`cell-heading-weekend`]])}>
+          -
+        </div>
+      );
+    }
+
     const manualUser = user.manualCalculation?.find(
       (i) =>
         moment(i.date).format(variables.DATE_FORMAT.DATE_AFTER) ===
@@ -250,6 +292,22 @@ const Index = () => {
           color="#00B24D"
         >
           <>L</>
+        </Tooltip>
+      );
+    }
+    if (userFilter === undefined) {
+      return (
+        <Tooltip
+          title={
+            <div className={styles['tooltip-container']}>
+
+              <br />
+
+            </div>
+          }
+          color="#00B24D"
+        >
+          <></>
         </Tooltip>
       );
     }

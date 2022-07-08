@@ -71,7 +71,7 @@ const Index = memo(() => {
                 style={{ marginBottom: 10 }}
               >
                 <Heading type="form-sub-title">
-                  {Helper.getDate(details, variables.DATE_FORMAT.DATE_TIME)}
+                  {Helper.getDate(details?.sentDate, variables.DATE_FORMAT.DATE_TIME)}
                 </Heading>
                 <p className={styles['text-delete']} role="presentation" onClick={remove}>
                   Xóa hình ảnh
@@ -110,7 +110,7 @@ const Index = memo(() => {
                     <AvatarTable
                       fileImage={Helper.getPathAvatarJson(
                         details?.studentMaster?.farther?.fileImage ||
-                          details?.studentMaster?.mother?.fileImage,
+                        details?.studentMaster?.mother?.fileImage,
                       )}
                     />
                     <Pane>

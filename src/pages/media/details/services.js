@@ -11,5 +11,7 @@ export function remove(params) {
   return request(`/posts/${params.id}`, {
     method: 'DELETE',
     parse: true,
+    editNotification: true,
+    cancelNotification: true,
   });
 }

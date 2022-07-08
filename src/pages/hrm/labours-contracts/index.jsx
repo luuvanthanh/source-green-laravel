@@ -258,14 +258,6 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'Thời gian tạo',
-        key: 'creationTime',
-        dataIndex: 'creationTime',
-        className: 'min-width-160',
-        width: 160,
-        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
-      },
-      {
         title: 'Nhân viên',
         key: 'name',
         className: 'min-width-220',
@@ -301,13 +293,6 @@ class Index extends PureComponent {
         render: (value) => value?.name,
       },
       {
-        title: 'Số năm/tháng hợp đồng',
-        key: 'contract_category',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => `${record.month} tháng`,
-      },
-      {
         title: 'Thời hạn HĐ từ',
         key: 'date',
         dataIndex: 'contractFrom',
@@ -322,20 +307,6 @@ class Index extends PureComponent {
         className: 'min-width-150',
         width: 150,
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Lương cơ bản',
-        key: 'salary',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.basicSalary),
-      },
-      {
-        title: 'Tổng phụ cấp',
-        key: 'payment',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.totalAllowance),
       },
       {
         title: 'Nơi làm việc',
@@ -354,12 +325,41 @@ class Index extends PureComponent {
         render: (value) => value?.name,
       },
       {
+        title: 'Số năm/tháng hợp đồng',
+        key: 'contract_category',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => `${record.month} tháng`,
+      },
+      {
+        title: 'Lương cơ bản',
+        key: 'salary',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => Helper.getPrice(record.basicSalary),
+      },
+      {
+        title: 'Tổng phụ cấp',
+        key: 'payment',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => Helper.getPrice(record.totalAllowance),
+      },
+      {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        width: 160,
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Trạng thái',
         key: 'status',
         width: 150,
         className: 'min-width-150',
         render: (record) =>
-          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo)),
+          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo), record),
       },
       {
         title: 'Thao tác',
@@ -410,6 +410,7 @@ class Index extends PureComponent {
       location: { pathname },
       categories,
     } = this.props;
+    console.log("dataa", data)
     const { search, isModalVisible, type } = this.state;
     const loading = effects['laboursContracts/GET_DATA'];
     return (

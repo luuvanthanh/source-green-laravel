@@ -629,7 +629,7 @@ export default [
         routes: [
           {
             path: '/diem-danh',
-            redirect: '/diem-danh/lich-hoc-tre',
+            redirect: '/diem-danh/lich-su-vao-ra-lop',
           },
           {
             path: '/diem-danh/lich-hoc-tre',
@@ -3231,7 +3231,7 @@ export default [
         routes: [
           {
             path: '/bieu-phi',
-            redirect: '/bieu-phi/tinh-phi-hoc-sinh-cu',
+            redirect: '/bieu-phi/ke-hoach-dong-phi',
           },
           {
             path: '/bieu-phi/tinh-phi-hoc-sinh-cu',

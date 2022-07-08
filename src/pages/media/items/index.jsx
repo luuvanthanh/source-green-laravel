@@ -37,6 +37,7 @@ const Index = memo(() => {
     branches: [],
     classes: [],
   });
+
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -63,7 +64,7 @@ const Index = memo(() => {
       width: 180,
       render: (record) => (
         <Text size="normal">
-          {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+          {Helper.getDate(record.sentDate, variables.DATE_FORMAT.DATE_TIME)}
         </Text>
       ),
     },
@@ -73,7 +74,7 @@ const Index = memo(() => {
       width: 120,
       className: 'min-width-120',
       render: (record) => (
-        <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
+        <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name || record?.studentMaster?.student?.branch?.name}</Text>
       ),
     },
     {
@@ -241,7 +242,7 @@ const Index = memo(() => {
   useEffect(() => {
     fetchBranches();
   }, []);
-
+  console.log("data", data);
   return (
     <>
       <Helmet title="Danh sách hình ảnh" />
@@ -274,15 +275,28 @@ const Index = memo(() => {
                     placeholder="Nhập từ khóa tìm kiếm"
                   />
                 </Pane>
-                <Pane className="col-lg-3">
-                  <FormItem
-                    name="branchId"
-                    type={variables.SELECT}
-                    data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
-                    onChange={(value) => changeFilterBranch('branchId')(value)}
-                    allowClear={false}
-                  />
-                </Pane>
+                {!defaultBranch?.id && (
+                  <Pane className="col-lg-3">
+                    <FormItem
+                      name="branchId"
+                      type={variables.SELECT}
+                      data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
+                      onChange={(value) => changeFilterBranch('branchId')(value)}
+                      allowClear={false}
+                    />
+                  </Pane>
+                )}
+                {defaultBranch?.id && (
+                  <Pane className="col-lg-3">
+                    <FormItem
+                      name="branchId"
+                      type={variables.SELECT}
+                      data={defaultBranch?.id ? [defaultBranch] : []}
+                      onChange={(value) => changeFilterBranch('branchId')(value)}
+                      allowClear={false}
+                    />
+                  </Pane>
+                )}
                 <Pane className="col-lg-3">
                   <FormItem
                     name="classId"

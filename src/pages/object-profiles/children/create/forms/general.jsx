@@ -107,12 +107,7 @@ const General = memo(
               registerDate: moment(),
             },
           },
-        callback: (response, error) => {
-          if (response) {
-            history.push(
-              `/ho-so-doi-tuong/hoc-sinh`,
-            );
-          }
+        callback: (error) => {
           if (error) {
             if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
               error?.validationErrors.forEach((item) => {
@@ -401,7 +396,7 @@ const General = memo(
                     />
                   </Pane>
                   <Pane className="col-lg-2">
-                    <Form.Item label="Tuổi(tháng)">
+                    <Form.Item label="Tuổi (tháng)">
                       {dayOfBirth && moment().diff(moment(dayOfBirth), 'month')}
                     </Form.Item>
                   </Pane>

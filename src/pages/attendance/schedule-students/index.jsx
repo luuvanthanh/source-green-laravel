@@ -118,7 +118,7 @@ class Index extends PureComponent {
 
     dispatch({
       type: 'scheduleStudents/GET_CATEGORY',
-      callback: () => {},
+      callback: () => { },
     });
   };
 
@@ -610,9 +610,8 @@ class Index extends PureComponent {
             fullName={record.fullName}
             description={
               record?.classStudent?.class
-                ? `${record?.classStudent?.class?.name || ''} - ${
-                    record?.classStudent?.class?.branch?.name || ''
-                  }`
+                ? `${record?.classStudent?.class?.name || ''} - ${record?.classStudent?.class?.branch?.name || ''
+                }`
                 : " "
             }
           />

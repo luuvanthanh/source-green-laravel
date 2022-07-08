@@ -20,8 +20,9 @@ const Index = memo(() => {
   const { query, pathname } = useLocation();
   const { params } = useParams();
   const dispatch = useDispatch();
-  const [{ data, pagination, employees }] = useSelector(({ manualTimekeeping }) => [
+  const [{ data, pagination, employees }, loading] = useSelector(({ manualTimekeeping, loading: { effects } }) => [
     manualTimekeeping,
+    effects,
   ]);
 
   const [search, setSearch] = useState({
@@ -35,11 +36,11 @@ const Index = memo(() => {
       : moment().startOf('month').subtract(1, 'months').add(25, 'days'),
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [dataCopy, setDataCopy] = useState([]);
-  const [isLoadDataCopy, setIsLoadDataCopy] = useState(false);
+  // const [dataCopy, setDataCopy] = useState([]);
+  // const [isLoadDataCopy, setIsLoadDataCopy] = useState(false);
 
   const onLoad = () => {
-    setIsLoadDataCopy(true);
+    // setIsLoadDataCopy(true);
     dispatch({
       type: 'manualTimekeeping/GET_DATA',
       payload: {
@@ -49,7 +50,7 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          setIsLoadDataCopy(false);
+          // setIsLoadDataCopy(false);
         }
       },
     });
@@ -131,7 +132,7 @@ const Index = memo(() => {
   };
 
   const onChangeDateModal = () => {
-    setIsLoadDataCopy(true);
+    // setIsLoadDataCopy(true);
     dispatch({
       type: 'manualTimekeeping/GET_DATA',
       payload: {
@@ -149,8 +150,8 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          setDataCopy(response);
-          setIsLoadDataCopy(false);
+          // setDataCopy(response);
+          // setIsLoadDataCopy(false);
         }
       },
     });
@@ -158,27 +159,28 @@ const Index = memo(() => {
 
   const handleOk = () => {
     modalRef.validateFields().then((values) => {
-      const payload = {
-        startDate: Helper.getDate(
-          moment(values.startDate).startOf('month').subtract(1, 'months').add(25, 'days'),
+      const dataDay = Helper.convertArrayDays(Helper.getDate(
+        moment(values.startDate).startOf('month').subtract(1, 'months').add(26, 'days'),
+        variables.DATE_FORMAT.DATE_AFTER),
+        Helper.getDate(
+          moment(values.startDate).startOf('month').add(25, 'days'),
           variables.DATE_FORMAT.DATE_AFTER,
-        ),
-        endDate: Helper.getDate(
-          moment(values.startDate).startOf('month').add(24, 'days'),
-          variables.DATE_FORMAT.DATE_AFTER,
-        ),
-        month: Helper.getDate(
-          moment(values.endDate).subtract(1, 'months').add(25, 'days'),
-          variables.DATE_FORMAT.DATE_AFTER,
-        ),
-        employeeId: !isEmpty(dataCopy)
-          ? dataCopy.map((item) => item.id)
-          : data.map((item) => item.id),
-      };
+        ));
+      const check = (i) => moment(i).day() !== 0 && moment(i).day() !== 1;
+      const dayFilter = dataDay?.filter(i => check(i));
 
+      const payload =
+        employees?.map(item => ({
+          employeeId: item?.id,
+          listOfDate: dayFilter?.map(i =>
+          ({
+            date: moment(i),
+            type: "X"
+          }))
+        }));
       dispatch({
         type: 'manualTimekeeping/COPY',
-        payload,
+        payload: { data: payload },
         callback: () => {
           modalRef.resetFields();
         },
@@ -249,7 +251,7 @@ const Index = memo(() => {
       <Helmet title="Chấm công thủ công" />
       <Modal
         centered
-        title="Tạo bản sao"
+        title="Chấm công nhanh"
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={
@@ -262,7 +264,7 @@ const Index = memo(() => {
               color="success"
               type="primary"
               onClick={handleOk}
-              disabled={isLoadDataCopy}
+              disabled={isEmpty(employees)}
             >
               Lưu
             </Button>
@@ -279,17 +281,9 @@ const Index = memo(() => {
           <div className="row">
             <div className="col-lg-6">
               <FormItem
-                label="Tháng muốn sao chép"
+                label="Tháng muốn chấm công"
                 name="startDate"
                 onChange={(event) => onChangeDateModal(event)}
-                type={variables.MONTH_PICKER}
-                allowClear={false}
-              />
-            </div>
-            <div className="col-lg-6">
-              <FormItem
-                label="Tháng cần sao chép"
-                name="endDate"
                 type={variables.MONTH_PICKER}
                 allowClear={false}
               />
@@ -299,8 +293,8 @@ const Index = memo(() => {
                 bordered
                 isEmpty
                 columns={header(params)}
-                dataSource={data}
-                pagination={paginationFunction(pagination)}
+                dataSource={employees}
+                pagination={false}
                 params={{
                   header: header(),
                   type: 'table',
@@ -319,7 +313,7 @@ const Index = memo(() => {
           </div>
           <div className="col-lg-6 p0 d-flex justify-content-end">
             <Button color="yellow" icon="file" onClick={showModal} className="mr10">
-              Tạo bản sao
+              Chấm công nhanh
             </Button>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Chấm công
@@ -368,6 +362,7 @@ const Index = memo(() => {
             isEmpty
             columns={header(params)}
             dataSource={data}
+            loading={loading['manualTimekeeping/GET_DATA']}
             pagination={paginationFunction(pagination)}
             params={{
               header: header(),

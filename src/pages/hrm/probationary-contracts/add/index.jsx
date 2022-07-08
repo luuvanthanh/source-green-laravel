@@ -185,7 +185,7 @@ class Index extends PureComponent {
     this.setStateData((prevState) => ({
       parameterValues: [
         ...prevState.parameterValues,
-        { index: last(prevState?.parameterValues)?.index + 1 },
+        { index: last(prevState?.parameterValues)?.index + 1, valueDefault: 0 },
       ],
     }));
   };
@@ -364,6 +364,7 @@ class Index extends PureComponent {
       effects['probationaryContractsAdd/GET_CATEGORIES'] ||
       effects['probationaryContractsAdd/GET_DETAILS'] ||
       effects['probationaryContractsAdd/GET_TYPE_CONTRACTS'];
+
     const loadingSubmit =
       effects['probationaryContractsAdd/ADD'] || effects['probationaryContractsAdd/UPDATE'];
     return (
@@ -542,9 +543,15 @@ class Index extends PureComponent {
                           rowKey="index"
                           scroll={{ x: '100%' }}
                           footer={() => (
-                            <Button color="success" ghost icon="plus" onClick={this.onAddValues}>
-                              Thêm dòng
-                            </Button>
+                            <div className='d-flex justify-content-between'>
+                              <Button color="success" ghost icon="plus" onClick={this.onAddValues}>
+                                Thêm dòng
+                              </Button>
+                              <div className={styles['text-sum']}>
+                                <p className={styles.title}>Tổng cộng: </p>
+                                <h3 className={styles.number}>{Helper.getPrice(parameterValues?.reduce((total, item) => total + JSON.parse(item?.valueDefault), 0))}</h3>
+                              </div>
+                            </div>
                           )}
                         />
                       </TabPane>

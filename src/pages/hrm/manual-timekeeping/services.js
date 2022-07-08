@@ -23,7 +23,7 @@ export function getEmployees(params = {}) {
 }
 
 export function copy(data = {}) {
-  return request('/v1/copy-manual-calculations', {
+  return request('/v1/fast-manual-calculations', {
     method: 'POST',
     data,
   });
