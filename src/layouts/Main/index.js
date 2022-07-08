@@ -84,7 +84,7 @@ const OBJECTS = {
   },
   ALLOCATION: {
     icon: '/images/home/pin.svg',
-    title: 'Phân bổ',
+    title: 'Phân lớp',
     menu: 'menuLeftAllocation',
   },
   ATTENDANCE: {

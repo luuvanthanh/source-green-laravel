@@ -21,7 +21,7 @@ export const feature = {
       permission: [permissions.HSDT],
     },
     {
-      title: 'Phân bổ',
+      title: 'Phân lớp',
       src: '/images/home/pin.svg',
       animation: animationImage.allotment,
       url: '/phan-bo',

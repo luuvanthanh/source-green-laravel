@@ -102,7 +102,7 @@ const Curator = memo(
                   <FormItem
                     data={Helper.convertSelectUsers(employees)}
                     name="employeeId"
-                    label="Nhân viên theo dõi"
+                    label="Giáo viên lead hiện tại"
                     type={variables.SELECT}
                     rules={[variables.RULES.EMPTY]}
                   />
@@ -140,7 +140,7 @@ Curator.propTypes = {
 Curator.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   employees: [],
