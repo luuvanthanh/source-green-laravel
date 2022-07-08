@@ -111,13 +111,13 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 $query01->where(function ($q2) use ($attributes) {
                     $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]])->where('IsEffect', true);
                 });
+            })->orWhereHas('labourContract.typeOfContract', function ($query02) {
+                $query02->where('IsUnlimited', true);
+            })->orWhereHas('probationaryContract', function ($query03) use ($attributes) {
+                $query03->where(function ($q2) use ($attributes) {
+                    $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]])->where('IsEffect', true);
+                });
             });
-
-            // $this->model = $this->model->whereDoesntHave('labourContract', function ($query) use ($now) {
-            //     $query->where('ContractTo', '<', $now)->where('IsEffect', true);
-            // })->whereDoesntHave('probationaryContract', function ($query) use ($now) {
-            //     $query->where('ContractTo', '<', $now)->where('IsEffect', true);
-            // });
         }
 
         if (!empty('timekeeping')) {
