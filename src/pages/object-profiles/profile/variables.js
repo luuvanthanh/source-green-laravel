@@ -1,8 +1,11 @@
 export const variables = {
   STATUS_NAME: {
-    UNDERWEIGHT: 'Thiếu cân',
-    OVERWEIGHT: 'Thiếu cân',
-    OBESITY: 'Thừa cân',
+    //  UNDERWEIGHT: 'Thiếu cân',
+    // OVERWEIGHT: 'Thiếu cân',
+    // OBESITY: 'Thừa cân',
+    UNDERWEIGHT: '',
+    OVERWEIGHT: '',
+    OBESITY: '',
     NORMAL: 'Bình thường',
   },
 };

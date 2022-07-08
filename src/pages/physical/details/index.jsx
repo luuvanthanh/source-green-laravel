@@ -66,14 +66,14 @@ const Index = memo(() => {
       show: false
     },
     axis: {
-      x : {
+      x: {
         label: {
           text: 'Thời gian (tháng)',
           position: 'outer-center',
         },
-        type : 'timeseries',
+        type: 'timeseries',
         tick: {
-          format (x) {
+          format(x) {
             return new Date(x).getMonth() + 1;
           }
         }
@@ -224,7 +224,7 @@ const Index = memo(() => {
                 <img className={styles['img-bmi']} src="/images/bmi.svg" alt="bmi" />
               </div>
               <div className={styles['result-bmi']}>
-                <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, 'Học sinh')}</p>
+                <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, '')}</p>
                 {details?.bmiConclusion?.status && details?.bmiConclusion?.status !== 'NORMAL' ? (
                   <p className="font-size-15 mb0">Cân nặng cần đạt được: <span className="text-danger mx5">{details?.bmiConclusion?.ideaWeight.toFixed(1) || 0}</span>kg</p>
                 ) : (
