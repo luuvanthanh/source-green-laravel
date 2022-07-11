@@ -332,8 +332,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             }
         }]);
 
-        $this->model = $this->studentRepositoryEloquent->model->where('IsDeleted', false);
-
         if (!empty($attributes['studentId'])) {
             $studentId = explode(',', $attributes['studentId']);
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
