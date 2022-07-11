@@ -25,9 +25,15 @@ export function getStaff() {
   return request(`/v1/employees`, {
     method: 'GET',
     params: {
-      include: Helper.convertIncludes([
-        'positionLevel,positionLevelNow',
-      ]),
+      include: Helper.convertIncludes(['positionLevel,positionLevelNow']),
+    },
+  });
+}
+export function getFormContarct(data = {}) {
+  return request('/v1/number-form-contracts', {
+    method: 'GET',
+    params: {
+      ...data,
     },
   });
 }

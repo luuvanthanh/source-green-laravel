@@ -96,7 +96,7 @@ const Index = () => {
         startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
         // unexpiredContract: true,
 
-        getLimitUser: endTime.getTime() > time.getTime() && startTime.getTime() < time.getTime() || endTime.getTime() > time.getTime() && startTime.getTime() > time.getTime() ? true : undefined,
+        // getLimitUser: endTime.getTime() > time.getTime() && startTime.getTime() < time.getTime() || endTime.getTime() > time.getTime() && startTime.getTime() > time.getTime() ? true : undefined,
         forManualCalculation: endTime.getTime() > time.getTime() && startTime.getTime() < time.getTime() || endTime.getTime() > time.getTime() && startTime.getTime() > time.getTime() ? true : undefined,
       },
     });

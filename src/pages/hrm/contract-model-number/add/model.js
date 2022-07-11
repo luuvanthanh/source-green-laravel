@@ -24,7 +24,7 @@ export default {
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: payload?.parsePayload,
     }),
   },
   effects: {

@@ -16,6 +16,7 @@ export default {
       paramaterValues: [],
       Staff: [],
     },
+    formContarct: [],
     contractTypes: [],
     details: {},
     error: {
@@ -59,7 +60,15 @@ export default {
     }),
     SET_STAFF: (state, { payload }) => ({
       ...state,
-      Staff:  payload?.filter(i => i?.positionLevelNow?.division?.code === 'CEO' || i?.positionLevelNow?.division?.code === 'HC'),
+      Staff: payload?.filter(
+        (i) =>
+          i?.positionLevelNow?.division?.code === 'CEO' ||
+          i?.positionLevelNow?.division?.code === 'HC',
+      ),
+    }),
+    SET_FORM_CONTRACTS: (state, { payload }) => ({
+      ...state,
+      formContarct: payload.parsePayload,
     }),
   },
   effects: {
@@ -136,6 +145,23 @@ export default {
           yield saga.put({
             type: 'SET_STAFF',
             payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_FORM_CONTRACTS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getFormContarct, payload);
+        callback(response);
+        if (response) {
+          yield saga.put({
+            type: 'SET_FORM_CONTRACTS',
+            payload: response,
           });
         }
       } catch (error) {

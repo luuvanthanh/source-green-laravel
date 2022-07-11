@@ -11,6 +11,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import variablesModules from './variables';
 
 let isMounted = true;
 /**
@@ -44,7 +45,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        KeyWord: query?.KeyWord,
+        fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -126,6 +127,11 @@ class Index extends PureComponent {
     this.debouncedSearch(e.target.value, type);
   };
 
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
+
   /**
    * Function set pagination
    * @param {integer} page page of pagination
@@ -196,25 +202,39 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'STT ',
-        key: 'index',
-        width: 80,
-        fixed: 'left',
-        render: (text, record, index) =>
-          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
+        title: 'Thời gian tạo',
+        key: 'date',
+        className: 'min-width-150',
+        width: 150,
+        render: (value) => Helper.getDate(value?.creationTime, variables.DATE_FORMAT.DATE_TIME),
       },
       {
-        title: 'Mã sự cố',
+        title: 'Loại hợp đồng',
         key: 'code',
         className: 'min-width-150',
-        width: 300,
-        render: (record) => <Text size="normal">{record.code}</Text>,
+        width: 150,
+        render: (record) => <Text size="normal"> {variablesModules?.STATUS[record?.type]}</Text>,
       },
       {
-        title: 'Tên sự cố',
-        key: 'name',
+        title: 'Mẫu số hợp đồng',
+        key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.name}</Text>,
+        width: 150,
+        render: (record) => <Text size="normal">{record.numberForm}</Text>,
+      },
+      {
+        title: 'Số hiện tại',
+        key: 'code',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => <Text size="normal">{record.ordinalNumber}</Text>,
+      },
+      {
+        title: 'Ngày hiệu lực',
+        key: 'name',
+        className: 'min-width-250',
+        width: 250,
+        render: (record) => <Text size="normal">{Helper.getDate(record?.startDate, variables.DATE_FORMAT.DATE)} - {Helper.getDate(record?.endDate, variables.DATE_FORMAT.DATE)}</Text>,
       },
       {
         key: 'action',
@@ -265,12 +285,21 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
-                    name="KeyWord"
-                    onChange={(event) => this.onChange(event, 'KeyWord')}
+                    name="fullName"
+                    onChange={(event) => this.onChange(event, 'fullName')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả loại công văn' }, ...variablesModules.DATA_TYPE]}
+                    name="type"
+                    onChange={(event) => this.onChangeSelect(event, 'type')}
+                    type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
               </div>

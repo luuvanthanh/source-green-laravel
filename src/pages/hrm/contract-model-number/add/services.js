@@ -1,5 +1,4 @@
 import request from '@/utils/requestLavarel';
-import { Helper } from '@/utils';
 
 export function add(data = {}) {
   return request('/v1/number-form-contracts', {
@@ -9,7 +8,7 @@ export function add(data = {}) {
 }
 
 export function update(data = {}) {
-  return request(`/v1/number-form-contracts`, {
+  return request(`/v1/number-form-contracts/${data.id}`, {
     method: 'PUT',
     params: {
       id: data.id,
@@ -24,10 +23,6 @@ export function details(data = {}) {
     method: 'GET',
     params: {
       ...data,
-      orderBy: 'created_at',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes(['Symptoms', 'symptoms']),
     },
   });
 }

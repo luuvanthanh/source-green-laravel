@@ -16,7 +16,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.items,
+      data: payload.parsePayload,
       pagination: {
         total: payload.totalCount,
       },

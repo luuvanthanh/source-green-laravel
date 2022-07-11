@@ -5,27 +5,21 @@ import { useSelector, useDispatch } from 'dva';
 import { head, isEmpty, get, last } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import classnames from 'classnames';
 import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import styles from '@/assets/styles/Common/common.scss';
 import { Helper } from '@/utils';
+import moment from 'moment';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import stylesModule from '../styles.module.scss';
+import variablesModules from '../variables';
 
-const dataType = [
-  { id: 'PROBATIONARY', name: 'Thử việc' },
-  { id: 'LABOUR', name: 'Lao động' },
-  { id: 'SEASONAL', name: 'Thời vụ' },
-];
 
 const General = memo(() => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [{ menuLeftHRM }, {
-    details,
-  }, effects] = useSelector(({ menu, HRMContractModelNumberAdd, loading: { effects } }) => [menu, HRMContractModelNumberAdd, effects]);
+  const [{ menuLeftHRM }, effects] = useSelector(({ menu, HRMContractModelNumberAdd, loading: { effects } }) => [menu, HRMContractModelNumberAdd, effects]);
   const mounted = useRef(false);
   const loadingSubmit = effects['HRMContractModelNumberAdd/ADD'] || effects['HRMContractModelNumberAdd/UPDATE'];
 
@@ -53,9 +47,12 @@ const General = memo(() => {
         callback: (response) => {
           if (response) {
             form.setFieldsValue({
-              data: response.symptoms.map((item) => ({
-                ...item,
-              })),
+              ...response?.parsePayload,
+              selectDate: response?.parsePayload?.startDate &&
+                response?.parsePayload?.endDate && [
+                  moment(response?.parsePayload?.startDate),
+                  moment(response?.parsePayload?.endDate),
+                ],
             });
           }
         },
@@ -63,31 +60,23 @@ const General = memo(() => {
     }
   }, [params.id]);
 
-  useEffect(() => {
-    if (params.id) {
-      form.setFieldsValue({
-        ...details,
-        ...head(details.positionLevel) || {},
-      });
-    }
-  }, [details]);
-
   const onFinish = (values) => {
+    const payload = {
+      startDate:
+        head(values.selectDate) &&
+        Helper.getDate(head(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
+      endDate:
+        last(values.selectDate) &&
+        Helper.getDate(last(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
+      selectDate: undefined,
+      type: values?.type,
+      numberForm: values?.numberForm,
+      ordinalNumber: values?.ordinalNumber,
+    };
 
     dispatch({
       type: params.id ? 'HRMContractModelNumberAdd/UPDATE' : 'HRMContractModelNumberAdd/ADD',
-      payload: {
-        startDate:
-          head(values.selectDate) &&
-          Helper.getDate(head(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
-        endDate:
-          last(values.selectDate) &&
-          Helper.getDate(last(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
-        selectDate: undefined,
-        type: values?.type,
-        numberForm: values?.numberForm,
-        ordinalNumber: values?.ordinalNumber,
-      },
+      payload: params.id ? { id: params?.id, ...payload } : payload,
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -127,7 +116,7 @@ const General = memo(() => {
                   </Heading>
                   <Pane className="row mt20">
                     <Pane className="col-lg-6">
-                      <FormItem label="Loại hợp đồng" name="type" data={dataType} type={variables.SELECT} rules={[variables.RULES.EMPTY_INPUT]} />
+                      <FormItem label="Loại hợp đồng" name="type" data={variablesModules?.DATA_TYPE} type={variables.SELECT} rules={[variables.RULES.EMPTY_INPUT]} />
                     </Pane>
                     <Pane className="col-lg-6">
                       <FormItem label="Mẫu số hợp đồng" name="numberForm" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />

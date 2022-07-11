@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form, Tabs, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty, toString, last } from 'lodash';
+import { get, isEmpty, toString, last, head } from 'lodash';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -39,6 +39,7 @@ const mapStateToProps = ({ menu, probationaryContractsAdd, loading }) => ({
   details: probationaryContractsAdd.details,
   error: probationaryContractsAdd.error,
   menuData: menu.menuLeftHRM,
+  formContarct: probationaryContractsAdd.formContarct,
 });
 
 @connect(mapStateToProps)
@@ -49,6 +50,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       parameterValues: [],
+      dataFormContarct: {},
     };
     setIsMounted(true);
   }
@@ -92,6 +94,9 @@ class Index extends PureComponent {
           id: item.pivot.parameterValueId,
         })),
       );
+      this.setStateData({
+        dataFormContarct: [details],
+      });
     }
   }
 
@@ -195,9 +200,13 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    const { parameterValues } = this.state;
+    const { parameterValues, dataFormContarct } = this.state;
     const payload = {
       ...values,
+      ordinalNumber: head(dataFormContarct)?.ordinalNumber,
+      numberForm: head(dataFormContarct)?.numberForm,
+      numberFormContractId: head(dataFormContarct)?.id,
+      type: head(dataFormContarct)?.type,
       id: params.id,
       contractDate: Helper.getDateTime({
         value: Helper.setDate({
@@ -349,6 +358,31 @@ class Index extends PureComponent {
     },
   ];
 
+  changeFormContarct = (value) => {
+    const {
+      dispatch
+    } = this.props;
+    dispatch({
+      type: 'probationaryContractsAdd/GET_FORM_CONTRACTS',
+      payload: {
+        type: 'PROBATIONARY',
+        contractDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: value,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+      },
+      callback: (response) => {
+        this.setStateData({
+          dataFormContarct: response?.parsePayload,
+        });
+      }
+    });
+  };
+
   render() {
     const {
       error,
@@ -359,7 +393,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { parameterValues } = this.state;
+    const { parameterValues, dataFormContarct } = this.state;
     const loading =
       effects['probationaryContractsAdd/GET_CATEGORIES'] ||
       effects['probationaryContractsAdd/GET_DETAILS'] ||
@@ -404,19 +438,20 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-4">
                     <FormItem
-                      label="Số hợp đồng"
-                      name="contractNumber"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </div>
-                  <div className="col-lg-4">
-                    <FormItem
                       label="Ngày hợp đồng"
                       name="contractDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
+                      onChange={this.changeFormContarct}
                     />
+                  </div>
+                  <div className="col-lg-4">
+                    <label htmlFor="" className="mb5 font-size-13">
+                      Số hợp đồng
+                    </label>
+                    <p className="mb0 font-size-13 mt10 font-weight-bold">
+                      {dataFormContarct?.length > 0 ? `${head(dataFormContarct)?.ordinalNumber}/${head(dataFormContarct)?.numberForm}` : ''}
+                    </p>
                   </div>
                   <div className="col-lg-4">
                     <FormItem
