@@ -98,24 +98,24 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         if (!empty($attributes['startDate']) && !empty($attributes['endDate']) && !empty($attributes['forManualCalculation']) && $attributes['forManualCalculation'] == true) {
             $this->model = $this->model->whereHas('manualCalculation', function ($q) use ($attributes) {
-                $q->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+                $q->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
             })->with(['manualCalculation' => function ($query) use ($attributes) {
-                $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+                $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
             }]);
         }
 
         $this->model = $this->model->tranferHistory($attributes);
 
         if (!empty($attributes['startDate']) && !empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == true) {
-            $this->model = $this->model->where('Status', User::STATUS['WORKING'])->whereHas('labourContract', function ($query01) use ($attributes) {
-                $query01->where('IsEffect', true)->orWhere(function ($q2) use ($attributes) {
-                    $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]]);
+            $this->model = $this->model->whereHas('labourContract', function ($query01) use ($attributes) {
+                $query01->where(function ($q2) use ($attributes) {
+                    $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]])->where('IsEffect', true);
                 });
             })->orWhereHas('labourContract.typeOfContract', function ($query02) {
                 $query02->where('IsUnlimited', true);
             })->orWhereHas('probationaryContract', function ($query03) use ($attributes) {
-                $query03->where('IsEffect', true)->where(function ($q2) use ($attributes) {
-                    $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]]);
+                $query03->where(function ($q2) use ($attributes) {
+                    $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]])->where('IsEffect', true);
                 });
             });
         }
