@@ -36,6 +36,7 @@ function Index() {
   const [parameterValues, setParameterValues] = useState([]);
   const [show, setShow] = useState(false);
   const [isValid, setIsValid] = useState(false);
+  const [dataFormContarct, setDataFormContarct] = useState([]);
 
   const loadCategories = () => {
     dispatch({
@@ -104,6 +105,7 @@ function Index() {
           id: item.pivot.parameterValueId,
         })),
       );
+      setDataFormContarct([details]);
     }
   }, [details]);
 
@@ -215,6 +217,10 @@ function Index() {
     const payload = {
       ...values,
       id: params.id,
+      ordinalNumber: head(dataFormContarct)?.ordinalNumber,
+      numberForm: head(dataFormContarct)?.numberForm,
+      numberFormContractId: head(dataFormContarct)?.id,
+      type: head(dataFormContarct)?.type,
       contractDate: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
@@ -356,6 +362,26 @@ function Index() {
     return columns;
   };
 
+  const changeFormContarct = (value) => {
+    dispatch({
+      type: 'probationaryContractsAdd/GET_FORM_CONTRACTS',
+      payload: {
+        type: 'SEASONAL',
+        contractDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: value,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+      },
+      callback: (response) => {
+        setDataFormContarct(response?.parsePayload);
+      }
+    });
+  };
+
   return (
     <>
       <Breadcrumbs
@@ -399,19 +425,20 @@ function Index() {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    label="Số hợp đồng"
-                    name="contractNumber"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
                     label="Ngày hợp đồng"
                     name="contractDate"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    onChange={changeFormContarct}
                   />
+                </div>
+                <div className="col-lg-4">
+                  <label htmlFor="" className="mb5 font-size-13">
+                    Số hợp đồng
+                  </label>
+                  <p className="mb0 font-size-13 mt10 font-weight-bold">
+                    {dataFormContarct?.length > 0 ? `${head(dataFormContarct)?.ordinalNumber}/${head(dataFormContarct)?.numberForm}` : ''}
+                  </p>
                 </div>
                 <div className="col-lg-4">
                   <FormItem

@@ -1,18 +1,18 @@
 // Import mixins
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN FORM */
 
-.ant-form input[type='file'] {
+.ant-form input[type="file"] {
   min-height: 40px;
 }
 
-.ant-form input.ant-input-sm[type='file'] {
+.ant-form input.ant-input-sm[type="file"] {
   min-height: 48px;
 }
 
-.ant-form input.ant-input-lg[type='file'] {
+.ant-form input.ant-input-lg[type="file"] {
   min-height: 52px;
 }
 
@@ -72,7 +72,7 @@ form .ant-cascader-picker:only-child {
       }
       &::after {
         color: $danger;
-        content: '*';
+        content: "*";
         font-size: 13px;
         line-height: 1;
         position: absolute;
@@ -239,7 +239,7 @@ form .ant-cascader-picker:only-child {
       &:last-child {
         border-bottom: unset;
       }
-      .ant-form-item input[type='checkbox'] {
+      .ant-form-item input[type="checkbox"] {
         width: 24px;
         height: 24px;
       }

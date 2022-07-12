@@ -1678,6 +1678,24 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-hop-dong',
+            component: './hrm/contract-model-number',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-hop-dong/tao-moi',
+            component: './hrm/contract-model-number/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-hop-dong/:id/chi-tiet',
+            component: './hrm/contract-model-number/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/phan-ca-lam-viec',
             component: './hrm/work-shift',
             wrappers: ['@/wrappers/auth'],
