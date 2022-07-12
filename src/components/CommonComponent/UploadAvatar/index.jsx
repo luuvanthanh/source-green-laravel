@@ -39,7 +39,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
       multiple: true,
       beforeUpload: () => null,
       customRequest({ file }) {
-        const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'image/jpg'];
+        const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
         const maxSize = 20 * 2 ** 20;
         const { type, size } = file;
 
