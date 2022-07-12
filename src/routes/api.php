@@ -48,7 +48,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
 
         \GGPHP\Crm\Province\RouteRegistrar::routes(function ($router) {
-            $router->forGuest();
+            $router->forBread();
         });
 
         \GGPHP\Crm\CustomerLead\RouteRegistrar::routes(function ($router) {
@@ -96,6 +96,18 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Crm\Fee\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+    });
+
+    \GGPHP\Crm\Marketing\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
+
+    \GGPHP\Crm\Category\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
+
+    \GGPHP\Crm\Province\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
     });
 
     \GGPHP\Crm\CallCenter\RouteRegistrar::routes(function ($route) {
