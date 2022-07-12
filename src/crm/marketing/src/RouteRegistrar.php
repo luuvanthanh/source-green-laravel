@@ -33,8 +33,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('data-marketings', 'DataMarketingController');
             \Route::post('program-data-marketings', 'DataMarketingController@storeProgram');
             \Route::post('delete-program-data-marketings', 'DataMarketingController@deleteProgram');
-            \Route::resource('marketing-programs', 'MarketingProgramController');
-            \Route::resource('data-marketing-student-infos', 'DataMarketingStudentInfoController')->except('show');
+            \Route::resource('marketing-programs', 'MarketingProgramController')->except('show');
+            \Route::resource('data-marketing-student-infos', 'DataMarketingStudentInfoController');
             \Route::resource('articles', 'ArticleController');
             \Route::post('move-leads', 'DataMarketingController@moveLead');
             \Route::post('post-article-facebooks', 'ArticleController@postArticleFacebook');
@@ -54,7 +54,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forGuest()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('data-marketing-student-infos', 'DataMarketingStudentInfoController')->only('show');
+            \Route::resource('marketing-programs', 'MarketingProgramController')->only('show');
         });
     }
 }
