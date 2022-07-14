@@ -298,4 +298,21 @@ class FacebookController extends Controller
             return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
         }
     }
+
+    public function registrationWebhook(Request $request)
+    {
+        try {
+            $registrationWebhook = FacebookService::registrationWebhook($request->all());
+
+            return $this->success(['data' => $registrationWebhook], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            $statusCode = 500;
+
+            if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                $statusCode = $th->getStatusCode();
+            }
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $statusCode);
+        }
+    }
 }

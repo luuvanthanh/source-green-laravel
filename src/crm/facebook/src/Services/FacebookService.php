@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Facebook\Services;
 
 use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
+use GGPHP\Crm\Facebook\Models\Page;
 use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -603,6 +604,41 @@ class FacebookService
                 '/' . $postId . '?fields=shares',
                 $attributes['page_access_token']
             );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode);
+    }
+
+    public static function registrationWebhook(array $attributes)
+    {
+        $fb = getFacebookSdk();
+        $subscribedFields = Page::SUBSCRIBEDFIELD;
+
+        try {
+            foreach ($attributes['data_page'] as $dataPage) {
+                $pageId = $dataPage['page_id'];
+                $response = $fb->post(
+                    '/' . $pageId . '/subscribed_apps',
+                    [
+                        'subscribed_fields' => $subscribedFields
+                    ],
+                    $dataPage['page_access_token']
+                );
+            }
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
 
