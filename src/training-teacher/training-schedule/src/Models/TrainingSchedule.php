@@ -3,6 +3,8 @@
 namespace GGPHP\TrainingTeacher\TrainingSchedule\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\TrainingTeacher\Category\Models\TrainingModule;
+use GGPHP\TrainingTeacher\Category\Models\TrainingModuleDetail;
 use GGPHP\Users\Models\User;
 
 class TrainingSchedule extends UuidModel
@@ -46,5 +48,15 @@ class TrainingSchedule extends UuidModel
     public function employee()
     {
         return $this->belongsToMany(User::class, 'evaluate_teacher.TrainingScheduleEmployees', 'TrainingScheduleId', 'EmployeeId');
+    }
+
+    public function trainingModule()
+    {
+        return $this->belongsTo(TrainingModule::class, 'TrainingModuleId');
+    }
+
+    public function trainingModuleDetail()
+    {
+        return $this->belongsTo(TrainingModuleDetail::class, 'TrainingModuleDetailId');
     }
 }
