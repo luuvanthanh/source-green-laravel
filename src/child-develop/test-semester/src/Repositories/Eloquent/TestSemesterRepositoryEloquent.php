@@ -278,6 +278,8 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
         }
 
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', Student::OFFICAL);
+
         if (!empty($attributes['limit'])) {
             $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
         } else {
@@ -294,7 +296,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             if (!empty($attributes['assessmentPeriodId'])) {
                 $query->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
             }
-            
+
             if (!empty($attributes['status'])) {
                 $query->whereIn('Status', $attributes['status']);
             }
