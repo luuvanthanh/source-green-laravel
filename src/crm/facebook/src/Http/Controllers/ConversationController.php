@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Facebook\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\Crm\Facebook\Jobs\SynchronizeConversation;
 use GGPHP\Crm\Facebook\Repositories\Contracts\ConversationRepository;
 use Illuminate\Http\Request;
 
@@ -30,8 +31,8 @@ class ConversationController extends Controller
 
     public function synchronizeConversation(Request $request)
     {
-        $conversation = $this->conversationRepository->synchronizeConversation($request->all());
-        return $this->success((array)$conversation, trans('lang::messages.common.getListSuccess'));
+        dispatch(new SynchronizeConversation($request->all()));
+        return null;
     }
 
     public function seenConversation(Request $request)

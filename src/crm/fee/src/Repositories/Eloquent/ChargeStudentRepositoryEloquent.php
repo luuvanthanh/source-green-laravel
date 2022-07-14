@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Fee\Repositories\Eloquent;
 
+use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Fee\Models\ChargeStudent;
 use GGPHP\Crm\Fee\Models\ClassType;
 use GGPHP\Crm\Fee\Models\Fee;
@@ -95,6 +96,8 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
                 $params['dayAdmission'] = $chargeStudent->day_admission;
                 $params['expectedToCollectMoney'] = $chargeStudent->expected_to_collect_money;
                 $params['chargeStudentIdCrm'] = $chargeStudent->id;
+                $params['branchId'] = $chargeStudent->branch->branch_id_hrm;
+                $params['classTypeId'] = $chargeStudent->classType->class_type_clover_id;
 
                 $tuitions = $chargeStudent->tuition->map(function ($item) {
                     return [
@@ -143,6 +146,8 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
                 $params['dayAdmission'] = $chargeStudent->day_admission;
                 $params['expectedToCollectMoney'] = $chargeStudent->expected_to_collect_money;
                 $params['chargeStudentIdCrm'] = $chargeStudent->id;
+                $params['branchId'] = $chargeStudent->branch->branch_id_hrm;
+                $params['classTypeId'] = $chargeStudent->classType->class_type_clover_id;
 
                 $tuitions = $chargeStudent->tuition->map(function ($item) {
                     return [
@@ -169,9 +174,6 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
 
     public function moneyFeePolicie(array $attributes)
     {
-        $classType = ClassType::find($attributes['class_type_id']);
-        $schoolYear = SchoolYear::find($attributes['school_year_id']);
-
         $details = json_decode($attributes['details'], true);
 
         foreach ($details as  $item) {
@@ -185,6 +187,9 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
             ];
         }
 
+        $classType = ClassType::find($attributes['class_type_id']);
+        $schoolYear = SchoolYear::find($attributes['school_year_id']);
+        $branch = Branch::find($attributes['branch_id']);
         //params send clover
         $details = json_encode($params['details']);
         $params['details'] = $details;
@@ -192,6 +197,7 @@ class ChargeStudentRepositoryEloquent extends BaseRepository implements ChargeSt
         $params['schoolYearId'] = $schoolYear->school_year_clover_id;
         $params['dayAdmission'] = $attributes['day_admission'];
         $params['student'] = $attributes['student'];
+        $params['branchId'] = $branch->branch_id_hrm;
 
         $data = ChargeStudentService::moneyFeePolicie($params);
 

@@ -110,4 +110,11 @@ class HistoryCallController extends Controller
     {
         $this->historyCallRepository->updateHistoryCall($request->all());
     }
+
+    public function switchboard()
+    {
+        $switchboard = $this->historyCallRepository->switchboard();
+
+        return $this->success($switchboard, trans('lang::messages.common.getListSuccess'));
+    }
 }

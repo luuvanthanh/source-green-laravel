@@ -9,8 +9,9 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, WithStartRow
+class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, WithStartRow, WithMultipleSheets
 {
     /**
      * @param array $row
@@ -20,6 +21,7 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
     public function model(array $row)
     {
         $sex = null;
+        $birthDate = null;
 
         if ($row[2] == 'Nam' || $row[2] == 'nam') {
             $sex = CustomerLead::SEX['MALE'];
@@ -27,7 +29,10 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
             $sex = CustomerLead::SEX['FEMALE'];
         }
 
-        $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+        if (!is_null($row[1])) {
+            $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+        }
+
         $searchSource = SearchSource::where('type', $row[5])->first();
         $data = [
             'full_name' => $row[0],
@@ -60,22 +65,47 @@ class CustomerLeadImport implements ToModel, WithValidation, SkipsEmptyRows, Wit
     {
         return [
             '*.4' => [
-                'required', 'email'
+                'nullable', 'email'
             ],
             '*.0' => [
                 'required'
             ],
             '*.3' => [
-                'required'
+                'nullable'
             ],
             '*.2' => [
                 'required', 'in:nam,nữ,Nam,Nữ'
-            ]
+            ],
+            '*.1' => [
+                'nullable', 'date_format:d-m-Y'
+            ],
+            '*.5' => [
+                'required'
+            ],
         ];
     }
 
     public function startRow(): int
     {
         return 2;
+    }
+
+    public function sheets(): array
+    {
+        return [
+            'template' => new CustomerLeadImport()
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function customValidationMessages()
+    {
+        return [
+            '*.5.required'  => 'Nguồn tìm kiếm không được bỏ trống.',
+            '*.0.required'  => 'Họ vs tên không được bỏ trống.',
+            '*.2.required'  => 'Giới tính không được bỏ trống.',
+        ];
     }
 }

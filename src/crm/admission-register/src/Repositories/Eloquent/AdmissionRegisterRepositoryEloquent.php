@@ -11,6 +11,7 @@ use GGPHP\Crm\AdmissionRegister\Services\ParentInfoService;
 use GGPHP\Crm\AdmissionRegister\Services\StudentService;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
@@ -92,7 +93,7 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         }
 
         if (!empty($attributes['date_register'])) {
-            $this->model = $this->model->where('date_register', $attributes['date_register']);
+            $this->model = $this->model->whereDate('date_register', $attributes['date_register']);
         }
 
         if (!empty($attributes['student_info_id'])) {
@@ -124,26 +125,24 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
     {
         \DB::beginTransaction();
         try {
-            $admissionRegister = AdmissionRegister::where('student_info_id', $attributes['student_info_id'])->where('status', true)->first();
+            $admissionRegister = AdmissionRegister::create($attributes);
 
-            if (!is_null($admissionRegister)) {
-                $attributes['register_status'] = AdmissionRegister::REGISTER_STATUS['NEW_REGISTER'];
-                $attributes['status'] = false;
-                $admissionRegister->update($attributes);
-            } else {
-                $admissionRegister = AdmissionRegister::create($attributes);
+            if (!empty($attributes['parent_info'])) {
+                $admissionRegister->parentInfo()->create($attributes['parent_info']);
+            }
 
-                if (!empty($attributes['parent_info'])) {
-                    $admissionRegister->parentInfo()->create($attributes['parent_info']);
-                }
+            $customerLead = CustomerLead::where('id', $attributes['customer_lead_id'])->first();
 
-                $customerLead = CustomerLead::where('id', $attributes['customer_lead_id'])->first();
+            if (!is_null($customerLead)) {
+                ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
+                $studentClover = $this->createStudent($attributes, $admissionRegister, $customerLead->id);
 
-                if (!is_null($customerLead)) {
-                    ParentInfoService::addParentInfo($admissionRegister->id, $customerLead);
-                    $studentClover = $this->createStudent($attributes, $admissionRegister, $customerLead->id);
-                    $admissionRegister->update(['student_clover_id' => $studentClover->student->id]);
-                }
+                $admissionRegister->update([
+                    'student_clover_id' => $studentClover->student->id,
+                    'student_clover_code' => $studentClover->student->code,
+                ]);
+
+                $customerLead->update(['parent_clover_id' => $studentClover->fartherId]);
             }
 
             $customerPotential = CustomerPotential::where('customer_lead_id', $attributes['customer_lead_id'])->first();
@@ -176,7 +175,13 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
     {
         \DB::beginTransaction();
         try {
-            $admissionRegister = AdmissionRegister::find($id);
+            $admissionRegister = AdmissionRegister::findOrfail($id);
+
+            if (!empty($attributes['register_status'])) {
+                if ($attributes['register_status'] == AdmissionRegister::REGISTER_STATUS['CANCEL_REGISTER'] && !is_null($admissionRegister->student_clover_id)) {
+                    StudentService::deleteStudent($admissionRegister->student_clover_id);
+                }
+            }
             $admissionRegister->update($attributes);
 
             if (!empty($attributes['parent_info'])) {
@@ -195,97 +200,62 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
     public function createStudent(array $attributes, $admissionRegister, $id)
     {
         $customerLead = CustomerLead::find($id);
-        switch ($customerLead->sex) {
-            case 0:
-                $customerLeadSex = 'FEMALE';
-                break;
-            case 1:
-                $customerLeadSex = 'MALE';
-                break;
-            case 2:
-                $customerLeadSex = 'OTHER';
-                break;
-            default:
-                break;
-        }
-        $studentInfo = $customerLead->studentInfo->where('id', $attributes['student_info_id'])->first();
+        $studentInfo = $customerLead->studentInfo()->where('id', $attributes['student_info_id'])->first();
         $birthday = Carbon::parse($studentInfo->birth_date);
         $now = Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'));
         $numberOfMonth = $birthday->diffInMonths($now);
 
         switch ($studentInfo->sex) {
-            case 0:
+            case StudentInfo::SEX['FEMALE']:
                 $studentInfoSex = 'FEMALE';
                 break;
-            case 1:
+            case StudentInfo::SEX['MALE']:
                 $studentInfoSex = 'MALE';
                 break;
-            case 2:
+            case StudentInfo::SEX['OTHER']:
                 $studentInfoSex = 'OTHER';
-                break;
-            default:
                 break;
         }
 
         $customerLeadAccount = $customerLead->ssoAccount;
         $data['student'] = [
             'code' => 'CrmStudent',
-            'cardNumber' => '',
-            'employeeUd' => null,
             'fullName' => !empty($studentInfo->full_name) ? $studentInfo->full_name : '',
             'sex' => $studentInfoSex,
             'dayOfBirth' => !empty($studentInfo->birth_date) ? $studentInfo->birth_date : '',
             'age' => $numberOfMonth,
-            'address' => '',
-            'street' => '',
-            'city' => null,
-            'district' => null,
-            'ward' => null,
-            'classId' => null,
             'studentCrmId' => $studentInfo->id,
-            'health' => '',
-            'registerDate' => Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d'),
-            'laborNumber' => '',
+            'registerDate' => $admissionRegister->date_register,
             'startDate' => Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d'),
             'status' => 'REGISTED',
             'note' => !empty($admissionRegister->children_note) ? $admissionRegister->children_note : '',
             'parentWish' => !empty($admissionRegister->parent_wish) ? $admissionRegister->parent_wish : '',
-            'source' => '',
-            'comments' => '',
             'fileImage' => '',
+            'branchId' => $admissionRegister->branch->branch_id_hrm
         ];
 
-        $data['fartherId'] = '00000000-0000-0000-0000-000000000000';
-        $data['MotherId'] = '00000000-0000-0000-0000-000000000000';
-        $data['father'] = [
-            'employeeId' => null,
-            'parentCrmId' => $customerLead->id,
-            'code' => $customerLead->code,
-            'fullName' => $customerLead->full_name,
-            'sex' => $customerLeadSex,
-            'dayOfBirth' => !empty($customerLead->birth_date) ? $customerLead->birth_date : '',
-            'address' => !empty($customerLead->address) ? $customerLead->address : '',
-            'street' => '',
-            'city' => null,
-            'district' => null,
-            'ward' => null,
-            'phone' => $customerLead->phone,
-            'anotherPhone' => !empty($customerLead->other_phone) ? $customerLead->other_phone : '',
-            'email' => $customerLead->email,
-            'zalo' => '',
-            'faceBook' => '',
-            'instagram' => '',
-            'hobby' => '',
-            'referent' => '',
-            'source' => '',
-            'status' => 'REGISTED',
-            'jobTile' => '',
-            'fileImage' => !empty($customerLead->file_image) ? $customerLead->file_image : '',
-        ];
+        switch ($studentInfo->customerLead->sex) {
+            case CustomerLead::SEX['FEMALE']:
+                $customerLeadSex = 'FEMALE';
+                break;
+            case CustomerLead::SEX['MALE']:
+                $customerLeadSex = 'MALE';
+                break;
+            case CustomerLead::SEX['OTHER']:
+                $customerLeadSex = 'OTHER';
+                break;
+        }
 
-        $data['mother'] = null;
-        $data['motherAccount'] = null;
-        $data['fatherAccount'] = null;
+        if (!empty($studentInfo->customerLead->parent_clover_id)) {
+            $data['fartherId'] = $studentInfo->customerLead->parent_clover_id;
+        } else {
+            $data['farther'] = [
+                'fullName' => $studentInfo->customerLead->full_name,
+                'sex' => $customerLeadSex,
+                'phone' => $studentInfo->customerLead->phone,
+                'email' => $studentInfo->customerLead->email,
+            ];
+        }
 
         return StudentService::createStudent($data);
     }

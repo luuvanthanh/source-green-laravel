@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forGuest();
     }
 
     /**
@@ -32,7 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('data-marketings', 'DataMarketingController');
             \Route::post('program-data-marketings', 'DataMarketingController@storeProgram');
             \Route::post('delete-program-data-marketings', 'DataMarketingController@deleteProgram');
-            \Route::resource('marketing-programs', 'MarketingProgramController');
+            \Route::resource('marketing-programs', 'MarketingProgramController')->except('show');
             \Route::resource('data-marketing-student-infos', 'DataMarketingStudentInfoController');
             \Route::resource('articles', 'ArticleController');
             \Route::post('move-leads', 'DataMarketingController@moveLead');
@@ -44,6 +45,16 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('article-comment-infos', 'ArticleCommentInfoController');
             \Route::post('import-excel-data-marketings', 'DataMarketingController@importExcelDataMarketing');
             \Route::get('quantity-shares', 'PostFacebookInfoController@quantityShare');
+            \Route::get('template-excel-data-marketings', 'DataMarketingController@templateExcelDataMarketing');
+
+            \Route::get('exchange-email-phone', 'DataMarketingController@exchangeEmailPhone');
+        });
+    }
+
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::resource('marketing-programs', 'MarketingProgramController')->only('show');
         });
     }
 }

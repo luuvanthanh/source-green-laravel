@@ -48,7 +48,7 @@ class HistoryCallTranformer extends BaseTransformer
 
     public function customMeta(): array
     {
-        return ['switchboard' => request()->switchboard_number];
+        return [];
     }
 
     public function includeCustomerLead(HistoryCall $historyCall)

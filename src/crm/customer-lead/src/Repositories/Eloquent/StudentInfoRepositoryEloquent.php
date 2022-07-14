@@ -8,6 +8,8 @@ use GGPHP\Crm\CustomerLead\Models\EventInfo;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Presenters\StudentInfoPresenter;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\StudentInfoRepository;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Models\PotentialStudentInfo;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -89,6 +91,6 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
             StudentInfo::whereIn('id', $attributes['deleteRows'])->delete();
         }
 
-        return parent::all();
+        return parent::find(StudentInfo::latest()->first()->id);
     }
 }

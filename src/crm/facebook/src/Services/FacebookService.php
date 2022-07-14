@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Facebook\Services;
 
 use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
+use GGPHP\Crm\Facebook\Models\Page;
 use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -87,7 +88,7 @@ class FacebookService
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->get(
-                '/' . $pageId . '/conversations?fields=id,unread_count,senders{profile_pic},can_reply,snippet,updated_time,wallpaper',
+                '/' . $pageId . '/conversations?fields=id,unread_count,senders{profile_pic},can_reply,snippet,updated_time,wallpaper' . '&folder=' . $attributes['folder'],
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -625,8 +626,8 @@ class FacebookService
     public static function registrationWebhook(array $attributes)
     {
         $fb = getFacebookSdk();
-        $subscribedFields = 'messages,messaging_postbacks,messaging_optins,messaging_optouts,message_deliveries,message_reads,messaging_payments,messaging_pre_checkouts,messaging_checkout_updates,messaging_account_linking,messaging_referrals,message_echoes,messaging_game_plays,standby,messaging_handovers,messaging_policy_enforcement,message_reactions,inbox_labels,messaging_feedback,messaging_customer_information,feed';
-        
+        $subscribedFields = Page::SUBSCRIBEDFIELD;
+
         try {
             foreach ($attributes['data_page'] as $dataPage) {
                 $pageId = $dataPage['page_id'];

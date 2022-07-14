@@ -4,6 +4,7 @@ namespace GGPHP\Crm\AdmissionRegister\Models;
 
 use Carbon\Carbon;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Category\Models\StatusAdmissionRegister;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,7 +17,7 @@ class AdmissionRegister extends UuidModel
 
     protected $fillable = [
         'student_info_id', 'address', 'date_register', 'parent_wish', 'children_note', 'status_admission_register_id', 'branch_id',
-        'school_year_id', 'status', 'student_clover_id', 'disable_status', 'register_status'
+        'school_year_id', 'status', 'student_clover_id', 'disable_status', 'register_status', 'student_clover_code'
     ];
 
     const STATUS_REGISTER = [
@@ -88,5 +89,10 @@ class AdmissionRegister extends UuidModel
                 $query->where([['start_date', '<', $date], ['end_date', '>', $date]]);
             });
         }]);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

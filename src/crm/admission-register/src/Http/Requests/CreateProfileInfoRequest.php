@@ -28,7 +28,19 @@ class CreateProfileInfoRequest extends FormRequest
             'update_rows' => 'array',
             'delete_rows' => 'array',
             'create_rows.*.admission_register_id' => 'required|exists:admission_registers,id',
-            'create_rows.*.config_profile_info_id' => 'exists:config_profile_infos,id'
+            'create_rows.*.config_profile_info_id' => 'required|exists:config_profile_infos,id'
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'create_rows.*.config_profile_info_id.required'  => 'Loại giấy tờ không được bỏ trống.',
         ];
     }
 }

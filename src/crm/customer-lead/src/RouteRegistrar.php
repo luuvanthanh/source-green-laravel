@@ -32,7 +32,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('event-infos', 'EventInfoController');
-            \Route::resource('customer-leads', 'CustomerLeadController')->only('store', 'update', 'destroy', 'show');
+            \Route::resource('customer-leads', 'CustomerLeadController')->except('index');
             \Route::resource('references', 'ReferenceController');
             \Route::resource('customer-tags', 'CustomerTagController');
             \Route::resource('student-infos', 'StudentInfoController');
@@ -54,6 +54,7 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::get('customer-by-phone/{phone}', 'CustomerLeadController@customerByPhone');
             \Route::post('import-excel-customer-leads', 'CustomerLeadController@importExcelCustomerLead');
+            \Route::get('template-excel-customer-leads', 'CustomerLeadController@templateExcelCustomerLead');
         });
     }
 

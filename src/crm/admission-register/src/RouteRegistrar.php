@@ -38,6 +38,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('child-evaluate-infos', 'ChildEvaluateInfoController');
             \Route::post('test-input-details', 'TestInputController@testInputDetail');
             \Route::get('move-student-to-officials/{id}', 'TestInputController@moveStudentToOfficial');
+            \Route::get('export-confirm-transporters', 'ConfirmTransporterController@exportConfirmTransporter');
+            \Route::get('export-medical-infos', 'MedicalInfoController@exportMedicalInfo');
+            \Route::get('export-child-evaluate-infos', 'ChildEvaluateInfoController@exportChildEvaluateInfo');
+            \Route::get('export-test-inputs', 'TestInputController@exportTestInput');
         });
     }
 }

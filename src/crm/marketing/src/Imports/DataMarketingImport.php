@@ -9,8 +9,9 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, WithStartRow
+class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, WithStartRow, WithMultipleSheets
 {
     /**
      * @param array $row
@@ -20,6 +21,7 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
     public function model(array $row)
     {
         $sex = null;
+        $birthDate = null;
 
         if ($row[2] == 'Nam' || $row[2] == 'nam') {
             $sex = DataMarketing::SEX['MALE'];
@@ -27,7 +29,9 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
             $sex = DataMarketing::SEX['FEMALE'];
         }
 
-        $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+        if (!is_null($row[1])) {
+            $birthDate = Carbon::parse($row[1])->format('Y-m-d');
+        }
         $searchSource = SearchSource::where('type', $row[5])->first();
         $data = [
             'full_name' => $row[0],
@@ -59,11 +63,35 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
 
     public function rules(): array
     {
-        return [];
+        return [
+            '*.1' => [
+                'nullable', 'date_multi_format:d-m-Y,d/m/Y'
+            ]
+        ];
     }
 
     public function startRow(): int
     {
         return 2;
+    }
+
+    public function sheets(): array
+    {
+        return [
+            'template' => new DataMarketingImport()
+        ];
+    }
+
+    /**
+     * Tweak the data slightly before sending it to the validator
+     * @param $data
+     * @param $index
+     * @return mixed
+     */
+    public function prepareForValidation($data, $index)
+    {
+        $data[1] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[1])->format('d-m-Y');
+
+        return $data;
     }
 }

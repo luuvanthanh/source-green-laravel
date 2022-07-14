@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 
+use GGPHP\Crm\Facebook\Jobs\SynchronizeConversation;
 use GGPHP\Crm\Facebook\Models\Conversation;
 use GGPHP\Crm\Facebook\Models\Message;
 use GGPHP\Crm\Facebook\Models\Page;
@@ -170,60 +171,68 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         return $conversation;
     }
 
-    public function synchronizeConversation($attributes)
+    public static function synchronizeConversation($attributes)
     {
         if (!empty($attributes['data_page'])) {
             foreach ($attributes['data_page'] as $attributes) {
-                $conversations = FacebookService::pageConversation($attributes);
-                foreach ($conversations as $conversation) {
-                    $conversationId = $conversation->id;
-                    foreach ($conversation->senders as $value) {
-                        $attributes['user_id'] = $value[0]->id;
-                        //tạm thời đóng lấy ảnh lại tránh bị lỗi khi không có quyền
-                        //$url = FacebookService::getAvatarUser($attributes);
-                        //$avatar = $this->storeAvatarUser($url, $value[0]->id);
-                        $dataUserFacebookInfo = [
-                            'user_id' => $value[0]->id,
-                            'user_name' => $value[0]->name,
-                            //'avatar' => $avatar
-                        ];
-                        $dataPage = [
-                            'page_id_facebook' => $value[1]->id,
-                            'name' => $value[1]->name,
-                        ];
-                        $userFacebookInfo = UserFacebookInfo::Where('user_id', $dataUserFacebookInfo['user_id'])->first();
+                foreach (Conversation::FOLDER as $folder) {
+                    $attributes['folder'] = $folder;
+                    $conversations = FacebookService::pageConversation($attributes);
+                    if (!empty($conversations)) {
+                        foreach ($conversations as $conversation) {
+                            $conversationId = $conversation->id;
+                            foreach ($conversation->senders as $value) {
+                                $attributes['user_id'] = $value[0]->id;
+                                $url = FacebookService::getAvatarUser($attributes);
+                                $avatar = self::storeAvatarUser($url, $value[0]->id);
+                                $dataUserFacebookInfo = [
+                                    'user_id' => $value[0]->id,
+                                    'user_name' => $value[0]->name,
+                                    'avatar' => $avatar
+                                ];
 
-                        if (is_null($userFacebookInfo)) {
-                            $userFacebookInfo = UserFacebookInfo::create($dataUserFacebookInfo);
-                        } else {
-                            $userFacebookInfo->update(['user_name' => $dataUserFacebookInfo['user_name']]);
-                            //$userFacebookInfo->update(['avatar' => $dataUserFacebookInfo['avatar']]);
+                                if (isset($value[1])) {
+                                    $dataPage = [
+                                        'page_id_facebook' => $value[1]->id,
+                                        'name' => $value[1]->name,
+                                    ];
+                                }
+
+                                $userFacebookInfo = UserFacebookInfo::Where('user_id', $dataUserFacebookInfo['user_id'])->first();
+
+                                if (is_null($userFacebookInfo)) {
+                                    $userFacebookInfo = UserFacebookInfo::create($dataUserFacebookInfo);
+                                } else {
+                                    $userFacebookInfo->update(['user_name' => $dataUserFacebookInfo['user_name']]);
+                                    $userFacebookInfo->update(['avatar' => $dataUserFacebookInfo['avatar']]);
+                                }
+
+                                $page = Page::Where('page_id_facebook', $dataPage['page_id_facebook'])->first();
+
+                                if (is_null($page)) {
+                                    $page = Page::create($dataPage);
+                                }
+
+                                $conversation = Conversation::Where('page_id', $page->id)->Where('user_facebook_info_id', $userFacebookInfo->id)->first();
+
+                                $dataConversation = [
+                                    'page_id' => $page->id,
+                                    'user_facebook_info_id' => $userFacebookInfo->id,
+                                    'conversation_id_facebook' => $conversationId
+                                ];
+                                if (is_null($conversation)) {
+                                    $conversation = Conversation::create($dataConversation);
+                                }
+
+                                $conversation->update(['conversation_id_facebook' => $dataConversation['conversation_id_facebook']]);
+                            }
                         }
-
-                        $page = Page::Where('page_id_facebook', $dataPage['page_id_facebook'])->first();
-
-                        if (is_null($page)) {
-                            $page = Page::create($dataPage);
-                        }
-
-                        $conversation = Conversation::Where('page_id', $page->id)->Where('user_facebook_info_id', $userFacebookInfo->id)->first();
-
-                        $dataConversation = [
-                            'page_id' => $page->id,
-                            'user_facebook_info_id' => $userFacebookInfo->id,
-                            'conversation_id_facebook' => $conversationId
-                        ];
-                        if (is_null($conversation)) {
-                            $conversation = Conversation::create($dataConversation);
-                        }
-
-                        $conversation->update(['conversation_id_facebook' => $dataConversation['conversation_id_facebook']]);
                     }
                 }
             }
         }
 
-        return parent::parserResult($conversation);
+        return null;
     }
 
     public function seenConversation($attributes)
@@ -233,7 +242,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         return $conversation;
     }
 
-    public function storeAvatarUser($url, $userId)
+    public static function storeAvatarUser($url, $userId)
     {
         $contents = file_get_contents($url);
         $name = $userId . '.jpg';

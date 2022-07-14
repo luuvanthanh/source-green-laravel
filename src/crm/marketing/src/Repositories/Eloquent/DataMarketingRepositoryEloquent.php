@@ -116,6 +116,10 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
             });
         }
 
+        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
+            $this->model = $this->model->where('created_at', '>=', $attributes['start_date'])->where('created_at', '<=', $attributes['end_date']);
+        }
+
         if (!empty($attributes['limit'])) {
             $dataMarketing = $this->paginate($attributes['limit']);
         } else {
@@ -165,7 +169,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
 
     public function moveLead($attributes)
     {
-        $dataMarketing = DataMarketing::whereIn('id', $attributes['data_marketing_id'])->get();
+        $dataMarketing = DataMarketing::whereIn('id', $attributes['data_marketing_id'])->where('status', DataMarketing::STATUS['NOT_MOVE'])->get();
         foreach ($dataMarketing as $key => $value) {
             $data = [
                 'code' => $value->code,
@@ -195,13 +199,13 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 'town_ward_id' => $value->town_ward_id
             ];
             $CustomerLead = CustomerLead::create($data);
+            $value->update(['status' => DataMarketing::STATUS['MOVE']]);
+
             $dataStatusLead = [
                 'customer_lead_id' => $CustomerLead->id,
                 'status' => StatusLead::STATUS_LEAD['LEAD_NEW']
             ];
             StatusLead::create($dataStatusLead);
-            $value->status = DataMarketing::STATUS['MOVE'];
-            $value->update();
             $studentInfo = DataMarketingStudentInfo::where('data_marketing_id', $value->id)->get();
             foreach ($studentInfo as $key => $values) {
                 $dataStudent = [
@@ -307,6 +311,26 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         }
 
         DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->where('id', '!=', $dataMarketing->id)->forceDelete();
+
+        return parent::parserResult($dataMarketing);
+    }
+
+    //Hoán đổi email và số điện thoại
+    public function exchangeEmailPhone()
+    {
+        $dataMarketing = DataMarketing::get();
+        foreach ($dataMarketing as $key => $value) {
+            if (!is_null($value->email) && !filter_var($value->email, FILTER_VALIDATE_EMAIL) && is_null($value->phone)) {
+                $newPhone = $value->email;
+                $newEmail = $value->phone;
+                $data = [
+                    'phone' => $newPhone,
+                    'email' => $newEmail
+                ];
+
+                $value->update($data);
+            }
+        }
 
         return parent::parserResult($dataMarketing);
     }

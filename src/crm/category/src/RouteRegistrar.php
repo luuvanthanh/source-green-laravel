@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forGuest();
     }
 
     /**
@@ -34,10 +35,17 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('tags', 'TagController');
             \Route::resource('search-sources', 'SearchSourceController');
             \Route::resource('status-admission-registers', 'StatusAdmissionRegisterController');
-            \Route::resource('branches', 'BranchController');
+            \Route::resource('branches', 'BranchController')->except('index');
             \Route::resource('category-events', 'CategoryEventController');
             \Route::resource('category-relationships', 'CategoryRelationshipController');
             \Route::post('sync-branch', 'BranchController@syncBranch');
+        });
+    }
+
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::resource('branches', 'BranchController')->only('index');
         });
     }
 }

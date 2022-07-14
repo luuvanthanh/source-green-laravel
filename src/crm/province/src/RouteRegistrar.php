@@ -27,18 +27,19 @@ class RouteRegistrar extends CoreRegistrar
      *
      * @return void
      */
-    public function forBread()
+    public function forGuest()
     {
         $this->router->group(['middleware' => []], function ($router) {
+            \Route::resource('districts', 'DistrictController')->only('index');
             \Route::post('import', 'DistrictController@import')->name('import');
         });
     }
 
-    public function forGuest()
+    public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('citys', 'CityController');
-            \Route::resource('districts', 'DistrictController');
+            \Route::resource('districts', 'DistrictController')->except('index');
             \Route::resource('town-wards', 'TownWardController');
             \Route::post('city-sorts', 'CityController@sort');
         });

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadAccountRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateEmployeeAssignmentRequest;
+use GGPHP\Crm\CustomerLead\Http\Requests\MoveCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\UpdateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Imports\CustomerLeadImport;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
@@ -14,6 +15,7 @@ use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerLeadController extends Controller
 {
@@ -150,11 +152,11 @@ class CustomerLeadController extends Controller
         return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
     }
 
-    public function moveToCustomerPotential(Request $request)
+    public function moveToCustomerPotential(MoveCustomerLeadRequest $request)
     {
-        $this->customerLeadRepository->moveToCustomerPotential($request->all());
+        $customerPotential = $this->customerLeadRepository->moveToCustomerPotential($request->all());
 
-        return $this->success([], trans('lang::messages.common.movedSuccess'));
+        return $this->success(['data' => $customerPotential], trans('lang::messages.common.movedSuccess'));
     }
 
     public function storeCareProgram(Request $request)
@@ -190,5 +192,10 @@ class CustomerLeadController extends Controller
         Excel::import(new CustomerLeadImport(), request()->file('file'));
 
         return $this->success(['data' =>  'Import thành công'], trans('lang::messages.common.createSuccess'));
+    }
+
+    public function templateExcelCustomerLead()
+    {
+        return Storage::disk('local')->download('excel-exporter/templates' . '/' . 'template-customer-lead.xlsx');
     }
 }

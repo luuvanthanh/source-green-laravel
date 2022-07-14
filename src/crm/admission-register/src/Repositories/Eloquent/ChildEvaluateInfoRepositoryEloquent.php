@@ -2,13 +2,17 @@
 
 namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Crm\AdmissionRegister\Models\ChildDescription;
 use GGPHP\Crm\AdmissionRegister\Models\ChildEvaluateInfo;
 use GGPHP\Crm\AdmissionRegister\Models\ChildIssue;
 use GGPHP\Crm\AdmissionRegister\Presenters\ChildEvaluateInfoPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ChildEvaluateInfoRepository;
+use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Container\Container as Application;
+use GGPHP\WordExporter\Services\WordExporterServices;
 
 /**
  * Class CustomerLeadRepositoryEloquent.
@@ -23,6 +27,14 @@ class ChildEvaluateInfoRepositoryEloquent extends BaseRepository implements Chil
     protected $fieldSearchable = [
         'created_at',
     ];
+
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -94,5 +106,56 @@ class ChildEvaluateInfoRepositoryEloquent extends BaseRepository implements Chil
         }
 
         return parent::all();
+    }
+
+    public function exportChildEvaluateInfo(array $attributes)
+    {
+        $childEvaluateInfo = $this->model->where('admission_register_id', $attributes['admissionRegisterId'])->get();
+
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+
+        foreach ($childEvaluateInfo as $value) {
+
+            $birthday = Carbon::parse($value->admissionRegister->studentInfo->birth_date);
+            $numberOfMonth = $birthday->diffInMonths($now);
+
+            $childDescription = $value->childDescription->map(function ($item, $key) {
+                return [
+                    'number' => $key + 1,
+                    'column_question' => $item->question,
+                    'answer' => $item->answer
+                ];
+            });
+
+            $valueIssue = $value->childIssue()->where('is_checked', true)->get();
+            $childIssue = $valueIssue->map(function ($item, $keyIssue) {
+                return [
+                    'number' => $keyIssue + 1,
+                    'issue' => $item->question
+                ];
+            });
+
+            $param = [
+                'full_name' => $value->admissionRegister->studentInfo->full_name,
+                'sex' => array_search($value->admissionRegister->studentInfo->sex, StudentInfo::SEX),
+                'birth_date' => !empty($value->admissionRegister->studentInfo->birth_date) ? $value->admissionRegister->studentInfo->birth_date : null,
+                'now' => $now->format('Y-m-d'),
+                'month_age' => $numberOfMonth,
+                'parent_name' => $value->admissionRegister->studentInfo->customerLead->full_name,
+                'phone_number' => $value->admissionRegister->studentInfo->customerLead->phone_number ?? null,
+                'email' => $value->admissionRegister->studentInfo->customerLead->email,
+                'address' => $value->admissionRegister->studentInfo->customerLead->address,
+                'day' => $now->format('d'),
+                'month' => $now->format('m'),
+                'year' => $now->format('Y'),
+                'other_issue' => $value->other_issue,
+                'parent_hope' => $value->parent_hope
+            ];
+        }
+
+        $param['detail'] = $childDescription->all();
+        $param['detailChildren'] = $childIssue->all();
+
+        return $this->wordExporterServices->multipleTableExportWord('report_child_evaluate_info', $param);
     }
 }

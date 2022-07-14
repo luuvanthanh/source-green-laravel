@@ -94,6 +94,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
 
         if (isset($attributes['data_page'])) {
             foreach ($attributes['data_page'] as $value) {
+                $urls = [];
                 $value['message'] = $article->name . "\n" . $article->content;
 
                 if ($article->file_image == '[]') {
@@ -178,8 +179,10 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         $postFacebookInfo->quantity_reaction = $quantity_reaction - 1;
                     } elseif ($attributes['value']['item'] == 'reaction' && $attributes['value']['verb'] == 'edit') {
                         $articleReactionInfo  = ArticleReactionInfo::where('post_facebook_info_id', $postFacebookInfo->id)->where('interactive_id', $attributes['value']['from']['id'])->first();
-                        $articleReactionInfo->reaction_type = strtoupper($attributes['value']['reaction_type']);
-                        $articleReactionInfo->update();
+                        if (!is_null($articleReactionInfo)) {
+                            $articleReactionInfo->reaction_type = strtoupper($attributes['value']['reaction_type']);
+                            $articleReactionInfo->update();
+                        }
                     }
                 }
 
