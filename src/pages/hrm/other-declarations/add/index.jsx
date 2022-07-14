@@ -569,7 +569,7 @@ class Index extends PureComponent {
                     label="Thời gian"
                     name="time"
                     rules={[variables.RULES.EMPTY]}
-                    type={variables.MONTH_PICKER}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
                 <div className="col-lg-4">

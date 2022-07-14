@@ -30,9 +30,10 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_DATA',
           payload: {
@@ -47,6 +48,14 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *PUT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.put, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },

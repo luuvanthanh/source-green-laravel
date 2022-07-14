@@ -11,6 +11,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
 import AssignmentComponent from './components/assignment';
@@ -184,6 +185,7 @@ class Index extends PureComponent {
           [`${type}`]: value,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
+
         },
       }),
       () => this.onLoad(),
@@ -206,6 +208,24 @@ class Index extends PureComponent {
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
+  };
+
+  /**
+* Function change input
+* @param {object} e event of input
+* @param {string} type key of object search
+*/
+  onChangeDate = (e) => {
+    this.setState(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          start_date: moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+          end_date: moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+        },
+      }),
+    );
+    this.debouncedSearch();
   };
 
   /**
@@ -772,6 +792,14 @@ class Index extends PureComponent {
                         onChange={(event) => this.onChangeSelect(event, 'tag_id')}
                         allowClear={false}
                         placeholder="Chọn tags"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="date"
+                        onChange={(event) => this.onChangeDate(event, 'date')}
+                        type={variables.RANGE_PICKER}
+                        allowClear={false}
                       />
                     </div>
                   </div>

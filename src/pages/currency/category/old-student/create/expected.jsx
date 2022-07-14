@@ -14,31 +14,29 @@ const Index = memo(({ yearsSchool, idYear, idRes, YearsDetail }) => {
         paymentForm: paymentMethod.data,
     }));
     const dataYear = yearsSchool?.filter((p) => (idYear === p.id ? (p) : ""));
-    console.log("yearsSchool",yearsSchool)
-    console.log("idYear",idYear);
     const data = YearsDetail.length > 0 ?
-    YearsDetail?.map((p, i) =>
-    (
-        {
-            date: p?.date,
-            fees: fees.map(id => ({
-                money: idRes?.map((a) => {
-                    if (paymentForm?.map(c => c.id === a.paymentFormId ? c.code : "").includes("THANG") && a.feeId === id.id) {
-                        return a?.money;
-                    }
-                    if (paymentForm?.map(c => c.id === a.paymentFormId ? c.code : "").includes("NAM") && a.feeId === id.id && i === 0) {
-                        return a?.money;
-                    }
-                    if (paymentForm?.map(c => c.id === a.paymentFormId ? c.code : "").includes("HOCKY1") && a.feeId === id.id && i === 0) {
-                        return a?.money;
-                    }
-                    if (paymentForm?.map(c => c.id === a.paymentFormId ? c.code : "").includes("HOCKY2") && a.feeId === id.id && i === 5) {
-                        return a?.money;
-                    }
-                    return 0;
-                })
-            })),
-        }))
+        YearsDetail?.map((p, i) =>
+        (
+            {
+                date: p?.date,
+                fees: fees.map(id => ({
+                    money: idRes?.map((a) => {
+                        if (paymentForm?.map(c => c.id === a.paymentFormId ? c.code : "").includes("THANG") && a.feeId === id.id) {
+                            return a?.money;
+                        }
+                        if (paymentForm?.map(c => c.id === a.paymentFormId ? c.code : "").includes("NAM") && a.feeId === id.id && i === 0) {
+                            return a?.money;
+                        }
+                        if (paymentForm?.map(c => c.id === a.paymentFormId ? c.code : "").includes("HOCKY1") && a.feeId === id.id && i === 0) {
+                            return a?.money;
+                        }
+                        if (paymentForm?.map(c => c.id === a.paymentFormId ? c.code : "").includes("HOCKY2") && a.feeId === id.id && i === 5) {
+                            return a?.money;
+                        }
+                        return 0;
+                    })
+                })),
+            }))
         :
         dataYear[0]?.changeParameter?.changeParameterDetail?.map((p, i) =>
         (
@@ -62,10 +60,9 @@ const Index = memo(({ yearsSchool, idYear, idRes, YearsDetail }) => {
                     })
                 })),
             }));
-            
-            console.log("data",data);
-            useEffect(() => {
-                dispatch({
+
+    useEffect(() => {
+        dispatch({
             type: 'fees/GET_DATA',
             payload: {
                 page: variables.PAGINATION.PAGE,
@@ -112,7 +109,7 @@ const Index = memo(({ yearsSchool, idYear, idRes, YearsDetail }) => {
                             {fees.map(i => <th scope="col" className={stylesModule['table-top']}>{i.name}</th>)}
                             <th scope="col" className={stylesModule['table-top']} >Ngoài giờ(đ) </th>
                             <th scope="col" className={stylesModule['table-top']}>Giảm trừ(đ)</th>
-                            <th scope="col" className={stylesModule['table-top']} style={{backgroundColor : '#eef0f4'}}>Tổng tiền(đ)</th>
+                            <th scope="col" className={stylesModule['table-top']} style={{ backgroundColor: '#eef0f4' }}>Tổng tiền(đ)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -133,7 +130,7 @@ const Index = memo(({ yearsSchool, idYear, idRes, YearsDetail }) => {
                             )}
                             <td className={stylesModule['table-footer']} />
                             <td className={stylesModule['table-footer']} />
-                            <td className={stylesModule['table-footer']} style={{backgroundColor : '#fff1eb'}}>{total(data?.length + 1)}</td>
+                            <td className={stylesModule['table-footer']} style={{ backgroundColor: '#fff1eb' }}>{total(data?.length + 1)}</td>
                         </tr>
                     </tbody>
                 </table>

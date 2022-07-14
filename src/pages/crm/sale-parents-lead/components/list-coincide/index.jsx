@@ -526,7 +526,7 @@ class Index extends PureComponent {
             },
             callback: (response, error) => {
               if (response) {
-                this.isModal();
+                this.setStateData({ isModalVisible: false });
                 this.props.dispatch({
                   type: 'crmSaleParentsLead/GET_DATA',
                   payload: {
@@ -534,6 +534,7 @@ class Index extends PureComponent {
                     limit: query?.limit,
                   },
                 });
+                this.onLoad();
               }
               if (error) {
                 if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {

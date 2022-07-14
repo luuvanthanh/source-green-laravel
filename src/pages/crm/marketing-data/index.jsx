@@ -4,6 +4,7 @@ import { Form, Select, Tag, Modal, Upload, message } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, debounce, head, size, get, last } from 'lodash';
 import { Helmet } from 'react-helmet';
+import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
@@ -155,18 +156,6 @@ class Index extends PureComponent {
         }
       },
     });
-    this.props.dispatch({
-      type: 'crmMarketingData/GET_SEARCH',
-      payload: {
-        ...search,
-      },
-    });
-    this.props.dispatch({
-      type: 'crmMarketingData/GET_PROGRAM',
-      payload: {
-        ...search,
-      },
-    });
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),
@@ -230,6 +219,26 @@ class Index extends PureComponent {
     );
   };
 
+
+
+  /**
+* Function change input
+* @param {object} e event of input
+* @param {string} type key of object search
+*/
+  onChangeDate = (e) => {
+    this.setState(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          start_date: moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+          end_date: moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+        },
+      }),
+    );
+    this.debouncedSearch();
+  };
+
   /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
@@ -249,6 +258,7 @@ class Index extends PureComponent {
 
   loadCategories = () => {
     const { dispatch } = this.props;
+    const { search } = this.state;
     dispatch({
       type: 'crmMarketingData/GET_CITIES',
       payload: {},
@@ -260,6 +270,18 @@ class Index extends PureComponent {
     dispatch({
       type: 'crmSaleParentsLead/GET_TAGS',
       payload: {},
+    });
+    this.props.dispatch({
+      type: 'crmMarketingData/GET_SEARCH',
+      payload: {
+        ...search,
+      },
+    });
+    this.props.dispatch({
+      type: 'crmMarketingData/GET_PROGRAM',
+      payload: {
+        ...search,
+      },
     });
   };
 
@@ -378,6 +400,12 @@ class Index extends PureComponent {
         key: 'search',
         width: 200,
         render: (record) => <Text size="normal">{get(record, 'searchSource.name')}</Text>,
+      },
+      {
+        title: 'Ngày nhận data',
+        key: 'search',
+        width: 150,
+        render: (record) => Helper.getDate(record?.created_at, variables.DATE_FORMAT.DATE_VI)
       },
       {
         key: 'action',
@@ -645,6 +673,14 @@ class Index extends PureComponent {
                           type={variables.SELECT}
                           allowClear={false}
                           placeholder="Chọn nguồn"
+                        />
+                      </div>
+                      <div className="col-lg-3">
+                        <FormItem
+                          name="date"
+                          onChange={(event) => this.onChangeDate(event, 'date')}
+                          type={variables.RANGE_PICKER}
+                          allowClear={false}
                         />
                       </div>
                     </div>

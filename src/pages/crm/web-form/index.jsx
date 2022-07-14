@@ -57,10 +57,6 @@ const General = memo(
         payload: {},
       });
       dispatch({
-        type: 'crmWebForm/GET_BRANCHES',
-        payload: {},
-      });
-      dispatch({
         type: 'crmWebForm/GET_DISTRICTS',
         payload: { city_id: 'e30bfd9c-0668-4860-b065-455cae47d328' },
       });
@@ -301,7 +297,7 @@ const General = memo(
                                   <Pane className="row">
                                     <Pane className="col-lg-6">
                                       <FormItem
-                                        label="Họ và tên trẻ 1"
+                                        label="Họ và tên trẻ"
                                         name={[field.name, 'full_name']}
                                         fieldKey={[field.fieldKey, 'full_name']}
                                         type={variables.INPUT}

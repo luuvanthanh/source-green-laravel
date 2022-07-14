@@ -43,7 +43,6 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.getData, payload);
-        console.log('res', response);
         if (response) {
           yield saga.put({
             type: 'SET_DATA',

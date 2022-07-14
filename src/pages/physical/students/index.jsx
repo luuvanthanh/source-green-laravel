@@ -10,12 +10,14 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
+import classnames from 'classnames';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
+import styleModule from './styles.module.scss';
 
 const Index = memo(() => {
   const mounted = useRef(false);
@@ -23,7 +25,7 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { pagination, error, data },
+    { pagination, error },
     loading,
     { defaultBranch },
   ] = useSelector(({ loading: { effects }, physicalStudents, user }) => [
@@ -36,6 +38,8 @@ const Index = memo(() => {
   const { query, pathname } = useLocation();
 
   const filterRef = useRef();
+  const [dataTable, setDataTable] = useState([]);
+
 
   const [category, setCategory] = useState({
     branches: [],
@@ -48,6 +52,39 @@ const Index = memo(() => {
     branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId,
   });
+
+  const onchangOpen = (e, key, keyName, record) => {
+    setDataTable(dataTable?.map((i, index) => ({
+      ...i,
+      openHeight: key === 'height' && e === index ? !i?.openHeight : i?.openHeight,
+      openWight: key === 'weight' && e === index ? !i?.openWight : i?.openWight,
+      inputHeight: key === 'height' && e === index ? !i?.inputHeight : i?.inputHeight,
+      inputWight: key === 'weight' && e === index ? !i?.inputWight : i?.inputWight,
+    })));
+    const id = key === 'height' ? record?.height?.id : record?.weight?.id;
+    if (keyName === 'save') {
+      dispatch({
+        type: 'physicalStudents/PUT',
+        payload: { id, value: key === 'height' ? record?.height?.value : record?.weight?.value },
+        callback: () => {
+        },
+      });
+    }
+  };
+
+  const onChangeInput = (indexValue, e, key) => {
+    setDataTable(dataTable?.map((i, index) => ({
+      ...i,
+      height: {
+        ...i?.height,
+        value: key === 'height' && e >= 0 && e && indexValue === index ? e : i?.height?.value,
+      },
+      weight: {
+        ...i?.weight,
+        value: key === 'weight' && e >= 0 && e && indexValue === index ? e : i?.weight?.value,
+      }
+    })));
+  };
 
   const columns = [
     {
@@ -95,17 +132,36 @@ const Index = memo(() => {
     {
       title: 'Chiều cao (cm)',
       key: 'height',
-      className: 'min-width-150',
-      width: 150,
+      className: 'min-width-170',
+      width: 170,
       align: 'center',
-      render: (record) =>
+      render: (text, record, index) =>
         record?.height?.value ? (
-          <>
-            <span className="font-weight-bold mr5">{record?.height?.value}</span>
-            <span>
-              ({Helper.getDate(record?.height?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})
-            </span>
-          </>
+          <div className={styleModule['wrapper-value']}>
+            {
+              record?.inputHeight && record?.openHeight ?
+                <FormItem
+                  className={classnames('mb-0', styleModule['icon-input'])}
+                  type={variables.INPUT_COUNT}
+                  value={record?.height?.value || ''}
+                  min={0}
+                  onChange={(e) => onChangeInput(index, e, 'height')}
+                />
+                :
+                <>
+                  <span className="font-weight-bold mr5">{record?.height?.value}</span>
+                  <span>
+                    ({Helper.getDate(record?.height?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})
+                  </span>
+                </>
+            }
+            {
+              record?.openHeight ?
+                <img src="/images/icon/save.svg" alt="group" className={styleModule['icon-edit']} onClick={() => onchangOpen(index, 'height', 'save', record)} role="presentation" />
+                :
+                <img src="/images/icon/edit.svg" alt="group" className={styleModule['icon-edit']} onClick={() => onchangOpen(index, 'height', 'edit', record)} role="presentation" />
+            }
+          </div>
         ) : (
           ''
         ),
@@ -113,17 +169,35 @@ const Index = memo(() => {
     {
       title: 'Cân nặng (kg)',
       key: 'wight',
-      className: 'min-width-120',
-      width: 120,
+      className: 'min-width-170',
+      width: 170,
       align: 'center',
-      render: (record) =>
+      render: (text, record, index) =>
         record?.weight?.value ? (
-          <>
-            <span className="font-weight-bold mr5">{record?.weight?.value}</span>
-            <span>
-              ({Helper.getDate(record?.weight?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})
-            </span>
-          </>
+          <div className={styleModule['wrapper-value']}>
+            {
+              record?.inputWight ?
+                <FormItem
+                  className={classnames('mb-0', styleModule['icon-input'])}
+                  type={variables.INPUT_COUNT}
+                  value={record?.weight?.value || ''}
+                  onChange={(e) => onChangeInput(index, e, 'weight')}
+                />
+                :
+                <>
+                  <span className="font-weight-bold mr5">{record?.weight?.value}</span>
+                  <span>
+                    ({Helper.getDate(record?.weight?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})
+                  </span>
+                </>
+            }
+            {
+              record?.openWight ?
+                <img src="/images/icon/save.svg" alt="group" className={styleModule['icon-edit']} onClick={() => onchangOpen(index, 'weight', 'save', record)} role="presentation" />
+                :
+                <img src="/images/icon/edit.svg" alt="group" className={styleModule['icon-edit']} onClick={() => onchangOpen(index, 'weight', 'edit', record)} role="presentation" />
+            }
+          </div>
         ) : (
           ''
         ),
@@ -241,6 +315,17 @@ const Index = memo(() => {
       payload: {
         ...search,
       },
+      callback: (res) => {
+        if (res) {
+          setDataTable(res?.items?.map(i => ({
+            ...i,
+            openWight: false,
+            openHeight: false,
+            inputHeight: false,
+            inputWight: false,
+          })));
+        }
+      },
     });
     history.push({
       pathname,
@@ -330,7 +415,7 @@ const Index = memo(() => {
             <Table
               bordered
               columns={columns}
-              dataSource={data}
+              dataSource={dataTable}
               loading={loading['physicalStudents/GET_DATA']}
               isError={error.isError}
               pagination={paginationTable(pagination)}

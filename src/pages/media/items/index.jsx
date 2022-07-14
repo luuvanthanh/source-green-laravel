@@ -242,7 +242,6 @@ const Index = memo(() => {
   useEffect(() => {
     fetchBranches();
   }, []);
-  console.log("data", data);
   return (
     <>
       <Helmet title="Danh sách hình ảnh" />

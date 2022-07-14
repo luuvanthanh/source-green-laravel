@@ -73,6 +73,7 @@ export const formats = [
   'image',
   'color',
   'code-block',
+  'video',
 ];
 
 // Quill Toolbar component
