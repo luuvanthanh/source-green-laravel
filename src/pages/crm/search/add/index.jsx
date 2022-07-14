@@ -114,6 +114,8 @@ class Index extends PureComponent {
     } = this.props;
     const payload = {
       ...values,
+      data_default: false,
+      type: "MANUAL_KHAC",
       id: params.id,
     };
     dispatch({
@@ -168,44 +170,44 @@ class Index extends PureComponent {
                         Thông tin thêm mới
                       </Heading>
                       <Pane className="row mt20">
-                      <Pane className="col-lg-6">
-                          <FormItem label="Mã tình trạng" name="code" type={variables.INPUT} placeholder={" "} disabled />
+                        <Pane className="col-lg-6">
+                          <FormItem label="Mã nguồn tìm kiếm" name="code" type={variables.INPUT} placeholder={" "} disabled />
                         </Pane>
                         <Pane className="col-lg-6">
-                          <FormItem label="Tên tình trạng" name="name" type={variables.INPUT} />
+                          <FormItem label="Tên nguồn tìm kiếm" name="name" type={variables.INPUT} />
                         </Pane>
                       </Pane>
                     </Pane>
-                  <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                    {params.id ? (
-                      <p
-                        className="btn-delete"
-                        role="presentation"
+                    <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+                      {params.id ? (
+                        <p
+                          className="btn-delete"
+                          role="presentation"
+                          loading={loadingSubmit}
+                          onClick={() => this.cancel(params.id)}
+                        >
+                          Xóa
+                        </p>
+                      ) : (
+                        <p
+                          className="btn-delete"
+                          role="presentation"
+                          loading={loadingSubmit}
+                          onClick={() => history.goBack()}
+                        >
+                          Hủy
+                        </p>
+                      )}
+                      <Button
+                        className="ml-auto px25"
+                        color="success"
+                        htmlType="submit"
+                        size="large"
                         loading={loadingSubmit}
-                        onClick={() => this.cancel(params.id)}
                       >
-                        Xóa
-                      </p>
-                    ) : (
-                      <p
-                        className="btn-delete"
-                        role="presentation"
-                        loading={loadingSubmit}
-                        onClick={() => history.goBack()}
-                      >
-                        Hủy
-                      </p>
-                    )}
-                    <Button
-                      className="ml-auto px25"
-                      color="success"
-                      htmlType="submit"
-                      size="large"
-                      loading={loadingSubmit}
-                    >
-                      Lưu
-                    </Button>
-                  </Pane>
+                        Lưu
+                      </Button>
+                    </Pane>
                   </Pane>
                 </Pane>
               </div>

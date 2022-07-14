@@ -409,9 +409,10 @@ const Index = memo(
         return null;
       },
       customRequest({ file }) {
-        const { name } = file;
+        const { name, size } = file;
+        const maxSize = 5 * 2 ** 20; // 5 mB
         const allowTypes = ['pdf', 'docx', 'xlsx'];
-        if (!allowTypes.includes(last(name.split('.')))) {
+        if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
           notification.error({
             message: 'Thông báo',
             description: 'Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb',

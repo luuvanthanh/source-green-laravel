@@ -64,7 +64,6 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        console.log('repo', response);
         if (response) {
           yield saga.put({
             type: 'SET_DATA',

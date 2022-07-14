@@ -19,6 +19,11 @@ const infomationTypes = {
   select: 'SELECT',
 };
 
+const genders = [
+  { id: 'MALE', name: 'Nam' },
+  { id: 'FEMALE', name: 'Nữ' },
+];
+
 const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
   loading,
   details: OPchildrenAdd.details,
@@ -70,7 +75,7 @@ const Parents = memo(
       [switchType],
     );
 
-    const detailForm = (key) => {
+    const detailForm = (key, sex) => {
       switch (formType[key]) {
         case infomationTypes.create:
           return (
@@ -105,7 +110,16 @@ const Parents = memo(
                     name={[key, 'dayOfBirth']}
                     label="Ngày sinh"
                     type={variables.DATE_PICKER}
-                    rules={[]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    name={[key, 'sex']}
+                    data={genders}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Giới tính"
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -142,7 +156,7 @@ const Parents = memo(
                   />
                 </Pane>
 
-                <Pane className="col-lg-12">
+                <Pane className="col-lg-8">
                   <FormItem
                     name={[key, 'hobby']}
                     label="Tính cách và sở thích"
@@ -159,7 +173,7 @@ const Parents = memo(
               <Pane className="row">
                 <Pane className="col-lg-6">
                   <FormItem
-                    data={Helper.convertSelectParent(parents)}
+                    data={Helper.convertSelectParent(parents)?.filter(i => i?.sex === sex)}
                     name={`${key}Id`}
                     label="Tên phụ huynh"
                     type={variables.SELECT}
@@ -289,7 +303,7 @@ const Parents = memo(
                 Thông tin cha
               </Heading>
               {!details?.farther && typeRadioGroup('farther')}
-              {detailForm('farther')}
+              {detailForm('farther', 'MALE')}
             </Pane>
 
             <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
@@ -298,7 +312,7 @@ const Parents = memo(
               </Heading>
 
               {!details?.mother && typeRadioGroup('mother')}
-              {detailForm('mother')}
+              {detailForm('mother', 'FEMALE')}
             </Pane>
 
             <Pane style={{ padding: 20 }}>
@@ -331,7 +345,7 @@ Parents.propTypes = {
 Parents.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   parents: [],

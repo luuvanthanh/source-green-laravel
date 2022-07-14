@@ -862,6 +862,7 @@ export default class Helpers {
         name: `${item.fullName}  ${
           getLodash(item, 'phone') ? `(${getLodash(item, 'phone')})` : ''
         }`,
+        ...item,
       }));
     }
     return [];

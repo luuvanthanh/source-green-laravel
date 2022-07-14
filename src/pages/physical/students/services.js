@@ -12,4 +12,13 @@ export function get(params = {}) {
   });
 }
 
+export function put(data = {}) {
+  return request(`/student-criterias/${data?.id}/physical`, {
+    method: 'PUT',
+    params: {
+      value: data?.value,
+    },
+  });
+}
+
 export default get;
