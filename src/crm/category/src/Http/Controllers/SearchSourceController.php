@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Category\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\Category\Http\Requests\CreateSearchSourceRequest;
+use GGPHP\Crm\Category\Http\Requests\SearchSourceDeleteRequest;
 use GGPHP\Crm\Category\Http\Requests\UpdateSearchSourceRequest;
 use GGPHP\Crm\Category\Repositories\Contracts\SearchSourceRepository;
 
@@ -91,7 +92,7 @@ class SearchSourceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(SearchSourceDeleteRequest $request, $id)
     {
         $this->searchSourceRepository->delete($id);
 

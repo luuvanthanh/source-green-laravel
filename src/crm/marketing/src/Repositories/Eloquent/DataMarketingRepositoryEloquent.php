@@ -116,6 +116,10 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
             });
         }
 
+        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
+            $this->model = $this->model->where('created_at', '>=', $attributes['start_date'])->where('created_at', '<=', $attributes['end_date']);
+        }
+
         if (!empty($attributes['limit'])) {
             $dataMarketing = $this->paginate($attributes['limit']);
         } else {
@@ -196,7 +200,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
             ];
             $CustomerLead = CustomerLead::create($data);
             $value->update(['status' => DataMarketing::STATUS['MOVE']]);
-            
+
             $dataStatusLead = [
                 'customer_lead_id' => $CustomerLead->id,
                 'status' => StatusLead::STATUS_LEAD['LEAD_NEW']

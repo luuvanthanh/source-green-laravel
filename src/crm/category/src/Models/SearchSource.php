@@ -25,7 +25,7 @@ class SearchSource extends UuidModel
 
     protected $table = 'search_sources';
 
-    protected $fillable = ['code', 'name', 'type'];
+    protected $fillable = ['code', 'name', 'type', 'data_default'];
 
     public function customerLead()
     {
