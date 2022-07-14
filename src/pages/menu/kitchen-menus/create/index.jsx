@@ -87,8 +87,6 @@ const Index = memo(() => {
       ...omit(values, 'month'),
       month: Number(Helper.getDate(values.month, 'M')),
       year: Number(Helper.getDate(values.month, variables.DATE_FORMAT.YEAR)),
-      fromDate: fromDate === null ? null : moment(fromDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
-      toDate: toDate === null ? null : moment(toDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
       menuType: 'STUDENT',
       menuMeals: menuMeals.map((item) => ({
         ...omit(item, 'timeline', 'isAdd', 'originId'),
@@ -104,8 +102,15 @@ const Index = memo(() => {
     };
     dispatch({
       type: params.id ? 'kitchenMenusCreate/UPDATE' : 'kitchenMenusCreate/ADD',
-      payload: {
+      payload: params.id ? {
         ...payload,
+        fromDate: fromDate === null ? null : moment(fromDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
+        toDate: toDate === null ? null : moment(toDate, "DD/MM/YYYY").format('YYYY-MM-DD'),
+        ...params,
+      } : {
+        ...payload,
+        fromDate: fromDate === null ? null : moment(fromDate, "MM/DD/YYYY").format('YYYY-MM-DD'),
+        toDate: toDate === null ? null : moment(toDate, "MM/DD/YYYY").format('YYYY-MM-DD'),
         ...params,
       },
       callback: (response, error) => {
