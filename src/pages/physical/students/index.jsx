@@ -61,11 +61,13 @@ const Index = memo(() => {
       inputHeight: key === 'height' && e === index ? !i?.inputHeight : i?.inputHeight,
       inputWight: key === 'weight' && e === index ? !i?.inputWight : i?.inputWight,
     })));
+    const id = key === 'height' ? record?.height?.id : record?.weight?.id;
     if (keyName === 'save') {
-      const id = key === 'height' ? record?.height?.id : record?.weight?.id;
       dispatch({
         type: 'physicalStudents/PUT',
         payload: { id, value: key === 'height' ? record?.height?.value : record?.weight?.value },
+        callback: () => {
+        },
       });
     }
   };

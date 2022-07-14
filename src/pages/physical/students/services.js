@@ -16,7 +16,7 @@ export function put(data = {}) {
   return request(`/student-criterias/${data?.id}/physical`, {
     method: 'PUT',
     params: {
-      value: data?.value,
+      value: `${data?.value}`,
     },
   });
 }
