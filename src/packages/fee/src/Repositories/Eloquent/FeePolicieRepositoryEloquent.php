@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use DateInterval;
 use DatePeriod;
+use Exception;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Fee\Models\Fee;
 use GGPHP\Fee\Models\FeePolicie;
@@ -239,8 +240,11 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         $data = [];
         $feePolicie = FeePolicie::where('BranchId', $attributes['branchId'])->where('SchoolYearId', $attributes['schoolYearId'])->first();
 
-        $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schoolYearId']);
+        if (is_null($feePolicie)) {
+            throw new Exception('Chưa hoàn thành cấu hình Chính sách phí.');
+        }
 
+        $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schoolYearId']);
 
         foreach ($details as $key => $detail) {
             $fee = \GGPHP\Fee\Models\Fee::findOrFail($detail->feeId);
