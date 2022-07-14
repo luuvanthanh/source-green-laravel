@@ -87,7 +87,7 @@ class FacebookService
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->get(
-                '/' . $pageId . '/conversations?fields=id,unread_count,senders{profile_pic},can_reply,snippet,updated_time,wallpaper',
+                '/' . $pageId . '/conversations?fields=id,unread_count,senders{profile_pic},can_reply,snippet,updated_time,wallpaper' . '&folder=' . $attributes['folder'],
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
