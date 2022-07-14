@@ -245,7 +245,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         }
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->where('created_at', '>=', $attributes['start_date'])->where('created_at', '<=', $attributes['end_date']);
+            $this->model = $this->model->whereDate('created_at', '>=', $attributes['start_date'])->whereDate('created_at', '<=', $attributes['end_date']);
         }
 
         if (!empty($attributes['limit'])) {
