@@ -88,7 +88,6 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res) {
-            console.log("res", res);
             setIdYear(res?.schoolYearId);
             setYearsDetail(res?.schoolYear?.changeParameter?.changeParameterDetail);
             getStudents(res?.student?.code);
@@ -118,7 +117,7 @@ const Index = memo(() => {
       getStudents();
     }
   }, []);
-  console.log('details', details);
+
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const key in object) {

@@ -1,0 +1,21 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-value {
+  display: flex;
+  align-items: center;
+}
+
+.icon-edit {
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+.icon-input {
+  width: 70px !important;
+  :global(.ant-input-number-input) {
+    font-family: "ProximaNovaBold", sans-serif;
+    font-weight: unset !important;
+    margin-bottom: 0px !important;
+    color: #473e3e !important;
+  }
+}

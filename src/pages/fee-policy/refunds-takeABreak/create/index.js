@@ -128,7 +128,7 @@ const Index = memo(() => {
       branchId: undefined,
     });
   };
-  console.log(data);
+
   return (
     <Form layout="vertical" colon={false} ref={formRef} onFinish={onFinish}>
       <Breadcrumbs

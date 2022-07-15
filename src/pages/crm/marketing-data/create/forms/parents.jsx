@@ -30,10 +30,10 @@ const mapStateToProps = ({ loading, crmMarketingDataAdd, user }) => ({
   district: crmMarketingDataAdd.district,
   search: crmMarketingDataAdd.search,
   townWards: crmMarketingDataAdd.townWards,
-  user : user.user,
+  user: user.user,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district,search , user, branches, townWards}) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search, user, branches, townWards }) => {
     const formRef = useRef();
     const [files, setFiles] = useState([]);
     const mounted = useRef(false);
@@ -122,8 +122,8 @@ const General = memo(
       dispatch({
         type: params.id ? 'crmMarketingDataAdd/UPDATE' : 'crmMarketingDataAdd/ADD',
         payload: params.id
-          ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files),user_create_id:null,user_create_info:null }
-          : { ...values, file_image: JSON.stringify(files), status: 'NOT_MOVE', user_create_id: user?.id, user_create_info : user },
+          ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files), user_create_id: null, user_create_info: null }
+          : { ...values, file_image: JSON.stringify(files), status: 'NOT_MOVE', user_create_id: user?.id, user_create_info: user },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -160,6 +160,7 @@ const General = memo(
           birth_date: details.birth_date && moment(details.birth_date),
           dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
           dateOff: details.dateOff && moment(details.dateOff),
+          created_at: Helper.getDate(details?.created_at, variables.DATE_FORMAT.DATE_VI),
         });
         if (Helper.isJSON(details?.file_image)) {
           mountedSet(setFiles, JSON.parse(details?.file_image));
@@ -334,6 +335,19 @@ const General = memo(
                     rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
+                <Pane className="col-lg-4">
+                  {
+                    params?.id ?
+                      <FormItem
+                        placeholder=" "
+                        name="created_at"
+                        type={variables.SELECT}
+                        label="Ngày nhận data"
+                        disabled
+                      />
+                      : ""
+                  }
+                </Pane>
               </Pane>
             </Pane>
 
@@ -367,7 +381,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],

@@ -166,7 +166,7 @@ const Index = memo(() => {
           recipient_id: conversationCurrent?.sender?.id,
           message: e?.target?.value,
         },
-        callback: () => {},
+        callback: () => { },
       });
     }
   };
@@ -178,7 +178,7 @@ const Index = memo(() => {
       ))}
     </Menu>
   );
-console.log("messagers",messagers);
+
   return (
     <div className={styles.wrapper}>
       <div className={styles['heading-container']}>

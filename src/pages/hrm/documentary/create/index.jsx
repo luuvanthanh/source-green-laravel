@@ -61,7 +61,6 @@ function Index() {
   };
 
   const debouncedSearchKeyWorkEmployee = debounce((e) => {
-    console.log("searchEmployee", searchEmployee);
     dispatch({
       type: 'HRMdocumentaryAdd/GET_EMPLOYEES',
       payload: { fullName: e, branchId: searchEmployee?.branchId, divisionId: searchEmployee?.divisionId },

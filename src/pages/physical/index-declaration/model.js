@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'physicalStudents',
+  namespace: 'physicalIndexDeclaration',
   state: {
     data: [],
     pagination: {
@@ -50,7 +50,7 @@ export default {
         });
       }
     },
-    *PUT({ payload, callback }, saga) {
+    *POST({ payload, callback }, saga) {
       try {
         yield saga.call(services.put, payload);
         callback(payload);
