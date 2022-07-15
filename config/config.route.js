@@ -2509,6 +2509,12 @@ export default [
             authority: [permissions.THECHAT],
           },
           {
+            path: '/phat-trien-the-chat/khai-bao-chi-so-who',
+            component: './physical/index-declaration',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
             path: '/phat-trien-the-chat/lich-su',
             component: './physical/histories',
             wrappers: ['@/wrappers/auth'],

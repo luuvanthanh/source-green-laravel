@@ -1927,6 +1927,13 @@ export async function getLeftMenuPhysical() {
       permission: [],
     },
     {
+      title: 'Khai báo chỉ số BMI theo WHO',
+      key: 'index-declaration',
+      icon: 'icon icon-setting',
+      url: ['/phat-trien-the-chat/khai-bao-chi-so-who'],
+      permission: [],
+    },
+    {
       title: 'Lịch sử',
       key: 'history',
       url: ['/phat-trien-the-chat/lich-su'],
