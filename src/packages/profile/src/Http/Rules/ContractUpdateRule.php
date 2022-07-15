@@ -32,7 +32,7 @@ class ContractUpdateRule implements Rule
             return true;
         }
 
-        if ($value <= $contract->OrdinalNumber) {
+        if ($value == $contract->OrdinalNumber) {
             return false;
         }
     }
@@ -44,6 +44,6 @@ class ContractUpdateRule implements Rule
      */
     public function message()
     {
-        return 'Số thứ tự phải lớn hơn số đã có';
+        return 'Số thứ tự khác số đã có.';
     }
 }

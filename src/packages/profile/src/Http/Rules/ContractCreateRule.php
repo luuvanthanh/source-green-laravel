@@ -25,7 +25,7 @@ class ContractCreateRule implements Rule
     {
         $numberFormContract = NumberFormContract::findOrFail($this->numberFormContractId);
 
-        if ($value <= $numberFormContract->OrdinalNumber) {
+        if ($value == $numberFormContract->OrdinalNumber) {
             return false;
         }
 
@@ -39,6 +39,6 @@ class ContractCreateRule implements Rule
      */
     public function message()
     {
-        return 'Số thứ tự phải lớn hơn số đã có';
+        return 'Số thứ tự khác số đã có.';
     }
 }

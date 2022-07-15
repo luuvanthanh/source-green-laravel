@@ -20,6 +20,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Exception;
 
 /**
  * Class LabourContractRepositoryEloquent.
@@ -227,6 +228,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new Exception($e->getMessage(), $e->getCode());
         }
 
         return parent::find($labourContract->Id);
@@ -299,6 +301,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new Exception($e->getMessage(), $e->getCode());
         }
 
         return parent::find($labourContract->Id);
@@ -580,10 +583,13 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     public function updated($model, $attributes)
     {
         $typeContract = NumberFormContract::TYPE[$attributes['type']];
-
         $numberFormContract = NumberFormContract::whereDate('StartDate', '<=', $model->ContractDate)
             ->whereDate('EndDate', '>=', $model->ContractDate)
-            ->where('Type', $typeContract)->firstOrFail();
+            ->where('Type', $typeContract)->first();
+
+        if (!$numberFormContract) {
+            return null;
+        }
 
         $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
     }
