@@ -300,6 +300,30 @@ class Index extends PureComponent {
   };
 
   /**
+ * Function remove items
+ * @param {uid} id id of items
+ */
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'crmMarketingData/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
@@ -409,16 +433,22 @@ class Index extends PureComponent {
       },
       {
         key: 'action',
-        width: 100,
+        width: 150,
         fixed: 'right',
         render: (record) => (
-          <div className={styles['list-button']}>
+          <div className="d-flex flex-row-reverse">
             <Button
               color="success"
+              className="ml5"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
+            {
+              record?.status === 'NOT_MOVE' && (
+                <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+              )
+            }
           </div>
         ),
       },
