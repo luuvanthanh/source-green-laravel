@@ -87,3 +87,13 @@ export function importExcel(data = {}) {
     data: formData,
   });
 }
+
+export function remove(id = {}) {
+  return request(`/v1/data-marketings/${id}`, {
+    method: 'DELETE',
+    params: {
+      id,
+    },
+    parse: true,
+  });
+}
