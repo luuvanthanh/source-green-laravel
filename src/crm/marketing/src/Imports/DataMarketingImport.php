@@ -90,7 +90,9 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
      */
     public function prepareForValidation($data, $index)
     {
-        $data[1] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[1])->format('d-m-Y');
+        if (is_numeric($data[1])) {
+            $data[1] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[1])->format('d-m-Y');
+        }
 
         return $data;
     }
