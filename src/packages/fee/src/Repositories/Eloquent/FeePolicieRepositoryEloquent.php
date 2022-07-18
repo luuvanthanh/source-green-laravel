@@ -569,10 +569,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             $totalMoneyMonth = 0;
             foreach ($dataTuition as $value) {
                 $feeTuiTion = Fee::find($value['feeId']);
-
                 $paymentForm = PaymentForm::find($value['paymentFormId']);
                 $value['applyDate'] = Carbon::parse($value['applyDate']);
                 $applyDate = $value['applyDate']->format('Y-m');
+
                 switch ($paymentForm->Code) {
                     case self::YEAR:
                         if ($applyDate == $month->format('Y-m')) {
@@ -593,7 +593,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                         }
                         break;
                     case self::MONTH:
-                        if ($applyDate ==  $month->format('Y-m')) {
+
+                        if ($applyDate == $month->format('Y-m')) {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
                                 'fee_name' => $feeTuiTion->Name,
@@ -659,6 +660,25 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         ];
                                     }
 
+                                    break;
+
+                                case self::BUS_FEE:
+                                    if ($month->format('Y-m') >= $applyDate) {
+                                        $fee[] = [
+                                            'fee_id' => $feeTuiTion->Id,
+                                            'fee_name' => $feeTuiTion->Name,
+                                            'money' => $value['money'],
+                                            'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                        ];
+                                        $totalMoneyMonth += $value['money'];
+                                    } else {
+                                        $fee[] = [
+                                            'fee_id' => $feeTuiTion->Id,
+                                            'fee_name' => $feeTuiTion->Name,
+                                            'money' => 0,
+                                            'fee_id_crm' => $feeTuiTion->FeeCrmId
+                                        ];
+                                    }
                                     break;
                                 default:
                                     $fee[] = [
