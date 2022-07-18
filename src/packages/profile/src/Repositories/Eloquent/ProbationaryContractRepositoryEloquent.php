@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use Exception;
 use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
@@ -22,6 +23,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent implements ProbationaryContractRepository
 {
+    const TI_LE_THU_VIEC = 'TI_LE_THU_VIEC';
 
     /**
      * @var array
@@ -162,7 +164,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 $parameterValue = ParamaterValue::find($value['parameterValueId']);
 
                 if ($parameterValue->Code != 'LUONG_CB') {
-                    $totalAllowance += $value['value'];
+                    if ($parameterValue->Code != self::TI_LE_THU_VIEC) {
+                        $totalAllowance += $value['value'];
+                    } else {
+                        $salaryRatio = $value['value'] < 1 ? $value['value'] * 100 : $value['value'];
+                    }
                 } else {
                     $basicSalary = $value['value'];
                 }
@@ -172,7 +178,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
             $probationaryContract->update([
                 'TotalAllowance' => $totalAllowance,
-                'BasicSalary' => $basicSalary
+                'BasicSalary' => $basicSalary,
+                'SalaryRatio' => isset($salaryRatio) ? $salaryRatio : null
             ]);
             $probationaryContract->employee->update(['DateOff' => null]);
 
@@ -208,6 +215,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new Exception($e->getMessage(), $e->getCode());
         }
 
         return parent::find($probationaryContract->Id);
@@ -215,8 +223,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
     public function update(array $attributes, $id)
     {
-        $probationaryContract = ProbationaryContract::findOrFail($id);
 
+        $probationaryContract = ProbationaryContract::findOrFail($id);
         \DB::beginTransaction();
         try {
             $probationaryContract->update($attributes);
@@ -232,7 +240,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 $parameterValue = ParamaterValue::find($value['parameterValueId']);
 
                 if ($parameterValue->Code != 'LUONG_CB') {
-                    $totalAllowance += $value['value'];
+                    if ($parameterValue->Code != self::TI_LE_THU_VIEC) {
+                        $totalAllowance += $value['value'];
+                    } else {
+                        $salaryRatio = $value['value'] < 1 ? $value['value'] * 100 : $value['value'];
+                    }
                 } else {
                     $basicSalary = $value['value'];
                 }
@@ -242,7 +254,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
             $probationaryContract->update([
                 'TotalAllowance' => $totalAllowance,
-                'BasicSalary' => $basicSalary
+                'BasicSalary' => $basicSalary,
+                'SalaryRatio' => isset($salaryRatio) ? $salaryRatio : null
             ]);
 
             $positionLevel = $probationaryContract->positionLevel;
@@ -282,6 +295,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new Exception($e->getMessage(), $e->getCode());
         }
 
         return parent::find($probationaryContract->Id);
@@ -300,11 +314,25 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         $labourContract = ProbationaryContract::findOrFail($id);
         $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
+        if ($labourContract->SalaryRatio) {
+            $salaryRatio = $labourContract->SalaryRatio;
+        } else {
+            $probationRate = $labourContract->parameterValues()->where('Code', self::TI_LE_THU_VIEC)->first();
+
+            if ($probationRate) {
+                $salaryRatio  = $probationRate->ValueDefault < 1 ? $probationRate->ValueDefault * 100 : $probationRate->ValueDefault;
+            }
+        }
+
         $salary = $labourContract->BasicSalary;
         $allowance =  $labourContract->TotalAllowance;
 
-        $total = $salary + $allowance;
+        // Lương thực nhận
+        $probationSalary = isset($salaryRatio) ? $salary * $salaryRatio / 100 : $salary;
+
+        $total = $probationSalary + $allowance;
         $employee = $labourContract->employee;
+
         $params = [
             'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
@@ -324,7 +352,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             // 'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'month' => $labourContract->Month ? $labourContract->Month : '........',
-            'salaryRatio' => $labourContract->SalaryRatio ? $labourContract->SalaryRatio : '........',
+            'salaryRatio' => isset($salaryRatio) ? $salaryRatio : '........',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
             'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . ' - ' . $labourContract->division->Name : '........',
