@@ -94,6 +94,15 @@ const renderChildren = (
       value={value}
     />
   ),
+  numberInput: (
+    <InputNumber
+      min={0}
+      disabled={disabled}
+      onChange={onChange}
+      placeholder="Nhập"
+      value={value}
+    />
+  ),
   inputDate: (
     <InputNumber
       className={classnames(

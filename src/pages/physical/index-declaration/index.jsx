@@ -80,7 +80,7 @@ const General = memo(({ loading: { effects }, error, details }) => {
           <>
             <FormItem
               className={classnames('mb-0', stylesModule['icon-input'])}
-              type={variables.INPUT_COUNT}
+              type={variables.NUMBER_INPUT}
               rules={[variables.RULES.EMPTY]}
               value={record?.monthNumber || ''}
               onChange={(e) => onChangeInput(record, e, 'monthNumber')}
@@ -104,8 +104,8 @@ const General = memo(({ loading: { effects }, error, details }) => {
             render: (value, record) => (
               <>
                 <FormItem
-                  className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.INPUT_COUNT}
+                  className={classnames('mb-0')}
+                  type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
                   value={record?.bmiMale || ''}
                   onChange={(e) => onChangeInput(record, e, 'bmiMale')}
@@ -124,8 +124,8 @@ const General = memo(({ loading: { effects }, error, details }) => {
             render: (value, record) => (
               <>
                 <FormItem
-                  className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.INPUT_COUNT}
+                  className={classnames('mb-0')}
+                  type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
                   value={record?.bmiFemale || ''}
                   onChange={(e) => onChangeInput(record, e, 'bmiFemale')}
@@ -152,8 +152,9 @@ const General = memo(({ loading: { effects }, error, details }) => {
               <>
                 <FormItem
                   className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.INPUT_COUNT}
+                  type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
+                  min={0}
                   value={record?.weightMale || ''}
                   onChange={(e) => onChangeInput(record, e, 'weightMale')}
                 />
@@ -172,7 +173,7 @@ const General = memo(({ loading: { effects }, error, details }) => {
               <>
                 <FormItem
                   className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.INPUT_COUNT}
+                  type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
                   value={record?.weightFemale || ''}
                   onChange={(e) => onChangeInput(record, e, 'weightFemale')}

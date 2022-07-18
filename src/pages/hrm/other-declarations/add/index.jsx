@@ -222,7 +222,7 @@ class Index extends PureComponent {
           ...prevState.detail,
           {
             employee,
-            detail: paramaterValues.map((i) => ({ ...i, value: 0 })),
+            detail: paramaterValues.map((i) => ({ ...i, value: i?.valueDefault })),
           },
         ],
       }));
@@ -249,7 +249,7 @@ class Index extends PureComponent {
           ...prevState.detailContract,
           {
             employee,
-            detail: paramaterValuesContract.map((i) => ({ ...i, value: 0 })),
+            detail: paramaterValuesContract.map((i) => ({ ...i, value: i?.valueDefault })),
           },
         ],
       }));
@@ -270,8 +270,9 @@ class Index extends PureComponent {
             if (currentParamaterValues) {
               return currentParamaterValues;
             }
-
-            return itemParamaterValues;
+            console.log("itemParamaterValues", itemParamaterValues);
+            console.log("currentParamaterValues", currentParamaterValues);
+            return { ...itemParamaterValues, value: itemParamaterValues?.valueDefault };
           })
           : []),
       ],
@@ -291,7 +292,7 @@ class Index extends PureComponent {
                 return currentParamaterValues;
               }
 
-              return itemParamaterValues;
+              return { ...itemParamaterValues, value: itemParamaterValues?.valueDefault };
             }),
           ]
           : [],
@@ -316,7 +317,7 @@ class Index extends PureComponent {
               return currentParamaterContract;
             }
 
-            return itemParamaterContract;
+            return { ...itemParamaterContract, value: itemParamaterContract?.valueDefault };
           })
           : []),
       ],
@@ -336,7 +337,7 @@ class Index extends PureComponent {
                 return currentParamaterContract;
               }
 
-              return itemParamaterContract;
+              return { ...itemParamaterContract, value: itemParamaterContract?.valueDefault };
             }),
           ]
           : [],
@@ -344,7 +345,7 @@ class Index extends PureComponent {
     }));
   };
 
-  onChangeNumber = (valueDefault, record, paramaterValue) => {
+  onChangeNumber = (value, record, paramaterValue) => {
     this.setStateData((prevState) => ({
       detail: prevState.detail.map((item) => {
         if (item?.employee?.id === record?.employee?.id) {
@@ -354,7 +355,7 @@ class Index extends PureComponent {
               if (itemDetail.id === paramaterValue.id) {
                 return {
                   ...itemDetail,
-                  valueDefault,
+                  value,
                 };
               }
               return itemDetail;
@@ -366,7 +367,7 @@ class Index extends PureComponent {
     }));
   };
 
-  onChangeNumberContract = (valueDefault, record, paramaterValue) => {
+  onChangeNumberContract = (value, record, paramaterValue) => {
     this.setStateData((prevState) => ({
       detailContract: prevState.detailContract.map((item) => {
         if (item?.employee?.id === record?.employee?.id) {
@@ -376,7 +377,7 @@ class Index extends PureComponent {
               if (itemDetail.id === paramaterValue.id) {
                 return {
                   ...itemDetail,
-                  valueDefault,
+                  value,
                 };
               }
               return itemDetail;
@@ -464,7 +465,7 @@ class Index extends PureComponent {
             className={classnames('input-number', styles['input-number-container'])}
             formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
             placeholder="Nhập"
-            value={itemParamater?.valueDefault || 0}
+            value={itemParamater?.value || 0}
             onChange={(value) => this.onChangeNumber(value, record, item)}
           />
         );
@@ -509,6 +510,7 @@ class Index extends PureComponent {
       width: item.code === 'T_BHXH' ? 80 : 200,
       render: (record) => {
         const itemParamater = record?.detail?.find(({ id }) => id === item.id);
+        console.log("itemParamater", itemParamater);
         if (itemParamater?.code === 'T_BHXH') {
           return (
             <FormItem
@@ -524,7 +526,7 @@ class Index extends PureComponent {
             className={classnames('input-number', styles['input-number-container'])}
             formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
             placeholder="Nhập"
-            value={itemParamater?.valueDefault || 0}
+            value={itemParamater?.value || 0}
             onChange={(value) => this.onChangeNumberContract(value, record, item)}
           />
         );
@@ -542,6 +544,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const { detail, detailContract } = this.state;
+    console.log("detail", detail);
     const loadingSubmit =
       effects['otherDeclarationsAdd/ADD'] || effects['otherDeclarationsAdd/UPDATE'];
     return (

@@ -309,6 +309,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
+    console.log(data);
     const loading = effects['otherDeclarations/GET_DATA'];
     return (
       <>
