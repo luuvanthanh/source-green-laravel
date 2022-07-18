@@ -25,16 +25,19 @@ class ContractUpdateRule implements Rule
      * @return bool
      */
     public function passes($attribute, $value)
-    {   
+    {
         $contract = $this->model::where('NumberForm', $this->numberForm)->where('Id', '!=', $this->idContract)->first();
-        
+
         if (is_null($contract)) {
             return true;
         }
 
         if ($value == $contract->OrdinalNumber) {
+
             return false;
         }
+
+        return true;
     }
 
     /**
