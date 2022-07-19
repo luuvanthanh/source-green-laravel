@@ -4,6 +4,7 @@ namespace GGPHP\Category\Providers;
 
 use GGPHP\Category\Repositories\Contracts\BlockRepository;
 use GGPHP\Category\Repositories\Contracts\BranchRepository;
+use GGPHP\Category\Repositories\Contracts\CriteriaRepository;
 use GGPHP\Category\Repositories\Contracts\DegreeRepository;
 use GGPHP\Category\Repositories\Contracts\DivisionRepository;
 use GGPHP\Category\Repositories\Contracts\EducationalLevelRepository;
@@ -20,6 +21,7 @@ use GGPHP\Category\Repositories\Contracts\TrainingSchoolRepository;
 use GGPHP\Category\Repositories\Contracts\TypeOfContractRepository;
 use GGPHP\Category\Repositories\Eloquent\BlockRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\BranchRepositoryEloquent;
+use GGPHP\Category\Repositories\Eloquent\CriteriaRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\DegreeRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\DivisionRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\EducationalLevelRepositoryEloquent;
@@ -73,5 +75,6 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(BranchRepository::class, BranchRepositoryEloquent::class);
         $this->app->bind(HolidayRepository::class, HolidayRepositoryEloquent::class);
         $this->app->bind(BlockRepository::class, BlockRepositoryEloquent::class);
+        $this->app->bind(CriteriaRepository::class, CriteriaRepositoryEloquent::class);
     }
 }

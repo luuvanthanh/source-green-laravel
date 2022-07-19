@@ -4,14 +4,14 @@ namespace GGPHP\Category\Models;
 
 use GGPHP\Core\Models\UuidModel;
 
-class Branch extends UuidModel
+class Criteria extends UuidModel
 {
     public $incrementing = false;
 
     /**
      * Declare the table name
      */
-    protected $table = 'Branches';
+    protected $table = 'Criterias';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class Branch extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Address', 'BranchIdCrm', 'Latitude', 'Longitude'
+        'Code', 'Name'
     ];
 
     /**
