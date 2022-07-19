@@ -3,6 +3,7 @@
 namespace GGPHP\YoungAttendance\Absent\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Clover\Repositories\Contracts\StudentRepository;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
 use GGPHP\YoungAttendance\Absent\Models\AbsentType;
 use Illuminate\Foundation\Http\FormRequest;
@@ -16,7 +17,6 @@ class AbsentCreateRequest extends FormRequest
 
     public function rules()
     {
-
         return [
             'expectedDate' => 'gt:0',
             'absentTypeId' => [
@@ -50,7 +50,6 @@ class AbsentCreateRequest extends FormRequest
                             return $fail('Phải xin phép trước ' . $checkStarDate . ' ngày');
                         }
                     }
-
 
                     $accessAbsent = $this->checkDuplicateAbsent($value);
 
@@ -128,5 +127,15 @@ class AbsentCreateRequest extends FormRequest
 
             return $advanceNotice->AdvanceNotice;
         }
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+        $weekend = resolve(StudentRepository::class)->holidays($data['startDate'], $data['endDate']);
+        
+        $data['expectedDate'] = $data['expectedDate'] - $weekend;
+
+        return $data;
     }
 }
