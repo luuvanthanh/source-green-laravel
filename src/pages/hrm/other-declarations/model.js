@@ -21,7 +21,7 @@ export default {
             detail: items?.map((k) => ({
               ...k,
               total: k?.detail?.reduce(
-                (accumulator, object) => accumulator + JSON.parse(object.valueDefault),
+                (accumulator, object) => accumulator + JSON?.parse(object?.value || 0),
                 0,
               ),
             })),

@@ -90,6 +90,7 @@ class Index extends PureComponent {
         contractDate: details.contractDate && moment(details.contractDate),
         contractFrom: details.contractFrom && moment(details.contractFrom),
         contractTo: details.contractTo && moment(details.contractTo),
+        ordinalNumber: details?.ordinalNumber
       });
       this.setParameterValues(
         details.parameterValues.map((item) => ({
@@ -99,7 +100,7 @@ class Index extends PureComponent {
         })),
       );
       this.setStateData({
-        dataFormContarct: [details],
+        dataFormContarct: details?.numberForm && [details],
       });
     }
   }
@@ -226,7 +227,7 @@ class Index extends PureComponent {
     const { parameterValues, dataFormContarct } = this.state;
     const payload = {
       ...values,
-      ordinalNumber: head(dataFormContarct)?.ordinalNumber,
+      ordinalNumber: values.ordinalNumber,
       numberForm: head(dataFormContarct)?.numberForm,
       numberFormContractId: head(dataFormContarct)?.id,
       type: head(dataFormContarct)?.type,
@@ -379,6 +380,10 @@ class Index extends PureComponent {
         this.setStateData({
           dataFormContarct: response?.parsePayload,
         });
+        const stringNumber = Number(head(response?.parsePayload)?.ordinalNumber) + 1;
+        this.formRef.current.setFieldsValue({
+          ordinalNumber: JSON.stringify(stringNumber),
+        });
       }
     });
   };
@@ -445,12 +450,17 @@ class Index extends PureComponent {
                       onChange={this.changeFormContarct}
                     />
                   </div>
-                  <div className="col-lg-4">
-                    <label htmlFor="" className="mb5 font-size-13">
-                      Số hợp đồng
-                    </label>
-                    <p className="mb0 font-size-13 mt10 font-weight-bold">
-                      {dataFormContarct?.length > 0 ? `${head(dataFormContarct)?.ordinalNumber}/${head(dataFormContarct)?.numberForm}` : ''}
+                  <div className="col-lg-2">
+                    <FormItem
+                      label="Số hợp đồng"
+                      name="ordinalNumber"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                  <div className="col-lg-2">
+                    <p className="mb0 font-size-13 mt35 font-weight-bold">
+                      {dataFormContarct?.length > 0 ? `/${head(dataFormContarct)?.numberForm}` : ''}
                     </p>
                   </div>
                   <div className="col-lg-4">
