@@ -23,15 +23,14 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
 const General = memo(({ loading: { effects }, error, details }) => {
   const [data, setData] = useState([
     {
-      monthNumber: undefined,
-      bmiFemale: undefined,
-      bmiMale: undefined,
-      weightFemale: undefined,
-      weightMale: undefined,
+      monthNumber: 0,
+      bmiFemale: 0,
+      bmiMale: 0,
+      weightFemale: 0,
+      weightMale: 0,
       id: uuidv4(),
     },
   ]);
-  const [errorTable, setErrorTable] = useState(false);
 
   const formRef = useRef();
   const mounted = useRef(false);
@@ -82,12 +81,9 @@ const General = memo(({ loading: { effects }, error, details }) => {
               className={classnames('mb-0', stylesModule['icon-input'])}
               type={variables.NUMBER_INPUT}
               rules={[variables.RULES.EMPTY]}
-              value={record?.monthNumber || ''}
+              value={record?.monthNumber}
               onChange={(e) => onChangeInput(record, e, 'monthNumber')}
             />
-            {errorTable && !(record?.monthNumber) && (
-              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-            )}
           </>
         )
       },
@@ -107,12 +103,9 @@ const General = memo(({ loading: { effects }, error, details }) => {
                   className={classnames('mb-0')}
                   type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
-                  value={record?.bmiMale || ''}
+                  value={record?.bmiMale}
                   onChange={(e) => onChangeInput(record, e, 'bmiMale')}
                 />
-                {errorTable && !(record?.bmiMale) && (
-                  <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-                )}
               </>
             )
           },
@@ -127,12 +120,9 @@ const General = memo(({ loading: { effects }, error, details }) => {
                   className={classnames('mb-0')}
                   type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
-                  value={record?.bmiFemale || ''}
+                  value={record?.bmiFemale}
                   onChange={(e) => onChangeInput(record, e, 'bmiFemale')}
                 />
-                {errorTable && !(record?.bmiFemale) && (
-                  <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-                )}
               </>
             )
           },
@@ -155,12 +145,9 @@ const General = memo(({ loading: { effects }, error, details }) => {
                   type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
                   min={0}
-                  value={record?.weightMale || ''}
+                  value={record?.weightMale}
                   onChange={(e) => onChangeInput(record, e, 'weightMale')}
                 />
-                {errorTable && !(record?.weightMale) && (
-                  <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-                )}
               </>
             )
           },
@@ -175,12 +162,9 @@ const General = memo(({ loading: { effects }, error, details }) => {
                   className={classnames('mb-0', stylesModule['icon-input'])}
                   type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
-                  value={record?.weightFemale || ''}
+                  value={record?.weightFemale}
                   onChange={(e) => onChangeInput(record, e, 'weightFemale')}
                 />
-                {errorTable && !(record?.weightFemale) && (
-                  <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-                )}
               </>
             )
           },
@@ -189,18 +173,9 @@ const General = memo(({ loading: { effects }, error, details }) => {
     ];
     return columns;
   };
-
+  
   const onFinish = () => {
-    const checkErrorTable = !isEmpty(data) ?
-      !!(data.find(item => !item?.monthNumber || !item?.bmiMale || !item?.bmiFemale || !item?.weightMale || !item?.weightFemale))
-      : true;
-
-    setErrorTable(checkErrorTable);
-
-    if (checkErrorTable) {
-      return true;
-    }
-
+   
     const items = data.map((item) => ({
       monthNumber: item?.monthNumber,
       bmiFemale: `${item?.bmiFemale}`,
@@ -264,6 +239,11 @@ const General = memo(({ loading: { effects }, error, details }) => {
                               id: uuidv4(),
                               status: true,
                               file_image: undefined,
+                              monthNumber: 0,
+                              bmiFemale: 0,
+                              bmiMale: 0,
+                              weightFemale: 0,
+                              weightMale: 0,
                             },
                           ])
                         }

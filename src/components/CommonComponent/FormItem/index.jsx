@@ -96,7 +96,13 @@ const renderChildren = (
   ),
   numberInput: (
     <InputNumber
-      min={0}
+    className={classnames(
+      'input-number',
+      styles['input-number-container'],
+      styles['input-number-count'],
+    )}
+      min={0} 
+      step={0.1}
       disabled={disabled}
       onChange={onChange}
       placeholder="Nhập"

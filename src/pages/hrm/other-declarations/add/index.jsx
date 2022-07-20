@@ -270,8 +270,6 @@ class Index extends PureComponent {
             if (currentParamaterValues) {
               return currentParamaterValues;
             }
-            console.log("itemParamaterValues", itemParamaterValues);
-            console.log("currentParamaterValues", currentParamaterValues);
             return { ...itemParamaterValues, value: itemParamaterValues?.valueDefault };
           })
           : []),
@@ -510,7 +508,6 @@ class Index extends PureComponent {
       width: item.code === 'T_BHXH' ? 80 : 200,
       render: (record) => {
         const itemParamater = record?.detail?.find(({ id }) => id === item.id);
-        console.log("itemParamater", itemParamater);
         if (itemParamater?.code === 'T_BHXH') {
           return (
             <FormItem
@@ -544,7 +541,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const { detail, detailContract } = this.state;
-    console.log("detail", detail);
+   
     const loadingSubmit =
       effects['otherDeclarationsAdd/ADD'] || effects['otherDeclarationsAdd/UPDATE'];
     return (
@@ -572,7 +569,7 @@ class Index extends PureComponent {
                     label="Thời gian"
                     name="time"
                     rules={[variables.RULES.EMPTY]}
-                    type={variables.RANGE_PICKER}
+                    type={variables.DATE_PICKER}
                   />
                 </div>
                 <div className="col-lg-4">
