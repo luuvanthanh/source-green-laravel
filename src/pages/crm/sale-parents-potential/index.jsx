@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tag } from 'antd';
 import classnames from 'classnames';
-import { get, debounce } from 'lodash';
+import { get, debounce, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -41,7 +41,7 @@ const mapStateToProps = ({ crmSaleParentsPotential, loading }) => ({
   employees: crmSaleParentsPotential.employees,
   searchSource: crmSaleParentsPotential.searchSource,
   branch: crmSaleParentsPotential.branch,
-  potential : crmSaleParentsPotential.potential,
+  potential: crmSaleParentsPotential.potential,
   loading,
 });
 @connect(mapStateToProps)
@@ -226,7 +226,7 @@ class Index extends PureComponent {
           const item = res.parsePayload?.find(i => i?.code === 'GD');
           dispatch({
             type: 'crmSaleParentsPotential/GET_EMPLOYEES',
-            payload: {divisionId: item?.id},
+            payload: { divisionId: item?.id },
           });
         }
       }
@@ -297,14 +297,7 @@ class Index extends PureComponent {
         width: 170,
         render: (record) => (
           <>
-            {' '}
-            {record?.customerPotentialStatusCare
-              ?.map((item, index) => (
-                <Text size="normal" key={index} >
-                  {get(item, 'statusParentPotential.name')}
-                </Text>
-              ))
-              .pop()}{' '}
+            {head(record?.customerPotentialStatusCare)?.statusParentPotential.name}
           </>
         ),
       },
@@ -360,7 +353,7 @@ class Index extends PureComponent {
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-            key='btn'
+              key='btn'
               color="success"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             >
@@ -414,7 +407,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả Quận huyện', id : null }, ...district,]}
+                    data={[{ name: 'Chọn tất cả Quận huyện', id: null }, ...district,]}
                     name="district"
                     onChange={(event) => this.onChangeSelect(event, 'district_id')}
                     type={variables.SELECT}
@@ -424,7 +417,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả Cơ sở' , id : null}, ...branch,]}
+                    data={[{ name: 'Chọn tất cả Cơ sở', id: null }, ...branch,]}
                     name="branch"
                     onChange={(event) => this.onChangeSelect(event, 'branch_id')}
                     type={variables.SELECT}
@@ -434,7 +427,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả Nguồn' , id: null}, ...searchSource,]}
+                    data={[{ name: 'Chọn tất cả Nguồn', id: null }, ...searchSource,]}
                     name="search"
                     onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
                     type={variables.SELECT}
@@ -466,8 +459,8 @@ class Index extends PureComponent {
                   <FormItem
                     name="full_name"
                     data={[
-                      { fullName: 'Chọn tất cả nhân viên' , employeeIdCrm: null},
-                          { employeeIdCrm: 'null', fullName: 'Chưa có nhân viên chăm sóc' },
+                      { fullName: 'Chọn tất cả nhân viên', employeeIdCrm: null },
+                      { employeeIdCrm: 'null', fullName: 'Chưa có nhân viên chăm sóc' },
                       ...employees,
                     ]}
                     onChange={(event) => this.onChangeSelect(event, 'employee_id')}
@@ -479,7 +472,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả tags' , id : null}, ...tags,]}
+                    data={[{ name: 'Chọn tất cả tags', id: null }, ...tags,]}
                     name="tags"
                     type={variables.SELECT}
                     onChange={(event) => this.onChangeSelect(event, 'tag_id')}
