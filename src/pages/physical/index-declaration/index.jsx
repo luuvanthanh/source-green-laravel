@@ -173,11 +173,11 @@ const General = memo(({ loading: { effects }, error, details }) => {
     ];
     return columns;
   };
-  
+
   const onFinish = () => {
-   
+
     const items = data.map((item) => ({
-      monthNumber: item?.monthNumber,
+      monthNumber: `${item?.monthNumber}`,
       bmiFemale: `${item?.bmiFemale}`,
       bmiMale: `${item?.bmiMale}`,
       weightFemale: `${item?.weightFemale}`,

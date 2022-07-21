@@ -1245,7 +1245,6 @@ export default class Helpers {
   };
 
   static getStatusContracts = (contractFrom, contractTo, record) => {
-    console.log(record);
     const diffSignDate = moment(
       moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
     ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
@@ -1256,10 +1255,8 @@ export default class Helpers {
     if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
       return <Tag color="success">Đang hiệu lực</Tag>;
     }
-    if (diffSignDate <= 0) {
-      if (record?.typeOfContract?.code === 'VTH') {
-        return <Tag color="success">Đang hiệu lực</Tag>;
-      }
+    if (diffSignDate >= 0) {
+      return <Tag color="yellow">Chưa đến hạn</Tag>;
     }
     if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
       return (

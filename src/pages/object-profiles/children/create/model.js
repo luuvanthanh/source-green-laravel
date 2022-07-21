@@ -189,6 +189,17 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *GET_AGE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getAge, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };
