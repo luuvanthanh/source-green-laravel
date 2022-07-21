@@ -119,4 +119,15 @@ class PayRollController extends Controller
 
         return $result;
     }
+
+    public function exportSalaryPaymentTemplate(Request $request)
+    {
+        $result = $this->payRollRepository->exportSalaryPaymentTemplate($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }

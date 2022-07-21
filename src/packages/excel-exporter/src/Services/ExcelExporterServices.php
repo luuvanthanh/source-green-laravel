@@ -34,6 +34,9 @@ class ExcelExporterServices
         'absent' => [
             'template' => 'absent.xlsx',
         ],
+        'salary_payment_template' => [
+            'template' => 'salary_payment_template.xlsx',
+        ],
     ];
 
     protected $disk;
