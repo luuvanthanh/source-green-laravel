@@ -1255,6 +1255,9 @@ export default class Helpers {
     if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
       return <Tag color="success">Đang hiệu lực</Tag>;
     }
+    if (diffSignDate >= 0) {
+      return <Tag color="yellow">Chưa đến hạn</Tag>;
+    }
     if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
       return (
         <Tag color="yellow">

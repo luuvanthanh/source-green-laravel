@@ -95,7 +95,7 @@ class Index extends PureComponent {
         })),
       );
       this.setStateData({
-        dataFormContarct: [details],
+        dataFormContarct: details?.numberForm && [details],
       });
     }
   }
@@ -203,7 +203,7 @@ class Index extends PureComponent {
     const { parameterValues, dataFormContarct } = this.state;
     const payload = {
       ...values,
-      ordinalNumber: head(dataFormContarct)?.ordinalNumber,
+      ordinalNumber: values.ordinalNumber,
       numberForm: head(dataFormContarct)?.numberForm,
       numberFormContractId: head(dataFormContarct)?.id,
       type: head(dataFormContarct)?.type,
@@ -358,6 +358,14 @@ class Index extends PureComponent {
     },
   ];
 
+  converNumber = (input) => {
+    const pad = input;
+    if ((Number(input) + 1)?.toString().length < pad?.length) {
+      return pad?.substring(0, pad?.length - (Number(input) + 1).toString()?.length) + (Number(input) + 1);
+    }
+    return input ? `${Number(input) + 1}` : "";
+  };
+
   changeFormContarct = (value) => {
     const {
       dispatch
@@ -379,6 +387,9 @@ class Index extends PureComponent {
         this.setStateData({
           dataFormContarct: response?.parsePayload,
         });
+        this.formRef.current.setFieldsValue({
+          ordinalNumber: this.converNumber(head(response?.parsePayload)?.ordinalNumber),
+        });
       }
     });
   };
@@ -392,6 +403,7 @@ class Index extends PureComponent {
       Staff,
       loading: { effects },
       match: { params },
+      details
     } = this.props;
     const { parameterValues, dataFormContarct } = this.state;
     const loading =
@@ -436,23 +448,52 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-4">
-                    <FormItem
-                      label="Ngày hợp đồng"
-                      name="contractDate"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                      onChange={this.changeFormContarct}
-                    />
-                  </div>
-                  <div className="col-lg-4">
-                    <label htmlFor="" className="mb5 font-size-13">
-                      Số hợp đồng
-                    </label>
-                    <p className="mb0 font-size-13 mt10 font-weight-bold">
-                      {dataFormContarct?.length > 0 ? `${head(dataFormContarct)?.ordinalNumber}/${head(dataFormContarct)?.numberForm}` : ''}
-                    </p>
-                  </div>
+                  {
+                    details?.contractNumber && params?.id ?
+                      <>
+                        <div className="col-lg-4">
+                          <FormItem
+                            label="Ngày hợp đồng"
+                            name="contractDate"
+                            type={variables.DATE_PICKER}
+                            rules={[variables.RULES.EMPTY]}
+                          />
+                        </div>
+                        <div className="col-lg-4">
+                          <FormItem
+                            label="Số hợp đồng"
+                            name="contractNumber"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY]}
+                          />
+                        </div>
+                      </>
+                      :
+                      <>
+                        <div className="col-lg-4">
+                          <FormItem
+                            label="Ngày hợp đồng"
+                            name="contractDate"
+                            type={variables.DATE_PICKER}
+                            rules={[variables.RULES.EMPTY]}
+                            onChange={this.changeFormContarct}
+                          />
+                        </div>
+                        <div className="col-lg-2">
+                          <FormItem
+                            label="Số hợp đồng"
+                            name="ordinalNumber"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY]}
+                          />
+                        </div>
+                        <div className="col-lg-2">
+                          <p className="mb0 font-size-13 mt35 font-weight-bold">
+                            {dataFormContarct?.length > 0 ? `/${head(dataFormContarct)?.numberForm}` : ''}
+                          </p>
+                        </div>
+                      </>
+                  }
                   <div className="col-lg-4">
                     <FormItem
                       data={contractTypes}
@@ -584,7 +625,7 @@ class Index extends PureComponent {
                               </Button>
                               <div className={styles['text-sum']}>
                                 <p className={styles.title}>Tổng cộng: </p>
-                                <h3 className={styles.number}>{Helper.getPrice(parameterValues?.reduce((total, item) => total + JSON.parse(item?.valueDefault), 0))}</h3>
+                                <h3 className={styles.number}>{Helper.getPrice(parameterValues?.reduce((total, item) => total + (item?.code === "TI_LE_THU_VIEC" ? 0 : JSON.parse(item?.valueDefault)), 0))}</h3>
                               </div>
                             </div>
                           )}

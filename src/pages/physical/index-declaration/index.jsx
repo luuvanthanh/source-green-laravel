@@ -31,7 +31,6 @@ const General = memo(({ loading: { effects }, error, details }) => {
       id: uuidv4(),
     },
   ]);
-  const [errorTable, setErrorTable] = useState(false);
 
   const formRef = useRef();
   const mounted = useRef(false);
@@ -80,14 +79,11 @@ const General = memo(({ loading: { effects }, error, details }) => {
           <>
             <FormItem
               className={classnames('mb-0', stylesModule['icon-input'])}
-              type={variables.INPUT_COUNT}
+              type={variables.NUMBER_INPUT}
               rules={[variables.RULES.EMPTY]}
-              value={record?.monthNumber || ''}
+              value={record?.monthNumber}
               onChange={(e) => onChangeInput(record, e, 'monthNumber')}
             />
-            {errorTable && !(record?.monthNumber) && (
-              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-            )}
           </>
         )
       },
@@ -104,15 +100,12 @@ const General = memo(({ loading: { effects }, error, details }) => {
             render: (value, record) => (
               <>
                 <FormItem
-                  className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.INPUT_COUNT}
+                  className={classnames('mb-0')}
+                  type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
-                  value={record?.bmiMale || ''}
+                  value={record?.bmiMale}
                   onChange={(e) => onChangeInput(record, e, 'bmiMale')}
                 />
-                {errorTable && !(record?.bmiMale) && (
-                  <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-                )}
               </>
             )
           },
@@ -124,15 +117,12 @@ const General = memo(({ loading: { effects }, error, details }) => {
             render: (value, record) => (
               <>
                 <FormItem
-                  className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.INPUT_COUNT}
+                  className={classnames('mb-0')}
+                  type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
-                  value={record?.bmiFemale || ''}
+                  value={record?.bmiFemale}
                   onChange={(e) => onChangeInput(record, e, 'bmiFemale')}
                 />
-                {errorTable && !(record?.bmiFemale) && (
-                  <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-                )}
               </>
             )
           },
@@ -152,14 +142,12 @@ const General = memo(({ loading: { effects }, error, details }) => {
               <>
                 <FormItem
                   className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.INPUT_COUNT}
+                  type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
-                  value={record?.weightMale || ''}
+                  min={0}
+                  value={record?.weightMale}
                   onChange={(e) => onChangeInput(record, e, 'weightMale')}
                 />
-                {errorTable && !(record?.weightMale) && (
-                  <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-                )}
               </>
             )
           },
@@ -172,14 +160,11 @@ const General = memo(({ loading: { effects }, error, details }) => {
               <>
                 <FormItem
                   className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.INPUT_COUNT}
+                  type={variables.NUMBER_INPUT}
                   rules={[variables.RULES.EMPTY]}
-                  value={record?.weightFemale || ''}
+                  value={record?.weightFemale}
                   onChange={(e) => onChangeInput(record, e, 'weightFemale')}
                 />
-                {errorTable && !(record?.weightFemale) && (
-                  <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-                )}
               </>
             )
           },
@@ -190,27 +175,31 @@ const General = memo(({ loading: { effects }, error, details }) => {
   };
 
   const onFinish = () => {
-    const checkErrorTable = !isEmpty(data) ?
-      !!(data.find(item => !item?.monthNumber || !item?.bmiMale || !item?.bmiFemale || !item?.weightMale || !item?.weightFemale))
-      : true;
-
-    setErrorTable(checkErrorTable);
-
-    if (checkErrorTable) {
-      return true;
-    }
 
     const items = data.map((item) => ({
-      monthNumber: item?.monthNumber,
-      bmiFemale: `${item?.bmiFemale}`,
-      bmiMale: `${item?.bmiMale}`,
-      weightFemale: `${item?.weightFemale}`,
-      weightMale: `${item?.weightMale}`,
+      monthNumber: item?.monthNumber ? `${item?.monthNumber}` : "0",
+      bmiFemale: item?.bmiFemale ? `${item?.bmiFemale}` : "0",
+      bmiMale: item?.bmiMale ? `${item?.bmiMale}` : "0",
+      weightFemale: item?.weightFemale ? `${item?.weightFemale}` : "0",
+      weightMale: item?.weightMale ? `${item?.weightMale}` : "0",
     }));
     dispatch({
       type: 'physicalIndexDeclaration/POST',
       payload: items,
       callback: (response, error) => {
+        if (response) {
+          dispatch({
+            type: 'physicalIndexDeclaration/GET_DATA',
+            payload: {},
+            callback: (response) => {
+              if (response) {
+                if (response?.items?.length > 0) {
+                  setData(response?.items);
+                }
+              };
+            },
+          });
+        }
         if (error) {
           if (error?.errors && !isEmpty(error?.errors)) {
             error?.errors.forEach((item) => {
@@ -263,6 +252,11 @@ const General = memo(({ loading: { effects }, error, details }) => {
                               id: uuidv4(),
                               status: true,
                               file_image: undefined,
+                              // monthNumber: 0,
+                              // bmiFemale: 0,
+                              // bmiMale: 0,
+                              // weightFemale: 0,
+                              // weightMale: 0,
                             },
                           ])
                         }

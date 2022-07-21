@@ -1,7 +1,7 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form, Steps } from 'antd';
 import { useParams } from 'umi';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, head } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -21,7 +21,7 @@ const General = memo(() => {
   const mounted = useRef(false);
   const {
     parentLead,
-    details,
+    // details,
     lead,
     user,
     loading: { effects },
@@ -94,13 +94,19 @@ const General = memo(() => {
     return mounted.current;
   }, []);
 
+  // useEffect(() => {
+  //   if (details?.customerPotentialStatusCare?.filter(i => i?.statusParentPotential?.number === 3).length <= 0 && details?.customerPotentialStatusCare?.filter(i => i?.statusParentPotential?.number === 4) <= 0) {
+  //     formRef.current.setFieldsValue({
+  //       status_parent_potential_id: details?.customerPotentialStatusCare[(details?.customerPotentialStatusCare?.length - 1)]?.status_parent_potential_id,
+  //     });
+  //   }
+  // }, [details]);
+
   useEffect(() => {
-    if (details?.customerPotentialStatusCare?.filter(i => i?.statusParentPotential?.number === 3).length <= 0 && details?.customerPotentialStatusCare?.filter(i => i?.statusParentPotential?.number === 4) <= 0) {
-      formRef.current.setFieldsValue({
-        status_parent_potential_id: details?.customerPotentialStatusCare[(details?.customerPotentialStatusCare?.length - 1)]?.status_parent_potential_id,
-      });
-    }
-  }, [details]);
+    formRef.current.setFieldsValue({
+      status_parent_potential_id: head(lead)?.statusParentPotential?.name,
+    });
+  }, [lead]);
 
   const header = () => {
     const columns = [
@@ -128,7 +134,6 @@ const General = memo(() => {
     ];
     return columns;
   };
-
   return (
     <Form layout="vertical" initialValues={{ data: [{}] }} ref={formRef} onFinish={onFinish}>
       <div className="card">
@@ -153,12 +158,12 @@ const General = memo(() => {
             </div>
             <div className="row">
               {
-                lead[0]?.statusParentPotential?.number === 3 || lead[0]?.statusParentPotential?.number  === 4 ?
+                head(lead)?.statusParentPotential?.number === 3 || head(lead)?.statusParentPotential?.number === 4 ?
                   <Pane className="col-lg-6">
                     <FormItem
                       options={['id', 'name']}
                       name="status_parent_potential_id"
-                      data={parentLead.filter(i => i?.use === false)}
+                      data={parentLead}
                       placeholder="Chọn"
                       label="Tình trạng chăm sóc của phụ huynh tiềm năng"
                       type={variables.SELECT}
@@ -182,12 +187,12 @@ const General = memo(() => {
             </div>
             <div className={stylesModule['wrapper-btn']}>
               {
-                lead[0]?.statusParentPotential?.number === 3 || lead[0]?.statusParentPotential?.number  === 4 ?
+                lead[0]?.statusParentPotential?.number === 3 || lead[0]?.statusParentPotential?.number === 4 ?
                   <Button
-                  color="success"  className="ml-4" disabled
+                    color="success" className="ml-4" disabled
                   >
                     Lưu
-                  </Button>:
+                  </Button> :
                   <Button
                     color="success"
                     size="normal"
@@ -195,7 +200,7 @@ const General = memo(() => {
                     loading={loadingSubmit || loading}
                   >
                     Lưu
-                  </Button> 
+                  </Button>
               }
             </div>
           </div>

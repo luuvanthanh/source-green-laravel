@@ -38,6 +38,7 @@ export const variables = {
   AUTO_COMPLETE: 'AutoComplete',
   DATE_REGISTERS_BIRTHDAY: 'registersBirthDay',
   DATE_REGISTERS_DAY: 'registersDay',
+  NUMBER_INPUT: 'numberInput',
   // RULES
   RULES: {
     EMPTY: { required: true, message: 'Vui lòng không được để trống trường này' },

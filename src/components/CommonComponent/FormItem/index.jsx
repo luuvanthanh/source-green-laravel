@@ -94,6 +94,20 @@ const renderChildren = (
       value={value}
     />
   ),
+  numberInput: (
+    <InputNumber
+      className={classnames(
+        'input-number',
+        styles['input-number-container'],
+        styles['input-number-count'],
+      )}
+      min={0}
+      disabled={disabled}
+      onChange={onChange}
+      placeholder="0"
+      value={value}
+    />
+  ),
   inputDate: (
     <InputNumber
       className={classnames(

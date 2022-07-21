@@ -154,8 +154,9 @@ function Index() {
       {
         title: 'Số hợp đồng',
         key: 'contract_number',
-        dataIndex: 'contractNumber',
         className: 'min-width-120',
+        render: (record) => <> {record?.contractNumber ? <>{record?.contractNumber}</> :
+          <>{(record?.ordinalNumber ? (<>{record?.ordinalNumber}/{record?.numberForm}</>) : "")}</>}</>
       },
       {
         title: 'Ngày hợp đồng',

@@ -5,6 +5,8 @@ export function get() {
     method: 'GET',
     params: {
       Sorting: 'Sorting',
+      SkipCount: 0,
+      MaxResultCount: 1000,
     },
   });
 }
