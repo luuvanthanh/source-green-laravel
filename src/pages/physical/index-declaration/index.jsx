@@ -23,11 +23,11 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
 const General = memo(({ loading: { effects }, error, details }) => {
   const [data, setData] = useState([
     {
-      monthNumber: 0,
-      bmiFemale: 0,
-      bmiMale: 0,
-      weightFemale: 0,
-      weightMale: 0,
+      monthNumber: undefined,
+      bmiFemale: undefined,
+      bmiMale: undefined,
+      weightFemale: undefined,
+      weightMale: undefined,
       id: uuidv4(),
     },
   ]);
@@ -177,16 +177,29 @@ const General = memo(({ loading: { effects }, error, details }) => {
   const onFinish = () => {
 
     const items = data.map((item) => ({
-      monthNumber: `${item?.monthNumber}`,
-      bmiFemale: `${item?.bmiFemale}`,
-      bmiMale: `${item?.bmiMale}`,
-      weightFemale: `${item?.weightFemale}`,
-      weightMale: `${item?.weightMale}`,
+      monthNumber: item?.monthNumber ? `${item?.monthNumber}` : "0",
+      bmiFemale: item?.bmiFemale ? `${item?.bmiFemale}` : "0",
+      bmiMale: item?.bmiMale ? `${item?.bmiMale}` : "0",
+      weightFemale: item?.weightFemale ? `${item?.weightFemale}` : "0",
+      weightMale: item?.weightMale ? `${item?.weightMale}` : "0",
     }));
     dispatch({
       type: 'physicalIndexDeclaration/POST',
       payload: items,
       callback: (response, error) => {
+        if (response) {
+          dispatch({
+            type: 'physicalIndexDeclaration/GET_DATA',
+            payload: {},
+            callback: (response) => {
+              if (response) {
+                if (response?.items?.length > 0) {
+                  setData(response?.items);
+                }
+              };
+            },
+          });
+        }
         if (error) {
           if (error?.errors && !isEmpty(error?.errors)) {
             error?.errors.forEach((item) => {
@@ -239,11 +252,11 @@ const General = memo(({ loading: { effects }, error, details }) => {
                               id: uuidv4(),
                               status: true,
                               file_image: undefined,
-                              monthNumber: 0,
-                              bmiFemale: 0,
-                              bmiMale: 0,
-                              weightFemale: 0,
-                              weightMale: 0,
+                              // monthNumber: 0,
+                              // bmiFemale: 0,
+                              // bmiMale: 0,
+                              // weightFemale: 0,
+                              // weightMale: 0,
                             },
                           ])
                         }

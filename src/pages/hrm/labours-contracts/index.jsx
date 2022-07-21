@@ -274,9 +274,8 @@ class Index extends PureComponent {
         key: 'contract_number',
         className: 'min-width-170',
         width: 170,
-        render: (record) => <>  {record?.ordinalNumber ?
-          <> {record?.ordinalNumber}/{record?.numberForm}</>
-          : ""} </>,
+        render: (record) => <> {record?.contractNumber ? <>{record?.contractNumber}</> :
+          <>{(record?.ordinalNumber ? (<>{record?.ordinalNumber}/{record?.numberForm}</>) : "")}</>}</>
       },
       {
         title: 'Ngày hợp đồng',
