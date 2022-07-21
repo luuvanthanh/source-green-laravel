@@ -391,23 +391,24 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $feeDetail = $feePolicie->moneyMeal()
                                 ->where('ClassTypeId', $attributes['classTypeId'])
                                 ->where('PaymentFormId', $detail->paymentFormId)->first();
-
                             $arrDate = $this->getDatesFromRange($begin->format('Y-m-d'), $end->format('Y-m-d'));
 
                             foreach ($arrDate as $key => $value) {
-                                $date = new DateTime($value);
-                                $holidayDetail = HolidayDetail::whereYear('StartDate', $date->format('Y'))->orWhereYear('EndDate', $date->format('Y'))->get();
-                                $getDate = array_merge(array_column($holidayDetail->toArray(), 'StartDate'), array_column($holidayDetail->toArray(), 'EndDate'));
 
                                 if ($this->isWeekend($value)) {
                                     unset($arrDate[$key]);
                                 }
 
-                                if (array_search($date->format('Y-m-d'), $getDate)) {
-                                    unset($arrDate[$key]);
+                                $date = new DateTime($value);
+                                $holidayDetail = HolidayDetail::whereYear('StartDate', $date->format('Y'))->orWhereYear('EndDate', $date->format('Y'))->get();
+                                $arrHoliday = [];
+                                foreach ($holidayDetail as $key => $valueHolidayDetail) {
+                                    $arrHoliday[] = $this->getDatesFromRange($valueHolidayDetail->StartDate, $valueHolidayDetail->EndDate);
                                 }
+                                $arrFlatten = $this->flatten($arrHoliday);
                             }
-                            $totalDaySemester1 = count($arrDate);
+
+                            $totalDaySemester1 = count(array_diff($arrDate, $arrFlatten));
 
                             if (!is_null($feeDetail)) {
                                 $money = $feeDetail->Money;
@@ -912,5 +913,14 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
     function isWeekend($date)
     {
         return (date('N', strtotime($date)) >= 6);
+    }
+
+    function flatten(array $array)
+    {
+        $return = array();
+        array_walk_recursive($array, function ($a) use (&$return) {
+            $return[] = $a;
+        });
+        return $return;
     }
 }
