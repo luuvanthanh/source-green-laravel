@@ -143,6 +143,14 @@ class Index extends PureComponent {
     });
   };
 
+  converNumber = (input) => {
+    const pad = input;
+    if ((Number(input) + 1)?.toString().length < pad?.length) {
+      return pad?.substring(0, pad?.length - (Number(input) + 1).toString()?.length) + (Number(input) + 1);
+    }
+    return input ? `${Number(input) + 1}` : "";
+  };
+
   changeContract = (value) => {
     const { contractTypes } = this.props;
     const itemContract = contractTypes.find((item) => item.id === value);
@@ -152,6 +160,7 @@ class Index extends PureComponent {
       parameterValues:
         itemContract?.parameterValues?.map((item, index) => ({ ...item, index })) || [],
     });
+
     this.formRef.current.setFieldsValue({
       month: itemContract?.code !== 'VTH' ? 0 : toString(itemContract.month),
     });
@@ -380,9 +389,8 @@ class Index extends PureComponent {
         this.setStateData({
           dataFormContarct: response?.parsePayload,
         });
-        const stringNumber = Number(head(response?.parsePayload)?.ordinalNumber) + 1;
         this.formRef.current.setFieldsValue({
-          ordinalNumber: JSON.stringify(stringNumber),
+          ordinalNumber: this.converNumber(head(response?.parsePayload)?.ordinalNumber),
         });
       }
     });
@@ -397,6 +405,7 @@ class Index extends PureComponent {
       contractTypes,
       loading: { effects },
       match: { params },
+      details
     } = this.props;
     const { parameterValues, typeContract, dataFormContarct } = this.state;
     const loading =
@@ -441,28 +450,52 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-4">
-                    <FormItem
-                      label="Ngày hợp đồng"
-                      name="contractDate"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                      onChange={this.changeFormContarct}
-                    />
-                  </div>
-                  <div className="col-lg-2">
-                    <FormItem
-                      label="Số hợp đồng"
-                      name="ordinalNumber"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </div>
-                  <div className="col-lg-2">
-                    <p className="mb0 font-size-13 mt35 font-weight-bold">
-                      {dataFormContarct?.length > 0 ? `/${head(dataFormContarct)?.numberForm}` : ''}
-                    </p>
-                  </div>
+                  {
+                    details?.contractNumber && params?.id ?
+                      <>
+                        <div className="col-lg-4">
+                          <FormItem
+                            label="Ngày hợp đồng"
+                            name="contractDate"
+                            type={variables.DATE_PICKER}
+                            rules={[variables.RULES.EMPTY]}
+                          />
+                        </div>
+                        <div className="col-lg-4">
+                          <FormItem
+                            label="Số hợp đồng"
+                            name="contractNumber"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY]}
+                          />
+                        </div>
+                      </>
+                      :
+                      <>
+                        <div className="col-lg-4">
+                          <FormItem
+                            label="Ngày hợp đồng"
+                            name="contractDate"
+                            type={variables.DATE_PICKER}
+                            rules={[variables.RULES.EMPTY]}
+                            onChange={this.changeFormContarct}
+                          />
+                        </div>
+                        <div className="col-lg-2">
+                          <FormItem
+                            label="Số hợp đồng"
+                            name="ordinalNumber"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY]}
+                          />
+                        </div>
+                        <div className="col-lg-2">
+                          <p className="mb0 font-size-13 mt35 font-weight-bold">
+                            {dataFormContarct?.length > 0 ? `/${head(dataFormContarct)?.numberForm}` : ''}
+                          </p>
+                        </div>
+                      </>
+                  }
                   <div className="col-lg-4">
                     <FormItem
                       data={contractTypes}

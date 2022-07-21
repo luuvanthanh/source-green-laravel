@@ -362,6 +362,14 @@ function Index() {
     return columns;
   };
 
+  const converNumber = (input) => {
+    const pad = input;
+    if ((Number(input) + 1)?.toString().length < pad?.length) {
+      return pad?.substring(0, pad?.length - (Number(input) + 1).toString()?.length) + (Number(input) + 1);
+    }
+    return input ? `${Number(input) + 1}` : "";
+  };
+
   const changeFormContarct = (value) => {
     dispatch({
       type: 'probationaryContractsAdd/GET_FORM_CONTRACTS',
@@ -378,6 +386,9 @@ function Index() {
       },
       callback: (response) => {
         setDataFormContarct(response?.parsePayload);
+        formRef.setFieldsValue({
+          ordinalNumber: converNumber(head(response?.parsePayload)?.ordinalNumber),
+        });
       }
     });
   };
@@ -423,23 +434,52 @@ function Index() {
               </div>
 
               <div className="row">
-                <div className="col-lg-4">
-                  <FormItem
-                    label="Ngày hợp đồng"
-                    name="contractDate"
-                    type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
-                    onChange={changeFormContarct}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <label htmlFor="" className="mb5 font-size-13">
-                    Số hợp đồng
-                  </label>
-                  <p className="mb0 font-size-13 mt10 font-weight-bold">
-                    {dataFormContarct?.length > 0 ? `${head(dataFormContarct)?.ordinalNumber}/${head(dataFormContarct)?.numberForm}` : ''}
-                  </p>
-                </div>
+                {
+                  details?.contractNumber && params?.id ?
+                    <>
+                      <div className="col-lg-4">
+                        <FormItem
+                          label="Ngày hợp đồng"
+                          name="contractDate"
+                          type={variables.DATE_PICKER}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </div>
+                      <div className="col-lg-4">
+                        <FormItem
+                          label="Số hợp đồng"
+                          name="contractNumber"
+                          type={variables.INPUT}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </div>
+                    </>
+                    :
+                    <>
+                      <div className="col-lg-4">
+                        <FormItem
+                          label="Ngày hợp đồng"
+                          name="contractDate"
+                          type={variables.DATE_PICKER}
+                          rules={[variables.RULES.EMPTY]}
+                          onChange={changeFormContarct}
+                        />
+                      </div>
+                      <div className="col-lg-2">
+                        <FormItem
+                          label="Số hợp đồng"
+                          name="ordinalNumber"
+                          type={variables.INPUT}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </div>
+                      <div className="col-lg-2">
+                        <p className="mb0 font-size-13 mt35 font-weight-bold">
+                          {dataFormContarct?.length > 0 ? `/${head(dataFormContarct)?.numberForm}` : ''}
+                        </p>
+                      </div>
+                    </>
+                }
                 <div className="col-lg-4">
                   <FormItem
                     data={contractTypes}

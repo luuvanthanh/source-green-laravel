@@ -104,7 +104,7 @@ const renderChildren = (
       min={0}
       disabled={disabled}
       onChange={onChange}
-      placeholder="Nhập"
+      placeholder="0"
       value={value}
     />
   ),
