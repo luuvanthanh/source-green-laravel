@@ -47,6 +47,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('holidays', 'HolidayController');
                 \Route::resource('blocks', 'BlockController');
                 \Route::resource('criterias', 'CriteriaController');
+                \Route::resource('grades', 'GradeController');
             });
         });
     }
