@@ -2,6 +2,7 @@
 
 namespace GGPHP\Clover\Transformers;
 
+use Carbon\Carbon;
 use GGPHP\Attendance\Transformers\AttendanceTransformer;
 use GGPHP\ChildDevelop\TestSemester\Transformers\TestSemesterTransformer;
 use GGPHP\Clover\Models\Student;
@@ -80,7 +81,15 @@ class StudentTransformer extends BaseTransformer
      */
     public function includeAttendance(Student $student)
     {
-        return $this->collection($student->attendance, new AttendanceTransformer, 'Attendance');
+        $newColection = [];
+        
+        if ($student->attendance->isNotEmpty()) {
+            $newColection =  $student->attendance->filter(function ($value, $key) {
+                return $value->Date->dayOfWeek != Carbon::SUNDAY && $value->Date->dayOfWeek != Carbon::SATURDAY;
+            });
+        }
+
+        return $this->collection($newColection, new AttendanceTransformer, 'Attendance');
     }
 
     /**

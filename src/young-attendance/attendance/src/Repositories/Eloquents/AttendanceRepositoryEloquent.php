@@ -332,8 +332,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             }
         }]);
 
-        $this->model = $this->studentRepositoryEloquent->model->where('IsDeleted', false);
-
         if (!empty($attributes['studentId'])) {
             $studentId = explode(',', $attributes['studentId']);
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
@@ -386,7 +384,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
         $timetableSetting = TimetableSetting::whereDate('FromDate', '<=', $date)->whereDate('ToDate', '>=', $date)->first();
 
-        if (!is_null($timetableSetting)) {
+        if (!is_null($timetableSetting) && Carbon::parse($date)->dayOfWeek != Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek != Carbon::SUNDAY) {
             foreach ($students as $student) {
                 $nowHours = !empty($attributes['time']) ? $attributes['time'] : Carbon::now('GMT+7')->format('H:i:s');
 

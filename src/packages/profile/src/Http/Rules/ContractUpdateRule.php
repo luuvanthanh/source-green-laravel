@@ -25,16 +25,19 @@ class ContractUpdateRule implements Rule
      * @return bool
      */
     public function passes($attribute, $value)
-    {   
+    {
         $contract = $this->model::where('NumberForm', $this->numberForm)->where('Id', '!=', $this->idContract)->first();
-        
+
         if (is_null($contract)) {
             return true;
         }
 
-        if ($value <= $contract->OrdinalNumber) {
+        if ($value == $contract->OrdinalNumber) {
+
             return false;
         }
+
+        return true;
     }
 
     /**
@@ -44,6 +47,6 @@ class ContractUpdateRule implements Rule
      */
     public function message()
     {
-        return 'Số thứ tự phải lớn hơn số đã có';
+        return 'Số thứ tự khác số đã có.';
     }
 }

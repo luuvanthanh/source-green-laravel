@@ -4,6 +4,7 @@ namespace GGPHP\YoungAttendance\Absent\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Attendance\Models\Attendance;
+use GGPHP\Clover\Repositories\Contracts\StudentRepository;
 use GGPHP\Clover\Repositories\Eloquent\ClassRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
@@ -123,7 +124,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
     public function create(array $attributes)
     {
-
         \DB::beginTransaction();
 
         try {
@@ -135,6 +135,11 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             $now = Carbon::now();
 
             foreach ($periodDate as $date) {
+
+                if (Carbon::parse($date)->dayOfWeek == Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek == Carbon::SUNDAY) {
+                    continue;
+                }
+
                 $isRefunds = false;
 
                 if ($date->format('Y-m-d') == $now->format('Y-m-d')) {
@@ -151,6 +156,11 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             if ($absent->Status == 'CONFIRM') {
 
                 foreach ($periodDate as $date) {
+
+                    if (Carbon::parse($date)->dayOfWeek == Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek == Carbon::SUNDAY) {
+                        continue;
+                    }
+
                     $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))->first();
 
                     if (is_null($attendance)) {
@@ -244,11 +254,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
             \DB::commit();
         } catch (\Exception $e) {
-
             \DB::rollback();
         }
-
-
 
         return parent::find($absent->Id);
     }
@@ -403,7 +410,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         if ($periodDate->start == $periodDate->end) {
             $date = $periodDate->start;
             $attendance = Attendance::where('StudentId', $absent->StudentId)->where('Date', $date->format('Y-m-d'))->first();
-            
+
             if (is_null($attendance)) {
                 $attendance = Attendance::create([
                     'StudentId' => $absent->StudentId,

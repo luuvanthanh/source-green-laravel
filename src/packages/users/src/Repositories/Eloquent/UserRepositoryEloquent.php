@@ -98,9 +98,9 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         if (!empty($attributes['startDate']) && !empty($attributes['endDate']) && !empty($attributes['forManualCalculation']) && $attributes['forManualCalculation'] == true) {
             $this->model = $this->model->whereHas('manualCalculation', function ($q) use ($attributes) {
-                $q->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+                $q->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
             })->with(['manualCalculation' => function ($query) use ($attributes) {
-                $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+                $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
             }]);
         }
 

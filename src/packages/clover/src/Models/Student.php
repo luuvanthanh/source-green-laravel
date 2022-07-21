@@ -5,9 +5,14 @@ namespace GGPHP\Clover\Models;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends UuidModel
 {
+    use SoftDeletes;
+
+    const DELETED_AT = 'DeletionTime';
+
     public $incrementing = false;
 
     /**
