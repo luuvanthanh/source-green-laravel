@@ -625,7 +625,7 @@ class Index extends PureComponent {
                               </Button>
                               <div className={styles['text-sum']}>
                                 <p className={styles.title}>Tổng cộng: </p>
-                                <h3 className={styles.number}>{Helper.getPrice(parameterValues?.reduce((total, item) => total + JSON.parse(item?.valueDefault), 0))}</h3>
+                                <h3 className={styles.number}>{Helper.getPrice(parameterValues?.reduce((total, item) => total + (item?.code === "TI_LE_THU_VIEC" ? 0 : JSON.parse(item?.valueDefault)), 0))}</h3>
                               </div>
                             </div>
                           )}
