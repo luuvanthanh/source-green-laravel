@@ -272,10 +272,11 @@ class Index extends PureComponent {
       {
         title: 'Số hợp đồng',
         key: 'contract_number',
-        dataIndex: 'contractNumber',
-        className: 'min-width-120',
-        width: 120,
-        render: (value) => <Text> {value?.ordinalNumber}/{value?.numberForm}</Text>,
+        className: 'min-width-170',
+        width: 170,
+        render: (record) => <>  {record?.ordinalNumber ?
+          <> {record?.ordinalNumber}/{record?.numberForm}</>
+          : ""} </>,
       },
       {
         title: 'Ngày hợp đồng',

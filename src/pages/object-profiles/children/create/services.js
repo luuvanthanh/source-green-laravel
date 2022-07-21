@@ -64,3 +64,12 @@ export function updateStatusRestore(data = {}) {
     data,
   });
 }
+
+export function getAge(params = {}) {
+  return request(`/students/get-age/${params?.dayOfBirth}`, {
+    method: 'GET',
+    params: {
+      dayOfBirth: params?.dayOfBirth,
+    },
+  });
+}

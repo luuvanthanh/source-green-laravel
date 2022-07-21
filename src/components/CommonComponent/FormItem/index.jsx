@@ -96,13 +96,12 @@ const renderChildren = (
   ),
   numberInput: (
     <InputNumber
-    className={classnames(
-      'input-number',
-      styles['input-number-container'],
-      styles['input-number-count'],
-    )}
-      min={0} 
-      step={0.1}
+      className={classnames(
+        'input-number',
+        styles['input-number-container'],
+        styles['input-number-count'],
+      )}
+      min={0}
       disabled={disabled}
       onChange={onChange}
       placeholder="Nhập"

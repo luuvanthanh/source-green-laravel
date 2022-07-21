@@ -65,7 +65,22 @@ const General = memo(
     const loading = effects[`OPchildrenAdd/GET_DETAILS`];
 
     const onChaneDate = (e) => {
-      mountedSet(setDayOfBirth, e);
+      dispatch({
+        type: 'OPchildrenAdd/GET_AGE',
+        payload: {
+          dayOfBirth: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: e,
+            }),
+            format: variables.DATE_FORMAT.DATE_AFTER,
+            isUTC: false,
+          }), id: params?.id
+        },
+        callback: (response) => {
+          setDayOfBirth(response);
+        },
+      });
     };
 
     const onChangeBranch = (e) => {
@@ -213,7 +228,7 @@ const General = memo(
           branchId: details?.student?.branch?.name || details?.student?.class?.branch?.name,
           status: details?.student?.status,
         });
-        mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
+        setDayOfBirth(details?.student?.age);
         if (details?.student?.class?.branchId) {
           dispatch({
             type: 'OPchildrenAdd/GET_CLASSES',
@@ -397,7 +412,7 @@ const General = memo(
                   </Pane>
                   <Pane className="col-lg-2">
                     <Form.Item label="Tuổi (tháng)">
-                      {dayOfBirth && moment().diff(moment(dayOfBirth), 'month')}
+                      {dayOfBirth}
                     </Form.Item>
                   </Pane>
                   <Pane className="col-lg-4">
