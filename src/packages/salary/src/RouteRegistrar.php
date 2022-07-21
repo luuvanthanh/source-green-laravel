@@ -35,6 +35,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('payslip', 'PayRollController@payslip');
 
             \Route::get('export-payrolls', 'PayRollController@exportPayroll');
+
+            \Route::get('export-salary-payment-template', 'PayRollController@exportSalaryPaymentTemplate');
         });
     }
 }
