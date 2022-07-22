@@ -33,7 +33,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forKiosk();
     });
 
-    Route::group(['middleware' => []], function () {
+    Route::group(['middleware' => ['auth_sso']], function () {
         \GGPHP\Users\RouteRegistrar::routes(function ($router) {
             $router->forUser();
         });
@@ -157,6 +157,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
 
         GGPHP\ManualCalculation\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\TeacherTimekeeping\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
     });

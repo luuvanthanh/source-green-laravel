@@ -16,6 +16,7 @@ use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
 use GGPHP\Profile\Transformers\LabourContractTransformer;
 use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
+use GGPHP\TeacherTimekeeping\Transformers\TeacherTimekeepingTransformer;
 use GGPHP\Timekeeping\Transformers\TimekeepingTransformer;
 use GGPHP\TrainingTeacher\TrainingSchedule\Transformers\TrainingScheduleDetailTransformer;
 use GGPHP\TrainingTeacher\TrainingSchedule\Transformers\TrainingScheduleTransformer;
@@ -48,7 +49,7 @@ class UserTransformer extends BaseTransformer
     protected $availableIncludes = [
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
         'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool',
-        'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail', 'typeTeacher'
+        'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail', 'typeTeacher', 'TeacherTimekeeping'
     ];
 
     /**
@@ -222,5 +223,15 @@ class UserTransformer extends BaseTransformer
     public function includeTypeTeacher(User $employee)
     {
         return $this->collection($employee->typeTeacher, new TypeTeacherTransformer, 'TypeTeacher');
+    }
+
+    /**
+     * Include timekeeping
+     * @param User $employee
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeTeacherTimekeeping(User $employee)
+    {
+        return $this->collection(empty($employee->teacherTimekeeping) ? [] : $employee->teacherTimekeeping, new TeacherTimekeepingTransformer, 'TeacherTimekeeping');
     }
 }
