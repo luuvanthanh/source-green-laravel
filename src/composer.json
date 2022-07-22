@@ -103,7 +103,8 @@
             "GGPHP\\TeacherAssignment\\": "hrm/teacher-assignment/src",
             "GGPHP\\TrainingTeacher\\TrainingModuleBoard\\": "training-teacher/training-module-board/src/",
             "GGPHP\\TrainingTeacher\\TrainingSchedule\\": "training-teacher/training-schedule/src/",
-            "GGPHP\\ManualCalculation\\": "hrm/manual-calculation/src/"
+            "GGPHP\\ManualCalculation\\": "hrm/manual-calculation/src/",
+            "GGPHP\\TeacherTimekeeping\\": "hrm/teacher-timekeeping/src/"
         },
         "classmap": [
             "database/seeds",

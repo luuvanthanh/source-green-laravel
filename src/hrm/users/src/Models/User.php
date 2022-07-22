@@ -14,6 +14,7 @@ use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
+use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingSchedule;
 use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingScheduleDetail;
@@ -364,5 +365,15 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function typeTeacher()
     {
         return $this->belongsToMany(TypeTeacher::class, 'EmployeeTypeTeacher', 'EmployeeId', 'TypeTeacherId');
+    }
+
+    /**
+     * Get educations of employee
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function TeacherTimekeeping()
+    {
+        return $this->hasMany(TeacherTimekeeping::class, 'EmployeeId');
     }
 }
