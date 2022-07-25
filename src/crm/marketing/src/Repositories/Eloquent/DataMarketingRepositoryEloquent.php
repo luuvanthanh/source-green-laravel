@@ -310,7 +310,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
             }
         }
 
-        DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->where('id', '!=', $dataMarketing->id)->forceDelete();
+        DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->where('id', '!=', $dataMarketing->id)->where('status', DataMarketing::STATUS['NOT_MOVE'])->forceDelete();
 
         return parent::parserResult($dataMarketing);
     }
@@ -333,5 +333,12 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         }
 
         return parent::parserResult($dataMarketing);
+    }
+
+    public function multipleDeleteDataMarketing(array $attributes)
+    {
+        DataMarketing::whereIn('id', $attributes['data'])->forceDelete();
+
+        return parent::parserResult($this->model->first());
     }
 }

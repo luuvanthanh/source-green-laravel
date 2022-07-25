@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Marketing\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Crm\Marketing\Http\Requests\CreateDataMarketingRequest;
 use GGPHP\Crm\Marketing\Http\Requests\MoveLeadRequest;
+use GGPHP\Crm\Marketing\Http\Requests\MultipleDeleteDataMarketingRequest;
 use GGPHP\Crm\Marketing\Http\Requests\UpdateDataMarketingRequest;
 use GGPHP\Crm\Marketing\Imports\DataMarketingImport;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
@@ -187,6 +188,13 @@ class DataMarketingController extends Controller
     public function exchangeEmailPhone(Request $request)
     {
         $dataMarketing = $this->dataMarketingRepository->exchangeEmailPhone();
+
+        return $this->success($dataMarketing, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
+
+    public function multipleDeleteDataMarketing(MultipleDeleteDataMarketingRequest $request)
+    {
+        $dataMarketing = $this->dataMarketingRepository->multipleDeleteDataMarketing($request->all());
 
         return $this->success($dataMarketing, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
