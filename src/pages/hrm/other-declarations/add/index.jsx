@@ -541,7 +541,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const { detail, detailContract } = this.state;
-   
+
     const loadingSubmit =
       effects['otherDeclarationsAdd/ADD'] || effects['otherDeclarationsAdd/UPDATE'];
     return (

@@ -239,7 +239,7 @@ class Index extends PureComponent {
       ordinalNumber: values.ordinalNumber,
       numberForm: head(dataFormContarct)?.numberForm,
       numberFormContractId: head(dataFormContarct)?.id,
-      type: head(dataFormContarct)?.type,
+      type: 'LABOUR',
       id: params.id,
       contractDate: Helper.getDateTime({
         value: Helper.setDate({

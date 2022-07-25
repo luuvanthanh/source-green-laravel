@@ -55,6 +55,8 @@ class Index extends PureComponent {
       },
       isCollapsed: false,
       loadingDownload: false,
+      loadingBank: false,
+      loadingSalary: false,
     };
     setIsMounted(true);
   }
@@ -386,31 +388,13 @@ class Index extends PureComponent {
       },
       ...(!isEmpty(data?.columnBasicSalaryAndAllowance)
         ? [
-            {
-              title: 'Lương cơ bản + Phụ Cấp',
-              key: 'name',
-              className: 'thead-green',
-              children:
-                data?.columnBasicSalaryAndAllowance?.map((item) => {
-                  if (item.code === 'TI_LE_THU_VIEC') {
-                    return {
-                      title: item.name,
-                      key: item.code,
-                      className: isCollapsed
-                        ? 'min-width-50 thead-green'
-                        : 'min-width-150 thead-green',
-                      width: isCollapsed ? 50 : 150,
-                      render: (record) => {
-                        if (record.basicSalaryAndAllowance) {
-                          const basic = record.basicSalaryAndAllowance.find(
-                            (itemBasic) => itemBasic.code === item.code,
-                          );
-                          return basic?.value;
-                        }
-                        return null;
-                      },
-                    };
-                  }
+          {
+            title: 'Lương cơ bản + Phụ Cấp',
+            key: 'name',
+            className: 'thead-green',
+            children:
+              data?.columnBasicSalaryAndAllowance?.map((item) => {
+                if (item.code === 'TI_LE_THU_VIEC') {
                   return {
                     title: item.name,
                     key: item.code,
@@ -423,41 +407,59 @@ class Index extends PureComponent {
                         const basic = record.basicSalaryAndAllowance.find(
                           (itemBasic) => itemBasic.code === item.code,
                         );
-                        return Helper.getPrice(basic?.value || 0);
+                        return basic?.value;
                       }
                       return null;
                     },
                   };
-                }) || [],
-            },
-          ]
-        : []),
-      ...(!isEmpty(data?.columnIncurredAllowance)
-        ? [
-            {
-              title: 'Phụ cấp phát sinh trong tháng',
-              key: 'name',
-              className: 'thead-green-1',
-              children:
-                data?.columnIncurredAllowance?.map((item) => ({
+                }
+                return {
                   title: item.name,
                   key: item.code,
                   className: isCollapsed
-                    ? 'min-width-50 thead-green-1'
-                    : 'min-width-150 thead-green-1',
+                    ? 'min-width-50 thead-green'
+                    : 'min-width-150 thead-green',
                   width: isCollapsed ? 50 : 150,
                   render: (record) => {
-                    if (record.incurredAllowance) {
-                      const incurred = record.incurredAllowance.find(
-                        (itemIncurred) => itemIncurred.code === item.code,
+                    if (record.basicSalaryAndAllowance) {
+                      const basic = record.basicSalaryAndAllowance.find(
+                        (itemBasic) => itemBasic.code === item.code,
                       );
-                      return Helper.getPrice(incurred?.value || 0);
+                      return Helper.getPrice(basic?.value || 0);
                     }
                     return null;
                   },
-                })) || [],
-            },
-          ]
+                };
+              }) || [],
+          },
+        ]
+        : []),
+      ...(!isEmpty(data?.columnIncurredAllowance)
+        ? [
+          {
+            title: 'Phụ cấp phát sinh trong tháng',
+            key: 'name',
+            className: 'thead-green-1',
+            children:
+              data?.columnIncurredAllowance?.map((item) => ({
+                title: item.name,
+                key: item.code,
+                className: isCollapsed
+                  ? 'min-width-50 thead-green-1'
+                  : 'min-width-150 thead-green-1',
+                width: isCollapsed ? 50 : 150,
+                render: (record) => {
+                  if (record.incurredAllowance) {
+                    const incurred = record.incurredAllowance.find(
+                      (itemIncurred) => itemIncurred.code === item.code,
+                    );
+                    return Helper.getPrice(incurred?.value || 0);
+                  }
+                  return null;
+                },
+              })) || [],
+          },
+        ]
         : []),
       {
         title: 'Thưởng KPI',
@@ -807,21 +809,53 @@ class Index extends PureComponent {
     return [];
   };
 
-  exportData = async (id) => {
+  exportData = async (id, type) => {
     const { search } = this.state;
-    this.setState({
-      loadingDownload: true,
-    });
-    await Helper.exportExcel(
-      `/v1/export-payrolls`,
-      {
-        id,
-      },
-      `BangLuong-${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
-    );
-    this.setState({
-      loadingDownload: false,
-    });
+    if (type === 'payrolls') {
+      this.setState({
+        loadingDownload: true,
+      });
+      await Helper.exportExcel(
+        `/v1/export-payrolls`,
+        {
+          id,
+        },
+        `BangLuong-${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+      );
+      this.setState({
+        loadingDownload: false,
+      });
+    }
+    if (type === 'payment-template') {
+      this.setState({
+        loadingSalary: true,
+      });
+      await Helper.exportExcel(
+        `/v1/export-salary-payment-template`,
+        {
+          id,
+        },
+        `BangThanhToanLuong-${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+      );
+      this.setState({
+        loadingSalary: false,
+      });
+    }
+    if (type === 'template-go-to-bank') {
+      this.setState({
+        loadingBank: true,
+      });
+      await Helper.exportExcel(
+        `/v1/export-salary-template-go-to-bank`,
+        {
+          id,
+        },
+        `BangLuongDiNganHang-${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+      );
+      this.setState({
+        loadingBank: false,
+      });
+    }
   };
 
   render() {
@@ -834,7 +868,7 @@ class Index extends PureComponent {
       branches,
       employees,
     } = this.props;
-    const { search, isCollapsed, loadingDownload } = this.state;
+    const { search, isCollapsed, loadingDownload, loadingSalary, loadingBank } = this.state;
     const loading = effects['salary/GET_DATA'];
     return (
       <>
@@ -903,14 +937,14 @@ class Index extends PureComponent {
                   <div className="col-lg-3">
                     <Button
                       color="success"
-                      onClick={() => this.exportData(data.id)}
+                      onClick={() => this.exportData(data.id, 'payrolls')}
                       loading={loadingDownload}
                     >
                       Xuất bảng lương
                     </Button>
                   </div>
                 )}
-                <div className="col-lg-12">
+                <div className="col-lg-6">
                   <FormItem
                     data={Helper.convertSelectUsers(employees)}
                     name="employeeId"
@@ -918,6 +952,23 @@ class Index extends PureComponent {
                     type={variables.SELECT_MUTILPLE}
                     placeholder="Chọn tất cả"
                   />
+                </div>
+                <div className="col-lg-6 d-flex">
+                  <Button
+                    color="success"
+                    onClick={() => this.exportData(data.id, 'payment-template')}
+                    loading={loadingSalary}
+                  >
+                    Xuất bảng Thanh toán lương
+                  </Button>
+                  <Button
+                    color="success"
+                    className="ml10"
+                    onClick={() => this.exportData(data.id, 'template-go-to-bank')}
+                    loading={loadingBank}
+                  >
+                    Xuất bảng lương đi ngân hàng
+                  </Button>
                 </div>
               </div>
             </Form>
