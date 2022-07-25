@@ -1,13 +1,15 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Modal } from 'antd';
-import { head, isEmpty, get } from 'lodash';
+import { Form, Modal, Upload, notification } from 'antd';
+import { head, isEmpty, get, last } from 'lodash';
 import moment from 'moment';
 import { history, useParams } from 'umi';
+import csx from 'classnames';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
+import stylesForm from '@/assets/styles/Common/common.scss';
 import { variables, Helper } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
@@ -42,6 +44,7 @@ const General = memo(() => {
   const dispatch = useDispatch();
   const params = useParams();
   const mounted = useRef(false);
+  const [fileImage, setFileImage] = useState([]);
   const [files, setFiles] = Helper.isJSON(details?.fileImage)
     ? useState(JSON.parse(details?.fileImage))
     : useState([]);
@@ -73,8 +76,8 @@ const General = memo(() => {
     dispatch({
       type: params.id ? 'HRMusersAdd/UPDATE' : 'HRMusersAdd/ADD',
       payload: params.id
-        ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files) }
-        : { ...values, fileImage: JSON.stringify(files), status: 'WORKING' },
+        ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files), fileAttached: JSON.stringify(fileImage) }
+        : { ...values, fileImage: JSON.stringify(files), status: 'WORKING', fileAttached: JSON.stringify(fileImage) },
       callback: (response, error) => {
         if (response && !params?.id) {
           history.goBack();
@@ -194,6 +197,9 @@ const General = memo(() => {
       if (Helper.isJSON(details?.fileImage)) {
         mountedSet(setFiles, JSON.parse(details?.fileImage));
       }
+      if (Helper.isJSON(details?.fileAttached)) {
+        mountedSet(setFileImage, JSON.parse(details?.fileAttached));
+      }
     }
   }, [details]);
 
@@ -205,6 +211,44 @@ const General = memo(() => {
   const uploadFiles = (file) => {
     mountedSet(setFiles, (prev) => [...prev, file]);
   };
+
+  const onUpload = (files) => {
+    dispatch({
+      type: 'upload/UPLOAD',
+      payload: files,
+      callback: (response) => {
+        if (response) {
+          setFileImage([...fileImage, head(response.results)?.fileInfo]);
+        }
+      },
+    });
+  };
+  const props = {
+    beforeUpload() {
+      return null;
+    },
+    customRequest({ file }) {
+      const { name, size } = file;
+      const maxSize = 5 * 2 ** 20; // 5 mB
+      const allowTypes = ['pdf', 'docx', 'xlsx'];
+      if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+        notification.error({
+          message: 'Thông báo',
+          description: 'Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb',
+        });
+        return;
+      }
+      onUpload(file);
+    },
+    showUploadList: false,
+    fileList: [],
+  };
+
+  const onRemoveFile = (e) => {
+    const check = fileImage?.filter(i => i?.url !== e?.url);
+    setFileImage(check);
+  };
+
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
       <div className="card">
@@ -343,6 +387,9 @@ const General = memo(() => {
                 <FormItem name="nationality" label="Quốc tịch" type={variables.INPUT} />
               </div>
               <div className="col-lg-4">
+                <FormItem name="isForeigner" className="checkbox-small" valuePropName="checked" label="Người nước ngoài" type={variables.CHECKBOX_FORM} />
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   name="permanentAddress"
                   label="Hộ khẩu thường trú"
@@ -408,8 +455,6 @@ const General = memo(() => {
                   />
                 </div>
               )}
-            </div>
-            <div className="row" {...marginProps}>
               <div className="col-lg-4">
                 <FormItem
                   name="bankNumberOfAccount"
@@ -419,6 +464,40 @@ const General = memo(() => {
               </div>
               <div className="col-lg-4">
                 <FormItem name="bankName" label="Tên ngân hàng" type={variables.INPUT} />
+              </div>
+            </div>
+            <div className='row' {...marginProps}>
+              <div className="col-lg-6">
+                <label className="ant-col ant-form-item-label d-flex">
+                  <span>Tài liệu đính kèm</span>
+                </label>
+                <Upload {...props} className={stylesForm['upload-file']}>
+                  <Button color="transparent" icon="upload1" loading={effects[`upload/UPLOAD`]}>
+                    Tải lên
+                  </Button>
+                  <i>Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb</i>
+                </Upload>
+              </div>
+              <div className="col-lg-6">
+                {!isEmpty(fileImage) && (
+                  <div className={csx(stylesForm['files-container'], 'mt5')}>
+                    {fileImage?.map((item) => (
+                      <div className={stylesForm.item} key={item.id}>
+                        <a href={`${API_UPLOAD}${item.url}`} target="_blank" rel="noreferrer">
+                          {item?.name}
+                        </a>
+                        <span
+                          role="presentation"
+                          className="icon-cross"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRemoveFile(item);
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

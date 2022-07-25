@@ -220,7 +220,7 @@ function Index() {
       ordinalNumber: head(dataFormContarct)?.ordinalNumber,
       numberForm: head(dataFormContarct)?.numberForm,
       numberFormContractId: head(dataFormContarct)?.id,
-      type: head(dataFormContarct)?.type,
+      type: 'SEASONAL',
       contractDate: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
