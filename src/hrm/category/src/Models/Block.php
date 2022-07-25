@@ -19,7 +19,7 @@ class Block extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Note'
+        'Code', 'Name', 'Note', 'GradeId'
     ];
 
     /**
@@ -28,4 +28,9 @@ class Block extends UuidModel
      * @var array
      */
     protected $hidden = [];
+
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class, 'GradeId');
+    }
 }
