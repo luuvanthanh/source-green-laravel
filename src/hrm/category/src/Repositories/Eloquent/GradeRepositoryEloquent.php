@@ -119,7 +119,7 @@ class GradeRepositoryEloquent extends CoreRepositoryEloquent implements GradeRep
         DB::beginTransaction();
         try {
             $grade = $this->model()::find($id);
-            $grade->update();
+            $grade->update($attributes);
 
             if (!empty($attributes['detail'])) {
                 $this->forDetail($attributes['detail'], $grade);
