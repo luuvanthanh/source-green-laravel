@@ -37,6 +37,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('export-payrolls', 'PayRollController@exportPayroll');
 
             \Route::get('export-salary-payment-template', 'PayRollController@exportSalaryPaymentTemplate');
+            \Route::get('export-salary-template-go-to-bank', 'PayRollController@exportSalaryTemplateGoToBank');
         });
     }
 }

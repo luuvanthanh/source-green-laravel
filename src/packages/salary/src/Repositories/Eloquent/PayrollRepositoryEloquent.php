@@ -10,6 +10,7 @@ use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Category\Models\ParamaterFormula;
 use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Category\Models\ParameterTax;
+use GGPHP\Core\Models\CoreModel;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\OtherDeclaration\Models\OtherDeclaration;
@@ -44,13 +45,15 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         TimekeepingRepositoryEloquent $timekeepingRepositoryEloquent,
         BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
         WorkHourRepositoryEloquent $workHourRepositoryEloquent,
-        Application $app
+        Application $app,
+        CoreModel $core
     ) {
         parent::__construct($app);
         $this->excelExporterServices = $excelExporterServices;
         $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
         $this->timekeepingRepositoryEloquent = $timekeepingRepositoryEloquent;
         $this->workHourRepositoryEloquent = $workHourRepositoryEloquent;
+        $this->core = $core;
     }
 
     /**
@@ -2636,7 +2639,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             },
 
         ];
-        
+
         return $this->excelExporterServices->export('salary_month', $params, $callbacks, $events);
     }
 
@@ -2659,12 +2662,12 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $totalActuallyReceivedCash = 0;
             $totalActuallyReceivedPayment = 0;
             foreach ($payroll as $key => $value) {
-                $totalActuallyReceivedCash += is_null($value['bank_number_of_account']) ? 0 : $value['actually_received'];
-                $totalActuallyReceivedPayment += is_null($value['bank_number_of_account']) ? $value['actually_received'] : 0;
+                $totalActuallyReceivedCash += !is_null($value['bank_number_of_account']) ? 0 : $value['actually_received'];
+                $totalActuallyReceivedPayment += !is_null($value['bank_number_of_account']) ? $value['actually_received'] : 0;
                 $params['[stt]'][] += $key + 1;
                 $params['[full_name]'][] = $value['employee'];
-                $params['[cash]'][] = is_null($value['bank_number_of_account']) ? 0 : $value['actually_received'];
-                $params['[payment]'][] = is_null($value['bank_number_of_account']) ? $value['actually_received'] : 0;
+                $params['[cash]'][] = !is_null($value['bank_number_of_account']) ? 0 : $value['actually_received'];
+                $params['[payment]'][] = !is_null($value['bank_number_of_account']) ? $value['actually_received'] : 0;
             }
 
             $params['[stt]'][] = 'TỔNG TIỀN LƯƠNG ' . strtoupper($value['branch_name']) . ',merge';
@@ -2803,19 +2806,205 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $result[$branch->Id][] = [
                     'branch_name' => $branch->Name,
                     'employee' => $employee->FullName,
+                    'employee_code' => $employee->Code,
                     'bank_number_of_account' => $employee->BankNumberOfAccount,
+                    'bank_name' => $employee->BankName,
                     'actually_received' => $payrollDetail->ActuallyReceived
                 ];
             } else {
                 $result[$branch->Id][] = [
                     'branch_name' => $branch->Name,
                     'employee' => $employee->FullName,
+                    'employee_code' => $employee->Code,
                     'bank_number_of_account' => $employee->BankNumberOfAccount,
+                    'bank_name' => $employee->BankName,
                     'actually_received' => $payrollDetail->ActuallyReceived
                 ];
             }
         }
 
         return $result;
+    }
+
+    public function exportSalaryTemplateGoToBank($attributes)
+    {
+        $payrolls = $this->payrollEmployeeByBranch($attributes);
+
+        $params = [];
+        $params['{month}'] = Carbon::parse($payrolls['month'])->format('m.Y');
+        $params['[stt]'] = [];
+        $params['[code]'] = [];
+        $params['[full_name]'] = [];
+        $params['[bank_number_of_account]'] = [];
+        $params['[bank_name]'] = [];
+        $params['[actually_received]'] = [];
+        $params['[note]'] = [];
+        $params['{time}'] = 'Ngày' . '    ' . 'tháng ' . Carbon::parse($payrolls['month'])->format('m') . ' Năm ' . Carbon::parse($payrolls['month'])->format('Y');
+        unset($payrolls['month']);
+        $totalSalary = 0;
+        foreach ($payrolls as $payroll) {
+            $totalActuallyReceivedByBranch = 0;
+            foreach ($payroll as $key => $value) {
+                if (!is_null($value['bank_number_of_account']) && !is_null($value['bank_name'])) {
+                    $totalActuallyReceivedByBranch += $value['actually_received'];
+                    $params['[stt]'][] += $key + 1;
+                    $params['[code]'][] = $value['employee_code'];
+                    $params['[full_name]'][] = $value['employee'];
+                    $params['[bank_number_of_account]'][] = $value['bank_number_of_account'];
+                    $params['[bank_name]'][] = $value['bank_name'];
+                    $params['[actually_received]'][] = $value['actually_received'];
+                    $params['[note]'][] = $this->core->convert_vi_to_en($value['employee']);
+                }
+            }
+
+            $params['[stt]'][] = 'TOTAL ' . strtoupper($value['branch_name']) . ',merge';
+            $params['[code]'][] = '';
+            $params['[full_name]'][] = 'fill_style';
+            $params['[bank_number_of_account]'][] = 'fill_style';
+            $params['[bank_name]'][] = 'fill_style';
+            $params['[actually_received]'][] = $totalActuallyReceivedByBranch . ',bold';
+            $params['[note]'][] = 'fill_style';
+            $totalSalary += $totalActuallyReceivedByBranch;
+        }
+        $params['[stt]'][] = 'TỔNG CỘNG' . ',merge_total';
+        $params['[code]'][] = '';
+        $params['[full_name]'][] = 'fill_style_total';
+        $params['[bank_number_of_account]'][] = 'fill_style_total';
+        $params['[bank_name]'][] = 'fill_style_total';
+        $params['[actually_received]'][] = $totalSalary . ',bold_total';
+        $params['[note]'][] = 'fill_style_total';
+
+        $listMerge = [];
+        $callbacks = [
+            '[stt]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+                $value = explode(',', $value);
+                if ($value[count($value) - 1] == 'merge') {
+                    $merge = $cell_coordinate . ':' . 'B' . $currentRow;
+                    $listMerge[] = $merge;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($merge)->getAlignment()->setHorizontal('left');
+                    $sheet->getStyle($merge)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('FF1600'));
+                }
+
+                if ($value[count($value) - 1] == 'merge_total') {
+                    $merge = $cell_coordinate . ':' . 'B' . $currentRow;
+                    $listMerge[] = $merge;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($merge)->getAlignment()->setHorizontal('left');
+                    $sheet->getStyle($merge)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[full_name]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'fill_style') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                }
+
+                if ($value == 'fill_style_total') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[bank_number_of_account]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'fill_style') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                }
+
+                if ($value == 'fill_style_total') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[bank_name]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'fill_style') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                }
+
+                if ($value == 'fill_style_total') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[actually_received]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+                $value = explode(',', $value);
+
+                if ($value[count($value) - 1] == 'bold') {
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('FF1600'));
+                }
+
+                if ($value[count($value) - 1] == 'bold_total') {
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[note]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'fill_style') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                }
+
+                if ($value == 'fill_style_total') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            }
+
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge) {
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+            },
+        ];
+
+        return $this->excelExporterServices->export('salary_template_go_to_bank', $params, $callbacks, $events);
     }
 }

@@ -37,6 +37,9 @@ class ExcelExporterServices
         'salary_payment_template' => [
             'template' => 'salary_payment_template.xlsx',
         ],
+        'salary_template_go_to_bank' => [
+            'template' => 'salary_template_go_to_bank.xlsx',
+        ],
     ];
 
     protected $disk;
