@@ -48,6 +48,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('template-excel-data-marketings', 'DataMarketingController@templateExcelDataMarketing');
 
             \Route::get('exchange-email-phone', 'DataMarketingController@exchangeEmailPhone');
+            \Route::post('multiple-delete-data-marketing', 'DataMarketingController@multipleDeleteDataMarketing');
         });
     }
 

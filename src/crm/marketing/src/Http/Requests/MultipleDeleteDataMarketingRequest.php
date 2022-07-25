@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Crm\CustomerLead\Http\Requests;
+namespace GGPHP\Crm\Marketing\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateReferenceRequest extends FormRequest
+class MultipleDeleteDataMarketingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,7 @@ class CreateReferenceRequest extends FormRequest
     public function rules()
     {
         return [
-            'full_name' => 'required|string',
-            'birth_date' => 'date_format:Y-m-d',
-            'phone' => 'required',
-            'address' => 'string',
-            'customer_lead_id' => 'required|exists:customer_leads,id'
+            'data' => 'required|array'
         ];
     }
 }
