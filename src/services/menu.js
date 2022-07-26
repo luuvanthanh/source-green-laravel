@@ -1638,6 +1638,13 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
           pro: true,
         },
+        {
+          title: 'Bảng lương nước ngoài',
+          key: 'salary-foreigner',
+          url: ['/quan-ly-nhan-su/bang-luong-nuoc-ngoai'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
       ],
     },
     {

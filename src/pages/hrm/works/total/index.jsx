@@ -274,7 +274,11 @@ class Index extends PureComponent {
   };
 
   exportExcel = async () => {
+    const {
+      branches,
+    } = this.props;
     const { search } = this.state;
+    const dataBranch = branches?.find(i => i?.id === search?.branchId);
     this.setStateData({ downloading: true });
     await Helper.exportExcel(
       `/v1/timekeeping-report-export`,
@@ -297,7 +301,7 @@ class Index extends PureComponent {
           isUTC: false,
         }),
       },
-      `BangCongThang_${Helper.getDate(search.endDate, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+      `${dataBranch ? `${dataBranch?.name} ` : ""}Bảng Công Tháng ${Helper.getDate(search.endDate, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
     );
     this.setStateData({ downloading: false });
   };

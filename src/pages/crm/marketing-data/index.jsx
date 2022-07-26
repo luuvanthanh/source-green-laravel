@@ -433,7 +433,7 @@ class Index extends PureComponent {
       },
       {
         key: 'action',
-        width: 150,
+        width: 120,
         fixed: 'right',
         render: (record) => (
           <div className="d-flex flex-row-reverse">
@@ -444,11 +444,11 @@ class Index extends PureComponent {
             >
               Chi tiết
             </Button>
-            {
+            {/* {
               record?.status === 'NOT_MOVE' && (
                 <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
               )
-            }
+            } */}
           </div>
         ),
       },
@@ -538,6 +538,25 @@ class Index extends PureComponent {
     );
   };
 
+  delete = () => {
+    const { dispatch } = this.props;
+    const self = this;
+    const payload = this.state.dataSource?.filter((item) => item?.isActive)?.map((item) => item.id);
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'crmMarketingData/REMOVE_ALL',
+          payload,
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+    });
+  };
+
   render() {
     const {
       match: { params },
@@ -593,6 +612,16 @@ class Index extends PureComponent {
                 <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
                   <Text color="dark">Data Marketing</Text>
                   <div className="d-flex ">
+                    <Button
+                      color="danger"
+                      icon="remove"
+                      className="ml-2"
+                      loading={effects['crmMarketingData/REMOVE_ALL']}
+                      onClick={this.delete}
+                      disabled={!size(dataSource.filter((item) => item.isActive))}
+                    >
+                      Xoá tất cả
+                    </Button>
                     <Button color="danger" icon="shrink" className="ml-2" onClick={this.showModal}>
                       Check trùng
                     </Button>
@@ -663,6 +692,7 @@ class Index extends PureComponent {
                       className="ml-2"
                       onClick={this.save}
                       disabled={!size(dataSource.filter((item) => item.isActive))}
+                      loading={effects['crmMarketingData/ADD']}
                     >
                       Chuyển lead
                     </Button>

@@ -274,10 +274,10 @@ class Index extends PureComponent {
     const loading = effects['crmDistricts/GET_DATA'];
     return (
       <>
-        <Helmet title="Tỉnh thành" />
+        <Helmet title="Quận huyện" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Tỉnh thành</Text>
+            <Text color="dark">Quận huyện</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

@@ -155,6 +155,14 @@ export default {
         callback(null, error);
       }
     },
+    *REMOVE_ALL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.removeAll, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

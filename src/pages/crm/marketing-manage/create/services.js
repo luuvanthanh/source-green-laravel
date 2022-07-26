@@ -130,7 +130,6 @@ export function updatePosts(data = {}) {
     method: 'PUT',
     data: {
       ...data,
-     
     },
   });
 }
@@ -154,12 +153,10 @@ export function details(params = {}) {
 export function detailsPosts(params = {}) {
   return request(`/v1/articles/${params.id}`, {
     method: 'GET',
-    params:{
+    params: {
       ...params,
-      include: Helper.convertIncludes([
-        'postFacebookInfo.page',
-      ]),
-    }
+      include: Helper.convertIncludes(['postFacebookInfo.page']),
+    },
   });
 }
 
@@ -448,7 +445,7 @@ export function removeFacebook(data = {}) {
     parse: true,
     data: {
       ...data,
-    }
+    },
   });
 }
 
@@ -456,7 +453,11 @@ export function getPostLike(params = {}) {
   return request('/v1/article-reaction-infos', {
     prefix: API_URL_CRM,
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+    },
   });
 }
 
@@ -464,7 +465,11 @@ export function getPostComment(params = {}) {
   return request('/v1/article-comment-infos', {
     prefix: API_URL_CRM,
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+    },
   });
 }
 
