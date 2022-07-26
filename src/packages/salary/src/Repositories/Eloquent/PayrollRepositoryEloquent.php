@@ -98,6 +98,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $employeeId = explode(',', $attributes['employeeId']);
                     $q2->whereIn('Id', $employeeId);
                 }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+                    $q2->where('IsForeigner', true);
+                }
+                
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+                    $q2->where('IsForeigner', false);
+                }
             });
         }])->first();
 
@@ -1350,6 +1358,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if (!empty($attributes['employeeId'])) {
                     $employeeId = explode(',', $attributes['employeeId']);
                     $q2->whereIn('Id', $employeeId);
+                }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+                    $q2->where('IsForeigner', $attributes['salaryForeigner']);
+                }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+                    $q2->where('IsForeigner', $attributes['salaryForeigner']);
                 }
             });
         }])->first();
@@ -2640,7 +2656,11 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         ];
 
-        return $this->excelExporterServices->export('salary_month', $params, $callbacks, $events);
+        if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+            return $this->excelExporterServices->export('salary_month_foreigner', $params, $callbacks, $events);
+        } elseif (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+            return $this->excelExporterServices->export('salary_month', $params, $callbacks, $events);
+        }
     }
 
     public function exportSalaryPaymentTemplate($attributes)
@@ -2772,7 +2792,12 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 }
             },
         ];
-        return $this->excelExporterServices->export('salary_payment_template', $params, $callbacks, $events);
+
+        if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+            return $this->excelExporterServices->export('salary_payment_template_foreigner', $params, $callbacks, $events);
+        } elseif (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+            return $this->excelExporterServices->export('salary_payment_template', $params, $callbacks, $events);
+        }
     }
 
     public function payrollEmployeeByBranch($attributes)
@@ -2789,6 +2814,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if (!empty($attributes['employeeId'])) {
                     $employeeId = explode(',', $attributes['employeeId']);
                     $q2->whereIn('Id', $employeeId);
+                }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+                    $q2->where('IsForeigner', true);
+                }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+                    $q2->where('IsForeigner', false);
                 }
             });
         }])->first();
@@ -3005,6 +3038,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             },
         ];
 
-        return $this->excelExporterServices->export('salary_template_go_to_bank', $params, $callbacks, $events);
+        if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+            return $this->excelExporterServices->export('salary_template_go_to_bank_foreigner', $params, $callbacks, $events);
+        } elseif (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+            return $this->excelExporterServices->export('salary_template_go_to_bank', $params, $callbacks, $events);
+        }
     }
 }
