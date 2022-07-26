@@ -330,13 +330,13 @@ function Index() {
           />
         ),
       },
-      {
-        title: 'Ngày hiệu lực',
-        key: 'application_date',
-        dataIndex: 'applyDate',
-        className: 'min-width-120',
-        render: (value) => Helper.getDate(moment(value)),
-      },
+      // {
+      //   title: 'Ngày hiệu lực',
+      //   key: 'application_date',
+      //   dataIndex: 'applyDate',
+      //   className: 'min-width-120',
+      //   render: (value) => Helper.getDate(moment(value)),
+      // },
       {
         title: 'Thao tác',
         key: 'actions',

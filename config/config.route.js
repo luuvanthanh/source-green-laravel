@@ -1762,6 +1762,12 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/bang-luong-nuoc-ngoai',
+            component: './hrm/salary-foreigner',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep',
             component: './hrm/report/employee-on-leave',
             wrappers: ['@/wrappers/auth'],

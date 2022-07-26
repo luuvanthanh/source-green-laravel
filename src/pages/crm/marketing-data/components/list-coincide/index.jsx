@@ -213,7 +213,7 @@ class Index extends PureComponent {
         title: 'Tên',
         key: 'name',
         width: 250,
-        render: (record) => record?.full_name,
+        render: (record) => <>{record?.full_name} ({record?.status === 'MOVE' ? 'Đã chuyển lead' : 'Chưa chuyển lead'})</>,
       },
       {
         title: 'Địa chỉ',
@@ -296,14 +296,14 @@ class Index extends PureComponent {
       {
         title: 'Họ  và tên',
         key: 'name',
-        width: 200,
+        width: 300,
         render: (record) => (
           <>
             <Radio.Group
               onChange={(e) => this.onChangeName(e, record, 'nameActive')}
               value={record.nameActive}
             >
-              <Radio value={record.full_name}>{record.full_name}</Radio>
+              <Radio value={record.full_name}>{record.full_name} ({record?.status === 'MOVE' ? 'Đã chuyển lead' : 'Chưa chuyển lead'})</Radio>
             </Radio.Group>
           </>
         ),
@@ -326,7 +326,7 @@ class Index extends PureComponent {
       {
         title: 'Email',
         key: 'email',
-        width: 170,
+        width: 250,
         render: (record) => (
           <>
             <Radio.Group
@@ -794,6 +794,7 @@ class Index extends PureComponent {
     const rowSelection = {
       onChange: this.onSelectChange,
     };
+
     const loading =
       effects['crmMarketingDataCheckList/GET_DATA'] || effects['crmMarketingDataCheckList/GET_DATA_COINCIDE'];
     const submitCoincide = effects['crmMarketingDataCheckList/ADD_COINCIDE'];
