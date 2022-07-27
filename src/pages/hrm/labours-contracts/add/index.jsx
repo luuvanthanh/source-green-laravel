@@ -239,7 +239,7 @@ class Index extends PureComponent {
       ordinalNumber: values.ordinalNumber,
       numberForm: head(dataFormContarct)?.numberForm,
       numberFormContractId: head(dataFormContarct)?.id,
-      type: head(dataFormContarct)?.type,
+      type: 'LABOUR',
       id: params.id,
       contractDate: Helper.getDateTime({
         value: Helper.setDate({
@@ -338,13 +338,13 @@ class Index extends PureComponent {
           />
         ),
       },
-      {
-        title: 'Ngày hiệu lực',
-        key: 'application_date',
-        dataIndex: 'applyDate',
-        className: 'min-width-120',
-        render: (value) => Helper.getDate(moment(value)),
-      },
+      // {
+      //   title: 'Ngày hiệu lực',
+      //   key: 'application_date',
+      //   dataIndex: 'applyDate',
+      //   className: 'min-width-120',
+      //   render: (value) => Helper.getDate(moment(value)),
+      // },
       {
         title: 'Thao tác',
         key: 'actions',

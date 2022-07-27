@@ -97,3 +97,13 @@ export function remove(id = {}) {
     parse: true,
   });
 }
+
+export function removeAll(data = {}) {
+  return request(`/v1/multiple-delete-data-marketing`, {
+    method: 'POST',
+    data: {
+      data,
+    },
+    parse: true,
+  });
+}

@@ -1,4 +1,4 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 .imageWrapper {
   position: relative;
@@ -13,7 +13,7 @@
   right: 5px;
   top: -8px;
   font-size: 12px;
-  span[class*='icon'] {
+  span[class*="icon"] {
     font-size: 10px;
     color: rgba($color: $text-dark, $alpha: 0.65);
   }
@@ -63,7 +63,7 @@
     border: 1px solid #eaeaea;
     box-sizing: border-box;
     border-radius: 100%;
-    span[class*='icon'] {
+    span[class*="icon"] {
       position: absolute;
       left: 50%;
       top: 50%;
@@ -99,7 +99,7 @@
 }
 
 .container-success {
-  span[class*='icon'] {
+  span[class*="icon"] {
     font-size: 50px;
     color: $text-success;
   }
@@ -108,5 +108,14 @@
     font-size: 13px;
     line-height: 20px;
     color: #3e4247;
+  }
+}
+
+.img-upload {
+  width: 175px !important;
+  height: 138px !important;
+  @media (max-width: $xs-max-width) {
+    width: 90px !important;
+    height: 90px !important;
   }
 }

@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Modal, Tabs, InputNumber } from 'antd';
-import { find, last, isEmpty, get } from 'lodash';
+import { find, last, isEmpty, get, head } from 'lodash';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'dva';
 import { useRouteMatch } from 'umi';
@@ -26,6 +26,9 @@ const Index = memo(() => {
     }
   };
   const formRefModal = useRef();
+  const { params } = useRouteMatch();
+
+  const [dataFormContarct, setDataFormContarct] = useState([]);
 
   const dispatch = useDispatch();
   const [
@@ -89,6 +92,7 @@ const Index = memo(() => {
         contractDate: record.contractDate && moment(record.contractDate),
       });
     }
+    setDataFormContarct([record]);
   };
 
   const exportData = (id) => {
@@ -100,8 +104,9 @@ const Index = memo(() => {
       {
         title: 'Số hợp đồng',
         key: 'contract_number',
-        dataIndex: 'contractNumber',
         className: 'min-width-120',
+        render: (record) => <> {record?.contractNumber ? <>{record?.contractNumber}</> :
+          <>{(record?.ordinalNumber ? (<>{record?.ordinalNumber}/{record?.numberForm}</>) : "")}</>}</>
       },
       {
         title: 'Ngày hợp đồng',
@@ -203,9 +208,9 @@ const Index = memo(() => {
       prev.map((item) =>
         item.index === record.index
           ? {
-              ...item,
-              valueDefault: value,
-            }
+            ...item,
+            valueDefault: value,
+          }
           : item,
       ),
     );
@@ -217,9 +222,9 @@ const Index = memo(() => {
       prev.map((item) =>
         item.index === record.index
           ? {
-              ...item,
-              ...itemParameter,
-            }
+            ...item,
+            ...itemParameter,
+          }
           : item,
       ),
     );
@@ -304,7 +309,18 @@ const Index = memo(() => {
       ...formValues,
       id: details.id,
       employeeId,
-      contractDate: moment(formValues.contractDate),
+      ordinalNumber: formValues.ordinalNumber,
+      numberForm: head(dataFormContarct)?.numberForm,
+      numberFormContractId: head(dataFormContarct)?.id,
+      type: 'LABOUR',
+      contractDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: formValues.contractDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
       contractFrom: formValues.contractFrom && moment(formValues.contractFrom),
       contractTo: formValues.contractTo && moment(formValues.contractTo),
       detail: (parameterValuesDetails || []).map(({ id, valueDefault }) => ({
@@ -378,6 +394,59 @@ const Index = memo(() => {
     fetchContracts();
   }, []);
 
+  const converNumber = (input) => {
+    const pad = input;
+    if ((Number(input) + 1)?.toString().length < pad?.length) {
+      return pad?.substring(0, pad?.length - (Number(input) + 1).toString()?.length) + (Number(input) + 1);
+    }
+    return input ? `${Number(input) + 1}` : "";
+  };
+
+  const changeFormContarct = (value) => {
+    dispatch({
+      type: 'probationaryContractsAdd/GET_FORM_CONTRACTS',
+      payload: {
+        type: 'LABOUR',
+        contractDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: value,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+      },
+      callback: (response) => {
+        setDataFormContarct(response?.parsePayload);
+        formRefModal.current.setFieldsValue({
+          ordinalNumber: converNumber(head(response?.parsePayload)?.ordinalNumber),
+        });
+      }
+    });
+  };
+
+  const openModal = () => {
+    mountedSet(setVisible, true);
+    setDataFormContarct([]);
+    formRefModal?.current?.setFieldsValue({
+      contractDate: undefined,
+      contractNumber: undefined,
+      ordinalNumber: undefined,
+      typeOfContractId: undefined,
+      year: undefined,
+      month: undefined,
+      divisionId: undefined,
+      contractFrom: undefined,
+      contractTo: undefined,
+      positionId: undefined,
+      work: undefined,
+      workTime: undefined,
+      branchId: undefined,
+      isSocialInsurance: undefined,
+
+    });
+  };
+
   return (
     <>
       <Modal
@@ -430,22 +499,52 @@ const Index = memo(() => {
           onValuesChange={formUpdate}
         >
           <Pane className="row">
-            <Pane className="col-lg-4">
-              <FormItem
-                label="Số hợp đồng"
-                name="contractNumber"
-                type={variables.INPUT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem
-                label="Ngày hợp đồng"
-                name="contractDate"
-                type={variables.DATE_PICKER}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
+            {
+              details?.contractNumber && params?.id ?
+                <>
+                  <div className="col-lg-4">
+                    <FormItem
+                      label="Ngày hợp đồng"
+                      name="contractDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                  <div className="col-lg-4">
+                    <FormItem
+                      label="Số hợp đồng"
+                      name="contractNumber"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                </>
+                :
+                <>
+                  <div className="col-lg-4">
+                    <FormItem
+                      label="Ngày hợp đồng"
+                      name="contractDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                      onChange={changeFormContarct}
+                    />
+                  </div>
+                  <div className="col-lg-2">
+                    <FormItem
+                      label="Số hợp đồng"
+                      name="ordinalNumber"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                  <div className="col-lg-2">
+                    <p className="mb0 font-size-13 mt35 font-weight-bold">
+                      {dataFormContarct?.length > 0 ? `/${head(dataFormContarct)?.numberForm}` : ''}
+                    </p>
+                  </div>
+                </>
+            }
             <Pane className="col-lg-4">
               <FormItem
                 data={contractTypes}
@@ -602,7 +701,7 @@ const Index = memo(() => {
         </Pane>
 
         <Pane style={{ padding: 20 }}>
-          <Button color="success" ghost icon="plus" onClick={() => mountedSet(setVisible, true)}>
+          <Button color="success" ghost icon="plus" onClick={openModal}>
             Thêm
           </Button>
         </Pane>

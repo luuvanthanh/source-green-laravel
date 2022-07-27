@@ -29,12 +29,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ salary, loading, hrmSalary }) => ({
-  data: hrmSalary.data,
-  error: salary.error,
-  branches: salary.branches,
-  divisions: salary.divisions,
-  employees: salary.employees,
+const mapStateToProps = ({ hrmSalaryForeigner, loading }) => ({
+  data: hrmSalaryForeigner.data,
+  error: hrmSalaryForeigner.error,
+  branches: hrmSalaryForeigner.branches,
+  divisions: hrmSalaryForeigner.divisions,
+  employees: hrmSalaryForeigner.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -86,15 +86,15 @@ class Index extends PureComponent {
 
   loadCategories = () => {
     this.props.dispatch({
-      type: 'salary/GET_BRANCHES',
+      type: 'hrmSalaryForeigner/GET_BRANCHES',
       payload: {},
     });
     this.props.dispatch({
-      type: 'salary/GET_DIVISIONS',
+      type: 'hrmSalaryForeigner/GET_DIVISIONS',
       payload: {},
     });
     this.props.dispatch({
-      type: 'salary/GET_EMPLOYEES',
+      type: 'hrmSalaryForeigner/GET_EMPLOYEES',
       payload: {},
     });
   };
@@ -109,7 +109,7 @@ class Index extends PureComponent {
     } = this.props;
     if (search.month) {
       this.props.dispatch({
-        type: 'hrmSalary/GET_DATA',
+        type: 'hrmSalaryForeigner/GET_DATA',
         payload: {
           ...search,
         },
@@ -241,7 +241,7 @@ class Index extends PureComponent {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'salary/REMOVE',
+          type: 'hrmSalaryForeigner/REMOVE',
           payload: {
             id,
           },
@@ -257,7 +257,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     if (key === 'CHOT_BANG_LUONG') {
       dispatch({
-        type: 'salary/UPDATE',
+        type: 'hrmSalaryForeigner/UPDATE',
         payload: {
           id: record.id,
           isTimesheet: true,
@@ -273,7 +273,7 @@ class Index extends PureComponent {
     }
     if (key === 'CHOT_BANG_THUONG_KPI') {
       dispatch({
-        type: 'salary/UPDATE',
+        type: 'hrmSalaryForeigner/UPDATE',
         payload: {
           id: record.id,
           isBonus: true,
@@ -289,7 +289,7 @@ class Index extends PureComponent {
     }
     if (key === 'KHAI_BAO_KHOAN_KHAC') {
       dispatch({
-        type: 'salary/UPDATE',
+        type: 'hrmSalaryForeigner/UPDATE',
         payload: {
           id: record.id,
           isOther: true,
@@ -308,7 +308,7 @@ class Index extends PureComponent {
   updateSalary = (record) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'salary/UPDATE_SALARY',
+      type: 'hrmSalaryForeigner/UPDATE_SALARY',
       payload: {
         id: record.id,
       },
@@ -823,7 +823,7 @@ class Index extends PureComponent {
         `/v1/export-payrolls`,
         {
           id,
-          salaryForeigner: 'false',
+          salaryForeigner: 'true',
         },
         `${dataBranch ? `${dataBranch?.name} ` : ""}Bảng Lương ${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
       );
@@ -839,7 +839,7 @@ class Index extends PureComponent {
         `/v1/export-salary-payment-template`,
         {
           id,
-          salaryForeigner: 'false',
+          salaryForeigner: 'true',
         },
         `${dataBranch ? `${dataBranch?.name} ` : ""}Bảng Thanh Toán Lương ${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
       );
@@ -855,7 +855,7 @@ class Index extends PureComponent {
         `/v1/export-salary-template-go-to-bank`,
         {
           id,
-          salaryForeigner: 'false',
+          salaryForeigner: 'true',
         },
         `${dataBranch ? `${dataBranch?.name} ` : ""}Bảng Lương Đi Ngân Hàng ${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
       );
