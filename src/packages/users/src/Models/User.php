@@ -63,7 +63,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
         'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'AccountantId', 'Description',
-        'FileAttached'
+        'FileAttached', 'IsForeigner'
     ];
 
     protected $dateTimeFields = [

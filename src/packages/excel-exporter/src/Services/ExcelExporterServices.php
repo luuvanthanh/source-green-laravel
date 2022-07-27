@@ -34,6 +34,21 @@ class ExcelExporterServices
         'absent' => [
             'template' => 'absent.xlsx',
         ],
+        'salary_payment_template' => [
+            'template' => 'salary_payment_template.xlsx',
+        ],
+        'salary_template_go_to_bank' => [
+            'template' => 'salary_template_go_to_bank.xlsx',
+        ],
+        'salary_month_foreigner' => [
+            'template' => 'salary_month_foreigner.xlsx',
+        ],
+        'salary_payment_template_foreigner' => [
+            'template' => 'salary_payment_template_foreigner.xlsx',
+        ],
+        'salary_template_go_to_bank_foreigner' => [
+            'template' => 'salary_template_go_to_bank_foreigner.xlsx',
+        ],
     ];
 
     protected $disk;
