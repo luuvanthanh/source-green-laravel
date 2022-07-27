@@ -657,4 +657,106 @@ class FacebookService
 
         return json_decode($graphNode);
     }
+
+    public static function updatePagePost($attributes)
+    {
+        $fb = getFacebookSdk();
+
+        try {
+            $postId = $attributes['facebook_post_id'];
+            $response = $fb->post(
+                $postId,
+                [
+                    'message' => $attributes['message'],
+                    // 'link' => 'https://developers.facebook.com',
+                ],
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode);
+    }
+
+    public static function updatePagePostWithImage($attributes, $urls)
+    {
+        $postId = $attributes['facebook_post_id'];
+        $fb = getFacebookSdk();
+
+        $photoIdArray = self::postMultipleImage($attributes, $urls);
+        $postParam['message'] = $attributes['message'];
+        foreach ($photoIdArray as $key => $photoId) {
+            $postParam['attached_media'][$key] = '{"media_fbid":"' . $photoId . '"}';
+        }
+
+        try {
+            $response = $fb->post(
+                $postId,
+                $postParam,
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode);
+    }
+
+    public static function updatePagePostWithVideo($attributes, $urls)
+    {
+        $fb = getFacebookSdk();
+        $url = $fb->fileToUpload($urls[0]);
+        try {
+            $postId = $attributes['facebook_post_id'];
+            $response = $fb->post(
+                $postId,
+                [
+                    'title' => $attributes['title'],
+                    'description' => $attributes['description'],
+                    'url' => $url,
+                ],
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode);
+    }
 }

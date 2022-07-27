@@ -77,7 +77,7 @@ class ArticleController extends Controller
     {
         $credentials = $request->all();
 
-        $article = $this->articleRepository->update($credentials, $id);
+        $article = $this->articleRepository->updateArticle($credentials, $id);
 
         return $this->success($article, trans('lang::messages.common.modifySuccess'));
     }
@@ -104,7 +104,7 @@ class ArticleController extends Controller
             return $this->success((array) $response, trans('Đăng bài viết lên facebook thành công'));
         } catch (\Throwable $th) {
             $statusCode = 500;
-            
+
             if ($th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
                 $statusCode = $th->getStatusCode();
             }
