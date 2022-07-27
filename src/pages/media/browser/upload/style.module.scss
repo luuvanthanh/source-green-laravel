@@ -6,17 +6,23 @@
     font-size: 40px;
   }
 }
+.wrapper-top {
+  position: relative;
+}
 
 .wrapper-delete {
   display: flex;
+  position: absolute;
+  top: 0;
+  right: 24px;
   width: 100%;
   justify-content: end;
   .title {
-    margin-top: 30px;
     font-size: 15px;
     font-weight: 600;
     color: rgb(212, 35, 35);
     cursor: pointer;
     line-height: 32px;
+    text-decoration-line: underline;
   }
 }

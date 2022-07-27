@@ -444,7 +444,7 @@ const Index = memo(() => {
 
                     <Pane className="row">
                       {(post?.files || []).map((image) => (
-                        <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>
+                        <Pane className={csx('col-lg-2 my10 col-4', styles.imageWrapper)} key={image?.id}>
                           <img
                             className="d-block w-100"
                             src={`${API_UPLOAD}${image?.url}`}

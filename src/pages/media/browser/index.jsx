@@ -276,8 +276,7 @@ const Index = memo(() => {
                       <Image.PreviewGroup>
                         {(images || []).map((item, index) => (
                           <Image
-                            width={175}
-                            height={138}
+                            className={styles['img-upload']}
                             src={`${API_UPLOAD}${item.url}`}
                             key={index}
                             preview={{

@@ -7,6 +7,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Quill from '@/components/CommonComponent/Quill';
+import EditorToolbar, { modules, formats } from "@/components/CommonComponent/EditorToolbar";
 import Text from '@/components/CommonComponent/Text';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import styles from '@/assets/styles/Common/information.module.scss';
@@ -751,7 +752,9 @@ const Index = memo(() => {
                     <span>Nội dung</span>
                   </label>
                 </div>
-                <Quill onChange={onChangeEditor} value={content} />
+                <EditorToolbar />
+                <Quill onChange={onChangeEditor} value={content} theme="snow" modules={modules}
+                  formats={formats} />
                 <Pane className="col-lg-12 mt20 d-flex p0">
                   <Pane className="mr15">
                     <FormItem
