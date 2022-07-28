@@ -30,8 +30,8 @@ class UpdateArticleRequest extends FormRequest
             'data_page' => function ($attribute, $value, $fail) {
                 $postFacebookInfo = PostFacebookInfo::where('article_id', $this->article)->first();
 
-                if (!is_null($postFacebookInfo)) {
-                    return $fail('Bài viết đã được đăng lên fanpage vui lòng login facebook trước khi cập nhật');
+                if (!is_null($postFacebookInfo) && empty($this->data_page)) {
+                    return $fail('Bài viết đã được đăng lên fanpage vui lòng login facebook, nếu đã login thì phải chọn page lúc login facebook trước khi xóa');
                 }
 
                 return true;
