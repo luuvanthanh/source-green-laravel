@@ -14,6 +14,7 @@ use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Illuminate\Container\Container as Application;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -160,7 +161,8 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         $quantity_reaction = $postFacebookInfo->quantity_reaction;
                         $postFacebookInfo->quantity_reaction = $quantity_reaction + 1;
                         FacebookService::createUserFacebookInfo($attributes);
-                        $this->dataMarketingRepositoryEloquent->syncDataAuto($attributes);
+                        //khách hàng yêu cầu off
+                        //$this->dataMarketingRepositoryEloquent->syncDataAuto($attributes);
                         $dataLike = [
                             'post_facebook_info_id' => $postFacebookInfo->id,
                             'full_name' => $attributes['value']['from']['name'],
@@ -190,7 +192,8 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                     $quantity_comment = $postFacebookInfo->quantity_comment;
                     $postFacebookInfo->quantity_comment = $quantity_comment + 1;
                     FacebookService::createUserFacebookInfo($attributes);
-                    $this->dataMarketingRepositoryEloquent->syncDataAuto($attributes);
+                    //khách hàng yêu cầu off
+                    //$this->dataMarketingRepositoryEloquent->syncDataAuto($attributes);
                     $dataComment = [
                         'post_facebook_info_id' => $postFacebookInfo->id,
                         'full_name' => $attributes['value']['from']['name'],
@@ -240,12 +243,12 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         }
                     }
                 }
-
-                Article::where('id', $id)->delete();
             }
+            Article::where('id', $id)->delete();
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
         return null;
     }
@@ -269,5 +272,57 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
         }
 
         return null;
+    }
+
+    public function updateArticle($attributes, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $article = Article::find($id);
+            $article->update($attributes);
+
+            if (!empty($attributes['data_page'])) {
+                foreach ($attributes['data_page'] as $dataPage) {
+                    $page = Page::where('page_id_facebook', $dataPage['page_id'])->select('id')->first();
+                    $postFacebookInfo = PostFacebookInfo::where('page_id', $page->id)->where('article_id', $id)->first();
+    
+                    if (!is_null($postFacebookInfo)) {
+                        $dataPage['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
+                        $urls = [];
+                        $dataPage['message'] = $article->name . "\n" . $article->content;
+
+                        if ($article->file_image == '[]') {
+                            $response = FacebookService::updatePagePost($dataPage);
+                        } else {
+                            $paths = json_decode($article->file_image);
+                            foreach ($paths as $path) {
+                                $urls[] = env('IMAGE_URL') . $path;
+                            }
+                            $video = false;
+                            foreach ($urls as $url) {
+                                if (pathinfo($url, PATHINFO_EXTENSION) == 'mp4') {
+                                    $video = true;
+                                    break;
+                                }
+                            }
+
+                            if ($video) {
+                                $dataPage['title'] = $article->name;
+                                $dataPage['description'] = $article->content;
+                                $response = FacebookService::updatePagePostWithVideo($dataPage, $urls);
+                            } else {
+                                $response = FacebookService::updatePagePostWithImage($dataPage, $urls);
+                            }
+                        }
+                    }
+                }
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return $this->parserResult($article);
     }
 }
