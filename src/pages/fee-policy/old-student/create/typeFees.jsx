@@ -184,8 +184,8 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
           placeholder="Chọn"
           onChange={(e) => onChangeTitle(e, record)}
           allowClear={false}
-          data={fees}
-          value={record?.feeId}
+          data={fees?.filter((e) => e?.id !== data.find(i => i?.feeId === e?.id)?.feeId)}
+          value={fees?.find(i => i?.id === record?.feeId)?.name}
           rules={[variables.RULES.EMPTY]}
         />
       ),

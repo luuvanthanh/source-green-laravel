@@ -4,6 +4,9 @@ export function add(data = {}) {
   return request('/news', {
     method: 'POST',
     data,
+    parse: true,
+    editNotification: true,
+    cancelNotification: true,
   });
 }
 
@@ -25,6 +28,6 @@ export function getClass(data = {}) {
     method: 'GET',
     params: {
       ...data,
-    }
+    },
   });
 }

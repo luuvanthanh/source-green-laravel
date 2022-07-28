@@ -13,7 +13,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import validator from 'validator';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
-import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
+import MultipleImageUpload from '@/components/CommonComponent/UploadAvatarVideo';
 import { Helper } from '@/utils';
 import stylesModule from '../../../styles.module.scss';
 
@@ -117,7 +117,6 @@ const General = memo(
         }, []);
         const cancel = () => {
             const user = JSON?.parse(localStorage.getItem('pageCurrent'));
-            console.log("user", user);
             if (detailsAddPost?.postFacebookInfo?.length > 0) {
                 if (isEmpty(user)) {
                     notification.error({
