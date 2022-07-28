@@ -258,15 +258,15 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $incurredAllowance = json_encode($incurredAllowance);
 
-        $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-        ])->totalBusRegistration;
+        $totalBusRegistration = 0;
+        // $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
+        //     'startDate' => $startDate,
+        //     'endDate' => $endDate,
+        // ])->totalBusRegistration;
 
         $isProbation = false;
 
         $contract = $employee->labourContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
-
         if (is_null($contract)) {
             $contract = $employee->probationaryContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
             if (!is_null($contract)) {
@@ -1301,7 +1301,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $reduceDependentSelf = $paramaterValueReduceDependentSelf->ValueDefault;
         }
         $params['{reduce_dependent_self}'] = number_format($reduceDependentSelf);
-        
+
         //phụ cấp ăn trưa
         $lunchAllowance = 0;
         $paramaterValueLunchAllowance = ParamaterValue::where('Code', 'PC_AN_TRUA')->first();
