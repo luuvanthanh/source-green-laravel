@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form } from 'antd';
+import { Form, notification } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 // import Quill from '@/components/CommonComponent/Quill';
@@ -68,6 +68,7 @@ const General = memo(
          * @param {object} values values of form
          */
         const onFinish = (values) => {
+            const user = JSON?.parse(localStorage.getItem('pageCurrent'));
             dispatch({
                 type: check
                     ? 'crmMarketingManageAdd/UPDATE_POSTS'
@@ -79,6 +80,11 @@ const General = memo(
                         content: values?.content,
                         marketing_program_id: detailsAddPost?.marketing_program_id,
                         file_image: JSON.stringify(files),
+                        data_page: user?.map(i =>
+                        ({
+                            page_id: i?.id,
+                            page_access_token: i.access_token,
+                        })),
                     }
                     : {
                         ...values,
@@ -111,19 +117,45 @@ const General = memo(
         }, []);
         const cancel = () => {
             const user = JSON?.parse(localStorage.getItem('pageCurrent'));
-            if (user?.length > 0) {
-                const details = user?.map(i =>
-                ({
-                    page_id: i?.id,
-                    page_access_token: i.access_token,
-                }));
-                return Helper.confirmAction({
+            if (detailsAddPost?.postFacebookInfo?.length > 0) {
+                if (!user) {
+                    notification.error({
+                        message: 'THÔNG BÁO',
+                        description: 'Bài viết đã được đăng lên fanpage vui lòng login facebook trước khi xóa',
+                    });
+                    if (user?.length > 0) {
+                        const details = user?.map(i =>
+                        ({
+                            page_id: i?.id,
+                            page_access_token: i.access_token,
+                        }));
+                        return Helper.confirmAction({
+                            callback: () => {
+                                dispatch({
+                                    type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
+                                    payload: {
+                                        id: detailsAddPost?.id,
+                                        data_page: details,
+                                    },
+                                    callback: (response) => {
+                                        if (response) {
+                                            history.goBack();
+                                        }
+                                    },
+                                });
+                            },
+                        });
+                    }
+                }
+            }
+            else {
+                Helper.confirmAction({
                     callback: () => {
                         dispatch({
                             type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
                             payload: {
                                 id: detailsAddPost?.id,
-                                data_page: details,
+                                data_page: [],
                             },
                             callback: (response) => {
                                 if (response) {

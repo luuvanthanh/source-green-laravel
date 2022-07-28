@@ -78,11 +78,11 @@ const Index = memo(() => {
             };
             const newChangeParameter = !_.isEmpty(res?.changeParameter?.changeParameterDetail)
               ? res?.changeParameter?.changeParameterDetail?.map((item) => ({
-                  ...item,
-                  rangeDate: [moment(item.startDate), moment(item.endDate)],
-                  fee: res?.changeParameter?.paymentForm?.name || '',
-                  feeId: res?.changeParameter?.paymentForm?.id || '',
-                }))
+                ...item,
+                rangeDate: [moment(item.startDate), moment(item.endDate)],
+                fee: res?.changeParameter?.paymentForm?.name || '',
+                feeId: res?.changeParameter?.paymentForm?.id || '',
+              }))
               : [];
             setParamChanges(newChangeParameter);
             formRef?.current?.setFieldsValue({ ...values });
@@ -132,8 +132,24 @@ const Index = memo(() => {
     const data = {
       ...values,
       rangeDate: undefined,
-      startDate: values.rangeDate[0],
-      endDate: values.rangeDate[1],
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.rangeDate[0],
+          targetValue: '23:59:59',
+        }),
+        format: variables.DATE_AFTER,
+        isUTC: false,
+      }),
+      endDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.rangeDate[1],
+          targetValue: '23:59:59',
+        }),
+        format: variables.DATE_AFTER,
+        isUTC: false,
+      }),
       fixedParameter: values?.fixedParameter.map((item) => ({
         paymentFormId: item.paymentFormId,
         duaDate: Helper.getDateTime({
@@ -146,7 +162,7 @@ const Index = memo(() => {
         }),
       })),
       changeParameter: {
-        paymentFormId:  values?.feeId || _.get(paramChanges[0], 'feeId'),
+        paymentFormId: values?.feeId || _.get(paramChanges[0], 'feeId'),
         duaDate: _.get(paramChanges[0], 'duaDate')
           ? moment(paramChanges[0]?.duaDate, variables.DATE_FORMAT.YEAR_MONTH_DAY).format('DD')
           : values.duaDate,
@@ -230,9 +246,9 @@ const Index = memo(() => {
         moment(startMonth).diff(endMonth, 'days') < 0
           ? moment(startMonth).format(variables.DATE_FORMAT.DATE_AFTER)
           : moment(startMonth)
-              .add(-1, 'month')
-              .endOf('month')
-              .format(variables.DATE_FORMAT.DATE_AFTER);
+            .add(-1, 'month')
+            .endOf('month')
+            .format(variables.DATE_FORMAT.DATE_AFTER);
       const response = data.find((item) => item.date === date && item.duaDate === duaDate);
       if (response) {
         datasTable.push({ ...response });

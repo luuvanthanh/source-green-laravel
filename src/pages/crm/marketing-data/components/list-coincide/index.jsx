@@ -213,7 +213,13 @@ class Index extends PureComponent {
         title: 'Tên',
         key: 'name',
         width: 250,
-        render: (record) => <>{record?.full_name} ({record?.status === 'MOVE' ? 'Đã chuyển lead' : 'Chưa chuyển lead'})</>,
+        render: (record) => <>{record?.full_name}</>,
+      },
+      {
+        title: 'Tình trạng',
+        key: 'name',
+        width: 250,
+        render: (record) => <>{record?.status === 'MOVE' ? 'Đã chuyển lead' : 'Chưa chuyển lead'}</>,
       },
       {
         title: 'Địa chỉ',
@@ -296,15 +302,25 @@ class Index extends PureComponent {
       {
         title: 'Họ  và tên',
         key: 'name',
-        width: 300,
+        width: 250,
         render: (record) => (
           <>
             <Radio.Group
               onChange={(e) => this.onChangeName(e, record, 'nameActive')}
               value={record.nameActive}
             >
-              <Radio value={record.full_name}>{record.full_name} ({record?.status === 'MOVE' ? 'Đã chuyển lead' : 'Chưa chuyển lead'})</Radio>
+              <Radio value={record.full_name}>{record.full_name} </Radio>
             </Radio.Group>
+          </>
+        ),
+      },
+      {
+        title: 'Tình trạng',
+        key: 'name',
+        width: 150,
+        render: (record) => (
+          <>
+            {record?.status === 'MOVE' ? 'Đã chuyển lead' : 'Chưa chuyển lead'}
           </>
         ),
       },
