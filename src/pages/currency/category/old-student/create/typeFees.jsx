@@ -19,9 +19,9 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
     paymentForm: paymentMethod.data,
   }));
 
-  const changeText=(e)=>{
+  const changeText = (e) => {
     hanDleChangeText(e);
-};
+  };
 
   useEffect(() => {
     dispatch({
@@ -40,7 +40,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
     });
   }, []);
 
-  
+
   const getMoney = async (details, tuition, name, value, index) => {
     const { schoolYearId, classTypeId, dayAdmission } = details;
     const { feeId, paymentFormId } = tuition[index];
@@ -100,7 +100,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
     if (error) {
       checkValidate(newTuition, 'tuition');
     }
-    return setTuition(newTuition) ;
+    return setTuition(newTuition);
   };
   const onChange = async (event, record, name) => {
     let value = event;
@@ -115,7 +115,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details, hanDle
     const newTuition = [...tuition].filter((item) => item.id !== record.id);
     setTuition(newTuition);
   };
- changeText(tuition);
+  changeText(tuition);
   const columns = useMemo(() => [
     {
       title: 'Loại phí',
@@ -226,9 +226,9 @@ Index.propTypes = {
 
 Index.defaultProps = {
   tuition: [],
-  setTuition: () => {},
+  setTuition: () => { },
   error: false,
-  checkValidate: () => {},
+  checkValidate: () => { },
   details: {},
 };
 

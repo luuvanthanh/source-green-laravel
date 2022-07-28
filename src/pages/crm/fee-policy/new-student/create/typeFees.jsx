@@ -197,8 +197,8 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
           placeholder="Chọn"
           onChange={(e) => onChangeTitle(e, record)}
           allowClear={false}
-          data={fees}
-          value={record?.feeId}
+          data={fees?.filter((e) => e?.fee_clover_id !== data.find(i => i?.fee_id_crm === e?.fee_clover_id)?.fee_id_crm)}
+          value={fees?.find(i => i?.id === record?.feeId)?.name}
           rules={[variables.RULES.EMPTY]}
         />
       ),
@@ -245,22 +245,24 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
       width: 100,
       fixed: 'right',
       render: (record) => (
-        <div>
-          <Button
-            onClick={() => {
-              setData(
-                data.filter(
-                  (val) =>
-                    (val.key || val.id || val.test) !== (record.key || record.id || record.test),
-                ),
-              );
-              setDeleteId(true);
-            }}
-            type="button"
-            color="danger"
-            icon="remove"
-          />
-        </div>
+        data?.length > 1 && (
+          <div>
+            <Button
+              onClick={() => {
+                setData(
+                  data.filter(
+                    (val) =>
+                      (val.key || val.id || val.test) !== (record.key || record.id || record.test),
+                  ),
+                );
+                setDeleteId(true);
+              }}
+              type="button"
+              color="danger"
+              icon="remove"
+            />
+          </div>
+        )
       ),
     },
   ];

@@ -48,6 +48,7 @@ const Index = memo(() => {
   const [checkTime, setCheckTime] = useState(undefined);
   const [isAllParents, setIsAllParents] = useState(false);
   const [type, setType] = useState(variablesModules.TYPE.EMPLOYEE);
+
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
@@ -67,7 +68,7 @@ const Index = memo(() => {
   const [employees, setEmployees] = useState([]);
   const [parents, setParents] = useState([]);
   const [employeesActive, setEmployeesActive] = useState([]);
-  const [parentsActive, setParentsActive] = useState([]);
+  const [parentsActive, setParentsActive] = useState(undefined);
   const [dataClass, setDataClass] = useState([]);
 
   const onChangeEditor = (value) => {
@@ -458,7 +459,12 @@ const Index = memo(() => {
               }),
             );
             mountedSet(setEmployeesActive, response?.employeeNews);
-            mountedSet(setParentsActive, response?.parentNews);
+            mountedSet(setParentsActive, response?.parentNews?.map(i => (
+              {
+                ...i,
+                checked: true,
+              }
+            )));
           }
           if (response?.branch?.id) {
             dispatch({
@@ -557,7 +563,7 @@ const Index = memo(() => {
                       </Checkbox>
                     </FormItemAntd>
                   </Pane>
-                  {!isAllEmployees && (
+                  {!isAllEmployees && ((employeesActive?.length > 0 && params?.id) || (!params?.id) || (parentsActive?.length > 0 && params?.id)) && (
                     <Pane className="border-bottom">
                       <Scrollbars autoHeight autoHeightMax="40vh">
                         <InfiniteScroll
@@ -654,7 +660,7 @@ const Index = memo(() => {
                     </FormItemAntd>
                   </Pane>
 
-                  {!isAllParents && (
+                  {!isAllParents && ((parentsActive?.length > 0 && params?.id) || (!params?.id) || employeesActive?.length > 0 && params?.id) && (
                     <Pane className="border-bottom">
                       <Scrollbars autoHeight autoHeightMax="40vh">
                         <InfiniteScroll
@@ -668,12 +674,11 @@ const Index = memo(() => {
                             dataSource={parents}
                             renderItem={({ id, fullName, fileImage }) => {
                               const checked = parentsActive?.find((item) => item.parent.id === id);
-
                               return (
                                 <ListItem key={id} className={styles.listItem}>
                                   <Pane className="px20 w-100 d-flex align-items-center">
                                     <Checkbox
-                                      defaultChecked={checked}
+                                      defaultChecked={checked?.parent?.id === id}
                                       className="mr15"
                                       onChange={() => changeCheckboxParent(id)}
                                     />

@@ -11,6 +11,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
+import HelperModules from '../../utils/Helper';
 import stylesModule from '../../styles.module.scss';
 
 const { confirm } = Modal;
@@ -218,8 +219,8 @@ class Index extends PureComponent {
       {
         title: 'Tình trạng',
         key: 'name',
-        width: 250,
-        render: (record) => <>{record?.status === 'MOVE' ? 'Đã chuyển lead' : 'Chưa chuyển lead'}</>,
+        width: 150,
+        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         title: 'Địa chỉ',
@@ -318,11 +319,7 @@ class Index extends PureComponent {
         title: 'Tình trạng',
         key: 'name',
         width: 150,
-        render: (record) => (
-          <>
-            {record?.status === 'MOVE' ? 'Đã chuyển lead' : 'Chưa chuyển lead'}
-          </>
-        ),
+        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         title: 'Giới tính',

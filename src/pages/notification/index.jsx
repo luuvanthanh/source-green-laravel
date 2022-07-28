@@ -13,6 +13,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import ability from '@/utils/ability';
+import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -312,6 +313,7 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <div
+            className={stylesModule['wrapper-content']}
             style={{ maxHeight: '100px', overflowY: 'auto' }}
             dangerouslySetInnerHTML={{ __html: record.content }}
           />
