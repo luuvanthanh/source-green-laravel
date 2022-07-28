@@ -325,7 +325,7 @@ const General = memo(
                     data={search}
                     placeholder="Chọn"
                     type={variables.SELECT}
-                    label="Nguồn tiềm kiếm"
+                    label="Nguồn tìm kiếm"
                   />
                 </Pane>
                 <Pane className="col-lg-4">
