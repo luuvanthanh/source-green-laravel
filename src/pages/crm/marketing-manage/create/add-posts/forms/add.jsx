@@ -80,7 +80,7 @@ const General = memo(
                         content: values?.content,
                         marketing_program_id: detailsAddPost?.marketing_program_id,
                         file_image: JSON.stringify(files),
-                        data_page: user?.map(i =>
+                        data_page: isEmpty(user) ? [] : user?.map(i =>
                         ({
                             page_id: i?.id,
                             page_access_token: i.access_token,
@@ -117,35 +117,36 @@ const General = memo(
         }, []);
         const cancel = () => {
             const user = JSON?.parse(localStorage.getItem('pageCurrent'));
+            console.log("user", user);
             if (detailsAddPost?.postFacebookInfo?.length > 0) {
-                if (!user) {
+                if (isEmpty(user)) {
                     notification.error({
                         message: 'THÔNG BÁO',
                         description: 'Bài viết đã được đăng lên fanpage vui lòng login facebook trước khi xóa',
                     });
-                    if (user?.length > 0) {
-                        const details = user?.map(i =>
-                        ({
-                            page_id: i?.id,
-                            page_access_token: i.access_token,
-                        }));
-                        return Helper.confirmAction({
-                            callback: () => {
-                                dispatch({
-                                    type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
-                                    payload: {
-                                        id: detailsAddPost?.id,
-                                        data_page: details,
-                                    },
-                                    callback: (response) => {
-                                        if (response) {
-                                            history.goBack();
-                                        }
-                                    },
-                                });
-                            },
-                        });
-                    }
+                }
+                else {
+                    const details = user?.map(i =>
+                    ({
+                        page_id: i?.id,
+                        page_access_token: i.access_token,
+                    }));
+                    return Helper.confirmAction({
+                        callback: () => {
+                            dispatch({
+                                type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
+                                payload: {
+                                    id: detailsAddPost?.id,
+                                    data_page: details,
+                                },
+                                callback: (response) => {
+                                    if (response) {
+                                        history.goBack();
+                                    }
+                                },
+                            });
+                        },
+                    });
                 }
             }
             else {
