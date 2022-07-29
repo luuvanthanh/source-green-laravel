@@ -1255,6 +1255,9 @@ export default class Helpers {
     if (record?.isEffect === false) {
       return <Tag color="danger">Đã hết hạn</Tag>;
     }
+    if (diffSignDate <= 0 && !diffExpirationDate) {
+      return <Tag color="success">Đang hiệu lực</Tag>;
+    }
     if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
       return <Tag color="success">Đang hiệu lực</Tag>;
     }

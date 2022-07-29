@@ -42,6 +42,7 @@ const Index = memo(() => {
 
   const [visible, setVisible] = useState(false);
   const [, setContractDetails] = useState({});
+  const [typeContract, setTypeContract] = useState(null);
   const [details, setDetails] = useState({});
   const [parameterValuesDetails, setParameterValuesDetails] = useState([]);
 
@@ -55,6 +56,7 @@ const Index = memo(() => {
   const changeContract = (value) => {
     const currentType = find(contractTypes, { id: value });
     mountedSet(setContractDetails, currentType || {});
+    const itemContract = contractTypes.find((item) => item.id === value);
     mountedSet(
       setParameterValuesDetails,
       currentType.parameterValues.map((item, index) => ({ index, ...item })) || {},
@@ -62,6 +64,10 @@ const Index = memo(() => {
     formRefModal.current.setFieldsValue({
       month: currentType.month,
       year: currentType.year,
+    });
+    setTypeContract(itemContract?.code);
+    formRefModal.current.setFieldsValue({
+      month: itemContract?.code !== 'VTH' ? 0 : toString(itemContract.month),
     });
   };
 
@@ -84,6 +90,7 @@ const Index = memo(() => {
         id: item.pivot.parameterValueId,
       })),
     );
+    setTypeContract(record.typeOfContract?.code);
     if (formRefModal.current) {
       formRefModal.current.setFieldsValue({
         ...record,
@@ -126,7 +133,7 @@ const Index = memo(() => {
         title: 'Số năm/tháng hợp đồng',
         key: 'contract_category',
         className: 'min-width-150',
-        render: (record) => `${record.month} tháng`,
+        render: (record) => <>{record?.month ? `${record?.month} tháng` : ""}</>,
       },
       {
         title: 'Thời hạn HĐ từ',
@@ -321,8 +328,22 @@ const Index = memo(() => {
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
-      contractFrom: formValues.contractFrom && moment(formValues.contractFrom),
-      contractTo: formValues.contractTo && moment(formValues.contractTo),
+      contractFrom: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: formValues.contractFrom,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      contractTo: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: formValues.contractTo,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
       detail: (parameterValuesDetails || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
         value: valueDefault,
@@ -557,22 +578,17 @@ const Index = memo(() => {
           </Pane>
 
           <Pane className="row">
-            <div className="col-lg-4">
-              <FormItem
-                label="Số năm hợp đồng"
-                name="year"
-                type={variables.INPUT_COUNT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </div>
-            <Pane className="col-lg-4">
-              <FormItem
-                label="Số tháng hợp đồng"
-                name="month"
-                type={variables.INPUT_COUNT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
+            {typeContract !== 'VTH' && (
+              <div className="col-lg-4">
+                <FormItem
+                  label="Số tháng hợp đồng"
+                  name="month"
+                  type={variables.INPUT_COUNT}
+                  rules={[variables.RULES.EMPTY]}
+                  disabled={typeContract === 'VTH'}
+                />
+              </div>
+            )}
             <Pane className="col-lg-4">
               <FormItem
                 data={divisions}
@@ -593,15 +609,17 @@ const Index = memo(() => {
                 rules={[variables.RULES.EMPTY]}
               />
             </Pane>
-            <Pane className="col-lg-4">
-              <FormItem
-                label="Thời hạn HĐ đến"
-                name="contractTo"
-                type={variables.DATE_PICKER}
-                rules={[variables.RULES.EMPTY]}
-                disabled
-              />
-            </Pane>
+            {typeContract !== 'VTH' && (
+              <div className="col-lg-4">
+                <FormItem
+                  label="Thời hạn HĐ đến"
+                  name="contractTo"
+                  type={variables.DATE_PICKER}
+                  rules={[variables.RULES.EMPTY]}
+                  disabled
+                />
+              </div>
+            )}
             <Pane className="col-lg-4">
               <FormItem
                 data={positions}
