@@ -2,6 +2,7 @@
 
 namespace GGPHP\ManualCalculation\Http\Requests;
 
+use GGPHP\ManualCalculation\Models\ManualCalculation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ManualCalculationCreateRequest extends FormRequest
@@ -23,10 +24,11 @@ class ManualCalculationCreateRequest extends FormRequest
      */
     public function rules()
     {
+        $type = implode(',', array_keys(ManualCalculation::TYPE));
         return [
             'employeeId' => 'required|exists:Employees,Id',
             'date' => 'required|date_format:Y-m-d',
-            'type' => 'required|in:X,F,K,N',
+            'type' => 'required|in:' . $type,
         ];
     }
 }
