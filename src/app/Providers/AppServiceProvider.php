@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use CloudCreativity\LaravelJsonApi\LaravelJsonApi;
+use GGPHP\Category\Models\Branch;
+use GGPHP\Category\Observers\BranchObserver;
 use GGPHP\Fee\Models\ClassType;
 use GGPHP\Fee\Models\Fee;
 use GGPHP\Fee\Models\FeePolicie;
@@ -39,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
         //
         LaravelJsonApi::defaultApi('v1');
 
+        Branch::observe(BranchObserver::class);
+        
         /**
          * Paginate a standard Laravel Collection.
          *
