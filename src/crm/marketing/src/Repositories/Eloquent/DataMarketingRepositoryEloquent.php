@@ -297,7 +297,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
 
     public function mergeDataMarketing(array $attributes)
     {
-        $dataMarketing = DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->orderBy('created_at', 'DESC')->first();
+        $dataMarketing = DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->orWhere('status', DataMarketing::STATUS['MOVE'])->orderBy('created_at', 'DESC')->first();
         $dataMarketing->update($attributes);
 
         if (!empty($attributes['studen_info'])) {
@@ -310,7 +310,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
             }
         }
 
-        DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->where('id', '!=', $dataMarketing->id)->where('status', DataMarketing::STATUS['NOT_MOVE'])->forceDelete();
+        DataMarketing::whereIn('id', $attributes['merge_data_marketing_id'])->where('id', '!=', $dataMarketing->id)->forceDelete();
 
         return parent::parserResult($dataMarketing);
     }
