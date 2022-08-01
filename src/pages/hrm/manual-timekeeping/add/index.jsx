@@ -192,6 +192,9 @@ const Index = () => {
       moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
     ).diff(moment(time).format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
     const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && isEmpty(diffExpirationDateMonth)) {
+      return { ...record, status: true };
+    }
     if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
       return { ...record, status: true };
     }
@@ -246,7 +249,7 @@ const Index = () => {
     const data = user?.labourContract?.concat(user?.probationaryContract);
     const dataUser = data?.map(i => getUserContracts(moment(i?.contractFrom), moment(i?.contractTo), i, dayOfWeek));
     const userFilter = dataUser?.find(i => i?.status);
-
+    // console.log(dataUser);
     if (moment(dayOfWeek).isoWeekday() >= 6) {
       return (
         <div className={classnames(styles['item-schedules'], [styles[`cell-heading-weekend`]])}>

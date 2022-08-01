@@ -15,6 +15,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { isEmpty } from 'lodash';
 import { Scrollbars } from 'react-custom-scrollbars';
 import variablesModules from '../utils/variables';
+import stylesModule from '../styles.module.scss';
 
 const { Item: ListItem } = List;
 
@@ -196,7 +197,7 @@ const Index = memo(() => {
 
                   <Pane className="mt10">
                     <label className={styles.infoLabel}>Nội dung</label>
-                    <div dangerouslySetInnerHTML={{ __html: details?.content }} />
+                    <div className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
                   </Pane>
                 </Pane>
                 <Pane className="p20">

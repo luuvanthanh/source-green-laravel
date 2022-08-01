@@ -27,7 +27,7 @@ const { Item: ListItem } = List;
 const Index = memo(() => {
   const [
     menuData,
-    { branches, divisions, details },
+    { branches, divisions },
     loading,
     { defaultBranch },
   ] = useSelector(({ menu, notificationAdd, loading: { effects }, user }) => [
@@ -40,6 +40,7 @@ const Index = memo(() => {
   const formRef = useRef();
   const mounted = useRef(false);
   const params = useParams();
+  const [details, setDetails] = useState(undefined);
   const mountedSet = (action, value) => mounted?.current && action(value);
   const dispatch = useDispatch();
 
@@ -48,6 +49,7 @@ const Index = memo(() => {
   const [checkTime, setCheckTime] = useState(undefined);
   const [isAllParents, setIsAllParents] = useState(false);
   const [type, setType] = useState(variablesModules.TYPE.EMPLOYEE);
+
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
@@ -67,7 +69,7 @@ const Index = memo(() => {
   const [employees, setEmployees] = useState([]);
   const [parents, setParents] = useState([]);
   const [employeesActive, setEmployeesActive] = useState([]);
-  const [parentsActive, setParentsActive] = useState([]);
+  const [parentsActive, setParentsActive] = useState(undefined);
   const [dataClass, setDataClass] = useState([]);
 
   const onChangeEditor = (value) => {
@@ -127,43 +129,121 @@ const Index = memo(() => {
   }, []);
 
   useEffect(() => {
-    mountedSet(setSearchEmployee, { ...searchEmployee, loading: true });
-    dispatch({
-      type: 'notificationAdd/GET_EMPLOYEES',
-      payload: {
-        ...searchEmployee,
-      },
-      callback: (response) => {
-        if (response) {
-          mountedSet(setEmployees, response.parsePayload);
-          mountedSet(setSearchEmployee, {
-            ...searchEmployee,
-            total: response.pagination.total,
-            loading: false,
-          });
-        }
-      },
-    });
+    if (!params?.id) {
+      mountedSet(setSearchEmployee, { ...searchEmployee, loading: true });
+      dispatch({
+        type: 'notificationAdd/GET_EMPLOYEES',
+        payload: {
+          ...searchEmployee,
+        },
+        callback: (response) => {
+          if (response) {
+            mountedSet(setEmployees, response.parsePayload);
+            mountedSet(setSearchEmployee, {
+              ...searchEmployee,
+              total: response.pagination.total,
+              loading: false,
+            });
+          }
+        },
+      });
+    }
   }, []);
 
   useEffect(() => {
-    mountedSet(setSearchParent, { ...searchParent, loading: true });
-    dispatch({
-      type: 'notificationAdd/GET_PARENTS',
-      payload: {
-        ...searchParent,
-      },
-      callback: (response) => {
-        if (response) {
-          mountedSet(setParents, response.items);
-          mountedSet(setSearchParent, { ...searchParent, total: response.totalCount });
-        }
-      },
-    });
+    if (details?.id) {
+      mountedSet(setSearchEmployee, { ...searchEmployee, branchId: details?.branchId });
+      dispatch({
+        type: 'notificationAdd/GET_EMPLOYEES',
+        payload: {
+          branchId: details?.branchId,
+          divisionId: details?.divisionId
+        },
+        callback: (response) => {
+          if (response) {
+            mountedSet(
+              setEmployees,
+              response.parsePayload?.map((item) => {
+                const itemEmloyee = details.employeeNews.find(
+                  (itemE) => itemE?.employee?.id === item.id,
+                );
+                return {
+                  ...item,
+                  checked: !!itemEmloyee,
+                };
+              }),
+            );
+            mountedSet(setSearchEmployee, {
+              ...searchEmployee,
+              total: response.pagination.total,
+            });
+          }
+        },
+      });
+    }
+  }, [details?.id]);
+
+  useEffect(() => {
+    if (!params?.id) {
+      mountedSet(setSearchParent, { ...searchParent, loading: true });
+      dispatch({
+        type: 'notificationAdd/GET_PARENTS',
+        payload: {
+          ...searchParent,
+        },
+        callback: (response) => {
+          if (response) {
+            mountedSet(setParents, response.items);
+            mountedSet(setSearchParent, { ...searchParent, total: response.totalCount });
+          }
+        },
+      });
+    }
   }, []);
 
+  useEffect(() => {
+    if (params?.id && details?.id) {
+      mountedSet(setSearchParent, { ...searchParent, loading: true });
+      dispatch({
+        type: 'notificationAdd/GET_PARENTS',
+        payload: {
+          ...searchParent,
+        },
+        callback: (response) => {
+          if (response) {
+            mountedSet(
+              setParents,
+              response.items?.map((item) => {
+                const itemEmloyee = details.parentNews?.find(
+                  (itemE) => itemE?.parent?.id === item?.id,
+                );
+                return {
+                  ...item,
+                  checked: !!itemEmloyee,
+                };
+              }),
+            );
+            // mountedSet(                                                
+            //   setParents,
+            //   parents.map((item) => {
+            //     const itemParent = response.parentNews.find(
+            //       (itemE) => itemE?.parent?.id === item.id,
+            //     );
+            //     return {
+            //       ...item,
+            //       checked: !!itemParent,
+            //     };
+            //   }),
+            // );
+            mountedSet(setSearchParent, { ...searchParent, total: response.totalCount });
+          }
+        },
+      });
+    }
+  }, [details]);
+
   const onChangeBranch = (value) => {
-    mountedSet(setSearchEmployee, { ...searchEmployee, loading: true });
+    mountedSet(setSearchEmployee, { ...searchEmployee, loading: true, branchId: value });
     dispatch({
       type: 'notificationAdd/GET_EMPLOYEES',
       payload: {
@@ -187,7 +267,10 @@ const Index = memo(() => {
       },
     });
   };
-
+  // console.log("employees", employees);
+  // console.log("parents", parents);
+  // console.log("isAllEmployees", isAllEmployees);
+  // console.log("isAllParents", isAllParents);
   const onChangeBranchParent = (value) => {
 
     dispatch({
@@ -198,6 +281,22 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           mountedSet(setDataClass, response.items);
+        }
+      },
+    });
+    mountedSet(setSearchParent, { ...searchParent, loading: true });
+    dispatch({
+      type: 'notificationAdd/GET_PARENTS',
+      payload: {
+        ...searchParent,
+        branchId: value,
+        skipCount: variables.PAGINATION.PAGE,
+        MaxResultCount: 1000,
+      },
+      callback: (response) => {
+        if (response) {
+          mountedSet(setParents, response.items);
+          mountedSet(setSearchParent, { ...searchParent, total: response.totalCount });
         }
       },
     });
@@ -224,6 +323,26 @@ const Index = memo(() => {
             total: response.pagination.total,
             loading: false,
           });
+        };
+      },
+    });
+  };
+
+
+  const onChangeClass = (value) => {
+    mountedSet(setSearchParent, { ...searchParent, loading: true });
+    dispatch({
+      type: 'notificationAdd/GET_PARENTS',
+      payload: {
+        ...searchParent,
+        branchId: value,
+        skipCount: variables.PAGINATION.PAGE,
+        MaxResultCount: 1000,
+      },
+      callback: (response) => {
+        if (response) {
+          mountedSet(setParents, response.items);
+          mountedSet(setSearchParent, { ...searchParent, total: response.totalCount });
         }
       },
     });
@@ -408,13 +527,15 @@ const Index = memo(() => {
       },
     });
   };
+
   useEffect(() => {
-    if (params.id && !isEmpty(employees) && !isEmpty(parents)) {
+    if (params.id) {
       dispatch({
         type: 'notificationAdd/GET_DETAILS',
         payload: params,
         callback: (response) => {
           if (response) {
+            setDetails(response);
             mountedSet(setContent, response.content);
             mountedSet(
               setType,
@@ -431,34 +552,27 @@ const Index = memo(() => {
               RemindTime: moment(response?.remindTime, variables.DATE_FORMAT.HOUR),
               RemindDate: moment(response.remindDate),
             });
-            mountedSet(
-              setParents,
-              parents.map((item) => {
-                const itemParent = response.parentNews.find(
-                  (itemE) => itemE?.parent?.id === item.id,
-                );
-                return {
-                  ...item,
-                  checked: !!itemParent,
-                };
-              }),
-            );
+            // mountedSet(                                                
+            //   setParents,
+            //   parents.map((item) => {
+            //     const itemParent = response.parentNews.find(
+            //       (itemE) => itemE?.parent?.id === item.id,
+            //     );
+            //     return {
+            //       ...item,
+            //       checked: !!itemParent,
+            //     };
+            //   }),
+            // );             
             mountedSet(setIsAllEmployees, response.isAllEmployees);
             mountedSet(setIsAllParents, response.isAllParents);
-            mountedSet(
-              setEmployees,
-              employees.map((item) => {
-                const itemEmloyee = response.employeeNews.find(
-                  (itemE) => itemE?.employee?.id === item.id,
-                );
-                return {
-                  ...item,
-                  checked: !!itemEmloyee,
-                };
-              }),
-            );
             mountedSet(setEmployeesActive, response?.employeeNews);
-            mountedSet(setParentsActive, response?.parentNews);
+            mountedSet(setParentsActive, response?.parentNews?.map(i => (
+              {
+                ...i,
+                checked: true,
+              }
+            )));
           }
           if (response?.branch?.id) {
             dispatch({
@@ -477,13 +591,8 @@ const Index = memo(() => {
       });
     }
   }, [
-    params.id &&
-    !isEmpty(employees) &&
-    searchEmployee.hasMore &&
-    !isEmpty(parents) &&
-    searchParent.hasMore,
+    params.id,
   ]);
-
   const onchangCheck = (e) => {
     setCheckTime(e.target.checked);
   };
@@ -557,7 +666,7 @@ const Index = memo(() => {
                       </Checkbox>
                     </FormItemAntd>
                   </Pane>
-                  {!isAllEmployees && (
+                  {!isAllEmployees && ((employeesActive?.length > 0 && params?.id) || (!params?.id) || (parentsActive?.length > 0 && params?.id)) && (
                     <Pane className="border-bottom">
                       <Scrollbars autoHeight autoHeightMax="40vh">
                         <InfiniteScroll
@@ -630,7 +739,7 @@ const Index = memo(() => {
                           name="ClassId"
                           data={dataClass}
                           type={variables.SELECT}
-                          onChange={onChangeDivision}
+                          onChange={onChangeClass}
                         />
                       </Pane>
                       <Pane className="col-lg-12">
@@ -654,7 +763,7 @@ const Index = memo(() => {
                     </FormItemAntd>
                   </Pane>
 
-                  {!isAllParents && (
+                  {!isAllParents && ((parentsActive?.length > 0 && params?.id) || (!params?.id) || employeesActive?.length > 0 && params?.id) && (
                     <Pane className="border-bottom">
                       <Scrollbars autoHeight autoHeightMax="40vh">
                         <InfiniteScroll
@@ -668,12 +777,11 @@ const Index = memo(() => {
                             dataSource={parents}
                             renderItem={({ id, fullName, fileImage }) => {
                               const checked = parentsActive?.find((item) => item.parent.id === id);
-
                               return (
                                 <ListItem key={id} className={styles.listItem}>
                                   <Pane className="px20 w-100 d-flex align-items-center">
                                     <Checkbox
-                                      defaultChecked={checked}
+                                      defaultChecked={checked?.parent?.id === id}
                                       className="mr15"
                                       onChange={() => changeCheckboxParent(id)}
                                     />

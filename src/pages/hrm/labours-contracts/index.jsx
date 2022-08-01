@@ -330,7 +330,7 @@ class Index extends PureComponent {
         key: 'contract_category',
         className: 'min-width-150',
         width: 150,
-        render: (record) => `${record.month} tháng`,
+        render: (record) => <>{record?.month ? `${record?.month} tháng` : ""}</>,
       },
       {
         title: 'Lương cơ bản',

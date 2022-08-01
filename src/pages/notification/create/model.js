@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import * as categories from '@/services/categories';
 import * as services from './services';
 
@@ -97,6 +98,10 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã gửi thông báo thành công',
+        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
