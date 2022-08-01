@@ -24,14 +24,14 @@ class UpdateDataMarketingRequest extends FormRequest
     public function rules()
     {
         return [
-            'full_name' => 'string',
-            'birth_date' => 'date_format:Y-m-d',
-            'sex' => 'string',
-            'email' => 'email',
-            'address' => 'string',
-            'city_id' => 'exists:citys,id',
-            'district_id' => 'exists:districts,id',
-            'search_source_id'=> 'exists:search_sources,id'
+            'full_name' => 'nullable|string',
+            'birth_date' => 'nullable|date_format:Y-m-d',
+            'sex' => 'nullable|string',
+            'email' => 'nullable|email',
+            'address' => 'nullable|string',
+            'city_id' => 'nullable|exists:citys,id',
+            'district_id' => 'nullable|exists:districts,id',
+            'search_source_id' => 'nullable|exists:search_sources,id'
         ];
     }
 }
