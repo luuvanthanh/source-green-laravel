@@ -401,7 +401,6 @@ class FacebookService
             $response = $fb->post(
                 $pageId . '/videos',
                 [
-                    'title' => $attributes['title'],
                     'description' => $attributes['description'],
                     'url' => $url,
                 ],

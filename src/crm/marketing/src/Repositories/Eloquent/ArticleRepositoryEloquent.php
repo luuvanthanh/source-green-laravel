@@ -115,8 +115,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         }
                     }
                     if ($video) {
-                        $value['title'] = $article->name;
-                        $value['description'] = $article->content;
+                        $value['description'] = $article->name . "\n" . $article->content;
                         $response = FacebookService::publishPagePostWithVideo($value, $urls);
 
                         $video_id = $response->id;
@@ -285,7 +284,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                 foreach ($attributes['data_page'] as $dataPage) {
                     $page = Page::where('page_id_facebook', $dataPage['page_id'])->select('id')->first();
                     $postFacebookInfo = PostFacebookInfo::where('page_id', $page->id)->where('article_id', $id)->first();
-    
+
                     if (!is_null($postFacebookInfo)) {
                         $dataPage['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
                         $urls = [];
