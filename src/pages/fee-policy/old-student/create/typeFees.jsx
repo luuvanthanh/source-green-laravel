@@ -201,7 +201,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
           placeholder="Chọn"
           onChange={(e) => onChangeContent(e, record)}
           allowClear={false}
-          data={paymentForm}
+          data={paymentForm?.filter(i => i?.isSemester !== true)}
           value={record?.paymentFormId}
           rules={[variables.RULES.EMPTY]}
         />

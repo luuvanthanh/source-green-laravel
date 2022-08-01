@@ -223,7 +223,7 @@ const General = memo(
                                             />
                                         </Pane>
                                         <Pane className="col-lg-12">
-                                            <Form.Item name="file_image" label="Ảnh đại diện">
+                                            <Form.Item name="file_image" label="Ảnh/Video">
                                                 <MultipleImageUpload
                                                     files={files}
                                                     callback={(files) => uploadFiles(files)}
