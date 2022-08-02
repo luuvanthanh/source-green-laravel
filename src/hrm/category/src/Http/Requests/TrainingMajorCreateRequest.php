@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\TrainingMajor;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TrainingMajorCreateRequest extends FormRequest
@@ -24,8 +25,26 @@ class TrainingMajorCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:TrainingMajors,Name',
-            'code' => 'required|string|unique:TrainingMajors,Code',
+            'name' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $trainingMajor = TrainingMajor::where('Name', $value)->first();
+
+                    if (!is_null($trainingMajor)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $trainingMajor = TrainingMajor::where('Code', $value)->first();
+
+                    if (!is_null($trainingMajor)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

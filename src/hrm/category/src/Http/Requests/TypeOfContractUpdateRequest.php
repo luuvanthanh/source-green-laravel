@@ -25,9 +25,9 @@ class TypeOfContractUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $typeOfContract = \GGPHP\Category\Models\TypeOfContract::where('Name', $value)->where('Id', '!=', request()->type_of_contract)->first();
+                    $typeOfContract = \GGPHP\Category\Models\TypeOfContract::where('Name', $value)->where('Id', '!=', $this->route('type_of_contract'))->first();
 
                     if (!is_null($typeOfContract)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -35,9 +35,9 @@ class TypeOfContractUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $typeOfContract = \GGPHP\Category\Models\TypeOfContract::where('Code', $value)->where('Id', '!=', request()->type_of_contract)->first();
+                    $typeOfContract = \GGPHP\Category\Models\TypeOfContract::where('Code', $value)->where('Id', '!=', $this->route('type_of_contract'))->first();
 
                     if (!is_null($typeOfContract)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

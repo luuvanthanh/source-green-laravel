@@ -25,9 +25,9 @@ class EducationalLevelUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $educationalLevel = \GGPHP\Category\Models\EducationalLevel::where('Name', $value)->where('Id', '!=', request()->educational_level)->first();
+                    $educationalLevel = \GGPHP\Category\Models\EducationalLevel::where('Name', $value)->where('Id', '!=', $this->route('educational_level'))->first();
 
                     if (!is_null($educationalLevel)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -35,9 +35,9 @@ class EducationalLevelUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $educationalLevel = \GGPHP\Category\Models\EducationalLevel::where('Code', $value)->where('Id', '!=', request()->educational_level)->first();
+                    $educationalLevel = \GGPHP\Category\Models\EducationalLevel::where('Code', $value)->where('Id', '!=', $this->route('educational_level'))->first();
 
                     if (!is_null($educationalLevel)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

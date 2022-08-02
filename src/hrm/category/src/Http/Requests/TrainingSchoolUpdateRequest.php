@@ -25,9 +25,9 @@ class TrainingSchoolUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $trainingSchool = \GGPHP\Category\Models\TrainingSchool::where('Name', $value)->where('Id', '!=', request()->training_school)->first();
+                    $trainingSchool = \GGPHP\Category\Models\TrainingSchool::where('Name', $value)->where('Id', '!=', $this->route('training_school'))->first();
 
                     if (!is_null($trainingSchool)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -35,15 +35,16 @@ class TrainingSchoolUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $trainingSchool = \GGPHP\Category\Models\TrainingSchool::where('Code', $value)->where('Id', '!=', request()->training_school)->first();
+                    $trainingSchool = \GGPHP\Category\Models\TrainingSchool::where('Code', $value)->where('Id', '!=', $this->route('training_school'))->first();
 
                     if (!is_null($trainingSchool)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
                     }
                 },
             ],
+            'address' => 'nullable|string|max:255',
         ];
     }
 }

@@ -27,9 +27,9 @@ class GradeUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $grade = Grade::where('Name', $value)->where('Id', '!=', request()->grade)->first();
+                    $grade = Grade::where('Name', $value)->where('Id', '!=', $this->route('grade'))->first();
 
                     if (!is_null($grade)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -37,9 +37,9 @@ class GradeUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $grade = Grade::where('Code', $value)->where('Id', '!=', request()->grade)->first();
+                    $grade = Grade::where('Code', $value)->where('Id', '!=', $this->route('grade'))->first();
 
                     if (!is_null($grade)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

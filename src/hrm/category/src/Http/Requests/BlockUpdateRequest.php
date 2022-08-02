@@ -26,9 +26,9 @@ class BlockUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $branch = Block::where('Name', $value)->where('Id', '!=', request()->block)->first();
+                    $branch = Block::where('Name', $value)->where('Id', '!=', $this->route('block'))->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -36,15 +36,16 @@ class BlockUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $branch = Block::where('Code', $value)->where('Id', '!=', request()->block)->first();
+                    $branch = Block::where('Code', $value)->where('Id', '!=', $this->route('block'))->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
                     }
                 },
             ],
+            'note' => 'nullable|max:255'
         ];
     }
 }
