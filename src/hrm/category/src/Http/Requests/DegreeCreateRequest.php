@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\Degree;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DegreeCreateRequest extends FormRequest
@@ -24,8 +25,26 @@ class DegreeCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:Degrees,Name',
-            'code' => 'required|unique:Degrees,Code',
+            'name' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $degree = Degree::where('Name', $value)->first();
+
+                    if (!is_null($degree)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu!');
+                    }
+                },
+            ],
+            'code' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $degree = Degree::where('Code', $value)->first();
+
+                    if (!is_null($degree)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu!');
+                    }
+                },
+            ],
         ];
     }
 }

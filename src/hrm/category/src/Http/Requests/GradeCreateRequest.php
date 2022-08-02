@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\Grade;
 use GGPHP\Category\Models\GradeDetail;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,8 +27,26 @@ class GradeCreateRequest extends FormRequest
     {
 
         return [
-            'name' => 'required|unique:Grades,Name',
-            'code' => 'required|unique:Grades,Code',
+            'name' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $grade = Grade::where('Name', $value)->first();
+
+                    if (!is_null($grade)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $grade = Grade::where('Code', $value)->first();
+
+                    if (!is_null($grade)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
             'detail.createRow.*.criteriaId' => 'nullable|exists:Criterias,Id',
             'detail.createRow.*.level' => 'nullable|in:' . implode(',', array_keys(GradeDetail::LEVEL)),
             'detail.updateRow.*.criteriaId' => 'nullable|exists:Criterias,Id',

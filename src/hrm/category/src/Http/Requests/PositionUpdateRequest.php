@@ -27,7 +27,7 @@ class PositionUpdateRequest extends FormRequest
             'name' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $position = \GGPHP\Category\Models\Position::where('Name', $value)->where('Id', '!=', request()->position)->first();
+                    $position = \GGPHP\Category\Models\Position::where('Name', $value)->where('Id', '!=', $this->route('position'))->first();
 
                     if (!is_null($position)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -37,7 +37,7 @@ class PositionUpdateRequest extends FormRequest
             'code' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $position = \GGPHP\Category\Models\Position::where('Code', $value)->where('Id', '!=', request()->position)->first();
+                    $position = \GGPHP\Category\Models\Position::where('Code', $value)->where('Id', '!=', $this->route('position'))->first();
 
                     if (!is_null($position)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

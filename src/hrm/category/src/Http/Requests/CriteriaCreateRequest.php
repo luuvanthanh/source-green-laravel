@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\Criteria;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CriteriaCreateRequest extends FormRequest
@@ -24,8 +25,26 @@ class CriteriaCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:Criterias,Name',
-            'code' => 'required|unique:Criterias,Code',
+            'name' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $criteria = Criteria::where('Name', $value)->first();
+
+                    if (!is_null($criteria)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu!');
+                    }
+                },
+            ],
+            'code' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $criteria = Criteria::where('Code', $value)->first();
+
+                    if (!is_null($criteria)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu!');
+                    }
+                },
+            ],
         ];
     }
 }

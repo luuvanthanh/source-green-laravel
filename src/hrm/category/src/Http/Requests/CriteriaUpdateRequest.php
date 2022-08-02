@@ -27,9 +27,9 @@ class CriteriaUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $branch = Criteria::where('Name', $value)->where('Id', '!=', request()->criteria)->first();
+                    $branch = Criteria::where('Name', $value)->where('Id', '!=', $this->route('criteria'))->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -37,9 +37,9 @@ class CriteriaUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $branch = Criteria::where('Code', $value)->where('Id', '!=', request()->criteria)->first();
+                    $branch = Criteria::where('Code', $value)->where('Id', '!=', $this->route('criteria'))->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
