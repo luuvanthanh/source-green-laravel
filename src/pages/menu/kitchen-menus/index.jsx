@@ -13,7 +13,6 @@ import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
-import styles from '@/assets/styles/Common/common.scss';
 import moment from 'moment';
 
 const Index = memo(() => {
@@ -38,6 +37,38 @@ const Index = memo(() => {
     Month: query?.Month ? query?.Month : moment().startOf('month').format('MM'),
     Year: query?.Year ? query?.Year : Helper.getDate(moment(), variables.DATE_FORMAT.YEAR),
   });
+
+
+  const onRemove = (id) => {
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'kitchenMenus/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              dispatch({
+                type: 'kitchenMenus/GET_DATA',
+                payload: { ...search },
+              });
+              history.push(
+                `${pathname}?${Helper.convertParamSearchConvert(
+                  {
+                    ...search,
+                    Month: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_MONTH),
+                    Year: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
+                  },
+                  variables.QUERY_STRING,
+                )}`,
+              );
+            }
+          },
+        });
+      },
+    });
+  };
 
   const columns = [
     {
@@ -81,18 +112,21 @@ const Index = memo(() => {
     },
     {
       key: 'action',
-      className: 'min-width-80',
-      width: 80,
+      width: 125,
       fixed: 'right',
       render: (record) => (
-        <div className={styles['list-button']}>
+        <div className="d-flex justify-content-end">
+          {
+            record?.status !== 'OFFICAL' && (
+              <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
+            )
+          }
           <Button
-            color="success"
-            ghost
+            color="primary"
+            icon="edit"
+            className='ml10'
             onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
-          >
-            Chi tiết
-          </Button>
+          />
         </div>
       ),
     },
