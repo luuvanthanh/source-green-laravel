@@ -5,9 +5,7 @@ import { Helper } from '@/utils';
 export function changeClassStudent({ id, data, joinDate }) {
   return request(`/class-students/change-to-class/${id}?joinDate=${joinDate}`, {
     method: 'PUT',
-    data: {
-      ...data,
-    },
+    data,
   });
 }
 
