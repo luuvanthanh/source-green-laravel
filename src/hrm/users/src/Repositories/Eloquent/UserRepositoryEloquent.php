@@ -84,7 +84,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         if (!empty($attributes['status'])) {
-            $this->model = $this->model->where('Status', $attributes['status']);
+            $this->model = $this->model->whereIn('Status', $attributes['status']);
         } else {
             $this->model = $this->model->status(User::STATUS['WORKING']);
         }

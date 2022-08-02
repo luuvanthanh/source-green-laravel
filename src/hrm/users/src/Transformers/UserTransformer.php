@@ -61,19 +61,11 @@ class UserTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $status = null;
-
-        foreach (User::STATUS as $key => $value) {
-            if ($value == $model->Status) {
-                $status = $key;
-            }
-        }
-
         $attributes = [
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'totalWorks' => $model->totalWorks,
             'responseInvalid' => $model->responseInvalid,
-            'Status' => $status,
+            'Status' => array_search($model->Status, User::STATUS) ? array_search($model->Status, User::STATUS) : null,
             'Category' => array_search($model->Category, User::CATEGORY) ? array_search($model->Category, User::CATEGORY) : null,
             'workHourSummary' => $model->workHourSummary,
             'totalWorkHourSummary' => $model->totalWorkHourSummary,
