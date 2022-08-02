@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
-export function change({ id, data }) {
-  return request(`/class-teachers/change-to-class/${id}`, {
+export function change({ id, data, startDate }) {
+  return request(`/class-teachers/change-to-class/${id}?startDate=${startDate}`, {
     method: 'PUT',
     data,
   });

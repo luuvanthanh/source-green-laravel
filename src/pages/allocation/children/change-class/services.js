@@ -2,10 +2,12 @@ import request from '@/utils/request';
 import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
-export function changeClassStudent({ id, data }) {
-  return request(`/class-students/change-to-class/${id}`, {
+export function changeClassStudent({ id, data, joinDate }) {
+  return request(`/class-students/change-to-class/${id}?joinDate=${joinDate}`, {
     method: 'PUT',
-    data,
+    data: {
+      ...data,
+    },
   });
 }
 
