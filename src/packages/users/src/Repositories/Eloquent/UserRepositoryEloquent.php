@@ -11,6 +11,7 @@ use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
+use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -149,6 +150,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     {
         \DB::beginTransaction();
         try {
+            $this->creating($attributes);
             $user = User::create($attributes);
             $this->created($attributes, $user);
 
@@ -221,6 +223,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     {
         \DB::beginTransaction();
         try {
+            $this->updating($attributes);
             $user = User::findOrFail($id);
             $user->update($attributes);
             $this->updated($attributes, $user);
@@ -355,5 +358,31 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         $this->model->update(['status' => User::STATUS[$attributes['status']]]);
 
         return parent::find($id);
+    }
+
+    public function creating(&$attributes)
+    {
+        $lastName = Str::of($attributes['fullName'])->explode(' ');
+
+        $attributes['LastName'] = $lastName->last();
+    }
+
+    public function updating(&$attributes)
+    {
+        if (!empty($attributes['fullName'])) {
+            $lastName = Str::of($attributes['fullName'])->explode(' ');
+
+            $attributes['LastName'] = $lastName->last();
+        }
+    }
+
+    public function updateLastName()
+    {
+        $users = $this->model->all();
+
+        $users = $users->each(function ($item) {
+            $fullName = Str::of($item->FullName)->explode(' ');
+            $this->model()::find($item->Id)->update(['LastName' => $fullName->last()]);
+        });
     }
 }
