@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect, NavLink } from 'umi';
-import { Form, List } from 'antd';
+import { Form, List, Radio } from 'antd';
 import classnames from 'classnames';
 import { Scrollbars } from 'react-custom-scrollbars';
 import PropTypes from 'prop-types';
@@ -139,7 +139,7 @@ class Index extends PureComponent {
       callback: (res, error) => {
         if (res) {
           this.setStateData({
-            teachers: res?.items.map((item) => item?.employee) || [],
+            teachers: res?.items.map((item) => ({ ...item?.employee, isLead: item?.isLead, idCheck: item?.id })) || [],
           });
         }
         if (error) {
@@ -150,6 +150,19 @@ class Index extends PureComponent {
       },
     });
   };
+
+  onChangeRadioTeacher = (e, id, teachers) => {
+    const { dispatch } = this.props;
+    this.setStateData({
+      teachers: teachers.map((item) => ({ ...item, isLead: id === item?.idCheck })) || [],
+    });
+    dispatch({
+      type: 'allocationTeacherList/ADD_RADIO_TEACHERS',
+      payload: { check: e.target.checked, id },
+      callback: () => {
+      },
+    });
+  }
 
   render() {
     const { students, branches, classes, teachers } = this.state;
@@ -256,21 +269,25 @@ class Index extends PureComponent {
                       </Text>
                     </div>
                     <Scrollbars autoHeight autoHeightMax={window.innerHeight - 340}>
-                      <List
-                        className={stylesAllocation.list}
-                        dataSource={teachers}
-                        renderItem={({ id, fullName, fileImage, positionLevel }, index) => (
-                          <List.Item key={id + index}>
-                            <div className={stylesAllocation['group-info']}>
-                              <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                              <div className={stylesAllocation.info}>
-                                <h3 className={stylesAllocation.title}>{fullName}</h3>
-                                <p className={stylesAllocation.norm}>Chức vụ: {positionLevel?.position?.name}</p>
-                              </div>
-                            </div>
-                          </List.Item>
-                        )}
-                      />
+                      <Radio.Group value>
+                        <List
+                          className={stylesAllocation.list}
+                          dataSource={teachers}
+                          renderItem={({ id, fullName, fileImage, positionLevel, isLead, idCheck }, index) => (
+                            <List.Item key={id + index}>
+                              <Radio onChange={(e) => this.onChangeRadioTeacher(e, idCheck, teachers)} value={isLead}>
+                                <div className={stylesAllocation['group-info']}>
+                                  <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                  <div className={stylesAllocation.info}>
+                                    <h3 className={stylesAllocation.title}>{fullName}</h3>
+                                    <p className={stylesAllocation.norm}>Chức vụ: {positionLevel?.position?.name}</p>
+                                  </div>
+                                </div>
+                              </Radio>
+                            </List.Item>
+                          )}
+                        />
+                      </Radio.Group>
                     </Scrollbars>
                   </div>
                 )}

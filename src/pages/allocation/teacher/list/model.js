@@ -26,6 +26,14 @@ export default {
         callback(null, error);
       }
     },
+    *ADD_RADIO_TEACHERS({ payload, callback }, saga) {
+      try {
+        const res = yield saga.call(services.changeRadioTeacher, payload);
+        callback(res);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

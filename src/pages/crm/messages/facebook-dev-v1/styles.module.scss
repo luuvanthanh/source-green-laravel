@@ -42,7 +42,7 @@
     font-size: 20px;
     line-height: 32px;
     font-weight: 700;
-    color: #3E4247;
+    color: #3e4247;
     outline: none;
     span[class*="icon"] {
       padding: 5px;
@@ -391,7 +391,8 @@
   }
 
   .messager-recieve {
-    width: 60%;
+    width: max-content;
+    max-width: 60%;
     .messager-content {
       background-color: $background-white;
       border-radius: 6px;
@@ -500,7 +501,7 @@
   }
 
   .messager-send {
-    width: 60%;
+    max-width: 60%;
     margin-left: auto;
     .messager-content {
       background-color: #3b5cad;
@@ -511,7 +512,7 @@
       color: $text;
       padding: 12px 15px;
       color: $text-white;
-      text-align: right;
+      text-align: left;
     }
     .messager-file {
       background-color: #3b5cad;
