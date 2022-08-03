@@ -168,6 +168,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 ->orWhere('DateOff', null);
         });
 
+        $employeesByStore->orderBy('LastName', 'ASC');
+
         if (empty($attributes['limit'])) {
             $result = $employeesByStore->get();
         } else {

@@ -143,4 +143,9 @@ class UserController extends Controller
 
         return $this->success($employee, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function updateLastName()
+    {
+        $this->employeeRepository->updateLastName();
+    }
 }
