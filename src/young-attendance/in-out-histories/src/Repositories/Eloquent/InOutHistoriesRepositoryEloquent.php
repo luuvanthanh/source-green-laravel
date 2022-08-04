@@ -76,9 +76,7 @@ class InOutHistoriesRepositoryEloquent extends CoreRepositoryEloquent implements
 
         if (!empty($attributes['classId'])) {
             $classId = explode(',', $attributes['classId']);
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($classId) {
-                $query->whereIn('ClassId', $classId);
-            });
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('ClassId', $classId);
         }
 
         if (!empty($attributes['branchId'])) {
