@@ -168,6 +168,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 ->orWhere('DateOff', null);
         });
 
+        $employeesByStore->orderBy('LastName', 'ASC');
+
         if (empty($attributes['limit'])) {
             $result = $employeesByStore->get();
         } else {
@@ -215,7 +217,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         if (!is_null($contract)) {
             if (!$contract->ContractFrom) {
-                throw new Exception('Vui lòng hoàn thành hợp đồng của ' . $contract->employee->FullName, 500);
+                throw new Exception('Vui lòng hoàn thành hợp đồng của ' . $contract->employee->FullName, 400);
             }
 
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');

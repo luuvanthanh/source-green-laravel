@@ -328,9 +328,9 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         $allowance =  $labourContract->TotalAllowance;
 
         // Lương thực nhận
-        $probationSalary = isset($salaryRatio) ? $salary * $salaryRatio / 100 : $salary;
+        // $probationSalary = isset($salaryRatio) ? $salary * $salaryRatio / 100 : $salary;
 
-        $total = $probationSalary + $allowance;
+        $total = $salary + $allowance;
         $employee = $labourContract->employee;
 
         $params = [

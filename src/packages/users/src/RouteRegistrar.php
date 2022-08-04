@@ -78,6 +78,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::put('update-status-employees/{id}', [
                 'uses' => 'UserController@updateStatusEmployee',
             ]);
+
+            \Route::get('update-last-name', [
+                'uses' => 'UserController@updateLastName',
+            ]);
         });
     }
 

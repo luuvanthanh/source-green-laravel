@@ -107,9 +107,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         if (!empty($attributes['classId'])) {
             $classId = explode(',', $attributes['classId']);
             $this->model = $this->model->whereHas('student', function ($query) use ($classId) {
-                $query->whereHas('classStudent', function ($q) use ($classId) {
-                    $q->whereIn('ClassId', $classId);
-                });
+                $query->whereIn('ClassId', $classId);
             });
         }
 
