@@ -80,4 +80,9 @@ class ChargeOldStudent extends UuidModel
     {
         return $this->belongsTo(Classes::class, 'ClassId');
     }
+
+    public function expectedToCollectMoney()
+    {
+        return $this->hasMany(ExpectedToCollectMoney::class, 'ChargeOldStudentId');
+    }
 }
