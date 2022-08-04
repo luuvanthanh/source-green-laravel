@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use CloudCreativity\LaravelJsonApi\LaravelJsonApi;
+use GGPHP\Fee\Models\ChargeOldStudent;
 use GGPHP\Fee\Models\ClassType;
 use GGPHP\Fee\Models\Fee;
 use GGPHP\Fee\Models\FeePolicie;
 use GGPHP\Fee\Models\PaymentForm;
+use GGPHP\Fee\Observers\ChargeOldStudentObserver;
 use GGPHP\Fee\Observers\ClassTypeObserver;
 use GGPHP\Fee\Observers\FeeObserver;
 use GGPHP\Fee\Observers\FeePolicieObserver;
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
         Fee::observe(FeeObserver::class);
         PaymentForm::observe(PaymentFormObserver::class);
         FeePolicie::observe(FeePolicieObserver::class);
+        ChargeOldStudent::observe(ChargeOldStudentObserver::class);
 
         /**
          * Paginate a standard Laravel Collection.
