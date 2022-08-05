@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\EducationalLevel;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EducationalLevelCreateRequest extends FormRequest
@@ -24,8 +25,26 @@ class EducationalLevelCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:EducationalLevels,Name',
-            'code' => 'required|unique:EducationalLevels,Code',
+            'name' => [
+                'string', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $educationalLevel = EducationalLevel::where('Name', $value)->first();
+
+                    if (!is_null($educationalLevel)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'string', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $educationalLevel = EducationalLevel::where('Code', $value)->first();
+
+                    if (!is_null($educationalLevel)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

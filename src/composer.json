@@ -96,7 +96,15 @@
             "GGPHP\\Salary\\": "hrm/salary/src/",
             "ZK\\": "hrm/zk/src",
             "GGPHP\\WorkOnline\\": "hrm/work-online/src",
-            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/"
+            "Botble\\GitCommitChecker\\": "packages/git-commit-checker/src/",
+            "GGPHP\\EvaluateTeacher\\Category\\": "evaluate-teacher/category/src/",
+            "GGPHP\\EvaluateTeacher\\EvaluateTeacher\\": "evaluate-teacher/evaluate-teacher/src/",
+            "GGPHP\\TrainingTeacher\\Category\\": "training-teacher/category/src/",
+            "GGPHP\\TeacherAssignment\\": "hrm/teacher-assignment/src",
+            "GGPHP\\TrainingTeacher\\TrainingModuleBoard\\": "training-teacher/training-module-board/src/",
+            "GGPHP\\TrainingTeacher\\TrainingSchedule\\": "training-teacher/training-schedule/src/",
+            "GGPHP\\ManualCalculation\\": "hrm/manual-calculation/src/",
+            "GGPHP\\TeacherTimekeeping\\": "hrm/teacher-timekeeping/src/"
         },
         "classmap": [
             "database/seeds",

@@ -23,6 +23,7 @@ class CreateHolidayDetailsTable extends Migration
             $table->date('EndDate')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

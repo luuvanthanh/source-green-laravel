@@ -12,38 +12,46 @@ class BranchesTableSeeder extends Seeder
      */
     public function run()
     {
+        
 
-        \DB::table('Branches')->truncate();
-
-        \DB::table('Branches')->insert(array(
-            0 => array(
-                'Id' => '7fe24a89-8007-4541-b6b7-4f1582896861',
-                'Code' => 'CS1',
-                'Name' => 'Cơ sở 1',
-                'Address' => null,
-                'PhoneNumber' => '0955555555',
-                'CreationTime' => '2021-04-19 08:42:48',
-                'LastModificationTime' => '2021-04-19 08:42:48',
+        \DB::table('Branches')->delete();
+        
+        \DB::table('Branches')->insert(array (
+            0 => 
+            array (
+                'Id' => '8e24619d-4e01-4714-b62f-c341b22af022',
+                'Code' => 'code2',
+                'Name' => 'cơ sở 2',
+                'Address' => 'đà nẵng',
+                'BranchIdCrm' => NULL,
+                'CreationTime' => '2022-03-21 02:05:11',
+                'LastModificationTime' => '2022-03-21 02:05:25',
+                'DeletionTime' => '2022-03-21 02:05:25',
             ),
-            1 => array(
-                'Id' => '8c4265dd-21c7-412b-b003-9a2a493d897a',
-                'Code' => 'CS2',
-                'Name' => 'Cơ sở 2',
-                'Address' => null,
-                'PhoneNumber' => '0955555555',
-                'CreationTime' => '2021-04-19 08:42:56',
-                'LastModificationTime' => '2021-04-19 08:42:56',
+            1 => 
+            array (
+                'Id' => 'fb103c94-59f8-41a3-b11a-6cb57d221e01',
+                'Code' => 'Cơ sở 01',
+                'Name' => 'Trường Trần Đại Nghĩa',
+                'Address' => 'Cơ sở 01',
+                'BranchIdCrm' => NULL,
+                'CreationTime' => '2022-03-22 06:42:18',
+                'LastModificationTime' => '2022-03-28 09:08:06',
+                'DeletionTime' => NULL,
             ),
-            2 => array(
-                'Id' => 'fd8184a1-c467-48e2-bf0f-7ffc7565551c',
-                'Code' => 'CS3',
-                'Name' => 'Cơ sở 3',
-                'Address' => null,
-                'PhoneNumber' => '0955555555',
-                'CreationTime' => '2021-04-19 08:43:01',
-                'LastModificationTime' => '2021-04-19 08:43:01',
+            2 => 
+            array (
+                'Id' => 'd61fbd0c-7b7d-4c91-baa2-9f0d64429d32',
+                'Code' => 'Q7',
+                'Name' => 'Cơ sở quận 7',
+                'Address' => 'Quận 7 - Thành phố Hồ Chí Minh',
+                'BranchIdCrm' => NULL,
+                'CreationTime' => '2022-04-08 02:19:19',
+                'LastModificationTime' => '2022-04-08 02:19:19',
+                'DeletionTime' => NULL,
             ),
         ));
-
+        
+        
     }
 }

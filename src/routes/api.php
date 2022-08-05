@@ -33,7 +33,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forKiosk();
     });
 
-    Route::group(['middleware' => 'auth_sso'], function () {
+    Route::group(['middleware' => ['auth_sso']], function () {
         \GGPHP\Users\RouteRegistrar::routes(function ($router) {
             $router->forUser();
         });
@@ -129,6 +129,38 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
 
         \GGPHP\WorkOnline\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        GGPHP\EvaluateTeacher\Category\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        GGPHP\EvaluateTeacher\EvaluateTeacher\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        GGPHP\TrainingTeacher\Category\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        GGPHP\TeacherAssignment\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        GGPHP\TrainingTeacher\TrainingModuleBoard\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        GGPHP\TrainingTeacher\TrainingSchedule\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        GGPHP\ManualCalculation\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\TeacherTimekeeping\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
     });

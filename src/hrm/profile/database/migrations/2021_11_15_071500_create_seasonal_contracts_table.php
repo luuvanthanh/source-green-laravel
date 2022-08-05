@@ -28,12 +28,14 @@ class CreateSeasonalContractsTable extends Migration
             $table->date('ContractTo');
             $table->string('WorkDetail');
             $table->string('WorkTime');
-            $table->string('NameProject');
+            $table->string('NameProject')->nullable();
             $table->boolean('JoinSocialInsurance')->default('false');
             $table->boolean('Project')->default('false');
             $table->uuid('BranchId');
+            $table->string('File', 1000)->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

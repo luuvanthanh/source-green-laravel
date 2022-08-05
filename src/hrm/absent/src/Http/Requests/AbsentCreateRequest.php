@@ -46,7 +46,7 @@ class AbsentCreateRequest extends FormRequest
                     $checkShift = $this->checkShift($value);
                     if (!is_null($checkShift)) {
                         $date = Carbon::parse($checkShift)->setTimezone('GMT+7')->format('d-m-Y');
-                        return $fail('Ngày' . $date . 'không có ca làm việc');
+                        return $fail('Ngày ' . $date . ' không có ca làm việc');
                     }
 
                     foreach ($value as $key => $item) {

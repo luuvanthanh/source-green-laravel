@@ -19,7 +19,7 @@ class ChangeContractParameter extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'OtherDeclarationId', 'EmployeeId', 'Detail', 'IsSocialInsurance'
+        'OtherDeclarationId', 'EmployeeId', 'Detail',
     ];
 
     /**

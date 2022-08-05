@@ -20,12 +20,14 @@ class CreateAbsentsTable extends Migration
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->uuid('AbsentTypeId');
             $table->foreign('AbsentTypeId')->references('Id')->on('AbsentTypes');
-            $table->uuid('AbsentReasonId');
+            $table->uuid('AbsentReasonId')->nullable();
             $table->foreign('AbsentReasonId')->references('Id')->on('AbsentReasons');
             $table->date('StartDate');
             $table->date('EndDate')->nullable();
+            $table->string('Reason')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

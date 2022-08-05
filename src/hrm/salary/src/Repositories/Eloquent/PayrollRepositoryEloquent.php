@@ -40,13 +40,13 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
     public function __construct(
         ExcelExporterServices $excelExporterServices,
         TimekeepingRepositoryEloquent $timekeepingRepositoryEloquent,
-        BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
+        // BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
         WorkHourRepositoryEloquent $workHourRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
         $this->excelExporterServices = $excelExporterServices;
-        $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
+        // $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
         $this->timekeepingRepositoryEloquent = $timekeepingRepositoryEloquent;
         $this->workHourRepositoryEloquent = $workHourRepositoryEloquent;
     }
@@ -258,15 +258,15 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $incurredAllowance = json_encode($incurredAllowance);
 
-        $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-        ])->totalBusRegistration;
+        $totalBusRegistration = 0;
+        // $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
+        //     'startDate' => $startDate,
+        //     'endDate' => $endDate,
+        // ])->totalBusRegistration;
 
         $isProbation = false;
 
         $contract = $employee->labourContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
-
         if (is_null($contract)) {
             $contract = $employee->probationaryContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
             if (!is_null($contract)) {

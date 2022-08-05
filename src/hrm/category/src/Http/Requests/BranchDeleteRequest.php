@@ -40,10 +40,11 @@ class BranchDeleteRequest extends FormRequest
                     $labourContract = LabourContract::where('BranchId', $value)->first();
                     $probationaryContract = ProbationaryContract::where('BranchId', $value)->first();
                     $transferDetail = TransferDetail::where('BranchId', $value)->first();
-                    $class = Classes::where('BranchId', $value)->first();
+                    //$class = Classes::where('BranchId', $value)->first();
 
-                    if (!is_null($appointDetails) || !is_null($dismissedDetail) || !is_null($positionLevel) || !is_null($labourContract)
-                        || !is_null($probationaryContract) || !is_null($transferDetail) || !is_null($class)
+                    if (
+                        !is_null($appointDetails) || !is_null($dismissedDetail) || !is_null($positionLevel) || !is_null($labourContract)
+                        || !is_null($probationaryContract) || !is_null($transferDetail)
                     ) {
                         return $fail('Dữ liệu đang được sử dụng!');
                     }

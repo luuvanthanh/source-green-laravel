@@ -109,7 +109,9 @@ return [
     'unique' => 'Trường đã có trong cơ sở dữ liệu.',
     'uploaded' => 'Trường tải lên thất bại.',
     'url' => 'Trường không giống với định dạng một URL.',
-
+    'check_unique' => 'Trường đã có trong cơ sở dữ liệu.',
+    'check_exists' => 'Trường :attribute không hợp lệ.',
+    
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -138,7 +140,6 @@ return [
     |
      */
 
-    'attributes' => [
-    ],
+    'attributes' => [],
 
 ];

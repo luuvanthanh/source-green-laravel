@@ -19,11 +19,14 @@ class CreateWorkOnlineDetailsTable extends Migration
             $table->date('Date');
             $table->time('StartTime')->nullable();
             $table->time('EndTime')->nullable();
-            $table->time('TotalHour')->nullable();
+            $table->string('ShiftCode')->nullable();
+            $table->float('TotalHour')->nullable();
+            $table->boolean('IsFullDate')->default(true);
             $table->uuid('WorkOnlineId');
             $table->foreign('WorkOnlineId')->references('Id')->on('WorkOnlines')->onDelete('cascade');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

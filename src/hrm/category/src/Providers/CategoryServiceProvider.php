@@ -2,9 +2,13 @@
 
 namespace GGPHP\Category\Providers;
 
+use GGPHP\Category\Repositories\Contracts\BlockRepository;
 use GGPHP\Category\Repositories\Contracts\BranchRepository;
+use GGPHP\Category\Repositories\Contracts\CriteriaRepository;
+use GGPHP\Category\Repositories\Contracts\DegreeRepository;
 use GGPHP\Category\Repositories\Contracts\DivisionRepository;
 use GGPHP\Category\Repositories\Contracts\EducationalLevelRepository;
+use GGPHP\Category\Repositories\Contracts\GradeRepository;
 use GGPHP\Category\Repositories\Contracts\HolidayRepository;
 use GGPHP\Category\Repositories\Contracts\ParamaterFormulaLogRepository;
 use GGPHP\Category\Repositories\Contracts\ParamaterFormulaRepository;
@@ -13,11 +17,16 @@ use GGPHP\Category\Repositories\Contracts\ParamaterValueRepository;
 use GGPHP\Category\Repositories\Contracts\ParameterTaxLogRepository;
 use GGPHP\Category\Repositories\Contracts\ParameterTaxRepository;
 use GGPHP\Category\Repositories\Contracts\PositionRepository;
+use GGPHP\Category\Repositories\Contracts\TrainingMajorRepository;
 use GGPHP\Category\Repositories\Contracts\TrainingSchoolRepository;
 use GGPHP\Category\Repositories\Contracts\TypeOfContractRepository;
+use GGPHP\Category\Repositories\Eloquent\BlockRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\BranchRepositoryEloquent;
+use GGPHP\Category\Repositories\Eloquent\CriteriaRepositoryEloquent;
+use GGPHP\Category\Repositories\Eloquent\DegreeRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\DivisionRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\EducationalLevelRepositoryEloquent;
+use GGPHP\Category\Repositories\Eloquent\GradeRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\HolidayRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\ParamaterFormulaLogRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\ParamaterFormulaRepositoryEloquent;
@@ -26,6 +35,7 @@ use GGPHP\Category\Repositories\Eloquent\ParamaterValueRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\ParameterTaxLogRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\ParameterTaxRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\PositionRepositoryEloquent;
+use GGPHP\Category\Repositories\Eloquent\TrainingMajorRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\TrainingSchoolRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\TypeOfContractRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
@@ -52,6 +62,8 @@ class CategoryServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(TrainingSchoolRepository::class, TrainingSchoolRepositoryEloquent::class);
+        $this->app->bind(TrainingMajorRepository::class, TrainingMajorRepositoryEloquent::class);
+        $this->app->bind(DegreeRepository::class, DegreeRepositoryEloquent::class);
         $this->app->bind(EducationalLevelRepository::class, EducationalLevelRepositoryEloquent::class);
         $this->app->bind(ParamaterValueRepository::class, ParamaterValueRepositoryEloquent::class);
         $this->app->bind(ParamaterFormulaRepository::class, ParamaterFormulaRepositoryEloquent::class);
@@ -64,5 +76,8 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(DivisionRepository::class, DivisionRepositoryEloquent::class);
         $this->app->bind(BranchRepository::class, BranchRepositoryEloquent::class);
         $this->app->bind(HolidayRepository::class, HolidayRepositoryEloquent::class);
+        $this->app->bind(BlockRepository::class, BlockRepositoryEloquent::class);
+        $this->app->bind(CriteriaRepository::class, CriteriaRepositoryEloquent::class);
+        $this->app->bind(GradeRepository::class, GradeRepositoryEloquent::class);
     }
 }

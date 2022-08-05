@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use CloudCreativity\LaravelJsonApi\LaravelJsonApi;
+use GGPHP\Category\Models\Branch;
+use GGPHP\Category\Observers\BranchObserver;
 use GGPHP\Fee\Models\ClassType;
 use GGPHP\Fee\Models\Fee;
 use GGPHP\Fee\Models\FeePolicie;
@@ -13,6 +15,8 @@ use GGPHP\Fee\Observers\FeePolicieObserver;
 use GGPHP\Fee\Observers\PaymentFormObserver;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
         //
         LaravelJsonApi::defaultApi('v1');
 
+        Branch::observe(BranchObserver::class);
+        
         /**
          * Paginate a standard Laravel Collection.
          *
@@ -59,6 +65,26 @@ class AppServiceProvider extends ServiceProvider
                     'pageName' => $pageName,
                 ]
             );
+        });
+
+        Validator::extend('check_unique', function ($attribute, $value, $parameters, $validator) {
+            $data = DB::table($parameters[0])->where($parameters[1], $value)->first();
+
+            if (!is_null($data)) {
+                return false;
+            }
+
+            return true;
+        });
+
+        Validator::extend('check_exists ', function ($attribute, $value, $parameters, $validator) {
+            $data = DB::table($parameters[0])->where($parameters[1], $value)->first();
+
+            if (is_null($data)) {
+                return false;
+            }
+
+            return true;
         });
     }
 }

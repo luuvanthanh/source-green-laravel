@@ -6,14 +6,16 @@ use GGPHP\Core\Contracts\Presentable;
 use GGPHP\Core\Traits\BootPresentTrait;
 use GGPHP\Core\Traits\CastDatetimeFormatTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CoreModel extends Model implements Presentable
 {
     const CREATED_AT = 'CreationTime';
     const UPDATED_AT = 'LastModificationTime';
-    const DELETED_AT = 'DeletedAt';
+    const DELETED_AT = 'DeletionTime';
 
     use CastDatetimeFormatTrait, BootPresentTrait;
+    use SoftDeletes;
 
     public function scopeWhereLike($query, $key, $value)
     {

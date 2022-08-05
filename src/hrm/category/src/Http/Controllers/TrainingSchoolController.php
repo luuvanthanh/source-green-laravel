@@ -5,6 +5,7 @@ namespace GGPHP\Category\Http\Controllers;
 use GGPHP\Category\Http\Requests\TrainingSchoolCreateRequest;
 use GGPHP\Category\Http\Requests\TrainingSchoolDeleteRequest;
 use GGPHP\Category\Http\Requests\TrainingSchoolUpdateRequest;
+use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Category\Repositories\Contracts\TrainingSchoolRepository;
 use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -48,6 +49,9 @@ class TrainingSchoolController extends Controller
     public function store(TrainingSchoolCreateRequest $request)
     {
         $credentials = $request->all();
+        if (!empty($credentials['category'])) {
+            $credentials['category'] = TrainingSchool::CATEGORY[$credentials['category']];
+        }
         $trainingSchool = $this->trainingSchoolRepository->create($credentials);
         return $this->success($trainingSchool, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
@@ -74,6 +78,9 @@ class TrainingSchoolController extends Controller
     public function update(TrainingSchoolUpdateRequest $request, $id)
     {
         $credentials = $request->all();
+        if (!empty($credentials['category'])) {
+            $credentials['category'] = TrainingSchool::CATEGORY[$credentials['category']];
+        }
         $trainingSchool = $this->trainingSchoolRepository->update($credentials, $id);
         return $this->success($trainingSchool, trans('lang::messages.common.modifySuccess'));
     }

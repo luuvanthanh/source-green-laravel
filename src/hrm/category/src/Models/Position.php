@@ -19,7 +19,7 @@ class Position extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name',
+        'Code', 'Name', 'Note'
     ];
 
     /**

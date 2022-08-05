@@ -18,10 +18,10 @@ class CreateDivisionsTable extends Migration
             $table->primary('Id');
             $table->string('Code');
             $table->string('Name');
-            $table->string('Note');
+            $table->string('Note')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

@@ -9,10 +9,15 @@ use GGPHP\Category\Models\TrainingMajor;
 use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\EvaluateTeacher\Category\Models\TypeTeacher;
 use GGPHP\LateEarly\Models\LateEarly;
+use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
+use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
 use GGPHP\Timekeeping\Models\Timekeeping;
+use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingSchedule;
+use GGPHP\TrainingTeacher\TrainingSchedule\Models\TrainingScheduleDetail;
 use GGPHP\WorkOnline\Models\WorkOnline;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
@@ -37,10 +42,15 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     use SyncToDevice;
 
     const STATUS = [
-        'WORKING' => 0,
         'INACTIVITY' => 1,
         'MATERNITY' => 2,
         'STORE' => 3,
+        'WORKING' => 4,
+    ];
+
+    const CATEGORY = [
+        'EMPLOYEE' => 1,
+        'TEACHER' => 2
     ];
 
     /**
@@ -59,7 +69,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'Nation', 'IdCard', 'DateOfIssueIdCard', 'PlaceOfIssueIdCard', 'Religion', 'WorkDate',
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
-        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'Description'
+        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'Description', 'Category'
     ];
 
     protected $dateTimeFields = [
@@ -335,5 +345,35 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function trainingSchool()
     {
         return $this->belongsTo(TrainingSchool::class, 'TrainingSchoolId');
+    }
+
+    public function manualCalculation()
+    {
+        return $this->hasMany(ManualCalculation::class, 'EmployeeId');
+    }
+
+    public function trainingSchedule()
+    {
+        return $this->belongsToMany(TrainingSchedule::class, 'evaluate_teacher.TrainingScheduleEmployees', 'EmployeeId', 'TrainingScheduleId');
+    }
+
+    public function trainingScheduleDetail()
+    {
+        return $this->belongsToMany(TrainingScheduleDetail::class, 'evaluate_teacher.TrainingScheduleDetailEmployees', 'EmployeeId', 'TrainingScheduleDetailId');
+    }
+
+    public function typeTeacher()
+    {
+        return $this->belongsToMany(TypeTeacher::class, 'EmployeeTypeTeacher', 'EmployeeId', 'TypeTeacherId');
+    }
+
+    /**
+     * Get educations of employee
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function TeacherTimekeeping()
+    {
+        return $this->hasMany(TeacherTimekeeping::class, 'EmployeeId');
     }
 }

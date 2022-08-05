@@ -210,6 +210,14 @@ return [
         GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
         GGPHP\WorkOnline\Providers\WorkOnlineServiceProvider::class,
         Botble\GitCommitChecker\Providers\GitCommitCheckerServiceProvider::class,
+        GGPHP\EvaluateTeacher\Category\Providers\CategoryServiceProvider::class,
+        GGPHP\EvaluateTeacher\EvaluateTeacher\Providers\EvaluateTeacherServiceProvider::class,
+        GGPHP\TrainingTeacher\Category\Providers\CategoryServiceProvider::class,
+        GGPHP\TeacherAssignment\Providers\TeacherAssignmentServiceProvider::class,
+        GGPHP\TrainingTeacher\TrainingModuleBoard\Providers\TrainingModuleBoardServiceProvider::class,
+        GGPHP\TrainingTeacher\TrainingSchedule\Providers\TrainingScheduleServiceProvider::class,
+        GGPHP\ManualCalculation\Providers\ManualCalculationServiceProvider::class,
+        GGPHP\TeacherTimekeeping\Providers\TeacherTimekeepingServiceProvider::class
     ],
 
     /*

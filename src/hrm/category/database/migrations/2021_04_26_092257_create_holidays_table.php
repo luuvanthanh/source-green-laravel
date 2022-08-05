@@ -19,6 +19,7 @@ class CreateHolidaysTable extends Migration
             $table->string('Name');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

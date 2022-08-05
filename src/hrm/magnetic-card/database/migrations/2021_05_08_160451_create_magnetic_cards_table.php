@@ -27,7 +27,7 @@ class CreateMagneticCardsTable extends Migration
             $table->string('TimekeepingStatus')->default('ON');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->timestamp('DeletedAt')->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

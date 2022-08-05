@@ -87,9 +87,9 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
         \DB::beginTransaction();
         try {
             $otherDeclaration = OtherDeclaration::create($attributes);
-
+           
             OtherDeclarationServices::addDetail($otherDeclaration->Id, $attributes['detail']);
-            OtherDeclarationServices::addChangeContract($otherDeclaration->Id, $attributes['changeContract']);
+            //OtherDeclarationServices::addChangeContract($otherDeclaration->Id, $attributes['changeContract']);
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -113,10 +113,10 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
                 OtherDeclarationServices::addDetail($otherDeclaration->Id, $attributes['detail']);
             }
 
-            if (!empty($attributes['changeContract'])) {
-                $otherDeclaration->changeContractParameter()->delete();
-                OtherDeclarationServices::addChangeContract($otherDeclaration->Id, $attributes['changeContract']);
-            }
+            // if (!empty($attributes['changeContract'])) {
+            //     $otherDeclaration->changeContractParameter()->delete();
+            //     OtherDeclarationServices::addChangeContract($otherDeclaration->Id, $attributes['changeContract']);
+            // }
 
             \DB::commit();
         } catch (\Exception $e) {

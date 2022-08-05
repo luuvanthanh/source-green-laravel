@@ -14,7 +14,7 @@ class CreateLabourContractParameterValueTable extends Migration
     public function up()
     {
         Schema::create('LabourContractParameterValue', function (Blueprint $table) {
-            $table->integer('Value');
+            $table->string('Value')->nullable();
             $table->uuid('LabourContractId');
             $table->uuid('ParameterValueId');
             $table->foreign('LabourContractId')->references('Id')->on('LabourContracts');

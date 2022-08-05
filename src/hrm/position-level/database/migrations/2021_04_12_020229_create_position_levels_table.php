@@ -27,8 +27,11 @@ class CreatePositionLevelsTable extends Migration
             $table->date('StartDate');
             $table->date('EndDate')->nullable();
             $table->string('Type')->nullable();
+            $table->uuid('ModelId')->nullable();
+            $table->string('ModelType')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

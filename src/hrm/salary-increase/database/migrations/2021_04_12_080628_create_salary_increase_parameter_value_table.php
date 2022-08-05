@@ -14,7 +14,7 @@ class CreateSalaryIncreaseParameterValueTable extends Migration
     public function up()
     {
         Schema::create('SalaryIncreaseParameterValue', function (Blueprint $table) {
-            $table->integer('Value');
+            $table->string('Value')->nullable();
             $table->uuid('SalaryIncreaseId');
             $table->uuid('ParameterValueId');
             $table->foreign('SalaryIncreaseId')->references('Id')->on('SalaryIncreases');

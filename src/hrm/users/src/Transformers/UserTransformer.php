@@ -10,11 +10,16 @@ use GGPHP\Category\Transformers\TrainingMajorTransformer;
 use GGPHP\Category\Transformers\TrainingSchoolTransformer;
 use GGPHP\Clover\Transformers\ClassTeacherTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\EvaluateTeacher\Category\Transformers\TypeTeacherTransformer;
 use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
+use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
 use GGPHP\Profile\Transformers\LabourContractTransformer;
 use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
+use GGPHP\TeacherTimekeeping\Transformers\TeacherTimekeepingTransformer;
 use GGPHP\Timekeeping\Transformers\TimekeepingTransformer;
+use GGPHP\TrainingTeacher\TrainingSchedule\Transformers\TrainingScheduleDetailTransformer;
+use GGPHP\TrainingTeacher\TrainingSchedule\Transformers\TrainingScheduleTransformer;
 use GGPHP\Users\Models\User;
 
 /**
@@ -42,7 +47,9 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool', 'labourContract'
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
+        'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool',
+        'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail', 'typeTeacher', 'TeacherTimekeeping'
     ];
 
     /**
@@ -54,19 +61,12 @@ class UserTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $status = null;
-
-        foreach (User::STATUS as $key => $value) {
-            if ($value == $model->Status) {
-                $status = $key;
-            }
-        }
-
         $attributes = [
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'totalWorks' => $model->totalWorks,
             'responseInvalid' => $model->responseInvalid,
-            'Status' => $status,
+            'Status' => array_search($model->Status, User::STATUS) ? array_search($model->Status, User::STATUS) : null,
+            'Category' => array_search($model->Category, User::CATEGORY) ? array_search($model->Category, User::CATEGORY) : null,
             'workHourSummary' => $model->workHourSummary,
             'totalWorkHourSummary' => $model->totalWorkHourSummary,
             'totalWorkWeekday' => $model->totalWorkWeekday,
@@ -195,5 +195,35 @@ class UserTransformer extends BaseTransformer
     public function includeLabourContract(User $employee)
     {
         return $this->collection($employee->labourContract, new LabourContractTransformer, 'LabourContract');
+    }
+
+    public function includeManualCalculation(User $employee)
+    {
+        return $this->collection($employee->manualCalculation, new ManualCalculationTransformer, 'ManualCalculation');
+    }
+
+    public function includeTrainingSchedule(User $employee)
+    {
+        return $this->collection($employee->trainingSchedule, new TrainingScheduleTransformer, 'TrainingSchedule');
+    }
+
+    public function includeTrainingScheduleDetail(User $employee)
+    {
+        return $this->collection($employee->trainingScheduleDetail, new TrainingScheduleDetailTransformer, 'TrainingScheduleDetail');
+    }
+
+    public function includeTypeTeacher(User $employee)
+    {
+        return $this->collection($employee->typeTeacher, new TypeTeacherTransformer, 'TypeTeacher');
+    }
+
+    /**
+     * Include timekeeping
+     * @param User $employee
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeTeacherTimekeeping(User $employee)
+    {
+        return $this->collection(empty($employee->teacherTimekeeping) ? [] : $employee->teacherTimekeeping, new TeacherTimekeepingTransformer, 'TeacherTimekeeping');
     }
 }

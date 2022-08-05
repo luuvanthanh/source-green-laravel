@@ -25,9 +25,9 @@ class HolidayUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $educationalLevel = \GGPHP\Category\Models\Holiday::where('Name', $value)->where('Id', '!=', request()->holiday)->first();
+                    $educationalLevel = \GGPHP\Category\Models\Holiday::where('Name', $value)->where('Id', '!=', $this->route('holiday'))->first();
 
                     if (!is_null($educationalLevel)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

@@ -10,6 +10,7 @@ use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\Timekeeping\Presenters\TimekeepingPresenter;
@@ -27,6 +28,9 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements TimekeepingRepository
 {
+    const UNKNOWN = 'KXD';
+    const CONFIRM = 'X';
+
     protected $employeeRepositoryEloquent;
 
     public function __construct(
@@ -130,7 +134,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      */
     public function timekeepingReport(array $attributes, $parser = false)
     {
-
         $employeesByStore = $this->employeeRepositoryEloquent->model()::with(['timekeeping' => function ($query) use ($attributes) {
             $query->whereDate('AttendedAt', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))
                 ->whereDate('AttendedAt', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'))
@@ -193,7 +196,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      */
     public function calculatorTimekeepingReport($employee, $attributes)
     {
-
         $startDate = Carbon::parse($attributes['startDate'])->format('Y-m-d');
         $endDate = Carbon::parse($attributes['endDate'])->format('Y-m-d');
         $now = Carbon::now();
@@ -234,7 +236,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $periodDate = new \DatePeriod($begin, $intervalDate, $end->modify('+1 day'));
 
         foreach ($periodDate as $date) {
-            $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+            $check = Carbon::parse($date)->setTimezone('GMT+7');
 
             if (!is_null($dateOff) && $date->format('Y-m-d') >= $dateOff) {
                 $responseTimeKeepingUser[] = [
@@ -255,17 +257,18 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     $responseTimeKeepingUser[$checkValue] = [
                         'date' => $date->format('Y-m-d'),
                         'timekeepingReport' => 0,
-                        'type' => 'KXD',
+                        'type' => self::UNKNOWN,
                     ];
                 } else {
                     $responseTimeKeepingUser[] = [
                         'date' => $date->format('Y-m-d'),
                         'timekeepingReport' => 0,
-                        'type' => 'KXD',
+                        'type' => self::UNKNOWN,
                     ];
                 }
             }
-            if (($check === 'Saturday' || $check === 'Sunday')) {
+
+            if ($check->isSaturday() || $check->isSunday()) {
                 $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
                 if ($checkValue !== false) {
@@ -288,7 +291,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $countWorkDeclarationByDate = count($workDeclarationByDate);
 
         if ($countEmployeeHasTimekeeping > 0 || $countWorkDeclarationByDate > 0) {
-
             foreach ($employeeTimeWorkShift as $key => $value) {
 
                 if (!is_null($dateOff) && $key >= $dateOff) {
@@ -304,10 +306,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     $checkOut = end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s');
 
                     if ($checkIn <= $startTime && $checkOut >= $endTime) {
-                        $type = 'x';
+                        $type = self::CONFIRM;
                         $timekeepingReport = 1;
                     } else {
-                        $type = 'KXD';
+                        $type = self::UNKNOWN;
                         $timekeepingReport = 0;
 
                         if (isset($workDeclarationByDate[$key])) {
@@ -373,16 +375,17 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorBusinessTravel($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorMaternityLeave($employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff, $countEmployeeHasTimekeeping, $countWorkDeclarationByDate);
+        $responseTimeKeepingUser = $this->calculatorManualCalculation($employee, $startDate, $endDate, $responseTimeKeepingUser);
 
         $totalWorks = 0;
         foreach ($responseTimeKeepingUser as $key => &$item) {
-            $check = Carbon::parse($item['date'])->setTimezone('GMT+7')->format('l');
+            $check = Carbon::parse($item['date'])->setTimezone('GMT+7');
 
             if (!is_null($dateStartWork) && $item['date'] == $dateStartWork) {
                 $responseTimeKeepingUser[$key]['type'] = 'ST';
             }
 
-            if ($check === 'Saturday' || $check === 'Sunday') {
+            if ($check->isSaturday() || $check->isSunday()) {
 
                 if ($responseTimeKeepingUser[$key]['type'] != 'TS') {
                     $responseTimeKeepingUser[$key]['timekeepingReport'] = 0;
@@ -436,7 +439,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 if (!$value->IsFullDate) {
 
                     if (!isset($timeKeepingByDate[$value->Date->format('Y-m-d')])) {
-                        $type = $type . ' - KXD';
+                        $type = $type . ' - ' . self::UNKNOWN;
                         $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                     } else {
                         $timeKeeping = $timeKeepingByDate[$value->Date->format('Y-m-d')];
@@ -455,7 +458,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                             if ($checkIn <= $startTime && $checkOut >= $endTime) {
                                 $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
                             } else {
-                                $type = $type . ' - KXD';
+                                $type = $type . ' - ' . self::UNKNOWN;
                                 $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                             }
 
@@ -530,9 +533,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     if ($holidayDetail->StartDate->format('Y-m-d') <= $date->format('Y-m-d') && $date->format('Y-m-d') <= $holidayDetail->EndDate->format('Y-m-d')) {
                         $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
-                        $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+                        $check = Carbon::parse($date)->setTimezone('GMT+7');
 
-                        if ($check === 'Saturday' || $check === 'Sunday') {
+                        if ($check->isSaturday() || $check->isSunday()) {
                             $timekeepingReport = 0;
                         } else {
                             $timekeepingReport = 1;
@@ -614,7 +617,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 if (!$value->IsFullDate) {
                     if (!isset($timeKeepingByDate[$value->Date->format('Y-m-d')])) {
-                        $type = $type . ' - KXD';
+                        $type = $type . ' - ' . self::UNKNOWN;
                         $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                     } else {
                         $timeKeeping = $timeKeepingByDate[$value->Date->format('Y-m-d')];
@@ -632,7 +635,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         if ($checkIn <= $startTime && $checkOut >= $endTime) {
                             $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
                         } else {
-                            $type = $type . ' - KXD';
+                            $type = $type . ' - ' . self::UNKNOWN;
                             $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                         }
 
@@ -925,10 +928,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $period = Carbon::create($attributes['startDate'])->daysUntil($attributes['endDate']);
         $period->setLocale('vi_VN');
         $params['[[date]]'][] = iterator_to_array($period->map(function (Carbon $date) use (&$init_value, &$month) {
-            $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+            $check = Carbon::parse($date)->setTimezone('GMT+7');
 
             $month[] = 'Tháng ' . $date->format('m');
-            if ($check === 'Saturday' || $check === 'Sunday') {
+            if ($check->isSaturday() || $check->isSunday()) {
                 $init_value[$date->format('Y-m-d')] = ''; // cuối tuần
             } else {
                 $init_value[$date->format('Y-m-d')] = '-';
@@ -1120,5 +1123,61 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         ];
 
         return $this->excelExporterServices->export('timekeeping_report', $params, $callbacks, $events);
+    }
+
+    public function calculatorManualCalculation($employee, $startDate, $endDate, $responseTimeKeepingUser)
+    {
+        $manualCalculation = $employee->manualCalculation()->where('Date', '>=', $startDate)->where('Date', '<=', $endDate)->get();
+
+        foreach ($manualCalculation as $value) {
+            $date = Carbon::parse($value->Date);
+
+            $check = Carbon::parse($date->format('Y-m-d'))->setTimezone('GMT+7');
+
+            if ($check->isSaturday() || $check->isSunday()) {
+                $timekeepingReport = 0;
+            } else {
+                $timekeepingReport = 1;
+            }
+            $changeKey = array_flip(ManualCalculation::TYPE);
+
+            switch ($value->Type) {
+                case ManualCalculation::TYPE['X']:
+                    $type = $changeKey[1];
+                    break;
+                case ManualCalculation::TYPE['K']:
+                    $timekeepingReport = 0;
+                    $type = $changeKey[2];
+                    break;
+                case ManualCalculation::TYPE['F']:
+                    $type = $changeKey[3];
+                    break;
+                case ManualCalculation::TYPE['X/2']:
+                    $type = $changeKey[5];
+                    break;
+                case ManualCalculation::TYPE['K/2']:
+                    $timekeepingReport = 0.5;
+                    $type = $changeKey[6];
+                    break;
+                case ManualCalculation::TYPE['F/2']:
+                    $timekeepingReport = 0.5;
+                    $type = $changeKey[7];
+                    break;
+            }
+
+            foreach ($responseTimeKeepingUser as $key => $valueUser) {
+
+                if ($valueUser['type'] == self::UNKNOWN && $date->format('Y-m-d') == $valueUser['date']) {
+                    unset($responseTimeKeepingUser[$key]);
+                    $responseTimeKeepingUser[$key] = [
+                        'date' => $date->format('Y-m-d'),
+                        'timekeepingReport' => $timekeepingReport,
+                        'type' => $type,
+                    ];
+                }
+            }
+        }
+
+        return array_values($responseTimeKeepingUser);
     }
 }

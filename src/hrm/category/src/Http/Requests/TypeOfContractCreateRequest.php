@@ -24,10 +24,28 @@ class TypeOfContractCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:TypeOfContracts,Name',
-            'code' => 'required|string|unique:TypeOfContracts,Code',
-            'name' => 'required',
+            'name' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $typeOfContract = \GGPHP\Category\Models\TypeOfContract::where('Name', $value)->first();
+
+                    if (!is_null($typeOfContract)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $typeOfContract = \GGPHP\Category\Models\TypeOfContract::where('Code', $value)->first();
+
+                    if (!is_null($typeOfContract)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
             'month' => 'required',
+            'year' => 'required',
             'paramValue' => 'required|array',
             // "paramFormula" => 'required|array',
         ];

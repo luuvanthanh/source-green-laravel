@@ -17,10 +17,13 @@ class CreateAppointsTable extends Migration
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('DecisionNumber');
-            $table->string('DecisionDate');
+            $table->date('DecisionDate')->nullable();
+            $table->date('TimeApply')->nullable();
+            $table->string('File', 1000)->nullable();
             $table->string('Reason')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

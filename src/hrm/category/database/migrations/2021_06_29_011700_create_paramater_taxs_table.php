@@ -24,7 +24,7 @@ class CreateParamaterTaxsTable extends Migration
             $table->date('ApplyDate');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

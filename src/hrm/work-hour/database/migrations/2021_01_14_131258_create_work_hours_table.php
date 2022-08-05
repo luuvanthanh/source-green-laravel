@@ -17,12 +17,13 @@ class CreateWorkHoursTable extends Migration
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->uuid('EmployeeId');
-            $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('Date');
             $table->json('Hours');
             $table->string('Reason')->nullable();
+            $table->uuid('AbsentTypeId')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

@@ -26,9 +26,9 @@ class DivisionUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $division = Division::where('Name', $value)->where('Id', '!=', request()->division)->first();
+                    $division = Division::where('Name', $value)->where('Id', '!=', $this->route('division'))->first();
 
                     if (!is_null($division)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -36,15 +36,16 @@ class DivisionUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $division = Division::where('Code', $value)->where('Id', '!=', request()->division)->first();
+                    $division = Division::where('Code', $value)->where('Id', '!=', $this->route('division'))->first();
 
                     if (!is_null($division)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
                     }
                 },
             ],
+            'note' => 'nullable|max:255'
         ];
     }
 }

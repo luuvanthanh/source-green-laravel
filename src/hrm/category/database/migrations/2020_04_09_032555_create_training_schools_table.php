@@ -18,11 +18,11 @@ class CreateTrainingSchoolsTable extends Migration
             $table->primary('Id');
             $table->string('Code');
             $table->string('Name');
-            $table->string('Address')->nullanle();
-            $table->boolean('Category')->default(0);
+            $table->string('Address')->nullable();
+            $table->string('Category')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            $table->softDeletes('DeletedAt', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

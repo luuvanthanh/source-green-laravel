@@ -2,6 +2,7 @@
 
 namespace GGPHP\Users\Http\Requests;
 
+use GGPHP\Users\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserCreateRequest extends FormRequest
@@ -23,9 +24,13 @@ class UserCreateRequest extends FormRequest
      */
     public function rules()
     {
+        $type = implode(',', array_keys(User::CATEGORY));
+
         return [
+            'code' => 'unique:Employees,Code',
             'email' => 'unique:Employees,Email',
             'fullName' => 'required|string',
+            'category' => 'required|in:' . $type
         ];
     }
 }

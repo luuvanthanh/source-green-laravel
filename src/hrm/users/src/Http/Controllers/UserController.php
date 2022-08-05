@@ -44,6 +44,10 @@ class UserController extends Controller
             $attributes['status'] = $newStatus;
         }
 
+        if (!empty($attributes['category'])) {
+            $attributes['category'] = User::CATEGORY[$attributes['category']];
+        }
+
         $employees = $this->employeeRepository->getUser($attributes);
 
         return $this->success($employees, trans('lang::messages.common.getListSuccess'));
@@ -61,6 +65,10 @@ class UserController extends Controller
 
         if (!empty($attributes['status'])) {
             $attributes['status'] = User::STATUS[$attributes['status']];
+        }
+
+        if (!empty($attributes['category'])) {
+            $attributes['category'] = User::CATEGORY[$attributes['category']];
         }
 
         $employee = $this->employeeRepository->create($attributes);
@@ -93,6 +101,10 @@ class UserController extends Controller
 
         if (!empty($attributes['status'])) {
             $attributes['status'] = User::STATUS[$attributes['status']];
+        }
+
+        if (!empty($attributes['category'])) {
+            $attributes['category'] = User::CATEGORY[$attributes['category']];
         }
 
         $employee = $this->employeeRepository->update($attributes, $id);

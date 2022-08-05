@@ -2,6 +2,7 @@
 
 namespace GGPHP\Users\Http\Requests;
 
+use GGPHP\Users\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserUpdateRequest extends FormRequest
@@ -23,18 +24,10 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $type = implode(',', array_keys(User::CATEGORY));
 
         return [
-            'name' => [
-                'string',
-                function ($attribute, $value, $fail) {
-                    $shift = LabourContract::where('ContractNumber', $value)->where('Id', '!=', request()->id)->first();
-
-                    if (!is_null($shift)) {
-                        return $fail('Số hợp đồng đã tồn tại.');
-                    }
-                },
-            ],
+            'category' => 'nullable|in:' . $type
         ];
     }
 }

@@ -35,7 +35,7 @@ class BranchController extends Controller
     {
         $branch = $this->branchRepository->create($request->all());
 
-        return $this->success([], trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED, 'isShowData' => false]);
+        return $this->success($branch, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED, 'isShowData' => false]);
     }
 
     /**
@@ -76,7 +76,7 @@ class BranchController extends Controller
     {
         $branch = $this->branchRepository->update($request->all(), $id);
 
-        return $this->success([], trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+        return $this->success($branch, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }
 
     /**

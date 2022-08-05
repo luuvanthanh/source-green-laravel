@@ -68,7 +68,7 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
 
             \DB::commit();
         } catch (\Exception $e) {
-
+            dd($e);
             \DB::rollback();
         }
 

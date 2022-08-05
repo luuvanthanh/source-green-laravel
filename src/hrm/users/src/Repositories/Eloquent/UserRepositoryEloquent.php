@@ -84,7 +84,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         if (!empty($attributes['status'])) {
-            $this->model = $this->model->where('Status', $attributes['status']);
+            $this->model = $this->model->whereIn('Status', $attributes['status']);
         } else {
             $this->model = $this->model->status(User::STATUS['WORKING']);
         }
@@ -99,6 +99,10 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             })->whereDoesntHave('probationaryContract', function ($query) use ($now) {
                 $query->where('ContractTo', '>', $now);
             });
+        }
+
+        if (isset($attributes['category'])) {
+            $this->model = $this->model->where('Category', $attributes['category']);
         }
 
         if (empty($attributes['limit'])) {
@@ -122,12 +126,17 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 'file_image' => $user->FileImage
             ];
 
-            $employeeCrm = CrmService::createEmployee($data);
+            // $employeeCrm = CrmService::createEmployee($data);
 
-            if (isset($employeeCrm->data->id)) {
-                $user->EmployeeIdCrm = $employeeCrm->data->id;
-                $user->update();
+            // if (isset($employeeCrm->data->id)) {
+            //     $user->EmployeeIdCrm = $employeeCrm->data->id;
+            //     $user->update();
+            // }
+
+            if (!empty($attributes['typeTeacher'])) {
+                $user->typeTeacher()->attach($attributes['typeTeacher']);
             }
+
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -145,15 +154,19 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
             $user->update($attributes);
 
-            $data = [
-                'full_name' => $user->FullName,
-                'employee_id_hrm' => $user->Id,
-                'file_image' => $user->FileImage
-            ];
-            $employeeIdCrm = $user->EmployeeIdCrm;
+            // $data = [
+            //     'full_name' => $user->FullName,
+            //     'employee_id_hrm' => $user->Id,
+            //     'file_image' => $user->FileImage
+            // ];
+            // $employeeIdCrm = $user->EmployeeIdCrm;
 
-            if (!is_null($employeeIdCrm)) {
-                CrmService::updateEmployee($data, $employeeIdCrm);
+            // if (!is_null($employeeIdCrm)) {
+            //     CrmService::updateEmployee($data, $employeeIdCrm);
+            // }
+
+            if (!empty($attributes['typeTeacher'])) {
+                $user->typeTeacher()->attach($attributes['typeTeacher']);
             }
 
             \DB::commit();

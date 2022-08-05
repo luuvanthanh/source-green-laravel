@@ -19,10 +19,11 @@ class CreateInsurrancesTable extends Migration
             $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->string('InsurranceNumber');
-            $table->date('TimeJoin');
-            $table->date('TimeStart');
+            $table->date('TimeJoin')->nullable();
+            $table->date('TimeStart')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

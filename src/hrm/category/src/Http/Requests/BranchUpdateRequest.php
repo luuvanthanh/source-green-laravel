@@ -26,9 +26,9 @@ class BranchUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $branch = Branch::where('Name', $value)->where('Id', '!=', request()->branch)->first();
+                    $branch = Branch::where('Name', $value)->where('Id', '!=', $this->route('branch'))->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -36,15 +36,16 @@ class BranchUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
-                    $branch = Branch::where('Code', $value)->where('Id', '!=', request()->branch)->first();
+                    $branch = Branch::where('Code', $value)->where('Id', '!=', $this->route('branch'))->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
                     }
                 },
             ],
+            'note' => 'nullable|max:255'
         ];
     }
 }

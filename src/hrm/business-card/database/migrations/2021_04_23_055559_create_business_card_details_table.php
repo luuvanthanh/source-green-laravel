@@ -19,12 +19,14 @@ class CreateBusinessCardDetailsTable extends Migration
             $table->uuid('BusinessCardId');
             $table->foreign('BusinessCardId')->references('Id')->on('BusinessCards')->onDelete('cascade');
             $table->date('Date')->nullable();
-            $table->boolean('IsHalfTime')->default(false);
+            $table->boolean('IsFullDate')->default(true);
+            $table->string('ShiftCode')->nullable();
             $table->float('Number')->nullable();
             $table->time('StartTime')->nullable();
             $table->time('EndTime')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
+            $table->softDeletes('DeletionTime', 0);
         });
     }
 

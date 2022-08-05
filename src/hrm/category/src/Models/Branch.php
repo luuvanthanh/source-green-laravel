@@ -3,11 +3,9 @@
 namespace GGPHP\Category\Models;
 
 use GGPHP\Core\Models\UuidModel;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Branch extends UuidModel
 {
-    use SoftDeletes;
     public $incrementing = false;
 
     /**
@@ -21,7 +19,7 @@ class Branch extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Address', 'PhoneNumber', 'BranchIdCrm'
+        'Code', 'Name', 'Address', 'BranchIdCrm', 'Latitude', 'Longitude'
     ];
 
     /**
