@@ -459,6 +459,7 @@ const General = memo(
                       name="registerDate"
                       label="Ngày vào lớp"
                       type={variables.DATE_PICKER}
+                      disabled
                     />
                   </Pane>
                 </Pane>
