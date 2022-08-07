@@ -25,7 +25,7 @@ class PositionUpdateRequest extends FormRequest
     {
         return [
             'name' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
                     $position = \GGPHP\Category\Models\Position::where('Name', $value)->where('Id', '!=', $this->route('position'))->first();
 
@@ -35,7 +35,7 @@ class PositionUpdateRequest extends FormRequest
                 },
             ],
             'code' => [
-                'string',
+                'string', 'max:255',
                 function ($attribute, $value, $fail) {
                     $position = \GGPHP\Category\Models\Position::where('Code', $value)->where('Id', '!=', $this->route('position'))->first();
 
@@ -44,6 +44,7 @@ class PositionUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'note' => 'nullable|max:255'
         ];
     }
 }

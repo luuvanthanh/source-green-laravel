@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\Position;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PositionCreateRequest extends FormRequest
@@ -24,8 +25,27 @@ class PositionCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:Positions,Name',
-            'code' => 'required|string|unique:Positions,Code',
+            'name' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $position = Position::where('Name', $value)->first();
+
+                    if (!is_null($position)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $position = Position::where('Code', $value)->first();
+
+                    if (!is_null($position)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'note' => 'nullable|max:255'
         ];
     }
 }
