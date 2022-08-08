@@ -38,7 +38,7 @@ class fastManualCalculationCreateRequest extends FormRequest
 
         foreach ($data['data'] as $key => $value) {
 
-            $labourContract = LabourContract::where('EmployeeId', $value['employeeId'])->where('ContractFrom', '<=', $now)->where('ContractTo', '>=', $now)->first();
+            $labourContract = LabourContract::where('EmployeeId', $value['employeeId'])->where('ContractFrom', '<=', $now)->where('ContractTo', '>=', $now)->orWhere('ContractTo', null)->first();
             $probationaryContract = ProbationaryContract::where('EmployeeId', $value['employeeId'])->where('ContractFrom', '<=', $now)->where('ContractTo', '>=', $now)->first();
             $seasonalContract = SeasonalContract::where('EmployeeId', $value['employeeId'])->where('ContractFrom', '<=', $now)->where('ContractTo', '>=', $now)->first();
 

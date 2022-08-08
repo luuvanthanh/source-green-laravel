@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\TypeOfContract;
 use GGPHP\Profile\Http\Rules\ContractCreateRule;
 use GGPHP\Profile\Http\Rules\NumberFormContractRule;
 use GGPHP\Profile\Models\LabourContract;
@@ -75,7 +76,7 @@ class LabourContractCreateRequest extends FormRequest
                     }
                 },
             ],
-            'contractTo' => 'date',
+            'contractTo' => 'nullable|date',
             'positionId' => 'required|exists:Positions,Id',
             'work' => 'required|string',
             'workTime' => 'required|string',
@@ -97,6 +98,14 @@ class LabourContractCreateRequest extends FormRequest
 
         if (!empty($data['type'])) {
             $data['type'] = array_key_exists($data['type'], NumberFormContract::TYPE) ? NumberFormContract::TYPE[$data['type']] : 0;
+        }
+
+        if (!empty($data['typeOfContractId'])) {
+            $typeContract = TypeOfContract::find($data['typeOfContractId']);
+
+            if ($typeContract->IsUnlimited) {
+                $data['contractTo'] = null;
+            }
         }
 
         return $data;
