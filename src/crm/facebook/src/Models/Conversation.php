@@ -20,7 +20,7 @@ class Conversation extends UuidModel
         'READ' => 2
     ];
 
-    const FOLDER = ['inbox','other','page_done','spam'];
+    const FOLDER = ['page_done', 'inbox', 'other', 'spam'];
 
     protected $fillable = [
         'conversation_id_facebook', 'page_id', 'user_facebook_info_id', 'avatar', 'snippet', 'time', 'noti_inbox', 'status_send_message', 'from', 'to', 'show_conversation'

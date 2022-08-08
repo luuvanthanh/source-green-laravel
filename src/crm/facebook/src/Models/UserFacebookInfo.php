@@ -20,8 +20,11 @@ class UserFacebookInfo extends UuidModel
         'LEAD' => 1
     ];
 
+    const NAME_DEFAULT = 'Người dùng Facebook';
+
     protected $fillable = [
-        'user_id', 'user_name', 'user_email', 'user_phone', 'user_birth_date', 'user_address', 'status', 'customer_lead_id', 'user_full_name', 'note', 'avatar', 'sex', 'employee_facebook_id'
+        'user_id', 'user_name', 'user_email', 'user_phone', 'user_birth_date', 'user_address', 'status', 'customer_lead_id', 'user_full_name', 'note', 'avatar', 'sex', 'employee_facebook_id',
+        'conversation_id_facebook'
     ];
 
     public function conversation()
