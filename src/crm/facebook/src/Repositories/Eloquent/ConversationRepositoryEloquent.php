@@ -224,7 +224,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
                             if (count($value) == 1) {
                                 $pageId = self::conversationError($value, $conversationId);
                             } elseif (count($value) == 2) {
-                                $pageId = self::conversationNotError($value, $conversationId);
+                                $pageId = self::conversationNotError($value, $conversationId,$attributes);
                             }
                         } catch (\Throwable $th) {
                             $pageId = self::conversationGetAvatarUserError($value, $conversationId);
@@ -259,7 +259,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         return $pageId;
     }
 
-    public static function conversationNotError($value, $conversationId)
+    public static function conversationNotError($value, $conversationId,$attributes)
     {
         $attributes['user_id'] = $value[0]->id;
         $url = FacebookService::getAvatarUser($attributes);
