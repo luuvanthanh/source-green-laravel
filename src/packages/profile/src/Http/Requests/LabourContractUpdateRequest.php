@@ -75,10 +75,6 @@ class LabourContractUpdateRequest extends FormRequest
     {
         $data = parent::all($keys);
 
-        if (!empty($data['type'])) {
-            $data['type'] = array_key_exists($data['type'], NumberFormContract::TYPE) ? NumberFormContract::TYPE[$data['type']] : 0;
-        }
-
         if (!empty($data['typeOfContractId'])) {
             $typeContract = TypeOfContract::find($data['typeOfContractId']);
 
