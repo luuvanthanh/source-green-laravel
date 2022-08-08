@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class SynchronizeConversation implements ShouldQueue
+class StoreConversation implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -18,6 +18,7 @@ class SynchronizeConversation implements ShouldQueue
 
     protected $attributes;
 
+
     public function __construct($attributes)
     {
         $this->attributes = $attributes;
@@ -25,6 +26,6 @@ class SynchronizeConversation implements ShouldQueue
 
     public function handle()
     {
-        ConversationRepositoryEloquent::synchronizeConversation($this->attributes);
+        ConversationRepositoryEloquent::storeConversation($this->attributes);
     }
 }
