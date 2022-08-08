@@ -3,8 +3,10 @@
 namespace GGPHP\Profile\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\TypeOfContract;
 use GGPHP\Profile\Http\Rules\ContractUpdateRule;
 use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\NumberFormContract;
 use GGPHP\Profile\Models\ProbationaryContract;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -58,6 +60,7 @@ class LabourContractUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'contractTo' => 'nullable|date',
             'contractDate' => 'required|date|date_format:Y-m-d',
             'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
             'ordinalNumber' => [
@@ -66,5 +69,24 @@ class LabourContractUpdateRequest extends FormRequest
                 new ContractUpdateRule($labourContract, $this->numberForm, $this->labours_contract)
             ]
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+
+        if (!empty($data['type'])) {
+            $data['type'] = array_key_exists($data['type'], NumberFormContract::TYPE) ? NumberFormContract::TYPE[$data['type']] : 0;
+        }
+
+        if (!empty($data['typeOfContractId'])) {
+            $typeContract = TypeOfContract::find($data['typeOfContractId']);
+
+            if ($typeContract->IsUnlimited) {
+                $data['contractTo'] = null;
+            }
+        }
+
+        return $data;
     }
 }
