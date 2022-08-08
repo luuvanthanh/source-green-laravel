@@ -135,4 +135,9 @@ class CustomerLead extends UuidModel
     {
         return $this->hasMany(ManagerCall::class);
     }
+
+    public function historyCare()
+    {
+        return $this->hasMany(HistoryCare::class);
+    }
 }

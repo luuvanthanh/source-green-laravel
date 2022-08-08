@@ -44,7 +44,7 @@ class CustomerLeadTransformer extends BaseTransformer
         'eventInfo', 'customerTag', 'reference', 'studentInfo',
         'city', 'district', 'searchSource', 'statusCare', 'employee', 'customerPotential',
         'branch', 'townWard', 'marketingProgram', 'ssoAccount', 'statusLead', 'historyCall',
-        'statusLeadLatest', 'statusCareLatest', 'managerCall'
+        'statusLeadLatest', 'statusCareLatest', 'managerCall', 'historyCare'
     ];
 
     /**
@@ -200,5 +200,10 @@ class CustomerLeadTransformer extends BaseTransformer
     public function includeManagerCall(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->managerCall, new ManagerCallTransformer, 'ManagerCall');
+    }
+
+    public function includeHistoryCare(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->historyCare, new HistoryCareTransformer, 'HistoryCare');
     }
 }
