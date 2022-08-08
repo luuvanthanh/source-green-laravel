@@ -244,7 +244,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         $dataUserFacebookInfo = [
             'conversation_id_facebook' => $conversationId,
             'user_name' => UserFacebookInfo::NAME_DEFAULT,
-            'avatar' => URL::to('/') . '/images/avatar-default.jpg'
+            'avatar' => env('URL_CRM') . '/images/avatar-default.jpg'
         ];
 
         $dataPage = [
@@ -286,7 +286,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         $dataUserFacebookInfo = [
             'user_id' => $value[0]->id,
             'user_name' => $value[0]->name,
-            'avatar' => URL::to('/') . '/images/avatar-default.jpg'
+            'avatar' => env('URL_CRM') . '/images/avatar-default.jpg'
         ];
 
         $dataPage = [
