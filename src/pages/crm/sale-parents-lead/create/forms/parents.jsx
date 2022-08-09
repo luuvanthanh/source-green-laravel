@@ -503,18 +503,18 @@ const General = memo(
                   )}
                 </Pane>
               </Pane>
-              <Pane className="row p20  border-bottom">
-                <Heading type="form-title" style={{ marginBottom: 20 }}>
+              <Pane className="row p20 ">
+                <Heading type="form-title">
                   Người giới thiệu
                 </Heading>
               </Pane>
-                <Pane className="row">
+                <Pane className="row border-bottom">
                   <Pane className="col-lg-4">
                     <FormItem
                       label="Họ và tên"
                       name="presenter_full_name"
                       type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
                     />
                   </Pane>
                   <Pane className="col-lg-4">
@@ -537,7 +537,6 @@ const General = memo(
                       label="Số điện thoại"
                       name="presenter_phone"
                       type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY_INPUT]}
                     />
                   </Pane>
                 </Pane>
