@@ -56,6 +56,9 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('import-excel-customer-leads', 'CustomerLeadController@importExcelCustomerLead');
             \Route::get('template-excel-customer-leads', 'CustomerLeadController@templateExcelCustomerLead');
             \Route::resource('history-cares', 'HistoryCareController');
+
+            \Route::post('import-excel-customer-lead-old', 'CustomerLeadController@importExcelCustomerLeadOld');
+            \Route::get('template-excel-customer-lead-old', 'CustomerLeadController@templateExcelCustomerLeadOld');
         });
     }
 
