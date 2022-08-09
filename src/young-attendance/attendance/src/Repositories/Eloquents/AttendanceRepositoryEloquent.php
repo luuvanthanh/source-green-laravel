@@ -764,9 +764,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             }
             $result[$key] = $value;
         }
+        $array = collect($result)->sortBy('name')->toArray();
 
         return [
-            'data' => $result
+            'data' => array_values($array)
         ];
     }
 
