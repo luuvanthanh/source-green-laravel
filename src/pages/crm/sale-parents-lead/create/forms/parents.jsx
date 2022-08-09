@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { head, isEmpty, get } from 'lodash';
+import { head, isEmpty, get, omit } from 'lodash';
 import moment from 'moment';
 import { connect, history, withRouter } from 'umi';
 import PropTypes from 'prop-types';
@@ -20,6 +20,14 @@ const genders = [
   { id: 'FEMALE', name: 'Nữ' },
   // { id: 'OTHER', name: 'Khác' },
 ];
+
+const network = [
+  { id: 'facebook', name: 'Facebook' },
+  { id: 'zalo', name: 'Zalo' },
+  { id: 'skype', name: 'Skype' },
+  { id: 'instagram', name: 'Instagram' },
+];
+
 const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   loading,
   details: crmSaleLeadAdd.details,
@@ -30,14 +38,30 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   district: crmSaleLeadAdd.district,
   search: crmSaleLeadAdd.search,
   townWards: crmSaleLeadAdd.townWards,
+  detailsReferences: crmSaleLeadAdd.detailsReferences,
+  interest: crmSaleLeadAdd.interest,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search, branches, townWards }) => {
+  ({
+    dispatch,
+    loading: { effects },
+    match: { params },
+    details,
+    error,
+    city,
+    district,
+    search,
+    branches,
+    townWards,
+    detailsReferences,
+    interest,
+  }) => {
     const formRef = useRef();
     const [files, setFiles] = useState([]);
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
-      !!mounted?.current && setFunction && setFunction(value);
+    !!mounted?.current && setFunction && setFunction(value);
+    const [checkNetwork, setCheckNetwork] = useState("facebook");
     const loadingSubmit =
       effects[`crmSaleLeadAdd/ADD`] ||
       effects[`crmSaleLeadAdd/UPDATE`] ||
@@ -65,10 +89,12 @@ const General = memo(
           type: 'crmSaleLeadAdd/GET_DETAILS',
           payload: params,
         });
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_PROGRAM_INTEREST',
+          payload: {},
+        });
       }
     }, [params.id]);
-
-
     useEffect(() => {
       if (details.city_id) {
         dispatch({
@@ -79,13 +105,13 @@ const General = memo(
       if (details.district_id) {
         dispatch({
           type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
-          payload: details
+          payload: details,
         });
       }
       if (details.town_ward_id) {
         dispatch({
           type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
-          payload: details
+          payload: details,
         });
       }
       if (details.district_id) {
@@ -111,6 +137,26 @@ const General = memo(
           type: 'crmSaleLeadAdd/GET_DETAILS',
           payload: params,
         });
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_REFERENCES',
+          payload: { customer_lead_id: params.id },
+          callback: (response) => {
+            if (response) {
+              if (params.id) {
+                formRef.current.setFieldsValue({
+                  ...head(
+                    response.parsePayload.map((item) => ({
+                      presenter_full_name: item?.full_name,
+                      presenter_birth_date: moment(item?.birth_date),
+                      presenter_address: item?.address,
+                      presenter_phone: item?.phone,
+                    })),
+                  ),
+                });
+              }
+            }
+          },
+        });
       }
     }, [params.id]);
 
@@ -131,11 +177,79 @@ const General = memo(
         type: params.id ? 'crmSaleLeadAdd/UPDATE' : 'crmSaleLeadAdd/ADD',
         payload: params.id
           ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files) }
-          : { ...values, file_image: JSON.stringify(files) },
+          : {
+              ...values,
+              file_image: JSON.stringify(files),
+              ...omit(
+                values,
+                'presenter_full_name',
+                'presenter_birth_date',
+                'presenter_address',
+                'presenter_phone',
+                'marketing_program_id',
+                'network',
+              ),
+            },
         callback: (response, error) => {
           if (response) {
             history.goBack();
           }
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+      if (
+        values?.presenter_full_name ||
+        values?.presenter_birth_date ||
+        values?.presenter_address ||
+        values?.presenter_phone
+      ) {
+        dispatch({
+          type: 'crmSaleLeadAdd/ADD_REFERENCES',
+          payload: {
+            ...detailsReferences,
+            full_name: values?.presenter_full_name,
+            birth_date: values?.presenter_birth_date,
+            address: values?.presenter_address,
+            phone: values?.presenter_phone,
+            customer_lead_id: params.id,
+            id: params.id,
+          },
+          callback: (response, error) => {
+            if (error) {
+              if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                error.data.errors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: get(item, 'source.pointer'),
+                      errors: [get(item, 'detail')],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+      }
+      dispatch({
+        type: 'crmSaleLeadAdd/ADD_INTEREST',
+        payload: {
+          customer_lead_id: params.id,
+          marketing_program: values.marketing_program_id.map((item) => ({
+            marketing_program_id: item,
+          })),
+        },
+        callback: (response, error) => {
           if (error) {
             if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
               error.data.errors.forEach((item) => {
@@ -160,6 +274,7 @@ const General = memo(
       if (!isEmpty(details) && params.id) {
         formRef.current.setFieldsValue({
           ...details,
+          network: 'facebook',
           ...head(details.positionLevel),
           birth_date: details.birth_date && moment(details.birth_date),
           created_at: Helper.getDate(details?.created_at, variables.DATE_FORMAT.DATE_VI),
@@ -168,10 +283,43 @@ const General = memo(
           mountedSet(setFiles, JSON.parse(details?.file_image));
         }
       }
+        if (params.id && details.marketingProgram) {
+          formRef.current.setFieldsValue({
+              marketing_program_id: details.marketingProgram.map((i) => i.id),
+          });
+      }
     }, [details]);
 
     const uploadFiles = (file) => {
       mountedSet(setFiles, (prev) => [...prev, file]);
+    };
+
+    const onNetwork = (e) => {
+      setCheckNetwork(e);
+    };
+
+    const onFormNetWord = () => {
+      if(checkNetwork === "facebook") {
+        return (<Pane className="col-lg-4">
+        <FormItem name="facebook" label="Facebook" type={variables.INPUT} />
+      </Pane>);
+      }
+      if(checkNetwork === "zalo") {
+        return ( <Pane className="col-lg-4">
+        <FormItem name="zalo" label="Zalo" type={variables.INPUT} />
+      </Pane>);
+      }
+      if(checkNetwork === "skype") {
+        return ( <Pane className="col-lg-4">
+        <FormItem name="skype" label="Skype" type={variables.INPUT} />
+      </Pane>);
+      }
+      if(checkNetwork === "instagram") {
+        return ( <Pane className="col-lg-4">
+        <FormItem name="instagram" label="Instagram" type={variables.INPUT} />
+      </Pane>);
+      }
+      return "";
     };
 
     return (
@@ -247,11 +395,7 @@ const General = memo(
                   />
                 </Pane>
                 <Pane className="col-lg-12">
-                  <FormItem
-                    name="address"
-                    label="Địa chỉ"
-                    type={variables.INPUT}
-                  />
+                  <FormItem name="address" label="Địa chỉ" type={variables.INPUT} />
                 </Pane>
                 <Pane className="col-lg-4">
                   <FormItem
@@ -286,19 +430,19 @@ const General = memo(
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  <FormItem name="facebook" label="Facebook" type={variables.INPUT} />
+                  <FormItem
+                    options={['id', 'name']}
+                    data={network}
+                    placeholder="Chọn"
+                    name="network"
+                    type={variables.SELECT}
+                    label="Mạng xã hội"
+                    onChange={onNetwork}
+                  />
                 </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem name="zalo" label="Zalo" type={variables.INPUT} />
-                </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem name="skype" label="Skype" type={variables.INPUT} />
-                </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem name="instagram" label="Instagram" type={variables.INPUT} />
-                </Pane>
+                {onFormNetWord()}
               </Pane>
-              <Pane className="row" {...marginProps}>
+              <Pane className="row  border-bottom" {...marginProps}>
                 <Pane className="col-lg-4">
                   <FormItem name="name_company" label="Tên công ty" type={variables.INPUT} />
                 </Pane>
@@ -322,43 +466,106 @@ const General = memo(
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  {details?.manual_create || !params?.id ? <FormItem
-                    options={['id', 'name']}
-                    name="search_source_id"
-                    data={search}
-                    placeholder="Chọn"
-                    type={variables.SELECT}
-                    label="Nguồn tìm kiếm"
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                  /> : <FormItem
-                    options={['id', 'name']}
-                    name="search_source_id"
-                    data={search}
-                    placeholder="Chọn"
-                    type={variables.SELECT}
-                    label="Nguồn tìm kiếm"
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                    disabled
-                  />}
+                  {details?.manual_create || !params?.id ? (
+                    <FormItem
+                      options={['id', 'name']}
+                      name="search_source_id"
+                      data={search}
+                      placeholder="Chọn"
+                      type={variables.SELECT}
+                      label="Nguồn tìm kiếm"
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
+                  ) : (
+                    <FormItem
+                      options={['id', 'name']}
+                      name="search_source_id"
+                      data={search}
+                      placeholder="Chọn"
+                      type={variables.SELECT}
+                      label="Nguồn tìm kiếm"
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                      disabled
+                    />
+                  )}
                 </Pane>
                 <Pane className="col-lg-4">
-                  {
-                    params?.id ? 
-                      <FormItem
-                        placeholder=" "
-                        name="created_at"
-                        type={variables.SELECT}
-                        label="Ngày nhận data"
-                        disabled
-                      />
-                     : ""
-                    }
+                  {params?.id ? (
+                    <FormItem
+                      placeholder=" "
+                      name="created_at"
+                      type={variables.SELECT}
+                      label="Ngày nhận data"
+                      disabled
+                    />
+                  ) : (
+                    ''
+                  )}
                 </Pane>
               </Pane>
+              <Pane className="row p20  border-bottom">
+                <Heading type="form-title" style={{ marginBottom: 20 }}>
+                  Người giới thiệu
+                </Heading>
+              </Pane>
+                <Pane className="row">
+                  <Pane className="col-lg-4">
+                    <FormItem
+                      label="Họ và tên"
+                      name="presenter_full_name"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                    />
+                  </Pane>
+                  <Pane className="col-lg-4">
+                    <FormItem
+                      name="presenter_birth_date"
+                      label="Ngày sinh"
+                      type={variables.DATE_PICKER}
+                    />
+                  </Pane>
+                  <Pane className="col-lg-4">
+                    <FormItem
+                      label="Địa chỉ"
+                      name="presenter_address"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                    />
+                  </Pane>
+                  <Pane className="col-lg-4">
+                    <FormItem
+                      label="Số điện thoại"
+                      name="presenter_phone"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
+                  </Pane>
+                </Pane>
+              <Pane className="row p20">
+                <Heading type="form-title">
+                  Chương trình phụ huynh quan tâm
+                </Heading>
+              </Pane>
+                <Pane className="row pl20 pr20 pb20">
+                  <Pane className="col-lg-12">
+                    <FormItem
+                      data={interest}
+                      options={['id', 'name']}
+                      name="marketing_program_id"
+                      defaultValue={[details.marketingProgram]}
+                      placeholder="Chọn"
+                      type={variables.SELECT_MUTILPLE}
+                    />
+                  </Pane>
+                </Pane>
             </Pane>
 
             <Pane className="p20 d-flex justify-content-between align-items-center ">
-              <p className="btn-delete" role="presentation" onClick={() => history.push('/crm/sale/ph-lead')}>
+              <p
+                className="btn-delete"
+                role="presentation"
+                onClick={() => history.push('/crm/sale/ph-lead')}
+              >
                 Hủy
               </p>
               <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
@@ -384,12 +591,14 @@ General.propTypes = {
   district: PropTypes.arrayOf(PropTypes.any),
   search: PropTypes.arrayOf(PropTypes.any),
   townWards: PropTypes.arrayOf(PropTypes.any),
+  detailsReferences: PropTypes.objectOf(PropTypes.any),
+  interest: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => { },
+  dispatch: () => {},
   loading: {},
   error: {},
   branches: [],
@@ -398,6 +607,8 @@ General.defaultProps = {
   district: [],
   search: [],
   townWards: [],
+  detailsReferences: {},
+  interest: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));

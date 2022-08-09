@@ -36,6 +36,8 @@ export default {
     townWards: [],
     categoryEvents: [],
     eventDetails: {},
+    historyDetails: {},
+    history: [],
   },
   reducers: {
     SET_BRANCHESS: (state, { payload }) => ({
@@ -49,6 +51,7 @@ export default {
       data: [],
       events: [],
       calendar: [],
+      history: [],
     }),
     SET_DATA: (state, { payload }) => ({
       ...state,
@@ -146,6 +149,14 @@ export default {
     SET_EVENTS_DETAILS: (state, { payload }) => ({
       ...state,
       eventDetails: payload.parsePayload,
+    }),
+    SET_HISTORY_DETAILS: (state, { payload }) => ({
+      ...state,
+      historyDetails: payload.parsePayload,
+    }),
+    SET_HISTORY: (state, { payload }) => ({
+      ...state,
+      history: payload.parsePayload,
     }),
     SET_REFERENCES: (state, { payload }) => ({
       ...state,
@@ -381,6 +392,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *ADD_HISTORY({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addHistory, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *UPDATE_EVENTS({ payload, callback }, saga) {
       try {
         yield saga.call(services.updateEvents, payload);
@@ -389,9 +408,25 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *UPDATE_HISTORY({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateHistory, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *REMOVE_EVENTS({ payload, callback }, saga) {
       try {
         yield saga.call(services.removeEvents, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_HISTORY({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeHistory, payload.id);
         callback(payload);
       } catch (error) {
         callback(null, error);
@@ -423,6 +458,23 @@ export default {
         const response = yield saga.call(services.Events, payload);
         yield saga.put({
           type: 'SET_EVENTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *HISTORY({ payload }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.history, payload);
+        yield saga.put({
+          type: 'SET_HISTORY',
           payload: response,
         });
       } catch (error) {
@@ -597,6 +649,24 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_HISTORY({ payload, callback }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getHistory, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_HISTORY_DETAILS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },
