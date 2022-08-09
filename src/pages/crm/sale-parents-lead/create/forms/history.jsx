@@ -158,6 +158,16 @@ const General = memo(() => {
             });
         }
     };
+    
+    const onFormNumber = () => {
+        if(historyDetails?.quantity_care) {
+            return  historyDetails?.quantity_care;
+        } 
+        if(history?.length > 0) {
+                return head(history)?.quantity_care + 1;
+        }
+        return 1 ;
+    };
 
     const onFormTrue = () => (
         <>
@@ -182,7 +192,7 @@ const General = memo(() => {
                   <label className="ant-form-item-required">Số lần chăm sóc</label>
                 </div>
                 <Text size="normal" className={stylesModule['general-detail']}>
-                 {historyDetails?.quantity_care ? historyDetails?.quantity_care : head(history)?.quantity_care + 1}
+                 {onFormNumber()}
                 </Text>
               </div>
               <Pane className="col-lg-6">
