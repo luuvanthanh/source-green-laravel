@@ -377,6 +377,7 @@ export function Events(params = {}) {
 
 export function addReferences(data = {}) {
   return requestPost('/v1/references', {
+    prefix: API_URL_CRM,
     method: 'POST',
     data: {
       ...data,
@@ -388,8 +389,8 @@ export function addReferences(data = {}) {
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
-      cancelNotification: true,
     },
+    cancelNotification: true,
   });
 }
 

@@ -525,7 +525,7 @@ const General = memo(
           <div className="card">
             <div style={{ padding: 20 }} className="pb-0 border-bottom">
               <Heading type="form-title" style={{ marginBottom: 20 }}>
-                Lịch sử chăm sóc
+                Lịch sử cập nhập tình trạng
               </Heading>
               <div className="row">
                 <Pane className="col-lg-12">
