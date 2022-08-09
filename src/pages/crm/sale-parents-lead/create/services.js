@@ -1,4 +1,5 @@
 import request from '@/utils/requestCrm';
+import requestPost from '@/utils/request';
 
 import { Helper, variables } from '@/utils';
 
@@ -254,6 +255,31 @@ export function addEvents(data = {}) {
   });
 }
 
+export function addHistory(data = {}) {
+  return request('/v1/history-cares', {
+    method: 'POST',
+    data: {
+      ...data,
+      date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      hours: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.hours,
+        }),
+        format: Helper.getDate(data.hours, variables.DATE_FORMAT.HOUR),
+        isUTC: false, 
+      }),
+    },
+  });
+}
+
 export function updateEvents(data = {}) {
   return request(`/v1/event-infos/${data.id}`, {
     method: 'PUT',
@@ -278,8 +304,40 @@ export function updateEvents(data = {}) {
   });
 }
 
+export function updateHistory(data = {}) {
+  return request(`/v1/history-cares/${data.id}`, {
+    method: 'PUT',
+    data: {
+      ...data,
+      date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      hours: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.hours,
+        }),
+        format: Helper.getDate(data.hours, variables.DATE_FORMAT.HOUR),
+        isUTC: false, 
+      }),
+    },
+  });
+}
+
 export function removeEvents(id = {}) {
   return request(`/v1/event-infos/${id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}
+
+export function removeHistory(id = {}) {
+  return request(`/v1/history-cares/${id}`, {
     method: 'DELETE',
     parse: true,
   });
@@ -290,6 +348,13 @@ export function getEvents(params = {}) {
     method: 'GET',
   });
 }
+
+export function getHistory(params = {}) {
+  return request(`/v1/history-cares/${params}`, {
+    method: 'GET',
+  });
+}
+
 export function Events(params = {}) {
   return request(`/v1/event-infos`, {
     method: 'GET',
@@ -311,7 +376,8 @@ export function Events(params = {}) {
 }
 
 export function addReferences(data = {}) {
-  return request('/v1/references', {
+  return requestPost('/v1/references', {
+    prefix: API_URL_CRM,
     method: 'POST',
     data: {
       ...data,
@@ -324,6 +390,7 @@ export function addReferences(data = {}) {
         isUTC: false,
       }),
     },
+    cancelNotification: true,
   });
 }
 
@@ -416,9 +483,11 @@ export function getTownWards(params) {
 }
 
 export function addInterest(data = {}) {
-  return request('/v1/customer-lead-marketing-programs', {
+  return requestPost('/v1/customer-lead-marketing-programs', {
+    prefix: API_URL_CRM,
     method: 'POST',
     data,
+    cancelNotification: true,
   });
 }
 
@@ -438,5 +507,28 @@ export function addAccount(data = {}) {
   return request('/v1/customer-lead-accounts', {
     method: 'POST',
     data,
+  });
+}
+
+export function history(params = {}) {
+  return request(`/v1/history-cares`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      time: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.time,
+        }),
+        format: variables.DATE_FORMAT.HOUR,
+        isUTC: false,
+      }),
+      include: Helper.convertIncludes([
+        'customerLead',
+      ]),
+    },
   });
 }
