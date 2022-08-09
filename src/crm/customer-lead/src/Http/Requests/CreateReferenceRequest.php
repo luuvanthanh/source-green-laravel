@@ -24,11 +24,11 @@ class CreateReferenceRequest extends FormRequest
     public function rules()
     {
         return [
-            'full_name' => 'required|string',
-            'birth_date' => 'date_format:Y-m-d',
-            'phone' => 'required',
-            'address' => 'string',
-            'customer_lead_id' => 'required|exists:customer_leads,id'
+            'full_name' => 'nullable|string',
+            'birth_date' => 'nullable|date_format:Y-m-d',
+            'phone' => 'nullable',
+            'address' => 'nullable|string',
+            'customer_lead_id' => 'nullable|exists:customer_leads,id'
         ];
     }
 }
