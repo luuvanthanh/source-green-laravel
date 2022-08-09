@@ -9,18 +9,19 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
 // import { isEmpty } from 'lodash';
 import ParentsForm from './forms/parents';
-import Interlocutor from './forms/interlocutor';
 import StudentForm from './forms/student';
 import GeneralForm from './forms/general';
 import LeadStatusForm from './forms/lead-status';
 import AccountForm from './forms/account';
-import CallForm from './forms/call';
 import EmailForm from './forms/email';
-import SocialNetworkForm from './forms/social-network';
 import EventsForm from './forms/events';
 import TagsForm from './forms/tags';
 import CalendarForm from './forms/calendar';
-import InterestForm from './forms/interest';
+// import CallForm from './forms/call';
+// import SocialNetworkForm from './forms/social-network';
+// import Interlocutor from './forms/interlocutor';
+// import InterestForm from './forms/interest';
+import HistoryForm from './forms/history';
  
 import { menu, defaultKey } from './menu';
 
@@ -28,18 +29,19 @@ const { Item: MenuItem } = Menu;
 
 const forms = {
   parents: <ParentsForm />,
-  interlocutor: <Interlocutor />,
+  // interlocutor: <Interlocutor />,
   student: <StudentForm />,
   general: <GeneralForm />,
   leadStatus: <LeadStatusForm />,
   account: <AccountForm />,
-  call: <CallForm />,
+  // call: <CallForm />,
   email: <EmailForm />,
-  socialNetwork: <SocialNetworkForm />,
+  // socialNetwork: <SocialNetworkForm />,
   events: <EventsForm />,
   tags: <TagsForm />,
   calendar: <CalendarForm />,
-  interest : <InterestForm/>,
+  // interest : <InterestForm/>,
+  history : <HistoryForm/>,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {

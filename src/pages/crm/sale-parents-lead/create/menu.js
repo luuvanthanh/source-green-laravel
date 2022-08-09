@@ -4,10 +4,10 @@ export const menu = [{
     key: 'parents',
     label: 'Thông tin phụ huynh',
   },
-  {
-    key: 'interlocutor',
-    label: ' Người giới thiệu',
-  },
+  // {
+  //   key: 'interlocutor',
+  //   label: ' Người giới thiệu',
+  // },
   {
     key: 'student',
     label: 'Thông tin học sinh',
@@ -24,18 +24,18 @@ export const menu = [{
     key: 'account',
     label: 'Thông tin tài khoản',
   },
-  {
-    key: 'call',
-    label: 'Thông tin cuộc gọi',
-  },
+  // {
+  //   key: 'call',
+  //   label: 'Thông tin cuộc gọi',
+  // },
   {
     key: 'email',
     label: 'Thông tin email',
   },
-  {
-    key: 'socialNetwork',
-    label: 'Thông tin MXH',
-  },
+  // {
+  //   key: 'socialNetwork',
+  //   label: 'Thông tin MXH',
+  // },
   {
     key: 'events',
     label: 'Thông tin sự kiện',
@@ -48,8 +48,12 @@ export const menu = [{
     key: 'calendar',
     label: 'Lịch',
   },
+  // {
+  //   key: 'interest',
+  //   label: 'Chương trình quan tâm',
+  // },
   {
-    key: 'interest',
-    label: 'Chương trình quan tâm',
+    key: 'history',
+    label: 'Lịch sử chăm sóc',
   },
 ];
