@@ -38,11 +38,6 @@ const General = memo(() => {
     }));
     const loading = effects[`crmSaleLeadAdd/HISTORY`] || effects[`crmSaleLeadAdd/GET_EVENTS`];
 
-
-    
-   
-
-    
     const [historyDetails, setHistoryDetails] = useState({});
 
     const [modal, setModal] = useState(false);
@@ -187,7 +182,7 @@ const General = memo(() => {
                   <label className="ant-form-item-required">Số lần chăm sóc</label>
                 </div>
                 <Text size="normal" className={stylesModule['general-detail']}>
-                 {historyDetails?.quantity_care}
+                 {historyDetails?.quantity_care ? historyDetails?.quantity_care : head(history)?.quantity_care + 1}
                 </Text>
               </div>
               <Pane className="col-lg-6">
@@ -363,6 +358,7 @@ const General = memo(() => {
                     : { ...values, customer_lead_id: params.id },
                 callback: (response, error) => {
                     if (response) {
+                        setHistoryDetails({});
                         setModal(false);
                         dispatch({
                             type: 'crmSaleLeadAdd/HISTORY',
@@ -372,10 +368,13 @@ const General = memo(() => {
                         });
                         formRef.current.setFieldsValue({
                             date: undefined,
-                            time: undefined,
+                            hours: undefined,
                             name: undefined,
-                            category_event_id: undefined,
-                            location: undefined
+                            status: undefined,
+                            content_call: undefined,
+                            result_call: undefined,
+                            history_interactive: undefined,
+                            offline: undefined,
                         });
                     }
                     if (error) {
