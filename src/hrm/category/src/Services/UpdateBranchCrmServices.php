@@ -17,6 +17,7 @@ class UpdateBranchCrmService
             'branch_id_hrm' => $data->Id,
             'latitude' => $data->Latitude ? $data->Latitude : null,
             'longitude' => $data->Longitude ? $data->Longitude : null,
+            'city_id' => $data->CityId
         ];
         $result = Http::withToken($token)->put($url . '/' . $id, $payload);
 

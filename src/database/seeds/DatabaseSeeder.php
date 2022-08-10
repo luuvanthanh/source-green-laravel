@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(BranchesTableSeeder::class);
         // $this->call(PositionsTableSeeder::class);
         $this->call(ParameterFormulasTableSeeder::class);
-        $this->call(ParameterValuesTableSeeder::class);
+        // $this->call(ParameterValuesTableSeeder::class);
+        $this->call(CitysTableSeeder::class);
     }
 }

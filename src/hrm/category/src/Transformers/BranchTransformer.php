@@ -19,4 +19,15 @@ class BranchTransformer extends BaseTransformer
      * @var array
      */
     protected $defaultIncludes = [];
+
+    protected $availableIncludes = ['city'];
+
+    public function includeCity(Branch $branch)
+    {
+        if (is_null($branch->city)) {
+            return null;
+        }
+
+        return $this->item($branch->city, new CityTransformer, 'City');
+    }
 }

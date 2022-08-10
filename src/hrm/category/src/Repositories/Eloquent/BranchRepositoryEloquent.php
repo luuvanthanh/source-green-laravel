@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Repositories\Eloquent;
 
 use GGPHP\Category\Models\Branch;
+use GGPHP\Category\Models\City;
 use GGPHP\Category\Presenters\BranchPresenter;
 use GGPHP\Category\Repositories\Contracts\BranchRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
