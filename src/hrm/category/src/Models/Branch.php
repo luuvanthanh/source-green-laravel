@@ -19,7 +19,7 @@ class Branch extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Address', 'BranchIdCrm', 'Latitude', 'Longitude'
+        'Code', 'Name', 'Address', 'BranchIdCrm', 'Latitude', 'Longitude', 'CityId'
     ];
 
     /**
@@ -28,4 +28,9 @@ class Branch extends UuidModel
      * @var array
      */
     protected $hidden = [];
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'CityId');
+    }
 }
