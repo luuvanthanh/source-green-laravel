@@ -102,7 +102,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
                     $q2->where('IsForeigner', true);
                 }
-                
+
                 if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
                     $q2->where('IsForeigner', false);
                 }
@@ -126,22 +126,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $columnBasicSalaryAndAllowance = [];
         $columnIncurredAllowance = [];
 
-        $employees = User::with(['workHours' => function ($query) use ($startDate, $endDate) {
+        $employees = User::where('Status', User::STATUS['WORKING'])->whereHas('workHours', function ($query) use ($startDate, $endDate) {
             $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
-        }])->where('Status', User::STATUS['WORKING'])->with(['busRegistrations' => function ($query) use ($startDate, $endDate) {
-            $query->with(['busRegistrationDetail' => function ($q) use ($startDate, $endDate) {
-                $q->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
-            }]);
-        }])->when($endDate, function ($query, $endDate) {
-            return $query->where(function ($query) use ($endDate) {
-                $query->wherehas('labourContract', function ($query) use ($endDate) {
-                    $query->where('ContractFrom', '<=', $endDate)->where('ContractTo', '>=', $endDate);
-                })->wherehas('probationaryContract', function ($query) use ($endDate) {
-                    $query->where('ContractFrom', '<=', $endDate)->where('ContractTo', '>=', $endDate);
-                })->whereDoesntHave('resignationDecision', function ($query) use ($endDate) {
-                    $query->where('TimeApply', '<', $endDate);
-                });
-            });
+        })->orWhereHas('manualCalculation', function ($query) use ($startDate, $endDate) {
+            $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
         })->get();
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
