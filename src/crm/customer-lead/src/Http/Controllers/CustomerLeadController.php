@@ -9,6 +9,7 @@ use GGPHP\Crm\CustomerLead\Http\Requests\CreateEmployeeAssignmentRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\MoveCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\UpdateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Imports\CustomerLeadImport;
+use GGPHP\Crm\CustomerLead\Imports\CustomerLeadOldImport;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\StatusLead;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
@@ -197,5 +198,17 @@ class CustomerLeadController extends Controller
     public function templateExcelCustomerLead()
     {
         return Storage::disk('local')->download('excel-exporter/templates' . '/' . 'template-customer-lead.xlsx');
+    }
+
+    public function importExcelCustomerLeadOld()
+    {
+        Excel::import(new CustomerLeadOldImport(), request()->file('file'));
+
+        return $this->success(['data' =>  'Import thành công'], trans('lang::messages.common.createSuccess'));
+    }
+
+    public function templateExcelCustomerLeadOld()
+    {
+        return Storage::disk('local')->download('excel-exporter/templates' . '/' . 'template-data-old.xlsx');
     }
 }

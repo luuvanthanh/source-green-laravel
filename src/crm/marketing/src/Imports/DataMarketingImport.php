@@ -32,13 +32,15 @@ class DataMarketingImport implements ToModel, WithValidation, SkipsEmptyRows, Wi
         if (!is_null($row[1])) {
             $birthDate = Carbon::parse($row[1])->format('Y-m-d');
         }
-        $searchSource = SearchSource::where('type', $row[5])->first();
+        $searchSource = SearchSource::where('type', $row[6])->first();
         $data = [
             'full_name' => $row[0],
             'birth_date' => $birthDate,
             'sex' => $sex,
             'phone' => $row[3],
             'email' => $row[4],
+            'facebook' => $row[5],
+            'note' => $row[7],
             'search_source_id' => is_null($searchSource) ? null : $searchSource->id,
         ];
         $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
