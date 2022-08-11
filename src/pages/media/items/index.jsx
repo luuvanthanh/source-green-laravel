@@ -41,8 +41,8 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    sentDateFrom: query?.sentDateFrom || moment().startOf('months'),
-    sentDateTo: query?.sentDateTo || moment().endOf('months'),
+    sentDateFrom: query?.sentDateFrom || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    sentDateTo: query?.sentDateTo || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
     description: query?.description,
     branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId,

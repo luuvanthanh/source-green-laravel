@@ -563,7 +563,7 @@ const General = memo(
               <p
                 className="btn-delete"
                 role="presentation"
-                onClick={() => history.push('/crm/sale/ph-lead')}
+                onClick={() =>  history.goBack()}
               >
                 Hủy
               </p>
