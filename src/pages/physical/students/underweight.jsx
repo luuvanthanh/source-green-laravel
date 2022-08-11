@@ -23,7 +23,7 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { pagination, error, data },
+    { pagination, data },
     loading,
     { defaultBranch },
   ] = useSelector(({ loading: { effects }, physicalStudents, user }) => [
@@ -247,6 +247,7 @@ const Index = memo(() => {
         ...search,
         isUnderWeight: 'true',
       },
+      callback: () => {},
     });
     history.push({
       pathname,
@@ -336,7 +337,7 @@ const Index = memo(() => {
               columns={columns}
               dataSource={data}
               loading={loading['physicalStudents/GET_DATA']}
-              isError={error.isError}
+              // isError={error.isError}
               pagination={paginationTable(pagination)}
               rowKey={(record) => record?.student?.id}
               scroll={{ x: '100%' }}

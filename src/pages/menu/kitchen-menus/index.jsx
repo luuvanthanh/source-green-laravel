@@ -20,7 +20,7 @@ const Index = memo(() => {
   const [
     { pagination, error, data, branches, classTypes },
     loading,
-    { defaultBranch },
+    { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, kitchenMenus, user }) => [kitchenMenus, effects, user]);
 
   const history = useHistory();
@@ -28,7 +28,6 @@ const Index = memo(() => {
 
   const filterRef = useRef();
   const mounted = useRef(false);
-
   const [search, setSearch] = useState({
     ...query,
     branchId: query.branchId || defaultBranch?.id,
@@ -37,7 +36,6 @@ const Index = memo(() => {
     Month: query?.Month ? query?.Month : moment().startOf('month').format('MM'),
     Year: query?.Year ? query?.Year : Helper.getDate(moment(), variables.DATE_FORMAT.YEAR),
   });
-
 
   const onRemove = (id) => {
     Helper.confirmAction({
@@ -112,19 +110,17 @@ const Index = memo(() => {
     },
     {
       key: 'action',
-      width: 125,
+      width: `${user?.roleCode !== "sale" ? 125 : 80}`,
       fixed: 'right',
       render: (record) => (
         <div className="d-flex justify-content-end">
-          {
-            record?.status !== 'OFFICAL' && (
-              <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
-            )
-          }
+          {user?.roleCode !== "sale"  && (
+            <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
+          )}
           <Button
             color="primary"
             icon="edit"
-            className='ml10'
+            className="ml10"
             onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
           />
         </div>
@@ -216,14 +212,16 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Danh sách thực đơn</Heading>
-          <Button
-            className="ml-auto"
-            color="success"
-            icon="plus"
-            onClick={() => history.push(`${pathname}/tao-moi`)}
-          >
-            Tạo thực đơn
-          </Button>
+          {user?.roleCode !== "sale" && (
+            <Button
+              className="ml-auto"
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
+              Tạo thực đơn
+            </Button>
+          )}
         </Pane>
 
         <Pane className="card">
