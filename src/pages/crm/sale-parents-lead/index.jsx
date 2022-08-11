@@ -75,7 +75,17 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        district_id: query?.district_id,
+        branch_id: query?.branch_id,
+        search_source_id: query?.search_source_id,
+        status_lead: query?.status_lead,
+        status_type_lead: query?.status_type_lead,
+        employee_id: query?.employee_id,
+        full_name: query?.full_name,
+        tag_id: query?.tag_id,
         key: query?.key,
+        start_date: query?.start_date ? query?.start_date : null,
+        end_date: query?.end_date ? query?.end_date : null,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -562,7 +572,7 @@ class Index extends PureComponent {
 
   onChangeExcel = () => {
     Helper.exportExcelCRM(
-      `/v1/template-excel-customer-leads`, " ", `template-customer-lead.xlsx`,
+      `/v1/template-excel-customer-lead-old`, " ", `template-customer-lead.xlsx`,
     );
   };
 
@@ -656,7 +666,10 @@ class Index extends PureComponent {
                       ]}
                     >
                       <div>
-                        <Form layout="vertical" ref={this.formCheck}>
+                        <Form 
+                        layout="vertical" 
+                        ref={this.formCheck}
+                        >
                           <Pane className="row">
                             <Pane className="col-lg-12">
                               <FormItem
@@ -704,8 +717,10 @@ class Index extends PureComponent {
               </div>
               <div className={styles['block-table']}>
                 <Form
-                  initialValues={{
+                   initialValues={{
                     ...search,
+                    date: search.start_date &&
+                      search.end_date && [moment(search.start_date), moment(search.end_date)],
                   }}
                   layout="vertical"
                   ref={this.formRef}
@@ -722,7 +737,7 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         data={[{ name: 'Chọn tất cả Quận huyện', id: null }, ...district,]}
-                        name="district"
+                        name="district_id"
                         onChange={(event) => this.onChangeSelect(event, 'district_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -732,7 +747,7 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         data={[{ name: 'Chọn tất cả Cơ sở', id: null }, ...branch,]}
-                        name="branch"
+                        name="branch_id"
                         onChange={(event) => this.onChangeSelect(event, 'branch_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -742,7 +757,7 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         data={[{ name: 'Chọn tất cả Nguồn', id: null }, ...searchSource,]}
-                        name="search"
+                        name="search_source_id"
                         onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -771,7 +786,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        name="full_name"
+                        name="employee_id"
                         data={[
                           { fullName: 'Chọn tất cả nhân viên', employeeIdCrm: null },
                           { employeeIdCrm: 'null', fullName: 'Chưa có nhân viên chăm sóc' },
@@ -787,7 +802,7 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         data={[{ name: 'Chọn tất cả tags', id: null }, ...tags,]}
-                        name="tags"
+                        name="tag_id"
                         type={variables.SELECT}
                         onChange={(event) => this.onChangeSelect(event, 'tag_id')}
                         allowClear={false}

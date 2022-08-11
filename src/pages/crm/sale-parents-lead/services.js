@@ -1,5 +1,6 @@
 import request from '@/utils/requestCrm';
 import requestLavarel from '@/utils/requestLavarel';
+import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
@@ -9,7 +10,7 @@ export function get(data = {}) {
       ...data,
       limit: data.limit,
       page: data.page,
-      orderBy: 'created_at',
+      orderBy: 'created_at;full_name',
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
@@ -24,6 +25,7 @@ export function get(data = {}) {
         'customerTag.tag',
         'searchSource',
       ]),
+      ...omit(data, 'date'),
       employeeId: data.employeeId && data.employeeId.join(','),
     },
   });
@@ -118,7 +120,7 @@ export function importExcel(data = {}) {
   Object.keys(data).forEach((key) => {
     formData.append(key, data[key]);
   });
-  return request('/v1/import-excel-customer-leads', {
+  return request('/v1/import-excel-customer-lead-old', {
     method: 'POST',
     data: formData,
   });
