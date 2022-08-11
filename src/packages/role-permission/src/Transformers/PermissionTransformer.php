@@ -34,7 +34,6 @@ class PermissionTransformer extends BaseTransformer
 
     public function customAttributes($model): array
     {
-
         return [
             'name' => $model->name,
             'description' => $model->description,
@@ -43,7 +42,7 @@ class PermissionTransformer extends BaseTransformer
             'group_slug' => $model->group_slug,
             'created_at' => $model->created_at,
             'updated_at' => $model->updated_at,
-            'collection_id' => $model->pivot->collection_id,
+            'collection_id' => !is_null($model->pivot) ? $model->pivot->collection_id : $model->pivot,
         ];
     }
 

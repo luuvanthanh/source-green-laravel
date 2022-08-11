@@ -46,33 +46,6 @@ class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
     }
 
     /**
-     * Update permission for role
-     *
-     * @param array $attributes
-     * @return object
-     */
-    public function updatePermissionForRole(array $attributes)
-    {
-        //Add permission
-        if (!empty($attributes['data_new'])) {
-            foreach ($attributes['data_new'] as $value) {
-                $role = Role::find($value['role_id']);
-                $role->givePermissionTo($value['permission_id']);
-            }
-        }
-
-        //Remove permission
-        if (!empty($attributes['data_delete'])) {
-            foreach ($attributes['data_delete'] as $value) {
-                $role = Role::find($value['role_id']);
-                $role->revokePermissionTo($value['permission_id']);
-            }
-        }
-
-        return parent::all();
-    }
-
-    /**
      * create role
      *
      * @param array $attributes
@@ -80,10 +53,16 @@ class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
      */
     public function create(array $attributes)
     {
-        $role = Role::create($attributes);
+        \DB::beginTransaction();
+        try {
+            $role = Role::create($attributes);
 
-        if (!empty($attributes['permission_id'])) {
-            $role->givePermissionTo($attributes['permission_id']);
+            if (!empty($attributes['permission_id'])) {
+                $role->permissions()->sync($attributes['permission_id']);
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
         }
 
         return parent::find($role->id);
@@ -97,12 +76,20 @@ class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
      */
     public function update(array $attributes, $id)
     {
-        $role = Role::findOrFail($id);
+        \DB::beginTransaction();
 
-        $role->update($attributes);
+        try {
+            $role = Role::findOrFail($id);
 
-        if (!empty($attributes['permission_id'])) {
-            $role->syncPermissions($attributes['permission_id']);
+            $role->update($attributes);
+
+            if (!empty($attributes['permission_id'])) {
+                $role->permissions()->detach();
+                $role->permissions()->sync($attributes['permission_id']);
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
         }
 
         return parent::find($id);

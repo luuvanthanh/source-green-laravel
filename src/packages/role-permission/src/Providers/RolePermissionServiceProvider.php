@@ -15,7 +15,8 @@ class RolePermissionServiceProvider extends ServiceProvider
         }
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/config.php', 'constants'
+            __DIR__ . '/../../config/config.php',
+            'constants'
         );
     }
 
@@ -30,5 +31,4 @@ class RolePermissionServiceProvider extends ServiceProvider
         $this->app->bind(\GGPHP\RolePermission\Repositories\Contracts\PermissionRepository::class, \GGPHP\RolePermission\Repositories\Eloquent\PermissionRepositoryEloquent::class);
         //:end-bindings:
     }
-
 }

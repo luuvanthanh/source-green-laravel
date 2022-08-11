@@ -2,6 +2,8 @@
 
 namespace GGPHP\Users\Transformers;
 
+use GGPHP\Camera\Transformers\CameraTransformer;
+use GGPHP\Category\Transformers\TouristDestinationTransformer;
 use GGPHP\Collection\Transformers\CollectionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\RolePermission\Transformers\PermissionTransformer;
@@ -34,7 +36,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'roles', 'collection', 'permissionSystem', 'permissions', 'videoWalls', 'permissionsWithCollection'
+        'role', 'collection', 'videoWall', 'camera', 'touristDestination'
     ];
 
     /**
@@ -46,15 +48,29 @@ class UserTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        //get avatr
         $media = $model->getAvatar();
         $avatar = null;
 
         if (!is_null($media)) {
-            $avatar = $media->getFullUrl();
+            $avatar = [
+                'path' => $media->getPath(),
+                'name' => $media->name,
+            ];
+        }
+
+        //get status
+        $status = null;
+
+        foreach (User::STATUS as $key => $value) {
+            if ($value == $model->status) {
+                $status = $key;
+            }
         }
 
         return [
-            "avatar" => $avatar
+            'avatar' => $avatar,
+            'status' => $status,
         ];
     }
 
@@ -62,36 +78,9 @@ class UserTransformer extends BaseTransformer
      * Include Role
      * @param  User $user
      */
-    public function includeRoles(User $user)
+    public function includeRole(User $user)
     {
         return $this->collection($user->roles, new RoleTransformer, 'Role');
-    }
-
-    /**
-     * Include PermissionSystem
-     * @param  User $user
-     */
-    public function includePermissionSystem(User $user)
-    {
-        return $this->collection($user->permissionSystem(), new PermissionTransformer, 'PermissionSystem');
-    }
-
-    /**
-     * Include Permission
-     * @param  User $user
-     */
-    public function includePermissions(User $user)
-    {
-        return $this->collection($user->permissions, new PermissionTransformer, 'Permission');
-    }
-
-    /**
-     * Include PermissionsWithCollection
-     * @param  User $user
-     */
-    public function includePermissionsWithCollection(User $user)
-    {
-        return $this->collection($user->permissionsWithCollection($user->collection_id), new PermissionTransformer, 'Permission');
     }
 
     /**
@@ -109,8 +98,26 @@ class UserTransformer extends BaseTransformer
      * Include Role
      * @param  User $user
      */
-    public function includeVideoWalls(User $user)
+    public function includeVideoWall(User $user)
     {
         return $this->collection($user->videoWalls, new VideoWallTransformer, 'VideoWall');
+    }
+
+    /**
+     * Include Role
+     * @param  User $user
+     */
+    public function includeCamera(User $user)
+    {
+        return $this->collection($user->camera, new CameraTransformer, 'Camera');
+    }
+
+    /**
+     * Include Role
+     * @param  User $user
+     */
+    public function includeTouristDestination(User $user)
+    {
+        return $this->collection($user->touristDestination, new TouristDestinationTransformer, 'TouristDestination');
     }
 }

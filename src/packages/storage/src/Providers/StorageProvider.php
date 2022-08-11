@@ -15,24 +15,24 @@ class StorageProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/storage.php', 'filesystems');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/storage.php', 'filesystems');
 
         Storage::extend('minio', function ($app, $config) {
             $client = new S3Client([
                 'credentials' => [
-                    'key'    => $config["key"],
-                    'secret' => $config["secret"]
+                    'key' => $config['key'],
+                    'secret' => $config['secret']
                 ],
-                'region' => $config["region"],
-                'version' => "latest",
+                'region' => $config['region'],
+                'version' => 'latest',
                 'bucket_endpoint' => false,
                 'use_path_style_endpoint' => true,
-                'endpoint' => $config["endpoint"],
+                'endpoint' => $config['endpoint'],
             ]);
             $options = [
                 'override_visibility_on_copy' => true
             ];
-            return new Filesystem(new AwsS3Adapter($client, $config["bucket"], '', $options));
+            return new Filesystem(new AwsS3Adapter($client, $config['bucket'], '', $options));
         });
     }
 
@@ -45,7 +45,7 @@ class StorageProvider extends ServiceProvider
         // $this->app->register('GGPHP\Fingerprints\Providers\FingerprintProvider');
         // Register the main class to use with the facade
         // $this->app->singleton('users', function () {
-            // return new \Meisoft\Models\User;
+        // return new \Meisoft\Models\User;
         // });
     }
 
@@ -58,9 +58,10 @@ class StorageProvider extends ServiceProvider
      */
     protected function mergeConfigFrom($path, $key)
     {
-        if (! ($this->app instanceof CachesConfiguration && $this->app->configurationIsCached())) {
+        if (!($this->app instanceof CachesConfiguration && $this->app->configurationIsCached())) {
             $this->app['config']->set($key, array_merge_recursive(
-                $this->app['config']->get($key, []), require $path
+                $this->app['config']->get($key, []),
+                require $path
             ));
         }
     }

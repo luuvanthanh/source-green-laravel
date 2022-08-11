@@ -50,6 +50,13 @@ return [
         'nothingChange'        => 'Nothing to change.',
         'occurError'           => 'An error occurred.',
         'emptyDataSystem'      => 'No data in system. Please try again.',
+        'importExcelSuccess'      => 'Import excel success.',
+    ],
+    'status' => [
+        'enabled' => 'Đang hoạt động',
+        'stopped' => 'Đang tạm dừng',
+        'error' => 'Bị hư hỏng',
+        'unknow' => 'Không có tín hiệu',
     ],
     'email'  => [
         'reset' => [

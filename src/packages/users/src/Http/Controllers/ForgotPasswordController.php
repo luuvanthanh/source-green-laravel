@@ -41,9 +41,8 @@ class ForgotPasswordController extends Controller
         $token = $this->broker()->createToken($user);
         // send mail
         $email = $user->email;
-        $name = $user->name;
         $domainClient = env('RESET_PASSWORD_URL', 'http://localhost:11000/password/reset');
-        $urlReset = $domainClient . '?token=' . $token;
+        $urlReset = $domainClient . '?token=' . $token . '&email=' . $email;
 
         // send mail
         $dataMail = [

@@ -1,8 +1,11 @@
 <?php
+
 namespace GGPHP\Core\Models;
 
 use GGPHP\Core\Models\CoreModel;
 use Webpatser\Uuid\Uuid;
+
+use function GuzzleHttp\json_decode;
 
 class UuidModel extends CoreModel
 {
@@ -16,5 +19,25 @@ class UuidModel extends CoreModel
         static::creating(function ($model) {
             $model->{$model->getKeyName()} = Uuid::generate(4)->string;
         });
+    }
+
+    /**
+     * Cancel Fault.
+     *
+     * @param object $entity
+     * @param array $images
+     * @param string $collection
+     */
+    public function addMediaToEntity($entity, $images = [], $collection = 'files')
+    {
+        foreach ($images as $image_path) {
+            $fileName = isset($image_path['file_name']) ? $image_path['file_name'] : 'file_name';
+            $vector = isset($image_path['vector']) ? $image_path['vector'] : [];
+
+            $entity->addMediaFromDisk($image_path['path'])->usingName($fileName)
+                ->withCustomProperties([
+                    'vector' => json_encode($vector)
+                ])->preservingOriginal()->toMediaCollection($collection);
+        }
     }
 }

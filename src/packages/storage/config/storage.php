@@ -8,7 +8,7 @@ return [
             'key' => env('MINIO_KEY', 'minio'),
             'secret' => env('MINIO_SECRET', 'minio123'),
             'region' => '',
-            'bucket' => env('MINIO_BUCKET', 'erptran'),
+            'bucket' => env('MINIO_BUCKET', 'dltm'),
             'endpoint' => env('MINIO_ENDPOINT', 'http://s3:9000'),
         ],
     ],

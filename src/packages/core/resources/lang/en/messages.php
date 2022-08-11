@@ -51,6 +51,13 @@ return [
         'occurError'           => 'An error occurred.',
         'emptyDataSystem'      => 'No data in system. Please try again.',
     ],
+    'status' => [
+        'ready'   => 'Ready',
+        'started' => 'Started',
+        'running' => 'Running',
+        'stopped' => 'Stopped',
+        'failed'  => 'Failed',
+    ],
     'email'  => [
         'reset' => [
             'subject' => 'Request your URL change password',

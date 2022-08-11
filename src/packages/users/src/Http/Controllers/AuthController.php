@@ -3,14 +3,20 @@
 namespace GGPHP\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use GGPHP\Users\Http\Requests\EgovLoginRequest;
+use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthController extends Controller
 {
+
+
     /**
      * @var UserRepository
      */
@@ -43,7 +49,13 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        if (!empty($request->player_id)) {
+            $this->userRepository->deletePlayer($request->player_id, $request->user()->id);
+        }
+
         $request->user()->token()->revoke();
+        // $request->session()->flush();
+
         return $this->success([], trans('lang::messages.auth.logoutSuccess'), ['isShowData' => false]);
     }
 
@@ -104,5 +116,39 @@ class AuthController extends Controller
     protected function guard()
     {
         return Auth::guard('api');
+    }
+
+    /**
+     * authenticated
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function authenticated(Request $request)
+    {
+        $user = $this->userRepository->find(Auth::id());
+        return $this->success($user, trans('lang::messages.common.getInfoSuccess'));
+    }
+
+    public function egovLogin(Request $request)
+    {
+        $cas = app('cas');
+        try {
+            $cas->authenticate();
+
+            $userEgov = $cas->user();
+            $user = User::where('email', $userEgov)->first();
+
+            if (is_null($user)) {
+                $request->session()->flush();
+                throw new HttpException(500, 'Người dùng không có quyền truy cập vào hệ thống!');
+            }
+
+            $objToken = $user->createToken('token-egov');
+            $strToken = $objToken->accessToken;
+
+            return redirect(env('WEB_CALL_BACK_LOGIN_EGOV') . '?token=' . $strToken);
+        } catch (\Throwable $th) {
+            throw new HttpException(500, 'Đăng nhập egov không thành công!');
+        }
     }
 }

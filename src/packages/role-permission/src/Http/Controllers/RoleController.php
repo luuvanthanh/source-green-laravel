@@ -5,6 +5,7 @@ namespace GGPHP\RolePermission\Http\Controllers;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\RolePermission\Http\Requests\RoleAssignPermissionRequest;
 use GGPHP\RolePermission\Http\Requests\RoleCreateRequest;
+use GGPHP\RolePermission\Http\Requests\RoleDeleteRequest;
 use GGPHP\RolePermission\Http\Requests\RoleUpdateRequest;
 use GGPHP\RolePermission\Repositories\Contracts\RoleRepository;
 use Illuminate\Http\Request;
@@ -96,24 +97,10 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(RoleDeleteRequest $request, $id)
     {
         $this->roleRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
-    }
-
-    /**
-     * Assign permissions to role
-     *
-     * @param RoleAssignPermissionRequest $request
-     * @param type $id
-     * @return type
-     */
-    public function updatePermissionForRole(RoleAssignPermissionRequest $request)
-    {
-        $roles = $this->roleRepository->updatePermissionForRole($request->all());
-
-        return $this->success($roles, trans('lang::messages.common.getInfoSuccess'));
     }
 }

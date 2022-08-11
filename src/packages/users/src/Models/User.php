@@ -2,7 +2,10 @@
 
 namespace GGPHP\Users\Models;
 
+use GGPHP\Camera\Models\Camera;
+use GGPHP\Category\Models\TouristDestination;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Notification\Models\Player;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -10,6 +13,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
@@ -30,12 +34,18 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
         Authorizable,
         CanResetPassword,
         MustVerifyEmail,
-        InteractsWithMedia;
+        InteractsWithMedia,
+        SoftDeletes;
 
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('avatar')->singleFile();
     }
+
+    const STATUS = [
+        'ACTIVITY' => 0,
+        'LOCK' => 1,
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -43,8 +53,10 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
      * @var array
      */
     protected $fillable = [
-        'full_name', 'email', 'password', 'phone', 'status', 'created_at', 'updated_at',
+        'full_name', 'email', 'password', 'phone', 'status', 'is_first_login', 'unit_id',
+        'is_all_tourist_destination', 'is_all_camera'
     ];
+
     protected $guard_name = 'api';
     protected $appends = ['rolesName'];
 
@@ -62,6 +74,11 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
      */
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    protected $casts = [
+        'is_all_tourist_destination' => 'boolean',
+        'is_all_camera' => 'boolean'
     ];
 
     /**
@@ -85,7 +102,7 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
      */
     public function collection()
     {
-        return $this->belongsToMany(\GGPHP\Collection\Models\Collection::class, 'user_collections');
+        return $this->belongsToMany(\GGPHP\Collection\Models\Collection::class, 'user_collection');
     }
 
     /**
@@ -99,22 +116,6 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
     }
 
     /**
-     * Get permission system
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function permissionSystem()
-    {
-        $permissions = new Collection();
-
-        foreach ($this->roles as $role) {
-            $permissions = $permissions->merge($role->permissions);
-        }
-
-        return $permissions->merge($this->permissions()->where('collection_id', 0)->get());
-    }
-
-    /**
      * Get the video walls for the user
      */
     public function videoWalls()
@@ -123,52 +124,26 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
     }
 
     /**
-     * A model may have multiple direct permissions.
+     * Define relations player
      */
-    public function permissions(): BelongsToMany
+    public function players()
     {
-        return $this->morphToMany(
-            config('permission.models.permission'),
-            'model',
-            config('permission.table_names.model_has_permissions'),
-            config('permission.column_names.model_morph_key'),
-            'permission_id'
-        )->withPivot('collection_id');
+        return $this->hasMany(Player::class);
     }
 
     /**
-     * A model may have multiple direct permissions with collection.
+     * Define relations player
      */
-    public function permissionsWithCollection($collectionId)
+    public function touristDestination()
     {
-        return $this->permissions()->where('collection_id', $collectionId)->get();
+        return $this->belongsToMany(TouristDestination::class, 'tourist_destination_user', 'user_id', 'tourist_destination_id');
     }
 
     /**
-     * Add scope filter user by request params
-     *
-     * @param type $query
-     * @param type $request
-     * @return type
+     * Define relations player
      */
-    public function scopeByFilter($query, $request)
+    public function camera()
     {
-        // Filter by collection
-        if ($request->has('collection_id')) {
-            $collectionId = $request->collection_id;
-            $query->whereHas('collection', function ($query) use ($collectionId) {
-                return $query->where('collection_id', $collectionId);
-            });
-        }
-
-        // Filter by role
-        if ($request->has('role_id')) {
-            $roleId = explode(',', $request->role_id);
-            $query->whereHas('roles', function ($query) use ($roleId) {
-                $query->whereIn('role_id', $roleId);
-            });
-        }
-
-        return $query;
+        return $this->belongsToMany(Camera::class, 'camera_user', 'user_id', 'camera_id');
     }
 }

@@ -2,7 +2,8 @@
 
 namespace GGPHP\Users\Repositories\Eloquent;
 
-use GGPHP\Storage\Services\StorageService;
+use GGPHP\Notification\Models\Player;
+use GGPHP\RolePermission\Models\Role;
 use GGPHP\Users\Jobs\SendEmail;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
-use Spatie\Permission\Models\Role;
 
 /**
  * Class UserRepositoryEloquent.
@@ -63,54 +63,45 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      *
      * @param type $request
      */
-    public function listing($request)
+    public function listing($attributes)
     {
-        // Add scope filter
-        $this->scopeQuery(function ($query) use ($request) {
-            return $query->byFilter($request);
-        });
 
-        if (empty($request->limit)) {
+        // Filter by key
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('full_name', $attributes['key']);
+                $query->orWhereLike('email', $attributes['key']);
+            });
+        }
+
+        // Filter by status
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->whereIn('status', $attributes['status']);
+        }
+
+        // Filter by collection
+        if (!empty($attributes['collection_id'])) {
+            $collectionId = $attributes['collection_id'];
+            $this->model = $this->model->whereHas('collection', function ($query) use ($collectionId) {
+                return $query->where('collection_id', $collectionId);
+            });
+        }
+
+        // Filter by role
+        if (!empty($attributes['role_id'])) {
+            $roleId = explode(',', $attributes['role_id']);
+            $this->model = $this->model->whereHas('roles', function ($query) use ($roleId) {
+                $query->whereIn('role_id', $roleId);
+            });
+        }
+
+        if (empty($attributes['limit'])) {
             $users = $this->all();
         } else {
-            $users = $this->paginate($request->limit);
+            $users = $this->paginate($attributes['limit']);
         }
 
         return $users;
-    }
-
-    /**
-     * Update role user
-     * @param  array  $attributes attributes from request
-     * @param  string  $id id from request
-     * @return object
-     */
-    public function updateRoleUser(array $attributes, $id)
-    {
-        $user = $this->model()::find($id);
-
-        if (!empty($attributes['roles'])) {
-            $user->syncRoles($attributes['roles']);
-        }
-
-        return parent::find($id);
-    }
-
-    /**
-     * Update permission user
-     * @param  array  $attributes attributes from request
-     * @param  string  $id id from request
-     * @return object
-     */
-    public function updatePermissionUser(array $attributes, $id)
-    {
-        $user = $this->model()::find($id);
-
-        if (!empty($attributes['permission_id'])) {
-            $user->syncPermissions($attributes['permission_id']);
-        }
-
-        return parent::find($id);
     }
 
     /**
@@ -130,11 +121,15 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         }
 
         if (!empty($attributes['role_id'])) {
-            $user->assignRole($attributes['role_id']);
+            $user->roles()->sync($attributes['role_id']);
         }
 
-        if (!empty($attributes['permission_id'])) {
-            $user->assignPermissions($attributes['permission_id']);
+        if (!empty($attributes['tourist_destination_id'])) {
+            $user->touristDestination()->sync($attributes['tourist_destination_id']);
+        }
+
+        if (!empty($attributes['camera_id'])) {
+            $user->camera()->sync($attributes['camera_id']);
         }
 
         // send mail
@@ -144,6 +139,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             'password' => $password,
             'url_login' => env('LOGIN_URL', 'http://localhost:11005/login'),
         ];
+
         dispatch(new SendEmail($dataMail, 'NOTI_PASSWORD'));
 
         return parent::find($user->id);
@@ -154,7 +150,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      * @param  array  $attributes attributes from request
      * @return object
      */
-    public function updateProfile(array $attributes, $id)
+    public function update(array $attributes, $id)
     {
         $user = $this->model()::findOrFail($id);
 
@@ -165,27 +161,80 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         $user->update($attributes);
 
         // Check if avatar null, remove avatar
-        if (array_key_exists('avatar', $attributes)) {
-            if (empty($attributes['avatar'])) {
-                $media = $user->getAvatar();
-                if ($media) {
-                    $media->delete();
-                    $user->clearMediaCollection('avatar');
-                }
-            } else {
-                $path = StorageService::upload($attributes['avatar'], config('filesystems.pathToUpload'));
-                $user->addMediaFromDisk($path['path'])->preservingOriginal()->toMediaCollection('avatar');
-            }
-        };
-
-        if (!empty($attributes['role_id'])) {
-            $user->syncRoles($attributes['role_id']);
+        if (!empty($attributes['avatar'])) {
+            $user->addMediaFromDisk($attributes['avatar']['path'])->usingName($attributes['avatar']['file_name'])->preservingOriginal()->toMediaCollection('avatar');
         }
 
-        if (!empty($attributes['permission_id'])) {
-            $user->syncPermissions($attributes['permission_id']);
+        if (!empty($attributes['role_id'])) {
+            $user->roles()->detach();
+            $user->roles()->sync($attributes['role_id']);
+        }
+
+        if (!empty($attributes['tourist_destination_id'])) {
+            $user->touristDestination()->sync($attributes['tourist_destination_id']);
+        }
+
+        if (!empty($attributes['camera_id'])) {
+            $user->camera()->sync($attributes['camera_id']);
         }
 
         return $this->parserResult($user);
+    }
+
+    public function lockUser(array $attributes, $id)
+    {
+        $user = $this->model()::findOrFail($id);
+
+        $user->update($attributes);
+
+        return $this->parserResult($user);
+    }
+
+    /**
+     * Add player to user
+     * @param $player_id
+     * @param $user_id
+     */
+    public static function addPlayer($player_id, $user_id)
+    {
+        $player = Player::where('player_id', $player_id)
+            ->where('user_id', $user_id)
+            ->get();
+
+        if ($player->isEmpty()) {
+            Player::create(['player_id' => $player_id, 'user_id' => $user_id]);
+        }
+    }
+
+    /**
+     * Delete player
+     * @param $player_id
+     * @param $user_id
+     */
+    public function deletePlayer($player_id, $user_id)
+    {
+        Player::where('player_id', $player_id)
+            ->where('user_id', $user_id)
+            ->delete();
+    }
+
+    /**
+     * Add Player user
+     * @param  array  $attributes attributes from request
+     * @return object
+     */
+    public function addPlayerUser(array $attributes, $id)
+    {
+        $player = Player::where('player_id', $attributes['player_id'])
+            ->where('user_id', $id)
+            ->first();
+
+        if (is_null($player)) {
+            Player::create(['player_id' => $attributes['player_id'], 'user_id' => $id]);
+        }
+
+        $user = $this->find($id);
+
+        return $user;
     }
 }

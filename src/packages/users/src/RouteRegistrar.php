@@ -32,6 +32,9 @@ class RouteRegistrar extends CoreRegistrar
         \Route::post('oauth/token', 'AccessTokenController@issueToken')->name('login');
         \Route::post('password/forgot/request', 'ForgotPasswordController@getResetToken');
         \Route::post('password/forgot/reset', 'ResetPasswordController@reset');
+
+        \Route::get('login/egov', 'AuthController@egovLogin');
+        \Route::get('callback/egov', 'AuthController@egovLoginCallback');
     }
 
     /**
@@ -42,21 +45,54 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         \Route::put('users/me', 'UserController@updateProfile');
-        \Route::group(['middleware' => ['permission:user.update.other']], function () {
-            \Route::delete('users/{id}', 'UserController@destroy');
-        });
-        \Route::resource('users', 'UserController')->except(['destroy']);
+        \Route::delete('users/{id}', 'UserController@destroy');
+
+        \Route::get('users', [
+            'comment' => 'Danh sách người dùng',
+            'uses' => 'UserController@index',
+            'as' => 'VIEW_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:VIEW_USER');
+
+        \Route::post('users', [
+            'comment' => 'Thêm mới người dùng',
+            'uses' => 'UserController@store',
+            'as' => 'ADD_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:ADD_USER');
+
+        \Route::put('users/{id}', [
+            'comment' => 'Sửa thông tin người dùng',
+            'uses' => 'UserController@update',
+            'as' => 'EDIT_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:EDIT_USER');
+
+        \Route::get('users/{id}', [
+            'comment' => 'Thông tin người dùng',
+            'uses' => 'UserController@show',
+            'as' => 'DETAIL_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:DETAIL_USER');
+
+        \Route::delete('users/{id}', [
+            'comment' => 'Xóa người dùng',
+            'uses' => 'UserController@destroy',
+            'as' => 'DELETE_USER',
+            'group' => 'Quản lý người dùng',
+        ])->middleware('permission_for_role:DELETE_USER');
+
         \Route::get('session', 'AuthController@logged')->name('logged');
         \Route::post('logout', 'AuthController@logout');
         \Route::post('password/change', 'ChangePasswordController@changePassword');
-        \Route::post('users/roles/{id}', 'UserController@updateRoleUser')->name('users.update.role');
-        \Route::post('users/permissions/{id}', 'UserController@updatePermissionUser')->name('users.update.role');
+        \Route::post('password/change/first', 'ChangePasswordController@changePasswordFirst');
 
-        // User collection
-        \Route::post('user-collections', 'UserCollectionController@assignOrRemoveUser');
+        \Route::get('me', 'AuthController@authenticated');
 
-        \Route::delete('user-collections', 'UserCollectionController@removeUser');
+        \Route::put('user-lock/{id}', 'UserController@lockUser');
 
-        \Route::get('users/{id}/collections', 'UserCollectionController@assigned');
+        \Route::post('users/player/{id}', [
+            'uses' => 'UserController@addPlayer',
+        ]);
     }
 }

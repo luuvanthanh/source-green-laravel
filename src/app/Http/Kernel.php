@@ -66,7 +66,11 @@ class Kernel extends HttpKernel
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
         'permission_for_role' => \GGPHP\RolePermission\Middlewares\PermissionForRoleMiddleware::class,
+        'check_view_permission' => \GGPHP\Core\Middlewares\CheckViewScope::class,
         'check_permission_view_project' => \GGPHP\Project\Middlewares\CheckPermissionViewProjectMiddleware::class,
         'check_permission_timekeeping_project' => \GGPHP\Timekeeping\Middlewares\CheckPermissionTimekeepingMiddleware::class,
+        'check_is_share_api' => \GGPHP\ApiShare\Middlewares\CheckIsShareApiMiddleware::class,
+        'cas.auth'  => 'Subfission\Cas\Middleware\CASAuth',
+        'cas.guest' => 'Subfission\Cas\Middleware\RedirectCASAuthenticated',
     ];
 }

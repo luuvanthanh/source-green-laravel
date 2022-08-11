@@ -16,9 +16,11 @@ class ActivityLogServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/config.php', 'constants-activity'
+            __DIR__ . '/../../config/config.php',
+            'constants-activity'
         );
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang-activity');
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
     }
 
     /**

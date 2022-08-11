@@ -17,6 +17,10 @@ class TouristDestination extends UuidModel
     protected $table = 'tourist_destinations';
 
     public $fillable = [
-        'name', 'address', 'phone', 'email', 'website'
+        'name', 'address', 'phone', 'email', 'website', 'address_limit'
+    ];
+
+    protected $casts = [
+        'address_limit'  =>  'array',
     ];
 }

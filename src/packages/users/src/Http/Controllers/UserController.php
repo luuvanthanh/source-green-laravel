@@ -41,7 +41,19 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = $this->userRepository->listing($request);
+        $attributes = $request->all();
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = Order::STATUS[$value];
+            }
+
+            $attributes['status'] = array_values($newStatus);
+        }
+
+        $users = $this->userRepository->listing($attributes);
+
         return $this->success($users, trans('lang::messages.common.getListSuccess'));
     }
 
@@ -78,7 +90,7 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
-        $user = $this->userRepository->updateProfile($request->all(), $id);
+        $user = $this->userRepository->update($request->all(), $id);
 
         return $this->success($user, trans('lang::messages.common.modifySuccess'));
     }
@@ -96,47 +108,29 @@ class UserController extends Controller
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
 
-    /**
-     *
-     * @param UserUpdateRoleRequest $request
-     * @param  string $id
-     *
-     * @return Response
-     */
-    public function updateRoleUser(UserUpdateRoleRequest $request, $id)
+    public function lockUser(Request $request, $id)
     {
-        $user = $this->userRepository->updateRoleUser($request->all(), $id);
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = User::STATUS[$attributes['status']];
+        }
+
+        $user = $this->userRepository->lockUser($attributes, $id);
 
         return $this->success($user, trans('lang::messages.common.modifySuccess'));
     }
 
     /**
+     * Get User birthday
+     * @param  int $id
      *
-     * @param UserUpdatePermissionRequest $request
-     * @param  string $id
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function updatePermissionUser(UserUpdatePermissionRequest $request, $id)
+    public function addPlayer(Request $request, $id)
     {
-        $user = $this->userRepository->updatePermissionUser($request->all(), $id);
+        $users = $this->userRepository->addPlayerUser($request->all(), $id);
 
-        return $this->success($user, trans('lang::messages.common.modifySuccess'));
+        return $this->success($users, trans('lang::messages.common.getListSuccess'));
     }
-
-    /**
-     *
-     * @param UserUpdateProfileRequest $request
-     * @param  string $id
-     *
-     * @return Response
-     */
-    public function updateProfile(UserUpdateProfileRequest $request)
-    {
-        $userId = Auth::id();
-        $user = $this->userRepository->updateProfile($request->all(), $userId);
-
-        return $this->success($user, trans('lang::messages.common.modifySuccess'));
-    }
-
 }

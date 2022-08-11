@@ -4,6 +4,7 @@ namespace GGPHP\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use GGPHP\Users\Http\Requests\ChangePasswordFirstRequest;
 use GGPHP\Users\Http\Requests\ChangePasswordRequest;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Hash;
@@ -39,7 +40,11 @@ class ChangePasswordController extends Controller
             return $this->error(trans('lang::messages.auth.changePasswordFail'), trans('lang::messages.auth.currentPasswordNotMatch'), config('constants.HTTP_STATUS_CODE.BAD_REQUEST'));
         }
 
-        $this->userRepository->update(['password' => Hash::make($request->password)], Auth::id());
+        $this->userRepository->update([
+            'password' => Hash::make($request->password),
+            'is_first_login' => false
+        ], Auth::id());
+
         $user->token()->revoke();
         $objToken = $user->createToken('name');
         // return new token
@@ -54,5 +59,24 @@ class ChangePasswordController extends Controller
         ];
 
         return $this->success($dataSuccess, trans('lang::messages.auth.changePasswordSuccess'));
+    }
+
+    /**
+     * Change password
+     *
+     * @param ChangePasswordRequest $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function changePasswordFirst(ChangePasswordFirstRequest $request)
+    {
+        $user = Auth::user();
+
+        $user->update([
+            'password' => Hash::make($request->password),
+            'is_first_login' => false
+        ]);
+
+        return $this->success(['data' => $user], trans('lang::messages.auth.changePasswordSuccess'));
     }
 }
