@@ -165,10 +165,16 @@ const Index = memo(({ classId, branchId }) => {
               </div>
             </div>
             <div className="col-md-6 py20 border-top">
+              {
+                detailsNote?.status === variables.STATUS.CONFIRMING ? 
+                "" : 
+                <>  
               <p className="mb5">Giáo viên đã nhận</p>
               <p className="font-weight-bold">
                 {`${detailsNote?.employee?.fullName || ''} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}`}
               </p>
+                </>
+              }
             </div>
           </div>
         </div>

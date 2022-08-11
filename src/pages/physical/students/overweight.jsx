@@ -247,7 +247,9 @@ const Index = memo(() => {
         ...search,
         isOverWeight: 'true',
       },
+      callback: () => {},
     });
+    
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),

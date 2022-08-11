@@ -289,7 +289,7 @@ const Index = memo(() => {
               <Pane className="card">
                 <Form layout="vertical" colon={false} ref={formRef} onFinish={onFinish}>
                   <Pane className="border-bottom p20">
-                    <Heading type="form-title">Chi tiết</Heading>
+                    <Heading type="form-title">Chi tiết123</Heading>
                   </Pane>
 
                   <Form.List name="data">
@@ -326,7 +326,6 @@ const Index = memo(() => {
                                             : []
                                         }
                                         type={variables.RADIO}
-                                        rules={[variables.RULES.EMPTY]}
                                         radioInline
                                       />
                                     </Pane>
@@ -353,7 +352,6 @@ const Index = memo(() => {
                                         name={[key, 'value']}
                                         label={criteria.property}
                                         type={variables.INPUT}
-                                        rules={[variables.RULES.EMPTY]}
                                       />
                                     </Pane>
                                   </Pane>
