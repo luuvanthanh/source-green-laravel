@@ -110,11 +110,11 @@ const Index = memo(() => {
     },
     {
       key: 'action',
-      width: `${user?.roleCode !== "sale" ? 125 : 80}`,
+      width: `${user?.roleCode === "sale" || user?.roleCode === "teacher" ? 80 : 125}`,
       fixed: 'right',
       render: (record) => (
         <div className="d-flex justify-content-end">
-          {user?.roleCode !== "sale"  && (
+         {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
             <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
           )}
           <Button
@@ -212,7 +212,7 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Danh sách thực đơn</Heading>
-          {user?.roleCode !== "sale" && (
+          {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
             <Button
               className="ml-auto"
               color="success"
