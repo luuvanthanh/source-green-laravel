@@ -217,7 +217,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $attributes['divisionId'])->where([['StartDate', '<=', $labourContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $labourContract->ContractFrom->format('Y-m-d')]])->first();
 
             if (!is_null($divisionShift)) {
-                
+
                 $endDate = $labourContract->ContractTo ? $labourContract->ContractTo->format('Y-m-d') : $divisionShift->EndDate->format('Y-m-d');
 
                 $dataSchedule = [
