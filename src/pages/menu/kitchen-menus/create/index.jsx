@@ -1072,6 +1072,7 @@ const Index = memo(() => {
                                                         dataSet={foodCommons}
                                                         placeholder="Chọn"
                                                         showSearch
+                                                        allowClear
                                                         value={itemMenuOfDay?.foodId || null}
                                                         onChange={(e) =>
                                                           onChangeFood(
