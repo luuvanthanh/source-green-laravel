@@ -130,6 +130,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
         })->orWhereHas('manualCalculation', function ($query) use ($startDate, $endDate) {
             $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
+        })->whereHas('labourContract', function ($q1) use ($startDate, $endDate) {
+            $q1->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
+        })->orWherehas('probationaryContract', function ($q2) use ($endDate, $startDate) {
+            $q2->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
         })->get();
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
