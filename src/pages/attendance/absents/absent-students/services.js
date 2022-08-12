@@ -5,6 +5,7 @@ export function get(data = {}) {
   return request('/v1/absent-students', {
     method: 'GET',
     params: {
+      ...data,
       limit: data.limit,
       page: data.page,
       orderBy: 'CreationTime',

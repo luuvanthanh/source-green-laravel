@@ -1,0 +1,10 @@
+@import '@/assets/styles/mixins.scss';
+
+.item-img {
+  object-fit: cover;
+}
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    font-weight: 700;
+}
+} 

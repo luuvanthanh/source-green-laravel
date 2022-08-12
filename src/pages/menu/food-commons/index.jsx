@@ -14,6 +14,7 @@ import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
+import style from './style.module.scss';
 
 const Index = memo(() => {
   const dispatch = useDispatch();
@@ -73,6 +74,7 @@ const Index = memo(() => {
                   <Image
                     key={index}
                     width={80}
+                    className={style['item-img']}
                     height={80}
                     src={`${API_UPLOAD}${item.url}`}
                     data-viewmore={`+${JSON.parse(record?.pathImage)?.length - 1}`}
@@ -183,7 +185,7 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
             </Form>
-
+            <div className={style['wrapper-table']}>
             <Table
               columns={columns}
               dataSource={data}
@@ -193,6 +195,7 @@ const Index = memo(() => {
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
+            </div>
           </Pane>
         </Pane>
       </Pane>

@@ -25,10 +25,12 @@ const Index = memo(() => {
     menuData,
     loading,
     { branches, classTypes, foodCommons, meals, error },
-  ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, kitchenMenusCreate }) => [
+    {user},
+  ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, kitchenMenusCreate,user }) => [
     menuLeftChildren,
     effects,
     kitchenMenusCreate,
+    user,
   ]);
   const dispatch = useDispatch();
   const params = useParams();
@@ -1070,6 +1072,7 @@ const Index = memo(() => {
                                                         dataSet={foodCommons}
                                                         placeholder="Chọn"
                                                         showSearch
+                                                        allowClear
                                                         value={itemMenuOfDay?.foodId || null}
                                                         onChange={(e) =>
                                                           onChangeFood(
@@ -1139,7 +1142,7 @@ const Index = memo(() => {
                         </div>
                       </div>
                     ))}
-                  {!params.id && (
+                  {!params.id && user?.roleCode !== "sale" && (
                     <Pane className="py20 d-flex justify-content-between align-items-center">
                       <p
                         className="btn-delete"
@@ -1163,7 +1166,7 @@ const Index = memo(() => {
                       </Button>
                     </Pane>
                   )}
-                  {params.id && (
+                  {params.id && user?.roleCode !== "sale" && (
                     <Pane className="py20 d-flex justify-content-between align-items-center">
                       <p
                         className="btn-delete"
@@ -1195,7 +1198,7 @@ const Index = memo(() => {
           </Pane>
         </Pane>
       </Pane>
-    </Pane>
+     </Pane>
   );
 });
 

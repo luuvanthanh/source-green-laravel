@@ -147,7 +147,7 @@ const General = memo(
                   ...head(
                     response.parsePayload.map((item) => ({
                       presenter_full_name: item?.full_name,
-                      presenter_birth_date: moment(item?.birth_date),
+                      presenter_birth_date: item?.birth_date ? moment(item?.birth_date): "",
                       presenter_address: item?.address,
                       presenter_phone: item?.phone,
                     })),
@@ -563,7 +563,7 @@ const General = memo(
               <p
                 className="btn-delete"
                 role="presentation"
-                onClick={() => history.push('/crm/sale/ph-lead')}
+                onClick={() =>  history.goBack()}
               >
                 Hủy
               </p>

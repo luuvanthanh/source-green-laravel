@@ -96,6 +96,7 @@ const General = memo(({ loading: { effects }, match: { params }, details, error,
       });
     }
   }, [params.id]);
+ 
   return (
     <Form layout="vertical" ref={formRef} onFinish={onFinish}>
       <Pane className="card">
@@ -144,15 +145,40 @@ const General = memo(({ loading: { effects }, match: { params }, details, error,
                 <div className="ant-col ant-form-item-label">
                   <label className="ant-form-item-required">Tình trạng chăm sóc lead</label>
                 </div>
-                <div size="normal" className={stylesModule['general-detail']}>
-                  {details?.statusCare
-                    ?.map((item, index) => (
-                      <Text size="normal" key={index} className={stylesModule['general-detail']}>
-                        {get(item, 'statusParentLead.name')}
-                      </Text>
-                    ))
-                    .pop()}
+                
+                {details?.statusLead
+              ?.map((item, index) => (
+                <Text size="normal" key={index} className={stylesModule['general-detail']}>
+                  {item?.status === 'LEAD_NEW' ? 'Lead mới' : ""}
+                  {item?.status === 'POTENTIAL' ? 'Tiềm năng' : ""}
+                  {item?.status === 'NOT_POTENTIAL' ? 'Không tiềm năng' : ""}
+                </Text>
+              ))
+              .pop()}
+              </div>
+              <div className="col-lg-4">
+                <div className="ant-col ant-form-item-label">
+                  <label className="ant-form-item-required">Ngày tư vấn</label>
                 </div>
+                <Text size="normal" className={stylesModule['general-detail']}>
+                  {Helper.getDate(details.advise_date, variables.DATE_FORMAT.DATE)}
+                </Text>
+              </div>
+              <div className="col-lg-4">
+                <div className="ant-col ant-form-item-label">
+                  <label className="ant-form-item-required">Ghi chú</label>
+                </div>
+                <Text size="normal" className={stylesModule['general-detail']}>
+                  {details.note}
+                </Text>
+              </div>
+              <div className="col-lg-4">
+                <div className="ant-col ant-form-item-label">
+                  <label className="ant-form-item-required">Mối quan tâm</label>
+                </div>
+                <Text size="normal" className={stylesModule['general-detail']}>
+                  {details.concerns}
+                </Text>
               </div>
             </div>
           </Pane>
