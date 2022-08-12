@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import Table from '@/components/CommonComponent/Table';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
-import { head, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import styles from '../index.scss';
 
 const { TabPane } = Tabs;
@@ -191,10 +191,10 @@ const Index = memo(({ classId, branchId }) => {
               {classDetails.classTeachers && !isEmpty(classDetails.classTeachers) && (
                 <AvatarTable
                   fileImage={Helper.getPathAvatarJson(
-                    head(classDetails.classTeachers)?.employee?.fileImage,
+                    classDetails.classTeachers?.find(i=> i?.isLead)?.employee?.fileImage,
                   )}
                   fullName="Giáo viên chủ nhiệm"
-                  description={head(classDetails.classTeachers)?.employee?.fullName}
+                  description={ classDetails.classTeachers?.find(i=> i?.isLead)?.employee?.fullName}
                 />
               )}
             </div>

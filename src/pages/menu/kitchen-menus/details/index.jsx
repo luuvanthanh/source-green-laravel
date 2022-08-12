@@ -162,7 +162,7 @@ const Index = memo(() => {
             </Scrollbars>
           </Pane>
         </Pane>
-        {user?.roleCode !== 'sale' && (
+        {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
           <Pane className="row justify-content-center">
             <Pane className="col-lg-6 ">
               <Pane className="d-flex justify-content-end align-items-center">
