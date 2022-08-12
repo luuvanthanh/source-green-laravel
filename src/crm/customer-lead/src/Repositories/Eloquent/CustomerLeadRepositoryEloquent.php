@@ -248,6 +248,19 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $this->model = $this->model->whereDate('created_at', '>=', $attributes['start_date'])->whereDate('created_at', '<=', $attributes['end_date']);
         }
 
+        if (!empty($attributes['isset_history_care']) && $attributes['isset_history_care'] == 'true') {
+            $this->model = $this->model->join('history_cares', function ($join) {
+                $join->on('history_cares.customer_lead_id', '=', 'customer_leads.id');
+            })
+                ->select('customer_leads.*', \DB::raw("MAX(history_cares.created_at) as max_created_at"))
+                ->groupBy('customer_leads.id')
+                ->orderBy('max_created_at', 'DESC');
+        }
+
+        if (!empty(!empty($attributes['isset_history_care']) && $attributes['isset_history_care'] == 'false')) {
+            $this->model = $this->model->has('historyCare', '<', 1);
+        }
+
         if (!empty($attributes['limit'])) {
             $customerLead = $this->paginate($attributes['limit']);
         } else {
