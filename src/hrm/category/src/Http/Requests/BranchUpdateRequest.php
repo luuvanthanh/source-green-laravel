@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Http\Requests;
 
 use GGPHP\Category\Models\Branch;
+use GGPHP\Category\Models\City;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BranchUpdateRequest extends FormRequest
@@ -45,7 +46,20 @@ class BranchUpdateRequest extends FormRequest
                     }
                 },
             ],
-            'note' => 'nullable|max:255'
+            'note' => 'nullable|max:255',
+            'cityId' => 'required|exists:Citys,Id'
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+
+        if (!empty($data['cityId'])) {
+            $city = City::find($data['cityId']);
+            $data['code'] = $city->code . $data['code'];
+        }
+
+        return $data;
     }
 }
