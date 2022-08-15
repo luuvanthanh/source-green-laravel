@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Exception;
+use GGPHP\Users\Repositories\Contracts\UserRepository;
 
 /**
  * Class LabourContractRepositoryEloquent.
@@ -598,5 +599,38 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         }
 
         $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
+    }
+
+    public function contractAddendum($id)
+    {
+        $contract = $this->model->find($id);
+
+        $employee = resolve(UserRepository::class)->skipPresenter()->find($contract->EmployeeId);
+
+        $now = Carbon::now();
+
+        $params = [
+            '${number_contract}' => $contract->OrdinalNumber ? $contract->OrdinalNumber . '/' . $contract->NumberForm : $contract->ContractNumber,
+            '${date_contract}' => $contract->ContractDate->format('d-m-Y'),
+            '${day}' => $now->format('d'),
+            '${month}' => $now->format('m'),
+            '${year}' => $now->format('Y'),
+            '${employee}' => $employee->FullName,
+            '${birthday}' => $employee->DateOfBirth->format('d-m-Y'),
+            '${born}' => $employee->PlaceOfBirth,
+            '${nationality}' => $employee->Nationality,
+            '${identity_card}' => $employee->IdCard,
+            '${date_identity}' => $employee->DateOfIssueIdCard->format('d-m-Y'),
+            '${place_provider}' => $employee->PlaceOfIssueIdCard,
+            '${household}' => $employee->Address,
+            '${place}' => $employee->PermanentAddress,
+            '${phone}' => $employee->PhoneNumber,
+            '${salary}' => number_format($contract->BasicSalary),
+            '${allowance}' => number_format($contract->TotalAllowance),
+            '${total}' => number_format($contract->BasicSalary + $contract->TotalAllowance)
+
+        ];
+        
+        return $this->wordExporterServices->exportWord('contract_addendum', $params);
     }
 }
