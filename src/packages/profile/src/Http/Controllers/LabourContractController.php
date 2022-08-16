@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\Profile\Http\Requests\LabourContractAddendumRequest;
 use GGPHP\Profile\Http\Requests\LabourContractCreateRequest;
 use GGPHP\Profile\Http\Requests\LabourContractUpdateRequest;
 use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
@@ -153,6 +154,17 @@ class LabourContractController extends Controller
     public function exportExcelWorkingSeniority(Request $request)
     {
         $result = $this->labourContractRepository->exportExcelWorkingSeniority($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
+
+    public function contractAddendum(LabourContractAddendumRequest $request, $id)
+    {
+        $result = $this->labourContractRepository->contractAddendum($id);
 
         if (is_string($result)) {
             return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);

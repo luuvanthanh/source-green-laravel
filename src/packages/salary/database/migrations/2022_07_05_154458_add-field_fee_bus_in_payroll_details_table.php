@@ -26,7 +26,7 @@ class AddFieldFeeBusInPayrollDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::table('payroll_details', function (Blueprint $table) {
+        Schema::table('PayrollDetails', function (Blueprint $table) {
             $table->dropColumn('BusAllowance','TotalBusRegistration');
         });
     }
