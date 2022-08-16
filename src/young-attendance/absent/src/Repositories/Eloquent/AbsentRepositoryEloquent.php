@@ -111,6 +111,12 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             });
         }
 
+        if (!empty($attributes['branchId'])) {
+            $this->model = $this->model->whereHas('student.classStudent.classes', function ($query) use ($attributes) {
+                $query->where('BranchId', $attributes['branchId']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $absents = $this->paginate($attributes['limit']);
         } else {
