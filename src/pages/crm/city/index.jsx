@@ -158,11 +158,11 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Quản lý Thành Phố" />
+      <Helmet title="Tỉnh thành" />
       <Pane className="p20">
         <Pane className=" mb20">
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Quản lý Thành Phố</Text>
+            <Text color="dark">Tỉnh thành</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

@@ -1252,6 +1252,12 @@ export default class Helpers {
       moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
     ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
     const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (record?.isEffect === false) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
+    }
+    if (diffSignDate <= 0 && !diffExpirationDate) {
+      return <Tag color="success">Đang hiệu lực</Tag>;
+    }
     if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
       return <Tag color="success">Đang hiệu lực</Tag>;
     }
@@ -1265,9 +1271,6 @@ export default class Helpers {
           Gần hết hạn
         </Tag>
       );
-    }
-    if (record?.isEffect === false) {
-      return <Tag color="danger">Đã hết hạn</Tag>;
     }
     if (diffExpirationDate < 0) {
       return <Tag color="danger">Đã hết hạn</Tag>;

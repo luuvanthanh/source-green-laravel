@@ -470,7 +470,6 @@ const Index = memo(() => {
                                             : []
                                         }
                                         type={variables.RADIO}
-                                        rules={[variables.RULES.EMPTY]}
                                         radioInline
                                       />
                                     </Pane>
@@ -497,7 +496,6 @@ const Index = memo(() => {
                                         name={[key, 'value']}
                                         label={criteria.property}
                                         type={variables.INPUT}
-                                        rules={[variables.RULES.EMPTY]}
                                       />
                                     </Pane>
                                   </Pane>

@@ -131,7 +131,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
         ref={formRef}
         onFinish={upload}
       >
-        <div className='row'>
+        <div className={csx(styles['wrapper-top'], 'row')}>
           <Pane className="col-lg-6">
             <FormItem
               name="uploadType"
@@ -144,7 +144,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
           </Pane>
           {
             fileList?.length > 0 && (
-              <Pane className={csx('col-lg-6', styles['wrapper-delete'])} onClick={() => setFileList([])}>
+              <Pane className={csx(styles['wrapper-delete'])} onClick={() => setFileList([])}>
                 <h3 className={styles.title}>Xoá tất cả</h3>
               </Pane>
             )
@@ -182,7 +182,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
               <Pane className="row" style={{ width: 'calc(100% + 15px)' }}>
                 {fileList.map((file, index) => (
                   <Pane
-                    className={csx('col-lg-3 col-md-4 col-sm-6 my10', imageStyles.imageWrapper)}
+                    className={csx('col-lg-3 col-md-4 col-sm-4  col-4 my10', imageStyles.imageWrapper)}
                     key={index}
                   >
                     <img

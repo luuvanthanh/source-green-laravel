@@ -19,10 +19,12 @@ const Index = memo(() => {
     { details, error },
     loading,
     menuLeftMedia,
-  ] = useSelector(({ mediaDetails, loading, menu }) => [
+    {user}
+  ] = useSelector(({ mediaDetails, loading, menu,user }) => [
     mediaDetails,
     loading?.effects,
     menu?.menuLeftMedia,
+    user,
   ]);
 
   const { params } = useRouteMatch();
@@ -73,9 +75,13 @@ const Index = memo(() => {
                 <Heading type="form-sub-title">
                   {Helper.getDate(details?.sentDate, variables.DATE_FORMAT.DATE_TIME)}
                 </Heading>
-                <p className={styles['text-delete']} role="presentation" onClick={remove}>
-                  Xóa hình ảnh
-                </p>
+                {
+                  user?.roleCode !== "teacher" && (
+                    <p className={styles['text-delete']} role="presentation" onClick={remove}>
+                      Xóa hình ảnh
+                    </p>
+                  )
+                }
               </Pane>
               <Pane style={{ marginBottom: 20 }}>
                 <Heading type="page-title">{details?.description}</Heading>

@@ -222,6 +222,18 @@ const renderChildren = (
       picker={picker}
     />
   ),
+  rangePickerMonth: (
+    <DatePicker.RangePicker
+      disabledDate={disabledDate}
+      disabled={disabled}
+      format="[Tháng] MM/YYYY"
+      onChange={onChange}
+      placeholder={picker === 'year' ? ['Từ năm', 'Đến năm'] : ['tháng/năm', 'tháng/năm']}
+      value={value}
+      allowClear={allowClear}
+      picker={picker}
+    />
+  ),
   rangeDateTimePicker: (
     <DatePicker.RangePicker
       disabledDate={disabledDate}

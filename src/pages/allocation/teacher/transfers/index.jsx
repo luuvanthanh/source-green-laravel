@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import * as _ from 'lodash';
 
 import styles from '@/assets/styles/Common/common.scss';
@@ -143,12 +144,20 @@ class Index extends PureComponent {
     });
   };
 
-  finishForm = ({ classChangeId }) => {
+  finishForm = ({ classChangeId, startDate }) => {
     this.setStateData({ submitLoading: true });
     const { selectedTeachers, classId } = this.state;
     const { dispatch } = this.props;
     const requestData = {
       id: classChangeId,
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: startDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
       data: selectedTeachers,
     };
     dispatch({
@@ -324,6 +333,18 @@ class Index extends PureComponent {
                             ? classChange.map(({ id, name }) => ({ value: id, label: name }))
                             : []
                         }
+                      />
+                    </div>
+                  </div>
+                  <div className="row mt-3">
+                    <div className="col-lg-12">
+                      <FormItem
+                        className="title-green"
+                        label="Ngày vào lớp"
+                        name="startDate"
+                        type={variables.DATE_PICKER}
+                        rules={[variables.RULES.EMPTY]}
+                        disabledDate={(current) => current < moment().add(-1, 'day')}
                       />
                     </div>
                   </div>

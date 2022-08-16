@@ -303,7 +303,7 @@ const Index = memo(() => {
           payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
           callback: () => { }
         });
-        const pageId = page?.find(i => i?.id === pageID[0]?.id);
+        const pageId = page?.find(i => i?.id === head(pageID)?.id);
         setLoadingMessageUser(true);
         mountedSet(setSearchUser, { ...searchUser, loading: true });
         dispatch({
@@ -320,7 +320,7 @@ const Index = memo(() => {
                 data: [""]
               });
               setSelectEmployee(response?.parsePayload);
-              users.unshift(response?.parsePayload?.find(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to));
+              users?.unshift(response?.parsePayload?.find(i => i?.from === data?.to && i?.to === data?.from || i?.from === data?.from && i?.to === data?.to));
               setLoadingMessageUser(false);
               const firstUser = head(
                 response?.parsePayload?.map((item) => ({
@@ -328,7 +328,7 @@ const Index = memo(() => {
                 })),
               );
               setConversationCurrent(firstUser);
-              mountedSet(setSearchUser, { ...searchUser, total: response.pagination.total });
+              mountedSet(setSearchUser, { ...searchUser, total: response?.pagination?.total });
             }
           },
         });

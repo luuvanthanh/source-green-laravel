@@ -26,10 +26,12 @@ const Index = memo(() => {
     menuData,
     loadingReducer,
     { data },
-  ] = useSelector(({ menu: { menuLeftChildren }, loading, kitchenMenusDetails }) => [
+    { user },
+  ] = useSelector(({ menu: { menuLeftChildren }, loading, kitchenMenusDetails, user }) => [
     menuLeftChildren,
     loading,
     kitchenMenusDetails,
+    user,
   ]);
   const loading = loadingReducer?.effects['kitchenMenusDetails/GET_DATA'];
   const params = useParams();
@@ -116,6 +118,7 @@ const Index = memo(() => {
                         <Timeline key={index}>
                           {item?.menuMealInfors?.map(
                             ({ fromTime, toTime, menuMealDetails }, index) => (
+                             <>
                               <TimelineItem color="red" key={index} style={{ paddingBottom: 10 }}>
                                 <Pane>
                                   <b>
@@ -133,6 +136,7 @@ const Index = memo(() => {
                                             <Image
                                               width={80}
                                               height={80}
+                                              className={styles['item-img']}
                                               src={`${API_UPLOAD}${item?.url}`}
                                               key={index}
                                               preview={{
@@ -146,6 +150,7 @@ const Index = memo(() => {
                                   </Pane>
                                 ))}
                               </TimelineItem>
+                             </>
                             ),
                           )}
                         </Timeline>
@@ -157,25 +162,27 @@ const Index = memo(() => {
             </Scrollbars>
           </Pane>
         </Pane>
-        <Pane className="row justify-content-center">
-          <Pane className="col-lg-6 ">
-            <Pane className="d-flex justify-content-end align-items-center">
-              <Button
-                color="success"
-                className="mr10"
-                onClick={() => history.push(pathname.replace('chi-tiet', 'chinh-sua'))}
-              >
-                Sửa
-              </Button>
-              <Button
-                color="success"
-                onClick={() => history.push(`/thuc-don/tao-moi?id=${params.id}`)}
-              >
-                Thêm bản sao
-              </Button>
+        {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
+          <Pane className="row justify-content-center">
+            <Pane className="col-lg-6 ">
+              <Pane className="d-flex justify-content-end align-items-center">
+                <Button
+                  color="success"
+                  className="mr10"
+                  onClick={() => history.push(pathname.replace('chi-tiet', 'chinh-sua'))}
+                >
+                  Sửa
+                </Button>
+                <Button
+                  color="success"
+                  onClick={() => history.push(`/thuc-don/tao-moi?id=${params.id}`)}
+                >
+                  Thêm bản sao
+                </Button>
+              </Pane>
             </Pane>
           </Pane>
-        </Pane>
+        )}
       </Pane>
     </>
   );

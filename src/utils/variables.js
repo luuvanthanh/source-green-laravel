@@ -39,6 +39,7 @@ export const variables = {
   DATE_REGISTERS_BIRTHDAY: 'registersBirthDay',
   DATE_REGISTERS_DAY: 'registersDay',
   NUMBER_INPUT: 'numberInput',
+  RANGE_PICKER_MONTH: 'rangePickerMonth',
   // RULES
   RULES: {
     EMPTY: { required: true, message: 'Vui lòng không được để trống trường này' },

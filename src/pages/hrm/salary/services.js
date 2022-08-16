@@ -9,6 +9,7 @@ export function get(data = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
+      salaryForeigner: 'false',
       month: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,

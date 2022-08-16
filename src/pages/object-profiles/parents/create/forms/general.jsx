@@ -214,6 +214,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 <FormItem name="referent" label="Khách hàng liên quan" type={variables.INPUT} />
               </Pane>
 
+
               <Pane className="col-lg-12">
                 <FormItem name="remark" label="Ghi chú" type={variables.INPUT} />
               </Pane>
@@ -221,6 +222,17 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               <Pane className="col-lg-12">
                 <FormItem name="hobby" label="Tính cách, sở thích" type={variables.INPUT} />
               </Pane>
+
+              <Pane className="col-lg-4">
+                <FormItem name="bank" label="Ngân hàng" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="bankNumber" label="Số tài khoản" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="ownerBank" label="Người hưởng thụ" type={variables.INPUT} />
+              </Pane>
+              
             </Pane>
           </Pane>
 

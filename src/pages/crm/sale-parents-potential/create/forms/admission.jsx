@@ -93,7 +93,7 @@ const General = memo(() => {
                             width={960}
                             centered
                             footer={[
-                                <div className={stylesModule['button-modal']}  key="back">
+                                <div className={stylesModule['button-modal']} key="back">
                                     <p
                                         key="back"
                                         role="presentation"
@@ -209,7 +209,7 @@ const General = memo(() => {
     return (
         <>
             {
-                details?.customerLead?.studentInfo?.length > 0 ?
+                details?.customerLead?.studentInfo?.filter(i => i?.admissionRegister?.length > 0)?.length > 0 ?
 
                     <div className="card p20">
                         <Heading type="form-title" style={{ marginBottom: 20 }}>
@@ -218,7 +218,7 @@ const General = memo(() => {
                         <div className={stylesModule['wrapper-table']}>
                             <Table
                                 columns={header()}
-                                dataSource={details?.customerLead?.studentInfo}
+                                dataSource={details?.customerLead?.studentInfo?.filter(i => i?.admissionRegister?.length > 0)}
                                 pagination={false}
                                 className="table-edit"
                                 isEmpty

@@ -13,7 +13,6 @@ import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
-import styles from '@/assets/styles/Common/common.scss';
 import moment from 'moment';
 
 const Index = memo(() => {
@@ -21,7 +20,7 @@ const Index = memo(() => {
   const [
     { pagination, error, data, branches, classTypes },
     loading,
-    { defaultBranch },
+    { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, kitchenMenus, user }) => [kitchenMenus, effects, user]);
 
   const history = useHistory();
@@ -29,7 +28,6 @@ const Index = memo(() => {
 
   const filterRef = useRef();
   const mounted = useRef(false);
-
   const [search, setSearch] = useState({
     ...query,
     branchId: query.branchId || defaultBranch?.id,
@@ -38,6 +36,37 @@ const Index = memo(() => {
     Month: query?.Month ? query?.Month : moment().startOf('month').format('MM'),
     Year: query?.Year ? query?.Year : Helper.getDate(moment(), variables.DATE_FORMAT.YEAR),
   });
+
+  const onRemove = (id) => {
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'kitchenMenus/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              dispatch({
+                type: 'kitchenMenus/GET_DATA',
+                payload: { ...search },
+              });
+              history.push(
+                `${pathname}?${Helper.convertParamSearchConvert(
+                  {
+                    ...search,
+                    Month: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_MONTH),
+                    Year: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
+                  },
+                  variables.QUERY_STRING,
+                )}`,
+              );
+            }
+          },
+        });
+      },
+    });
+  };
 
   const columns = [
     {
@@ -81,18 +110,19 @@ const Index = memo(() => {
     },
     {
       key: 'action',
-      className: 'min-width-80',
-      width: 80,
+      width: `${user?.roleCode === "sale" || user?.roleCode === "teacher" ? 80 : 125}`,
       fixed: 'right',
       render: (record) => (
-        <div className={styles['list-button']}>
+        <div className="d-flex justify-content-end">
+         {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
+            <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
+          )}
           <Button
-            color="success"
-            ghost
+            color="primary"
+            icon="edit"
+            className="ml10"
             onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
-          >
-            Chi tiết
-          </Button>
+          />
         </div>
       ),
     },
@@ -182,14 +212,16 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Danh sách thực đơn</Heading>
-          <Button
-            className="ml-auto"
-            color="success"
-            icon="plus"
-            onClick={() => history.push(`${pathname}/tao-moi`)}
-          >
-            Tạo thực đơn
-          </Button>
+          {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
+            <Button
+              className="ml-auto"
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
+              Tạo thực đơn
+            </Button>
+          )}
         </Pane>
 
         <Pane className="card">

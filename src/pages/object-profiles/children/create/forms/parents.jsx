@@ -164,6 +164,33 @@ const Parents = memo(
                     rules={[variables.RULES.MAX_LENGTH_255]}
                   />
                 </Pane>
+
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'bank']}
+                    label="Ngân hàng"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.MAX_LENGTH_255]}
+                  />
+                </Pane>
+
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'bankNumber']}
+                    label="Số tài khoản"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.MAX_LENGTH_255]}
+                  />
+                </Pane>
+
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'ownerBank']}
+                    label="Người hưởng thụ"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.MAX_LENGTH_255]}
+                  />
+                </Pane>
               </Pane>
             </>
           );

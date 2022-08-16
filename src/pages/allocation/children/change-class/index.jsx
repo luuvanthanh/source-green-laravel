@@ -224,14 +224,21 @@ class Index extends PureComponent {
     });
   };
 
-  finishForm = ({ classId }) => {
+  finishForm = ({ classId, joinDate }) => {
     const { selectedStudents } = this.state;
     const { dispatch } = this.props;
-
     dispatch({
       type: 'allocationChangeClass/UPDATE',
       payload: {
         id: classId,
+        joinDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: joinDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
         data: selectedStudents,
       },
       callback: () => {
@@ -348,7 +355,7 @@ class Index extends PureComponent {
                       className={stylesAllocation.list}
                       dataSource={students}
                       loading={!hasMore && loading}
-                      renderItem={({ id, fullName, age, fileImage }, index) => (
+                      renderItem={({ id, fullName, age, fileImage, registerDate }, index) => (
                         <List.Item key={id + index}>
                           <Checkbox
                             className={stylesAllocation.checkbox}
@@ -357,8 +364,8 @@ class Index extends PureComponent {
                           <div className={stylesAllocation['group-info']}>
                             <AvatarTable
                               fileImage={Helper.getPathAvatarJson(fileImage)}
-                              fullName={fullName}
-                              description={`${age} tháng tuổi`}
+                              fullName={`${fullName}`}
+                              description={`${age} tháng tuổi ${registerDate ? ` - ${Helper.getDate(registerDate, variables.DATE_FORMAT.DATE)}` : ""}`}
                             />
                           </div>
                         </List.Item>
@@ -421,6 +428,13 @@ class Index extends PureComponent {
                       <hr />
                     </>
                   )}
+
+                  <div className="row mt-3">
+                    <div className="col-lg-6">
+                      <FormItem label="Ngày vào lớp" name="joinDate" type={variables.DATE_PICKER} rules={[variables.RULES.EMPTY]} />
+                    </div>
+                  </div>
+
                 </div>
               </div>
               <div className={stylesAllocation['footer-content']}>

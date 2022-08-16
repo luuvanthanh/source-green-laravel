@@ -207,6 +207,34 @@ class Index extends PureComponent {
     }));
   };
 
+  loadFormContarct = (value) => {
+    const {
+      dispatch
+    } = this.props;
+    dispatch({
+      type: 'probationaryContractsAdd/GET_FORM_CONTRACTS',
+      payload: {
+        type: 'LABOUR',
+        contractDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: value,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+      },
+      callback: (response) => {
+        this.setStateData({
+          dataFormContarct: response?.parsePayload,
+        });
+        this.formRef.current.setFieldsValue({
+          ordinalNumber: this.converNumber(head(response?.parsePayload)?.ordinalNumber),
+        });
+      }
+    });
+  };
+
   onChangeEmployee = (value) => {
     const { dispatch } = this.props;
     dispatch({
@@ -216,6 +244,7 @@ class Index extends PureComponent {
       },
       callback: (response) => {
         if (!isEmpty(response)) {
+          this.loadFormContarct(head(response)?.contractDate);
           const details = head(response);
           this.formRef.current.setFieldsValue({
             ...omit(details, 'typeOfContractId'),
@@ -239,7 +268,7 @@ class Index extends PureComponent {
       ordinalNumber: values.ordinalNumber,
       numberForm: head(dataFormContarct)?.numberForm,
       numberFormContractId: head(dataFormContarct)?.id,
-      type: head(dataFormContarct)?.type,
+      type: 'LABOUR',
       id: params.id,
       contractDate: Helper.getDateTime({
         value: Helper.setDate({
@@ -338,13 +367,13 @@ class Index extends PureComponent {
           />
         ),
       },
-      {
-        title: 'Ngày hiệu lực',
-        key: 'application_date',
-        dataIndex: 'applyDate',
-        className: 'min-width-120',
-        render: (value) => Helper.getDate(moment(value)),
-      },
+      // {
+      //   title: 'Ngày hiệu lực',
+      //   key: 'application_date',
+      //   dataIndex: 'applyDate',
+      //   className: 'min-width-120',
+      //   render: (value) => Helper.getDate(moment(value)),
+      // },
       {
         title: 'Thao tác',
         key: 'actions',
@@ -369,31 +398,7 @@ class Index extends PureComponent {
   };
 
   changeFormContarct = (value) => {
-    const {
-      dispatch
-    } = this.props;
-    dispatch({
-      type: 'probationaryContractsAdd/GET_FORM_CONTRACTS',
-      payload: {
-        type: 'LABOUR',
-        contractDate: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: value,
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
-      },
-      callback: (response) => {
-        this.setStateData({
-          dataFormContarct: response?.parsePayload,
-        });
-        this.formRef.current.setFieldsValue({
-          ordinalNumber: this.converNumber(head(response?.parsePayload)?.ordinalNumber),
-        });
-      }
-    });
+    this.loadFormContarct(value);
   };
 
   render() {

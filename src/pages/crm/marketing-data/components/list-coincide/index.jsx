@@ -11,6 +11,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
+import HelperModules from '../../utils/Helper';
 import stylesModule from '../../styles.module.scss';
 
 const { confirm } = Modal;
@@ -213,7 +214,13 @@ class Index extends PureComponent {
         title: 'Tên',
         key: 'name',
         width: 250,
-        render: (record) => record?.full_name,
+        render: (record) => <>{record?.full_name}</>,
+      },
+      {
+        title: 'Tình trạng',
+        key: 'name',
+        width: 150,
+        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         title: 'Địa chỉ',
@@ -296,17 +303,23 @@ class Index extends PureComponent {
       {
         title: 'Họ  và tên',
         key: 'name',
-        width: 200,
+        width: 250,
         render: (record) => (
           <>
             <Radio.Group
               onChange={(e) => this.onChangeName(e, record, 'nameActive')}
               value={record.nameActive}
             >
-              <Radio value={record.full_name}>{record.full_name}</Radio>
+              <Radio value={record.full_name}>{record.full_name} </Radio>
             </Radio.Group>
           </>
         ),
+      },
+      {
+        title: 'Tình trạng',
+        key: 'name',
+        width: 150,
+        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         title: 'Giới tính',
@@ -326,7 +339,7 @@ class Index extends PureComponent {
       {
         title: 'Email',
         key: 'email',
-        width: 170,
+        width: 250,
         render: (record) => (
           <>
             <Radio.Group
@@ -794,6 +807,7 @@ class Index extends PureComponent {
     const rowSelection = {
       onChange: this.onSelectChange,
     };
+
     const loading =
       effects['crmMarketingDataCheckList/GET_DATA'] || effects['crmMarketingDataCheckList/GET_DATA_COINCIDE'];
     const submitCoincide = effects['crmMarketingDataCheckList/ADD_COINCIDE'];
