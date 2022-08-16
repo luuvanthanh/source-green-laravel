@@ -16,6 +16,7 @@ import Application from './application';
 import Student from './student';
 import Activity from './activity';
 import Warning from './warning';
+import SChoolYear from './School-year';
 
 const { TabPane } = Tabs;
 
@@ -134,6 +135,7 @@ class HomePage extends PureComponent {
         </div>
         <div className={styles.flex}>
           <div className="d-flex align-items-center mb30 mt-10">
+          <SChoolYear/>
             <div className={styles['date-header']}>
               {moment().format(variables.DATE_FORMAT.DATE_MONTH)}
             </div>
@@ -145,7 +147,7 @@ class HomePage extends PureComponent {
                 placeholder="Chọn cơ sở"
                 onChange={this.handleChangeClass}
                 data={!_.isEmpty(classes) ? classes : []}
-              />
+                />
             </Form>
           </div>
           <div className={styles['custom-tab']}>
