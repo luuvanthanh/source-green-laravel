@@ -19,7 +19,7 @@ class ClassTeacher extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'ClassId', 'EmployeeId', 'StartDate', 'Description', 'CreatorId',
+        'ClassId', 'EmployeeId', 'StartDate', 'Description', 'CreatorId', 'IsLead', 'IsLastest'
     ];
 
     public function classes()

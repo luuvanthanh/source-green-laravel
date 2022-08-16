@@ -141,4 +141,11 @@ class PayRollController extends Controller
 
         return $result;
     }
+
+    public function payRollSessionForeigner(Request $request)
+    {
+        $payRolls = $this->payRollRepository->payRollSessionForeigner($request->all());
+
+        return $this->success($payRolls, trans('lang::messages.common.createSuccess'));
+    }
 }

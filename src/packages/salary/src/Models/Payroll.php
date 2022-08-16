@@ -19,7 +19,7 @@ class Payroll extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Month', 'IsTimesheet', 'IsBonus', 'IsOther', 'IsSalary', 'ColumnBasicSalaryAndAllowance', 'ColumnIncurredAllowance',
+        'Month', 'IsTimesheet', 'IsBonus', 'IsOther', 'IsSalary', 'ColumnBasicSalaryAndAllowance', 'ColumnIncurredAllowance', 'IsSessionSalary'
     ];
 
     protected $dateTimeFields = [
@@ -42,5 +42,10 @@ class Payroll extends UuidModel
     public function payrollDetail()
     {
         return $this->hasMany(\GGPHP\Salary\Models\PayRollDetail::class, 'PayrollId');
+    }
+
+    public function payrollSession()
+    {
+        return $this->hasMany(PayrollSession::class, 'PayrollId');
     }
 }
