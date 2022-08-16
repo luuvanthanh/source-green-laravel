@@ -33,6 +33,10 @@ const leadStatus = [
   { id: 'POTENTIAL', name: 'Có tiềm năng' },
   { id: 'NOT_POTENTIAL', name: 'Không tiềm năng' },
 ];
+const statusData = [
+  { id: 'true', name: 'Đã gọi' },
+  { id: 'false', name: 'Chưa gọi' },
+];
 let isMounted = true;
 /**
  * Set isMounted
@@ -88,6 +92,7 @@ class Index extends PureComponent {
         end_date: query?.end_date ? query?.end_date : null,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        isset_history_care: query?.isset_history_care,
       },
       dataSource: [],
       isModalVisible: false,
@@ -815,6 +820,16 @@ class Index extends PureComponent {
                         onChange={(event) => this.onChangeDate(event, 'date')}
                         type={variables.RANGE_PICKER}
                         allowClear={false}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={[{ name: 'Chọn tất cả trạng thái', id: null }, ...statusData,]}
+                        name="isset_history_care"
+                        type={variables.SELECT}
+                        onChange={(event) => this.onChangeSelect(event, 'isset_history_care')}
+                        allowClear={false}
+                        placeholder="Chọn trạng thái"
                       />
                     </div>
                   </div>
