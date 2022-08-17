@@ -266,3 +266,12 @@ export function getEmployee(params = {}) {
     },
   });
 }
+
+export function getYears() {
+  return request('/schoolYears', {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
