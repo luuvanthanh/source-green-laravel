@@ -24,7 +24,7 @@ class CreatePayrollSessionsTable extends Migration
             $table->decimal('Allowance', 12, 2)->nullable();
             $table->decimal('PersonalIncomeTax', 12, 2)->nullable();
             $table->decimal('TaxPayment', 12, 2)->nullable();
-            $table->decimal('SalaryByHour', 12, 2)->nullable();
+            $table->decimal('ValueSalary', 12, 2)->nullable();
             $table->decimal('Deduction', 12, 2)->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
