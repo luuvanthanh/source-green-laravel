@@ -16,6 +16,7 @@ use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\OtherDeclaration\Models\OtherDeclaration;
 use GGPHP\Salary\Models\Payroll;
 use GGPHP\Salary\Models\PayRollDetail;
+use GGPHP\Salary\Models\PayrollSession;
 use GGPHP\Salary\Presenters\PayrollPresenter;
 use GGPHP\Salary\Repositories\Contracts\PayrollRepository;
 use GGPHP\Timekeeping\Repositories\Eloquent\TimekeepingRepositoryEloquent;
@@ -3089,6 +3090,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $data['Allowance'] = 0;
                     $data['PersonalIncomeTax'] = 0;
                     $data['TaxPayment'] = 0;
+                    $data['ValueSalary'] = $actuallyReceived;
                     $data['Deduction'] = 0;
 
                     if (!is_null($defineValueTax) && $actuallyReceived > $defineValueTax->ValueDefault) {
@@ -3116,10 +3118,11 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $data['TaxPayment'] = 0;
                     $data['Deduction'] = 0;
                     $data['TotalIncome'] = 0;
+                    $data['ValueSalary'] = 0;
                 }
 
-                if (!empty($payroll->payrollSession)) {
-                    $payroll->payrollSession()->delete();
+                if (!empty($employee->payrollSession)) {
+                    $employee->payrollSession()->delete();
                 }
                 $payroll->payrollSession()->create($data);
                 $payroll->update(['isSessionSalary' => true]);
@@ -3127,5 +3130,81 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         }
 
         return parent::find($payroll->Id);
+    }
+
+    public function getPayRollSessionForeigner($attributes)
+    {
+        $payroll = $this->model->find($attributes['id']);
+        $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
+        $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+        $orderByBranch = $payroll->payrollSession()->with(['employee.seasonalContract' => function ($query) {
+            $query->orderBy('BranchId');
+        }])->get();
+
+        $result = [];
+        foreach ($orderByBranch as $value) {
+            $seasonalContract = $value->employee->seasonalContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
+
+            if (!array_key_exists($seasonalContract->BranchId, $result)) {
+                $payrollSession = $payroll->payrollSession()->whereHas('employee.seasonalContract', function ($query) use ($seasonalContract) {
+                    $query->where('BranchId', $seasonalContract->BranchId);
+                })->with('employee')->get();
+
+                $result[$seasonalContract->branch->Name][] = [
+                    'branchName' => $seasonalContract->BranchId,
+                    'branchTotalInCome' => $this->totalIncomeByBranch($payrollSession),
+                    'totalWorkDay' => $this->totalWorkDay($payrollSession),
+                    'personalIncomeTax' => $this->personalIncomeTax($payrollSession),
+                    'taxPayment' => $this->taxPayment($payrollSession),
+                    'deduction' => $this->deduction($payrollSession),
+                    'valueSalary' => $this->valueSalary($payrollSession),
+                    'dataDetail' => $payrollSession->toArray()
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    public function totalIncomeByBranch($collect)
+    {
+        return $collect->sum(function ($collect) {
+            return $collect->sum('TotalIncome');
+        });
+    }
+
+    public function totalWorkDay($collect)
+    {
+        return $collect->sum(function ($collect) {
+            return $collect->sum('WorkDay');
+        });
+    }
+
+    public function personalIncomeTax($collect)
+    {
+        return $collect->sum(function ($collect) {
+            return $collect->sum('PersonalIncomeTax');
+        });
+    }
+
+    public function taxPayment($collect)
+    {
+        return $collect->sum(function ($collect) {
+            return $collect->sum('TaxPayment');
+        });
+    }
+
+    public function deduction($collect)
+    {
+        return $collect->sum(function ($collect) {
+            return $collect->sum('Deduction');
+        });
+    }
+
+    public function valueSalary($collect)
+    {
+        return $collect->sum(function ($collect) {
+            return $collect->sum('ValueSalary');
+        });
     }
 }
