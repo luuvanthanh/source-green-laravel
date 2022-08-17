@@ -21,4 +21,8 @@ export const menu = [
     key: 'other',
     label: 'Khác',
   },
+  {
+    key: 'history',
+    label: 'Lịch sử sếp lớp',
+  },
 ];
