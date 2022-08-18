@@ -37,6 +37,8 @@ const mapStateToProps = ({ medicalStudentProblem, loading, user }) => ({
   branches: medicalStudentProblem.branches,
   pagination: medicalStudentProblem.pagination,
   defaultBranch: user.defaultBranch,
+  years: medicalStudentProblem.years,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -46,12 +48,14 @@ class Index extends PureComponent {
     super(props);
     const {
       defaultBranch,
+      user,
       location: { query },
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         KeyWord: query?.KeyWord,
+        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -126,6 +130,10 @@ class Index extends PureComponent {
     dispatch({
       type: 'medicalStudentProblem/GET_BRACHES',
       payload: {},
+    });
+    this.props.dispatch({
+      type: 'medicalStudentProblem/GET_YEARS',
+      payload: { },
     });
   };
 
@@ -348,6 +356,7 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      years,
       error,
       classes,
       branches,
@@ -425,6 +434,16 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -461,6 +480,8 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  years :PropTypes.arrayOf(PropTypes.any),
+  user:  PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -474,6 +495,8 @@ Index.defaultProps = {
   error: {},
   classes: [],
   defaultBranch: {},
+  years: [],
+  user: {},
 };
 
 export default Index;
