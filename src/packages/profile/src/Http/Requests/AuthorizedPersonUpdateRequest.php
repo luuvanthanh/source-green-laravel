@@ -38,9 +38,6 @@ class AuthorizedPersonUpdateRequest extends FormRequest
                         $count = resolve(AuthorizedPersonRepository::class)->skipPresenter()->where([
                             ['EmployeeId', $authorized->EmployeeId],
                             ['IsEffect', '!=', $value]
-                        ])->orWhere([
-                            ['EmployeeId', $authorized->EmployeeId],
-                            ['IsEffect', '!=', $value]
                         ])->where('Id', '!=', $authorized->Id)->count();
 
                         if ($count) {

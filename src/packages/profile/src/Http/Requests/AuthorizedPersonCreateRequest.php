@@ -33,9 +33,6 @@ class AuthorizedPersonCreateRequest extends FormRequest
                     $authorized = resolve(AuthorizedPersonRepository::class)->skipPresenter()->where([
                         ['EmployeeId', $value],
                         ['IsEffect', $this->isEffect]
-                    ])->orWhere([
-                        ['EmployeeId', $value],
-                        ['IsEffect', $this->isEffect]
                     ])->count();
 
                     if ($authorized) {

@@ -8,6 +8,7 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\SeasonalContract;
 use GGPHP\Profile\Presenters\SeasonalContractPresenter;
+use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
 use GGPHP\Profile\Repositories\Contracts\SeasonalContractRepository;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;

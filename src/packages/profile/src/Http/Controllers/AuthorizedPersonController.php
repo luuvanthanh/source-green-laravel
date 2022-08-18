@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class AuthorizedPersonController extends Controller
 {
     /**
-     * @var $labourContractRepository
+     * @var $authorizedPersonRepository
      */
     protected $authorizedPersonRepository;
 
@@ -33,9 +33,9 @@ class AuthorizedPersonController extends Controller
      */
     public function index(Request $request)
     {
-        $insurrance = $this->authorizedPersonRepository->getAuthorizedPerson($request->all());
+        $authorized = $this->authorizedPersonRepository->getAuthorizedPerson($request->all());
 
-        return $this->success($insurrance, trans('lang::messages.common.getListSuccess'));
+        return $this->success($authorized, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -46,10 +46,9 @@ class AuthorizedPersonController extends Controller
      */
     public function store(AuthorizedPersonCreateRequest $request)
     {
+        $authorized = $this->authorizedPersonRepository->create($request->all());
 
-        $insurrance = $this->authorizedPersonRepository->create($request->all());
-
-        return $this->success($insurrance, trans('lang::messages.common.createSuccess'));
+        return $this->success($authorized, trans('lang::messages.common.createSuccess'));
     }
 
     /**
@@ -62,9 +61,9 @@ class AuthorizedPersonController extends Controller
      */
     public function update(AuthorizedPersonUpdateRequest $request, $id)
     {
-        $insurrance = $this->authorizedPersonRepository->update($request->all(), $id);
+        $authorized = $this->authorizedPersonRepository->update($request->all(), $id);
 
-        return $this->success($insurrance, trans('lang::messages.common.modifySuccess'));
+        return $this->success($authorized, trans('lang::messages.common.modifySuccess'));
     }
 
     /**y
@@ -75,9 +74,10 @@ class AuthorizedPersonController extends Controller
      */
     public function show($id)
     {
-        $insurrance = $this->authorizedPersonRepository->find($id);
-        if ($insurrance) {
-            return $this->success($insurrance, trans('lang::messages.common.getInfoSuccess'));
+        $authorized = $this->authorizedPersonRepository->find($id);
+        
+        if ($authorized) {
+            return $this->success($authorized, trans('lang::messages.common.getInfoSuccess'));
         }
     }
 
