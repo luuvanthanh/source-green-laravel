@@ -5,6 +5,7 @@ export default {
   namespace: 'kitchenMenus',
   state: {
     data: [],
+    years: [],
     pagination: {
       total: 0,
     },
@@ -34,6 +35,13 @@ export default {
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
       branches: payload.parsePayload,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years: payload.parsePayload?.map((item) => ({
+        id: item.id,
+        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+      })) || [],
     }),
     SET_CLASS_TYPES: (state, { payload }) => ({
       ...state,
@@ -94,6 +102,22 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

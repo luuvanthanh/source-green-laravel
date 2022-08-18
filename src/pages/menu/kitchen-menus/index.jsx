@@ -18,7 +18,7 @@ import moment from 'moment';
 const Index = memo(() => {
   const dispatch = useDispatch();
   const [
-    { pagination, error, data, branches, classTypes },
+    { pagination, error, data, branches, classTypes,years },
     loading,
     { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, kitchenMenus, user }) => [kitchenMenus, effects, user]);
@@ -32,6 +32,7 @@ const Index = memo(() => {
     ...query,
     branchId: query.branchId || defaultBranch?.id,
     page: query?.page || variables.PAGINATION.PAGE,
+    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     Month: query?.Month ? query?.Month : moment().startOf('month').format('MM'),
     Year: query?.Year ? query?.Year : Helper.getDate(moment(), variables.DATE_FORMAT.YEAR),
@@ -199,6 +200,10 @@ const Index = memo(() => {
         payload: {},
       });
     }
+    dispatch({
+      type: 'kitchenMenus/GET_YEARS',
+      payload: {},
+    });
   }, []);
 
   useEffect(() => {
@@ -273,6 +278,16 @@ const Index = memo(() => {
                     type={variables.MONTH_PICKER}
                     name="date"
                     onChange={(e) => changeMonthFilter('date')(e)}
+                    allowClear={false}
+                  />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(e) => changeFilter('schoolYearId')(e)}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
                     allowClear={false}
                   />
                 </Pane>
