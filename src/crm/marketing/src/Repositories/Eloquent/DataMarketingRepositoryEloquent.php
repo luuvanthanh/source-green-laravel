@@ -93,26 +93,36 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         }
 
         if (!empty($attributes['email']) && $attributes['email'] == 'true') {
-            $this->model = $this->model->whereIn('email', function ($query) {
+            $this->model = $this->model->orWhereIn('email', function ($query) {
                 $query->select('data_marketings.email')->from('data_marketings')->groupBy('data_marketings.email')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['address']) && $attributes['address'] == 'true') {
-            $this->model = $this->model->whereIn('address', function ($query) {
+            $this->model = $this->model->orWhereIn('address', function ($query) {
                 $query->select('data_marketings.address')->from('data_marketings')->groupBy('data_marketings.address')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['phone']) && $attributes['phone'] == 'true') {
-            $this->model = $this->model->whereIn('phone', function ($query) {
+            $this->model = $this->model->orWhereIn('phone', function ($query) {
                 $query->select('data_marketings.phone')->from('data_marketings')->groupBy('data_marketings.phone')->havingRaw('count(*) > 1');
             });
         }
 
-        if (!empty($attributes['birth_date']) && $attributes['birth_date'] == 'true') {
-            $this->model = $this->model->whereIn('birth_date', function ($query) {
-                $query->select('data_marketings.birth_date')->from('data_marketings')->groupBy('data_marketings.birth_date')->havingRaw('count(*) > 1');
+        if (!empty($attributes['children_full_name']) && $attributes['children_full_name'] == 'true') {
+            $this->model = $this->model->orWhereHas('studentInfo', function ($query) {
+                $query->whereIn('full_name', function ($q) {
+                    $q->select('data_marketing_student_infos.full_name')->from('data_marketing_student_infos')->groupBy('data_marketing_student_infos.full_name')->havingRaw('count(*) > 1');
+                });
+            });
+        }
+
+        if (!empty($attributes['children_birth_date']) && $attributes['children_birth_date'] == 'true') {
+            $this->model = $this->model->orWhereHas('studentInfo', function ($query) {
+                $query->whereIn('birth_date', function ($q) {
+                    $q->select('data_marketing_student_infos.birth_date')->from('data_marketing_student_infos')->groupBy('data_marketing_student_infos.birth_date')->havingRaw('count(*) > 1');
+                });
             });
         }
 
@@ -340,5 +350,93 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         DataMarketing::whereIn('id', $attributes['data'])->forceDelete();
 
         return parent::parserResult($this->model->first());
+    }
+
+    public function mergeMultipleDataMarketing($attributes)
+    {
+        $dataMarketingDuplicateEmails = $this->model->whereIn('id', $attributes['id'])->whereIn('email', function ($query) {
+            $query->select('data_marketings.email')->from('data_marketings')->groupBy('data_marketings.email')->havingRaw('count(*) > 1');
+        })->where('status', DataMarketing::STATUS['NOT_MOVE'])->orderBy('email')->orderBy('created_at', 'DESC')->get();
+
+        if (!empty($dataMarketingDuplicateEmails)) {
+            $this->handleDataMarketing($dataMarketingDuplicateEmails, $action = 'email');
+        }
+
+        $dataMarketingDuplicatePhones = $this->model->whereIn('id', $attributes['id'])->whereIn('phone', function ($query) {
+            $query->select('data_marketings.phone')->from('data_marketings')->groupBy('data_marketings.phone')->havingRaw('count(*) > 1');
+        })->where('status', DataMarketing::STATUS['NOT_MOVE'])->orderBy('phone')->orderBy('created_at', 'DESC')->get();
+
+        if (!empty($dataMarketingDuplicatePhones)) {
+            $this->handleDataMarketing($dataMarketingDuplicatePhones, $action = 'phone');
+        }
+
+        return null;
+    }
+
+    public function handleDataMarketing($attributes, $action)
+    {
+        if ($action == 'email') {
+            $attributes = $attributes->groupBy(function ($item) {
+                return $item->email;
+            })->map->sortByDesc('created_at');
+        } elseif ($action == 'phone') {
+            $attributes = $attributes->groupBy(function ($item) {
+                return $item->phone;
+            })->map->sortByDesc('created_at');
+        }
+
+        foreach ($attributes as $dataMarketingDuplicate) {
+            foreach ($dataMarketingDuplicate as  $dataMarketing) {
+                $dataStudents = $this->dataStudent($dataMarketing);
+                $arrayDataMarketingId[] = $dataMarketing->id;
+            }
+
+            $this->storeDataMarketing($arrayDataMarketingId, $dataStudents, $action);
+            $arrayDataMarketingId = [];
+            $dataStudents = [];
+        }
+    }
+
+    public function storeDataMarketing($arrayDataMarketingId, $dataStudents, $action)
+    {
+        $dataMarketing = DataMarketing::whereIn('id', $arrayDataMarketingId)->orderBy('created_at', 'DESC')->first();
+        if ($action == 'email') {
+            $phoneOtherDataMarketing = DataMarketing::whereIn('id', $arrayDataMarketingId)->where('id', '!=', $dataMarketing->id)->where('phone', '!=', $dataMarketing->phone)->orderBy('created_at', 'DESC')->first();
+
+            if (!is_null($phoneOtherDataMarketing)) {
+                $dataMarketing->update(['other_phone' => $phoneOtherDataMarketing->phone]);
+            }
+        } elseif ($action == 'phone') {
+            $emailDataMarketing = DataMarketing::whereIn('id', $arrayDataMarketingId)->where('id', '!=', $dataMarketing->id)->where('email', '!=', null)->orderBy('created_at', 'DESC')->first();
+
+            if (!is_null($emailDataMarketing) && $dataMarketing->email == null) {
+                $dataMarketing->update(['email' => $emailDataMarketing->email]);
+            }
+        }
+
+        if (!empty($dataStudents)) {
+            foreach ($dataStudents as $dataStudent) {
+                foreach ($dataStudent as $value) {
+                    $value['data_marketing_id'] = $dataMarketing->id;
+                    DataMarketingStudentInfo::create($value);
+                }
+            }
+        }
+
+        DataMarketing::whereIn('id', $arrayDataMarketingId)->where('id', '!=', $dataMarketing->id)->forceDelete();
+    }
+
+    public function dataStudent($dataMarketing)
+    {
+        $dataStudent = [];
+        $student = $dataMarketing->studentInfo;
+
+        if (!empty($student)) {
+            $dataStudent = $student->map->only('full_name', 'birth_date', 'sex', 'file_image', 'category_relationship_id')->toArray();
+        }
+
+        $data[] = $dataStudent;
+
+        return $data;
     }
 }

@@ -198,4 +198,12 @@ class DataMarketingController extends Controller
 
         return $this->success($dataMarketing, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
+
+    public function mergeMultipleDataMarketing(Request $request)
+    {
+        $attributes = $request->all();
+        $mergeDataMarketing = $this->dataMarketingRepository->mergeMultipleDataMarketing($attributes);
+
+        return $this->success([], trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
 }
