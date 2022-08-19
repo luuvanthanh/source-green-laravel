@@ -23,6 +23,6 @@ export const menu = [
   },
   {
     key: 'history',
-    label: 'Lịch sử sếp lớp',
+    label: 'Lịch sử lớp học',
   },
 ];

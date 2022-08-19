@@ -524,6 +524,16 @@ export async function getLeftMenuConfiguration() {
           permission: [permissions.CAUHINH],
           pro: true,
         },
+        {
+          title: 'Năm học',
+          key: 'school-year',
+          url: [
+            '/cau-hinh/nam-hoc',
+            '/cau-hinh/nam-hoc/tao-moi',
+            '/cau-hinh/nam-hoc/:id/chi-tiet',
+          ],
+          permission: [permissions.CAUHINH],
+        },
       ],
       pro: true,
     },
@@ -1756,17 +1766,6 @@ export async function getLeftMenuFeePolicy() {
           pro: true,
         },
       ],
-    },
-    {
-      title: 'Năm học',
-      key: 'school-year',
-      url: [
-        '/chinh-sach-phi/nam-hoc',
-        '/chinh-sach-phi/nam-hoc/tao-moi',
-        '/chinh-sach-phi/nam-hoc/:id/chi-tiet',
-      ],
-      icon: 'icon icon-calendar',
-      permission: [permissions.CHINHSACHPHI],
     },
     {
       title: 'Phí',

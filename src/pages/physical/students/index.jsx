@@ -25,9 +25,9 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { pagination, error },
+    { pagination, years },
     loading,
-    { defaultBranch },
+    { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, physicalStudents, user }) => [
     physicalStudents,
     effects,
@@ -49,6 +49,7 @@ const Index = memo(() => {
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     keyWord: query?.keyWord,
+    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
     branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId,
   });
@@ -335,6 +336,10 @@ const Index = memo(() => {
 
   useEffect(() => {
     fetchBranches();
+    dispatch({
+      type: 'physicalStudents/GET_YEARS',
+      payload: {},
+    });
   }, []);
 
   return (
@@ -409,6 +414,15 @@ const Index = memo(() => {
                     allowClear={false}
                   />
                 </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    name="schoolYearId"
+                    type={variables.SELECT}
+                    data={[{ name: 'Chọn tất cả năm học', id: null }, ...years]}
+                    onChange={(value) => changeFilter('schoolYearId')(value)}
+                    allowClear={false}
+                  />
+                </Pane>
               </Pane>
             </Form>
 
@@ -417,7 +431,7 @@ const Index = memo(() => {
               columns={columns}
               dataSource={dataTable}
               loading={loading['physicalStudents/GET_DATA']}
-              isError={error.isError}
+              // isError={error.isError}
               pagination={paginationTable(pagination)}
               rowKey={(record) => record?.student?.id}
               scroll={{ x: '100%', y: '60vh' }}
