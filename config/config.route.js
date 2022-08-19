@@ -915,6 +915,24 @@ export default [
             authority: [permissions.CAUHINH],
           },
           {
+            path: '/cau-hinh/nam-hoc',
+            component: './fee-policy/school-year',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/nam-hoc/tao-moi',
+            component: './fee-policy/school-year/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/nam-hoc/:id/chi-tiet',
+            component: './fee-policy/school-year/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
             path: '/cau-hinh/loai-lop',
             component: './configuration/class-type',
             wrappers: ['@/wrappers/auth'],
@@ -2272,7 +2290,7 @@ export default [
         routes: [
           {
             path: '/chinh-sach-phi',
-            redirect: '/chinh-sach-phi/nam-hoc',
+            redirect: '/chinh-sach-phi/tinh-phi-hoc-sinh-cu',
           },
           {
             path: '/chinh-sach-phi/phi',
@@ -2307,24 +2325,6 @@ export default [
           {
             path: '/chinh-sach-phi/tien-dong/:id/chi-tiet',
             component: './fee-policy/policy/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
-          },
-          {
-            path: '/chinh-sach-phi/nam-hoc',
-            component: './fee-policy/school-year',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
-          },
-          {
-            path: '/chinh-sach-phi/nam-hoc/tao-moi',
-            component: './fee-policy/school-year/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
-          },
-          {
-            path: '/chinh-sach-phi/nam-hoc/:id/chi-tiet',
-            component: './fee-policy/school-year/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },

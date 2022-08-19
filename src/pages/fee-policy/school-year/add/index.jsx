@@ -24,9 +24,9 @@ const { TabPane } = Tabs;
 
 const Index = memo(() => {
   const params = useParams();
-  const { loading, menuLeftFeePolicy, fees } = useSelector(({ loading, menu, paymentMethod }) => ({
+  const { loading, menuConfiguration, fees } = useSelector(({ loading, menu, paymentMethod }) => ({
     loading: loading.effects,
-    menuLeftFeePolicy: menu.menuLeftFeePolicy,
+    menuConfiguration: menu.menuConfiguration,
     fees: paymentMethod.data,
   }));
   const dispatch = useDispatch();
@@ -345,7 +345,7 @@ const Index = memo(() => {
       <Breadcrumbs
         className="pb30 pt0"
         last={`${params?.id && !isCopy ? 'Chi tiết' : 'Thêm mới'}`}
-        menu={menuLeftFeePolicy}
+        menu={menuConfiguration}
       />
       <Pane className="row">
         <Pane className="col-12">

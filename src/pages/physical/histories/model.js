@@ -1,9 +1,11 @@
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
   namespace: 'physicalHistory',
   state: {
     data: [],
+    years: [],
     pagination: {
       total: 0,
     },
@@ -18,6 +20,13 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years: payload.parsePayload?.map((item) => ({
+        id: item.id,
+        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+      })) || [],
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -40,6 +49,22 @@ export default {
             pagination: {
               total: response.totalCount,
             },
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
           },
         });
       } catch (error) {

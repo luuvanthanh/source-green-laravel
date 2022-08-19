@@ -37,7 +37,7 @@ const Index = memo(() => {
         key: 'date',
         width: 80,
         className: 'min-width-80',
-        render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Năm học',
@@ -82,7 +82,7 @@ const Index = memo(() => {
         <Form layout="vertical" ref={formRef} onFinish>
           <Pane className="card">
             <Pane style={{ padding: 20 }} className="pb-0">
-              <Heading type="page-title">Lịch sử xếp lớp</Heading>
+              <Heading type="page-title">Lịch sử lớp học</Heading>
             </Pane>
             <Pane style={{ padding: 20 }}>
               <Table
