@@ -14,7 +14,9 @@ use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
+use GGPHP\Profile\Models\AuthorizedPerson;
 use GGPHP\ResignationDecision\Models\ResignationDecision;
+use GGPHP\Salary\Models\PayrollSession;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\WorkOnline\Models\WorkOnline;
 use Illuminate\Auth\Authenticatable;
@@ -355,5 +357,20 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function branchDefault()
     {
         return $this->hasMany(PositionLevel::class, 'EmployeeId')->where('Type', 'DEFAULT')->latest();
+    }
+
+    public function authorizedPerson()
+    {
+        return $this->hasMany(AuthorizedPerson::class, 'EmployeeId');
+    }
+
+    public function authorizedPersonEffectIn()
+    {
+        return $this->hasMany(AuthorizedPerson::class, 'EmployeeId')->where('IsEffect', true);
+    }
+
+    public function payrollSession()
+    {
+        return $this->hasMany(PayrollSession::class, 'EmployeeId');
     }
 }

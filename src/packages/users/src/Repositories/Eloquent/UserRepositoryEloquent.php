@@ -118,7 +118,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 });
             });
         }
-
+        
         if (!empty('timekeeping')) {
             $this->model = $this->model->when(!empty($attributes['endDate']), function ($query) use ($attributes) {
                 $arr = explode('-', $attributes['endDate']);
@@ -134,6 +134,15 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                         $query->whereYear('TimeApply', '<', $year)->whereMonth('TimeApply', '<', $month);
                     });
                 });
+            });
+        }
+
+        if (!empty($attributes['dateApply'])) {
+            $this->model = $this->model->whereHas('authorizedPerson', function ($query) use ($attributes) {
+                $now = Carbon::now();
+                $query->whereDate('DateApply', '<=', $now->format('Y-m-d'));
+                $query->whereDate('DateApply', '<=', $attributes['dateApply']);
+                $query->where('IsEffect', true);
             });
         }
 

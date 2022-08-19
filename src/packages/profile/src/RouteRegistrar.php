@@ -100,6 +100,10 @@ class RouteRegistrar extends CoreRegistrar
             ]);
 
             \Route::resource('number-form-contracts', 'NumberFormContractController');
+
+            \Route::get('contract-addendum/{labour_contract_id}', 'LabourContractController@contractAddendum');
+
+            \Route::resource('authorized-persons', 'AuthorizedPersonController');
         });
     }
 }

@@ -61,6 +61,10 @@ class WordExporterServices
             'template' => 'authority_contract.docx',
             'result' => 'authority_contract.docx',
         ],
+        'contract_addendum' => [
+            'template' => 'contract_addendum.docx',
+            'result' => 'contract_addendum.docx'
+        ]
     ];
 
     public function __construct()

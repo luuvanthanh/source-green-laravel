@@ -3,6 +3,7 @@
 namespace GGPHP\Salary\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\Salary\Http\Requests\CreatePayrollSessionRequest;
 use GGPHP\Salary\Http\Requests\CreatPayRollRequest;
 use GGPHP\Salary\Http\Requests\PayslipRequest;
 use GGPHP\Salary\Http\Requests\UpdatePayRollRequest;
@@ -140,5 +141,26 @@ class PayRollController extends Controller
         }
 
         return $result;
+    }
+
+    public function payRollSessionForeigner(CreatePayrollSessionRequest $request)
+    {
+        $payRolls = $this->payRollRepository->payRollSessionForeigner($request->all());
+
+        return $this->success($payRolls, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function getPayRollSession(CreatePayrollSessionRequest $request)
+    {
+        $employees = $this->payRollRepository->getPayRollSession($request->all());
+
+        return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function payRollSessionLocal(CreatePayrollSessionRequest $request)
+    {
+        $payRolls = $this->payRollRepository->payRollSessionLocal($request->all());
+
+        return $this->success($payRolls, trans('lang::messages.common.createSuccess'));
     }
 }

@@ -14,6 +14,7 @@ use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
+use GGPHP\Profile\Transformers\AuthorizedPersonTransformer;
 use GGPHP\Profile\Transformers\LabourContractTransformer;
 use GGPHP\Profile\Transformers\ProbationaryContractTransformer;
 use GGPHP\ResignationDecision\Transformers\ResignationDecisionTransformer;
@@ -49,7 +50,7 @@ class UserTransformer extends BaseTransformer
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel',
         'classTeacher', 'positionLevelNow', 'businessCard', 'degree',
         'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation', 'branchDefault', 'probationaryContract',
-        'resignationDecision'
+        'resignationDecision', 'authorizedPersion','authorizedPersonEffectIn'
     ];
 
     /**
@@ -226,5 +227,15 @@ class UserTransformer extends BaseTransformer
         }
 
         return $this->item($employee->resignationDecision, new ResignationDecisionTransformer, 'ResignationDecision');
+    }
+
+    public function includeAuthorizedPersion(User $employee)
+    {
+        return $this->collection($employee->authorizedPerson, new AuthorizedPersonTransformer, 'AuthorizedPersion');
+    }
+
+    public function includeAuthorizedPersonEffectIn(User $employee)
+    {
+        return $this->collection($employee->authorizedPersonEffectIn, new AuthorizedPersonTransformer, 'AuthorizedPersion');
     }
 }
