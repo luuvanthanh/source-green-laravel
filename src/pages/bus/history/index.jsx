@@ -30,11 +30,15 @@ const Index = memo(() => {
     paginationReducer,
     busHistory,
     data,
-  ] = useSelector(({ loading, busHistory = {} }) => [
+    years,
+    user,
+  ] = useSelector(({ loading, busHistory = {}, user = {} }) => [
     loading,
     busHistory?.pagination,
     busHistory?.busRoutes,
     busHistory?.data,
+    busHistory?.years,
+    user?.user,
   ]);
   const loading = loadingReducer?.effects['busHistory/GET_DATA'];
 
@@ -56,6 +60,7 @@ const Index = memo(() => {
     status: query?.status || variablesModules.STATUS_TABS.SCHOOLWARD,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
   });
 
   const showRoute = (record) => {
@@ -234,6 +239,10 @@ const Index = memo(() => {
       type: 'busHistory/GET_BUS_ROUTES',
       payload: {},
     });
+    dispatch({
+      type: 'busHistory/GET_YEARS',
+      payload: {},
+    });
   }, []);
 
   useEffect(() => {
@@ -302,6 +311,15 @@ const Index = memo(() => {
                 </Pane>
                 <Pane className="col-lg-3">
                   <FormItem name="date" type={variables.DATE_PICKER} />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
                 </Pane>
               </Pane>
             </Form>

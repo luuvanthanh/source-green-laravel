@@ -16,6 +16,7 @@ import MultipleImageUpload from './UploadAvatar';
 import Calendar from './components/calendar';
 import styles from './styles.module.scss';
 
+const { TextArea } = Input;
 
 const sex = [
   { id: 'MALE', name: 'Nam' },
@@ -47,7 +48,7 @@ const Index = memo(() => {
   const [conversationCurrent, setConversationCurrent] = useState({});
   const [users, setUsers] = useState([]);
   const [messagers, setMessagers] = useState([]);
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState(undefined);
   const [messageFile, setMessageFile] = useState(null);
   const [loadingMessage, setLoadingMessage] = useState(true);
   const [loadingMessageUser, setLoadingMessageUser] = useState(true);
@@ -247,8 +248,17 @@ const Index = memo(() => {
     }
   }, [conversationCurrent?.id]);
 
+  const onChangeMessager = (e) => {
+    const str = e.target.value;
+    if( str.trim().length > 0) {
+      setMessage(str);
+    }else {
+      setMessage(null); 
+    }
+  };
+
   const onPressEnter = (e) => {
-    setMessage(undefined);
+    setMessage(null);
     if (e?.target?.value && e?.target?.value !== '' || file || files) {
       setMessagers((prev) => [
         {
@@ -281,6 +291,7 @@ const Index = memo(() => {
       callback: () => {
         mountedSet(setFiles, undefined);
         mountedSet(setFile, undefined);
+        setMessage(null);
       },
     });
   };
@@ -1889,14 +1900,14 @@ const Index = memo(() => {
               />
               <div className='d-flex'>
                 <div className={styles['chat-container']}>
-                  <Input
-                    autosize={{ minRows: 1, maxRows: 1 }}
+                  <TextArea
+                    autoSize={!isEmpty(message) ?  { minRows: 1, maxRows: 2 } :{ minRows: 1, maxRows: 1 } }
                     width={80}
                     placeholder="Nhập tin nhắn"
                     onPressEnter={onPressEnter}
                     className={styles.input}
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={(e) => onChangeMessager(e)}
                   />
                   <div className={styles['group-icon']}>
                     {/* <span className="icon-attachment" /> */}

@@ -199,12 +199,12 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="copy"
-              onClick={() => history.push(`/chinh-sach-phi/nam-hoc/${record?.id}/chi-tiet?type=ban-sao`)}
+              onClick={() => history.push(`/cau-hinh/nam-hoc/${record?.id}/chi-tiet?type=ban-sao`)}
             />
             <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push(`/chinh-sach-phi/nam-hoc/${record?.id}/chi-tiet`)}
+              onClick={() => history.push(`/cau-hinh/nam-hoc/${record?.id}/chi-tiet`)}
             />
           </div>
         ),

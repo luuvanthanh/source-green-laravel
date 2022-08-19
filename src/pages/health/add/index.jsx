@@ -289,7 +289,7 @@ const Index = memo(() => {
               <Pane className="card">
                 <Form layout="vertical" colon={false} ref={formRef} onFinish={onFinish}>
                   <Pane className="border-bottom p20">
-                    <Heading type="form-title">Chi tiết123</Heading>
+                    <Heading type="form-title">Chi tiết</Heading>
                   </Pane>
 
                   <Form.List name="data">

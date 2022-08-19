@@ -37,6 +37,8 @@ const mapStateToProps = ({ health, loading, user }) => ({
   classes: health.classes,
   defaultBranch: user.defaultBranch,
   criteriaGroupProperties: health.criteriaGroupProperties,
+  years: health.years,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -46,6 +48,7 @@ class Index extends PureComponent {
     super(props);
     const {
       defaultBranch,
+      user,
       location: { query },
     } = props;
     this.state = {
@@ -53,6 +56,7 @@ class Index extends PureComponent {
       search: {
         classId: query.classId,
         keyWord: query?.keyWord,
+        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         branchId: query.branchId || defaultBranch?.id,
         reportDate: moment().format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
@@ -128,6 +132,10 @@ class Index extends PureComponent {
     this.props.dispatch({
       type: 'health/GET_CRITERIA_GROUP_PROPERTIES',
       payload: {},
+    });
+    this.props.dispatch({
+      type: 'health/GET_YEARS',
+      payload: { },
     });
   };
 
@@ -307,6 +315,7 @@ class Index extends PureComponent {
       branches,
       classes,
       data,
+      years,
       pagination,
       defaultBranch,
       match: { params },
@@ -378,6 +387,16 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -411,6 +430,8 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  years :PropTypes.arrayOf(PropTypes.any),
+  user:  PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -424,6 +445,8 @@ Index.defaultProps = {
   branches: [],
   classes: [],
   defaultBranch: {},
+  years: [],
+  user: {},
 };
 
 export default Index;

@@ -17,9 +17,10 @@ import { variables, Helper } from '@/utils';
 const Index = memo(() => {
   const dispatch = useDispatch();
   const [
-    { pagination, error, data },
+    { pagination, error, data, years },
     loading,
-  ] = useSelector(({ loading: { effects }, physicalHistory }) => [physicalHistory, effects]);
+    {user}
+  ] = useSelector(({ loading: { effects }, physicalHistory,user }) => [physicalHistory, effects, user]);
 
   const mounted = useRef(false);
   const history = useHistory();
@@ -31,6 +32,7 @@ const Index = memo(() => {
     employeeId: query?.employeeId,
     fromDate: query?.fromDate || '',
     toDate: query?.toDate || '',
+    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
   });
   const [employee, setEmployee] = useState([]);
 
@@ -147,6 +149,14 @@ const Index = memo(() => {
     getEmployees(val);
   }, 300);
 
+  
+  useEffect(() => {
+    dispatch({
+      type: 'physicalHistory/GET_YEARS',
+      payload: {},
+    });
+  }, []);
+
   return (
     <>
       <Helmet title="Lịch sử" />
@@ -194,6 +204,15 @@ const Index = memo(() => {
                     name="rangeTime"
                     type={variables.RANGE_PICKER}
                     onChange={changeFilterDate}
+                  />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    name="schoolYearId"
+                    type={variables.SELECT}
+                    data={[{ name: 'Chọn tất cả năm học', id: null }, ...years]}
+                    onChange={(value) => changeFilter('schoolYearId', value)}
+                    allowClear={false}
                   />
                 </Pane>
               </Pane>

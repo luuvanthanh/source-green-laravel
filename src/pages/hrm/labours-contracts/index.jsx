@@ -17,7 +17,6 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import variablesModules from './utils/variables';
 import stylesModule from './style.module.scss';
 
-
 const { Item: FormItemAntd } = Form;
 const { Group: RadioGroup } = Radio;
 let isMounted = true;
@@ -66,7 +65,7 @@ class Index extends PureComponent {
       isModalVisible: false,
       isModalRadio: variablesModules.TYPE.WORD,
       idTable: undefined,
-      type: (variablesModules.TYPE.WORD),
+      type: variablesModules.TYPE.WORD,
     };
     setIsMounted(true);
   }
@@ -274,8 +273,24 @@ class Index extends PureComponent {
         key: 'contract_number',
         className: 'min-width-170',
         width: 170,
-        render: (record) => <> {record?.contractNumber ? <>{record?.contractNumber}</> :
-          <>{(record?.ordinalNumber ? (<>{record?.ordinalNumber}/{record?.numberForm}</>) : "")}</>}</>
+        render: (record) => (
+          <>
+            {' '}
+            {record?.contractNumber ? (
+              <>{record?.contractNumber}</>
+            ) : (
+              <>
+                {record?.ordinalNumber ? (
+                  <>
+                    {record?.ordinalNumber}/{record?.numberForm}
+                  </>
+                ) : (
+                  ''
+                )}
+              </>
+            )}
+          </>
+        ),
       },
       {
         title: 'Ngày hợp đồng',
@@ -360,7 +375,11 @@ class Index extends PureComponent {
         width: 150,
         className: 'min-width-150',
         render: (record) =>
-          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo), record),
+          Helper.getStatusContracts(
+            moment(record?.contractFrom),
+            moment(record?.contractTo),
+            record,
+          ),
       },
       {
         title: 'Thao tác',
@@ -392,7 +411,7 @@ class Index extends PureComponent {
                 icon="export"
                 className="ml-2"
                 onClick={() => this.showModal(record.id)}
-              // onClick={() => this.export(record.id)}
+                // onClick={() => this.export(record.id)}
               />
             </li>
           </ul>
@@ -523,16 +542,14 @@ class Index extends PureComponent {
               <Button htmlType="submit" color="success" type="primary" onClick={this.export}>
                 Kết xuất
               </Button>
-            </div>
+            </div>,
           ]}
         >
           <Pane className={stylesModule['wrapper-modal-content']}>
             <Pane className="row">
+              <Pane className="col-lg-12">Chọn loại kết xuất</Pane>
               <Pane className="col-lg-12">
-                Chọn loại kết xuất
-              </Pane>
-              <Pane className="col-lg-12">
-                <FormItemAntd >
+                <FormItemAntd>
                   <RadioGroup
                     defaultValue={type}
                     options={variablesModules.TYPES}

@@ -5,6 +5,7 @@ export default {
   namespace: 'health',
   state: {
     data: [],
+    years: [],
     pagination: {
       total: 0,
     },
@@ -35,6 +36,13 @@ export default {
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
       branches: payload.parsePayload,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years: payload.parsePayload?.map((item) => ({
+        id: item.id,
+        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+      })) || [],
     }),
     SET_CLASSES: (state, { payload }) => ({
       ...state,
@@ -95,6 +103,22 @@ export default {
         yield saga.put({
           type: 'SET_CRITERIA_GROUP_PROPERTIES',
           payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
+          },
         });
       } catch (error) {
         yield saga.put({

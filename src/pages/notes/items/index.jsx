@@ -39,6 +39,8 @@ const mapStateToProps = ({ noteItems, loading, user }) => ({
   classes: noteItems.classes,
   branches: noteItems.branches,
   defaultBranch: user.defaultBranch,
+  years: noteItems.years,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -49,6 +51,7 @@ class Index extends PureComponent {
     const {
       location: { query },
       defaultBranch,
+      user
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
@@ -56,6 +59,7 @@ class Index extends PureComponent {
         keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId,
+        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         from: query?.from
           ? moment(query?.from).format(variables.DATE_FORMAT.DATE_AFTER)
           : moment().startOf('months'),
@@ -146,6 +150,10 @@ class Index extends PureComponent {
         payload: {},
       });
     }
+    this.props.dispatch({
+      type: 'noteItems/GET_YEARS',
+      payload: { },
+    });
   };
 
   /**
@@ -354,6 +362,13 @@ class Index extends PureComponent {
         ),
       },
       {
+        title: 'Năm học',
+        key: 'year',
+        width: 180,
+        className: 'min-width-180',
+        render: (record) => record?.schoolYear?.yearFrom ? <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text> : "",
+      },
+      {
         title: 'Cơ sở',
         key: 'life',
         width: 180,
@@ -431,6 +446,7 @@ class Index extends PureComponent {
       defaultBranch,
       match: { params },
       loading: { effects },
+      years,
     } = this.props;
     const { search, defaultBranchs } = this.state;
     const loading = effects['noteItems/GET_DATA'];
@@ -508,6 +524,16 @@ class Index extends PureComponent {
                     type={variables.RANGE_PICKER}
                   />
                 </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -540,6 +566,8 @@ Index.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  years :PropTypes.arrayOf(PropTypes.any),
+  user:  PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -552,6 +580,8 @@ Index.defaultProps = {
   classes: [],
   branches: [],
   defaultBranch: {},
+  years: [],
+  user: {},
 };
 
 export default Index;

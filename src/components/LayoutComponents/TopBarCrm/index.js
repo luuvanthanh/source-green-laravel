@@ -2,6 +2,7 @@ import React from 'react';
 import Notification from './Notification';
 import ProfileMenu from './ProfileMenu';
 import Settings from './Settings';
+import SChoolYear from './School-year';
 import LoginFacebook from './LoginFacebook';
 import styles from './style.module.scss';
 
@@ -9,6 +10,7 @@ class TopBar extends React.Component {
   render() {
     return (
       <div className={styles.topbar}>
+          <SChoolYear/>
         <div className="mr-4"></div>
         <div className="mr-auto" />
         <div className="mr-4">

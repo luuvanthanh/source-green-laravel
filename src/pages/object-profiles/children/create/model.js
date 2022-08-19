@@ -6,6 +6,8 @@ export default {
   namespace: 'OPchildrenAdd',
   state: {
     details: {},
+    years: [],
+    history: [],
     error: {
       status: null,
       isError: false,
@@ -47,6 +49,17 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload.items,
+    }),
+    SET_HISTORY: (state, { payload }) => ({
+      ...state,
+      history: payload,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years: payload.parsePayload?.map((item) => ({
+        id: item.id,
+        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+      })) || [],
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -193,6 +206,36 @@ export default {
       try {
         const response = yield saga.call(services.getAge, payload);
         callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_HISTORY({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getHistory, payload);
+        yield saga.put({
+          type: 'SET_HISTORY',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
+          },
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
