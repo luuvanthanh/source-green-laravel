@@ -150,10 +150,17 @@ class PayRollController extends Controller
         return $this->success($payRolls, trans('lang::messages.common.createSuccess'));
     }
 
-    public function getPayRollSessionForeigner(Request $request)
+    public function getPayRollSession(CreatePayrollSessionRequest $request)
     {
-        $employees = $this->payRollRepository->getPayRollSessionForeigner($request->all());
+        $employees = $this->payRollRepository->getPayRollSession($request->all());
 
         return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function payRollSessionLocal(CreatePayrollSessionRequest $request)
+    {
+        $payRolls = $this->payRollRepository->payRollSessionLocal($request->all());
+
+        return $this->success($payRolls, trans('lang::messages.common.createSuccess'));
     }
 }

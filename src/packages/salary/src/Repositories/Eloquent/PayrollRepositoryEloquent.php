@@ -16,7 +16,6 @@ use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\OtherDeclaration\Models\OtherDeclaration;
 use GGPHP\Salary\Models\Payroll;
 use GGPHP\Salary\Models\PayRollDetail;
-use GGPHP\Salary\Models\PayrollSession;
 use GGPHP\Salary\Presenters\PayrollPresenter;
 use GGPHP\Salary\Repositories\Contracts\PayrollRepository;
 use GGPHP\Timekeeping\Repositories\Eloquent\TimekeepingRepositoryEloquent;
@@ -39,6 +38,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
     const LUONG_CTV_NN_KHOAN = 'LUONG_CTV_NN_KHOAN';
     const LUONG_CTV_NN_NGAY = 'LUONG_CTV_NN_NGAY';
     const TRUY_LINH = 'TRUY_LINH';
+    const LUONG_CB = 'LUONG_CB';
+    const LUONG_CTV_VN_KHOAN = 'LUONG_CTV_VN_KHOAN';
+    const LUONG_CTV_VN_NGAY = 'LUONG_CTV_VN_NGAY';
 
     protected $fieldSearchable = [
         'Id',
@@ -3049,13 +3051,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
         $parameter = [];
 
-        $employees = User::where('Status', User::STATUS['WORKING'])->whereHas('workHours', function ($query) use ($startDate, $endDate) {
-            $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
-        })->orWhereHas('manualCalculation', function ($query) use ($startDate, $endDate) {
-            $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
-        })->whereHas('seasonalContract', function ($q1) use ($startDate, $endDate) {
-            $q1->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-        })->where('IsForeigner', true)->get();
+        $employees = User::where('Status', User::STATUS['WORKING'])->where('IsForeigner', true)
+            ->whereHas('seasonalContract', function ($q1) use ($startDate, $endDate) {
+                $q1->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
+            })->get();
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
 
@@ -3132,14 +3131,18 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         return parent::find($payroll->Id);
     }
 
-    public function getPayRollSessionForeigner($attributes)
+    public function getPayRollSession($attributes)
     {
         $payroll = $this->model->find($attributes['id']);
         $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
         $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
         $orderByBranch = $payroll->payrollSession()->with(['employee.seasonalContract' => function ($query) {
             $query->orderBy('BranchId');
-        }])->get();
+        }])->whereHas('employee', function ($query) use ($attributes) {
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
 
         $result = [];
         foreach ($orderByBranch as $value) {
@@ -3153,7 +3156,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $result[$seasonalContract->branch->Name][] = [
                     'branchName' => $seasonalContract->BranchId,
                     'branchTotalInCome' => $this->totalIncomeByBranch($payrollSession),
-                    'totalWorkDay' => $this->totalWorkDay($payrollSession),
+                    'totalWorkDay' => array_sum(array_column($payrollSession->ToArray(), 'WorkDay')),
                     'personalIncomeTax' => $this->personalIncomeTax($payrollSession),
                     'taxPayment' => $this->taxPayment($payrollSession),
                     'deduction' => $this->deduction($payrollSession),
@@ -3206,5 +3209,103 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         return $collect->sum(function ($collect) {
             return $collect->sum('ValueSalary');
         });
+    }
+
+    public function payRollSessionLocal($attributes)
+    {
+        $payroll = Payroll::findOrFail($attributes['id']);
+        $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
+        $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+        $parameter = [];
+        $employees = User::where('Status', User::STATUS['WORKING'])->where('IsForeigner', false)
+            ->whereHas('seasonalContract', function ($q1) use ($startDate, $endDate) {
+                $q1->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
+            })->get();
+
+        $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
+
+        if (!is_null($otherDeclaration)) {
+            foreach ($employees as $employee) {
+                $seasonalContract = $employee->seasonalContract()->where('ContractFrom', '<=', $startDate)->where('ContractTo', '>=', $endDate)->first();
+                $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                ])->totalWorks;
+
+                $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = (int) $totalWorks;
+                $parameter['SO_NGAY_CHUAN'] = (int) $otherDeclaration->NumberOfWorkdays;
+                $data = $this->storeDataPayrollSessionLocal($seasonalContract, $parameter, $employee, $otherDeclaration);
+
+                if (!empty($employee->payrollSession)) {
+                    $employee->payrollSession()->delete();
+                }
+                $payroll->payrollSession()->create($data);
+                $payroll->update(['isSessionSalary' => true]);
+            }
+        }
+        return parent::find($payroll->Id);
+    }
+
+    public function storeDataPayrollSessionLocal($seasonalContract, array $parameter, $employee, $otherDeclaration)
+    {
+        $parameterValues = $seasonalContract->parameterValues()->where('Code', self::LUONG_CTV_VN_KHOAN)->orWhere('Code', self::LUONG_CTV_VN_NGAY)->first();
+
+        if (!is_null($parameterValues)) {
+            //Lương thực tế
+            $actuallyReceived = 0;
+            $paramaterFormula = ParamaterFormula::where('Code', 'LUONG_THUC_TE_CTV')->first();
+
+            if (!is_null($paramaterFormula)) {
+                $actuallyReceived = $this->getFormular(json_decode($paramaterFormula->Recipe), $seasonalContract, $parameter);
+                $actuallyReceived = eval('return ' . $actuallyReceived . ';');
+            }
+
+            //Lương thực tế và phụ cấp
+            $actuallyAllowance = 0;
+            $paramaterFormula = ParamaterFormula::where('Code', 'TONG_THUNHAP_CTV_VN')->first();
+
+            if (!is_null($paramaterFormula)) {
+                $actuallyAllowance = $this->getFormular(json_decode($paramaterFormula->Recipe), $seasonalContract, $parameter);
+                $actuallyAllowance = eval('return ' . $actuallyAllowance . ';');
+            }
+
+            $data['EmployeeId'] = $employee->Id;
+            $data['BasicSalary'] = $parameterValues->pivot->Value;
+            $data['WorkDay'] = $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'];
+            $data['Allowance'] = $actuallyAllowance - $actuallyReceived;
+            $data['PersonalIncomeTax'] = 0;
+            $data['TaxPayment'] = 0;
+            $data['Deduction'] = 0;
+            $data['ValueSalary'] = $actuallyReceived;
+
+            $defineValueTax = ParamaterValue::where('Code', 'MUC_DONG_THUE_CTV_VN')->first();
+
+            if (!is_null($defineValueTax) && $actuallyReceived > $defineValueTax->ValueDefault) {
+                $data['PersonalIncomeTax'] = $actuallyReceived;
+                $data['TaxPayment'] = $actuallyReceived * 0.1;
+            }
+            $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail()->where('EmployeeId', $employee->Id)->first();
+
+            if (!is_null($otherDeclarationDetail)) {
+                $arrDetail = json_decode($otherDeclarationDetail->Detail, true);
+                $checkCode = array_search(self::TRUY_LINH, array_column($arrDetail, 'code'));
+
+                if ($checkCode !== false) {
+                    $data['Deduction'] = $arrDetail[$checkCode]['valueDefault'];
+                }
+            }
+            $data['TotalIncome'] = $actuallyAllowance + $data['Deduction'] - $data['TaxPayment'];
+        } else {
+            $data['EmployeeId'] = $employee->Id;
+            $data['BasicSalary'] = 0;
+            $data['WorkDay'] = $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'];
+            $data['Allowance'] = 0;
+            $data['PersonalIncomeTax'] = 0;
+            $data['TaxPayment'] = 0;
+            $data['Deduction'] = 0;
+            $data['TotalIncome'] = 0;
+        }
+
+        return $data;
     }
 }
