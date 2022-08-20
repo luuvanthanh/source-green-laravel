@@ -41,6 +41,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('payroll-session-foreigners', 'PayRollController@payRollSessionForeigner');
             \Route::get('payroll-sessions', 'PayRollController@getPayRollSession');
             \Route::post('payroll-session-locals', 'PayRollController@payRollSessionLocal');
+            \Route::get('payroll-group-by-division', 'PayRollController@payrollGroupByDivision');
         });
     }
 }

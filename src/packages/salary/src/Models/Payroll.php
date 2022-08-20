@@ -33,6 +33,8 @@ class Payroll extends UuidModel
      */
     protected $casts = [
         'Date' => 'datetime',
+        'ColumnBasicSalaryAndAllowance' => 'array',
+        'ColumnIncurredAllowance' => 'array'
     ];
 
     /**

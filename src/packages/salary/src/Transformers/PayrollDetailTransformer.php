@@ -20,8 +20,8 @@ class PayRollDetailTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            'BasicSalaryAndAllowance' => json_decode($model->BasicSalaryAndAllowance),
-            'IncurredAllowance' => json_decode($model->IncurredAllowance),
+            // 'BasicSalaryAndAllowance' => json_decode($model->BasicSalaryAndAllowance),
+            // 'IncurredAllowance' => json_decode($model->IncurredAllowance),
         ];
     }
 

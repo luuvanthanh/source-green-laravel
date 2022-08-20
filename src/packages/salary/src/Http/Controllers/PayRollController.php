@@ -163,4 +163,11 @@ class PayRollController extends Controller
 
         return $this->success($payRolls, trans('lang::messages.common.createSuccess'));
     }
+
+    public function payrollGroupByDivision(Request $request)
+    {
+        $employees = $this->payRollRepository->payrollGroupByDivision($request->all());
+
+        return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
+    }
 }
