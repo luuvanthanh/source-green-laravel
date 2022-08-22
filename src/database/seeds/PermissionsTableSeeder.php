@@ -21,6 +21,32 @@ class PermissionsTableSeeder extends Seeder
         \DB::table('permissions')->insert(array(
             0 =>
             array(
+                'id' => '9f921779-46b0-4e46-898d-feffe8958e7c',
+                'name' => 'VIEW_NOTIFICATION',
+                'guard_name' => 'api',
+                'created_at' => '2022-06-21 10:11:13',
+                'updated_at' => '2022-06-21 10:11:13',
+                'show_name' => NULL,
+                'description' => 'Danh sách thông báo',
+                'group' => 'Thông báo',
+                'group_slug' => 'thong_bao',
+                'is_system' => "0",
+            ),
+            1 =>
+            array(
+                'id' => 'cce21205-ec97-412f-b4b2-c701aecc38af',
+                'name' => 'EDIT_TRAVELAGENCY',
+                'guard_name' => 'api',
+                'created_at' => '2022-06-21 10:11:13',
+                'updated_at' => '2022-06-21 10:11:13',
+                'show_name' => NULL,
+                'description' => 'Thêm, xóa  HDV vào doanh nghiệp lữ hành',
+                'group' => 'Doanh nghiệp lữ hành',
+                'group_slug' => 'doanh_nghiep_lu_hanh',
+                'is_system' => "0",
+            ),
+            2 =>
+            array(
                 'id' => 'a218543e-6f87-4ca7-8691-e88ef9eb9129',
                 'name' => 'VIEW_CAMERA',
                 'guard_name' => 'api',
@@ -32,7 +58,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_camera',
                 'is_system' => "0",
             ),
-            1 =>
+            3 =>
             array(
                 'id' => '2918be34-59d5-481e-a8ed-dc648e263a38',
                 'name' => 'ADD_CAMERA',
@@ -45,7 +71,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_camera',
                 'is_system' => "0",
             ),
-            2 =>
+            4 =>
             array(
                 'id' => 'b4b808a4-4d5b-4f67-885a-10eb5b97383f',
                 'name' => 'EDIT_CAMERA',
@@ -58,7 +84,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_camera',
                 'is_system' => "0",
             ),
-            3 =>
+            5 =>
             array(
                 'id' => 'fa7a61c7-734d-40b0-b098-50aad97b67bf',
                 'name' => 'DELETE_CAMERA',
@@ -71,7 +97,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_camera',
                 'is_system' => "0",
             ),
-            4 =>
+            6 =>
             array(
                 'id' => '26047e45-901f-424f-8100-a1306a1a2452',
                 'name' => 'VIEW_CAMERAGROUP',
@@ -84,7 +110,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nhom_camera',
                 'is_system' => "0",
             ),
-            5 =>
+            7 =>
             array(
                 'id' => '71638e5e-9c43-4c14-a40d-b10a29902fee',
                 'name' => 'ADD_CAMERAGROUP',
@@ -97,7 +123,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nhom_camera',
                 'is_system' => "0",
             ),
-            6 =>
+            8 =>
             array(
                 'id' => '1442d74d-d676-40a5-a091-b05af8d0e9d1',
                 'name' => 'EDIT_CAMERAGROUP',
@@ -110,7 +136,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nhom_camera',
                 'is_system' => "0",
             ),
-            7 =>
+            9 =>
             array(
                 'id' => '9004f90c-c041-46d9-a768-d25b1f6df0da',
                 'name' => 'DELETE_CAMERAGROUP',
@@ -123,7 +149,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nhom_camera',
                 'is_system' => "0",
             ),
-            8 =>
+            10 =>
             array(
                 'id' => '746733a3-3445-49f5-ad29-c22042d0c2d9',
                 'name' => 'VIEW_CAMERASERVER',
@@ -136,7 +162,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_camera_server',
                 'is_system' => "0",
             ),
-            9 =>
+            11 =>
             array(
                 'id' => 'ad74b8de-a78f-4c97-8246-5fcaac6ffecd',
                 'name' => 'ADD_CAMERASERVER',
@@ -149,7 +175,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_camera_server',
                 'is_system' => "0",
             ),
-            10 =>
+            12 =>
             array(
                 'id' => 'fc6c1fb6-c302-47ec-a239-d67581dba5dd',
                 'name' => 'EDIT_CAMERASERVER',
@@ -162,7 +188,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_camera_server',
                 'is_system' => "0",
             ),
-            11 =>
+            13 =>
             array(
                 'id' => 'be889db1-02ec-43b2-9798-45c53cbb7b23',
                 'name' => 'DELETE_CAMERASERVER',
@@ -175,7 +201,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_camera_server',
                 'is_system' => "0",
             ),
-            12 =>
+            14 =>
             array(
                 'id' => '19ea1926-f8e6-4826-96f9-a553d4e2f2f4',
                 'name' => 'VIEW_LEGALTOURGUIDE',
@@ -188,7 +214,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'huong_dan_vien_hop_phap',
                 'is_system' => "0",
             ),
-            13 =>
+            15 =>
             array(
                 'id' => 'da79e8b1-7c35-49ca-a0bd-bc06066daba8',
                 'name' => 'EDIT_LEGALTOURGUIDE',
@@ -201,7 +227,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'huong_dan_vien_hop_phap',
                 'is_system' => "0",
             ),
-            14 =>
+            16 =>
             array(
                 'id' => '43621634-b057-4666-b7ea-9e0a185114aa',
                 'name' => 'VIEW_TRAVELAGENCY',
@@ -214,20 +240,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'doanh_nghiep_lu_hanh',
                 'is_system' => "0",
             ),
-            15 =>
-            array(
-                'id' => 'cce21205-ec97-412f-b4b2-c701aecc38af',
-                'name' => 'EDIT_TRAVELAGENCY',
-                'guard_name' => 'api',
-                'created_at' => '2022-06-21 10:11:13',
-                'updated_at' => '2022-06-21 10:11:13',
-                'show_name' => NULL,
-                'description' => 'Thêam, xóa  HDV vào doanh nghiệp lữ hành',
-                'group' => 'Doanh nghiệp lữ hành',
-                'group_slug' => 'doanh_nghiep_lu_hanh',
-                'is_system' => "0",
-            ),
-            16 =>
+            17 =>
             array(
                 'id' => 'ec74056e-04eb-42fd-b72f-ab86d8ad291c',
                 'name' => 'VIEW_ILLEGALTOURGUIDE',
@@ -240,7 +253,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'huong_dan_vien_bat_hop_phap',
                 'is_system' => "0",
             ),
-            17 =>
+            18 =>
             array(
                 'id' => 'cfeb5700-93d6-4c23-b1d7-3763637f926f',
                 'name' => 'ADD_ILLEGALTOURGUIDE',
@@ -253,7 +266,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'huong_dan_vien_bat_hop_phap',
                 'is_system' => "0",
             ),
-            18 =>
+            19 =>
             array(
                 'id' => 'a84eeb2b-3b16-4805-a40b-2944a29ca9c5',
                 'name' => 'EDIT_ILLEGALTOURGUIDE',
@@ -266,7 +279,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'huong_dan_vien_bat_hop_phap',
                 'is_system' => "0",
             ),
-            19 =>
+            20 =>
             array(
                 'id' => '1e1bcec8-d856-41cd-8227-b30049d149d1',
                 'name' => 'DELETE_ILLEGALTOURGUIDE',
@@ -279,7 +292,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'huong_dan_vien_bat_hop_phap',
                 'is_system' => "0",
             ),
-            20 =>
+            21 =>
             array(
                 'id' => '13bb9958-67de-4253-8c6b-04979bd159c1',
                 'name' => 'VIEW_BLACKLIST',
@@ -292,7 +305,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'doi_tuong_can_theo_doi',
                 'is_system' => "0",
             ),
-            21 =>
+            22 =>
             array(
                 'id' => '3f62b059-6828-4318-8d05-ab3f7c242f43',
                 'name' => 'ADD_BLACKLIST',
@@ -305,7 +318,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'doi_tuong_can_theo_doi',
                 'is_system' => "0",
             ),
-            22 =>
+            23 =>
             array(
                 'id' => 'e0bb7bc2-e038-4ce1-b3c8-c67a32d4cd56',
                 'name' => 'EDIT_BLACKLIST',
@@ -318,7 +331,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'doi_tuong_can_theo_doi',
                 'is_system' => "0",
             ),
-            23 =>
+            24 =>
             array(
                 'id' => 'd077c737-48b4-4c33-bd56-9b10b800bebd',
                 'name' => 'DELETE_BLACKLIST',
@@ -331,7 +344,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'doi_tuong_can_theo_doi',
                 'is_system' => "0",
             ),
-            24 =>
+            25 =>
             array(
                 'id' => 'e94d874b-8d59-49ff-bddb-c48e303f470e',
                 'name' => 'VIEW_BLACKLISTTYPE',
@@ -344,7 +357,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'danh_muc_doi_tuong_can_theo_doi',
                 'is_system' => "0",
             ),
-            25 =>
+            26 =>
             array(
                 'id' => '32f68cd9-0de8-4fb9-9d5f-30b92d1edf7d',
                 'name' => 'ADD_BLACKLISTTYPE',
@@ -357,7 +370,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'danh_muc_doi_tuong_can_theo_doi',
                 'is_system' => "0",
             ),
-            26 =>
+            27 =>
             array(
                 'id' => 'e903f3a8-a1f9-4287-bdb4-ac84812b210a',
                 'name' => 'EDIT_BLACKLISTTYPE',
@@ -370,7 +383,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'danh_muc_doi_tuong_can_theo_doi',
                 'is_system' => "0",
             ),
-            27 =>
+            28 =>
             array(
                 'id' => 'cf22381d-2a7f-45a0-bcc3-99de77296fe3',
                 'name' => 'DELETE_BLACKLISTTYPE',
@@ -383,7 +396,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'danh_muc_doi_tuong_can_theo_doi',
                 'is_system' => "0",
             ),
-            28 =>
+            29 =>
             array(
                 'id' => 'b563ce08-a8f9-4c6a-9bfd-c0bf93ce7616',
                 'name' => 'VIEW_SYNC',
@@ -396,7 +409,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'dong_bo_du_lieu',
                 'is_system' => "0",
             ),
-            29 =>
+            30 =>
             array(
                 'id' => '7880bf10-324e-4a22-a60e-d625f520d1b3',
                 'name' => 'VIEW_DASHBOARD',
@@ -409,7 +422,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'dashboard_giam_sat',
                 'is_system' => "0",
             ),
-            30 =>
+            31 =>
             array(
                 'id' => '08bb5c3d-5296-4db1-94ad-5e9bb81cf37b',
                 'name' => 'VIEW_EVENT',
@@ -422,7 +435,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'tat_ca_su_kien',
                 'is_system' => "0",
             ),
-            31 =>
+            32 =>
             array(
                 'id' => 'c671a56a-1012-40c9-bfc0-4f20d27f0f55',
                 'name' => 'EDIT_EVENT',
@@ -435,7 +448,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'tat_ca_su_kien',
                 'is_system' => "0",
             ),
-            32 =>
+            33 =>
             array(
                 'id' => '9af4e3cc-2079-40ba-a73e-ede3850e2766',
                 'name' => 'VIEW_TRACKEDEVENT',
@@ -448,7 +461,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'su_kien_can_theo_doi_xu_ly',
                 'is_system' => "0",
             ),
-            33 =>
+            34 =>
             array(
                 'id' => '53704a40-155e-4fbf-acef-4ba3fe75f73c',
                 'name' => 'EDIT_TRACKEDEVENT',
@@ -461,7 +474,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'su_kien_can_theo_doi_xu_ly',
                 'is_system' => "0",
             ),
-            34 =>
+            35 =>
             array(
                 'id' => 'bd3d1f3a-f7f0-4902-8c60-19fca358e6ea',
                 'name' => 'SEARCH_FACE',
@@ -474,7 +487,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'tim_kiem_theo_khuon_mat',
                 'is_system' => "0",
             ),
-            35 =>
+            36 =>
             array(
                 'id' => '9fb8242f-7604-4399-a155-7475dc69a834',
                 'name' => 'SEARCH_FACECARD',
@@ -487,7 +500,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'tim_kiem_doi_tuong_lien_quan_theo_the',
                 'is_system' => "0",
             ),
-            36 =>
+            37 =>
             array(
                 'id' => 'b529b9ca-4826-48c2-b737-34f1f6cfacca',
                 'name' => 'SEARCH_TOURIST',
@@ -500,7 +513,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'tra_cuu_du_khach_tai_khu_diem',
                 'is_system' => "0",
             ),
-            37 =>
+            38 =>
             array(
                 'id' => '44bee464-1dd5-4f9d-833d-c52000243138',
                 'name' => 'VIEW_SURVEYRESULT',
@@ -513,7 +526,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'ket_qua_khao_sat',
                 'is_system' => "0",
             ),
-            38 =>
+            39 =>
             array(
                 'id' => '2a222e5d-b66b-4ed4-8ae5-db5605fd4d1c',
                 'name' => 'VIEW_SITE',
@@ -526,7 +539,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_khu_diem_du_lich',
                 'is_system' => "0",
             ),
-            39 =>
+            40 =>
             array(
                 'id' => '3a82b2d7-90dd-4879-9ebf-86149d0aff1b',
                 'name' => 'ADD_SITE',
@@ -539,7 +552,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_khu_diem_du_lich',
                 'is_system' => "0",
             ),
-            40 =>
+            41 =>
             array(
                 'id' => 'b12e2918-7178-45a0-b60e-ab2e9f78ba04',
                 'name' => 'EDIT_SITE',
@@ -552,7 +565,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_khu_diem_du_lich',
                 'is_system' => "0",
             ),
-            41 =>
+            42 =>
             array(
                 'id' => 'b35825e2-55e6-4b3e-b0f9-e121c51e3c35',
                 'name' => 'DELETE_SITE',
@@ -565,7 +578,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_khu_diem_du_lich',
                 'is_system' => "0",
             ),
-            42 =>
+            43 =>
             array(
                 'id' => 'b83dc944-6f61-44f7-9b0f-321ec5854418',
                 'name' => 'VIEW_EVENTTYPE',
@@ -578,7 +591,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_loai_su_kien',
                 'is_system' => "0",
             ),
-            43 =>
+            44 =>
             array(
                 'id' => 'ce82ca95-3288-49d9-b57b-5f62b50d6444',
                 'name' => 'VIEW_PROVINCE',
@@ -591,7 +604,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_tinh_cap_the',
                 'is_system' => "0",
             ),
-            44 =>
+            45 =>
             array(
                 'id' => '93f66686-dd79-47a1-b884-9af778cd108d',
                 'name' => 'VIEW_CARDTYPE',
@@ -604,7 +617,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_loai_the',
                 'is_system' => "0",
             ),
-            45 =>
+            46 =>
             array(
                 'id' => '0d86210f-8f0a-4370-92f3-8ad88a0bfb38',
                 'name' => 'VIEW_LANGUAGE',
@@ -617,7 +630,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_ngoai_ngu_su_dung',
                 'is_system' => "0",
             ),
-            46 =>
+            47 =>
             array(
                 'id' => 'c710f47a-fcf8-42f9-9557-d86034c5e044',
                 'name' => 'VIEW_STATUS',
@@ -630,7 +643,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_trang_thai_huong_dan_vien_du_lich',
                 'is_system' => "0",
             ),
-            47 =>
+            48 =>
             array(
                 'id' => '6ad72af7-3f1f-442a-be8f-360f30485fc2',
                 'name' => 'VIEW_SURVEY',
@@ -643,7 +656,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_phieu_khao_sat',
                 'is_system' => "0",
             ),
-            48 =>
+            49 =>
             array(
                 'id' => '53c140cd-0d84-4f0f-af33-cc8bbaad514b',
                 'name' => 'ADD_SURVEY',
@@ -656,7 +669,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_phieu_khao_sat',
                 'is_system' => "0",
             ),
-            49 =>
+            50 =>
             array(
                 'id' => '3946804f-48fc-432e-8fc6-76c474d4d4d1',
                 'name' => 'EDIT_SURVEY',
@@ -669,7 +682,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_phieu_khao_sat',
                 'is_system' => "0",
             ),
-            50 =>
+            51 =>
             array(
                 'id' => '53a79b5c-a3ba-42da-be02-f1c03c36ea3b',
                 'name' => 'DELETE_SURVEY',
@@ -682,7 +695,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_phieu_khao_sat',
                 'is_system' => "0",
             ),
-            51 =>
+            52 =>
             array(
                 'id' => '09956385-0239-4a96-97ff-d05edd70dbf8',
                 'name' => 'VIEW_STATISTICSDASHBOARD',
@@ -695,7 +708,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            52 =>
+            53 =>
             array(
                 'id' => '3e037837-af15-4881-a74d-6c8943294565',
                 'name' => 'VIEW_STATISTICSLEGALTOURGUIDE',
@@ -708,7 +721,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            53 =>
+            54 =>
             array(
                 'id' => 'bfd1e50d-9400-42b3-aeb8-15df12db20df',
                 'name' => 'VIEW_STATISTICSLEGALRATE',
@@ -721,7 +734,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            54 =>
+            55 =>
             array(
                 'id' => '1b04a69d-64e4-4225-a706-90a3a2ee0995',
                 'name' => 'VIEW_STATISTICSAGENCYRATE',
@@ -734,7 +747,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            55 =>
+            56 =>
             array(
                 'id' => '64bca16a-9e2f-47df-8e2e-7d5b34ea9506',
                 'name' => 'VIEW_STATISTICSILLEGALTOURGUIDE',
@@ -747,7 +760,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            56 =>
+            57 =>
             array(
                 'id' => 'ed7ef474-754d-4b88-b651-c33da3d24999',
                 'name' => 'VIEW_STATISTICSILLEGALRATE',
@@ -760,7 +773,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            57 =>
+            58 =>
             array(
                 'id' => 'd7d67428-7384-45d6-8d02-8148efde0c7f',
                 'name' => 'VIEW_STATISTICSBLACKLISTRATE',
@@ -773,7 +786,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            58 =>
+            59 =>
             array(
                 'id' => '56b16e38-6bd9-4286-8993-13e4b8ad3f14',
                 'name' => 'VIEW_STATISTICSTOURIST',
@@ -786,7 +799,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            59 =>
+            60 =>
             array(
                 'id' => '7fe27cc1-dabb-4074-8ff6-2830c693036c',
                 'name' => 'VIEW_STATISTICSHAWKER',
@@ -799,7 +812,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            60 =>
+            61 =>
             array(
                 'id' => '5498e202-fbc7-468c-851a-18c9a07e1677',
                 'name' => 'VIEW_STATISTICSTRASH',
@@ -812,7 +825,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            61 =>
+            62 =>
             array(
                 'id' => '6df80dc3-950b-4f2b-8218-03bd6b3c8cbe',
                 'name' => 'VIEW_STATISTICSSURVEY',
@@ -825,7 +838,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            62 =>
+            63 =>
             array(
                 'id' => 'aa43b59b-387d-46cf-a9c2-8d00d09ca1e6',
                 'name' => 'VIEW_STATISTICSALERT',
@@ -838,7 +851,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            63 =>
+            64 =>
             array(
                 'id' => 'ff0a98f3-13bc-49ee-95b7-192841e9d83b',
                 'name' => 'VIEW_STATISTICSTRACKEDEVENT',
@@ -851,7 +864,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'bao_cao_thong_ke',
                 'is_system' => "0",
             ),
-            64 =>
+            65 =>
             array(
                 'id' => '21b3a115-0344-478b-b4fe-e4a84637ab50',
                 'name' => 'VIEW_ROLE',
@@ -864,7 +877,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_vai_tro',
                 'is_system' => "0",
             ),
-            65 =>
+            66 =>
             array(
                 'id' => 'd8756b17-b0b2-43df-a01d-6c02f7441929',
                 'name' => 'ADD_ROLE',
@@ -877,7 +890,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_vai_tro',
                 'is_system' => "0",
             ),
-            66 =>
+            67 =>
             array(
                 'id' => 'd4869b96-cc92-41b5-acae-806d37186040',
                 'name' => 'EDIT_ROLE',
@@ -890,7 +903,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_vai_tro',
                 'is_system' => "0",
             ),
-            67 =>
+            68 =>
             array(
                 'id' => '0b7b40ff-0371-4e6e-bd9c-426bbedb413c',
                 'name' => 'DELETE_ROLE',
@@ -903,7 +916,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_vai_tro',
                 'is_system' => "0",
             ),
-            68 =>
+            69 =>
             array(
                 'id' => 'f60f7178-9b48-48ba-ba8f-58de3893c442',
                 'name' => 'VIEW_UNIT',
@@ -916,7 +929,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_don_vi',
                 'is_system' => "0",
             ),
-            69 =>
+            70 =>
             array(
                 'id' => 'bcdaadd3-25fb-46e7-bb71-b1a7bbdaf2a3',
                 'name' => 'ADD_UNIT',
@@ -929,7 +942,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_don_vi',
                 'is_system' => "0",
             ),
-            70 =>
+            71 =>
             array(
                 'id' => '99e72460-e3f2-43ef-a1a2-57627a7c4245',
                 'name' => 'EDIT_UNIT',
@@ -942,7 +955,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_don_vi',
                 'is_system' => "0",
             ),
-            71 =>
+            72 =>
             array(
                 'id' => 'f2db2616-1bd1-4117-a512-653e8b14db58',
                 'name' => 'DELETE_UNIT',
@@ -955,7 +968,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_don_vi',
                 'is_system' => "0",
             ),
-            72 =>
+            73 =>
             array(
                 'id' => '935d791e-cb11-4ea7-aba2-1758df77050d',
                 'name' => 'VIEW_USER',
@@ -968,7 +981,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nguoi_dung',
                 'is_system' => "0",
             ),
-            73 =>
+            74 =>
             array(
                 'id' => 'b1ef24f8-320e-4802-9168-0f04110ec6b4',
                 'name' => 'ADD_USER',
@@ -981,7 +994,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nguoi_dung',
                 'is_system' => "0",
             ),
-            74 =>
+            75 =>
             array(
                 'id' => '58c6e4fc-3f64-4acc-926d-79a868989dd3',
                 'name' => 'EDIT_USER',
@@ -994,7 +1007,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nguoi_dung',
                 'is_system' => "0",
             ),
-            75 =>
+            76 =>
             array(
                 'id' => 'ac5f8512-7377-4821-9ca2-a18a4d6d467f',
                 'name' => 'DELETE_USER',
@@ -1007,7 +1020,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nguoi_dung',
                 'is_system' => "0",
             ),
-            76 =>
+            77 =>
             array(
                 'id' => 'd85895c4-4d8e-4144-9576-978d2b6e1943',
                 'name' => 'BLOCK_USER ',
@@ -1020,7 +1033,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_nguoi_dung',
                 'is_system' => "0",
             ),
-            77 =>
+            78 =>
             array(
                 'id' => 'aa80b737-0b7c-43b0-bb63-c9dbe37bc58a',
                 'name' => 'VIEW_EVENTSETTING',
@@ -1033,7 +1046,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_su_kien',
                 'is_system' => "0",
             ),
-            78 =>
+            79 =>
             array(
                 'id' => 'b1d686c7-f697-4d0a-8774-46d46483d13f',
                 'name' => 'VIEW_SYSTEMSETTING',
@@ -1046,7 +1059,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_he_thong',
                 'is_system' => "0",
             ),
-            79 =>
+            80 =>
             array(
                 'id' => '4e569566-acab-4923-9868-a3363140efd3',
                 'name' => 'EDIT_SYSTEMSETTING',
@@ -1059,7 +1072,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_he_thong',
                 'is_system' => "0",
             ),
-            80 =>
+            81 =>
             array(
                 'id' => '7e4df066-a1bc-47d0-b028-caaf16243a5c',
                 'name' => 'VIEW_SERVICESETTING',
@@ -1072,7 +1085,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_dich_vu',
                 'is_system' => "0",
             ),
-            81 =>
+            82 =>
             array(
                 'id' => '07d5876b-881f-469c-9b17-6427f2e7a9db',
                 'name' => 'EDIT_SERVICESETTING',
@@ -1085,7 +1098,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_dich_vu',
                 'is_system' => "0",
             ),
-            82 =>
+            83 =>
             array(
                 'id' => 'cacfb042-0a9a-4ed6-bf0c-458e6c1c6917',
                 'name' => 'VIEW_NASSETTING',
@@ -1098,7 +1111,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_nas',
                 'is_system' => "0",
             ),
-            83 =>
+            84 =>
             array(
                 'id' => '2c1e61cb-7c9d-47a7-be78-6b949ea85cf7',
                 'name' => 'EDIT_NASSETTING',
@@ -1111,7 +1124,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_nas',
                 'is_system' => "0",
             ),
-            84 =>
+            85 =>
             array(
                 'id' => '47d686eb-c750-47bb-8444-77faef5848e0',
                 'name' => 'VIEW_3RDSETTING',
@@ -1124,7 +1137,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_third_party_services',
                 'is_system' => "0",
             ),
-            85 =>
+            86 =>
             array(
                 'id' => 'e5cfd3b8-a596-4c0c-9c6f-cac624caa008',
                 'name' => 'EDIT_3RDSETTING',
@@ -1137,7 +1150,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'cau_hinh_third_party_services',
                 'is_system' => "0",
             ),
-            86 =>
+            87 =>
             array(
                 'id' => '81fc496b-1858-47dd-bfc5-549bf360cd9d',
                 'name' => 'VIEW_APISETTING',
@@ -1150,7 +1163,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_api_chia_se_cho_lgsp',
                 'is_system' => "0",
             ),
-            87 =>
+            88 =>
             array(
                 'id' => '9ecd0284-b94c-40a5-96e7-b255ec440d80',
                 'name' => 'EDIT__APISETTING',
@@ -1163,7 +1176,7 @@ class PermissionsTableSeeder extends Seeder
                 'group_slug' => 'quan_ly_api_chia_se_cho_lgsp',
                 'is_system' => "0",
             ),
-            88 =>
+            89 =>
             array(
                 'id' => '370b35e0-6cb0-4119-b27e-100843003ac6',
                 'name' => 'VIEW_HISTORY',
@@ -1171,7 +1184,7 @@ class PermissionsTableSeeder extends Seeder
                 'created_at' => '2022-06-21 10:11:13',
                 'updated_at' => '2022-06-21 10:11:13',
                 'show_name' => NULL,
-                'description' => NULL,
+                'description' => 'Lịch sử hoạt động',
                 'group' => 'Lịch sử hoạt động',
                 'group_slug' => 'lich_su_hoat_dong',
                 'is_system' => "0",
