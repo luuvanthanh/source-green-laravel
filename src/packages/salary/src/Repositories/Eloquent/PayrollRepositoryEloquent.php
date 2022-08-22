@@ -3164,61 +3164,32 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
                 $result[$seasonalContract->branch->Name] = [
                     'BranchId' => $seasonalContract->BranchId,
-                    'BranchTotalInCome' => $this->totalIncomeByBranch($payrollSession),
-                    'TotalWorkDay' => array_sum(array_column($payrollSession->ToArray(), 'WorkDay')),
-                    'PersonalIncomeTax' => $this->personalIncomeTax($payrollSession),
-                    'TaxPayment' => $this->taxPayment($payrollSession),
-                    'Deduction' => $this->deduction($payrollSession),
-                    'ValueSalary' => $this->valueSalary($payrollSession),
+                    'TotalInCome' => array_sum(array_column($payrollSession->ToArray(), 'TotalIncome')),
+                    'WorkDay' => array_sum(array_column($payrollSession->ToArray(), 'WorkDay')),
+                    'PersonalIncomeTax' => array_sum(array_column($payrollSession->ToArray(), 'PersonalIncomeTax')),
+                    'TaxPayment' => array_sum(array_column($payrollSession->ToArray(), 'TaxPayment')),
+                    'Deduction' => array_sum(array_column($payrollSession->ToArray(), 'Deduction')),
+                    'ValueSalary' => array_sum(array_column($payrollSession->ToArray(), 'ValueSalary')),
+                    'Allowance' => array_sum(array_column($payrollSession->ToArray(), 'Allowance')),
+                    'BasicSalary' => array_sum(array_column($payrollSession->ToArray(), 'BasicSalary')),
                 ];
-
                 $result[$seasonalContract->branch->Name]['DataDetail'] = $payrollSession;
             }
         }
 
-        return $result;
-    }
+        $data = [
+            'BranchTotalInCome' => array_sum(array_column($result, 'TotalInCome')),
+            'TotalWorkDay' => array_sum(array_column($result, 'WorkDay')),
+            'TotalPersonalIncomeTax' => array_sum(array_column($result, 'PersonalIncomeTax')),
+            'TotalTaxPayment' => array_sum(array_column($result, 'TaxPayment')),
+            'TotalDeduction' => array_sum(array_column($result, 'Deduction')),
+            'TotalValueSalary' => array_sum(array_column($result, 'ValueSalary')),
+            'TotalAllowance' => array_sum(array_column($result, 'Allowance')),
+            'TotalBasicSalary' => array_sum(array_column($result, 'BasicSalary')),
+        ];
+        $data['Data'] = $result;
 
-    public function totalIncomeByBranch($collect)
-    {
-        return $collect->sum(function ($collect) {
-            return $collect->sum('TotalIncome');
-        });
-    }
-
-    public function totalWorkDay($collect)
-    {
-        return $collect->sum(function ($collect) {
-            return $collect->sum('WorkDay');
-        });
-    }
-
-    public function personalIncomeTax($collect)
-    {
-        return $collect->sum(function ($collect) {
-            return $collect->sum('PersonalIncomeTax');
-        });
-    }
-
-    public function taxPayment($collect)
-    {
-        return $collect->sum(function ($collect) {
-            return $collect->sum('TaxPayment');
-        });
-    }
-
-    public function deduction($collect)
-    {
-        return $collect->sum(function ($collect) {
-            return $collect->sum('Deduction');
-        });
-    }
-
-    public function valueSalary($collect)
-    {
-        return $collect->sum(function ($collect) {
-            return $collect->sum('ValueSalary');
-        });
+        return $data;
     }
 
     public function payRollSessionLocal($attributes)
