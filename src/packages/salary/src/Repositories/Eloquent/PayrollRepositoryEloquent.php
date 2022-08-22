@@ -3177,7 +3177,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             }
         }
 
-        $data = [
+        $result['TotalSum'] = [
             'BranchTotalInCome' => array_sum(array_column($result, 'TotalInCome')),
             'TotalWorkDay' => array_sum(array_column($result, 'WorkDay')),
             'TotalPersonalIncomeTax' => array_sum(array_column($result, 'PersonalIncomeTax')),
@@ -3187,9 +3187,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             'TotalAllowance' => array_sum(array_column($result, 'Allowance')),
             'TotalBasicSalary' => array_sum(array_column($result, 'BasicSalary')),
         ];
-        $data['Data'] = $result;
 
-        return $data;
+        return $result;
     }
 
     public function payRollSessionLocal($attributes)
