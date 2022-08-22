@@ -3133,12 +3133,19 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
     public function getPayRollSession($attributes)
     {
-        $payroll = $this->model->find($attributes['id']);
+        $payroll = Payroll::where('Month', $attributes['month'])->first();
         $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
         $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
         $orderByBranch = $payroll->payrollSession()->with(['employee.seasonalContract' => function ($query) {
             $query->orderBy('BranchId');
         }])->whereHas('employee', function ($query) use ($attributes) {
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            $query->tranferHistory($attributes);
+
             if (!empty($attributes['isForeigner'])) {
                 $query->where('IsForeigner', $attributes['isForeigner']);
             }
@@ -3156,7 +3163,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 }])->get();
 
                 $result[$seasonalContract->branch->Name] = [
-                    'branchName' => $seasonalContract->BranchId,
+                    'branchId' => $seasonalContract->BranchId,
                     'branchTotalInCome' => $this->totalIncomeByBranch($payrollSession),
                     'totalWorkDay' => array_sum(array_column($payrollSession->ToArray(), 'WorkDay')),
                     'personalIncomeTax' => $this->personalIncomeTax($payrollSession),
@@ -3168,7 +3175,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $result[$seasonalContract->branch->Name]['dataDetail'] = $payrollSession;
             }
         }
-        
+
         return $result;
     }
 
@@ -3307,6 +3314,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $data['TaxPayment'] = 0;
             $data['Deduction'] = 0;
             $data['TotalIncome'] = 0;
+            $data['ValueSalary'] = 0;
         }
 
         return $data;
@@ -3326,35 +3334,44 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $employeeId = explode(',', $attributes['employeeId']);
                     $q2->whereIn('Id', $employeeId);
                 }
-
-                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
-                    $q2->where('IsForeigner', true);
-                }
-
-                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
-                    $q2->where('IsForeigner', false);
-                }
             });
         }])->first();
 
         $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
         $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
 
-        $payrollDetail = $payroll->payrollDetail()->whereHas('employee.labourContract', function ($query) use ($startDate, $endDate) {
-            $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-        })->orWhereHas('employee.probationaryContract', function ($query) use ($startDate, $endDate) {
-            $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-        })->with(['employee' => function ($query) {
-            $query->select('Id', 'FullName');
-        }])->get();
+        $payrollDetail = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($startDate, $endDate, $attributes) {
+            $query->tranferHistory($attributes);
+
+            if (!empty($attributes['fullName'])) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            }
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+
+            $query->whereHas('labourContract', function ($query) use ($startDate, $endDate) {
+                $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
+            })->orWhereHas('probationaryContract', function ($query) use ($startDate, $endDate) {
+                $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
+            })->with(['employee' => function ($query) {
+                $query->select('Id', 'FullName', 'Code');
+            }]);
+        })->get();
 
         $listDivision = [];
         foreach ($payrollDetail as $value) {
-            $employee = $value->employee()->with(['labourContract' => function ($query) use ($startDate, $endDate) {
+            $employee = $value->employee()->whereHas('labourContract', function ($query) use ($startDate, $endDate) {
                 $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-            }])->with(['probationaryContract' => function ($query) use ($startDate, $endDate) {
+            })->orWhereHas('probationaryContract', function ($query) use ($startDate, $endDate) {
                 $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-            }])->first();
+            })->first();
 
             if (!empty($employee->labourContract)) {
                 $contract = $employee->labourContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
@@ -3362,10 +3379,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $contract = $employee->probationaryContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
             }
 
-            $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee.labourContract', function ($query) use ($contract, $startDate, $endDate) {
-                $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->where('DivisionId', $contract->DivisionId);
-            })->orWhereHas('employee.probationaryContract', function ($query1) use ($contract, $startDate, $endDate) {
-                $query1->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->where('DivisionId', $contract->DivisionId);
+            $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee.probationaryContract', function ($q) use ($contract, $startDate, $endDate) {
+                $q->where('DivisionId', $contract->DivisionId)->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
+            })->orWhereHas('employee.labourContract', function ($q) use ($contract, $startDate, $endDate) {
+                $q->where('DivisionId', $contract->DivisionId)->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
             })->get();
             $result = call_user_func_array('array_merge', array_column($payrollDetailSum->ToArray(), 'BasicSalaryAndAllowance'));
 
