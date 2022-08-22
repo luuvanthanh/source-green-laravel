@@ -3151,9 +3151,11 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             if (!array_key_exists($seasonalContract->BranchId, $result)) {
                 $payrollSession = $payroll->payrollSession()->whereHas('employee.seasonalContract', function ($query) use ($seasonalContract) {
                     $query->where('BranchId', $seasonalContract->BranchId);
-                })->with('employee')->get();
+                })->with(['employee' => function ($query) {
+                    $query->select('Id', 'FullName', 'Code');
+                }])->get();
 
-                $result[$seasonalContract->branch->Name][] = [
+                $result[$seasonalContract->branch->Name] = [
                     'branchName' => $seasonalContract->BranchId,
                     'branchTotalInCome' => $this->totalIncomeByBranch($payrollSession),
                     'totalWorkDay' => array_sum(array_column($payrollSession->ToArray(), 'WorkDay')),
@@ -3161,11 +3163,12 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'taxPayment' => $this->taxPayment($payrollSession),
                     'deduction' => $this->deduction($payrollSession),
                     'valueSalary' => $this->valueSalary($payrollSession),
-                    'dataDetail' => $payrollSession->toArray()
                 ];
+
+                $result[$seasonalContract->branch->Name]['dataDetail'] = $payrollSession;
             }
         }
-
+        
         return $result;
     }
 
