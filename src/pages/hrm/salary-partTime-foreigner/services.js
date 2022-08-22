@@ -21,30 +21,23 @@ export function get(data = {}) {
   });
 }
 
-export function update(data) {
-  return request(`/v1/payrolls/${data.id}`, {
-    method: 'PUT',
-    data,
-  });
-}
-
-export function updateSalary(data) {
-  return request(`/v1/payslip`, {
-    method: 'POST',
-    data,
-  });
-}
-
-export function updateSalaryVn(data) {
-  return request(`/v1/payroll-session-locals`, {
-    method: 'POST',
-    data,
-  });
-}
-
-export function updateSalaryForeign(data) {
-  return request(`/v1/payroll-session-foreigners`, {
-    method: 'POST',
-    data,
+export function getData(data = {}) {
+  return request('/v1/payroll-sessions', {
+    method: 'GET',
+    params: {
+      ...data,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      isForeigner: 'false',
+      month: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.month,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }

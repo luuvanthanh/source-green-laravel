@@ -1655,6 +1655,20 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
           pro: true,
         },
+        {
+          title: 'Bảng lương thời vụ Việt Nam',
+          key: 'salary-part-time-vn',
+          url: ['/quan-ly-nhan-su/bang-luong-thoi-vu-viet-nam'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Bảng lương thời vụ nước ngoài',
+          key: 'salary-part-time-foreigner',
+          url: ['/quan-ly-nhan-su/bang-luong-thoi-vu-nuoc-ngoai'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
       ],
     },
     {
