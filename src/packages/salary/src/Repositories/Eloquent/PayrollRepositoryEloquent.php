@@ -3362,10 +3362,12 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $listDivision[$contract->division->Name] = $arrSumAllowance;
                 $listDivision[$contract->division->Name]['TotalInCome'] = array_sum(array_column($payrollDetailSum->ToArray(), 'TotalIncome'));
                 $listDivision[$contract->division->Name]['Value'][] = $value;
-                $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = $value->payroll->ColumnBasicSalaryAndAllowance;
+                $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance);
+                $listDivision[$contract->division->Name]['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance);
             } else {
                 $listDivision[$contract->division->Name]['Value'][] = $value;
-                $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = $value->payroll->ColumnBasicSalaryAndAllowance;
+                $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance);
+                $listDivision[$contract->division->Name]['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance);
             }
         }
 
