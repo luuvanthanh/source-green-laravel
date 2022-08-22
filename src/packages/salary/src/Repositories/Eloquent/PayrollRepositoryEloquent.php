@@ -3163,16 +3163,16 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 }])->get();
 
                 $result[$seasonalContract->branch->Name] = [
-                    'branchId' => $seasonalContract->BranchId,
-                    'branchTotalInCome' => $this->totalIncomeByBranch($payrollSession),
-                    'totalWorkDay' => array_sum(array_column($payrollSession->ToArray(), 'WorkDay')),
-                    'personalIncomeTax' => $this->personalIncomeTax($payrollSession),
-                    'taxPayment' => $this->taxPayment($payrollSession),
-                    'deduction' => $this->deduction($payrollSession),
-                    'valueSalary' => $this->valueSalary($payrollSession),
+                    'BranchId' => $seasonalContract->BranchId,
+                    'BranchTotalInCome' => $this->totalIncomeByBranch($payrollSession),
+                    'TotalWorkDay' => array_sum(array_column($payrollSession->ToArray(), 'WorkDay')),
+                    'PersonalIncomeTax' => $this->personalIncomeTax($payrollSession),
+                    'TaxPayment' => $this->taxPayment($payrollSession),
+                    'Deduction' => $this->deduction($payrollSession),
+                    'ValueSalary' => $this->valueSalary($payrollSession),
                 ];
 
-                $result[$seasonalContract->branch->Name]['dataDetail'] = $payrollSession;
+                $result[$seasonalContract->branch->Name]['DataDetail'] = $payrollSession;
             }
         }
 
@@ -3391,11 +3391,11 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $arrSumAllowance = $this->sumAllowanceByDivision($arrGroupBy);
                 $listDivision[$contract->division->Name] = $arrSumAllowance;
                 $listDivision[$contract->division->Name]['TotalInCome'] = array_sum(array_column($payrollDetailSum->ToArray(), 'TotalIncome'));
-                $listDivision[$contract->division->Name]['value'][] = $value;
-                $listDivision[$contract->division->Name]['columnBasicSalaryAndAllowance'] = $value->payroll->ColumnBasicSalaryAndAllowance;
+                $listDivision[$contract->division->Name]['Value'][] = $value;
+                $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = $value->payroll->ColumnBasicSalaryAndAllowance;
             } else {
-                $listDivision[$contract->division->Name]['value'][] = $value;
-                $listDivision[$contract->division->Name]['columnBasicSalaryAndAllowance'] = $value->payroll->ColumnBasicSalaryAndAllowance;
+                $listDivision[$contract->division->Name]['Value'][] = $value;
+                $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = $value->payroll->ColumnBasicSalaryAndAllowance;
             }
         }
 
