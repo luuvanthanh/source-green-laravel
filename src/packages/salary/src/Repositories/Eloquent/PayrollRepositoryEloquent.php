@@ -3360,10 +3360,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
             })->orWhereHas('probationaryContract', function ($query) use ($startDate, $endDate) {
                 $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-            })->with(['employee' => function ($query) {
-                $query->select('Id', 'FullName', 'Code');
-            }]);
-        })->get();
+            });
+        })->with(['employee' => function ($query) {
+            $query->select('Id', 'FullName', 'Code');
+        }])->get();
 
         $listDivision = [];
         foreach ($payrollDetail as $value) {
