@@ -16,10 +16,10 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatarVideo';
 import { Helper } from '@/utils';
 import Gallery from "react-photo-gallery";
-import Photo from "./Photo";
 import arrayMove from "array-move";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 // import { photos } from "./photos";
+import Photo from "./Photo";
 import stylesModule from '../../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
@@ -34,16 +34,7 @@ const General = memo(
     ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, location: { pathname } }) => {
         const formRef = useRef();
         const [files, setFiles] = useState([]);
-        const [photos, setPhoto] = useState([ {
-            src: "https://source.unsplash.com/qDkso9nvCg0/600x799",
-            width: 3,
-            height: 4
-          },
-          {
-            src: "https://source.unsplash.com/iecJiKe_RNg/600x799",
-            width: 3,
-            height: 4
-          },]);
+        const [photos, setPhoto] = useState([]);
         const mounted = useRef(false);
         const [check, setCheck] = useState(false);
         const mountedSet = (action, value) => mounted?.current && action(value);
@@ -197,23 +188,20 @@ const General = memo(
         }, [detailsAddPost]);
 
         const uploadFiles = (file) => {
-            mountedSet(setFiles, (prev) => [file , ...prev]);
-            mountedSet(setPhoto, (prev) => [{src:   `${API_UPLOAD}${file}` ,   width: 494.6666666666667,
-            height: 371 }, ...prev]);
+            mountedSet(setPhoto, (prev) => [{src:   `${API_UPLOAD}${file}` ,   width: 100,
+            height: 100 }, ...prev]);
         };
 
         const SortablePhoto = SortableElement(item => <Photo {...item} />);
-            const SortableGallery = SortableContainer(({ items }) => (
-            <Gallery photos={items} renderImage={props => <SortablePhoto {...props} />} />
+
+
+       const SortableGallery = SortableContainer(({ photos }) => (
+            <Gallery photos={photos} renderImage={props => <SortablePhoto {...props} />} />
             ));
-
-const [items, setItems] = useState(photos);
-console.log("photo",photos)
-console.log("files",files)
-
-  const onSortEnd = ({ oldIndex, newIndex }) => {
-    setItems(arrayMove(items, oldIndex, newIndex));
-  };
+  
+       const onSortEnd = ({ oldIndex, newIndex }) => {
+            setPhoto(arrayMove(photos, oldIndex, newIndex));
+       };
 
         return (
             <>
@@ -255,9 +243,7 @@ console.log("files",files)
                                         <Pane className="col-lg-12">
                                             <Form.Item name="file_image" label="Ảnh/Video">
                                                 <MultipleImageUpload
-                                                    files={files}
                                                     callback={(files) => uploadFiles(files)}
-                                                    removeFiles={(files) => mountedSet(setFiles, files)}
                                                 />
                                             </Form.Item>
                                         </Pane>
@@ -292,7 +278,7 @@ console.log("files",files)
                         </Pane>
                     </Pane>
                 </Form>
-                <SortableGallery items={items} onSortEnd={onSortEnd} axis={"xy"} />
+                <SortableGallery photos={photos} onSortEnd={onSortEnd} axis={"xy"} />
             </>
         );
     },
