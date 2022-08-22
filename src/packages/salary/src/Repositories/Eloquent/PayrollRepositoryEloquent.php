@@ -1425,12 +1425,12 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $basicSalaryAllowance = [];
         $bsa = [];
         $totalBsa = [];
-        foreach ($payroll->ColumnBasicSalaryAndAllowance as $basicSalaryAllowanceValue) {
-            $basicSalaryAllowance[] = $basicSalaryAllowanceValue['name'];
+        foreach (json_decode($payroll->ColumnBasicSalaryAndAllowance) as $basicSalaryAllowanceValue) {
+            $basicSalaryAllowance[] = $basicSalaryAllowanceValue->name;
             $bsa[] = "Lương cơ bản + Phụ Cấp";
 
-            if (!array_key_exists($basicSalaryAllowanceValue['code'], $totalBsa)) {
-                $totalBsa[$basicSalaryAllowanceValue['code']] = 0;
+            if (!array_key_exists($basicSalaryAllowanceValue->name, $totalBsa)) {
+                $totalBsa[$basicSalaryAllowanceValue->code] = 0;
             }
         }
 
@@ -1442,14 +1442,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $ai = [];
         $totalAi = [];
 
-        if (!empty($payroll->ColumnIncurredAllowance)) {
+        if (!empty(json_decode($payroll->ColumnIncurredAllowance))) {
 
-            foreach ($payroll->ColumnIncurredAllowance as $columnIncurredAllowanceValue) {
-                $columnIncurredAllowance[] = $columnIncurredAllowanceValue['name'];
+            foreach (json_decode($payroll->ColumnIncurredAllowance) as $columnIncurredAllowanceValue) {
+                $columnIncurredAllowance[] = $columnIncurredAllowanceValue->name;
                 $ai[] = "Phụ cấp phát sinh trong tháng";
 
-                if (!array_key_exists($columnIncurredAllowanceValue['code'], $totalAi)) {
-                    $totalAi[$columnIncurredAllowanceValue['code']] = 0;
+                if (!array_key_exists($columnIncurredAllowanceValue->name, $totalAi)) {
+                    $totalAi[$columnIncurredAllowanceValue->code] = 0;
                 }
             }
         }
