@@ -5,6 +5,7 @@ namespace GGPHP\Salary\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Salary\Http\Requests\CreatePayrollSessionRequest;
 use GGPHP\Salary\Http\Requests\CreatPayRollRequest;
+use GGPHP\Salary\Http\Requests\GetPayrollSessionRequest;
 use GGPHP\Salary\Http\Requests\PayslipRequest;
 use GGPHP\Salary\Http\Requests\UpdatePayRollRequest;
 use GGPHP\Salary\Repositories\Contracts\PayrollRepository;
@@ -150,7 +151,7 @@ class PayRollController extends Controller
         return $this->success($payRolls, trans('lang::messages.common.createSuccess'));
     }
 
-    public function getPayRollSession(CreatePayrollSessionRequest $request)
+    public function getPayRollSession(GetPayrollSessionRequest $request)
     {
         $employees = $this->payRollRepository->getPayRollSession($request->all());
 
@@ -164,7 +165,7 @@ class PayRollController extends Controller
         return $this->success($payRolls, trans('lang::messages.common.createSuccess'));
     }
 
-    public function payrollGroupByDivision(Request $request)
+    public function payrollGroupByDivision(GetPayrollSessionRequest $request)
     {
         $employees = $this->payRollRepository->payrollGroupByDivision($request->all());
 
