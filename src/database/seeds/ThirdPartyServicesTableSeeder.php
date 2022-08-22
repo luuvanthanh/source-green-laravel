@@ -98,7 +98,7 @@ class ThirdPartyServicesTableSeeder extends Seeder
                 'code' => 'RESET_PASSWORD_URL',
                 'value' => 'https://gsdl-dev.greenglobal.vn/reset-password',
                 'created_at' => '2022-02-16 11:09:14',
-                'updated_at' => '2022-02-16 11:09:14',
+                'updated_at' => '2022-04-18 10:23:11',
             ),
         ));
         

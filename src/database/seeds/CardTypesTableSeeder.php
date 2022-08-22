@@ -50,8 +50,8 @@ array (
 2 => 
 array (
 'id' => '5b14f909-c66d-4d22-a124-42b32b54893c',
-'color' => 'Hướng dẫn cho khách du lịch trong phạm vi khu du lịch, điểm du lịch',
-'name' => 'Vàng cam (Mã: C = 0, M = 80, Y = 95, K = 0), trắng',
+'color' => 'Vàng cam (Mã: C = 0, M = 80, Y = 95, K = 0), trắng',
+'name' => 'Hướng dẫn cho khách du lịch trong phạm vi khu du lịch, điểm du lịch',
 'scope_of_practice' => 'Hướng dẫn cho khách du lịch nội địa, khách du lịch quốc tế đến Việt Nam trong phạm vi toàn quốc và đưa khách du lịch ra nước ngoài',
 'duration' => 'Không có',
 'condition' => 'a) Có Quốc tịch Việt Nam, thường trú tại Việt Nam;b) Có năng lực hành vi dân sự đầy đủ;c) Không mắc bệnh truyền nhiễm, không sử dụng chất ma túy;d) Tốt nghiệp trung cấp trở lên chuyên ngành hướng dẫn du lịch; trường hợp tốt nghiệp trung cấp trở lên chuyên ngành khác phải có chứng chỉ nghiệp vụ hướng dẫn du lịch nội địa.',
