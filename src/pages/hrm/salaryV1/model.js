@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'salaryPartTimeForeigner',
+  namespace: 'hrmSalary',
   state: {
     data: {},
     dataTable: [],
@@ -18,20 +18,16 @@ export default {
     }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      dataTable:
-        Object.keys(payload.payload)?.length > 1
-          ? Object.keys(payload.payload).map((key) => ({
-              id: key,
-              name: key === 'TotalSum' ? 'Tổng cộng quỹ lương giáo viên' : key,
-              key: key === 'TotalSum',
-              ...(payload?.payload[key] || {}),
-              children:
-                payload?.payload[key]?.DataDetail &&
-                Object.keys(payload?.payload[key]?.DataDetail).map((keyProduct) => ({
-                  ...(payload?.payload[key]?.DataDetail[keyProduct] || {}),
-                })),
-            }))
-          : [],
+      dataTable: Object.keys(payload.payload).map((key) => ({
+        id: key,
+        name: key,
+        ...(payload?.payload[key] || {}),
+        children:
+          payload?.payload[key]?.Value &&
+          Object.keys(payload?.payload[key]?.Value).map((keyProduct) => ({
+            ...(payload?.payload[key]?.Value[keyProduct] || {}),
+          })),
+      })),
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -76,6 +72,6 @@ export default {
         });
       }
     },
-  },
+  }, 
   subscriptions: {},
 };

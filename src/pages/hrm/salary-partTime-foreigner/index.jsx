@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useHistory, useLocation } from 'umi';
+import {useHistory,  useLocation } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
@@ -7,7 +7,6 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -16,15 +15,15 @@ import stylesModule from './styles.module.scss';
 
 const Index = () => {
   const [formRef] = Form.useForm();
-  const { query, pathname } = useLocation();
+  const { query, pathname  } = useLocation();
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const [
-    { data, pagination, error,dataTable },
+    { data, pagination,dataTable },
     loading,
   ] = useSelector(({ salaryPartTimeForeigner, loading: { effects } }) => [salaryPartTimeForeigner, effects]);
 
+  const history = useHistory();
   const [search, setSearch] = useState({
     key: query?.key,
     page: query?.page || variables.PAGINATION.PAGE,
@@ -32,29 +31,8 @@ const Index = () => {
     month: query?.month ? moment(query.month) : moment().startOf('months'),
   });
 
-  const onLoad = () => {
-    dispatch({
-      type: 'salaryPartTimeForeigner/GET_DATA_PAYROLL',
-      payload: {
-        ...search,
-      },
-    });
-    history.push(
-      `${pathname}?${Helper.convertParamSearchConvert(
-        {
-          ...search,
-        },
-        variables.QUERY_STRING,
-      )}`,
-    );
-  };
-console.log("dataTable",dataTable)
-  useEffect(() => {
-    onLoad();
-  }, [search]);
 
   useEffect(() => {
-    if (data?.id) {
       dispatch({
         type: 'salaryPartTimeForeigner/GET_DATA',
         payload: {
@@ -62,8 +40,15 @@ console.log("dataTable",dataTable)
           id: data?.id,
         },
       });
-    }
-  }, [data.id]);
+      history.push(
+        `${pathname}?${Helper.convertParamSearchConvert(
+          {
+            ...search,
+          },
+          variables.QUERY_STRING,
+        )}`,
+      );
+  }, [search]);
 
   const debouncedSearch = debounce((value, type) => {
     setSearch((prev) => ({
@@ -100,12 +85,136 @@ console.log("dataTable",dataTable)
   const header = useMemo(
     () => [
       {
-        title: 'Tên',
+        title: 'STT/NO',
         key: 'index',
+        width: 100,
+        lassName: 'min-width-100',
+        render: (value, _, index) => {
+          const obj = {
+              children: (
+                  <div className={stylesModule['table-name']}>
+                      {value?.children || value?.key ?
+                          <>
+                              {value?.name}
+                          </> : <> {Helper.serialOrder(search?.page, index, search?.limit)}</>
+                      }
+                  </div>
+              ),
+              props: {},
+          };
+          if (value?.children && value?.name || value?.key) {
+              obj.props.colSpan = 3;
+          }
+          return obj;
+      },
+      },
+      {
+        title: 'Mã NV/Code ee',
+        key: 'code',
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record) => record?.name
+        render: (value) => {
+          const obj = {
+              children: (
+                  <div className={stylesModule['table-name']}>
+                     {!value?.children &&
+                          <>
+                            {value?.employee?.Code}
+                          </> 
+                      }
+                  </div>
+              ),
+              props: {},
+          };
+          if (value?.children  || value?.key) {
+              obj.props.colSpan = 0;
+          }
+          return obj;
+      },
+      },
+      {
+        title: 'Học và tên',
+        key: 'FullName',
+        className: 'min-width-250',
+        width: 250,
+        align: 'center',
+        render: (value) => {
+          const obj = {
+              children: (
+                  <div className={stylesModule['table-name']}>
+                     {!value?.children &&
+                          <>
+                            {value?.employee?.FullName}
+                          </> 
+                      }
+                  </div>
+              ),
+              props: {},
+          };
+          if (value?.children  || value?.key) {
+              obj.props.colSpan = 0;
+          }
+          return obj;
+      },
+      },
+      {
+        title: 'Số giờ làm việc thực tế',
+        key: 'time',
+        children: [
+            {
+                title: 'Đơn giá',
+                key: 'birthDay',
+                children: [
+                  {
+                      title: 'Lương cơ bản',
+                      key: 'BasicSalary',
+                      width: 150,
+                      className: 'min-width-150',
+                      render: (record) => <Text size="normal">{Helper.getPrice(record?.BasicSalary) || Helper.getPrice(record?.TotalBasicSalary)}</Text>,
+                  },
+                  {
+                    title: 'Ngày công trong tháng',
+                    key: 'WorkDay',
+                    width: 150,
+                    className: 'min-width-150',
+                    render: (record) => <Text size="normal">{record?.WorkDay || record?.TotalWorkDay}</Text>,
+                },
+              ]
+            },
+        ]
+    },
+      {
+        title: 'Thổng thu nhập chịu thuế/Total taxable',
+        key: 'personalIncomeTax',
+        className: 'min-width-150',
+        width: 150,
+        align: 'center',
+        render: (text, record) => <Text size="normal">{Helper.getPrice(record?.PersonalIncomeTax) || Helper.getPrice(record?.TotalPersonalIncomeTax)}</Text>,
+      },
+      {
+        title: 'Thanh toán thuế TNCN/PIT payment',
+        key: 'TaxPayment',
+        className: 'min-width-150',
+        width: 150,
+        align: 'center',
+        render: (record) => <Text size="normal">{Helper.getPrice(record?.TaxPayment) || Helper.getPrice(record?.TotalTaxPayment)}</Text>,
+      },
+      {
+        title: 'Deduction',
+        key: 'Deduction',
+        className: 'min-width-150',
+        width: 150,
+        align: 'center',
+        render: ( record) => <Text size="normal">{Helper.getPrice(record?.Deduction) || Helper.getPrice(record?.TotalDeduction)}</Text>,
+      },
+      {
+        title: 'Lãnh thực',
+        key: 'index',
+        className: 'min-width-150',
+        width: 150,
+        align: 'center',
+        render: ( record) => <Text size="normal">{Helper.getPrice(record?.TotalInCome) || Helper.getPrice(record?.BranchTotalInCome)}</Text>,
       },
     ],
     [],
@@ -113,15 +222,12 @@ console.log("dataTable",dataTable)
 
   return (
     <>
-      <Helmet title="cơ sở" />
+      <Helmet title="Bảng lương cộng tác viên nước ngoài" />
       <div className={classnames(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
           <Text color="dark" className={styles['title-header']}>
-            Cơ sở
+            Bảng lương cộng tác viên nước ngoài
           </Text>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-            Thêm mới
-          </Button>
         </div>
         <div className={styles['block-table']}>
           <Form
@@ -144,14 +250,13 @@ console.log("dataTable",dataTable)
           </Form>
           <div className={stylesModule['wrapper-table']}>
           <Table
-            bordered={false}
+            bordered
             columns={header}
             dataSource={dataTable}  
-            loading={loading['salaryPartTimeForeigner/GET_DATA_PAYROLL']}
+            loading={loading['salaryPartTimeForeigner/GET_DATA']}
             pagination={paginationFunction}
-            error={error}
+            defaultExpandAllRows
             childrenColumnName="children"
-            isError={error.isError}
             params={{
               header,
               type: 'table',

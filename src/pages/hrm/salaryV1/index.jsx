@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, toNumber } from 'lodash';
+import { debounce, isEmpty, toNumber, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Button from '@/components/CommonComponent/Button';
+import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -29,12 +30,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ hrmSalaryForeigner, loading }) => ({
-  data: hrmSalaryForeigner.data,
-  error: hrmSalaryForeigner.error,
-  branches: hrmSalaryForeigner.branches,
-  divisions: hrmSalaryForeigner.divisions,
-  employees: hrmSalaryForeigner.employees,
+const mapStateToProps = ({ salary, loading, hrmSalary }) => ({
+  data: hrmSalary.dataTable,
+  error: salary.error,
+  branches: salary.branches,
+  divisions: salary.divisions,
+  employees: salary.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -86,15 +87,15 @@ class Index extends PureComponent {
 
   loadCategories = () => {
     this.props.dispatch({
-      type: 'hrmSalaryForeigner/GET_BRANCHES',
+      type: 'salary/GET_BRANCHES',
       payload: {},
     });
     this.props.dispatch({
-      type: 'hrmSalaryForeigner/GET_DIVISIONS',
+      type: 'salary/GET_DIVISIONS',
       payload: {},
     });
     this.props.dispatch({
-      type: 'hrmSalaryForeigner/GET_EMPLOYEES',
+      type: 'salary/GET_EMPLOYEES',
       payload: {},
     });
   };
@@ -109,7 +110,7 @@ class Index extends PureComponent {
     } = this.props;
     if (search.month) {
       this.props.dispatch({
-        type: 'hrmSalaryForeigner/GET_DATA',
+        type: 'hrmSalary/GET_DATA',
         payload: {
           ...search,
         },
@@ -241,7 +242,7 @@ class Index extends PureComponent {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'hrmSalaryForeigner/REMOVE',
+          type: 'salary/REMOVE',
           payload: {
             id,
           },
@@ -257,7 +258,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     if (key === 'CHOT_BANG_LUONG') {
       dispatch({
-        type: 'hrmSalaryForeigner/UPDATE',
+        type: 'salary/UPDATE',
         payload: {
           id: record.id,
           isTimesheet: true,
@@ -273,7 +274,7 @@ class Index extends PureComponent {
     }
     if (key === 'CHOT_BANG_THUONG_KPI') {
       dispatch({
-        type: 'hrmSalaryForeigner/UPDATE',
+        type: 'salary/UPDATE',
         payload: {
           id: record.id,
           isBonus: true,
@@ -289,7 +290,7 @@ class Index extends PureComponent {
     }
     if (key === 'KHAI_BAO_KHOAN_KHAC') {
       dispatch({
-        type: 'hrmSalaryForeigner/UPDATE',
+        type: 'salary/UPDATE',
         payload: {
           id: record.id,
           isOther: true,
@@ -308,7 +309,7 @@ class Index extends PureComponent {
   updateSalary = (record) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'hrmSalaryForeigner/UPDATE_SALARY',
+      type: 'salary/UPDATE_SALARY',
       payload: {
         id: record.id,
       },
@@ -325,7 +326,7 @@ class Index extends PureComponent {
    */
   header = () => {
     const { data } = this.props;
-    const { isCollapsed } = this.state;
+    const { isCollapsed, search } = this.state;
     const columns = [
       {
         title: 'Họ và tên',
@@ -333,13 +334,27 @@ class Index extends PureComponent {
         width: isCollapsed ? 100 : 200,
         className: isCollapsed ? 'min-width-100 thead-green' : 'min-width-200 thead-green',
         fixed: 'left',
-        render: (record) =>
-          record.key !== 'TOTAL' && (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-              fullName={record?.employee?.fullName}
-            />
-          ),
+        render: (record) => {
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {record?.children || record?.key ? (
+                  <>{record?.name}</>
+                ) : (
+                  <AvatarTable
+                    fileImage={Helper.getPathAvatarJson(record?.employee?.FileImage)}
+                    fullName={record?.employee?.FullName}
+                  />
+                )}
+              </div>
+            ),
+            props: {},
+          };
+          if ((record?.children && record?.name) || record?.key) {
+            obj.props.colSpan = 1;
+          }
+          return obj;
+        },
       },
       {
         title: 'Ngày bắt đầu làm việc',
@@ -348,7 +363,7 @@ class Index extends PureComponent {
           ? 'min-width-50 thead-green text-primary'
           : 'min-width-150 thead-green text-primary',
         width: isCollapsed ? 50 : 150,
-        render: (record) => Helper.getDate(record.dateStartWork, variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record.DateStartWork, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Nghỉ không lương/Thai sản',
@@ -357,7 +372,7 @@ class Index extends PureComponent {
           ? 'min-width-50 thead-green text-primary'
           : 'min-width-150 thead-green text-primary',
         width: isCollapsed ? 50 : 150,
-        render: (record) => record?.isMaternity && 'Có',
+        render: (record) => record?.IsMaternity && 'Có',
       },
       {
         title: 'Thử việc',
@@ -366,7 +381,7 @@ class Index extends PureComponent {
           ? 'min-width-50 thead-green text-primary'
           : 'min-width-150 thead-green text-primary',
         width: isCollapsed ? 50 : 150,
-        render: (record) => record?.isProbation && 'Có',
+        render: (record) => record?.IsProbation && 'Có',
       },
       {
         title: 'Không tham gia BHXH',
@@ -375,7 +390,7 @@ class Index extends PureComponent {
           ? 'min-width-50 thead-green text-primary'
           : 'min-width-150 thead-green text-primary',
         width: isCollapsed ? 50 : 150,
-        render: (record) => record?.isSocialInsurance && 'Có',
+        render: (record) => record?.IsSocialInsurance && 'Có',
       },
       {
         title: 'Tổng thu nhập',
@@ -384,28 +399,28 @@ class Index extends PureComponent {
           ? 'min-width-50 thead-green text-primary'
           : 'min-width-150 thead-green text-primary',
         width: isCollapsed ? 50 : 150,
-        render: (record) => Helper.getPrice(record.totalIncome),
+        render: (record) => Helper.getPrice(record.TotalIncome),
       },
-      ...(!isEmpty(data?.columnBasicSalaryAndAllowance)
+      ...(!isEmpty(head(data)?.ColumnIncurredAllowance)
         ? [
           {
             title: 'Lương cơ bản + Phụ Cấp',
             key: 'name',
             className: 'thead-green',
             children:
-           !isEmpty(data?.columnBasicSalaryAndAllowance)  ?  data?.columnBasicSalaryAndAllowance?.map((item) => {
-                if (item?.code === 'TI_LE_THU_VIEC') {
+            head(data)?.ColumnIncurredAllowance?.map((item) => {
+                if (item.code === 'TI_LE_THU_VIEC') {
                   return {
-                    title: item?.name,
-                    key: item?.code,
+                    title: item.name,
+                    key: item.code,
                     className: isCollapsed
                       ? 'min-width-50 thead-green'
                       : 'min-width-150 thead-green',
                     width: isCollapsed ? 50 : 150,
                     render: (record) => {
                       if (record.basicSalaryAndAllowance) {
-                        const basic = record?.basicSalaryAndAllowance?.find(
-                          (itemBasic) => itemBasic?.code === item?.code,
+                        const basic = record.basicSalaryAndAllowance.find(
+                          (itemBasic) => itemBasic.code === item.code,
                         );
                         return basic?.value;
                       }
@@ -430,18 +445,18 @@ class Index extends PureComponent {
                     return null;
                   },
                 };
-              }) : [],
+              }) || [],
           },
         ]
         : []),
-      ...(!isEmpty(data?.columnIncurredAllowance)
+        ...(!isEmpty(head(data)?.ColumnIncurredAllowance)
         ? [
           {
             title: 'Phụ cấp phát sinh trong tháng',
             key: 'name',
             className: 'thead-green-1',
             children:
-              data?.columnIncurredAllowance?.map((item) => ({
+              head(data)?.ColumnIncurredAllowance?.map((item) => ({
                 title: item.name,
                 key: item.code,
                 className: isCollapsed
@@ -449,8 +464,8 @@ class Index extends PureComponent {
                   : 'min-width-150 thead-green-1',
                 width: isCollapsed ? 50 : 150,
                 render: (record) => {
-                  if (record.incurredAllowance) {
-                    const incurred = record.incurredAllowance.find(
+                  if (record.IncurredAllowance) {
+                    const incurred = record.IncurredAllowance.find(
                       (itemIncurred) => itemIncurred.code === item.code,
                     );
                     return Helper.getPrice(incurred?.value || 0);
@@ -461,225 +476,225 @@ class Index extends PureComponent {
           },
         ]
         : []),
-      {
-        title: 'Thưởng KPI',
-        key: 'kpiBonus',
-        className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
-        width: isCollapsed ? 50 : 150,
-        render: (record) => Helper.getPrice(record.kpiBonus),
-      },
-      {
-        title: 'OT',
-        key: 'name',
-        className: 'thead-green',
-        children: [
-          {
-            title: 'OT tính thuế ',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.otTax),
-          },
-          {
-            title: 'OT không tính thuế',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.otNoTax),
-          },
-        ],
-      },
-      {
-        title: 'Nghỉ không lương',
-        key: 'name',
-        className: isCollapsed
-          ? 'min-width-50 thead-green text-primary'
-          : 'min-width-150 thead-green text-primary',
-        width: isCollapsed ? 50 : 150,
-        render: (record) => record.unpaidLeave,
-      },
-      {
-        title: 'Ngày công thực tế trong tháng',
-        key: 'name',
-        className: isCollapsed
-          ? 'min-width-50 thead-green text-primary'
-          : 'min-width-150 thead-green text-primary',
-        width: isCollapsed ? 50 : 150,
-        render: (record) => record.totalWork,
-      },
-      {
-        title: 'Tổng thu nhập trong tháng',
-        key: 'name',
-        className: isCollapsed
-          ? 'min-width-50 thead-green text-primary'
-          : 'min-width-150 thead-green text-primary',
-        width: isCollapsed ? 50 : 150,
-        render: (record) => Helper.getPrice(record.totalIncomeMonth),
-      },
-      {
-        title: 'Người lao động',
-        key: 'name',
-        className: 'thead-primary',
-        children: [
-          {
-            title: 'BHXH 8%',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.socialInsuranceEmployee),
-          },
-          {
-            title: 'BHYT 1.5%',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.healthInsuranceEmployee),
-          },
-          {
-            title: 'BHTN 1%',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.unemploymentInsuranceEmployee),
-          },
-          {
-            title: 'Điều chỉnh BHXH',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.socialInsuranceAdjustedEmployee),
-          },
-        ],
-      },
-      {
-        title: 'Công ty',
-        key: 'name',
-        className: 'thead-green',
-        children: [
-          {
-            title: 'BHXH 17.5%',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.socialInsuranceCompany),
-          },
-          {
-            title: 'BHYT 3%',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.healthInsuranceCompany),
-          },
-          {
-            title: 'BHTN 1%',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.unemploymentInsuranceCompany),
-          },
-          {
-            title: 'Điều chỉnh BHXH',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.socialInsuranceAdjustedCompany),
-          },
-          {
-            title: 'Phí công đoàn',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.unionDues),
-          },
-        ],
-      },
-      {
-        title: 'Tham số tính thuế TNCN',
-        key: 'name',
-        className: 'thead-green',
-        children: [
-          {
-            title: 'Số người phụ thuộc',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => record.dependentPerson,
-          },
-          {
-            title: 'Tổng giảm trừ bản thân và người phụ thuộc',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.eeduce),
-          },
-          {
-            title: 'Đóng góp từ thiện',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.charity),
-          },
-        ],
-      },
-      {
-        title: 'Tổng các khoản giảm trừ',
-        key: 'name',
-        className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-        width: isCollapsed ? 50 : 150,
-        render: (record) => Helper.getPrice(record.totalReduce),
-      },
-      {
-        title: 'Thu nhập tính thuế',
-        key: 'name',
-        className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-        width: isCollapsed ? 50 : 150,
-        render: (record) => Helper.getPrice(record.rentalIncome),
-      },
-      {
-        title: 'Thuế TNCN',
-        key: 'name',
-        className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
-        width: isCollapsed ? 50 : 150,
-        render: (record) => Helper.getPrice(record.personalIncomeTax),
-      },
-      {
-        title: 'Các khoản thanh toán không tính thuế',
-        key: 'name',
-        className: 'thead-yellow',
-        children: [
-          {
-            title: 'Thanh toán từ BHXH',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.socialInsurancePayment),
-          },
-          {
-            title: 'Trừ các khoản đã chi tạm ứng',
-            key: 'name',
-            className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
-            width: isCollapsed ? 50 : 150,
-            render: (record) => Helper.getPrice(record.advance),
-          },
-        ],
-      },
-      {
-        title: 'Ghi chú',
-        key: 'note',
-        className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
-        width: isCollapsed ? 50 : 150,
-        render: (record) => record.note,
-      },
-      {
-        title: 'Lương thực nhận',
-        key: 'name',
-        className: isCollapsed
-          ? 'min-width-50 thead-yellow text-primary'
-          : 'min-width-150 thead-yellow text-primary',
-        width: isCollapsed ? 50 : 150,
-        fixed: 'right',
-        render: (record) => Helper.getPrice(record.actuallyReceived),
-      },
+        {
+          title: 'Thưởng KPI',
+          key: 'kpiBonus',
+          className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
+          width: isCollapsed ? 50 : 150,
+          render: (record) => Helper.getPrice(record.KpiBonus),
+        },
+        {
+          title: 'OT',
+          key: 'name',
+          className: 'thead-green',
+          children: [
+            {
+              title: 'OT tính thuế ',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.OtTax),
+            },
+            {
+              title: 'OT không tính thuế',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.OtNoTax),
+            },
+          ],
+        },
+        {
+          title: 'Nghỉ không lương',
+          key: 'name',
+          className: isCollapsed
+            ? 'min-width-50 thead-green text-primary'
+            : 'min-width-150 thead-green text-primary',
+          width: isCollapsed ? 50 : 150,
+          render: (record) => record.UnpaidLeave,
+        },
+        {
+          title: 'Ngày công thực tế trong tháng',
+          key: 'name',
+          className: isCollapsed
+            ? 'min-width-50 thead-green text-primary'
+            : 'min-width-150 thead-green text-primary',
+          width: isCollapsed ? 50 : 150,
+          render: (record) => record.TotalWork,
+        },
+        {
+          title: 'Tổng thu nhập trong tháng',
+          key: 'name',
+          className: isCollapsed
+            ? 'min-width-50 thead-green text-primary'
+            : 'min-width-150 thead-green text-primary',
+          width: isCollapsed ? 50 : 150,
+          render: (record) => Helper.getPrice(record.TotalIncomeMonth),
+        },
+        {
+          title: 'Người lao động',
+          key: 'name',
+          className: 'thead-primary',
+          children: [
+            {
+              title: 'BHXH 8%',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.SocialInsuranceEmployee),
+            },
+            {
+              title: 'BHYT 1.5%',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.HealthInsuranceEmployee),
+            },
+            {
+              title: 'BHTN 1%',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.UnemploymentInsuranceEmployee),
+            },
+            {
+              title: 'Điều chỉnh BHXH',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.SocialInsuranceAdjustedEmployee),
+            },
+          ],
+        },
+        {
+          title: 'Công ty',
+          key: 'name',
+          className: 'thead-green',
+          children: [
+            {
+              title: 'BHXH 17.5%',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.SocialInsuranceCompany),
+            },
+            {
+              title: 'BHYT 3%',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.HealthInsuranceCompany),
+            },
+            {
+              title: 'BHTN 1%',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.UnemploymentInsuranceCompany),
+            },
+            {
+              title: 'Điều chỉnh BHXH',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.SocialInsuranceAdjustedCompany),
+            },
+            {
+              title: 'Phí công đoàn',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.UnionDues),
+            },
+          ],
+        },
+        {
+          title: 'Tham số tính thuế TNCN',
+          key: 'name',
+          className: 'thead-green',
+          children: [
+            {
+              title: 'Số người phụ thuộc',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => record.DependentPerson,
+            },
+            {
+              title: 'Tổng giảm trừ bản thân và người phụ thuộc',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.Eeduce),
+            },
+            {
+              title: 'Đóng góp từ thiện',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.Charity),
+            },
+          ],
+        },
+        {
+          title: 'Tổng các khoản giảm trừ',
+          key: 'name',
+          className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+          width: isCollapsed ? 50 : 150,
+          render: (record) => Helper.getPrice(record.TotalReduce),
+        },
+        {
+          title: 'Thu nhập tính thuế',
+          key: 'name',
+          className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+          width: isCollapsed ? 50 : 150,
+          render: (record) => Helper.getPrice(record.RentalIncome),
+        },
+        {
+          title: 'Thuế TNCN',
+          key: 'name',
+          className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+          width: isCollapsed ? 50 : 150,
+          render: (record) => Helper.getPrice(record.PersonalIncomeTax),
+        },
+        {
+          title: 'Các khoản thanh toán không tính thuế',
+          key: 'name',
+          className: 'thead-yellow',
+          children: [
+            {
+              title: 'Thanh toán từ BHXH',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.SocialInsurancePayment),
+            },
+            {
+              title: 'Trừ các khoản đã chi tạm ứng',
+              key: 'name',
+              className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
+              width: isCollapsed ? 50 : 150,
+              render: (record) => Helper.getPrice(record.Advance),
+            },
+          ],
+        },
+        {
+          title: 'Ghi chú',
+          key: 'note',
+          className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
+          width: isCollapsed ? 50 : 150,
+          render: (record) => record.Note,
+        },
+        {
+          title: 'Lương thực nhận',
+          key: 'name',
+          className: isCollapsed
+            ? 'min-width-50 thead-yellow text-primary'
+            : 'min-width-150 thead-yellow text-primary',
+          width: isCollapsed ? 50 : 150,
+          fixed: 'right',
+          render: (record) => Helper.getPrice(record.ActuallyReceived),
+        },
     ];
     return columns;
   };
@@ -771,7 +786,7 @@ class Index extends PureComponent {
             (total, item) => total + item.actuallyReceived,
             0,
           ),
-          basicSalaryAndAllowance: data?.columnBasicSalaryAndAllowance
+          basicSalaryAndAllowance: data?.ColumnIncurredAllowance
             .filter((item) => item.code !== 'TI_LE_THU_VIEC')
             .map((item) => {
               let summary = 0;
@@ -788,7 +803,7 @@ class Index extends PureComponent {
                 value: summary,
               };
             }),
-          incurredAllowance: data?.columnIncurredAllowance.map((item) => {
+          incurredAllowance: data?.ColumnIncurredAllowance.map((item) => {
             let summary = 0;
             data.payrollDetail.forEach((itemPage) => {
               if (!isEmpty(itemPage.incurredAllowance)) {
@@ -810,11 +825,9 @@ class Index extends PureComponent {
   };
 
   exportData = async (id, type) => {
-    const {
-      branches,
-    } = this.props;
+    const { branches } = this.props;
     const { search } = this.state;
-    const dataBranch = branches?.find(i => i?.id === search?.branchId);
+    const dataBranch = branches?.find((i) => i?.id === search?.branchId);
     if (type === 'payrolls') {
       this.setState({
         loadingDownload: true,
@@ -823,9 +836,12 @@ class Index extends PureComponent {
         `/v1/export-payrolls`,
         {
           id,
-          salaryForeigner: 'true',
+          salaryForeigner: 'false',
         },
-        `${dataBranch ? `${dataBranch?.name} ` : ""}Bảng Lương ${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+        `${dataBranch ? `${dataBranch?.name} ` : ''}Bảng Lương ${Helper.getDate(
+          search.month,
+          variables.DATE_FORMAT.MONTH_FULL,
+        )}.xlsx`,
       );
       this.setState({
         loadingDownload: false,
@@ -839,9 +855,12 @@ class Index extends PureComponent {
         `/v1/export-salary-payment-template`,
         {
           id,
-          salaryForeigner: 'true',
+          salaryForeigner: 'false',
         },
-        `${dataBranch ? `${dataBranch?.name} ` : ""}Bảng Thanh Toán Lương ${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+        `${dataBranch ? `${dataBranch?.name} ` : ''}Bảng Thanh Toán Lương ${Helper.getDate(
+          search.month,
+          variables.DATE_FORMAT.MONTH_FULL,
+        )}.xlsx`,
       );
       this.setState({
         loadingSalary: false,
@@ -855,9 +874,12 @@ class Index extends PureComponent {
         `/v1/export-salary-template-go-to-bank`,
         {
           id,
-          salaryForeigner: 'true',
+          salaryForeigner: 'false',
         },
-        `${dataBranch ? `${dataBranch?.name} ` : ""}Bảng Lương Đi Ngân Hàng ${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+        `${dataBranch ? `${dataBranch?.name} ` : ''}Bảng Lương Đi Ngân Hàng ${Helper.getDate(
+          search.month,
+          variables.DATE_FORMAT.MONTH_FULL,
+        )}.xlsx`,
       );
       this.setState({
         loadingBank: false,
@@ -875,8 +897,9 @@ class Index extends PureComponent {
       branches,
       employees,
     } = this.props;
+
     const { search, isCollapsed, loadingDownload, loadingSalary, loadingBank } = this.state;
-    const loading = effects['salary/GET_DATA'];
+    const loading = effects['hrmSalary/GET_DATA'];
     return (
       <>
         <Helmet title="Bảng lương" />
@@ -960,7 +983,7 @@ class Index extends PureComponent {
                     placeholder="Chọn tất cả"
                   />
                 </div>
-                <div className="col-lg-6 d-flex">
+                {/* <div className="col-lg-6 d-flex">
                   <Button
                     color="success"
                     onClick={() => this.exportData(data.id, 'payment-template')}
@@ -976,15 +999,17 @@ class Index extends PureComponent {
                   >
                     Xuất bảng lương đi ngân hàng
                   </Button>
-                </div>
+                </div> */}
               </div>
             </Form>
             <TableCus
               bordered
               className={classnames('table-salary', { 'table-salary-collapsed': isCollapsed })}
               columns={this.header(params)}
-              dataSource={this.addSummary(data)}
+              dataSource={data}
               loading={loading}
+              defaultExpandAllRows
+              childrenColumnName="children"
               pagination={false}
               error={error}
               isError={error.isError}

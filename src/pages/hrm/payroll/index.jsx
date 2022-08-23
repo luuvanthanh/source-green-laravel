@@ -359,6 +359,9 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['hrmPayroll/UPDATE'] || effects['hrmPayroll/UPDATE_SALARY'];
+    const loadingSalaryVN = effects['hrmPayroll/UPDATE_SALARY'];
+    const loadingSalaryForeign = effects['hrmPayroll/UPDATE_SALARY'];
+
     const columns = [
       {
         title: 'Tên',
@@ -520,12 +523,12 @@ class Index extends PureComponent {
               </Button>
             )}
             {record.id === 'TINH_LUONG_VIET_NAM' && (
-              <Button color="primary" onClick={() => this.updateSalaryVN(data)} loading={loading}>
+              <Button color="primary" onClick={() => this.updateSalaryVN(data)} loading={loadingSalaryVN}>
                 Tính lương
               </Button>
             )}
             {record.id === 'TINH_LUONG_NUOC_NGOAI' && (
-              <Button color="primary" onClick={() => this.updateSalaryForeign(data)} loading={loading}>
+              <Button color="primary" onClick={() => this.updateSalaryForeign(data)} loading={loadingSalaryForeign}>
                 Tính lương
               </Button>
             )}
