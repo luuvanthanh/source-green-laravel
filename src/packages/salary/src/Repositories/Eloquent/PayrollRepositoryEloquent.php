@@ -1555,7 +1555,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         //data employee
         foreach ($payroll->payrollDetail as $key => $payrollDetail) {
-            $basicSalaryAllowanceEmployee = $payrollDetail->BasicSalaryAndAllowance;
+            $basicSalaryAllowanceEmployee = json_decode($payrollDetail->BasicSalaryAndAllowance);
             $valueBasicSalaryAllowance = [];
 
             foreach ($basicSalaryAllowance as $value) {
@@ -1565,13 +1565,13 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if ($keyBasicSalaryAllowance) {
                     $valueBasicSalaryAllowance[] = $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value ?? 0;
 
-                    $totalBsa[$basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]['code']] += $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value ?? 0;
+                    $totalBsa[$basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->code] += $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value ?? 0;
                 } else {
                     $valueBasicSalaryAllowance[] = 0;
                 };
             }
 
-            $incurredAllowanceEmployee = $payrollDetail->IncurredAllowance;
+            $incurredAllowanceEmployee = json_decode($payrollDetail->IncurredAllowance);
             $valueIncurredAllowance = [];
 
             foreach ($columnIncurredAllowance as $value) {
@@ -1580,7 +1580,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if ($keyColumnIncurredAllowance) {
                     $valueIncurredAllowance[] = $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value ?? 0;
 
-                    $totalAi[$incurredAllowanceEmployee[$keyColumnIncurredAllowance]['code']] += $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value ?? 0;
+                    $totalAi[$incurredAllowanceEmployee[$keyColumnIncurredAllowance]->code] += $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value ?? 0;
                 } else {
                     $valueIncurredAllowance[] = 0;
                 };
@@ -3354,8 +3354,11 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             })->orWhereHas('employee.labourContract', function ($q) use ($contract, $startDate, $endDate) {
                 $q->where('DivisionId', $contract->DivisionId)->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
             })->get();
-            $result = call_user_func_array('array_merge', array_column($payrollDetailSum->ToArray(), 'BasicSalaryAndAllowance'));
 
+            foreach ($payrollDetailSum as $arrSalaryAllowance) {
+                $valueSalaryAllowance[] = json_decode($arrSalaryAllowance->BasicSalaryAndAllowance, true);
+            }
+            $result = call_user_func_array('array_merge', $valueSalaryAllowance);
             if (!array_key_exists($contract->division->Name, $listDivision)) {
                 $arrGroupBy = $this->GroupByAllowance($result, 'code');
                 $arrSumAllowance = $this->sumAllowanceByDivision($arrGroupBy);
