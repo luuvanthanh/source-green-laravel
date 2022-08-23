@@ -3344,33 +3344,43 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             })->first();
 
             if (!empty($employee->labourContract)) {
-                $contract = $employee->labourContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
+                $contract = $value->employee->labourContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
             } else {
-                $contract = $employee->probationaryContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
+                $contract = $value->employee->probationaryContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
             }
+            $valueReturn = \Arr::except($value->ToArray(), ['BasicSalaryAndAllowance', 'IncurredAllowance']);
+            $valueReturn['BasicSalaryAndAllowance'] = json_decode($value->BasicSalaryAndAllowance, true);
+            $valueReturn['IncurredAllowance'] = json_decode($value->IncurredAllowance, true);
 
-            $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee.probationaryContract', function ($q) use ($contract, $startDate, $endDate) {
-                $q->where('DivisionId', $contract->DivisionId)->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-            })->orWhereHas('employee.labourContract', function ($q) use ($contract, $startDate, $endDate) {
-                $q->where('DivisionId', $contract->DivisionId)->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-            })->get();
+            if (!is_null($contract)) {
+                if (!array_key_exists($contract->division->Name, $listDivision)) {
 
-            foreach ($payrollDetailSum as $arrSalaryAllowance) {
-                $valueSalaryAllowance[] = json_decode($arrSalaryAllowance->BasicSalaryAndAllowance, true);
-            }
-            $result = call_user_func_array('array_merge', $valueSalaryAllowance);
-            if (!array_key_exists($contract->division->Name, $listDivision)) {
-                $arrGroupBy = $this->GroupByAllowance($result, 'code');
-                $arrSumAllowance = $this->sumAllowanceByDivision($arrGroupBy);
-                $listDivision[$contract->division->Name] = $arrSumAllowance;
-                $listDivision[$contract->division->Name]['TotalInCome'] = array_sum(array_column($payrollDetailSum->ToArray(), 'TotalIncome'));
-                $listDivision[$contract->division->Name]['Value'][] = $value;
-                $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance);
-                $listDivision[$contract->division->Name]['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance);
-            } else {
-                $listDivision[$contract->division->Name]['Value'][] = $value;
-                $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance);
-                $listDivision[$contract->division->Name]['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance);
+                    $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($startDate, $endDate, $contract) {
+                        $query->whereHas('labourContract', function ($query) use ($startDate, $endDate, $contract) {
+                            $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->where('DivisionId', $contract->DivisionId);
+                        })->orWhereHas('probationaryContract', function ($query) use ($startDate, $endDate, $contract) {
+                            $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->where('DivisionId', $contract->DivisionId);
+                        });
+                    })->get();
+
+                    $valueSalaryAllowance = [];
+                    foreach ($payrollDetailSum as $arrSalaryAllowance) {
+                        $valueSalaryAllowance[] = json_decode($arrSalaryAllowance->BasicSalaryAndAllowance, true);
+                    }
+
+                    $result = call_user_func_array('array_merge', $valueSalaryAllowance);
+                    $arrGroupBy = $this->GroupByAllowance($result, 'code');
+                    $arrSumAllowance = $this->sumAllowanceByDivision($arrGroupBy);
+                    $listDivision[$contract->division->Name] = $arrSumAllowance;
+                    $listDivision[$contract->division->Name]['TotalInCome'] = array_sum(array_column($payrollDetailSum->ToArray(), 'TotalIncome'));
+                    $listDivision[$contract->division->Name]['Value'][] = $valueReturn;
+                    $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance);
+                    $listDivision[$contract->division->Name]['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance);
+                } else {
+                    $listDivision[$contract->division->Name]['Value'][] = $valueReturn;
+                    $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance);
+                    $listDivision[$contract->division->Name]['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance);
+                }
             }
         }
 
