@@ -24,8 +24,8 @@ class HistoryCareUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'customer_lead_id' => 'nullable|exists:customer_leads,id',
-            'date' => 'nullable|date_format:Y-m-d',
+            'create_rows' => 'array',
+            'create_rows.*.customer_lead_id' => 'nullable|exists:customer_leads,id',
         ];
     }
 }

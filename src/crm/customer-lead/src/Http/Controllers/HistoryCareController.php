@@ -41,14 +41,9 @@ class HistoryCareController extends Controller
      */
     public function store(HistoryCareCreateRequest $request)
     {
-        $credentials = $request->all();
+        $eventInfo = $this->historyCareRepository->createHistoryCare($request->all());
 
-        if (!empty($credentials['status'])) {
-            $credentials['status'] = HistoryCare::STATUS[$credentials['status']];
-        }
-        $eventInfo = $this->historyCareRepository->createHistoryCare($credentials);
-
-        return $this->success($eventInfo, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success([], trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     /**

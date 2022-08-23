@@ -61,17 +61,64 @@ class HistoryCareRepositoryEloquent extends BaseRepository implements HistoryCar
 
     public function createHistoryCare(array $attributes)
     {
-        $lastHistoryCare = $this->model->where('customer_lead_id', $attributes['customer_lead_id'])->latest()->first();
+        $attributes = $this->creating($attributes);
 
-        if (is_null($lastHistoryCare)) {
-            $attributes['quantity_care'] = 1;
-        } else {
-            $quantityCare = $lastHistoryCare->quantity_care;
-            $attributes['quantity_care'] = $quantityCare + 1;
+        if (!empty($attributes['create_rows'])) {
+            foreach ($attributes['create_rows'] as $key => $value) {
+                $lastHistoryCare = $this->model->where('customer_lead_id', $value['customer_lead_id'])->orderBy('quantity_care', 'DESC')->first();
+
+                if (is_null($lastHistoryCare)) {
+                    $value['quantity_care'] = 1;
+                } else {
+                    $quantityCare = $lastHistoryCare->quantity_care;
+
+                    $value['quantity_care'] = $quantityCare + 1;
+                }
+
+                $this->model->create($value);
+            }
         }
 
-        $historyCare = $this->model->create($attributes);
+        if (!empty($attributes['update_rows'])) {
+            foreach ($attributes['update_rows'] as $key => $value) {
+                $historyCare = $this->model->findOrFail($value['history_care_id']);
+                $historyCare->update($value);
+            }
+        }
 
-        return $this->parserResult($historyCare);
+        if (!empty($attributes['delete_rows'])) {
+            $this->model->whereIn('id', $attributes['delete_rows'])->delete();
+        }
+
+        return null;
+    }
+
+    public function creating($attributes)
+    {
+        if (!empty($attributes['create_rows'])) {
+            foreach ($attributes['create_rows'] as $key => $value) {
+                if (!empty($value['status'])) {
+                    $attributes['create_rows'][$key]['status'] = HistoryCare::STATUS[$value['status']];
+                }
+
+                if (!empty($value['category'])) {
+                    $attributes['create_rows'][$key]['category'] = HistoryCare::CATEGORY[$value['category']];
+                }
+            }
+        }
+
+        if (!empty($attributes['update_rows'])) {
+            foreach ($attributes['update_rows'] as $key => $value) {
+                if (!empty($value['status'])) {
+                    $attributes['update_rows'][$key]['status'] = HistoryCare::STATUS[$value['status']];
+                }
+
+                if (!empty($value['category'])) {
+                    $attributes['update_rows'][$key]['category'] = HistoryCare::CATEGORY[$value['category']];
+                }
+            }
+        }
+
+        return $attributes;
     }
 }
