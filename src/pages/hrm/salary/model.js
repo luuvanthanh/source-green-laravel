@@ -2,7 +2,7 @@ import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
-  namespace: 'hrmSalary',
+  namespace: 'hrmSalaryTest',
   state: {
     data: {},
     error: {

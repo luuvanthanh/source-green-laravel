@@ -1775,13 +1775,25 @@ export default [
           },
           {
             path: '/quan-ly-nhan-su/bang-luong',
-            component: './hrm/salary',
+            component: './hrm/salaryV1',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
           {
             path: '/quan-ly-nhan-su/bang-luong-nuoc-ngoai',
             component: './hrm/salary-foreigner',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/bang-luong-thoi-vu-viet-nam',
+            component: './hrm/salary-partTime-vn',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/bang-luong-thoi-vu-nuoc-ngoai',
+            component: './hrm/salary-partTime-foreigner',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },

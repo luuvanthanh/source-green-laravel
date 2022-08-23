@@ -38,6 +38,14 @@ const DATA_SOURCE = [
     id: 'TINH_LUONG',
     name: 'Tính lương',
   },
+  {
+    id: 'TINH_LUONG_VIET_NAM',
+    name: 'Bảng lương CTV Việt Nam',
+  },
+  {
+    id: 'TINH_LUONG_NUOC_NGOAI',
+    name: 'Bảng lương CTV nước ngoài',
+  },
 ];
 
 let isMounted = true;
@@ -311,6 +319,36 @@ class Index extends PureComponent {
     });
   };
 
+  updateSalaryVN = (record) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'hrmPayroll/UPDATE_SALARY_VN',
+      payload: {
+        id: record.id,
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
+  updateSalaryForeign = (record) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'hrmPayroll/UPDATE_SALARY_FOREIGN',
+      payload: {
+        id: record.id,
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
   /**
    * Function header table
    */
@@ -321,6 +359,9 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['hrmPayroll/UPDATE'] || effects['hrmPayroll/UPDATE_SALARY'];
+    const loadingSalaryVN = effects['hrmPayroll/UPDATE_SALARY'];
+    const loadingSalaryForeign = effects['hrmPayroll/UPDATE_SALARY'];
+
     const columns = [
       {
         title: 'Tên',
@@ -478,6 +519,16 @@ class Index extends PureComponent {
             )}
             {record.id === 'TINH_LUONG' && (
               <Button color="primary" onClick={() => this.updateSalary(data)} loading={loading}>
+                Tính lương
+              </Button>
+            )}
+            {record.id === 'TINH_LUONG_VIET_NAM' && (
+              <Button color="primary" onClick={() => this.updateSalaryVN(data)} loading={loadingSalaryVN}>
+                Tính lương
+              </Button>
+            )}
+            {record.id === 'TINH_LUONG_NUOC_NGOAI' && (
+              <Button color="primary" onClick={() => this.updateSalaryForeign(data)} loading={loadingSalaryForeign}>
                 Tính lương
               </Button>
             )}
