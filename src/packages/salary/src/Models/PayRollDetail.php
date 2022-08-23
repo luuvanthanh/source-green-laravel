@@ -49,8 +49,8 @@ class PayRollDetail extends UuidModel
      * @var array
      */
     protected $casts = [
-        'BasicSalaryAndAllowance' => 'array',
-        'IncurredAllowance' => 'array'
+        // 'BasicSalaryAndAllowance' => 'array',
+        // 'IncurredAllowance' => 'array'
     ];
 
     /**
