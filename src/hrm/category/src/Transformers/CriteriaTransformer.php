@@ -2,7 +2,9 @@
 
 namespace GGPHP\Category\Transformers;
 
+use GGPHP\Category\Models\Criteria;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Category\Transformers\CriteriaDetailTransformer;
 
 /**
  * Class BlockTransformer.
@@ -11,5 +13,10 @@ use GGPHP\Core\Transformers\BaseTransformer;
  */
 class CriteriaTransformer extends BaseTransformer
 {
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['criteriaDetail'];
+
+    public function includeCriteriaDetail(Criteria $criteria)
+    {
+        return $this->collection($criteria->criteriaDetail, new CriteriaDetailTransformer, 'CriteriaDetail');
+    }
 }
