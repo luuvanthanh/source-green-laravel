@@ -27,7 +27,17 @@ class GradeDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'CriteriaId', 'Level', 'Define', 'GradeId', 'SpecificExpression'
+        'CriteriaId', 'Level', 'Define', 'GradeId', 'SpecificExpression', 'LevelArray'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'Date' => 'datetime',
+        'LevelArray' => 'array'
     ];
 
     public function grade()
