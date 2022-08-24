@@ -28,4 +28,9 @@ class Criteria extends UuidModel
      * @var array
      */
     protected $hidden = [];
+
+    public function criteriaDetail()
+    {
+        return $this->hasMany(CriteriaDetail::class, 'CriteriaId');
+    }
 }
