@@ -110,6 +110,7 @@ class CriteriaRepositoryEloquent extends CoreRepositoryEloquent implements Crite
         if (!empty($attributes['updateRow'])) {
             foreach ($attributes['updateRow'] as $value) {
                 $criteriaDetail = CriteriaDetail::find($value['id']);
+                $value['level'] = CriteriaDetail::LEVEL[$value['level']];
                 $criteriaDetail->update($value);
             }
         }
