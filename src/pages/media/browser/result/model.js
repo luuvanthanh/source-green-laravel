@@ -49,9 +49,10 @@ export default {
         });
       }
     },
-    *GET_RECORDED_FILES({ payload }, saga) {
+    *GET_RECORDED_FILES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getRecordedFiles, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_RECORDED_FILES',
           payload: response,
