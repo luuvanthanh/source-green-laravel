@@ -27,7 +27,7 @@ class GradeDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'CriteriaId', 'Level', 'Description', 'GradeId'
+        'CriteriaId', 'Level', 'Define', 'GradeId', 'SpecificExpression'
     ];
 
     public function grade()
