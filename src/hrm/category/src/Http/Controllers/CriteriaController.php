@@ -51,7 +51,7 @@ class CriteriaController extends Controller
     public function store(CriteriaCreateRequest $request)
     {
         $credentials = $request->all();
-        $criteria = $this->criteriaRepository->create($credentials);
+        $criteria = $this->criteriaRepository->createAll($credentials);
         return $this->success($criteria, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
@@ -77,7 +77,7 @@ class CriteriaController extends Controller
     public function update(CriteriaUpdateRequest $request, $id)
     {
         $credentials = $request->all();
-        $criteria = $this->criteriaRepository->update($credentials, $id);
+        $criteria = $this->criteriaRepository->updateAll($credentials, $id);
         return $this->success($criteria, trans('lang::messages.common.modifySuccess'));
     }
 
