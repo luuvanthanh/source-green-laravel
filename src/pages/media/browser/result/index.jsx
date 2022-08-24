@@ -27,7 +27,7 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { data, recordedFiles },
+    { data },
     loading,
   ] = useSelector(({ loading: { effects }, mediaResult }) => [mediaResult, effects]);
 
@@ -35,6 +35,12 @@ const Index = memo(() => {
   const { query, pathname } = useLocation();
 
   const [classifyData, setClassifyData] = useState([]);
+
+  const [pageFile, setPageFile] = useState(1);
+  const [limitFile, setLimitFile] = useState(18);
+  const [recordedFiles, setRecordedFiles] = useState([]);
+  const [checkLoadMore, setCheckLoadMore] = useState(false);
+
   const [search, setSearch] = useState({
     search: query?.search,
     creationTimeFrom: query?.creationTimeFrom
@@ -84,15 +90,42 @@ const Index = memo(() => {
     });
   }, [search]);
 
-  const fetchRecordedFiles = useCallback(() => {
+  const fetchRecordedFiles = () => {
     dispatch({
       type: 'mediaResult/GET_RECORDED_FILES',
       payload: {
         status: localVariables.CLASSIFY_STATUS.UNDEFINED,
-        maxResultCount: variables.PAGINATION.SIZEMAX,
+        page: pageFile,
+        limit: limitFile,
+      },
+      callback: (response) => {
+       if(pageFile === 1) {
+        setRecordedFiles(response.items);
+       }
       },
     });
-  }, []);
+  };
+   
+  const onLoadMoreFiles = () => {
+    dispatch({
+      type: 'mediaResult/GET_RECORDED_FILES',
+      payload: {
+        status: localVariables.CLASSIFY_STATUS.UNDEFINED,
+        page: pageFile,
+        limit: limitFile,
+      },
+      callback: (response) => {
+        if(response?.totalCount > limitFile) {
+        setRecordedFiles( recordedFiles.concat(response.items));
+        setCheckLoadMore(true);
+        setPageFile(pageFile + 18);
+        setLimitFile(limitFile + 18);
+       }else {
+        setCheckLoadMore(false);
+       }
+      },
+    });
+  };
 
   const removeImage = (postId, image) => {
     dispatch({
@@ -286,7 +319,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     fetchRecordedFiles();
-  }, [fetchRecordedFiles]);
+  }, []);
 
   useEffect(() => {
     setClassifyData(data);
@@ -495,6 +528,15 @@ const Index = memo(() => {
                   </Pane>
                 ))}
               </Pane>
+              {
+                checkLoadMore && (
+                    <div className={styles.more}>
+                    <Button color="success"
+                        className="ml20"
+                        loading={loading['mediaResult/GET_RECORDED_FILES']} onClick={() => onLoadMoreFiles()} >Load More</Button>
+                    </div>
+                )
+              }
             </Pane>
           </>
         )}
