@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\CustomerLead\Http\Requests;
 
+use GGPHP\Crm\CustomerLead\Models\HistoryCare;
 use Illuminate\Foundation\Http\FormRequest;
 
 class HistoryCareCreateRequest extends FormRequest
@@ -23,10 +24,14 @@ class HistoryCareCreateRequest extends FormRequest
      */
     public function rules()
     {
+        $status = implode(',', array_keys(HistoryCare::STATUS));
+        $category = implode(',', array_keys(HistoryCare::CATEGORY));
+
         return [
-            'customer_lead_id' => 'required|exists:customer_leads,id',
-            'date' => 'required|date_format:Y-m-d',
-            'hours' => 'required',
+            'create_rows' => 'array',
+            'create_rows.*.customer_lead_id' => 'required|exists:customer_leads,id',
+            'create_rows.*.status' => 'required|in:' . $status,
+            'create_rows.*.category' => 'required|in:' . $category,
         ];
     }
 }

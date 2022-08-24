@@ -51,9 +51,10 @@ class HistoryCareTransformer extends BaseTransformer
                 }
             }
         }
-
+        
         return [
-            'status' => $status
+            'status' => $status,
+            'category' => array_search($model->category, HistoryCare::CATEGORY) ? array_search($model->category, HistoryCare::CATEGORY) : null,
         ];
     }
 
