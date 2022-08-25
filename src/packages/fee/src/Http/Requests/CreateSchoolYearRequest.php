@@ -77,6 +77,8 @@ class CreateSchoolYearRequest extends FormRequest
                     }
                 },
             ],
+            'isCheck' => 'nullable|boolean',
+            'content' => 'nullable|max:3000'
         ];
     }
 }
