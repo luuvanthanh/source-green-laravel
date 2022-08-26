@@ -46,18 +46,9 @@ class DataMarketingStudentInfoTransformer extends BaseTransformer
         $birthday = Carbon::parse($model->birth_date);
         $today = Carbon::parse($now);
         $numberOfMonth = $birthday->diffInMonths($today);
-
-        $sex = null;
-
-        foreach (DataMarketingStudentInfo::SEX as $key => $value) {
-
-            if ($value == $model->sex) {
-                $sex = $key;
-            }
-        }
-
+        
         return [
-            'sex' => $sex,
+            'sex' => is_null($model->sex) ? null : array_search($model->sex, DataMarketingStudentInfo::SEX),
             'month_age' => $numberOfMonth
         ];
     }

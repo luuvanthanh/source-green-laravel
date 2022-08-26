@@ -51,6 +51,10 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
             $this->model = $this->model->where('data_marketing_id', $attributes['data_marketing_id']);
         }
 
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where('full_name', $attributes['key']);
+        }
+
         if (!empty($attributes['limit'])) {
             $studentInfo = $this->paginate($attributes['limit']);
         } else {
@@ -63,7 +67,7 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
     public function create(array $attributes)
     {
         if (!empty($attributes['create_rows'])) {
-            foreach ($attributes['create_rows'] as $value) {  
+            foreach ($attributes['create_rows'] as $value) {
                 $value['sex'] = DataMarketingStudentInfo::SEX[$value['sex']];
                 DataMarketingStudentInfo::create($value);
             }

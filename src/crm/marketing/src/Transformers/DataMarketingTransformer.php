@@ -35,7 +35,7 @@ class DataMarketingTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource', 'marketingProgram', 'studentInfo', 'tag', 'branch'];
+    protected $availableIncludes = ['city', 'district', 'searchSource', 'marketingProgram', 'studentInfo', 'tag', 'branch'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -47,28 +47,9 @@ class DataMarketingTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $sex = null;
-
-        foreach (DataMarketing::SEX as $key => $value) {
-            if (!is_null($model->sex)) {
-                if ($value == $model->sex) {
-                    $sex = $key;
-                }
-            }
-        }
-
-        $status = null;
-
-        foreach (DataMarketing::STATUS as $key => $value) {
-
-            if ($value == $model->status) {
-                $status = $key;
-            }
-        }
-
         return [
-            'sex' => $sex,
-            'status' => $status,
+            'sex' => is_null($model->sex) ? null : array_search($model->sex, DataMarketing::SEX),
+            'status' => is_null($model->status) ? null :  array_search($model->status, DataMarketing::STATUS),
             'user_create_info' => json_decode($model->user_create_info),
         ];
     }
