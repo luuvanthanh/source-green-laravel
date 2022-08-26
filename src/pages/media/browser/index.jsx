@@ -1,5 +1,5 @@
 import { memo, useRef, useState, useCallback, useEffect } from 'react';
-import { Form, Image, Tag, Progress } from 'antd';
+import { Form, Image, Tag, Progress,notification } from 'antd';
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useHistory, useLocation } from 'umi';
@@ -162,6 +162,12 @@ const Index = memo(() => {
       if (message) {
         setProgress(message?.data?.progress || 0);
         if (message?.data?.status === 'finished') {
+          if(message?.data?.hasImgUndefined) {
+            notification.error({
+              message: 'Thông báo',
+              description: 'Một số hình ảnh chưa nhận dạng được',
+            });
+          }
           setInProgessSuccess(true);
           setVisibleProgress(false);
           setProgress(0);
