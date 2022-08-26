@@ -799,6 +799,10 @@ class Index extends PureComponent {
 
   isMergeAll = () => {
     const {  dataSource } = this.state;
+    const {
+      location: { query },
+    } = this.props;
+
     this.props.dispatch({
       type: 'crmMarketingDataCheckList/MERGE_ALL',
       payload: {
@@ -806,7 +810,14 @@ class Index extends PureComponent {
       },
       callback: (response) => {
         if (response) {
-        this.isModal();
+          this.props.dispatch({
+            type: 'crmMarketingData/GET_DATA',
+            payload: {
+              page: query?.page,
+              limit: query?.limit,
+            },
+          });
+          this.onLoad();
         }
       },
     });
