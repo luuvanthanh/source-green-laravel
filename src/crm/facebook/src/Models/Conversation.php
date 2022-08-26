@@ -22,6 +22,8 @@ class Conversation extends UuidModel
 
     const FOLDER = ['page_done', 'inbox', 'other', 'spam'];
 
+    const FIELD = ',unread_count,senders{profile_pic},can_reply,snippet,updated_time,wallpaper';
+
     protected $fillable = [
         'conversation_id_facebook', 'page_id', 'user_facebook_info_id', 'avatar', 'snippet', 'time', 'noti_inbox', 'status_send_message', 'from', 'to', 'show_conversation'
     ];

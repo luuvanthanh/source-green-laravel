@@ -2,7 +2,11 @@
 
 namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 
+use GGPHP\Crm\Facebook\Jobs\ConversationError;
+use GGPHP\Crm\Facebook\Jobs\ConversationGetAvatarUserError;
+use GGPHP\Crm\Facebook\Jobs\ConversationNotError;
 use GGPHP\Crm\Facebook\Jobs\StoreConversation;
+use GGPHP\Crm\Facebook\Jobs\StoreDataToDatabase;
 use GGPHP\Crm\Facebook\Jobs\SynchronizeConversation;
 use GGPHP\Crm\Facebook\Models\Conversation;
 use GGPHP\Crm\Facebook\Models\Message;
@@ -175,16 +179,6 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
 
     public static function synchronizeConversation($attributes)
     {
-        $conversationError = Conversation::where('conversation_id_facebook', null)->get();
-
-        if (!empty($conversationError)) {
-            $userFacebookInfoIdError = $conversationError->map(function ($item) {
-                return $item->user_facebook_info_id;
-            })->toArray();
-
-            UserFacebookInfo::whereIn('id', $userFacebookInfoIdError)->delete();
-        }
-
         if (!empty($attributes['data_page'])) {
             foreach ($attributes['data_page'] as $attributes) {
                 dispatch(new StoreConversation($attributes));
@@ -215,6 +209,7 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
     {
         foreach (Conversation::FOLDER as $folder) {
             $attributes['folder'] = $folder;
+            $attributes['fields'] = Conversation::FIELD;
             $conversations = FacebookService::pageConversation($attributes);
             if (!empty($conversations)) {
                 foreach ($conversations as $conversation) {
@@ -222,21 +217,17 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
                     foreach ($conversation->senders as $value) {
                         try {
                             if (count($value) == 1) {
-                                $pageId = self::conversationError($value, $conversationId);
+                                dispatch(new ConversationError($value, $conversationId));
                             } elseif (count($value) == 2) {
-                                $pageId = self::conversationNotError($value, $conversationId,$attributes);
+                                dispatch(new ConversationNotError($value, $conversationId, $attributes));
                             }
                         } catch (\Throwable $th) {
-                            $pageId = self::conversationGetAvatarUserError($value, $conversationId);
+                            dispatch(new ConversationGetAvatarUserError($value, $conversationId));
                         }
                     }
-
-                    $arrayConversationId[] = $conversationId;
                 }
             }
         }
-
-        Conversation::whereNotIn('conversation_id_facebook', $arrayConversationId)->where('page_id', $pageId)->delete();
     }
 
     public static function conversationError($value, $conversationId)
@@ -254,12 +245,12 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
 
         $userFacebookInfo = UserFacebookInfo::Where('conversation_id_facebook', $dataUserFacebookInfo['conversation_id_facebook'])->first();
 
-        $pageId = self::storeDataToDatabase($dataUserFacebookInfo, $dataPage, $userFacebookInfo, $conversationId);
+        dispatch(new StoreDataToDatabase($dataUserFacebookInfo, $dataPage, $userFacebookInfo, $conversationId));
 
-        return $pageId;
+        return null;
     }
 
-    public static function conversationNotError($value, $conversationId,$attributes)
+    public static function conversationNotError($value, $conversationId, $attributes)
     {
         $attributes['user_id'] = $value[0]->id;
         $url = FacebookService::getAvatarUser($attributes);
@@ -277,8 +268,9 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
 
         $userFacebookInfo = UserFacebookInfo::Where('user_id', $dataUserFacebookInfo['user_id'])->first();
 
-        $pageId = self::storeDataToDatabase($dataUserFacebookInfo, $dataPage, $userFacebookInfo, $conversationId);
-        return $pageId;
+        dispatch(new StoreDataToDatabase($dataUserFacebookInfo, $dataPage, $userFacebookInfo, $conversationId));
+
+        return null;
     }
 
     public static function conversationGetAvatarUserError($value, $conversationId)
@@ -296,9 +288,9 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
 
         $userFacebookInfo = UserFacebookInfo::Where('user_id', $dataUserFacebookInfo['user_id'])->first();
 
-        $pageId = self::storeDataToDatabase($dataUserFacebookInfo, $dataPage, $userFacebookInfo, $conversationId);
+        dispatch(new StoreDataToDatabase($dataUserFacebookInfo, $dataPage, $userFacebookInfo, $conversationId));
 
-        return $pageId;
+        return null;
     }
 
     public static function storeDataToDatabase($dataUserFacebookInfo, $dataPage, $userFacebookInfo, $conversationId)
