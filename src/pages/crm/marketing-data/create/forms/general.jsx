@@ -93,6 +93,14 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
                   {Helper.getDate(details.updated_at, variables.DATE_FORMAT.DATE)}
                 </Text>
               </div>
+              <div className="col-lg-4">
+                <div className="ant-col ant-form-item-label">
+                  <label className="ant-form-item-required">Ghi chú</label>
+                </div>
+                <Text size="normal" className={stylesModule['general-detail']}>
+                  {details.note}
+                </Text>
+              </div>
             </div>
           </Pane>
         </Loading>

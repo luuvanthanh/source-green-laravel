@@ -37,9 +37,9 @@ const Index = memo(() => {
   const [classifyData, setClassifyData] = useState([]);
 
   const [pageFile, setPageFile] = useState(1);
-  const [limitFile, setLimitFile] = useState(18);
+  const [total, setTotal] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [recordedFiles, setRecordedFiles] = useState([]);
-  const [checkLoadMore, setCheckLoadMore] = useState(false);
 
   const [search, setSearch] = useState({
     search: query?.search,
@@ -95,12 +95,17 @@ const Index = memo(() => {
       type: 'mediaResult/GET_RECORDED_FILES',
       payload: {
         status: localVariables.CLASSIFY_STATUS.UNDEFINED,
-        page: pageFile,
-        limit: limitFile,
+        skipCount: pageFile,
+        maxResultCount: 18,
       },
       callback: (response) => {
-       if(pageFile === 1) {
-        setRecordedFiles(response.items);
+        if(pageFile === 1) {
+          setRecordedFiles(response.items);
+          setTotalCount(response.totalCount);
+       }
+       if(response?.totalCount > total) {
+        setPageFile(pageFile + 18);
+        setTotal(total + 18);
        }
       },
     });
@@ -111,17 +116,14 @@ const Index = memo(() => {
       type: 'mediaResult/GET_RECORDED_FILES',
       payload: {
         status: localVariables.CLASSIFY_STATUS.UNDEFINED,
-        page: pageFile,
-        limit: limitFile,
+        skipCount: pageFile,
+        maxResultCount: 18,
       },
       callback: (response) => {
-        if(response?.totalCount > limitFile) {
+        if(response?.totalCount > total) {
         setRecordedFiles( recordedFiles.concat(response.items));
-        setCheckLoadMore(true);
         setPageFile(pageFile + 18);
-        setLimitFile(limitFile + 18);
-       }else {
-        setCheckLoadMore(false);
+        setTotal(total +18);
        }
       },
     });
@@ -529,7 +531,7 @@ const Index = memo(() => {
                 ))}
               </Pane>
               {
-                checkLoadMore && (
+                total < totalCount && (
                     <div className={styles.more}>
                     <Button color="success"
                         className="ml20"

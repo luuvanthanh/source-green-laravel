@@ -73,3 +73,11 @@ export function getCoincide(params = {}) {
     },
   });
 }
+
+export function mergeAll(data = {}) {
+  return request(`/v1/merge-multiple-data-marketings`, {
+    method: 'POST',
+    data,
+    parse: true,
+  });
+}
