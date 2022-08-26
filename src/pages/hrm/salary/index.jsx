@@ -29,8 +29,8 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ salary, loading, hrmSalary }) => ({
-  data: hrmSalary.data,
+const mapStateToProps = ({ salary, loading, hrmSalaryTest }) => ({
+  data: hrmSalaryTest.data,
   error: salary.error,
   branches: salary.branches,
   divisions: salary.divisions,
@@ -109,7 +109,7 @@ class Index extends PureComponent {
     } = this.props;
     if (search.month) {
       this.props.dispatch({
-        type: 'hrmSalary/GET_DATA',
+        type: 'hrmSalaryTest/GET_DATA',
         payload: {
           ...search,
         },
