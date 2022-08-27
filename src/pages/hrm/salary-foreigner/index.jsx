@@ -393,19 +393,19 @@ class Index extends PureComponent {
             key: 'name',
             className: 'thead-green',
             children:
-              data?.columnBasicSalaryAndAllowance?.map((item) => {
-                if (item.code === 'TI_LE_THU_VIEC') {
+           !isEmpty(data?.columnBasicSalaryAndAllowance)  ?  data?.columnBasicSalaryAndAllowance?.map((item) => {
+                if (item?.code === 'TI_LE_THU_VIEC') {
                   return {
-                    title: item.name,
-                    key: item.code,
+                    title: item?.name,
+                    key: item?.code,
                     className: isCollapsed
                       ? 'min-width-50 thead-green'
                       : 'min-width-150 thead-green',
                     width: isCollapsed ? 50 : 150,
                     render: (record) => {
                       if (record.basicSalaryAndAllowance) {
-                        const basic = record.basicSalaryAndAllowance.find(
-                          (itemBasic) => itemBasic.code === item.code,
+                        const basic = record?.basicSalaryAndAllowance?.find(
+                          (itemBasic) => itemBasic?.code === item?.code,
                         );
                         return basic?.value;
                       }
@@ -430,7 +430,7 @@ class Index extends PureComponent {
                     return null;
                   },
                 };
-              }) || [],
+              }) : [],
           },
         ]
         : []),

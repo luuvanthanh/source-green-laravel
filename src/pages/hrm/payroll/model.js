@@ -58,6 +58,22 @@ export default {
         callback(null, error);
       }
     },
+    *UPDATE_SALARY_VN({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateSalaryVn, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE_SALARY_FOREIGN({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateSalaryForeign, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

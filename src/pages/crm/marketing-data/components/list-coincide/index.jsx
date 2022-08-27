@@ -797,6 +797,31 @@ class Index extends PureComponent {
     this.props.parentCallback({ isModal: false });
   };
 
+  // isMergeAll = () => {
+  //   const {  dataSource } = this.state;
+  //   const {
+  //     location: { query },
+  //   } = this.props;
+
+  //   this.props.dispatch({
+  //     type: 'crmMarketingDataCheckList/MERGE_ALL',
+  //     payload: {
+  //       id: dataSource?.map(i=> i?.id),
+  //     },
+  //     callback: (response) => {
+  //       if (response) {
+  //         this.props.dispatch({
+  //           type: 'crmMarketingData/GET_DATA',
+  //           payload: {
+  //             page: query?.page,
+  //             limit: query?.limit,
+  //           },
+  //         });
+  //         this.onLoad();
+  //       }
+  //     },
+  //   });
+  // };
 
   render() {
     const {
@@ -834,11 +859,11 @@ class Index extends PureComponent {
               scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
             />
             <div className="d-flex  justify-content-center mt-5">
-              <Button color="yellow" icon="comeback" className="mr-5" onClick={this.isModal}>
+              <Button color="yellow" icon="comeback"  onClick={this.isModal}>
                 Quay lại
               </Button>
               <div>
-                <Button color="success" icon="shrink" className="ml-5" onClick={this.showModal}  >
+                <Button color="success" icon="shrink" className="ml-5 mr-5" onClick={this.showModal}  >
                   Gộp dữ liệu
                 </Button>
                 <Modal
@@ -887,6 +912,9 @@ class Index extends PureComponent {
                   </div>
                 </Modal>
               </div>
+              {/* <Button color="danger" icon="shrink"  loading={effects['crmMarketingDataCheckList/MERGE_ALL']}  onClick={this.isMergeAll}>
+                Gộp tất cả
+              </Button> */}
             </div>
           </div>
         </div>

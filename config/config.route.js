@@ -1786,6 +1786,18 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/bang-luong-thoi-vu-viet-nam',
+            component: './hrm/salary-partTime-vn',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/bang-luong-thoi-vu-nuoc-ngoai',
+            component: './hrm/salary-partTime-foreigner',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/bao-cao/bao-cao-nhan-vien-dang-nghi-phep',
             component: './hrm/report/employee-on-leave',
             wrappers: ['@/wrappers/auth'],

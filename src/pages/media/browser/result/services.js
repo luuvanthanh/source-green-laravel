@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { Helper, variables } from '@/utils';
+import { omit } from 'lodash';
 
 export function get(params = {}) {
   return request('/posts', {
@@ -53,7 +53,7 @@ export function getRecordedFiles(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+      ...omit(params, 'maxResultCount'),
     },
   });
 }
