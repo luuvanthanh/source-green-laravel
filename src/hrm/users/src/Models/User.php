@@ -364,7 +364,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
 
     public function typeTeacher()
     {
-        return $this->belongsToMany(TypeTeacher::class, 'EmployeeTypeTeacher', 'EmployeeId', 'TypeTeacherId')->withPivot('CreationTime')->orderBy('CreationTime');
+        return $this->belongsToMany(TypeTeacher::class, 'EmployeeTypeTeacher', 'EmployeeId', 'TypeTeacherId')->withPivot('CreationTime')->orderBy('CreationTime', 'DESC');
     }
 
     /**
