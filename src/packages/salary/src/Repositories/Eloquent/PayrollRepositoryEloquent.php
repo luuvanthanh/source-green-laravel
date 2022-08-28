@@ -3295,86 +3295,150 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         return $data;
     }
 
-    public function payrollGroupByDivision(array $attributes)
+    public function payrollGroupByBranch(array $attributes)
     {
         $payroll = Payroll::where('Month', $attributes['month'])->first();
         $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
         $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
         $payrollDetail = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($startDate, $endDate, $attributes) {
-            $query->tranferHistory($attributes);
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
 
             if (!empty($attributes['employeeId'])) {
                 $employeeId = explode(',', $attributes['employeeId']);
                 $query->whereIn('Id', $employeeId);
             }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
         })->with(['employee' => function ($query) {
             $query->select('Id', 'FullName', 'Code');
         }])->get();
 
-        $listDivision = [];
-        foreach ($payrollDetail as $value) {
-            $employee = $value->employee->whereHas('labourContract', function ($query) use ($startDate, $endDate) {
-                $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-            })->orWhereHas('probationaryContract', function ($query) use ($startDate, $endDate) {
-                $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
-            })->first();
+        $result['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance, true);
+        $result['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance, true);
+        $result['ListBranch'] = [];
 
-            if (!empty($employee->labourContract)) {
-                $contract = $value->employee->labourContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
-            } else {
-                $contract = $value->employee->probationaryContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
-            }
-            $valueReturn = \Arr::except($value->ToArray(), ['BasicSalaryAndAllowance', 'IncurredAllowance']);
-            $valueReturn['BasicSalaryAndAllowance'] = json_decode($value->BasicSalaryAndAllowance, true);
-            $valueReturn['IncurredAllowance'] = json_decode($value->IncurredAllowance, true);
+        foreach ($payrollDetail as $value) {
+            $contract = $this->checkContract($value, $startDate, $endDate);
+            $branchName = $value->employee->positionLevelNow->branch->Name;
+            $divisionName = $value->employee->positionLevelNow->division->Name;
+
+            $value['BasicSalaryAndAllowance'] = json_decode($value->BasicSalaryAndAllowance, true);
+            $value['IncurredAllowance'] = json_decode($value->IncurredAllowance, true);
 
             if (!is_null($contract)) {
-                if (!array_key_exists($contract->division->Name, $listDivision)) {
-
-                    $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($startDate, $endDate, $contract, $attributes) {
-                        $query->tranferHistory($attributes);
-
-                        if (!empty($attributes['fullName'])) {
-                            $query->whereLike('FullName', $attributes['fullName']);
-                        }
-
-                        if (!empty($attributes['employeeId'])) {
-                            $employeeId = explode(',', $attributes['employeeId']);
-                            $query->whereIn('Id', $employeeId);
-                        }
-
-                        $query->whereHas('labourContract', function ($query) use ($startDate, $endDate, $contract) {
-                            $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->where('DivisionId', $contract->DivisionId);
-                        })->orWhereHas('probationaryContract', function ($query) use ($startDate, $endDate, $contract) {
-                            $query->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->where('DivisionId', $contract->DivisionId);
-                        });
-                    })->get();
-
-                    $valueSalaryAllowance = [];
-                    foreach ($payrollDetailSum as $arrSalaryAllowance) {
-                        $valueSalaryAllowance[] = json_decode($arrSalaryAllowance->BasicSalaryAndAllowance, true);
-                    }
-
-                    $result = call_user_func_array('array_merge', $valueSalaryAllowance);
-                    $arrGroupBy = $this->GroupByAllowance($result, 'code');
-                    $arrSumAllowance = $this->sumAllowanceByDivision($arrGroupBy);
-                    $listDivision[$contract->division->Name] = $arrSumAllowance;
-                    $listDivision[$contract->division->Name]['TotalInCome'] = array_sum(array_column($payrollDetailSum->ToArray(), 'TotalIncome'));
-                    $listDivision[$contract->division->Name]['Value'][] = $valueReturn;
-                    $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance);
-                    $listDivision[$contract->division->Name]['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance);
+                if (!array_key_exists($branchName, $result['ListBranch'])) {
+                    $result['ListBranch'][$branchName] = [
+                        'BranchName' => $branchName,
+                        'TotalInComeBranch' => $value->TotalIncome,
+                        'ActuallyReceived' => $value->ActuallyReceived,
+                        'KpiBonus' => $value->KpiBonus,
+                        'OtNoTax' => $value->OtNoTax,
+                        'OtTax' => $value->OtTax,
+                        'TotalWork' => $value->TotalWork,
+                        'TotalIncomeMonth' => $value->TotalIncomeMonth,
+                        'SocialInsuranceEmployee' => $value->SocialInsuranceEmployee,
+                        'HealthInsuranceEmployee' => $value->HealthInsuranceEmployee,
+                        'UnemploymentInsuranceEmployee' => $value->UnemploymentInsuranceEmployee,
+                        'SocialInsuranceCompany' => $value->SocialInsuranceCompany,
+                        'HealthInsuranceCompany' => $value->HealthInsuranceCompany,
+                        'PersonalIncomeTax' => $value->PersonalIncomeTax,
+                        'BasicSalaryAndAllowance' => $this->branchBasicSalaryAndAllowance($payroll, $contract, $attributes),
+                        'IncurredAllowance' => $this->branchIncurredAllowance($payroll, $payrollDetail, $contract, $attributes),
+                        'ListDivision' => []
+                    ];
                 } else {
-                    $listDivision[$contract->division->Name]['Value'][] = $valueReturn;
-                    $listDivision[$contract->division->Name]['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance);
-                    $listDivision[$contract->division->Name]['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance);
+                    $result['ListBranch'][$branchName]['TotalInComeBranch'] += $value->TotalIncome;
+                    $result['ListBranch'][$branchName]['ActuallyReceived'] += $value->ActuallyReceived;
+                    $result['ListBranch'][$branchName]['KpiBonus'] += $value->KpiBonus;
+                    $result['ListBranch'][$branchName]['OtNoTax'] += $value->OtNoTax;
+                    $result['ListBranch'][$branchName]['OtTax'] += $value->OtTax;
+                    $result['ListBranch'][$branchName]['TotalWork'] += $value->TotalWork;
+                    $result['ListBranch'][$branchName]['TotalIncomeMonth'] += $value->TotalIncomeMonth;
+                    $result['ListBranch'][$branchName]['SocialInsuranceEmployee'] += $value->SocialInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['HealthInsuranceEmployee'] += $value->HealthInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['UnemploymentInsuranceEmployee'] += $value->UnemploymentInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['SocialInsuranceCompany'] += $value->SocialInsuranceCompany;
+                    $result['ListBranch'][$branchName]['HealthInsuranceCompany'] += $value->HealthInsuranceCompany;
+                    $result['ListBranch'][$branchName]['PersonalIncomeTax'] += $value->PersonalIncomeTax;
+                }
+
+                if (!array_key_exists($divisionName, $result['ListBranch'][$branchName]['ListDivision'])) {
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName] = [
+                        'DivisionName' => $divisionName,
+                        'TotalInComeDivision' => $value->TotalIncome,
+                        'ActuallyReceived' => $value->ActuallyReceived,
+                        'KpiBonus' => $value->KpiBonus,
+                        'OtNoTax' => $value->OtNoTax,
+                        'OtTax' => $value->OtTax,
+                        'TotalWork' => $value->TotalWork,
+                        'TotalIncomeMonth' => $value->TotalIncomeMonth,
+                        'SocialInsuranceEmployee' => $value->SocialInsuranceEmployee,
+                        'HealthInsuranceEmployee' => $value->HealthInsuranceEmployee,
+                        'UnemploymentInsuranceEmployee' => $value->UnemploymentInsuranceEmployee,
+                        'SocialInsuranceCompany' => $value->SocialInsuranceCompany,
+                        'HealthInsuranceCompany' => $value->HealthInsuranceCompany,
+                        'PersonalIncomeTax' => $value->PersonalIncomeTax,
+                        'BasicSalaryAndAllowance' => $this->divisionBasicSalaryAndAllowance($payroll, $contract, $attributes),
+                        'IncurredAllowance' => $this->divisionIncurredAllowance($payroll, $payrollDetail, $contract, $attributes)
+                    ];
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['payrollDetail'][] = $value;
+                } else {
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['ActuallyReceived'] += $value->ActuallyReceived;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalInComeDivision'] += $value->TotalIncome;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['KpiBonus'] += $value->KpiBonus;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['OtNoTax'] += $value->OtNoTax;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['OtTax'] += $value->OtTax;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalWork'] += $value->TotalWork;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalIncomeMonth'] += $value->TotalIncomeMonth;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['SocialInsuranceEmployee'] += $value->SocialInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['HealthInsuranceEmployee'] += $value->HealthInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['UnemploymentInsuranceEmployee'] += $value->UnemploymentInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['SocialInsuranceCompany'] += $value->SocialInsuranceCompany;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['HealthInsuranceCompany'] += $value->HealthInsuranceCompany;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['PersonalIncomeTax'] += $value->PersonalIncomeTax;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['payrollDetail'][] = $value;
                 }
             }
         }
+        $result['Total'] = [
+            'TotalInComeBranch' => array_sum(array_column($result['ListBranch'], 'TotalInComeBranch')),
+            'ActuallyReceived' => array_sum(array_column($result['ListBranch'], 'ActuallyReceived')),
+            'KpiBonus' => array_sum(array_column($result['ListBranch'], 'KpiBonus')),
+            'OtNoTax' => array_sum(array_column($result['ListBranch'], 'OtNoTax')),
+            'OtTax' => array_sum(array_column($result['ListBranch'], 'OtTax')),
+            'TotalWork' => array_sum(array_column($result['ListBranch'], 'TotalWork')),
+            'TotalIncomeMonth' => array_sum(array_column($result['ListBranch'], 'TotalIncomeMonth')),
+            'SocialInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'SocialInsuranceEmployee')),
+            'HealthInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'HealthInsuranceEmployee')),
+            'UnemploymentInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'UnemploymentInsuranceEmployee')),
+            'SocialInsuranceCompany' => array_sum(array_column($result['ListBranch'], 'SocialInsuranceCompany')),
+            'HealthInsuranceCompany' => array_sum(array_column($result['ListBranch'], 'HealthInsuranceCompany')),
+            'PersonalIncomeTax' => array_sum(array_column($result['ListBranch'], 'PersonalIncomeTax')),
+            'BasicSalaryAndAllowance' => $this->sumOfTotalBasicSalaryAndAllowance($payrollDetail),
+            'ColumnIncurredAllowance' => $this->sumOfTotalColumnIncurredAllowance($payrollDetail),
+        ];
 
-        return $listDivision;
+        return $result;
     }
 
-    function GroupByAllowance($array, $key)
+    function groupByAllowance($array, $key)
     {
         $return = array();
         foreach ($array as $val) {
@@ -3383,68 +3447,220 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         return $return;
     }
 
-    public function sumAllowanceByDivision(array $arrayAllowance)
+    public function branchBasicSalaryAndAllowance($payroll, $contract, $attributes)
     {
-        $listAllowance['PC_TRACH_NHIEM'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_TRACH_NHIEM'], $arrayAllowance)) {
-            $listAllowance['PC_TRACH_NHIEM'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_TRACH_NHIEM']], 'value'));
+        $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($contract, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $column = [];
+        foreach (array_column($payrollDetailSum->ToArray(), 'BasicSalaryAndAllowance') as $valueColumn) {
+            $column[] = json_decode($valueColumn, true);
+        }
+        $groupKey = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
+        $data = $this->sumGroupByKey($groupKey);
+
+        return $data;
+    }
+
+    public function divisionBasicSalaryAndAllowance($payroll, $contract, $attributes)
+    {
+        $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($contract, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $column = [];
+        foreach (array_column($payrollDetailSum->ToArray(), 'BasicSalaryAndAllowance') as $valueColumn) {
+            $column[] = json_decode($valueColumn, true);
+        }
+        $groupKey = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
+        $data = $this->sumGroupByKey($groupKey);
+
+        return $data;
+    }
+
+    public function sumOfTotalBasicSalaryAndAllowance($payrollDetail)
+    {
+        $column = [];
+        foreach (array_column($payrollDetail->ToArray(), 'BasicSalaryAndAllowance') as $valueColumn) {
+            $column[] = $valueColumn;
+        }
+        $groupPC = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
+        $data = $this->sumGroupByKey($groupPC);
+
+        return $data;
+    }
+
+    public function sumOfTotalColumnIncurredAllowance($payrollDetail)
+    {
+        $column = [];
+        foreach (array_column($payrollDetail->ToArray(), 'ColumnIncurredAllowance') as $valueColumn) {
+            $column[] = $valueColumn;
+        }
+        $groupPC = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
+        $data = $this->sumGroupByKey($groupPC);
+
+        return $data;
+    }
+
+    public function checkContract($value, $startDate, $endDate)
+    {
+
+        $contract = $value->employee->labourContract()->where(function ($q1) use ($startDate, $endDate) {
+            $q1->where([['ContractFrom', '<=', $endDate], ['ContractTo', '>=', $startDate]]);
+        })->orWhere(function ($q2) use ($endDate) {
+            $q2->where('ContractFrom', '<=', $endDate)->where('ContractTo', null);
+        })->orderBy('CreationTime', 'DESC')->first();
+
+        if (is_null($contract)) {
+            $contract = $value->employee->probationaryContract()->where('ContractFrom', '<=', $endDate)->where('ContractTo', '>=', $startDate)->orderBy('CreationTime', 'DESC')->first();
         }
 
-        $listAllowance['PC_XANG_XEPC_DONG_PHUCPC_CHUYEN_CAN'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_XANG_XEPC_DONG_PHUCPC_CHUYEN_CAN'], $arrayAllowance)) {
-            $listAllowance['PC_XANG_XEPC_DONG_PHUCPC_CHUYEN_CAN'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_XANG_XEPC_DONG_PHUCPC_CHUYEN_CAN']], 'value'));
+        return !empty($contract) ? $contract : null;
+    }
+
+    public function divisionIncurredAllowance($payroll, $payrollDetail, $contract, $attributes)
+    {
+        $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($contract, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $groupIncurredAllowance = [];
+        foreach ($payrollDetailSum as $value) {
+            if (count(json_decode($value->IncurredAllowance, true)) <= 0) {
+                continue;
+            }
+            $groupIncurredAllowance[] = json_decode($value->IncurredAllowance, true);
+        }
+        $groupKey = $this->groupByAllowance(call_user_func_array('array_merge', $groupIncurredAllowance), 'code');
+        $data = $this->sumGroupByKey($groupKey);
+
+        return $data;
+    }
+
+    public function branchIncurredAllowance($payroll, $payrollDetail, $contract, $attributes)
+    {
+        $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($contract, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $groupIncurredAllowance = [];
+        foreach ($payrollDetailSum as $value) {
+            if (count(json_decode($value->IncurredAllowance, true)) <= 0) {
+                continue;
+            }
+            $groupIncurredAllowance[] = json_decode($value->IncurredAllowance, true);
         }
 
-        $listAllowance['PC_AN_TRUA'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_AN_TRUA'], $arrayAllowance)) {
-            $listAllowance['PC_AN_TRUA'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_AN_TRUA']], 'value'));
+        $groupKey = $this->groupByAllowance(call_user_func_array('array_merge', $groupIncurredAllowance), 'code');
+        $data = $this->sumGroupByKey($groupKey);
+
+        return $data;
+    }
+
+    public function sumGroupByKey($arrayGroupKey)
+    {
+        $data = [];
+        foreach ($arrayGroupKey as $key => $valueGroup) {
+            $data[$key] = array_sum(array_column($valueGroup, 'value'));
         }
 
-        $listAllowance['PC_DIEN_THOAI'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_DIEN_THOAI'], $arrayAllowance)) {
-            $listAllowance['PC_DIEN_THOAI'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_DIEN_THOAI']], 'value'));
-        }
-
-        $listAllowance['PC_LEAD_LOP_HOC'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_LEAD_LOP_HOC'], $arrayAllowance)) {
-            $listAllowance['PC_LEAD_LOP_HOC'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_LEAD_LOP_HOC']], 'value'));
-        }
-
-        $listAllowance['PC_KHAC'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_KHAC'], $arrayAllowance)) {
-            $listAllowance['PC_KHAC'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_KHAC']], 'value'));
-        }
-
-        $listAllowance['PC_HT_TCSK'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_HT_TCSK'], $arrayAllowance)) {
-            $listAllowance['PC_HT_TCSK'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_HT_TCSK']], 'value'));
-        }
-
-        $listAllowance['PC_NANG_SUAT'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_NANG_SUAT'], $arrayAllowance)) {
-            $listAllowance['PC_NANG_SUAT'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_NANG_SUAT']], 'value'));
-        }
-
-        $listAllowance['PC_PHAT_SINH'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_PHAT_SINH'], $arrayAllowance)) {
-            $listAllowance['PC_PHAT_SINH'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_PHAT_SINH']], 'value'));
-        }
-
-        $listAllowance['PC_BUS'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_BUS'], $arrayAllowance)) {
-            $listAllowance['PC_BUS'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_BUS']], 'value'));
-        }
-
-        $listAllowance['PC_THEOHD'] = 0;
-        if (array_key_exists(PayRollDetail::PC['PC_THEOHD'], $arrayAllowance)) {
-            $listAllowance['PC_THEOHD'] = array_sum(array_column($arrayAllowance[PayRollDetail::PC['PC_THEOHD']], 'value'));
-        }
-
-        $listAllowance['LUONG_CB'] = 0;
-        if (array_key_exists(PayRollDetail::LUONG_CB, $arrayAllowance)) {
-            $listAllowance['LUONG_CB'] = array_sum(array_column($arrayAllowance[PayRollDetail::LUONG_CB], 'value'));
-        }
-
-        return $listAllowance;
+        return $data;
     }
 }
