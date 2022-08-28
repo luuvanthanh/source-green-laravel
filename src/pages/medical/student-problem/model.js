@@ -5,6 +5,7 @@ export default {
   namespace: 'medicalStudentProblem',
   state: {
     data: [],
+    years: [],
     pagination: {
       total: 0,
     },
@@ -38,6 +39,13 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload.items,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years: payload.parsePayload?.map((item) => ({
+        id: item.id,
+        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+      })) || [],
     }),
   },
   effects: {
@@ -80,6 +88,22 @@ export default {
         yield saga.put({
           type: 'SET_CLASSES',
           payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
+          },
         });
       } catch (error) {
         yield saga.put({

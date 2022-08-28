@@ -524,6 +524,16 @@ export async function getLeftMenuConfiguration() {
           permission: [permissions.CAUHINH],
           pro: true,
         },
+        {
+          title: 'Năm học',
+          key: 'school-year',
+          url: [
+            '/cau-hinh/nam-hoc',
+            '/cau-hinh/nam-hoc/tao-moi',
+            '/cau-hinh/nam-hoc/:id/chi-tiet',
+          ],
+          permission: [permissions.CAUHINH],
+        },
       ],
       pro: true,
     },
@@ -1645,6 +1655,20 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
           pro: true,
         },
+        {
+          title: 'Bảng lương cộng tác viên Việt Nam',
+          key: 'salary-part-time-vn',
+          url: ['/quan-ly-nhan-su/bang-luong-thoi-vu-viet-nam'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Bảng lương cộng tác viên ngoài',
+          key: 'salary-part-time-foreigner',
+          url: ['/quan-ly-nhan-su/bang-luong-thoi-vu-nuoc-ngoai'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
       ],
     },
     {
@@ -1756,17 +1780,6 @@ export async function getLeftMenuFeePolicy() {
           pro: true,
         },
       ],
-    },
-    {
-      title: 'Năm học',
-      key: 'school-year',
-      url: [
-        '/chinh-sach-phi/nam-hoc',
-        '/chinh-sach-phi/nam-hoc/tao-moi',
-        '/chinh-sach-phi/nam-hoc/:id/chi-tiet',
-      ],
-      icon: 'icon icon-calendar',
-      permission: [permissions.CHINHSACHPHI],
     },
     {
       title: 'Phí',

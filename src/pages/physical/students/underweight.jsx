@@ -23,9 +23,9 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { pagination, data },
+    { pagination, data ,years},
     loading,
-    { defaultBranch },
+    { defaultBranch,user },
   ] = useSelector(({ loading: { effects }, physicalStudents, user }) => [
     physicalStudents,
     effects,
@@ -47,6 +47,7 @@ const Index = memo(() => {
     branchId: query?.branchId || defaultBranch?.id,
     keyWord: query?.keyWord,
     classId: query?.classId,
+    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
   });
 
   const columns = [
@@ -257,6 +258,10 @@ const Index = memo(() => {
 
   useEffect(() => {
     fetchBranches();
+    dispatch({
+      type: 'physicalStudents/GET_YEARS',
+      payload: {},
+    });
   }, []);
 
   return (
@@ -326,6 +331,15 @@ const Index = memo(() => {
                     type={variables.SELECT}
                     data={[{ name: 'Chọn tất cả', id: null }, ...category?.classes]}
                     onChange={(value) => changeFilter('classId')(value)}
+                    allowClear={false}
+                  />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    name="schoolYearId"
+                    type={variables.SELECT}
+                    data={[{ name: 'Chọn tất cả năm học', id: null }, ...years]}
+                    onChange={(value) => changeFilter('schoolYearId')(value)}
                     allowClear={false}
                   />
                 </Pane>

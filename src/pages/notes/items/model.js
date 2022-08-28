@@ -5,6 +5,7 @@ export default {
   namespace: 'noteItems',
   state: {
     data: [],
+    years: [],
     pagination: {
       total: 0,
     },
@@ -25,6 +26,13 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload.items,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years: payload.parsePayload?.map((item) => ({
+        id: item.id,
+        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+      })) || [],
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -106,6 +114,22 @@ export default {
         yield saga.put({
           type: 'GET_DATA',
           payload: payload.pagination,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
+          },
         });
       } catch (error) {
         yield saga.put({

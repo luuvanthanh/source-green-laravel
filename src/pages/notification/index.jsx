@@ -30,10 +30,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ notifications, loading }) => ({
+const mapStateToProps = ({ notifications, loading,user }) => ({
   data: notifications.data,
   pagination: notifications.pagination,
   error: notifications.error,
+  branches: notifications.branches, 
+  years: notifications.years,
+  user: user.user,
+  defaultBranch: user.defaultBranch,
   loading,
 });
 @connect(mapStateToProps)
@@ -43,18 +47,23 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      user,
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         keyWord: query?.keyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
+        branchId: query?.branchId || defaultBranch?.id,
         fromDate: query?.fromDate
-          ? moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER)
+          ? query?.fromDate
           : moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
         toDate: query?.toDate
-          ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
+          ? query?.toDate
           : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
       },
     };
@@ -63,6 +72,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -100,6 +110,17 @@ class Index extends PureComponent {
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),
+    });
+  };
+
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'notifications/GET_YEARS',
+      payload: { },
+    });
+    this.props.dispatch({
+      type: 'notifications/GET_BRANCHES',
+      payload: {},
     });
   };
 
@@ -246,6 +267,10 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeStatus = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
   /**
    * Function remove items
    * @param {uid} id id of items
@@ -292,6 +317,18 @@ class Index extends PureComponent {
             {Helper.getDate(record.sentDate, variables.DATE_FORMAT.DATE_TIME)}
           </Text>
         ),
+      },
+      {
+        title: 'Năm học',
+        key: 'year',
+        className: 'min-width-200',
+        render: (record) => record?.schoolYear?.yearFrom ? <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text> : "",
+      },
+      {
+        title: 'Cơ sở',
+        key: 'branches',
+        className: 'min-width-200',
+        render: (record) => <Text size="normal">{record?.branch?.name}</Text>,
       },
       {
         title: 'Người gửi',
@@ -358,10 +395,13 @@ class Index extends PureComponent {
       data,
       error,
       pagination,
+      branches,
+      years,
+      defaultBranch,
       match: { params },
       loading: { effects },
     } = this.props;
-    const { search } = this.state;
+    const { search, defaultBranchs } = this.state;
     const loading = effects['notifications/GET_DATA'];
     return (
       <>
@@ -405,6 +445,40 @@ class Index extends PureComponent {
                     type={variables.RANGE_PICKER}
                   />
                 </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(event) => this.onChangeStatus(event, 'schoolYearId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </div>
+                {!defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                      name="branchId"
+                      onChange={(event) => this.onChangeStatus(event, 'branchId')}
+                      type={variables.SELECT}
+                      placeholder="Chọn cơ sở"
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      onChange={(event) => this.onChangeStatus(event, 'branchId')}
+                      type={variables.SELECT}
+                      placeholder="Chọn cơ sở"
+                      allowClear={false}
+                    />
+                  </div>
+                )}
               </div>
             </Form>
             <Table
@@ -412,7 +486,7 @@ class Index extends PureComponent {
               dataSource={data}
               loading={loading}
               error={error}
-              isError={error.isError}
+              // isError={error.isError}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
@@ -443,6 +517,10 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  user:  PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  years :PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -453,6 +531,10 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  user: {},
+  branches: [],
+  years: [],
+  defaultBranch: {},
 };
 
 export default Index;

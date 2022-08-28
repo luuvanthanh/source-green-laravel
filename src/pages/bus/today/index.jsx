@@ -24,11 +24,13 @@ const { TabPane } = Tabs;
 const Index = memo(() => {
   const filterRef = useRef();
   const formRef = useRef();
-  const [busRoutes, summary, data, timelines] = useSelector(({ busToday = {} }) => [
+  const [busRoutes, summary, data, timelines, years, user] = useSelector(({ busToday = {},user = {} }) => [
     busToday?.busRoutes,
     busToday?.summary,
     busToday?.data,
     busToday?.timelines,
+    busToday?.years,
+    user?.user,
   ]);
 
   const history = useHistory();
@@ -46,6 +48,7 @@ const Index = memo(() => {
     status: query?.status || variablesModules.STATUS_TABS.SCHOOLWARD,
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
+    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
   });
   const [listSDT, setListSDT] = useState({});
 
@@ -74,6 +77,10 @@ const Index = memo(() => {
   useEffect(() => {
     dispatch({
       type: 'busToday/GET_BUS_ROUTES',
+      payload: {},
+    });
+    dispatch({
+      type: 'busToday/GET_YEARS',
       payload: {},
     });
   }, []);
@@ -182,6 +189,15 @@ const Index = memo(() => {
                       name: item?.busRoute?.name,
                     }))}
                     placeholder="Chọn lộ trình"
+                  />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
                   />
                 </Pane>
               </Pane>

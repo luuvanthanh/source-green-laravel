@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import requestLavarel from '@/utils/requestLavarel';
 import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
@@ -29,11 +30,9 @@ export function get(params = {}) {
 }
 
 export function getBranches(params = {}) {
-  return request('/branches', {
+  return requestLavarel('/v1/branches', {
     method: 'GET',
-    params: {
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-    },
+    params,
   });
 }
 

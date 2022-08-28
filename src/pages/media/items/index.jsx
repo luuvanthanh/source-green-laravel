@@ -23,9 +23,9 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { pagination, error, data },
+    { pagination, error, data, years },
     loading,
-    { defaultBranch },
+    { defaultBranch,user },
   ] = useSelector(({ loading: { effects }, media, user }) => [media, effects, user]);
 
   const history = useHistory();
@@ -46,6 +46,7 @@ const Index = memo(() => {
     description: query?.description,
     branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId,
+    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
   });
 
   const columns = [
@@ -67,6 +68,13 @@ const Index = memo(() => {
           {Helper.getDate(record.sentDate, variables.DATE_FORMAT.DATE_TIME)}
         </Text>
       ),
+    },
+    {
+      title: 'Năm học',
+      key: 'year',
+      width: 180,
+      className: 'min-width-180',
+      render: (record) => record?.schoolYear?.yearFrom ? <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text> : "",
     },
     {
       title: 'Cơ sở',
@@ -228,6 +236,10 @@ const Index = memo(() => {
         }
       },
     });
+    dispatch({
+      type: 'media/GET_YEARS',
+      payload: {},
+    });
   };
 
   useEffect(() => {
@@ -242,6 +254,7 @@ const Index = memo(() => {
   useEffect(() => {
     fetchBranches();
   }, []);
+
   return (
     <>
       <Helmet title="Danh sách hình ảnh" />
@@ -310,6 +323,16 @@ const Index = memo(() => {
                     name="rangeTime"
                     type={variables.RANGE_PICKER}
                     onChange={changeFilterDate}
+                  />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(value) => changeFilter('schoolYearId')(value)}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
                   />
                 </Pane>
               </Pane>

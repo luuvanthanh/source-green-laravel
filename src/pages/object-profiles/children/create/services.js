@@ -73,3 +73,10 @@ export function getAge(params = {}) {
     },
   });
 }
+
+export function getHistory(params = {}) {
+  return request(`/class-students/history-by-studentId/${params?.id}`, {
+    method: 'GET',
+    params,
+  });
+}

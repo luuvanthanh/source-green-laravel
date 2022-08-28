@@ -366,6 +366,20 @@ class Index extends PureComponent {
         render: (record) => HelperModules.tagStatus(record.status),
       },
       {
+        title: 'Facebook',
+        key: 'status',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => record?.facebook,
+      },
+      {
+        title: 'Ghi chú',
+        key: 'status',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => record?.note,
+      },
+      {
         title: 'Tag',
         key: 'tags',
         width: 300,
@@ -653,7 +667,11 @@ class Index extends PureComponent {
                       ]}
                     >
                       <div>
-                        <Form layout="vertical" ref={this.formCheck}>
+                        <Form 
+                         initialValues={{
+                          name: dataSearchCheck?.map(i => i?.id)
+                        }} 
+                          layout="vertical" ref={this.formCheck}>
                           <Pane className="row">
                             <Pane className="col-lg-12">
                               <FormItem
