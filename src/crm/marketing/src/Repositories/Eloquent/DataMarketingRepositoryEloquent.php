@@ -355,15 +355,15 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
     public function mergeMultipleDataMarketing($attributes)
     {
         $dataMarketingDuplicateEmails = $this->model->whereIn('id', $attributes['id'])->whereIn('email', function ($query) {
-            $query->select('data_marketings.email')->from('data_marketings')->groupBy('data_marketings.email')->havingRaw('count(*) > 1');
+            $query->select('data_marketings.email')->from('data_marketings')->where('deleted_at', null)->where('status', DataMarketing::STATUS['NOT_MOVE'])->groupBy('data_marketings.email')->havingRaw('count(*) > 1');
         })->where('status', DataMarketing::STATUS['NOT_MOVE'])->orderBy('email')->orderBy('created_at', 'DESC')->get();
 
         if (!empty($dataMarketingDuplicateEmails)) {
             $this->handleDataMarketing($dataMarketingDuplicateEmails, $action = 'email');
         }
 
-        $dataMarketingDuplicatePhones = $this->model->whereIn('id', $attributes['id'])->whereIn('phone', function ($query) {
-            $query->select('data_marketings.phone')->from('data_marketings')->groupBy('data_marketings.phone')->havingRaw('count(*) > 1');
+        $dataMarketingDuplicatePhones = $this->model->whereIn('id', $attributes['id'])->whereIn('phone', function ($query) use ($attributes) {
+            $query->select('data_marketings.phone')->from('data_marketings')->where('deleted_at', null)->where('status', DataMarketing::STATUS['NOT_MOVE'])->groupBy('data_marketings.phone')->havingRaw('count(*) > 1');
         })->where('status', DataMarketing::STATUS['NOT_MOVE'])->orderBy('phone')->orderBy('created_at', 'DESC')->get();
 
         if (!empty($dataMarketingDuplicatePhones)) {
@@ -387,10 +387,9 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
 
         foreach ($attributes as $dataMarketingDuplicate) {
             foreach ($dataMarketingDuplicate as  $dataMarketing) {
-                $dataStudents = $this->dataStudent($dataMarketing);
                 $arrayDataMarketingId[] = $dataMarketing->id;
             }
-
+            $dataStudents = $this->dataStudent($arrayDataMarketingId);
             $this->storeDataMarketing($arrayDataMarketingId, $dataStudents, $action);
             $arrayDataMarketingId = [];
             $dataStudents = [];
@@ -400,21 +399,55 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
     public function storeDataMarketing($arrayDataMarketingId, $dataStudents, $action)
     {
         $dataMarketing = DataMarketing::whereIn('id', $arrayDataMarketingId)->orderBy('created_at', 'DESC')->first();
-        if ($action == 'email') {
-            $phoneOtherDataMarketing = DataMarketing::whereIn('id', $arrayDataMarketingId)->where('id', '!=', $dataMarketing->id)->where('phone', '!=', $dataMarketing->phone)->orderBy('created_at', 'DESC')->first();
 
-            if (!is_null($phoneOtherDataMarketing)) {
-                $dataMarketing->update(['other_phone' => $phoneOtherDataMarketing->phone]);
+        if ($action == 'email') {
+            $phoneDataMarketing = DataMarketing::whereIn('id', $arrayDataMarketingId)->where('id', '!=', $dataMarketing->id)->where('phone', '!=', $dataMarketing->phone)->orderBy('created_at', 'DESC')->first();
+
+            if (is_null($dataMarketing->phone) && !is_null($phoneDataMarketing)) {
+                $dataMarketing->update(['phone' => $phoneDataMarketing->phone]);
+            } elseif (!is_null($phoneDataMarketing)) {
+                $dataMarketing->update(['other_phone' => $phoneDataMarketing->phone]);
             }
         } elseif ($action == 'phone') {
             $emailDataMarketing = DataMarketing::whereIn('id', $arrayDataMarketingId)->where('id', '!=', $dataMarketing->id)->where('email', '!=', null)->orderBy('created_at', 'DESC')->first();
 
-            if (!is_null($emailDataMarketing) && $dataMarketing->email == null) {
+            if (!is_null($emailDataMarketing) && is_null($dataMarketing->email)) {
                 $dataMarketing->update(['email' => $emailDataMarketing->email]);
             }
         }
 
+        $dataMarketings = DataMarketing::whereIn('id', $arrayDataMarketingId)->where('id', '!=', $dataMarketing->id)->orderBy('created_at', 'asc')->get();
+
+        foreach ($dataMarketings as $key => $value) {
+            $data = [
+                'birth_date' => is_null($dataMarketing->birth_date) ? $value->birth_date : $dataMarketing->birth_date,
+                'sex' => is_null($dataMarketing->sex) ? $value->sex : $dataMarketing->sex,
+                'address' => is_null($dataMarketing->address) ? $value->address : $dataMarketing->address,
+                'city_id' => is_null($dataMarketing->city_id) ? $value->city_id : $dataMarketing->city_id,
+                'district_id' => is_null($dataMarketing->district_id) ? $value->district_id : $dataMarketing->district_id,
+                'facility_id' => is_null($dataMarketing->facility_id) ? $value->facility_id : $dataMarketing->facility_id,
+                'user_create_id' => is_null($dataMarketing->user_create_id) ? $value->user_create_id : $dataMarketing->user_create_id,
+                'user_create_info' => is_null($dataMarketing->user_create_info) ? $value->user_create_info : $dataMarketing->user_create_info,
+                'search_source_id' => is_null($dataMarketing->search_source_id) ? $value->search_source_id : $dataMarketing->search_source_id,
+                'facebook' => is_null($dataMarketing->facebook) ? $value->facebook : $dataMarketing->facebook,
+                'zalo' => is_null($dataMarketing->zalo) ? $value->zalo : $dataMarketing->zalo,
+                'instagram' => is_null($dataMarketing->instagram) ? $value->instagram : $dataMarketing->instagram,
+                'skype' => is_null($dataMarketing->skype) ? $value->skype : $dataMarketing->skype,
+                'name_company' => is_null($dataMarketing->name_company) ? $value->name_company : $dataMarketing->name_company,
+                'address_company' => is_null($dataMarketing->address_company) ? $value->address_company : $dataMarketing->address_company,
+                'phone_company' => is_null($dataMarketing->phone_company) ? $value->phone_company : $dataMarketing->phone_company,
+                'career' => is_null($dataMarketing->career) ? $value->career : $dataMarketing->career,
+                'file_image' => is_null($dataMarketing->file_image) ? $value->file_image : $dataMarketing->file_image,
+                'branch_id' => is_null($dataMarketing->branch_id) ? $value->branch_id : $dataMarketing->branch_id,
+                'town_ward_id' => is_null($dataMarketing->town_ward_id) ? $value->town_ward_id : $dataMarketing->town_ward_id,
+                'note' => is_null($dataMarketing->note) ? $value->note : $dataMarketing->note,
+            ];
+        }
+
+        $dataMarketing->update($data);
+
         if (!empty($dataStudents)) {
+            $dataMarketing->studentInfo()->forceDelete();
             foreach ($dataStudents as $dataStudent) {
                 foreach ($dataStudent as $value) {
                     $value['data_marketing_id'] = $dataMarketing->id;
@@ -426,16 +459,20 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         DataMarketing::whereIn('id', $arrayDataMarketingId)->where('id', '!=', $dataMarketing->id)->forceDelete();
     }
 
-    public function dataStudent($dataMarketing)
+    public function dataStudent($arrayDataMarketingId)
     {
-        $dataStudent = [];
-        $student = $dataMarketing->studentInfo;
+        $data = [];
+        $dataMarketings = DataMarketing::whereIn('id', $arrayDataMarketingId)->get();
+        foreach ($dataMarketings as $key => $dataMarketing) {
+            $student = $dataMarketing->studentInfo;
+            if (!empty($student)) {
+                $dataStudent = $student->map->only('full_name', 'birth_date', 'sex', 'file_image', 'category_relationship_id')->toArray();
 
-        if (!empty($student)) {
-            $dataStudent = $student->map->only('full_name', 'birth_date', 'sex', 'file_image', 'category_relationship_id')->toArray();
+                if (!empty($dataStudent)) {
+                    $data[] = $dataStudent;
+                }
+            }
         }
-
-        $data[] = $dataStudent;
 
         return $data;
     }
