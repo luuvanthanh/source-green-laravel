@@ -60,6 +60,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::get('pages/user-long-tokens', 'FacebookController@userLongToken');
                 \Route::post('pages/add-pages', 'PageController@store');
                 \Route::post('pages/registration-webhooks', 'FacebookController@registrationWebhook');
+                \Route::post('pages/sync-message', 'MessageController@syncMessage');
             });
         });
     }

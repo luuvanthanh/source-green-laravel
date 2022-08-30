@@ -2,9 +2,13 @@
 
 namespace GGPHP\Crm\Facebook\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Crm\Facebook\Events\FacebookMessageReceive;
 use GGPHP\Crm\Facebook\Events\FacebookStatusSendMessage;
 use GGPHP\Crm\Facebook\Events\FacebookSynchronizeConversation;
+use GGPHP\Crm\Facebook\Jobs\GetMessageFacebook;
+use GGPHP\Crm\Facebook\Jobs\StoreDataMessageToDatabase;
+use GGPHP\Crm\Facebook\Jobs\StoreMessageFacebook;
 use GGPHP\Crm\Facebook\Models\Conversation;
 use GGPHP\Crm\Facebook\Models\Message;
 use GGPHP\Crm\Facebook\Models\Page;
@@ -63,7 +67,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         if (!empty($attributes['conversation_id'])) {
             $this->model = $this->model->where('conversation_id', $attributes['conversation_id']);
             $this->seenConversation($attributes['conversation_id']);
-        }
+        }   
 
         if (!empty($attributes['limit'])) {
             $message = $this->paginate($attributes['limit']);
@@ -325,5 +329,131 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         Storage::disk('local')->put('public/files/' . $name, $contents);
         $url = env('URL_CRM') . '/storage/files/' . $name;
         return $url;
+    }
+
+    public static function syncMessage($attributes)
+    {
+        if (!empty($attributes['data_page'])) {
+            foreach ($attributes['data_page'] as $attributes) {
+                dispatch(new GetMessageFacebook($attributes));
+            }
+        }
+    }
+
+    public static function getMessageFacebook($attributes)
+    {
+        foreach (Conversation::FOLDER as $folder) {
+            $attributes['folder'] = $folder;
+            $conversations = FacebookService::pageConversation($attributes);
+            if (!empty($conversations)) {
+                foreach ($conversations as $key => $conversation) {
+                    $attributes['conversation_id'] = $conversation->id;
+                    $messages = FacebookService::pageConversationMessage($attributes);
+                    dispatch(new StoreMessageFacebook($messages));
+                }
+            }
+        }
+    }
+
+    public static function storeMessageFacebook($messages)
+    {
+        if (!empty($messages)) {
+            foreach ($messages as $key => $message) {
+                if (isset($message->attachments)) {
+                    $attachments = $message->attachments;
+                    $url = self::handleFile($attachments);
+                    $content = $url;
+                } else {
+                    $content = $message->message;
+                }
+
+                $attributes = [
+                    'from' => $message->from->id,
+                    'to' => $message->to->data[0]->id,
+                    'content' => $content,
+                    'message_id_facebook' => $message->id,
+                    'created_at' => Carbon::now()->addSeconds($key + 1),
+                    'updated_at' => Carbon::now()->addSeconds($key + 1)
+                ];
+
+                dispatch(new StoreDataMessageToDatabase($attributes));
+            }
+        }
+    }
+
+    public static function handleFile($attachments)
+    {
+        foreach ($attachments->data as $key => $attachment) {
+            if (!empty($attachment->image_data)) {
+                $url = $attachment->image_data->url;
+            } elseif (!empty($attachment->video_data)) {
+                $url = $attachment->video_data->url;
+            } elseif (!empty($attachment->file_url)) {
+                $url = $attachment->file_url;
+            }
+            $contents = file_get_contents($url);
+            $url = strtok($url, '?');
+            $name = substr($url, strrpos($url, '/') + 1);
+            Storage::disk('local')->put('public/files/' . $name, $contents);
+            $url = env('URL_CRM') . '/storage/files/' . $name;
+            return $url;
+        }
+    }
+
+    public static function storeDataMessageToDatabase($attributes)
+    {
+
+        $page = Page::where('page_id_facebook', $attributes['from'])->first();
+        $notiInbox = Conversation::NOTI_INBOX['SEEN'];
+
+        if (!is_null($page)) {
+            $from = $page->id;
+            $pageId = $page->id;
+            $userFacebookInfo = UserFacebookInfo::where('user_id', $attributes['to'])->first();
+            $to = $userFacebookInfo->id;
+            $userFacebookInfoId = $userFacebookInfo->id;
+        } else {
+            $notiInbox = Conversation::NOTI_INBOX['NOT_SEEN'];
+            $userFacebookInfo = UserFacebookInfo::where('user_id', $attributes['from'])->first();
+            $from = $userFacebookInfo->id;
+            $userFacebookInfoId = $userFacebookInfo->id;
+            $page = Page::where('page_id_facebook', $attributes['to'])->first();
+            $to =  $page->id;
+            $pageId = $page->id;
+        }
+
+        $conversation = Conversation::where('page_id', $pageId)->where('user_facebook_info_id', $userFacebookInfoId)->first();
+
+        $message = Message::where('message_id_facebook', $attributes['message_id_facebook'])->first();
+
+        if (!is_null($conversation)) {
+            $dataMessage = [
+                'content' => $attributes['content'],
+                'message_id_facebook' => $attributes['message_id_facebook'],
+                'from' => $from,
+                'to' => $to,
+                'conversation_id' => $conversation->id,
+                'created_at' => $attributes['created_at'],
+                'updated_at' => $attributes['updated_at']
+            ];
+
+            if (is_null($message)) {
+                $message = Message::create($dataMessage);
+            } else {
+                $message->update($dataMessage);
+            }
+
+            $created_at = $message->created_at;
+            $dataConversation = [
+                'time' => $created_at->setTimezone('GMT+7')->format('Y-m-d H:i'),
+                'snippet' => $message->content,
+                'from' => $message->from,
+                'to' => $message->to,
+                'show_conversation' => true,
+                'noti_inbox' => $notiInbox
+            ];
+
+            $conversation->update($dataConversation);
+        }
     }
 }

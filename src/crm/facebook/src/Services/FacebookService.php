@@ -85,11 +85,16 @@ class FacebookService
     public static function pageConversation(array $attributes)
     {
         $fb = getFacebookSdk();
+        $fields = null;
+
+        if (isset($attributes['fields'])) {
+            $fields = $attributes['fields'];
+        }
 
         try {
             $pageId = $attributes['page_id'];
             $response = $fb->get(
-                '/' . $pageId . '/conversations?fields=id,unread_count,senders{profile_pic},can_reply,snippet,updated_time,wallpaper' . '&folder=' . $attributes['folder'] . '&limit=99999999999999999999',
+                '/' . $pageId . '/conversations?fields=id' . $fields . '&folder=' . $attributes['folder'] . '&limit=99999999999999999999',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -157,7 +162,7 @@ class FacebookService
             $conversationId = $attributes['conversation_id'];
             //Nội dung cuộc trò chuyện
             $response = $fb->get(
-                '/' . $conversationId . '/messages?fields=id,message,from,to,created_time&limit=10',
+                '/' . $conversationId . '/messages?fields=id,message,from,to,created_time,attachments&limit=99999999999999999999999',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
