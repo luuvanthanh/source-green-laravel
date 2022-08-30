@@ -107,12 +107,12 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                 <div
                   key={index}
                   className="container-preview-image"
-                  style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}
+                  // style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}
                 >
                   <Image
-                    width={102}
-                    height={102}
-                    src={`${API_UPLOAD}${item}`}
+                    // width={102}
+                    // height={102}
+                    // src={`${API_UPLOAD}${item}`}
                     preview={{
                       maskClassName: 'customize-mask',
                       mask: (
