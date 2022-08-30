@@ -338,3 +338,34 @@
   line-height: 20px;
   color: #3e4247;
 }
+
+.wrapper-img {
+  :global(img) {
+    width: 100px !important;
+    height: 100px !important;
+    object-fit: cover;
+  }
+  :global(.ant-image) {
+    width: 100px !important;
+    height: 100px !important;
+  }
+}
+
+.item-img{ 
+   display: flex;
+  position: relative;
+  :global(img) {
+    width: 100px !important;
+    height: 100px !important;
+    object-fit: cover;
+  }
+  .cancel {
+    width: 25px !important;
+    height: 25px !important;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    z-index: 1000;
+    cursor: pointer;
+  }
+}
