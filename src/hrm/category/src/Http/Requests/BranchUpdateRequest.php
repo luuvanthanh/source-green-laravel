@@ -50,16 +50,4 @@ class BranchUpdateRequest extends FormRequest
             'cityId' => 'required|exists:Citys,Id'
         ];
     }
-
-    public function all($keys = null)
-    {
-        $data = parent::all($keys);
-
-        if (!empty($data['cityId'])) {
-            $city = City::find($data['cityId']);
-            $data['code'] = $city->code . $data['code'];
-        }
-
-        return $data;
-    }
 }
