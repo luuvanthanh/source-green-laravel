@@ -261,6 +261,12 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $this->model = $this->model->has('historyCare', '<', 1);
         }
 
+        if (!empty($attributes['start_date_history_care']) && !empty($attributes['end_date_history_care'])) {
+            $this->model = $this->model->whereHas('historyCare', function ($query) use ($attributes) {
+                $query->whereDate('created_at', '>=', $attributes['start_date_history_care'])->whereDate('created_at', '<=', $attributes['end_date_history_care']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $customerLead = $this->paginate($attributes['limit']);
         } else {
