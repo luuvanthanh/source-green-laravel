@@ -351,12 +351,17 @@
   }
 }
 
-.item-img{ 
-   display: flex;
+.item-img {
+  display: flex;
   position: relative;
   :global(img) {
-    width: 100px !important;
-    height: 100px !important;
+    width: 150px !important;
+    height: 150px !important;
+    object-fit: cover;
+  }
+  :global(video) {
+    width: 150px !important;
+    height: 150px !important;
     object-fit: cover;
   }
   .cancel {
@@ -368,4 +373,12 @@
     z-index: 1000;
     cursor: pointer;
   }
+}
+
+.wrapper-upload {
+  display: flex;
+  width: 100%;
+  padding: 0 15px;
+  height: auto;
+  margin-bottom: 20px;
 }

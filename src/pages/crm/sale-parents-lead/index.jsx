@@ -93,6 +93,8 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         isset_history_care: query?.isset_history_care,
+        start_date_history_care: query?.start_date_history_care ? query?.start_date_history_care : null,
+        end_date_history_care: query?.end_date_history_care ? query?.end_date_history_care : null,
       },
       dataSource: [],
       isModalVisible: false,
@@ -230,16 +232,47 @@ class Index extends PureComponent {
 * @param {object} e event of input
 * @param {string} type key of object search
 */
-  onChangeDate = (e) => {
-    this.setState(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          start_date: moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
-          end_date: moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
-        },
-      }),
-    );
+  onChangeDate = (e, key) => {
+    if (e) {
+      if (key === 'date') {
+        this.setState(
+          (prevState) => ({
+            search: {
+              ...prevState.search,
+              start_date: moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+              end_date: moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+            },
+          }),
+        );
+      }
+      else {
+        this.formRef.current.setFieldsValue({ date: ["", ""] });
+        this.setState(
+          (prevState) => ({
+            search: {
+              ...prevState.search,
+              start_date: undefined,
+              end_date: undefined,
+              date: undefined,
+              start_date_history_care: moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+              end_date_history_care: moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+            },
+          }),
+        );
+      }
+    } else {
+      this.setState(
+        (prevState) => ({
+          search: {
+            ...prevState.search,
+            start_date: undefined,
+            end_date: undefined,
+            start_date_history_care: undefined,
+            end_date_history_care: undefined,
+          },
+        }),
+      );
+    }
     this.debouncedSearch();
   };
 
@@ -597,6 +630,7 @@ class Index extends PureComponent {
       location,
     } = this.props;
     const { search, dataSource, isModalVisible, dataCheck, isModal } = this.state;
+
     const self = this;
     const rowSelection = {
       onChange: this.onSelectChange,
@@ -671,9 +705,9 @@ class Index extends PureComponent {
                       ]}
                     >
                       <div>
-                        <Form 
-                        layout="vertical" 
-                        ref={this.formCheck}
+                        <Form
+                          layout="vertical"
+                          ref={this.formCheck}
                         >
                           <Pane className="row">
                             <Pane className="col-lg-12">
@@ -722,10 +756,12 @@ class Index extends PureComponent {
               </div>
               <div className={styles['block-table']}>
                 <Form
-                   initialValues={{
+                  initialValues={{
                     ...search,
                     date: search.start_date &&
-                      search.end_date && [moment(search.start_date), moment(search.end_date)],
+                      search.end_date ? [moment(search.start_date), moment(search.end_date)] : ["", ""],
+                    date_history_care: search.start_date_history_care &&
+                      search.end_date_history_care && [moment(search.start_date_history_care), moment(search.end_date_history_care)],
                   }}
                   layout="vertical"
                   ref={this.formRef}
@@ -819,7 +855,7 @@ class Index extends PureComponent {
                         name="date"
                         onChange={(event) => this.onChangeDate(event, 'date')}
                         type={variables.RANGE_PICKER}
-                        allowClear={false}
+                        disabled={search?.start_date_history_care && true}
                       />
                     </div>
                     <div className="col-lg-3">
@@ -830,6 +866,14 @@ class Index extends PureComponent {
                         onChange={(event) => this.onChangeSelect(event, 'isset_history_care')}
                         allowClear={false}
                         placeholder="Chọn trạng thái"
+                        disabled={search?.start_date_history_care && true}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="date_history_care"
+                        onChange={(event) => this.onChangeDate(event, 'date_history_care')}
+                        type={variables.RANGE_PICKER}
                       />
                     </div>
                   </div>

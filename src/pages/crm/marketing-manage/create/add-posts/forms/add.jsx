@@ -1,5 +1,5 @@
-import { memo, useRef, useEffect, useState } from 'react';
-import { Form, notification } from 'antd';
+import { memo, useRef, useEffect, useState, useMemo, useCallback } from 'react';
+import { Form, notification, Upload } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 // import Quill from '@/components/CommonComponent/Quill';
@@ -14,9 +14,9 @@ import Loading from '@/components/CommonComponent/Loading';
 import validator from 'validator';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
-import MultipleImageUpload from '@/components/CommonComponent/UploadAvatarVideo';
 import { Helper } from '@/utils';
 import Gallery from 'react-photo-gallery';
+import { imageUploadProps } from '@/utils/upload';
 import arrayMove from 'array-move';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 // import { photos } from "./photos";
@@ -24,7 +24,7 @@ import Photo from './Photo';
 import stylesModule from '../../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
-
+const { ...otherProps } = imageUploadProps;
 const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
   loading,
   detailsAddPost: crmMarketingManageAdd.detailsAddPost,
@@ -43,6 +43,12 @@ const General = memo(
     const [photos, setPhoto] = useState([]);
     const mounted = useRef(false);
     const [check, setCheck] = useState(false);
+
+    const [checkImg, setCheckImg] = useState(false);
+    const [checkVideo, setCheckVideo] = useState(false);
+
+    const [checkFile, setCheckFile] = useState(false);
+
     const mountedSet = (action, value) => mounted?.current && action(value);
     const loadingSubmit =
       effects[`crmMarketingManageAdd/ADD_POSTS`] || effects[`crmMarketingManageAdd/UPDATE_POSTS`];
@@ -88,23 +94,23 @@ const General = memo(
         type: check ? 'crmMarketingManageAdd/UPDATE_POSTS' : 'crmMarketingManageAdd/ADD_POSTS',
         payload: check
           ? {
-              id: params.id,
-              name: values?.name,
-              content: values?.content,
-              marketing_program_id: detailsAddPost?.marketing_program_id,
-              file_image: JSON.stringify(dataPhoto),
-              data_page: isEmpty(user)
-                ? []
-                : user?.map((i) => ({
-                    page_id: i?.id,
-                    page_access_token: i.access_token,
-                  })),
-            }
+            id: params.id,
+            name: values?.name,
+            content: values?.content,
+            marketing_program_id: detailsAddPost?.marketing_program_id,
+            file_image: JSON.stringify(dataPhoto),
+            data_page: isEmpty(user)
+              ? []
+              : user?.map((i) => ({
+                page_id: i?.id,
+                page_access_token: i.access_token,
+              })),
+          }
           : {
-              ...values,
-              file_image: JSON.stringify(dataPhoto),
-              marketing_program_id: params.id,
-            },
+            ...values,
+            file_image: JSON.stringify(dataPhoto),
+            marketing_program_id: params.id,
+          },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -182,12 +188,23 @@ const General = memo(
     useEffect(() => {
       if (check) {
         JSON?.parse(detailsAddPost?.file_image);
+        const dataJson = JSON?.parse(detailsAddPost?.file_image)?.map((i) => ({
+          src: i,
+        }));
         mountedSet(
           setPhoto,
           JSON?.parse(detailsAddPost?.file_image)?.map((i) => ({
             src: i,
           })),
         );
+
+        if (dataJson?.length > 0) {
+          if (head(dataJson)?.src.lastIndexOf('.mp4') !== -1) {
+            setCheckVideo(true);
+          } else {
+            setCheckImg(true);
+          }
+        }
         formRef.current.setFieldsValue({
           ...detailsAddPost,
           ...head(detailsAddPost.positionLevel),
@@ -196,14 +213,12 @@ const General = memo(
       }
     }, [detailsAddPost]);
 
-    const uploadFiles = (file) => {
-      mountedSet(setPhoto, (prev) => [
-        { src: `${API_UPLOAD}${file}`, width: 100, height: 100 },
-        ...prev,
-      ]);
-    };
-
     const hanDleDelete = (e) => {
+      if (photos?.length < 2) {
+        setCheckImg(false);
+        setCheckVideo(false);
+        setCheckFile(false);
+      }
       mountedSet(
         setPhoto,
         photos?.filter((i) => i?.src !== e?.src),
@@ -221,6 +236,97 @@ const General = memo(
     const onSortEnd = ({ oldIndex, newIndex }) => {
       setPhoto(arrayMove(photos, oldIndex, newIndex));
     };
+
+    const uploadActionImg = useCallback((file) => {
+      dispatch({
+        type: 'upload/UPLOAD',
+        payload: file,
+        callback: (res) => {
+          if (res) {
+            mountedSet(setPhoto, (prev) => [
+              { src: `${res?.results[0].fileInfo.url}`, type: 'img' },
+              ...prev,
+            ]);
+          }
+        },
+      });
+    }, []);
+
+    const uploadActionVideo = useCallback((file) => {
+      dispatch({
+        type: 'upload/UPLOAD',
+        payload: file,
+        callback: (res) => {
+          if (res) {
+            setCheckVideo(true);
+            mountedSet(setPhoto, (prev) => [
+              { src: `${res?.results[0].fileInfo.url}`, type: 'video' },
+              ...prev,
+            ]);
+          }
+        },
+      });
+    }, []);
+
+    const uploadProps = useMemo(
+      () => ({
+        ...otherProps,
+        multiple: true,
+        beforeUpload: () => null,
+        customRequest({ file }) {
+          const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/HEIC', 'image/heic'];
+          const maxSize = 20 * 2 ** 2000;
+          const { type, size } = file;
+
+          if (!allowImageTypes.includes(type)) {
+            return notification.error({
+              message: 'Thông báo',
+              description: 'Chỉ hỗ trợ định dạng jpeg, png, jpg, webp, heic',
+            });
+          }
+
+          if (size > maxSize) {
+            return notification.error({
+              message: 'Thông báo',
+              description: 'Chỉ hỗ trợ định dạng jpeg, png, jpg, webp, heic',
+            });
+          }
+          setCheckImg(true);
+          return uploadActionImg(file);
+        },
+      }),
+      [uploadActionImg],
+    );
+
+    const uploadPropsVideo = useMemo(
+      () => ({
+        ...otherProps,
+        multiple: true,
+        beforeUpload: () => null,
+        customRequest({ file }) {
+          const allowImageTypes = ['video/mp4'];
+          const maxSize = 20 * 2 ** 2000;
+          const { type, size } = file;
+
+          if (!allowImageTypes.includes(type)) {
+            return notification.error({
+              message: 'Thông báo',
+              description: 'Chỉ hỗ trợ định dạng mp4',
+            });
+          }
+
+          if (size > maxSize) {
+            return notification.error({
+              message: 'Thông báo',
+              description: 'Chỉ hỗ trợ định dạng mp4',
+            });
+          }
+          setCheckFile(true);
+          return uploadActionVideo(file);
+        },
+      }),
+      [uploadActionVideo],
+    );
 
     return (
       <>
@@ -258,17 +364,40 @@ const General = memo(
                         rules={[variables.RULES.EMPTY_INPUT]}
                       />
                     </Pane>
-                    <Pane className="col-lg-12">
-                      <Form.Item name="file_image" label="Ảnh/Video">
+                    <Pane className="col-lg-4">
+                      {/* <Form.Item name="file_image" label="Tải ảnh">
                         <MultipleImageUpload callback={(files) => uploadFiles(files)} />
-                      </Form.Item>
+                      </Form.Item> */}
+                    </Pane>
+                    <Pane className={stylesModule['wrapper-upload']}>
+                      <div>
+                        {
+                          !checkFile && !checkImg && !checkVideo && (
+                            <Upload {...uploadProps}>
+                              <Button color="primary" loading={effects['upload/UPLOAD']} >Tải ảnh</Button>
+                            </Upload>)
+                        }
+                        {
+                          !checkFile && checkImg && (
+                            <Upload {...uploadProps}>
+                              <Button color="primary" loading={effects['upload/UPLOAD']} >Tải ảnh</Button>
+                            </Upload>)
+                        }
+                      </div>
+                      <div>
+                        {
+                          (!checkImg && checkVideo) || (!checkImg && !checkVideo) && (
+                            <Upload {...uploadPropsVideo}>
+                              <Button color="primary" loading={effects['upload/UPLOAD']} className='ml10'>Tải video</Button>
+                            </Upload>)
+                        }
+                      </div>
                     </Pane>
                     <Pane className={classnames('col-lg-12', stylesModule['wrapper-img'])}>
                       <SortableGallery photos={photos} onSortEnd={onSortEnd} axis={'xy'} />
                     </Pane>
                   </Pane>
                 </Pane>
-
                 <Pane className="p20 d-flex justify-content-between align-items-center ">
                   {check ? (
                     <Button
@@ -320,7 +449,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   detailsAddPost: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],

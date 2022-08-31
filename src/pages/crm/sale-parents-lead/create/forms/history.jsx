@@ -35,12 +35,12 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
 const General = memo(
   ({ loading: { effects }, error, match: { params }, details }) => {
     const [data, setData] = useState([
-    //   {
-    //     config_profile_info_id: undefined,
-    //     status: true,
-    //     file_image: undefined,
-    //     id: uuidv4(),
-    //   },
+      //   {
+      //     config_profile_info_id: undefined,
+      //     status: true,
+      //     file_image: undefined,
+      //     id: uuidv4(),
+      //   },
     ]);
     const [remove, setRemove] = useState([]);
 
@@ -92,8 +92,8 @@ const General = memo(
           width: 200,
           render: (record) => (
             <Text size="normal">
-            {Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE_TIME)}
-          </Text>
+              {Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE_TIME)}
+            </Text>
           ),
         },
         {
@@ -187,7 +187,7 @@ const General = memo(
           width: 200,
           render: (record) => (
             <>
-             <Input.TextArea
+              <Input.TextArea
                 value={record.offline}
                 autoSize={{ minRows: 2, maxRows: 3 }}
                 placeholder="Nhập"
@@ -201,7 +201,7 @@ const General = memo(
           key: 'type',
           className: 'min-width-150',
           width: 150,
-          render: (record) => record?.type ?  record?.quantity_care : data?.length,
+          render: (record) => record?.quantity_care,
         },
         {
           title: 'Thao tác',
@@ -237,7 +237,7 @@ const General = memo(
       const items = data.map((item) => ({
         ...item,
         customer_lead_id: params.id,
-        history_care_id:  item.type &&  item?.id,
+        history_care_id: item.type && item?.id,
       }));
       const payload = {
         create_rows: items.filter((item) => !item.type),
@@ -265,20 +265,20 @@ const General = memo(
     };
 
     useEffect(() => {
-        dispatch({
-          type: 'crmSaleLeadAdd/HISTORY',
-          payload: {customer_lead_id: params?.id},
-          callback: (response) => {
-            if (response?.parsePayload.length > 0) {
-              setData(
-                response.parsePayload.map((item) => ({
-                  ...item,
-                })),
-              );
-            }
-          },
-        });
-      }, []);
+      dispatch({
+        type: 'crmSaleLeadAdd/HISTORY',
+        payload: { customer_lead_id: params?.id },
+        callback: (response) => {
+          if (response?.parsePayload.length > 0) {
+            setData(
+              response.parsePayload.map((item) => ({
+                ...item,
+              })),
+            );
+          }
+        },
+      });
+    }, []);
 
     return (
       <Form layout="vertical" ref={formRef} onFinish={onFinish}>
@@ -317,6 +317,7 @@ const General = memo(
                                 id: uuidv4(),
                                 status: true,
                                 file_image: undefined,
+                                quantity_care: data?.length > 0 ? (Math.max(...data.map(i => i.quantity_care)) + 1) : 1,
                               },
                             ])
                           }
