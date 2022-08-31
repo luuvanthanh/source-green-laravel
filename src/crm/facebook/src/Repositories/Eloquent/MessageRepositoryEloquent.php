@@ -364,6 +364,10 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                     $attachments = $message->attachments;
                     $url = self::handleFile($attachments);
                     $content = $url;
+                } elseif (isset($message->shares)) {
+                    $attachments = $message->shares;
+                    $url = self::handleFile($attachments);
+                    $content = $url;
                 } else {
                     $content = $message->message;
                 }
@@ -373,6 +377,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                     'to' => $message->to->data[0]->id,
                     'content' => $content,
                     'message_id_facebook' => $message->id,
+                    //mục đích để tránh tình trạng trùng ngày tạo
                     'created_at' => Carbon::now()->addSeconds($key + 1),
                     'updated_at' => Carbon::now()->addSeconds($key + 1)
                 ];
@@ -391,7 +396,10 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
                 $url = $attachment->video_data->url;
             } elseif (!empty($attachment->file_url)) {
                 $url = $attachment->file_url;
+            } elseif (!empty($attachment->link)) {
+                $url = $attachment->link;
             }
+
             $contents = file_get_contents($url);
             $url = strtok($url, '?');
             $name = substr($url, strrpos($url, '/') + 1);

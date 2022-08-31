@@ -162,7 +162,7 @@ class FacebookService
             $conversationId = $attributes['conversation_id'];
             //Nội dung cuộc trò chuyện
             $response = $fb->get(
-                '/' . $conversationId . '/messages?fields=id,message,from,to,created_time,attachments&limit=99999999999999999999999',
+                '/' . $conversationId . '/messages?fields=id,message,from,to,created_time,attachments,shares{link}&limit=99999999999999999999999',
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
