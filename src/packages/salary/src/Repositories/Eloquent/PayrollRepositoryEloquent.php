@@ -3542,7 +3542,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
     public function sumOfTotalColumnIncurredAllowance($payrollDetail)
     {
         $column = [];
-        foreach (array_column($payrollDetail->ToArray(), 'ColumnIncurredAllowance') as $valueColumn) {
+        foreach (array_column($payrollDetail->ToArray(), 'IncurredAllowance') as $valueColumn) {
             $column[] = $valueColumn;
         }
         $groupPC = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
