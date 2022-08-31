@@ -8,21 +8,6 @@ class PayRollDetail extends UuidModel
 {
     public $incrementing = false;
 
-    const LUONG_CB = 'LUONG_CB';
-    const PC = [
-        'PC_TRACH_NHIEM' => 'PC_TRACH_NHIEM',
-        'PC_XANG_XEPC_DONG_PHUCPC_CHUYEN_CAN' => 'PC_XANG_XEPC_DONG_PHUCPC_CHUYEN_CAN',
-        'PC_AN_TRUA' => 'PC_AN_TRUA',
-        'PC_DIEN_THOAI' => 'PC_DIEN_THOAI',
-        'PC_LEAD_LOP_HOC' => 'PC_LEAD_LOP_HOC',
-        'PC_KHAC' => 'PC_KHAC',
-        'PC_HT_TCSK' => 'PC_HT_TCSK',
-        'PC_NANG_SUAT' => 'PC_NANG_SUAT',
-        'PC_PHAT_SINH' => 'PC_PHAT_SINH',
-        'PC_BUS' => 'PC_BUS',
-        'PC_THEOHD' => 'PC_THEOHD'
-    ];
-
     /**
      * Declare the table name
      */
