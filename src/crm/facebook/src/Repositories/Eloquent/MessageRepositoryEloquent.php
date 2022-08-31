@@ -67,7 +67,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         if (!empty($attributes['conversation_id'])) {
             $this->model = $this->model->where('conversation_id', $attributes['conversation_id']);
             $this->seenConversation($attributes['conversation_id']);
-        }   
+        }
 
         if (!empty($attributes['limit'])) {
             $message = $this->paginate($attributes['limit']);
@@ -358,6 +358,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
     public static function storeMessageFacebook($messages)
     {
         if (!empty($messages)) {
+            $messages = array_reverse($messages);
             foreach ($messages as $key => $message) {
                 if (isset($message->attachments)) {
                     $attachments = $message->attachments;
