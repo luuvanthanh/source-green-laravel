@@ -23,8 +23,10 @@ const Photo = ({ index, onClick, photo, hanDleDelete, margin, direction, top, le
   return (
     <div className={stylesModule['item-img']}>
       <button className={stylesModule?.cancel} type="button" onClick={() => onDelete(photo)}>
-        <CloseOutlined />
+        {/* <CloseOutlined onClick={() => onDelete(photo)} /> */}
       </button>
+      
+
       {photo?.type === 'video' || photo?.src?.lastIndexOf('.mp4') !== -1 ? (
         <video controls width={300}>
           <source src={`${API_UPLOAD}${photo?.src}`} />
