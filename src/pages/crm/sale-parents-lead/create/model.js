@@ -467,12 +467,13 @@ export default {
         });
       }
     },
-    *HISTORY({ payload }, saga) {
+    *HISTORY({ payload,callback }, saga) {
       try {
         yield saga.put({
           type: 'INIT_STATE',
         });
         const response = yield saga.call(services.history, payload);
+       callback(response);
         yield saga.put({
           type: 'SET_HISTORY',
           payload: response,

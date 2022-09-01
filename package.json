@@ -95,6 +95,7 @@
     "react-infinite-scroller": "^1.2.4",
     "react-json-view": "^1.21.3",
     "react-leaflet": "^2.0.1",
+    "react-photo-gallery": "^8.0.0",
     "react-quill": "^1.3.5",
     "react-slick": "^0.28.1",
     "react-sortable-hoc": "^1.11.0",

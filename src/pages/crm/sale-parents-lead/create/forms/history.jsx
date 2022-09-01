@@ -1,511 +1,378 @@
-import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Modal} from 'antd';
-import { useParams } from 'umi';
-import { useSelector, useDispatch } from 'dva';
-import styles from '@/assets/styles/Common/common.scss';
+import { memo, useRef, useEffect, useState } from 'react';
+import { Form, Select, Input } from 'antd';
+import { connect, withRouter } from 'umi';
+import PropTypes from 'prop-types';
+
 import Pane from '@/components/CommonComponent/Pane';
-import Text from '@/components/CommonComponent/Text';
-import { variables, Helper } from '@/utils';
-import { isEmpty, get,head } from 'lodash';
-import moment from 'moment';
 import Heading from '@/components/CommonComponent/Heading';
-import FormItem from '@/components/CommonComponent/FormItem';
-import Table from '@/components/CommonComponent/Table';
 import Button from '@/components/CommonComponent/Button';
+import Text from '@/components/CommonComponent/Text';
+import Loading from '@/components/CommonComponent/Loading';
+import { useDispatch } from 'dva';
+import { isEmpty } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
+import { variables, Helper } from '@/utils';
+import Table from '@/components/CommonComponent/Table';
 import stylesModule from '../../styles.module.scss';
 
+const { Option } = Select;
 const genders = [
-    { id: 'LEAD_NEW', name: 'Lead mới' },
-    { id: 'POTENTIAL', name: 'Có tiềm năng' },
-    { id: 'NOT_POTENTIAL', name: 'Không tiềm năng' },
-  ];
+  { id: 'LEAD_NEW', name: 'Lead mới' },
+  { id: 'POTENTIAL', name: 'Có tiềm năng' },
+  { id: 'NOT_POTENTIAL', name: 'Không tiềm năng' },
+];
 
-const General = memo(() => {
+const dataCategory = [
+  { id: 'PHONE', name: 'Điện thoại' },
+  { id: 'EMAIL', name: 'Email' },
+  { id: 'FACEBOOK', name: 'Facebook' },
+];
+
+const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
+  loading,
+  details: crmSaleLeadAdd.details,
+});
+const General = memo(
+  ({ loading: { effects }, error, match: { params }, details }) => {
+    const [data, setData] = useState([
+      //   {
+      //     config_profile_info_id: undefined,
+      //     status: true,
+      //     file_image: undefined,
+      //     id: uuidv4(),
+      //   },
+    ]);
+    const [remove, setRemove] = useState([]);
+
     const formRef = useRef();
-    const dispatch = useDispatch();
-    const params = useParams();
     const mounted = useRef(false);
-    const {
-        history,
-        loading: { effects },
-        details,
-    } = useSelector(({ loading, crmSaleLeadAdd }) => ({
-        loading,
-        history: crmSaleLeadAdd.history,
-        details: crmSaleLeadAdd.details,
-        data: crmSaleLeadAdd.data,
-        error: crmSaleLeadAdd.error,
-    }));
-    const loading = effects[`crmSaleLeadAdd/HISTORY`] || effects[`crmSaleLeadAdd/GET_EVENTS`];
-
-    const [historyDetails, setHistoryDetails] = useState({});
-
-    const [modal, setModal] = useState(false);
-    const [objects, setObjects] = useState({ id: null });
-    const loadingSubmit =
-        effects[`crmSaleLeadAdd/ADD_EVENTS`] || effects[`crmSaleLeadAdd/UPDATE_EVENTS`];
-    const mountedSet = (action, value) => {
-        if (mounted.current) {
-            action(value);
-        }
-    };
-
+    const loadingSubmit = '';
+    const loading = effects[``];
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        if (params.id) {
-          dispatch({
-            type: 'crmSaleLeadAdd/GET_DETAILS',
-            payload: params,
-          });
-        }
-      }, [params.id]);
-
+      mounted.current = true;
+      return mounted.current;
+    }, []);
 
     useEffect(() => {
-        if (params.detailId) {
-            dispatch({
-                type: 'crmSaleLeadAdd/GET_EVENTS',
-                payload: params,
-            });
-        }
-    }, [params.detailId]);
-
-    useEffect(() => {
+      if (params.id) {
         dispatch({
-            type: 'crmSaleLeadAdd/HISTORY',
-            payload: {
-                customer_lead_id: params.id,
-            },
+          type: 'crmSaleLeadAdd/GET_DETAILS',
+          payload: params,
         });
-        const dataSession = JSON.parse(sessionStorage.getItem('check'));
-        if (dataSession?.modal) {
-            setModal(dataSession?.modal);
-            setObjects({ id: dataSession?.id });
-            if (objects) {
-                dispatch({
-                    type: 'crmSaleLeadAdd/GET_EVENTS',
-                    payload: dataSession?.id,
-                    callback: () => {
-                    },
-                });
-                dispatch({
-                    type: 'crmSaleLeadAdd/EVENTS',
-                    payload: {
-                        customer_lead_id: params.id,
-                    },
-                });
-            }
-        }
-        sessionStorage.removeItem('check');
-    }, []);
+      }
+    }, [params.id]);
 
-    useEffect(() => {
-        dispatch({
-            type: 'crmSaleLeadAdd/GET_CATEGORY_EVENTS',
-            payload: {},
-        });
-    }, []);
-
-    useEffect(() => {
-        mounted.current = true;
-        return mounted.current;
-    }, []);
-
-    const onRemove = (id) => {
-        Helper.confirmAction({
-            callback: () => {
-                dispatch({
-                    type: 'crmSaleLeadAdd/REMOVE_HISTORY',
-                    payload: {
-                        id,
-                    },
-                    callback: () => {
-                        dispatch({
-                            type: 'crmSaleLeadAdd/HISTORY',
-                            payload: {
-                                customer_lead_id: params.id,
-                            },
-                        });
-                    },
-                });
-            },
-        });
+    const onSelectEmployees = (productId, record, type) => {
+      setData((prev) =>
+        prev.map((item) => ({
+          ...item,
+          [`${type}`]: item.id === record.id ? productId : item?.[`${type}`],
+        })),
+      );
     };
 
-    const showModal = () => {
-        setHistoryDetails({});
-        setModal(true);
+    const onChangeInput = (e, record, key) => {
+      setData((prev) =>
+        prev.map((item) =>
+          item.test === record.test && item.id === record.id
+            ? { ...item, [key]: e.target.value }
+            : { ...item },
+        ),
+      );
     };
-
-    const detailModal = (record) => {
-        setModal(true);
-        mountedSet(setObjects, { id: record });
-        if (objects) {
-            dispatch({
-                type: 'crmSaleLeadAdd/GET_HISTORY',
-                payload: record,
-                callback: (res) => {
-                    if(res){
-                        setHistoryDetails(res?.parsePayload);
-                    }
-                },
-            });
-            dispatch({
-                type: 'crmSaleLeadAdd/HISTORY',
-                payload: {
-                    customer_lead_id: params.id,
-                },
-            });
-        }
-    };
-    
-    const onFormNumber = () => {
-        if(historyDetails?.quantity_care) {
-            return  historyDetails?.quantity_care;
-        } 
-        if(history?.length > 0) {
-                return head(history)?.quantity_care + 1;
-        }
-        return 1 ;
-    };
-
-    const onFormTrue = () => (
-        <>
-           <div className="col-lg-6">
-                <div className="ant-col ant-form-item-label">
-                  <label className="ant-form-item-required">Tên phụ huynh</label>
-                </div>
-                <Text size="normal" className={stylesModule['general-detail']}>
-                  {details?.full_name}
-                </Text>
-              </div>
-              <div className="col-lg-6">
-                <div className="ant-col ant-form-item-label">
-                  <label className="ant-form-item-required">SĐT</label>
-                </div>
-                <Text size="normal" className={stylesModule['general-detail']}>
-                  {details?.phone}
-                </Text>
-              </div>
-              <div className="col-lg-6">
-                <div className="ant-col ant-form-item-label">
-                  <label className="ant-form-item-required">Số lần chăm sóc</label>
-                </div>
-                <Text size="normal" className={stylesModule['general-detail']}>
-                 {onFormNumber()}
-                </Text>
-              </div>
-              <Pane className="col-lg-6">
-                <FormItem
-                    label="Tình trạng chăm sóc"
-                    name="status"
-                    data={genders}
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT}
-                />
-            </Pane>
-            <Pane className="col-lg-6">
-                <FormItem
-                    name="date"
-                    label="Ngày diễn ra"
-                    type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
-                />
-            </Pane>
-            <Pane className="col-lg-6">
-                <FormItem
-                    label="Giờ"
-                    name="hours"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.TIME_PICKER}
-                />
-            </Pane>
-            <Pane className="col-lg-12">
-                <FormItem
-                    name="content_call"
-                    label="Nội dung cuộc gọi"
-                    type={variables.TEXTAREA}
-                />
-            </Pane>
-            <Pane className="col-lg-12">
-                <FormItem
-                    name="result_call"
-                    label="Kết quả cuộc gọi"
-                    type={variables.TEXTAREA}
-                />
-            </Pane>
-            <Pane className="col-lg-12">
-                <FormItem
-                    name="history_interactive"
-                    label="Lịch sử tương tác bằng mạng xã hội"
-                    type={variables.TEXTAREA}
-                />
-            </Pane>
-            <Pane className="col-lg-12">
-                <FormItem
-                    name="offline"
-                    label="Các hoạt động offline"
-                    type={variables.TEXTAREA}
-                />
-            </Pane>
-        </>);
 
     const header = () => {
-        const columns = [
-            {
-                title: 'Thời gian',
-                key: 'date',
-                className: 'min-width-150',
-                width: 200,
-                render: (record) => (
-                    <Text size="normal">
-                        {record.date}, {record.hours} 
-                    </Text>
-                ),
+      const columns = [
+        {
+          title: 'Thời gian',
+          key: 'date',
+          className: 'min-width-150',
+          width: 200,
+          render: (record) => (
+            <Text size="normal">
+              {Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE_TIME)}
+            </Text>
+          ),
+        },
+        {
+          title: 'Tên phụ huynh',
+          key: 'type',
+          className: 'min-width-250',
+          width: 250,
+          render: () => details?.full_name,
+        },
+        {
+          title: 'SĐT',
+          key: 'type',
+          className: 'min-width-150',
+          width: 150,
+          render: () => details?.phone,
+        },
+        {
+          title: 'Tình trạng chăm sóc',
+          key: 'type',
+          className: 'min-width-200',
+          width: 200,
+          render: (value, record) => (
+            <Select
+              placeholder="Chọn"
+              showSearch
+              className="w-100"
+              defaultValue={record.status}
+              onChange={(val) => onSelectEmployees(val, record, 'status')}
+            >
+              {genders?.map((item) => (
+                <Option key={item.id}>{item?.name}</Option>
+              ))}
+            </Select>
+          ),
+        },
+        {
+          title: 'Loại tương tác',
+          key: 'type',
+          className: 'min-width-200',
+          width: 200,
+          render: (value, record) => (
+            <Select
+              placeholder="Chọn"
+              showSearch
+              className="w-100"
+              defaultValue={record.category}
+              onChange={(e) => onSelectEmployees(e, record, 'category')}
+            >
+              {dataCategory?.map((item) => (
+                <Option key={item.id}>{item?.name}</Option>
+              ))}
+            </Select>
+          ),
+        },
+        {
+          title: 'Nội dung tương tác',
+          key: 'content',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => (
+            <>
+              <Input.TextArea
+                value={record.content}
+                autoSize={{ minRows: 2, maxRows: 3 }}
+                placeholder="Nhập"
+                onChange={(e) => onChangeInput(e, record, 'content')}
+              />
+            </>
+          ),
+        },
+        {
+          title: 'Kết quả tương tác',
+          key: 'name',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => (
+            <>
+              <Input.TextArea
+                value={record.result}
+                autoSize={{ minRows: 2, maxRows: 3 }}
+                placeholder="Nhập"
+                onChange={(e) => onChangeInput(e, record, 'result')}
+              />
+            </>
+          ),
+        },
+        {
+          title: 'Các hoạt động offline',
+          key: 'offline',
+          className: 'min-width-200',
+          width: 200,
+          render: (record) => (
+            <>
+              <Input.TextArea
+                value={record.offline}
+                autoSize={{ minRows: 2, maxRows: 3 }}
+                placeholder="Nhập"
+                onChange={(e) => onChangeInput(e, record, 'offline')}
+              />
+            </>
+          ),
+        },
+        {
+          title: 'SL chăm sóc',
+          key: 'type',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => record?.quantity_care,
+        },
+        {
+          title: 'Thao tác',
+          key: 'action',
+          width: 100,
+          fixed: 'right',
+          render: (record) => (
+            <div className={stylesModule['list-button']}>
+              <Button
+                onClick={() => {
+                  setData(
+                    data.filter(
+                      (val) =>
+                        (val.key || val.id || val.test) !==
+                        (record.key || record.id || record.test),
+                    ),
+                  );
+                  setRemove([...remove, record.id]);
+                }}
+                type="button"
+                color="danger"
+                icon="remove"
+                className={stylesModule.remove}
+              />
+            </div>
+          ),
+        },
+      ];
+      return columns;
+    };
+
+    const onFinish = () => {
+      const items = data.map((item) => ({
+        ...item,
+        customer_lead_id: params.id,
+        history_care_id: item.type && item?.id,
+      }));
+      const payload = {
+        create_rows: items.filter((item) => !item.type),
+        update_rows: items.filter((item) => item.type),
+        delete_rows: remove,
+      };
+      dispatch({
+        type: 'crmSaleLeadAdd/ADD_HISTORY',
+        payload,
+        callback: (response, error) => {
+          dispatch({
+            type: 'crmSaleLeadAdd/HISTORY',
+            payload: { customer_lead_id: params?.id },
+            callback: (response) => {
+              if (response?.parsePayload.length > 0) {
+                setData(
+                  response.parsePayload.map((item) => ({
+                    ...item,
+                  })),
+                );
+              }
             },
-            {
-                title: 'Tên phụ huynh',
-                key: 'name',
-                width: 250,
-                className: 'min-width-250',
-                render: (record) => record?.customerLead?.full_name,
-            },
-            {
-                title: 'SĐT',
-                key: 'phone',
-                width: 150,
-                className: 'min-width-150',
-                render: (record) => record?.customerLead?.phone,
-            },
-            {
-                title: 'Số lần chăm sóc',
-                key: 'quantity_care',
-                width: 150,
-                className: 'min-width-150',
-                render: (record) => get(record, 'quantity_care'),
-            },
-            {
-                title: 'Tình trạng chăm sóc',
-                key: 'status',
-                width: 170,
-                className: 'min-width-170',
-                render: (record) => <>
-                 {record?.status === 'LEAD_NEW' ? 'Lead mới' : ""}
-                  {record?.status === 'POTENTIAL' ? 'Tiềm năng' : ""}
-                  {record?.status === 'NOT_POTENTIAL' ? 'Không tiềm năng' : ""}
-                </>,
-            },
-             {
-                title: 'Nội dung cuộc gọi',
-                key: 'content_call',
-                width: 170,
-                className: 'min-width-170',
-                render: (record) => get(record, 'content_call'),
-            },
-            {
-                title: 'Kết quả cuộc gọi',
-                key: 'result_call',
-                width: 150,
-                className: 'min-width-150',
-                render: (record) => get(record, 'result_call'),
-            },
-            {
-                title: 'Lịch sử tương tác bằng MXH',
-                key: 'history_interactive',
-                width: 250,
-                className: 'min-width-250',
-                render: (record) => get(record, 'history_interactive'),
-            },
-            {
-                title: 'Các hoạt động offline',
-                key: 'offline',
-                width: 200,
-                className: 'min-width-200',
-                render: (record) => get(record, 'offline'),
-            },
-            {
-                key: 'Thao tác',
-                width: 100,
-                fixed: 'right',
-                render: (record) => (
-                    <div className={styles['list-button']}>
-                        <Button
-                            color="primary"
-                            icon="edit"
-                            onClick={() => detailModal(record.id)}
-                        />
-                        <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
-                    </div>
-                ),
-            },
-        ];
-        return columns;
+          });
+          if (error) {
+            if (error?.errors && !isEmpty(error?.errors)) {
+              error?.errors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: item?.source?.pointer,
+                    errors: [item.detail],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
     };
 
     useEffect(() => {
-        mounted.current = true;
-        return mounted.current;
+      dispatch({
+        type: 'crmSaleLeadAdd/HISTORY',
+        payload: { customer_lead_id: params?.id },
+        callback: (response) => {
+          if (response?.parsePayload.length > 0) {
+            setData(
+              response.parsePayload.map((item) => ({
+                ...item,
+              })),
+            );
+          }
+        },
+      });
     }, []);
 
-    useEffect(() => {
-        if (objects.id) {
-            formRef.current.setFieldsValue({
-                ...historyDetails,
-                ...head(historyDetails.positionLevel),
-                date: historyDetails.date && moment(historyDetails.date),
-                created_at: historyDetails.created_at && moment(historyDetails.created_at),
-                hours: historyDetails?.hours && moment(historyDetails?.hours, variables.DATE_FORMAT.HOUR),
-            });
-        }
-    }, [historyDetails]);
-
-    const handleOk = () => {
-        formRef.current.validateFields().then((values) => {
-            dispatch({
-                type: objects.id ? 'crmSaleLeadAdd/UPDATE_HISTORY' : 'crmSaleLeadAdd/ADD_HISTORY',
-                payload: objects.id
-                    ? { ...historyDetails, ...values, customer_lead_id: params.id }
-                    : { ...values, customer_lead_id: params.id },
-                callback: (response, error) => {
-                    if (response) {
-                        setHistoryDetails({});
-                        setModal(false);
-                        dispatch({
-                            type: 'crmSaleLeadAdd/HISTORY',
-                            payload: {
-                                customer_lead_id: params.id,
-                            },
-                        });
-                        formRef.current.setFieldsValue({
-                            date: undefined,
-                            hours: undefined,
-                            name: undefined,
-                            status: undefined,
-                            content_call: undefined,
-                            result_call: undefined,
-                            history_interactive: undefined,
-                            offline: undefined,
-                        });
-                    }
-                    if (error) {
-                        if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-                            error.data.errors.forEach((item) => {
-                                formRef.current.setFields([
-                                    {
-                                        name: get(item, 'source.pointer'),
-                                        errors: [get(item, 'detail')],
-                                    },
-                                ]);
-                            });
-                        }
-                    }
-                },
-            });
-        });
-    };
-
-    const handleCancel = () => {
-        setModal(false);
-        formRef.current.resetFields();
-        mountedSet(setObjects, {});
-    };
-
     return (
-        <>
-            <Form layout="vertical"
-                initialValues={{ data: [{}] }}>
-                <div className="card">
-                    <div style={{ padding: 20 }} className="pb-0 border-bottom">
-                        <div className="d-flex justify-content-between">
-                            <Heading type="form-title" style={{ marginBottom: 20 }}>
-                              Lịch sử chăm sóc
-                            </Heading>
-                            <>
-                                <Button
-                                    color="success"
-                                    icon="plus"
-                                    onClick={() => showModal()}
-                                >
-                                   Thêm mới
-                                </Button>
-                                <Modal
-                                    title={objects.id ? "Chi tiết sử chăm sóc" : "Thêm lịch sử chăm sóc"}
-                                    className={stylesModule['wrapper-modal']}
-                                    visible={modal}
-                                    onOk={handleOk}
-                                    onCancel={handleCancel}
-                                    width={960}
-                                    centered
-                                    footer={[
-                                        <p
-                                            key="back"
-                                            role="presentation"
-                                            className={stylesModule['button-cancel']}
-                                            onClick={() => handleCancel()}
-                                        >
-                                            Hủy
-                                        </p>,
-                                        <Button
-                                            key="submit"
-                                            color="success"
-                                            type="primary"
-                                            onClick={handleOk}
-                                            className={styles['cheack-btn-ok']}
-                                            loading={loadingSubmit || loading}
-                                        >
-                                            Lưu
-                                        </Button>,
-                                    ]}
-                                >
-
-
-                                    <Pane className="p10">
-                                        <Form
-                                            layout="vertical"
-                                            ref={formRef}
-                                            initialValues={{ data: [{}] }}>
-
-                                            <div className="card">
-                                                <div style={{ padding: 20 }} className="pb-0 border-bottom">
-                                                    <div className="row">
-                                                        {
-                                                          onFormTrue()
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </Form>
-                                    </Pane>
-                                </Modal>
-                            </>
-                        </div>
-                        <div className="row">
-                            <Pane className="col-lg-12 pb20">
-                                <div className={stylesModule['wrapper-table']}>
-                                    <Table
-                                        columns={header()}
-                                        dataSource={history}
-                                        pagination={false}
-                                        className="table-normal"
-                                        isEmpty
-                                        loading={loading}
-                                        params={{
-                                            header: header(),
-                                            type: 'table',
-                                        }}
-                                        bordered
-                                        rowKey={(record) => record.id}
-                                        scroll={{ x: '100%' }}
-                                    />
-                                </div>
-                            </Pane>
-                        </div>
-                    </div>
+      <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+        <Loading loading={loading} isError={error.isError} params={{ error }}>
+          <Pane className="card">
+            <Pane className="border-bottom">
+              <Pane className="p20">
+                <Heading type="form-title" style={{ marginBottom: 20 }}>
+                  Lịch sử chăm sóc
+                </Heading>
+                <div className={stylesModule['wrapper-table']}>
+                  <Table
+                    columns={header()}
+                    dataSource={data}
+                    pagination={false}
+                    loading={loading}
+                    className="table-edit"
+                    isEmpty
+                    params={{
+                      header: header(),
+                      type: 'table',
+                    }}
+                    bordered={false}
+                    rowKey={(record) => record.id}
+                    scroll={{ x: '100%' }}
+                    footer={(item, index) =>
+                      details?.register_status === 'CANCEL_REGISTER' ? (
+                        ''
+                      ) : (
+                        <Button
+                          key={index}
+                          onClick={() =>
+                            setData([
+                              ...data,
+                              {
+                                id: uuidv4(),
+                                status: true,
+                                file_image: undefined,
+                                quantity_care: data?.length > 0 ? (Math.max(...data.map(i => i.quantity_care)) + 1) : 1,
+                              },
+                            ])
+                          }
+                          color="transparent-success"
+                          icon="plus"
+                        >
+                          Thêm lịch sử
+                        </Button>
+                      )
+                    }
+                  />
                 </div>
-            </Form>
-        </>
+              </Pane>
+            </Pane>
+            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+              {details?.register_status === 'CANCEL_REGISTER' ? (
+                ''
+              ) : (
+                <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
+                  Lưu
+                </Button>
+              )}
+            </Pane>
+          </Pane>
+        </Loading>
+      </Form>
     );
-});
+  },
+);
 
-export default General;
+General.propTypes = {
+  loading: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+};
+
+General.defaultProps = {
+  loading: {},
+  error: {},
+  match: {},
+  details: {},
+};
+
+export default withRouter(connect(mapStateToProps)(General));
