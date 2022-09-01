@@ -365,10 +365,15 @@
     object-fit: cover;
   }
   .cancel {
-    width: 25px !important;
-    height: 25px !important;
+    width: 20px !important;
+    height: 20px !important;
     position: absolute;
     right: 0px;
+    background-image: url(/images/delete.png);
+    background-color: transparent;
+    background-repeat: no-repeat;  
+    object-fit: cover;
+    background-position: 0px 0px;  
     top: 0px;
     z-index: 1000;
     cursor: pointer;
