@@ -372,17 +372,17 @@ const General = memo(
                     <Pane className={stylesModule['wrapper-upload']}>
                       <div>
                         {
-                          !checkFile && !checkImg && !checkVideo && (
+                          (!checkFile && !checkImg && !checkVideo) || (!checkFile && checkImg) ? (
                             <Upload {...uploadProps}>
                               <Button color="primary" loading={effects['upload/UPLOAD']} >Tải ảnh</Button>
-                            </Upload>)
+                            </Upload>) : ""
                         }
-                        {
+                        {/* {
                           !checkFile && checkImg && (
                             <Upload {...uploadProps}>
                               <Button color="primary" loading={effects['upload/UPLOAD']} >Tải ảnh</Button>
                             </Upload>)
-                        }
+                        } */}
                       </div>
                       <div>
                         {

@@ -912,7 +912,7 @@ class Index extends PureComponent {
                   </div>
                 </Modal>
               </div>
-              <Button color="danger" icon="shrink" loading={effects['crmMarketingDataCheckList/MERGE_ALL']} onClick={this.isMergeAll}>
+              <Button color="success" icon="shrink" loading={effects['crmMarketingDataCheckList/MERGE_ALL']} onClick={this.isMergeAll}>
                 Gộp tất cả
               </Button>
             </div>

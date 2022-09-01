@@ -516,7 +516,7 @@ export function history(params = {}) {
     params: {
       ...params,
       orderBy: 'created_at',
-      sortedBy: 'desc',
+      sortedBy: 'asc',
       searchJoin: 'and',
       time: Helper.getDateTime({
         value: Helper.setDate({
