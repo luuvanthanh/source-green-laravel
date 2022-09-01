@@ -248,6 +248,19 @@ const General = memo(
         type: 'crmSaleLeadAdd/ADD_HISTORY',
         payload,
         callback: (response, error) => {
+          dispatch({
+            type: 'crmSaleLeadAdd/HISTORY',
+            payload: { customer_lead_id: params?.id },
+            callback: (response) => {
+              if (response?.parsePayload.length > 0) {
+                setData(
+                  response.parsePayload.map((item) => ({
+                    ...item,
+                  })),
+                );
+              }
+            },
+          });
           if (error) {
             if (error?.errors && !isEmpty(error?.errors)) {
               error?.errors.forEach((item) => {
