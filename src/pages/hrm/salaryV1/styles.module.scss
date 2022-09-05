@@ -2,9 +2,13 @@
 .wrapper-table {
   :global(.ant-table-thead > tr > th) {
     background-color: #dee4f1 !important;
-   }
+  }
   :global(.ant-table-row-level-0) {
-    background-color: #FFF1EB !important;
-   border-right: none !important;
-   }
+    background-color: #fff1eb !important;
+    border-right: none !important;
+  }
+  :global(.ant-table-row-level-1) {
+    background-color: #eef8ea !important;
+    border-right: none !important;
+  }
 }
