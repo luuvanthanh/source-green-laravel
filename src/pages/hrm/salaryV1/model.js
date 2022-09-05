@@ -4,7 +4,7 @@ export default {
   namespace: 'hrmSalary',
   state: {
     data: {},
-    dataTable: [],
+    dataTable: {},
     error: {
       isError: false,
       data: {},
@@ -18,16 +18,31 @@ export default {
     }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      dataTable: Object.keys(payload.payload).map((key) => ({
-        id: key,
-        name: key,
-        ...(payload?.payload[key] || {}),
-        children:
-          payload?.payload[key]?.Value &&
-          Object.keys(payload?.payload[key]?.Value).map((keyProduct) => ({
-            ...(payload?.payload[key]?.Value[keyProduct] || {}),
-          })),
-      })),
+      dataTable: {
+        ...(payload?.payload || {}),
+        ListBranch: Object.keys(payload?.payload?.ListBranch).map((keyBranch) => ({
+          id: keyBranch,
+          name: keyBranch,
+          ...(payload?.payload?.ListBranch[keyBranch] || {}),
+          children:
+            payload?.payload?.ListBranch[keyBranch] &&
+            Object.keys(payload?.payload?.ListBranch[keyBranch]?.ListDivision).map(
+              (keyDivision) => ({
+                id: keyDivision,
+                name: keyDivision,
+                ...(payload?.payload?.ListBranch[keyBranch]?.ListDivision[keyDivision] || {}),
+                children:
+                  payload?.payload?.ListBranch[keyBranch]?.ListDivision[keyDivision]
+                    ?.payrollDetail &&
+                  payload?.payload?.ListBranch[keyBranch]?.ListDivision[
+                    keyDivision
+                  ]?.payrollDetail?.map((keyItem) => ({
+                    ...keyItem,
+                  })),
+              }),
+            ),
+        })),
+      },
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -72,6 +87,6 @@ export default {
         });
       }
     },
-  }, 
+  },
   subscriptions: {},
 };
