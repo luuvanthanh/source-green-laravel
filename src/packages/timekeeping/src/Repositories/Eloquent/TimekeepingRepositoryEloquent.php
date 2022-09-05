@@ -1133,7 +1133,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
     public function calculatorManualCalculation($employee, $startDate, $endDate, $responseTimeKeepingUser)
     {
-        $manualCalculation = $employee->manualCalculation()->where('Date', '>=', $startDate)->where('Date', '<=', $endDate)->get();
+        $manualCalculation = $employee->manualCalculation()->whereDate('Date', '>=', $startDate)->whereDate('Date', '<=', $endDate)->get();
 
         foreach ($manualCalculation as $value) {
             $date = Carbon::parse($value->Date);

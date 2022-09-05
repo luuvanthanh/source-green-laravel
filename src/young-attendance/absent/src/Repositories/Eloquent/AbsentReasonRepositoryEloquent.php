@@ -42,4 +42,19 @@ class AbsentReasonRepositoryEloquent extends CoreRepositoryEloquent implements A
     {
         return AbsentReasonPresenter::class;
     }
+
+    public function getAll(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('Name', $attributes['key']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $absentReason = $this->paginate($attributes['limit']);
+        } else {
+            $absentReason = $this->get();
+        }
+
+        return $absentReason;
+    }
 }
