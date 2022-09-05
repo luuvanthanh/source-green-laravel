@@ -21,7 +21,8 @@ class HistoryCare extends UuidModel
     const CATEGORY = [
         'PHONE' => 1,
         'EMAIL' => 2,
-        'FACEBOOK' => 3
+        'FACEBOOK' => 3,
+        'ZALO' => 4
     ];
 
     public function customerLead()
