@@ -36,16 +36,6 @@ class BranchCreateRequest extends FormRequest
                     }
                 },
             ],
-            'code' => [
-                'required', 'max:255',
-                function ($attribute, $value, $fail) {
-                    $branch = Branch::where('Code', $value)->first();
-
-                    if (!is_null($branch)) {
-                        return $fail('Trường đã có trong cơ sở dữ liệu!');
-                    }
-                },
-            ],
             'note' => 'nullable|max:255',
             'cityId' => 'required|exists:Citys,Id'
         ];
@@ -54,10 +44,20 @@ class BranchCreateRequest extends FormRequest
     public function all($keys = null)
     {
         $data = parent::all($keys);
+        $branch = Branch::latest()->first();
+        $city = City::find($data['cityId']);
 
-        if (!empty($data['cityId'])) {
-            $city = City::find($data['cityId']);
-            $data['code'] = $city->code . $data['code'];
+        if (is_null($branch)) {
+            $data['code'] = $city->Code . '001';
+        } else {
+            $findNum = substr(substr($branch->Code, strpos($branch->Code, '-') + 1), 0, -1);
+            $getNumber = substr($branch->Code, strpos($branch->Code, '-') + 1);
+
+            if (++$getNumber <= 9) {
+                $data['code'] = $city->Code . '-' . '00' . $getNumber;
+            } else {
+                $data['code'] = $city->Code . '-' . $getNumber;
+            }
         }
 
         return $data;
