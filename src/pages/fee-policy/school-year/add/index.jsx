@@ -423,6 +423,20 @@ const Index = memo(() => {
                     }
                   />
                 </Pane>
+                <Pane className="col-lg-2">
+                  <FormItem
+                    valuePropName="checked"
+                    label="Sử dụng"
+                    name="isCheck"
+                    type={variables.SWITCH}
+                  />
+                </Pane>
+                <Pane className="col-lg-2">
+                  <FormItem
+                    label="Ghi chú"
+                    name="content"
+                    type={variables.INPUT} />
+                </Pane>
               </Pane>
             </Pane>
             <Pane className="card mb0">

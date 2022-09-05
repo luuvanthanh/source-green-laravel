@@ -26,6 +26,7 @@ const dataCategory = [
   { id: 'PHONE', name: 'Điện thoại' },
   { id: 'EMAIL', name: 'Email' },
   { id: 'FACEBOOK', name: 'Facebook' },
+  { id: 'ZALO', name: 'Zalo' },
 ];
 
 const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
@@ -89,7 +90,7 @@ const General = memo(
           title: 'Thời gian',
           key: 'date',
           className: 'min-width-150',
-          width: 200,
+          width: 150,
           render: (record) => (
             <Text size="normal">
               {Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE_TIME)}
@@ -99,15 +100,15 @@ const General = memo(
         {
           title: 'Tên phụ huynh',
           key: 'type',
-          className: 'min-width-250',
-          width: 250,
+          className: 'min-width-220',
+          width: 220,
           render: () => details?.full_name,
         },
         {
           title: 'SĐT',
           key: 'type',
-          className: 'min-width-150',
-          width: 150,
+          className: 'min-width-120',
+          width: 120,
           render: () => details?.phone,
         },
         {
@@ -151,8 +152,8 @@ const General = memo(
         {
           title: 'Nội dung tương tác',
           key: 'content',
-          className: 'min-width-150',
-          width: 150,
+          className: 'min-width-300',
+          width: 300,
           render: (record) => (
             <>
               <Input.TextArea
@@ -167,8 +168,8 @@ const General = memo(
         {
           title: 'Kết quả tương tác',
           key: 'name',
-          className: 'min-width-150',
-          width: 150,
+          className: 'min-width-300',
+          width: 300,
           render: (record) => (
             <>
               <Input.TextArea

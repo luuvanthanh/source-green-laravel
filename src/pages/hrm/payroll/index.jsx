@@ -359,8 +359,8 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['hrmPayroll/UPDATE'] || effects['hrmPayroll/UPDATE_SALARY'];
-    const loadingSalaryVN = effects['hrmPayroll/UPDATE_SALARY'];
-    const loadingSalaryForeign = effects['hrmPayroll/UPDATE_SALARY'];
+    const loadingSalaryVN = effects['hrmPayroll/UPDATE_SALARY_VN'];
+    const loadingSalaryForeign = effects['hrmPayroll/UPDATE_SALARY_FOREIGN'];
 
     const columns = [
       {

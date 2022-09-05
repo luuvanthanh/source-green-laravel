@@ -37,7 +37,7 @@ export default {
           type: 'SET_DATA',
           payload: {
             parsePayload: response.parsePayload,
-            pagination: response.pagination
+            pagination: response.pagination,
           },
         });
       } catch (error) {
@@ -45,6 +45,14 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *UPDATE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.update, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data);
       }
     },
   },
