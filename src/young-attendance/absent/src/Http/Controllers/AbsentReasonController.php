@@ -33,15 +33,7 @@ class AbsentReasonController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-        if ($limit == config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $absentReasons = $this->absentReasonRepository->all();
-        } else {
-            $absentReasons = $this->absentReasonRepository->paginate($limit);
-        }
+        $absentReasons = $this->absentReasonRepository->getAll($request->all());
 
         return $this->success($absentReasons, trans('lang::messages.common.getListSuccess'));
     }

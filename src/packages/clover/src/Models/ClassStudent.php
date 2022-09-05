@@ -3,6 +3,7 @@
 namespace GGPHP\Clover\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\SchoolYear;
 
 class ClassStudent extends UuidModel
 {
@@ -19,11 +20,16 @@ class ClassStudent extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'ClassId', 'StudentId', 'JoinDate', 'Description', 'CreatorId',
+        'ClassId', 'StudentId', 'JoinDate', 'Description', 'CreatorId', 'SchoolYearId',
     ];
 
     public function classes()
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Classes::class, 'ClassId');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
 }
