@@ -77,7 +77,19 @@ class CreateSchoolYearRequest extends FormRequest
                     }
                 },
             ],
-            'isCheck' => 'nullable|boolean',
+            'isCheck' => [
+                'required',
+                function ($attribute, $value, $fail) {
+
+                    if ($value) {
+                        $schoolYear = SchoolYear::where('IsCheck', true)->first();
+
+                        if (!is_null($schoolYear)) {
+                            return $fail('Vẫn tồn tại một năm học đang chưa được khóa.');
+                        }
+                    }
+                },
+            ],
             'content' => 'nullable|max:3000'
         ];
     }
