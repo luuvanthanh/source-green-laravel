@@ -161,32 +161,32 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (!empty($attributes['full_name']) && $attributes['full_name'] == 'true') {
             $this->model = $this->model->whereIn('full_name', function ($query) {
-                $query->select('customer_leads.full_name')->from('customer_leads')->groupBy('customer_leads.full_name')->havingRaw('count(*) > 1');
+                $query->select('customer_leads.full_name')->from('customer_leads')->where('deleted_at', null)->groupBy('customer_leads.full_name')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['email']) && $attributes['email'] == 'true') {
             $this->model = $this->model->whereIn('email', function ($query) {
-                $query->select('customer_leads.email')->from('customer_leads')->groupBy('customer_leads.email')->havingRaw('count(*) > 1');
+                $query->select('customer_leads.email')->from('customer_leads')->where('deleted_at', null)->groupBy('customer_leads.email')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['address']) && $attributes['address'] == 'true') {
             $this->model = $this->model->whereIn('address', function ($query) {
-                $query->select('customer_leads.address')->from('customer_leads')->groupBy('customer_leads.address')->havingRaw('count(*) > 1');
+                $query->select('customer_leads.address')->from('customer_leads')->where('deleted_at', null)->groupBy('customer_leads.address')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['phone']) && $attributes['phone'] == 'true') {
             $this->model = $this->model->whereIn('phone', function ($query) {
-                $query->select('customer_leads.phone')->from('customer_leads')->groupBy('customer_leads.phone')->havingRaw('count(*) > 1');
+                $query->select('customer_leads.phone')->from('customer_leads')->where('deleted_at', null)->groupBy('customer_leads.phone')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['children_full_name']) && $attributes['children_full_name'] == 'true') {
             $this->model = $this->model->whereHas('studentInfo', function ($query) {
                 $query->whereIn('full_name', function ($q) {
-                    $q->select('student_infos.full_name')->from('student_infos')->groupBy('student_infos.full_name')->havingRaw('count(*) > 1');
+                    $q->select('student_infos.full_name')->from('student_infos')->where('deleted_at', null)->groupBy('student_infos.full_name')->havingRaw('count(*) > 1');
                 });
             });
         }
@@ -194,7 +194,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         if (!empty($attributes['children_birth_date']) && $attributes['children_birth_date'] == 'true') {
             $this->model = $this->model->whereHas('studentInfo', function ($query) {
                 $query->whereIn('birth_date', function ($q) {
-                    $q->select('student_infos.birth_date')->from('student_infos')->groupBy('student_infos.birth_date')->havingRaw('count(*) > 1');
+                    $q->select('student_infos.birth_date')->from('student_infos')->where('deleted_at', null)->groupBy('student_infos.birth_date')->havingRaw('count(*) > 1');
                 });
             });
         }

@@ -88,32 +88,32 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
 
         if (!empty($attributes['full_name']) && $attributes['full_name'] == 'true') {
             $this->model = $this->model->whereIn('full_name', function ($query) {
-                $query->select('data_marketings.full_name')->from('data_marketings')->groupBy('data_marketings.full_name')->havingRaw('count(*) > 1');
+                $query->select('data_marketings.full_name')->from('data_marketings')->where('deleted_at', null)->groupBy('data_marketings.full_name')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['email']) && $attributes['email'] == 'true') {
             $this->model = $this->model->orWhereIn('email', function ($query) {
-                $query->select('data_marketings.email')->from('data_marketings')->groupBy('data_marketings.email')->havingRaw('count(*) > 1');
+                $query->select('data_marketings.email')->from('data_marketings')->where('deleted_at', null)->groupBy('data_marketings.email')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['address']) && $attributes['address'] == 'true') {
             $this->model = $this->model->orWhereIn('address', function ($query) {
-                $query->select('data_marketings.address')->from('data_marketings')->groupBy('data_marketings.address')->havingRaw('count(*) > 1');
+                $query->select('data_marketings.address')->from('data_marketings')->where('deleted_at', null)->groupBy('data_marketings.address')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['phone']) && $attributes['phone'] == 'true') {
             $this->model = $this->model->orWhereIn('phone', function ($query) {
-                $query->select('data_marketings.phone')->from('data_marketings')->groupBy('data_marketings.phone')->havingRaw('count(*) > 1');
+                $query->select('data_marketings.phone')->from('data_marketings')->where('deleted_at', null)->groupBy('data_marketings.phone')->havingRaw('count(*) > 1');
             });
         }
 
         if (!empty($attributes['children_full_name']) && $attributes['children_full_name'] == 'true') {
             $this->model = $this->model->orWhereHas('studentInfo', function ($query) {
                 $query->whereIn('full_name', function ($q) {
-                    $q->select('data_marketing_student_infos.full_name')->from('data_marketing_student_infos')->groupBy('data_marketing_student_infos.full_name')->havingRaw('count(*) > 1');
+                    $q->select('data_marketing_student_infos.full_name')->from('data_marketing_student_infos')->where('deleted_at', null)->groupBy('data_marketing_student_infos.full_name')->havingRaw('count(*) > 1');
                 });
             });
         }
@@ -121,7 +121,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         if (!empty($attributes['children_birth_date']) && $attributes['children_birth_date'] == 'true') {
             $this->model = $this->model->orWhereHas('studentInfo', function ($query) {
                 $query->whereIn('birth_date', function ($q) {
-                    $q->select('data_marketing_student_infos.birth_date')->from('data_marketing_student_infos')->groupBy('data_marketing_student_infos.birth_date')->havingRaw('count(*) > 1');
+                    $q->select('data_marketing_student_infos.birth_date')->from('data_marketing_student_infos')->where('deleted_at', null)->groupBy('data_marketing_student_infos.birth_date')->havingRaw('count(*) > 1');
                 });
             });
         }
