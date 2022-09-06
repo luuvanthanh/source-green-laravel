@@ -73,6 +73,19 @@ class UpdateSchoolYearRequest extends FormRequest
                     }
                 },
             ],
+            'isCheck' => [
+                'required',
+                function ($attribute, $value, $fail) {
+
+                    if ($value) {
+                        $schoolYear = SchoolYear::where('IsCheck', true)->where('Id', '!=', request()->id)->first();
+
+                        if (!is_null($schoolYear)) {
+                            return $fail('Vẫn tồn tại một năm học đang chưa được khóa.');
+                        }
+                    }
+                },
+            ],
         ];
     }
 }
