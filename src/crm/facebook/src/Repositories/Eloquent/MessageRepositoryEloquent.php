@@ -326,6 +326,7 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         $contents = file_get_contents($url);
         $url = strtok($url, '?');
         $name = substr($url, strrpos($url, '/') + 1);
+        $name = urldecode($name);
         Storage::disk('local')->put('public/files/' . $name, $contents);
         $url = env('URL_CRM') . '/storage/files/' . $name;
         return $url;
@@ -464,5 +465,24 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
             $conversation->update($dataConversation);
         }
+    }
+
+    public function renameFile()
+    {
+        $files = Storage::disk('public')->files('files');
+
+        if (!empty($files)) {
+            foreach ($files as $key => $file) {
+                $oldFileName = substr($file, strrpos($file, '/') + 1);
+                $newFileName = urldecode(substr($file, strrpos($file, '/') + 1));
+                $exists = Storage::disk('public')->exists('files/' . $newFileName);
+
+                if ($newFileName != $oldFileName && $exists == false) {
+                    Storage::disk('public')->move($file, 'files/' . $newFileName);
+                }
+            }
+        }
+
+        return;
     }
 }

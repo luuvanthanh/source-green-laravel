@@ -32,7 +32,7 @@ class ConversationController extends Controller
     public function synchronizeConversation(Request $request)
     {
         dispatch(new SynchronizeConversation($request->all()));
-        return null;
+        return $this->success([], trans('lang::messages.common.getListSuccess'));
     }
 
     public function seenConversation(Request $request)

@@ -43,4 +43,11 @@ class MessageController extends Controller
 
         return $this->success([], trans('lang::messages.common.getListSuccess'));
     }
+
+    public function renameFile()
+    {
+        $this->messageRepository->renameFile();
+
+        return $this->success([], trans('lang::messages.common.getListSuccess'));
+    }
 }

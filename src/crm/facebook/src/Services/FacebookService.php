@@ -631,6 +631,7 @@ class FacebookService
     public static function registrationWebhook(array $attributes)
     {
         $fb = getFacebookSdk();
+        
         $subscribedFields = Page::SUBSCRIBEDFIELD;
 
         try {
