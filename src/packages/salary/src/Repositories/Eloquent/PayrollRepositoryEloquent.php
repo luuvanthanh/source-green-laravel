@@ -3346,7 +3346,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if (!array_key_exists($branchName, $result['ListBranch'])) {
                     $result['ListBranch'][$branchName] = [
                         'BranchName' => $branchName,
-                        'TotalInCome' => $value->TotalIncome,
+                        'TotalIncome' => $value->TotalIncome,
                         'ActuallyReceived' => $value->ActuallyReceived,
                         'KpiBonus' => $value->KpiBonus,
                         'OtNoTax' => $value->OtNoTax,
@@ -3367,7 +3367,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                         'ListDivision' => []
                     ];
                 } else {
-                    $result['ListBranch'][$branchName]['TotalInCome'] += $value->TotalIncome;
+                    $result['ListBranch'][$branchName]['TotalIncome'] += $value->TotalIncome;
                     $result['ListBranch'][$branchName]['ActuallyReceived'] += $value->ActuallyReceived;
                     $result['ListBranch'][$branchName]['KpiBonus'] += $value->KpiBonus;
                     $result['ListBranch'][$branchName]['OtNoTax'] += $value->OtNoTax;
@@ -3388,7 +3388,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if (!array_key_exists($divisionName, $result['ListBranch'][$branchName]['ListDivision'])) {
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName] = [
                         'DivisionName' => $divisionName,
-                        'TotalInCome' => $value->TotalIncome,
+                        'TotalIncome' => $value->TotalIncome,
                         'ActuallyReceived' => $value->ActuallyReceived,
                         'KpiBonus' => $value->KpiBonus,
                         'OtNoTax' => $value->OtNoTax,
@@ -3410,7 +3410,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['payrollDetail'][] = $value;
                 } else {
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['ActuallyReceived'] += $value->ActuallyReceived;
-                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalInCome'] += $value->TotalIncome;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalIncome'] += $value->TotalIncome;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['KpiBonus'] += $value->KpiBonus;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['OtNoTax'] += $value->OtNoTax;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['OtTax'] += $value->OtTax;
@@ -3430,7 +3430,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             }
         }
         $result['Total'] = [
-            'TotalInComeBranch' => array_sum(array_column($result['ListBranch'], 'TotalInComeBranch')),
+            'TotalIncome' => array_sum(array_column($result['ListBranch'], 'TotalIncome')),
             'ActuallyReceived' => array_sum(array_column($result['ListBranch'], 'ActuallyReceived')),
             'KpiBonus' => array_sum(array_column($result['ListBranch'], 'KpiBonus')),
             'OtNoTax' => array_sum(array_column($result['ListBranch'], 'OtNoTax')),
