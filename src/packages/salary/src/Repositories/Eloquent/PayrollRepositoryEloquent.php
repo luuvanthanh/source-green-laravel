@@ -3346,7 +3346,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if (!array_key_exists($branchName, $result['ListBranch'])) {
                     $result['ListBranch'][$branchName] = [
                         'BranchName' => $branchName,
-                        'TotalInComeBranch' => $value->TotalIncome,
+                        'TotalInCome' => $value->TotalIncome,
                         'ActuallyReceived' => $value->ActuallyReceived,
                         'KpiBonus' => $value->KpiBonus,
                         'OtNoTax' => $value->OtNoTax,
@@ -3356,6 +3356,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                         'SocialInsuranceEmployee' => $value->SocialInsuranceEmployee,
                         'HealthInsuranceEmployee' => $value->HealthInsuranceEmployee,
                         'UnemploymentInsuranceEmployee' => $value->UnemploymentInsuranceEmployee,
+                        'UnemploymentInsuranceCompany' => $value->UnemploymentInsuranceCompany,
+                        'UnionDues' => $value->UnionDues,
+                        'TotalReduce' => $value->TotalReduce,
                         'SocialInsuranceCompany' => $value->SocialInsuranceCompany,
                         'HealthInsuranceCompany' => $value->HealthInsuranceCompany,
                         'PersonalIncomeTax' => $value->PersonalIncomeTax,
@@ -3364,7 +3367,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                         'ListDivision' => []
                     ];
                 } else {
-                    $result['ListBranch'][$branchName]['TotalInComeBranch'] += $value->TotalIncome;
+                    $result['ListBranch'][$branchName]['TotalInCome'] += $value->TotalIncome;
                     $result['ListBranch'][$branchName]['ActuallyReceived'] += $value->ActuallyReceived;
                     $result['ListBranch'][$branchName]['KpiBonus'] += $value->KpiBonus;
                     $result['ListBranch'][$branchName]['OtNoTax'] += $value->OtNoTax;
@@ -3374,6 +3377,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $result['ListBranch'][$branchName]['SocialInsuranceEmployee'] += $value->SocialInsuranceEmployee;
                     $result['ListBranch'][$branchName]['HealthInsuranceEmployee'] += $value->HealthInsuranceEmployee;
                     $result['ListBranch'][$branchName]['UnemploymentInsuranceEmployee'] += $value->UnemploymentInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['UnemploymentInsuranceCompany'] += $value->UnemploymentInsuranceCompany;
+                    $result['ListBranch'][$branchName]['UnionDues'] += $value->UnionDues;
+                    $result['ListBranch'][$branchName]['TotalReduce'] += $value->TotalReduce;
                     $result['ListBranch'][$branchName]['SocialInsuranceCompany'] += $value->SocialInsuranceCompany;
                     $result['ListBranch'][$branchName]['HealthInsuranceCompany'] += $value->HealthInsuranceCompany;
                     $result['ListBranch'][$branchName]['PersonalIncomeTax'] += $value->PersonalIncomeTax;
@@ -3382,7 +3388,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 if (!array_key_exists($divisionName, $result['ListBranch'][$branchName]['ListDivision'])) {
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName] = [
                         'DivisionName' => $divisionName,
-                        'TotalInComeDivision' => $value->TotalIncome,
+                        'TotalInCome' => $value->TotalIncome,
                         'ActuallyReceived' => $value->ActuallyReceived,
                         'KpiBonus' => $value->KpiBonus,
                         'OtNoTax' => $value->OtNoTax,
@@ -3392,6 +3398,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                         'SocialInsuranceEmployee' => $value->SocialInsuranceEmployee,
                         'HealthInsuranceEmployee' => $value->HealthInsuranceEmployee,
                         'UnemploymentInsuranceEmployee' => $value->UnemploymentInsuranceEmployee,
+                        'UnemploymentInsuranceCompany' => $value->UnemploymentInsuranceCompany,
+                        'UnionDues' => $value->UnionDues,
+                        'TotalReduce' => $value->TotalReduce,
                         'SocialInsuranceCompany' => $value->SocialInsuranceCompany,
                         'HealthInsuranceCompany' => $value->HealthInsuranceCompany,
                         'PersonalIncomeTax' => $value->PersonalIncomeTax,
@@ -3401,7 +3410,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['payrollDetail'][] = $value;
                 } else {
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['ActuallyReceived'] += $value->ActuallyReceived;
-                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalInComeDivision'] += $value->TotalIncome;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalInCome'] += $value->TotalIncome;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['KpiBonus'] += $value->KpiBonus;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['OtNoTax'] += $value->OtNoTax;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['OtTax'] += $value->OtTax;
@@ -3410,6 +3419,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['SocialInsuranceEmployee'] += $value->SocialInsuranceEmployee;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['HealthInsuranceEmployee'] += $value->HealthInsuranceEmployee;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['UnemploymentInsuranceEmployee'] += $value->UnemploymentInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['UnemploymentInsuranceCompany'] += $value->UnemploymentInsuranceCompany;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['UnionDues'] += $value->UnionDues;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalReduce'] += $value->TotalReduce;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['SocialInsuranceCompany'] += $value->SocialInsuranceCompany;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['HealthInsuranceCompany'] += $value->HealthInsuranceCompany;
                     $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['PersonalIncomeTax'] += $value->PersonalIncomeTax;
@@ -3428,6 +3440,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             'SocialInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'SocialInsuranceEmployee')),
             'HealthInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'HealthInsuranceEmployee')),
             'UnemploymentInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'UnemploymentInsuranceEmployee')),
+            'UnemploymentInsuranceCompany' => array_sum(array_column($result['ListBranch'], 'UnemploymentInsuranceCompany')),
+            'UnionDues' => array_sum(array_column($result['ListBranch'], 'UnionDues')),
+            'TotalReduce' => array_sum(array_column($result['ListBranch'], 'TotalReduce')),
             'SocialInsuranceCompany' => array_sum(array_column($result['ListBranch'], 'SocialInsuranceCompany')),
             'HealthInsuranceCompany' => array_sum(array_column($result['ListBranch'], 'HealthInsuranceCompany')),
             'PersonalIncomeTax' => array_sum(array_column($result['ListBranch'], 'PersonalIncomeTax')),
