@@ -61,6 +61,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::post('pages/add-pages', 'PageController@store');
                 \Route::post('pages/registration-webhooks', 'FacebookController@registrationWebhook');
                 \Route::post('pages/sync-message', 'MessageController@syncMessage');
+                \Route::get('rename-files', 'MessageController@renameFile');
             });
         });
     }
