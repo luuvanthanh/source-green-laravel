@@ -3,6 +3,7 @@
 namespace GGPHP\Attendance\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\SchoolYear;
 
 class Attendance extends UuidModel
 {
@@ -27,7 +28,7 @@ class Attendance extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason', 'StudentTransporterId',
+        'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason', 'StudentTransporterId', 'SchoolYearId',
         'IsHaveInAi', 'IsHaveOutAi'
     ];
 
@@ -67,5 +68,10 @@ class Attendance extends UuidModel
     public function studentTransporter()
     {
         return $this->hasOne(\GGPHP\Clover\Models\StudentTransporter::class, 'Id', 'StudentTransporterId');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
 }

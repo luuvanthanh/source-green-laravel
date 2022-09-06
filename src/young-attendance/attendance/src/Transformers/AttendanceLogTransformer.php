@@ -4,6 +4,7 @@ namespace GGPHP\Attendance\Transformers;
 
 use GGPHP\Attendance\Models\AttendanceLog;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\SchoolYearTransformer;
 use GGPHP\Users\Transformers\UserTransformer;
 
 /**
@@ -19,7 +20,7 @@ class AttendanceLogTransformer extends BaseTransformer
      * @var array
      */
     protected $defaultIncludes = [];
-    protected $availableIncludes = ['employee', 'attendance'];
+    protected $availableIncludes = ['employee', 'attendance', 'schoolYear'];
 
     /**
      * Transform the custom field entity.
@@ -29,7 +30,6 @@ class AttendanceLogTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [];
-
     }
 
     /**
@@ -58,5 +58,19 @@ class AttendanceLogTransformer extends BaseTransformer
         }
 
         return $this->item($attendanceLog->attendance, new AttendanceTransformer, 'Attendance');
+    }
+
+    /**
+     * Include AbsentType
+     * @param Absent $absent
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeSchoolYear(AttendanceLog $attendanceLog)
+    {
+        if (empty($attendanceLog->schoolYear)) {
+            return null;
+        }
+
+        return $this->item($attendanceLog->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }

@@ -3,6 +3,7 @@
 namespace GGPHP\InOutHistories\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\SchoolYear;
 
 class InOutHistories extends UuidModel
 {
@@ -19,7 +20,7 @@ class InOutHistories extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'StudentId', 'AttendedAt', 'FileImage',
+        'StudentId', 'AttendedAt', 'FileImage', 'SchoolYearId'
     ];
 
     protected $dateTimeFields = [
@@ -42,5 +43,14 @@ class InOutHistories extends UuidModel
     public function student()
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Student::class, 'StudentId');
+    }
+
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
 }
