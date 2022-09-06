@@ -31,6 +31,7 @@ export async function switchBranches(params) {
     method: 'PATCH',
     params,
     parse: true,
+    cancelNotification: true,
   });
 }
 

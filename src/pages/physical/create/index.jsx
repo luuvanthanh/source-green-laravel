@@ -75,7 +75,12 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          mountedSet(setStudents, response?.items || []);
+          mountedSet(setStudents, response?.items?.map(i => (
+            {
+              ...i,
+              checked: false,
+            }
+          )) || []);
           setSearchStudents((prev) => ({
             ...prev,
             total: response?.totalCount,
@@ -85,7 +90,7 @@ const Index = memo(() => {
       },
     });
   }, []);
-
+  console.log("student", students)
   const getClasses = (branchId) => {
     dispatch({
       type: 'physicalCreate/GET_CLASSES',
@@ -443,38 +448,42 @@ const Index = memo(() => {
                 </FormItemAntd>
               </Pane>
               <Pane className="border-bottom">
-                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
-                  <InfiniteScroll
-                    hasMore={!searchStudent.loading && searchStudent.hasMore}
-                    initialLoad={searchStudent.loading}
-                    loadMore={handleInfiniteOnLoad}
-                    pageStart={0}
-                    useWindow={false}
-                  >
-                    <List
-                      loading={searchStudent.loading}
-                      dataSource={students}
-                      renderItem={({ student: { id, fullName, positionLevel, fileImage }, checked }) => (
-                        <ListItem key={id} className={styles.listItem}>
-                          <Pane className="px20 w-100 d-flex align-items-center">
-                            <Checkbox
-                              checked={!!checked}
-                              className="mr15"
-                              onChange={(e) => changeCheckboxEmployee(e, id)}
-                            />
-                            <Pane className={styles.userInformation}>
-                              <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                              <Pane>
-                                <h3>{fullName}</h3>
-                                <p>{head(positionLevel)?.position?.name}</p>
+                {
+                  !isEmpty(students) && (
+                    <Scrollbars autoHeight autoHeightMax={window.innerHeight - 450}>
+                      <InfiniteScroll
+                        hasMore={!searchStudent.loading && searchStudent.hasMore}
+                        initialLoad={searchStudent.loading}
+                        loadMore={handleInfiniteOnLoad}
+                        pageStart={0}
+                        useWindow={false}
+                      >
+                        <List
+                          loading={searchStudent.loading}
+                          dataSource={students}
+                          renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
+                            <ListItem key={id} className={styles.listItem}>
+                              <Pane className="px20 w-100 d-flex align-items-center">
+                                <Checkbox
+                                  checked={!!checked}
+                                  className="mr15"
+                                  onChange={(e) => changeCheckboxEmployee(e, id)}
+                                />
+                                <Pane className={styles.userInformation}>
+                                  <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                  <Pane>
+                                    <h3>{fullName}</h3>
+                                    <p>{head(positionLevel)?.position?.name}</p>
+                                  </Pane>
+                                </Pane>
                               </Pane>
-                            </Pane>
-                          </Pane>
-                        </ListItem>
-                      )}
-                    />
-                  </InfiniteScroll>
-                </Scrollbars>
+                            </ListItem>
+                          )}
+                        />
+                      </InfiniteScroll>
+                    </Scrollbars>
+                  )
+                }
               </Pane>
 
               <Pane className="d-flex justify-content-between align-items-center p20">

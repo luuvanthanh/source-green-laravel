@@ -25,7 +25,7 @@ const forms = {
   parents: <ParentsForm />,
   shuttlers: <ShuttlersForm />,
   other: <OtherForm />,
-  history: <History/>,
+  history: <History />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {

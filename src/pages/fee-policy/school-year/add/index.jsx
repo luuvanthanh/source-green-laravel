@@ -426,7 +426,7 @@ const Index = memo(() => {
                 <Pane className="col-lg-2">
                   <FormItem
                     valuePropName="checked"
-                    label="Sử dụng"
+                    label="Khoá"
                     name="isCheck"
                     type={variables.SWITCH}
                   />
