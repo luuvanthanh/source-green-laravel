@@ -50,7 +50,7 @@ request.interceptors.response.use(
     if (optionsRoot?.parse === true && !optionsRoot?.cancelNotification) {
       notification.success({
         message: 'Thông báo',
-        description: 'Bạn đã cập nhật thành công dữ liệu3',
+        description: 'Bạn đã cập nhật thành công dữ liệu',
       });
       return {
         status: 201,
@@ -72,12 +72,12 @@ request.interceptors.response.use(
         if (optionsRoot.isLogin) {
           notification.success({
             message: 'Thông báo',
-            description: 'Bạn đã đăng nhập thành công1',
+            description: 'Bạn đã đăng nhập thành công',
           });
         } else {
           notification.success({
             message: 'Thông báo',
-            description: 'Bạn đã cập nhật thành công dữ liệu2',
+            description: 'Bạn đã cập nhật thành công dữ liệu',
           });
         }
       }
