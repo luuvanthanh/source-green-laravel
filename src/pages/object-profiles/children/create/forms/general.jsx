@@ -60,8 +60,7 @@ const General = memo(
 
     const loadingSubmit =
       effects[`OPchildrenAdd/ADD`] ||
-      effects[`OPchildrenAdd/UPDATE`] ||
-      effects[`OPchildrenAdd/UPDATE_STATUS`];
+      effects[`OPchildrenAdd/UPDATE`];
     const loading = effects[`OPchildrenAdd/GET_DETAILS`];
 
     const onChaneDate = (e) => {
@@ -122,7 +121,12 @@ const General = memo(
               registerDate: moment(),
             },
           },
-        callback: (error) => {
+        callback: (res, error) => {
+          if (res) {
+            history.push(
+              `/ho-so-doi-tuong/hoc-sinh/${res?.student?.id}/chi-tiet`,
+            );
+          }
           if (error) {
             if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
               error?.validationErrors.forEach((item) => {
@@ -539,7 +543,7 @@ const General = memo(
                         htmlType="button"
                         className="mr-3"
                         onClick={updateStatus}
-                        loading={loadingSubmit}
+                        loading={effects[`OPchildrenAdd/UPDATE_STATUS`]}
                       >
                         Lưu trữ hồ sơ
                       </Button>

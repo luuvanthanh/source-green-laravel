@@ -129,6 +129,17 @@ const Index = memo(() => {
   }, []);
 
   useEffect(() => {
+    const dataActive = pageCurrent?.filter(i => i?.id === head(pageID)?.attributes?.page_id_facebook);
+    if (dataActive?.length > 0) {
+      dispatch({
+        type: 'crmFBDevV1/ADD_CONVERSATIONS',
+        payload: { data_page: dataActive?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
+        callback: () => { }
+      });
+    }
+  }, [pageID]);
+
+  useEffect(() => {
     if (pageID.length > 0) {
       const pageId = page?.find(i => i?.id === pageID[0]?.id);
       setLoadingMessageUser(true);
@@ -250,10 +261,10 @@ const Index = memo(() => {
 
   const onChangeMessager = (e) => {
     const str = e.target.value;
-    if( str.trim().length > 0) {
+    if (str.trim().length > 0) {
       setMessage(str);
-    }else {
-      setMessage(null); 
+    } else {
+      setMessage(null);
     }
   };
 
@@ -308,12 +319,14 @@ const Index = memo(() => {
     });
 
     socket.on('facebook.synchronize.conversation', (event, data) => {
+      console.log("event", event);
+      console.log("data", data);
       if (data) {
-        dispatch({
-          type: 'crmFBDevV1/ADD_CONVERSATIONS',
-          payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
-          callback: () => { }
-        });
+        // dispatch({
+        //   type: 'crmFBDevV1/ADD_CONVERSATIONS',
+        //   payload: { data_page: pageCurrent?.map(i => ({ page_access_token: i?.access_token, page_id: i?.id })), },
+        //   callback: () => { }
+        // });
         const pageId = page?.find(i => i?.id === head(pageID)?.id);
         setLoadingMessageUser(true);
         mountedSet(setSearchUser, { ...searchUser, loading: true });
@@ -702,7 +715,7 @@ const Index = memo(() => {
                   <div className={styles['messager-file']}>
                     <a href={attributes?.content} download={files} className='icon-download' style={{ color: "white" }} />
                     <div className='d-flex'>
-                      <p className='pr10'>Một file đính kèm</p>
+                      <p className='pr10 pl10'>Một file đính kèm</p>
                       <img src="/images/facebook/messagesFile.png" alt="facebook" className={styles.icon} />
                     </div>
                   </div>
@@ -739,7 +752,7 @@ const Index = memo(() => {
               <div className={styles['messager-file']}>
                 <div className='d-flex'>
                   <img src="/images/facebook/messagesFile.png" alt="facebook" className={styles.icon} />
-                  <p className='pl10'>Một file đính kèm</p>
+                  <p className='pl10 pr10'>Một file đính kèm</p>
                 </div>
                 <a href={attributes?.content} download={files} className='icon-download' />
               </div>
@@ -1901,7 +1914,7 @@ const Index = memo(() => {
               <div className='d-flex'>
                 <div className={styles['chat-container']}>
                   <TextArea
-                    autoSize={!isEmpty(message) ?  { minRows: 1, maxRows: 2 } :{ minRows: 1, maxRows: 1 } }
+                    autoSize={!isEmpty(message) ? { minRows: 1, maxRows: 2 } : { minRows: 1, maxRows: 1 }}
                     width={80}
                     placeholder="Nhập tin nhắn"
                     onPressEnter={onPressEnter}

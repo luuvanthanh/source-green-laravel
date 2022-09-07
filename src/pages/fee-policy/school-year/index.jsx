@@ -192,7 +192,7 @@ class Index extends PureComponent {
         render: (record) => `${Helper.getDate(record.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record.endDate, variables.DATE_FORMAT.DATE_VI)}`
       },
       {
-        title: 'Sử dụng',
+        title: 'Khoá',
         dataIndex: 'use',
         width: 160,
         className: 'min-width-160',
@@ -204,7 +204,7 @@ class Index extends PureComponent {
             }}
           >
             <Switch
-              defaultChecked={record?.isCheck}
+              checked={record?.isCheck}
               onChange={() => {
                 const payload = {
                   id: record?.id,

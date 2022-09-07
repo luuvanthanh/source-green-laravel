@@ -246,7 +246,7 @@ class Index extends PureComponent {
         );
       }
       else {
-        this.formRef.current.setFieldsValue({ date: ["", ""] });
+        this.formRef.current.setFieldsValue({ date: ["", ""], isset_history_care: undefined });
         this.setState(
           (prevState) => ({
             search: {
@@ -254,6 +254,7 @@ class Index extends PureComponent {
               start_date: undefined,
               end_date: undefined,
               date: undefined,
+              isset_history_care: undefined,
               start_date_history_care: moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
               end_date_history_care: moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
             },
