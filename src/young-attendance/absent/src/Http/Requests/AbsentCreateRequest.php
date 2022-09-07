@@ -4,6 +4,7 @@ namespace GGPHP\YoungAttendance\Absent\Http\Requests;
 
 use Carbon\Carbon;
 use GGPHP\Clover\Repositories\Contracts\StudentRepository;
+use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
 use GGPHP\YoungAttendance\Absent\Models\AbsentType;
 use Illuminate\Foundation\Http\FormRequest;
@@ -131,11 +132,17 @@ class AbsentCreateRequest extends FormRequest
 
     public function all($keys = null)
     {
+
         $data = parent::all();
         $weekend = resolve(StudentRepository::class)->holidays($data['startDate'], $data['endDate']);
-        
-        $data['expectedDate'] = $data['expectedDate'] - $weekend;
 
+        $data['expectedDate'] = $data['expectedDate'] - $weekend;
+        $schoolYear = SchoolYear::where('IsCheck', true)->first();
+
+        if (!is_null($schoolYear)) {
+            $data['schoolYearId'] = $schoolYear->Id;
+        }
+        
         return $data;
     }
 }

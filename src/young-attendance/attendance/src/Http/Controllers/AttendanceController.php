@@ -3,6 +3,7 @@
 namespace GGPHP\Attendance\Http\Controllers;
 
 use GGPHP\Attendance\Http\Requests\AttendanceCreateRequest;
+use GGPHP\Attendance\Http\Requests\AttendanceCronTabRequest;
 use GGPHP\Attendance\Http\Requests\AttendanceSummaryRequest;
 use GGPHP\Attendance\Http\Requests\AttendanceSummaryByClassRequest;
 use GGPHP\Attendance\Http\Requests\AttendanceUpdateRequest;
@@ -115,7 +116,7 @@ class AttendanceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function attendanceCrontab(Request $request)
+    public function attendanceCrontab(AttendanceCronTabRequest $request)
     {
         $attendance = $this->attendanceRepository->attendanceCrontab($request->all());
 

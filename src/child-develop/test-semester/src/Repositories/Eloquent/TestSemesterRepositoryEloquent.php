@@ -300,6 +300,12 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             if (!empty($attributes['status'])) {
                 $query->whereIn('Status', $attributes['status']);
             }
+
+            if (!empty($attributes['schoolYearId'])) {
+                $query->whereHas('assessmentPeriod', function ($q) use ($attributes) {
+                    $q->where('SchoolYearId', $attributes['schoolYearId']);
+                });
+            }
         });
 
         if (!empty($attributes['branchId'])) {

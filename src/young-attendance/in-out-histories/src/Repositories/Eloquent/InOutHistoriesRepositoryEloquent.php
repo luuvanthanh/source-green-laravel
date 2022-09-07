@@ -88,6 +88,13 @@ class InOutHistoriesRepositoryEloquent extends CoreRepositoryEloquent implements
             });
         }
 
+        if (!empty($attributes['schoolYearId'])) {
+            $schoolYear = explode(',', $attributes['schoolYearId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('inOutHistory', function ($query) use ($schoolYear) {
+                $query->whereIn('SchoolYearId', $schoolYear);
+            });
+        }
+
         if (!empty($attributes['nameStudent'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['nameStudent']);
         }

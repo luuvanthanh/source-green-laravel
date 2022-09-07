@@ -4,6 +4,7 @@ namespace GGPHP\Attendance\Http\Requests;
 
 use Carbon\Carbon;
 use GGPHP\Attendance\Models\Attendance;
+use GGPHP\Fee\Models\SchoolYear;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -83,5 +84,17 @@ class AttendanceCreateRequest extends FormRequest
                 },
             ],
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+        $schoolYear = SchoolYear::where('IsCheck', true)->first();
+
+        if (!is_null($schoolYear)) {
+            $data['schoolYearId'] = $schoolYear->Id;
+        }
+        
+        return $data;
     }
 }
