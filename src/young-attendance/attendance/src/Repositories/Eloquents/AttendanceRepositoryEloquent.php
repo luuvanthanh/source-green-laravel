@@ -386,7 +386,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
     public function attendanceCrontab($attributes)
     {
-        $students = Student::with(['inOutHistory'])->where('Status', '!=', Student::STORE)->get();
+        \Log::info('Cron Tab Started' . ' ' . Carbon::now('GMT+7')->format('Y-m-d H:i:s'));
+        $students = Student::with(['inOutHistory'])->where('Status', Student::OFFICAL)->get();
         $date = !empty($attributes['date']) ? $attributes['date'] : Carbon::now('GMT+7')->format('Y-m-d');
 
         $timetableSetting = TimetableSetting::whereDate('FromDate', '<=', $date)->whereDate('ToDate', '>=', $date)->first();
@@ -401,7 +402,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 ];
 
                 $timeAllow = $this->checkTimeAllow($date, $valueTimeAllow);
-
                 //chưa vào lớp
                 if ($nowHours < Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
                     $existNotInClass = Attendance::where('StudentId', $student->Id)
@@ -619,7 +619,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             ->whereDate('Date', $date)->first();
 
                         $dataCheckOut = [
-                            'SchoolYearId' => $attributes['schoolYearId'],
+                            'SchoolYearId' => !empty($attributes['schoolYearId']) ? $attributes['schoolYearId'] : null,
                             'Date' => $date,
                             'StudentId' => $student->Id,
                             'Status' => Attendance::STATUS['UNPAID_LEAVE'],
@@ -669,6 +669,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 }
             }
         }
+        \Log::info('Cron Tab Ended' . ' ' . Carbon::now('GMT+7')->format('Y-m-d H:i:s'));
         return true;
     }
 
