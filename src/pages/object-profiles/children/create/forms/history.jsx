@@ -42,15 +42,15 @@ const Index = memo(() => {
       {
         title: 'Lớp',
         key: 'class',
-        width: 100,
-        className: 'min-width-100',
+        width: 250,
+        className: 'min-width-250',
         render: (record) => <>{record?.class?.name}</>,
       },
       {
         title: 'Cơ sở',
         key: 'branch',
-        width: 100,
-        className: 'min-width-100',
+        width: 250,
+        className: 'min-width-250',
         render: (record) => <>{record?.class?.branch?.name}</>,
       },
       {
@@ -58,7 +58,7 @@ const Index = memo(() => {
         key: 'date',
         width: 80,
         className: 'min-width-80',
-        render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME),
+        render: (record) => Helper.getDate(record.joinDate, variables.DATE_FORMAT.DATE),
       },
     ];
     return columns;
