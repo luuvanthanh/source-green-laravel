@@ -64,6 +64,11 @@ class AttendanceLogRepositoryEloquent extends CoreRepositoryEloquent implements 
             }
         });
 
+        if (!empty($attributes['schoolYearId'])) {
+            $schoolYear = explode(',', $attributes['schoolYearId']);
+            $this->model = $this->model->whereIn('SchoolYearId', $schoolYear);
+        }
+
         if (!empty($attributes['limit'])) {
             $attendanceLog = $this->paginate($attributes['limit']);
         } else {

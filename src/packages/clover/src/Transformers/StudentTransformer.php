@@ -48,6 +48,7 @@ class StudentTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
+            'age_month' => Carbon::parse($model->DayOfBirth)->diffInMonths(now()),
             'refund' => $model->refund,
             'dateOff' => $model->dateOff,
             'numberDayOff' => $model->numberDayOff
@@ -82,7 +83,7 @@ class StudentTransformer extends BaseTransformer
     public function includeAttendance(Student $student)
     {
         $newColection = [];
-        
+
         if ($student->attendance->isNotEmpty()) {
             $newColection =  $student->attendance->filter(function ($value, $key) {
                 return $value->Date->dayOfWeek != Carbon::SUNDAY && $value->Date->dayOfWeek != Carbon::SATURDAY;

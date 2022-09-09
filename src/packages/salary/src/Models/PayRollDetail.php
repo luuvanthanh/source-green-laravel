@@ -33,7 +33,10 @@ class PayRollDetail extends UuidModel
      *
      * @var array
      */
-    protected $casts = [];
+    protected $casts = [
+        // 'BasicSalaryAndAllowance' => 'array',
+        // 'IncurredAllowance' => 'array'
+    ];
 
     /**
      *
@@ -42,5 +45,10 @@ class PayRollDetail extends UuidModel
     public function employee()
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
+    }
+
+    public function payroll()
+    {
+        return $this->belongsTo(Payroll::class, 'PayrollId');
     }
 }

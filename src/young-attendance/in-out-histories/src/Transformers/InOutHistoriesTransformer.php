@@ -4,6 +4,7 @@ namespace GGPHP\InOutHistories\Transformers;
 
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\SchoolYearTransformer;
 use GGPHP\InOutHistories\Models\InOutHistories;
 
 /**
@@ -14,7 +15,7 @@ use GGPHP\InOutHistories\Models\InOutHistories;
 class InOutHistoriesTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['student'];
+    protected $availableIncludes = ['student', 'schoolYear'];
     protected $defaultIncludes = [];
 
     public function customAttributes($model): array
@@ -33,5 +34,18 @@ class InOutHistoriesTransformer extends BaseTransformer
         }
 
         return $this->item($inOutHistories->student, new StudentTransformer, 'Student');
+    }
+
+    /**
+     * Include Student
+     * @param  InOutHistories $inOutHistories
+     */
+    public function includeSchoolYear(InOutHistories $inOutHistories)
+    {
+        if (empty($inOutHistories->schoolYear)) {
+            return;
+        }
+
+        return $this->item($inOutHistories->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }

@@ -24,7 +24,7 @@ class CalculatorWorkRequest extends FormRequest
     public function rules()
     {
         return [
-            'startDate' => 'required|date_format:Y-m-d|befor_or_equal:endDate',
+            'startDate' => 'required|date_format:Y-m-d|before_or_equal:endDate',
             'endDate' => 'required|date_format:Y-m-d|after_or_equal:startDate',
         ];
     }

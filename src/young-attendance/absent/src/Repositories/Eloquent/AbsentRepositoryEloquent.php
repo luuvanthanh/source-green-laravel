@@ -7,6 +7,7 @@ use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Clover\Repositories\Contracts\StudentRepository;
 use GGPHP\Clover\Repositories\Eloquent\ClassRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
 use GGPHP\YoungAttendance\Absent\Models\AbsentStudentDetail;
 use GGPHP\YoungAttendance\Absent\Presenters\AbsentPresenter;
@@ -76,6 +77,11 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         if (!empty($attributes['studentId'])) {
             $studentId = explode(',', $attributes['studentId']);
             $this->model = $this->model->whereIn('StudentId', $studentId);
+        }
+
+        if (!empty($attributes['schoolYearId'])) {
+            $schoolYear = explode(',', $attributes['schoolYearId']);
+            $this->model = $this->model->whereIn('SchoolYearId', $schoolYear);
         }
 
         if (!empty($attributes['status'])) {

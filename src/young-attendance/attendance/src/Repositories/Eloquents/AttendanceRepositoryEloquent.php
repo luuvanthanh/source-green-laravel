@@ -127,6 +127,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             if ($attendance->Status == 3 || $attendance->Status == 4) {
                 $action = $attendance->Status == 3 ? 'Vào lớp' : 'Ra về';
                 AttendanceLog::create([
+                    'SchoolYearId' => $attributes['schoolYearId'],
                     'EmployeeId' => $attributes['employeeId'],
                     'AttendanceId' => $attendance->Id,
                     'Action' => $action,
@@ -203,6 +204,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             if ($attendance->Status == 3 || $attendance->Status == 4) {
                 $action = $attendance->Status == 3 ? 'Vào lớp' : 'Ra về';
                 AttendanceLog::create([
+                    'SchoolYearId' => $attributes['schoolYearId'],
                     'EmployeeId' => $attributes['employeeId'],
                     'AttendanceId' => $attendance->Id,
                     'Action' => $action,
@@ -359,6 +361,13 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             });
         }
 
+        if (!empty($attributes['schoolYearId'])) {
+            $schoolYear = explode(',', $attributes['schoolYearId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendance', function ($query) use ($schoolYear) {
+                $query->whereIn('SchoolYearId', $schoolYear);
+            });
+        }
+
         //$this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '=', Student::OFFICAL);
         if (!empty($attributes['excel']) && $attributes['excel'] == 'true') {
@@ -377,7 +386,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
     public function attendanceCrontab($attributes)
     {
-        $students = Student::with(['inOutHistory'])->where('Status', '!=', Student::STORE)->get();
+        \Log::info('Cron Tab Started' . ' ' . Carbon::now('GMT+7')->format('Y-m-d H:i:s'));
+        $students = Student::with(['inOutHistory'])->where('Status', Student::OFFICAL)->get();
         $date = !empty($attributes['date']) ? $attributes['date'] : Carbon::now('GMT+7')->format('Y-m-d');
 
         $timetableSetting = TimetableSetting::whereDate('FromDate', '<=', $date)->whereDate('ToDate', '>=', $date)->first();
@@ -392,7 +402,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 ];
 
                 $timeAllow = $this->checkTimeAllow($date, $valueTimeAllow);
-
                 //chưa vào lớp
                 if ($nowHours < Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
                     $existNotInClass = Attendance::where('StudentId', $student->Id)
@@ -401,6 +410,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                     if (is_null($existNotInClass)) {
                         $dataNotInClass = [
+                            'SchoolYearId' => $attributes['schoolYearId'],
                             'Date' => $date,
                             'StudentId' => $student->Id,
                             'Status' => Attendance::STATUS['NOT_IN_CLASS'],
@@ -436,6 +446,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                             if (is_null($existAttendance)) {
                                 $dataCheckIn = [
+                                    'SchoolYearId' => $attributes['schoolYearId'],
                                     'Date' => $date,
                                     'StudentId' => $student->Id,
                                     'Status' => Attendance::STATUS['HAVE_IN'],
@@ -453,6 +464,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             }
 
                             AttendanceLog::create([
+                                'SchoolYearId' => $attributes['schoolYearId'],
                                 'AttendanceId' => $existAttendance->Id,
                                 'Action' => 'Vào lớp',
                                 'Type' => 'CAMERA_AI',
@@ -526,6 +538,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                             if (is_null($existAttendance)) {
                                 $dataCheckOut = [
+                                    'SchoolYearId' => $attributes['schoolYearId'],
                                     'Date' => $date,
                                     'StudentId' => $student->Id,
                                     'Status' => Attendance::STATUS['HAVE_OUT'],
@@ -543,6 +556,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             }
 
                             AttendanceLog::create([
+                                'SchoolYearId' => $attributes['schoolYearId'],
                                 'AttendanceId' => $existAttendance->Id,
                                 'Action' => 'Ra về',
                                 'Type' => 'CAMERA_AI',
@@ -605,6 +619,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             ->whereDate('Date', $date)->first();
 
                         $dataCheckOut = [
+                            'SchoolYearId' => !empty($attributes['schoolYearId']) ? $attributes['schoolYearId'] : null,
                             'Date' => $date,
                             'StudentId' => $student->Id,
                             'Status' => Attendance::STATUS['UNPAID_LEAVE'],
@@ -654,6 +669,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 }
             }
         }
+        \Log::info('Cron Tab Ended' . ' ' . Carbon::now('GMT+7')->format('Y-m-d H:i:s'));
         return true;
     }
 

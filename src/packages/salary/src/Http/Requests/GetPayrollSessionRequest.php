@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\OtherDeclaration\Http\Requests;
+namespace GGPHP\Salary\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreatOtherDeclarationRequest extends FormRequest
+class GetPayrollSessionRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -23,11 +23,8 @@ class CreatOtherDeclarationRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
-            'time' => 'unique:OtherDeclarations,Time',
-            'startDate' => 'required|date|date_format:Y-m-d|before:endDate',
-            'endDate' => 'required|date|date_format:Y-m-d|after:startDate'
+            'month' => 'required|date_format:Y-m-d',
         ];
     }
 }

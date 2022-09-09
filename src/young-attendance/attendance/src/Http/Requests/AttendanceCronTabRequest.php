@@ -1,14 +1,15 @@
 <?php
 
-namespace GGPHP\InOutHistories\Http\Requests;
+namespace GGPHP\Attendance\Http\Requests;
 
 use GGPHP\Fee\Models\SchoolYear;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
-class CreatInOutHistoriesRequest extends FormRequest
+class AttendanceCronTabRequest extends FormRequest
 {
     /**
-     * Determine if the employee is authorized to make this request.
+     * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
@@ -22,17 +23,15 @@ class CreatInOutHistoriesRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
-        return [
-            'studentId' => 'required',
-            'attendedAt' => 'required',
-        ];
+        return [];
     }
 
     public function all($keys = null)
     {
         $data = parent::all();
+        $data['schoolYearId'] = null;
         $schoolYear = SchoolYear::where('IsCheck', true)->first();
 
         if (!is_null($schoolYear)) {

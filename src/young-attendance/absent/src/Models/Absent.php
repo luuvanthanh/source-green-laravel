@@ -3,6 +3,7 @@
 namespace GGPHP\YoungAttendance\Absent\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\SchoolYear;
 
 class Absent extends UuidModel
 {
@@ -11,7 +12,7 @@ class Absent extends UuidModel
     protected $table = 'AbsentStudents';
 
     protected $fillable = [
-        'AbsentTypeId', 'AbsentReasonId', 'ParentId', 'StudentId', 'StartDate', 'EndDate', 'Status', 'EmployeeId', 'ExpectedDate',
+        'AbsentTypeId', 'AbsentReasonId', 'ParentId', 'StudentId', 'StartDate', 'EndDate', 'Status', 'EmployeeId', 'ExpectedDate', 'SchoolYearId'
     ];
 
     protected $dateTimeFields = [
@@ -70,5 +71,10 @@ class Absent extends UuidModel
     public function absentReason()
     {
         return $this->belongsTo(AbsentReason::class, 'AbsentReasonId');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
 }

@@ -5,6 +5,7 @@ namespace GGPHP\YoungAttendance\Absent\Transformers;
 use GGPHP\Clover\Transformers\ParentsTransformer;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\SchoolYearTransformer;
 use GGPHP\ShiftSchedule\Models\Shift;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\ShiftSchedule\Transformers\ShiftTransformer;
@@ -22,7 +23,7 @@ class AbsentTransformer extends BaseTransformer
 {
 
     protected $defaultIncludes = [];
-    protected $availableIncludes = ['parent', 'student', 'absentReason', 'shift', 'timekeeping', 'employee', 'absentStudentDetail'];
+    protected $availableIncludes = ['parent', 'student', 'absentReason', 'shift', 'timekeeping', 'employee', 'absentStudentDetail', 'schoolYear'];
 
     /**
      * Include parent
@@ -135,7 +136,20 @@ class AbsentTransformer extends BaseTransformer
      */
     public function includeAbsentStudentDetail(Absent $absent)
     {
-
         return $this->collection($absent->absentStudentDetail, new AbsentStudentDetailTransformer, 'AbsentStudentDetail');
+    }
+
+    /**
+     * Include AbsentType
+     * @param Absent $absent
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeSchoolYear(Absent $absent)
+    {
+        if (empty($absent->schoolYear)) {
+            return null;
+        }
+
+        return $this->item($absent->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }

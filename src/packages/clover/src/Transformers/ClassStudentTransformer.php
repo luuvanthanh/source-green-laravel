@@ -4,6 +4,7 @@ namespace GGPHP\Clover\Transformers;
 
 use GGPHP\Clover\Models\ClassStudent;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\SchoolYearTransformer;
 
 /**
  * Class ClassStudentTransformer.
@@ -29,7 +30,7 @@ class ClassStudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['class'];
+    protected $availableIncludes = ['class', 'schoolYear'];
 
     /**
      * Transform the Student entity.
@@ -56,5 +57,19 @@ class ClassStudentTransformer extends BaseTransformer
         }
 
         return $this->item($classTeacher->classes, new ClassesTransformer, 'Class');
+    }
+
+    /**
+     * Include RankPositionInformation
+     * @param ClassStudent $employee
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeSchoolYear(ClassStudent $classTeacher)
+    {
+        if (empty($classTeacher->schoolYear)) {
+            return;
+        }
+
+        return $this->item($classTeacher->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }
