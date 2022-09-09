@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
 use GGPHP\Crm\Facebook\Models\Page;
 use GGPHP\Crm\Facebook\Services\FacebookService;
+use GGPHP\Crm\Marketing\Jobs\UpdatePagePostWithVideo;
 use GGPHP\Crm\Marketing\Models\Article;
 use GGPHP\Crm\Marketing\Models\ArticleCommentInfo;
 use GGPHP\Crm\Marketing\Models\ArticleCommentInfoDetail;
@@ -234,7 +235,13 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
 
                     if (!is_null($postFacebookInfo)) {
                         $attributes['page_access_token'] = $dataPage['page_access_token'];
-                        $attributes['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
+
+                        if (is_null($postFacebookInfo->facebook_post_id)) {
+                            $attributes['facebook_post_id'] = $postFacebookInfo->video_id;
+                        } else {
+                            $attributes['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
+                        }
+
                         $response = FacebookService::deletePagePost($attributes);
 
                         if ($response->success) {
@@ -284,7 +291,6 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                 foreach ($attributes['data_page'] as $dataPage) {
                     $page = Page::where('page_id_facebook', $dataPage['page_id'])->select('id')->first();
                     $postFacebookInfo = PostFacebookInfo::where('page_id', $page->id)->where('article_id', $id)->first();
-
                     if (!is_null($postFacebookInfo)) {
                         $dataPage['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
                         $urls = [];
@@ -306,8 +312,14 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                             }
 
                             if ($video) {
-                                $dataPage['title'] = $article->name;
-                                $dataPage['description'] = $article->content;
+                                if (!is_null($postFacebookInfo->video_id)) {
+                                    $dataPage['facebook_post_id'] = $postFacebookInfo->video_id;
+                                } else {
+                                    $dataPage['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
+                                }
+                               
+                                $dataPage['description'] = $article->name . "\n" . $article->content;
+                                
                                 $response = FacebookService::updatePagePostWithVideo($dataPage, $urls);
                             } else {
                                 $response = FacebookService::updatePagePostWithImage($dataPage, $urls);
