@@ -318,13 +318,13 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       {
-        title: 'Ngày vào lớp',
+        title: 'Ngày nhập học',
         key: 'date',
         className: 'min-width-150',
         width: 150,
         render: (record) => (
           <Text size="normal">
-            {Helper.getDate(record.registerDate, variables.DATE_FORMAT.DATE)}
+            {Helper.getDate(record.startDate, variables.DATE_FORMAT.DATE)}
           </Text>
         ),
       },
