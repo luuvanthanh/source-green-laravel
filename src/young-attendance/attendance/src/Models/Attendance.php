@@ -13,6 +13,7 @@ class Attendance extends UuidModel
         'HAVE_IN' => 3,
         'HAVE_OUT' => 4,
         'NOT_IN_CLASS' => 5,
+        'HOLIDAY' => 6
     ];
 
     /**
@@ -29,7 +30,7 @@ class Attendance extends UuidModel
      */
     protected $fillable = [
         'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason', 'StudentTransporterId', 'SchoolYearId',
-        'IsHaveInAi', 'IsHaveOutAi'
+        'IsHaveInAi', 'IsHaveOutAi', 'Description'
     ];
 
     protected $casts = [

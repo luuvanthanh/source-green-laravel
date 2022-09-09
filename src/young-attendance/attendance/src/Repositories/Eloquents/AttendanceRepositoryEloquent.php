@@ -6,11 +6,15 @@ use alhimik1986\PhpExcelTemplator\params\CallbackParam;
 use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Attendance\Models\AttendanceLog;
 use GGPHP\Attendance\Presenters\AttendancePresenter;
 use GGPHP\Attendance\Repositories\Contracts\AttendanceRepository;
 use GGPHP\Category\Models\Branch;
+use GGPHP\Category\Models\Holiday;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Clover\Models\ClassStudent;
 use GGPHP\Clover\Models\Student;
@@ -18,6 +22,7 @@ use GGPHP\Clover\Models\StudentTransporter;
 use GGPHP\Clover\Models\TimetableSetting;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Shift;
 use GGPHP\YoungAttendance\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use Illuminate\Container\Container as Application;
@@ -389,47 +394,225 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         \Log::info('Cron Tab Started' . ' ' . Carbon::now('GMT+7')->format('Y-m-d H:i:s'));
         $students = Student::with(['inOutHistory'])->where('Status', Student::OFFICAL)->get();
         $date = !empty($attributes['date']) ? $attributes['date'] : Carbon::now('GMT+7')->format('Y-m-d');
+        $arrayHoliday = $this->getHoliday($date);
+        $attributes['schoolYearId'] = $this->getSchoolYear();
 
-        $timetableSetting = TimetableSetting::whereDate('FromDate', '<=', $date)->whereDate('ToDate', '>=', $date)->first();
+        if (!array_key_exists($date, $arrayHoliday)) {
+            $timetableSetting = TimetableSetting::whereDate('FromDate', '<=', $date)->whereDate('ToDate', '>=', $date)->first();
 
-        if (!is_null($timetableSetting) && Carbon::parse($date)->dayOfWeek != Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek != Carbon::SUNDAY) {
-            foreach ($students as $student) {
-                $nowHours = !empty($attributes['time']) ? $attributes['time'] : Carbon::now('GMT+7')->format('H:i:s');
+            if (!is_null($timetableSetting) && Carbon::parse($date)->dayOfWeek != Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek != Carbon::SUNDAY) {
+                foreach ($students as $student) {
+                    $nowHours = !empty($attributes['time']) ? $attributes['time'] : Carbon::now('GMT+7')->format('H:i:s');
 
-                $valueTimeAllow = [
-                    'StartTime' => $timetableSetting->FromTime,
-                    'EndTime' => $timetableSetting->ToTime
-                ];
+                    $valueTimeAllow = [
+                        'StartTime' => $timetableSetting->FromTime,
+                        'EndTime' => $timetableSetting->ToTime
+                    ];
 
-                $timeAllow = $this->checkTimeAllow($date, $valueTimeAllow);
-                //chưa vào lớp
-                if ($nowHours < Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
-                    $existNotInClass = Attendance::where('StudentId', $student->Id)
-                        ->whereDate('Date', $date)
-                        ->first();
+                    $timeAllow = $this->checkTimeAllow($date, $valueTimeAllow);
+                    //chưa vào lớp
+                    if ($nowHours < Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
+                        $existNotInClass = Attendance::where('StudentId', $student->Id)
+                            ->whereDate('Date', $date)
+                            ->first();
 
-                    if (is_null($existNotInClass)) {
-                        $dataNotInClass = [
-                            'SchoolYearId' => $attributes['schoolYearId'],
-                            'Date' => $date,
-                            'StudentId' => $student->Id,
-                            'Status' => Attendance::STATUS['NOT_IN_CLASS'],
-                        ];
+                        if (is_null($existNotInClass)) {
+                            $dataNotInClass = [
+                                'SchoolYearId' => $attributes['schoolYearId'],
+                                'Date' => $date,
+                                'StudentId' => $student->Id,
+                                'Status' => Attendance::STATUS['NOT_IN_CLASS'],
+                            ];
 
-                        $this->model->create($dataNotInClass);
+                            $this->model->create($dataNotInClass);
+                        }
                     }
-                }
 
-                // Vào lớp
-                if ($nowHours > Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
-                    $inOutAfterTimeStart = $student->inOutHistory()
-                        ->where([['AttendedAt', '>=', $timeAllow['validBeforeStartTime']]])
-                        ->where([['AttendedAt', '<=', $timeAllow['validAfterStartTime']]])
-                        ->orderBy('AttendedAt')
-                        ->get();
+                    // Vào lớp
+                    if ($nowHours > Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
+                        $inOutAfterTimeStart = $student->inOutHistory()
+                            ->where([['AttendedAt', '>=', $timeAllow['validBeforeStartTime']]])
+                            ->where([['AttendedAt', '<=', $timeAllow['validAfterStartTime']]])
+                            ->orderBy('AttendedAt')
+                            ->get();
 
-                    if (count($inOutAfterTimeStart) > 0) {
-                        //kiểm tra tồn tại vào lớp chưa
+                        if (count($inOutAfterTimeStart) > 0) {
+                            //kiểm tra tồn tại vào lớp chưa
+                            $existCheckIn = Attendance::where('StudentId', $student->Id)
+                                ->whereDate('Date', $date)
+                                ->where(function ($query) {
+                                    $query->where('Status', Attendance::STATUS['HAVE_IN'])
+                                        ->orWhere('Status', Attendance::STATUS['HAVE_OUT'])
+                                        ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
+                                        ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
+                                })->get();
+
+                            if (count($existCheckIn) == 0) {
+                                $existAttendance = Attendance::where('StudentId', $student->Id)
+                                    ->whereDate('Date', $date)
+                                    ->first();
+
+                                if (is_null($existAttendance)) {
+                                    $dataCheckIn = [
+                                        'SchoolYearId' => $attributes['schoolYearId'],
+                                        'Date' => $date,
+                                        'StudentId' => $student->Id,
+                                        'Status' => Attendance::STATUS['HAVE_IN'],
+                                        'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
+                                        'IsHaveInAi' => true
+                                    ];
+
+                                    $existAttendance = $this->model->create($dataCheckIn);
+                                } else {
+                                    $existAttendance->update([
+                                        'Status' => Attendance::STATUS['HAVE_IN'],
+                                        'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
+                                        'IsHaveInAi' => true
+                                    ]);
+                                }
+
+                                AttendanceLog::create([
+                                    'SchoolYearId' => $attributes['schoolYearId'],
+                                    'AttendanceId' => $existAttendance->Id,
+                                    'Action' => 'Vào lớp',
+                                    'Type' => 'CAMERA_AI',
+                                    'FileImage' =>  $inOutAfterTimeStart[0]->FileImage
+                                ]);
+
+                                $parents = $student->parent;
+                                $userId = [];
+
+                                if (!empty($parents)) {
+                                    foreach ($parents as $parent) {
+                                        if (!is_null($parent->account)) {
+                                            $userId[] = $parent->account->AppUserId;
+                                        }
+                                    }
+                                }
+
+                                $nameStudent = $student->FullName;
+                                $images =  json_decode($student->FileImage);
+                                $urlImage = '';
+
+                                if (!empty($images)) {
+                                    $urlImage = env('IMAGE_URL') . $images[0];
+                                }
+
+                                $timeCheckIn = $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s');
+                                $message = 'Bé' . ' ' . $nameStudent . ' ' . 'đã vào lớp lúc' . ' ' . $timeCheckIn;
+
+                                if (!empty($userId)) {
+                                    $dataNoti = [
+                                        'users' => $userId,
+                                        'title' => $nameStudent,
+                                        'imageURL' => $urlImage,
+                                        'message' => $message,
+                                        'moduleType' => 6,
+                                        'moduleCode' => 'ATTENDANCE',
+                                        'refId' => $student->Id,
+                                    ];
+
+                                    dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                                }
+                            }
+                        }
+                    }
+
+                    // ra về
+                    if ($nowHours > Carbon::parse($timeAllow['validBeforeEndTime'])->format('H:i:s')) {
+                        $inOutAfterTimeEnd = $student->inOutHistory()
+                            ->where([['AttendedAt', '>=', $timeAllow['validBeforeEndTime']]])
+                            ->where([['AttendedAt', '<=', $timeAllow['validAfterEndTime']]])
+                            ->orderBy('AttendedAt')
+                            ->get();
+                        if (count($inOutAfterTimeEnd) > 0) {
+                            //kiểm tra tồn tại ra về chưa
+                            $existCheckOut = Attendance::where('StudentId', $student->Id)
+                                ->whereDate('Date', $date)
+                                ->where(function ($query) {
+                                    $query->where('Status', Attendance::STATUS['HAVE_OUT'])
+                                        ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE']);
+                                })->get();
+
+                            if (count($existCheckOut) == 0) {
+                                $existAttendance = Attendance::where('StudentId', $student->Id)
+                                    ->whereDate('Date', $date)
+                                    ->where(function ($query) {
+                                        $query->where('Status', Attendance::STATUS['HAVE_IN'])
+                                            ->orWhere('Status', Attendance::STATUS['NOT_IN_CLASS'])
+                                            ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
+                                    })
+                                    ->first();
+
+                                if (is_null($existAttendance)) {
+                                    $dataCheckOut = [
+                                        'SchoolYearId' => $attributes['schoolYearId'],
+                                        'Date' => $date,
+                                        'StudentId' => $student->Id,
+                                        'Status' => Attendance::STATUS['HAVE_OUT'],
+                                        'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
+                                        'IsHaveOutAi' => true
+                                    ];
+
+                                    $existAttendance = $this->model->create($dataCheckOut);
+                                } else {
+                                    $existAttendance->update([
+                                        'Status' => Attendance::STATUS['HAVE_OUT'],
+                                        'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
+                                        'IsHaveOutAi' => true
+                                    ]);
+                                }
+
+                                AttendanceLog::create([
+                                    'SchoolYearId' => $attributes['schoolYearId'],
+                                    'AttendanceId' => $existAttendance->Id,
+                                    'Action' => 'Ra về',
+                                    'Type' => 'CAMERA_AI',
+                                    'FileImage' =>  $inOutAfterTimeStart[0]->FileImage
+                                ]);
+
+                                $parents = $student->parent;
+                                $userId = [];
+
+                                if (!empty($parents)) {
+                                    foreach ($parents as $parent) {
+                                        if (!is_null($parent->account)) {
+                                            $userId[] = $parent->account->AppUserId;
+                                        }
+                                    }
+                                }
+
+                                $nameStudent = $student->FullName;
+                                $images =  json_decode($student->FileImage);
+                                $urlImage = '';
+
+                                if (!empty($images)) {
+                                    $urlImage = env('IMAGE_URL') . $images[0];
+                                }
+
+                                $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
+                                $message = 'Bé' . ' ' . $nameStudent . ' ' . 'đã ra về lúc' . ' ' . $timeCheckOut;
+
+
+                                if (!empty($userId)) {
+                                    $dataNoti = [
+                                        'users' => $userId,
+                                        'title' => $nameStudent,
+                                        'imageURL' => $urlImage,
+                                        'message' => $message,
+                                        'moduleType' => 6,
+                                        'moduleCode' => 'ATTENDANCE',
+                                        'refId' => $student->Id,
+                                    ];
+
+                                    dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                                }
+                            }
+                        }
+                    }
+
+                    // //vắng không phép
+                    if ($nowHours > Carbon::parse($timeAllow['validAfterStartTime'])->format('H:i:s')) {
                         $existCheckIn = Attendance::where('StudentId', $student->Id)
                             ->whereDate('Date', $date)
                             ->where(function ($query) {
@@ -441,235 +624,127 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                         if (count($existCheckIn) == 0) {
                             $existAttendance = Attendance::where('StudentId', $student->Id)
-                                ->whereDate('Date', $date)
-                                ->first();
+                                ->whereDate('Date', $date)->first();
 
-                            if (is_null($existAttendance)) {
-                                $dataCheckIn = [
-                                    'SchoolYearId' => $attributes['schoolYearId'],
-                                    'Date' => $date,
-                                    'StudentId' => $student->Id,
-                                    'Status' => Attendance::STATUS['HAVE_IN'],
-                                    'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
-                                    'IsHaveInAi' => true
-                                ];
-
-                                $existAttendance = $this->model->create($dataCheckIn);
-                            } else {
-                                $existAttendance->update([
-                                    'Status' => Attendance::STATUS['HAVE_IN'],
-                                    'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
-                                    'IsHaveInAi' => true
-                                ]);
-                            }
-
-                            AttendanceLog::create([
+                            $dataCheckOut = [
                                 'SchoolYearId' => $attributes['schoolYearId'],
-                                'AttendanceId' => $existAttendance->Id,
-                                'Action' => 'Vào lớp',
-                                'Type' => 'CAMERA_AI',
-                                'FileImage' =>  $inOutAfterTimeStart[0]->FileImage
-                            ]);
-
-                            $parents = $student->parent;
-                            $userId = [];
-
-                            if (!empty($parents)) {
-                                foreach ($parents as $parent) {
-                                    if (!is_null($parent->account)) {
-                                        $userId[] = $parent->account->AppUserId;
-                                    }
-                                }
-                            }
-
-                            $nameStudent = $student->FullName;
-                            $images =  json_decode($student->FileImage);
-                            $urlImage = '';
-
-                            if (!empty($images)) {
-                                $urlImage = env('IMAGE_URL') . $images[0];
-                            }
-
-                            $timeCheckIn = $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s');
-                            $message = 'Bé' . ' ' . $nameStudent . ' ' . 'đã vào lớp lúc' . ' ' . $timeCheckIn;
-
-                            if (!empty($userId)) {
-                                $dataNoti = [
-                                    'users' => $userId,
-                                    'title' => $nameStudent,
-                                    'imageURL' => $urlImage,
-                                    'message' => $message,
-                                    'moduleType' => 6,
-                                    'moduleCode' => 'ATTENDANCE',
-                                    'refId' => $student->Id,
-                                ];
-
-                                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
-                            }
-                        }
-                    }
-                }
-
-                // ra về
-                if ($nowHours > Carbon::parse($timeAllow['validBeforeEndTime'])->format('H:i:s')) {
-                    $inOutAfterTimeEnd = $student->inOutHistory()
-                        ->where([['AttendedAt', '>=', $timeAllow['validBeforeEndTime']]])
-                        ->where([['AttendedAt', '<=', $timeAllow['validAfterEndTime']]])
-                        ->orderBy('AttendedAt')
-                        ->get();
-                    if (count($inOutAfterTimeEnd) > 0) {
-                        //kiểm tra tồn tại ra về chưa
-                        $existCheckOut = Attendance::where('StudentId', $student->Id)
-                            ->whereDate('Date', $date)
-                            ->where(function ($query) {
-                                $query->where('Status', Attendance::STATUS['HAVE_OUT'])
-                                    ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE']);
-                            })->get();
-
-                        if (count($existCheckOut) == 0) {
-                            $existAttendance = Attendance::where('StudentId', $student->Id)
-                                ->whereDate('Date', $date)
-                                ->where(function ($query) {
-                                    $query->where('Status', Attendance::STATUS['HAVE_IN'])
-                                        ->orWhere('Status', Attendance::STATUS['NOT_IN_CLASS'])
-                                        ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
-                                })
-                                ->first();
-
-                            if (is_null($existAttendance)) {
-                                $dataCheckOut = [
-                                    'SchoolYearId' => $attributes['schoolYearId'],
-                                    'Date' => $date,
-                                    'StudentId' => $student->Id,
-                                    'Status' => Attendance::STATUS['HAVE_OUT'],
-                                    'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
-                                    'IsHaveOutAi' => true
-                                ];
-
-                                $existAttendance = $this->model->create($dataCheckOut);
-                            } else {
-                                $existAttendance->update([
-                                    'Status' => Attendance::STATUS['HAVE_OUT'],
-                                    'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
-                                    'IsHaveOutAi' => true
-                                ]);
-                            }
-
-                            AttendanceLog::create([
-                                'SchoolYearId' => $attributes['schoolYearId'],
-                                'AttendanceId' => $existAttendance->Id,
-                                'Action' => 'Ra về',
-                                'Type' => 'CAMERA_AI',
-                                'FileImage' =>  $inOutAfterTimeStart[0]->FileImage
-                            ]);
-
-                            $parents = $student->parent;
-                            $userId = [];
-
-                            if (!empty($parents)) {
-                                foreach ($parents as $parent) {
-                                    if (!is_null($parent->account)) {
-                                        $userId[] = $parent->account->AppUserId;
-                                    }
-                                }
-                            }
-
-                            $nameStudent = $student->FullName;
-                            $images =  json_decode($student->FileImage);
-                            $urlImage = '';
-
-                            if (!empty($images)) {
-                                $urlImage = env('IMAGE_URL') . $images[0];
-                            }
-
-                            $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
-                            $message = 'Bé' . ' ' . $nameStudent . ' ' . 'đã ra về lúc' . ' ' . $timeCheckOut;
-
-
-                            if (!empty($userId)) {
-                                $dataNoti = [
-                                    'users' => $userId,
-                                    'title' => $nameStudent,
-                                    'imageURL' => $urlImage,
-                                    'message' => $message,
-                                    'moduleType' => 6,
-                                    'moduleCode' => 'ATTENDANCE',
-                                    'refId' => $student->Id,
-                                ];
-
-                                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
-                            }
-                        }
-                    }
-                }
-
-                // //vắng không phép
-                if ($nowHours > Carbon::parse($timeAllow['validAfterStartTime'])->format('H:i:s')) {
-                    $existCheckIn = Attendance::where('StudentId', $student->Id)
-                        ->whereDate('Date', $date)
-                        ->where(function ($query) {
-                            $query->where('Status', Attendance::STATUS['HAVE_IN'])
-                                ->orWhere('Status', Attendance::STATUS['HAVE_OUT'])
-                                ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
-                                ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
-                        })->get();
-
-                    if (count($existCheckIn) == 0) {
-                        $existAttendance = Attendance::where('StudentId', $student->Id)
-                            ->whereDate('Date', $date)->first();
-
-                        $dataCheckOut = [
-                            'SchoolYearId' => !empty($attributes['schoolYearId']) ? $attributes['schoolYearId'] : null,
-                            'Date' => $date,
-                            'StudentId' => $student->Id,
-                            'Status' => Attendance::STATUS['UNPAID_LEAVE'],
-                        ];
-
-                        if (is_null($existAttendance)) {
-                            $this->model->create($dataCheckOut);
-                        } else {
-                            $existAttendance->update($dataCheckOut);
-                        }
-
-                        $parents = $student->parent;
-                        $userId = [];
-
-                        if (!empty($parents)) {
-                            foreach ($parents as $parent) {
-                                if (!is_null($parent->account)) {
-                                    $userId[] = $parent->account->AppUserId;
-                                }
-                            }
-                        }
-
-                        $nameStudent = $student->FullName;
-                        $images =  json_decode($student->FileImage);
-                        $urlImage = '';
-
-                        if (!empty($images)) {
-                            $urlImage = env('IMAGE_URL') . $images[0];
-                        }
-
-                        $message = 'Bé' . ' ' . $nameStudent . ' ' . 'vắng không phép ngày' . ' ' . $date;
-
-                        if (!empty($userId)) {
-                            $dataNoti = [
-                                'users' => $userId,
-                                'title' => $nameStudent,
-                                'imageURL' => $urlImage,
-                                'message' => $message,
-                                'moduleType' => 6,
-                                'moduleCode' => 'ATTENDANCE',
-                                'refId' => $student->Id,
+                                'Date' => $date,
+                                'StudentId' => $student->Id,
+                                'Status' => Attendance::STATUS['UNPAID_LEAVE'],
                             ];
 
-                            dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                            if (is_null($existAttendance)) {
+                                $this->model->create($dataCheckOut);
+                            } else {
+                                $existAttendance->update($dataCheckOut);
+                            }
+
+                            $parents = $student->parent;
+                            $userId = [];
+
+                            if (!empty($parents)) {
+                                foreach ($parents as $parent) {
+                                    if (!is_null($parent->account)) {
+                                        $userId[] = $parent->account->AppUserId;
+                                    }
+                                }
+                            }
+
+                            $nameStudent = $student->FullName;
+                            $images =  json_decode($student->FileImage);
+                            $urlImage = '';
+
+                            if (!empty($images)) {
+                                $urlImage = env('IMAGE_URL') . $images[0];
+                            }
+
+                            $message = 'Bé' . ' ' . $nameStudent . ' ' . 'vắng không phép ngày' . ' ' . $date;
+
+                            if (!empty($userId)) {
+                                $dataNoti = [
+                                    'users' => $userId,
+                                    'title' => $nameStudent,
+                                    'imageURL' => $urlImage,
+                                    'message' => $message,
+                                    'moduleType' => 6,
+                                    'moduleCode' => 'ATTENDANCE',
+                                    'refId' => $student->Id,
+                                ];
+
+                                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            $timetableSetting = TimetableSetting::whereDate('FromDate', '<=', $date)->whereDate('ToDate', '>=', $date)->first();
+
+            if (!is_null($timetableSetting) && Carbon::parse($date)->dayOfWeek != Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek != Carbon::SUNDAY) {
+                foreach ($students as $student) {
+                    $nowHours = !empty($attributes['time']) ? $attributes['time'] : Carbon::now('GMT+7')->format('H:i:s');
+
+                    $valueTimeAllow = [
+                        'StartTime' => $timetableSetting->FromTime,
+                        'EndTime' => $timetableSetting->ToTime
+                    ];
+
+                    $timeAllow = $this->checkTimeAllow($date, $valueTimeAllow);
+
+                    //ngày lễ
+                    if ($nowHours < Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
+                        $existNotInClass = Attendance::where('StudentId', $student->Id)
+                            ->whereDate('Date', $date)
+                            ->first();
+
+                        if (is_null($existNotInClass)) {
+                            $dataNotInClass = [
+                                'SchoolYearId' => $attributes['schoolYearId'],
+                                'Date' => $date,
+                                'StudentId' => $student->Id,
+                                'Status' => Attendance::STATUS['HOLIDAY'],
+                                'Description' => $arrayHoliday[$date]
+                            ];
+
+                            $this->model->create($dataNotInClass);
+                        }
+                    }
+
+                    //ngày lễ
+                    if ($nowHours > Carbon::parse($timeAllow['validAfterStartTime'])->format('H:i:s')) {
+                        $existCheckIn = Attendance::where('StudentId', $student->Id)
+                            ->whereDate('Date', $date)
+                            ->where(function ($query) {
+                                $query->where('Status', Attendance::STATUS['HAVE_IN'])
+                                    ->orWhere('Status', Attendance::STATUS['HAVE_OUT'])
+                                    ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
+                                    ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
+                            })->get();
+
+                        if (count($existCheckIn) == 0) {
+                            $existAttendance = Attendance::where('StudentId', $student->Id)
+                                ->whereDate('Date', $date)->first();
+
+                            $dataCheckOut = [
+                                'SchoolYearId' => $attributes['schoolYearId'],
+                                'Date' => $date,
+                                'StudentId' => $student->Id,
+                                'Status' => Attendance::STATUS['HOLIDAY'],
+                                'Description' => $arrayHoliday[$date]
+                            ];
+
+                            if (is_null($existAttendance)) {
+                                $this->model->create($dataCheckOut);
+                            } else {
+                                $existAttendance->update($dataCheckOut);
+                            }
                         }
                     }
                 }
             }
         }
         \Log::info('Cron Tab Ended' . ' ' . Carbon::now('GMT+7')->format('Y-m-d H:i:s'));
+
         return true;
     }
 
@@ -975,5 +1050,34 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         ];
 
         return $this->excelExporterServices->export('attendance_report', $params, $callbacks, $events);
+    }
+
+    public function getHoliday($date): array
+    {
+        $arrayHoliday = [];
+        $holiday = Holiday::where('Name', Carbon::parse($date)->format('Y'))->first();
+
+        foreach ($holiday->holidayDetail as $value) {
+            $startingDate = strtotime($value->StartDate);
+            $endingDate = strtotime($value->EndDate);
+
+            for ($currentDate = $startingDate; $currentDate <= $endingDate; $currentDate += (86400)) {
+                $date = date('Y-m-d', $currentDate);
+                $arrayHoliday[$date] = $value->Name;
+            }
+        }
+
+        return $arrayHoliday;
+    }
+
+    public function getSchoolYear()
+    {
+        $schoolYear = SchoolYear::where('IsCheck', true)->first();
+
+        if (!is_null($schoolYear)) {
+            $data['schoolYearId'] = $schoolYear->Id;
+        }
+
+        return !empty($schoolYear) ? $data['schoolYearId'] : null;
     }
 }
