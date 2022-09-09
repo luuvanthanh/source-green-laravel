@@ -53,6 +53,7 @@ class Index extends PureComponent {
       defaultBranch,
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         classId: query?.classId,
         nameStudent: query?.nameStudent,
@@ -408,8 +409,9 @@ class Index extends PureComponent {
       loading: { effects },
       branches,
       classes,
+      defaultBranch,
     } = this.props;
-    const { search, visible, object } = this.state;
+    const { search, visible, object, defaultBranchs } = this.state;
     const loading = effects['attendances/GET_DATA'];
     return (
       <>
@@ -481,15 +483,32 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
+                {
+                  !defaultBranch?.id && (
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                        name="branchId"
+                        onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                      />
+                    </div>
+                  )
+                }
+                {
+                  defaultBranch?.id && (
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={defaultBranchs}
+                        name="branchId"
+                        onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                      />
+                    </div>
+                  )
+                }
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}

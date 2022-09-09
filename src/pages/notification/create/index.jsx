@@ -1,3 +1,4 @@
+
 import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Radio, Checkbox, List, message } from 'antd';
@@ -92,8 +93,7 @@ const Index = memo(() => {
     dispatch({
       type: 'notificationAdd/GET_PARENTS',
       payload: {
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.PAGE_SIZE,
+        ...searchParent,
         KeyWord: value?.trim(),
         total: undefined,
       },
@@ -191,7 +191,7 @@ const Index = memo(() => {
   }, [details?.id]);
 
   useEffect(() => {
-    if (defaultBranch?.id) {
+    if (defaultBranch?.id && !params?.id) {
       mountedSet(setSearchParent, { ...searchParent, loading: true });
       dispatch({
         type: 'notificationAdd/GET_PARENTS',
@@ -200,7 +200,10 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            mountedSet(setParents, response.items);
+            mountedSet(
+              setParents,
+              response.items,
+            );
             mountedSet(setSearchParent, { ...searchParent, total: response.totalCount, loading: false });
           }
         },
@@ -217,7 +220,6 @@ const Index = memo(() => {
         },
       });
 
-      mountedSet(setSearchEmployee, { ...searchEmployee, branchId: details?.branchId });
       dispatch({
         type: 'notificationAdd/GET_EMPLOYEES',
         payload: {
@@ -228,8 +230,6 @@ const Index = memo(() => {
             setEmployees(response.parsePayload);
             mountedSet(setSearchEmployee, {
               ...searchEmployee,
-              branchId: details?.branchId,
-              divisionId: details?.divisionId,
               total: response.pagination.total,
             });
           }
@@ -376,11 +376,12 @@ const Index = memo(() => {
           mountedSet(setEmployees, response.parsePayload);
           mountedSet(setSearchEmployee, {
             ...searchEmployee,
-            page: variables.PAGINATION.PAGE,
-            limit: variables.PAGINATION.PAGE_SIZE,
             divisionId: value,
             total: response.pagination.total,
             loading: false,
+            page: 1,
+            limit: 10,
+            hasMore: true,
           });
         }
       },
@@ -388,7 +389,10 @@ const Index = memo(() => {
   };
 
   const onChangeClass = (value) => {
-    mountedSet(setSearchParent, { ...searchParent, loading: true });
+    mountedSet(setSearchParent, {
+      ...searchParent, loading: true, page: 1,
+      limit: 10,
+    });
     dispatch({
       type: 'notificationAdd/GET_PARENTS',
       payload: {
@@ -405,18 +409,23 @@ const Index = memo(() => {
             skipCount: 0,
             total: response.totalCount,
             classId: value,
+            page: 1,
+            limit: 10,
+            hasMore: true,
+            loading: false
           });
         }
       },
     });
   };
 
-
   const debouncedSearchUser = debounce((value) => {
     dispatch({
       type: 'notificationAdd/GET_EMPLOYEES',
       payload: {
         fullName: value,
+        branchId: searchEmployee?.branchId,
+        divisionId: searchEmployee?.divisionId,
       },
       callback: (response) => {
         if (response) {
@@ -463,6 +472,8 @@ const Index = memo(() => {
       type: 'notificationAdd/GET_EMPLOYEES',
       payload: {
         ...searchEmployee,
+        total: undefined,
+        abc: "ádasdasd",
         page: searchEmployee.page + 1,
       },
       callback: (response, error) => {
@@ -1034,3 +1045,4 @@ const Index = memo(() => {
 });
 
 export default Index;
+
