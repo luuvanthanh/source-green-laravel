@@ -85,16 +85,4 @@ class AttendanceCreateRequest extends FormRequest
             ],
         ];
     }
-
-    public function all($keys = null)
-    {
-        $data = parent::all();
-        $schoolYear = SchoolYear::where('IsCheck', true)->first();
-
-        if (!is_null($schoolYear)) {
-            $data['schoolYearId'] = $schoolYear->Id;
-        }
-        
-        return $data;
-    }
 }
