@@ -125,14 +125,12 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
         if (is_null($attendance)) {
             $attendance = Attendance::create($attributes);
-
             $reason = $attendance->reason;
             $attendanceReason = $attendance->attendanceReason ? $attendance->attendanceReason->Content : null;
 
             if ($attendance->Status == 3 || $attendance->Status == 4) {
                 $action = $attendance->Status == 3 ? 'Vào lớp' : 'Ra về';
                 AttendanceLog::create([
-                    'SchoolYearId' => $attributes['schoolYearId'],
                     'EmployeeId' => $attributes['employeeId'],
                     'AttendanceId' => $attendance->Id,
                     'Action' => $action,
@@ -200,7 +198,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         } else {
-
             $attendance->update($attributes);
 
             $reason = $attendance->reason;
@@ -209,7 +206,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             if ($attendance->Status == 3 || $attendance->Status == 4) {
                 $action = $attendance->Status == 3 ? 'Vào lớp' : 'Ra về';
                 AttendanceLog::create([
-                    'SchoolYearId' => $attributes['schoolYearId'],
                     'EmployeeId' => $attributes['employeeId'],
                     'AttendanceId' => $attendance->Id,
                     'Action' => $action,
