@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
-import {  useParams } from 'umi';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { Helper, variables } from '@/utils';
 
@@ -33,32 +33,32 @@ const Index = memo(() => {
   const header = () => {
     const columns = [
       {
-        title: 'Thời gian ',
-        key: 'date',
-        width: 80,
-        className: 'min-width-80',
-        render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME),
-      },
-      {
         title: 'Năm học',
         key: 'year',
         width: 150,
         className: 'min-width-150',
-        render: (record) => (<>{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</> ),
+        render: (record) => (<>{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</>),
       },
       {
         title: 'Lớp',
         key: 'class',
-        width: 100,
-        className: 'min-width-100',
+        width: 250,
+        className: 'min-width-250',
         render: (record) => <>{record?.class?.name}</>,
       },
       {
         title: 'Cơ sở',
         key: 'branch',
-        width: 100,
-        className: 'min-width-100',
+        width: 250,
+        className: 'min-width-250',
         render: (record) => <>{record?.class?.branch?.name}</>,
+      },
+      {
+        title: 'Ngày vào Lớp',
+        key: 'date',
+        width: 80,
+        className: 'min-width-80',
+        render: (record) => Helper.getDate(record.joinDate, variables.DATE_FORMAT.DATE),
       },
     ];
     return columns;

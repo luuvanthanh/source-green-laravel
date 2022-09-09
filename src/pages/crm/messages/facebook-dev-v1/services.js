@@ -34,7 +34,9 @@ export function getConversations(params = {}) {
       show_conversation: 'true',
       orderBy: 'time',
       sortedBy: 'desc',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
+      include: Helper.convertIncludes([
+        'userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook',
+      ]),
     },
   });
 }
@@ -48,7 +50,9 @@ export function getConversationsCall(params = {}) {
       show_conversation: 'true',
       orderBy: 'time',
       sortedBy: 'desc',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
+      include: Helper.convertIncludes([
+        'userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook',
+      ]),
     },
   });
 }
@@ -127,20 +131,25 @@ export function getConversationsId(params = {}) {
       ...params,
       show_conversation: 'true',
       orderBy: 'created_at',
-      include: Helper.convertIncludes(['userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook']),
+      include: Helper.convertIncludes([
+        'userFacebookInfo.userFacebookInfoTag.tag,userFacebookInfo.employeeFacebook',
+      ]),
     },
   });
 }
 
 export function updateNote(data = {}) {
-  return request(`/v1/facebook/pages/user-facebook-infos/${data.conversationCurrent.userFacebookInfo.id}`, {
-    prefix: API_URL_CRM,
-    method: 'PUT',
-    data: {
-      note: data.noteValue,
+  return request(
+    `/v1/facebook/pages/user-facebook-infos/${data.conversationCurrent.userFacebookInfo.id}`,
+    {
+      prefix: API_URL_CRM,
+      method: 'PUT',
+      data: {
+        note: data.noteValue,
+      },
+      cancelNotification: true,
     },
-    cancelNotification: true,
-  });
+  );
 }
 
 export function getRelationships() {

@@ -60,8 +60,7 @@ const General = memo(
 
     const loadingSubmit =
       effects[`OPchildrenAdd/ADD`] ||
-      effects[`OPchildrenAdd/UPDATE`] ||
-      effects[`OPchildrenAdd/UPDATE_STATUS`];
+      effects[`OPchildrenAdd/UPDATE`];
     const loading = effects[`OPchildrenAdd/GET_DETAILS`];
 
     const onChaneDate = (e) => {
@@ -93,7 +92,7 @@ const General = memo(
     };
 
     const onFinish = (values) => {
-      const wrongDate = moment(values?.registerDate, 'MM/DD/YYYY').year();
+      // const wrongDate = moment(values?.startDate, 'MM/DD/YYYY').year();
 
       const age = moment().diff(moment(values.dayOfBirth), 'month');
       dispatch({
@@ -105,7 +104,8 @@ const General = memo(
             student: {
               ...details.student,
               ...values,
-              registerDate: wrongDate === 1 ? moment() : values?.registerDate,
+              // registerDate: wrongDate === 1 ? moment() : values?.registerDate,
+              startDate: values?.startDate,
               branchId: details?.student?.branchId || details?.student?.class?.branchId,
               id: params.id,
               fileImage: JSON.stringify(files),
@@ -119,10 +119,15 @@ const General = memo(
               fileImage: JSON.stringify(files),
               age,
               branchId: user?.branchs?.length > 0 ? user?.branchs[0]?.id : "",
-              registerDate: moment(),
+              // registerDate: moment(),
             },
           },
-        callback: (error) => {
+        callback: (res, error) => {
+          if (res) {
+            history.push(
+              `/ho-so-doi-tuong/hoc-sinh/${res?.student?.id}/chi-tiet`,
+            );
+          }
           if (error) {
             if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
               error?.validationErrors.forEach((item) => {
@@ -206,7 +211,6 @@ const General = memo(
         });
         formRef.current.setFieldsValue({
           branchId: user?.branchs[0]?.id,
-          registerDate: moment(),
         });
       }
     }, [user?.id]);
@@ -221,7 +225,7 @@ const General = memo(
         formRef.current.setFieldsValue({
           ...details.student,
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
-          registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
+          startDate: details?.student?.startDate && moment(details?.student?.startDate),
           stopStudyingDate: details?.student?.stopStudyingDate && moment(details?.student?.stopStudyingDate)
             || details?.student?.withdrawApplicationDate && moment(details?.student?.withdrawApplicationDate),
           restoredDate: "",
@@ -429,7 +433,7 @@ const General = memo(
                       <FormItem
                         data={[defaultBranch]}
                         name="branchId"
-                        label="Mã cơ sở"
+                        label="Cơ sở"
                         type={variables.SELECT}
                         onChange={onChangeBranch}
                         disabled
@@ -438,7 +442,7 @@ const General = memo(
                       <FormItem
                         data={branches}
                         name="branchId"
-                        label="Mã cơ sở"
+                        label="Cơ sở"
                         type={variables.SELECT}
                         onChange={onChangeBranch}
                         disabled
@@ -449,17 +453,16 @@ const General = memo(
                     <FormItem
                       data={classes}
                       name="classId"
-                      label="Mã lớp"
+                      label="Lớp"
                       type={variables.SELECT}
                       disabled
                     />
                   </Pane>
                   <Pane className="col-lg-4">
                     <FormItem
-                      name="registerDate"
-                      label="Ngày vào lớp"
+                      name="startDate"
+                      label="Ngày nhập học"
                       type={variables.DATE_PICKER}
-                      disabled
                     />
                   </Pane>
                 </Pane>
@@ -539,7 +542,7 @@ const General = memo(
                         htmlType="button"
                         className="mr-3"
                         onClick={updateStatus}
-                        loading={loadingSubmit}
+                        loading={effects[`OPchildrenAdd/UPDATE_STATUS`]}
                       >
                         Lưu trữ hồ sơ
                       </Button>

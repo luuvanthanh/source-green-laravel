@@ -49,6 +49,10 @@ const UserModel = {
           can([item], item);
         });
         ability.update(rules);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Đăng nhập thành công',
+        });
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
@@ -132,13 +136,13 @@ const UserModel = {
     *CHANGE_PASSWORD({ payload }, saga) {
       try {
         yield saga.call(services.changePassword, payload);
-        if(payload) {
+        if (payload) {
           notification.success({
             message: 'THÔNG BÁO',
             description: 'Đổi mật khẩu thành công.',
           });
         }
-      }  catch (error) {
+      } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
         });

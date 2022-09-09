@@ -1775,7 +1775,7 @@ export default [
           },
           {
             path: '/quan-ly-nhan-su/bang-luong',
-            component: './hrm/salary',
+            component: './hrm/salaryV1',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },

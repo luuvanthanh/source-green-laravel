@@ -180,12 +180,23 @@ export default {
         });
       }
     },
+    // *ADD_CONVERSATIONS({ payload, callback }, saga) {
+    //   try {
+    //     const response = yield saga.call(services.addConversations, payload);
+    //     callback(response);
+    //     console.log('payload', payload);
+    //   } catch (error) {
+    //     console.log('error', error);
+    //     callback(null, error?.data?.error);
+    //   }
+    // },
+
     *ADD_CONVERSATIONS({ payload, callback }, saga) {
       try {
-        yield saga.call(services.addConversations, payload);
-        callback(payload);
+        const response = yield saga.call(services.addConversations, payload);
+        callback(response);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
       }
     },
 

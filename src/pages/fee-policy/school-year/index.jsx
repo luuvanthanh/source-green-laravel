@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Switch } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -168,6 +168,7 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const { search } = this.state;
     const columns = [
       {
         title: 'STT',
@@ -189,6 +190,46 @@ class Index extends PureComponent {
         key: 'date',
         className: 'min-width-300',
         render: (record) => `${Helper.getDate(record.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record.endDate, variables.DATE_FORMAT.DATE_VI)}`
+      },
+      {
+        title: 'Khoá',
+        dataIndex: 'use',
+        width: 160,
+        className: 'min-width-160',
+        render: (isCheck, record) => (
+          <div
+            role="presentation"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Switch
+              checked={record?.isCheck}
+              onChange={() => {
+                const payload = {
+                  id: record?.id,
+                  isCheck: !record?.isCheck,
+                };
+                this.props.dispatch({
+                  type: 'schoolYear/UPDATE',
+                  payload,
+                  callback: (response) => {
+                    if (response) {
+                      this.props.dispatch({
+                        type: 'schoolYear/GET_DATA',
+                        payload: {
+                          ...search,
+                          orderBy: 'CreationTime',
+                          sortedBy: 'desc',
+                        },
+                      });
+                    }
+                  },
+                });
+              }}
+            />
+          </div>
+        ),
       },
       {
         key: 'action',

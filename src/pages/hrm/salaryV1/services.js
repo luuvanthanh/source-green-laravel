@@ -22,7 +22,7 @@ export function get(data = {}) {
 }
 
 export function getData(data = {}) {
-  return request('/v1/payroll-group-by-division', {
+  return request('/v1/payroll-group-by-branches', {
     method: 'GET',
     params: {
       ...data,
@@ -38,7 +38,7 @@ export function getData(data = {}) {
         isUTC: false,
       }),
       employeeId: data.employeeId && data.employeeId.join(','),
-      include: Helper.convertIncludes(['payrollDetail.employee']),
+      // include: Helper.convertIncludes(['payrollDetail.employee']),
     },
   });
 }

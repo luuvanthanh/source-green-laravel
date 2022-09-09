@@ -99,18 +99,18 @@ const Index = memo(() => {
         maxResultCount: 18,
       },
       callback: (response) => {
-        if(pageFile === 1) {
+        if (pageFile === 1) {
           setRecordedFiles(response.items);
           setTotalCount(response.totalCount);
-       }
-       if(response?.totalCount > total) {
-        setPageFile(pageFile + 18);
-        setTotal(total + 18);
-       }
+        }
+        if (response?.totalCount > total) {
+          setPageFile(pageFile + 18);
+          setTotal(total + 18);
+        }
       },
     });
   };
-   
+
   const onLoadMoreFiles = () => {
     dispatch({
       type: 'mediaResult/GET_RECORDED_FILES',
@@ -120,11 +120,11 @@ const Index = memo(() => {
         maxResultCount: 18,
       },
       callback: (response) => {
-        if(response?.totalCount > total) {
-        setRecordedFiles( recordedFiles.concat(response.items));
-        setPageFile(pageFile + 18);
-        setTotal(total +18);
-       }
+        if (response?.totalCount > total) {
+          setRecordedFiles(recordedFiles.concat(response.items));
+          setPageFile(pageFile + 18);
+          setTotal(total + 18);
+        }
       },
     });
   };
@@ -229,7 +229,7 @@ const Index = memo(() => {
       payload: [id],
       callback: (response) => {
         if (response) {
-          fetchRecordedFiles();
+          setRecordedFiles(recordedFiles?.filter(i => i?.id !== id));
         }
       },
     });
@@ -241,7 +241,7 @@ const Index = memo(() => {
       payload: recordedFiles.map((item) => item.id),
       callback: (response) => {
         if (response) {
-          fetchRecordedFiles();
+          setRecordedFiles([]);
         }
       },
     });
@@ -532,11 +532,11 @@ const Index = memo(() => {
               </Pane>
               {
                 total < totalCount && (
-                    <div className={styles.more}>
+                  <div className={styles.more}>
                     <Button color="success"
-                        className="ml20"
-                        loading={loading['mediaResult/GET_RECORDED_FILES']} onClick={() => onLoadMoreFiles()} >Load More</Button>
-                    </div>
+                      className="ml20"
+                      loading={loading['mediaResult/GET_RECORDED_FILES']} onClick={() => onLoadMoreFiles()} >Load More</Button>
+                  </div>
                 )
               }
             </Pane>

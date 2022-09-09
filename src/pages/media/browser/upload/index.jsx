@@ -212,7 +212,8 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
             loading={
               loading['upload/UPLOAD'] ||
               loading['mediaUpload/UPLOAD'] ||
-              loading['mediaUpload/CREATE']
+              loading['mediaUpload/CREATE'] ||
+              loading['upload/UPLOAD_WATER_MARK']
             }
           >
             Tải lên
