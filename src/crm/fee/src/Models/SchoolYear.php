@@ -12,6 +12,6 @@ class SchoolYear extends UuidModel
     protected $table = 'school_years';
 
     protected $fillable = [
-        'year_from', 'year_to', 'start_date', 'end_date', 'school_year_clover_id', 'total_month'
+        'year_from', 'year_to', 'start_date', 'end_date', 'school_year_clover_id', 'total_month', 'is_check', 'content'
     ];
 }
