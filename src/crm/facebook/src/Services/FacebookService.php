@@ -631,7 +631,7 @@ class FacebookService
     public static function registrationWebhook(array $attributes)
     {
         $fb = getFacebookSdk();
-        
+
         $subscribedFields = Page::SUBSCRIBEDFIELD;
 
         try {
@@ -700,7 +700,6 @@ class FacebookService
     {
         $postId = $attributes['facebook_post_id'];
         $fb = getFacebookSdk();
-
         $photoIdArray = self::postMultipleImage($attributes, $urls);
         $postParam['message'] = $attributes['message'];
         foreach ($photoIdArray as $key => $photoId) {
@@ -736,12 +735,12 @@ class FacebookService
     {
         $fb = getFacebookSdk();
         $url = $fb->fileToUpload($urls[0]);
+
         try {
             $postId = $attributes['facebook_post_id'];
             $response = $fb->post(
                 $postId,
                 [
-                    'title' => $attributes['title'],
                     'description' => $attributes['description'],
                     'url' => $url,
                 ],
