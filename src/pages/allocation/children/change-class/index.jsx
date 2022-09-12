@@ -41,8 +41,12 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
+    const {
+      defaultBranch,
+    } = props;
     this.state = {
       hasMore: true,
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       searchStudents: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.PAGE_SIZE,
@@ -268,6 +272,7 @@ class Index extends PureComponent {
       hasMore,
       selectedStudents,
       categories: { students, branches, classes, filterClasses },
+      defaultBranchs,
     } = this.state;
 
     return (
@@ -319,16 +324,34 @@ class Index extends PureComponent {
                 </div>
                 <div className={stylesAllocation['content-form']}>
                   <div className="row mt-3">
-                    <div className="col-lg-6">
-                      <FormItem
-                        label="Cơ sở"
-                        name="branch"
-                        type={variables.SELECT}
-                        data={branches}
-                        onChange={this.selectBranch('filterClasses')}
-                        allowClear={false}
-                      />
-                    </div>
+                    {
+                      !defaultBranch?.id && (
+                        <div className="col-lg-6">
+                          <FormItem
+                            label="Cơ sở"
+                            name="branch"
+                            type={variables.SELECT}
+                            data={branches}
+                            onChange={this.selectBranch('filterClasses')}
+                            allowClear={false}
+                          />
+                        </div>
+                      )
+                    }
+                    {
+                      defaultBranch?.id && (
+                        <div className="col-lg-6">
+                          <FormItem
+                            label="Cơ sở"
+                            name="branch"
+                            type={variables.SELECT}
+                            data={defaultBranchs}
+                            onChange={this.selectBranch('filterClasses')}
+                            allowClear={false}
+                          />
+                        </div>
+                      )
+                    }
                     <div className="col-lg-6">
                       <FormItem
                         label="Lớp"

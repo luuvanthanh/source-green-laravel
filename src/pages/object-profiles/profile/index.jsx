@@ -25,13 +25,15 @@ const General = memo(() => {
     dataPipiPupu,
     groupProperty,
     detailsStudent,
-  ] = useSelector(({ OPProfile }) => [
+    defaultBranch,
+  ] = useSelector(({ OPProfile, user }) => [
     OPProfile.branches,
     OPProfile.classes,
     OPProfile.students,
     OPProfile.dataPipiPupu,
     OPProfile.groupProperty,
     OPProfile.detailsStudent,
+    user.defaultBranch,
   ]);
   const dispatch = useDispatch();
   const [loadData, setLoadData] = useState(false);
@@ -43,9 +45,11 @@ const General = memo(() => {
   const { query } = useLocation();
   const [dataHeight, setDataHeight] = useState({});
 
+  const [defaultBranchs,] = useState(defaultBranch?.id ? [defaultBranch] : []);
   const [search, setSearch] = useState({
     id: query?.id,
     SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
+    branchId: query?.branchId || defaultBranch?.id,
   });
 
   const BAR = {
@@ -144,6 +148,17 @@ const General = memo(() => {
       payload: {},
     });
   }, []);
+
+  useEffect(() => {
+    if (search?.branchId) {
+      dispatch({
+        type: 'OPProfile/GET_CLASSES',
+        payload: {
+          branch: search?.branchId,
+        },
+      });
+    }
+  }, [search?.branchId]);
 
   const onChangeSelectBranch = (e) => {
     dispatch({
@@ -310,20 +325,41 @@ const General = memo(() => {
         </div>
 
         <div className="card p20">
-          <Form layout="vertical">
+          <Form layout="vertical" initialValues={{
+            ...search,
+          }}>
             <div className="row">
               <div className="col-lg-10 d-flex">
-                <div className="col-lg-3">
-                  <FormItem
-                    label="Cơ sở"
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => onChangeSelectBranch(event, 'branchId')}
-                    type={variables.SELECT}
-                    placeholder="Chọn cơ sở"
-                    allowClear={false}
-                  />
-                </div>
+                {
+                  !defaultBranch?.id && (
+                    <div className="col-lg-3">
+                      <FormItem
+                        label="Cơ sở"
+                        data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                        name="branchId"
+                        onChange={(event) => onChangeSelectBranch(event, 'branchId')}
+                        type={variables.SELECT}
+                        placeholder="Chọn cơ sở"
+                        allowClear={false}
+                      />
+                    </div>
+                  )
+                }
+                {
+                  defaultBranch?.id && (
+                    <div className="col-lg-3">
+                      <FormItem
+                        label="Cơ sở"
+                        data={defaultBranchs}
+                        name="branchId"
+                        onChange={(event) => onChangeSelectBranch(event, 'branchId')}
+                        type={variables.SELECT}
+                        placeholder="Chọn cơ sở"
+                        allowClear={false}
+                      />
+                    </div>
+                  )
+                }
 
                 <div className="col-lg-3">
                   <FormItem
@@ -438,14 +474,14 @@ const General = memo(() => {
                       </Text>
                       <p className={styles.content}>
                         Cập nhật{' '}
-                        {dataHeight?.studentCriterias?.length > 0 && ( dataHeight?.studentCriterias[0]?.lastModificationTime ? 
-                         Helper.getDate(
-                          dataHeight?.studentCriterias[0]?.lastModificationTime,
-                          variables.DATE_FORMAT.DATE_TIME,
-                        ) : Helper.getDate(
-                          dataHeight?.studentCriterias[0]?.creationTime,
-                          variables.DATE_FORMAT.DATE_TIME,
-                        ))}
+                        {dataHeight?.studentCriterias?.length > 0 && (dataHeight?.studentCriterias[0]?.lastModificationTime ?
+                          Helper.getDate(
+                            dataHeight?.studentCriterias[0]?.lastModificationTime,
+                            variables.DATE_FORMAT.DATE_TIME,
+                          ) : Helper.getDate(
+                            dataHeight?.studentCriterias[0]?.creationTime,
+                            variables.DATE_FORMAT.DATE_TIME,
+                          ))}
                       </p>
                     </div>
                   </div>
@@ -620,7 +656,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập thể chất</p>
                   </div>
-                  <Button className={styles.btn}   onClick={onchangePhysical}>Chi tiết</Button>
+                  <Button className={styles.btn} onClick={onchangePhysical}>Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">
@@ -631,7 +667,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập tiếng Anh</p>
                   </div>
-                  <Button className={styles.btn}  onClick={onchangeEnglish}>Chi tiết</Button>
+                  <Button className={styles.btn} onClick={onchangeEnglish}>Chi tiết</Button>
                 </div>
               </div>
             </div>

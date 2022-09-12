@@ -34,8 +34,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 
-const mapStateToProps = ({ loading }) => ({
+const mapStateToProps = ({ loading, user }) => ({
   loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -43,14 +44,18 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
+    const {
+      defaultBranch,
+      location: { query },
+    } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       categories: {
         teachers: [],
         branches: [],
         classes: [],
         positions: [],
       },
-      branchId: '',
       selectedTeachers: [],
       loadingTeacher: false,
       hasMore: true,
@@ -59,6 +64,7 @@ class Index extends PureComponent {
         totalCount: 0,
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
+        branchId: query?.branchId || defaultBranch?.id,
       },
     };
     setIsMounted(true);
@@ -109,6 +115,7 @@ class Index extends PureComponent {
           totalCount: 0,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.SIZEMAX,
+          branchId: value,
         },
         selectedTeachers: [],
         hasMore: true,
@@ -125,6 +132,7 @@ class Index extends PureComponent {
 
   fetchPositions = () => {
     const { dispatch } = this.props;
+    const { searchTeachers } = this.state;
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
@@ -138,11 +146,30 @@ class Index extends PureComponent {
         }
       },
     });
+    if (searchTeachers?.branchId) {
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: searchTeachers?.branchId,
+        },
+        callback: (res) => {
+          if (res) {
+            this.setStateData(({ categories }) => ({
+              categories: {
+                ...categories,
+                classes: res?.items || [],
+              },
+              hasMore: !(res?.items?.length <= variables.PAGINATION.PAGE_SIZE),
+            }));
+          }
+        },
+      });
+    }
   };
 
   fetchBranches = () => {
     const { dispatch } = this.props;
-    const { searchTeachers, branchId } = this.state;
+    const { searchTeachers } = this.state;
     dispatch({
       type: 'allocationTeacherNoClass/GET_POSITIONS',
       callback: (res) => {
@@ -160,7 +187,6 @@ class Index extends PureComponent {
             payload: {
               ...searchTeachers,
               hasClass: 'false',
-              branchId,
               positionId: pos.id,
             },
             callback: (res) => {
@@ -206,20 +232,20 @@ class Index extends PureComponent {
   };
 
   finishForm = ({ classId, startDate }) => {
-    const { selectedTeachers } = this.state;
+    const { selectedTeachers, searchTeachers } = this.state;
     const { dispatch } = this.props;
     const requestData = selectedTeachers.map((employeeId) => ({
       employeeId,
       classId,
       startDate: startDate
         ? Helper.getDateTime({
-            value: Helper.setDate({
-              ...variables.setDateData,
-              originValue: startDate,
-              targetValue: '00:00:00',
-            }),
-            isUTC: false,
-          })
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: startDate,
+            targetValue: '00:00:00',
+          }),
+          isUTC: false,
+        })
         : undefined,
     }));
     dispatch({
@@ -236,13 +262,14 @@ class Index extends PureComponent {
             totalCount: 0,
             page: variables.PAGINATION.PAGE,
             limit: variables.PAGINATION.PAGE_SIZE,
+            branchId: searchTeachers?.branchId,
           },
           selectedTeachers: [],
           hasMore: true,
           loadingLoadMore: false,
         }));
         // gọi lại danh sách giáo viên từ API
-        // this.fetchTeachers();
+        this.fetchBranches();
       },
     });
   };
@@ -301,6 +328,7 @@ class Index extends PureComponent {
   render() {
     const {
       loading: { effects },
+      defaultBranch,
     } = this.props;
     const {
       categories: { teachers, branches, classes },
@@ -308,11 +336,16 @@ class Index extends PureComponent {
       loadingTeacher,
       loadingLoadMore,
       hasMore,
+      defaultBranchs,
+      searchTeachers
     } = this.state;
     const submitLoading = effects['allocationTeacherNoClass/ADD'];
 
     return (
-      <Form layout="vertical" colon={false} ref={this.formRef} onFinish={this.finishForm}>
+      <Form layout="vertical" colon={false} initialValues={{
+        ...searchTeachers,
+        branch: searchTeachers.branchId || null,
+      }} ref={this.formRef} onFinish={this.finishForm}>
         <Helmet title="Giáo viên chưa xếp lớp" />
         <div
           className={classnames(
@@ -359,17 +392,36 @@ class Index extends PureComponent {
                     Danh sách giáo viên chưa xếp lớp
                   </Text>
                   <div className="row mt-3">
-                    <div className="col-lg-6">
-                      <FormItem
-                        className="mb-0"
-                        label="Cơ sở"
-                        name="branch"
-                        type={variables.SELECT}
-                        data={branches}
-                        onChange={this.selectBranch}
-                        allowClear={false}
-                      />
-                    </div>
+                    {
+                      !defaultBranch?.id && (
+                        <div className="col-lg-6">
+                          <FormItem
+                            className="mb-0"
+                            label="Cơ sở"
+                            name="branch"
+                            type={variables.SELECT}
+                            data={branches}
+                            onChange={this.selectBranch}
+                            allowClear={false}
+                          />
+                        </div>
+                      )
+                    }
+                    {
+                      defaultBranch?.id && (
+                        <div className="col-lg-6">
+                          <FormItem
+                            className="mb-0"
+                            label="Cơ sở"
+                            name="branch"
+                            type={variables.SELECT}
+                            data={defaultBranchs}
+                            onChange={this.selectBranch}
+                            allowClear={false}
+                          />
+                        </div>
+                      )
+                    }
                   </div>
                 </div>
                 {loadingTeacher ? (
@@ -489,11 +541,15 @@ class Index extends PureComponent {
 Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   loading: {},
   dispatch: {},
+  defaultBranch: {},
+  location: {},
 };
 
 export default Index;

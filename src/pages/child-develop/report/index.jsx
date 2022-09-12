@@ -49,6 +49,7 @@ class Index extends PureComponent {
             location: { query },
         } = props;
         this.state = {
+            defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
             search: {
                 key: query?.key,
                 page: query?.page || variables.PAGINATION.PAGE,
@@ -312,10 +313,11 @@ class Index extends PureComponent {
             data,
             match: { params },
             pagination,
+            defaultBranch,
             loading: { effects },
         } = this.props;
 
-        const { search } = this.state;
+        const { search, defaultBranchs } = this.state;
         const loading = effects['childDevelopReport/GET_DATA'];
         return (
             <>
@@ -328,6 +330,8 @@ class Index extends PureComponent {
                         <Form
                             initialValues={{
                                 ...search,
+                                branchId: search.branchId || null,
+                                Class: search.Class || null,
                             }}
                             layout="vertical"
                             ref={this.formRef}
@@ -341,16 +345,34 @@ class Index extends PureComponent {
                                         type={variables.INPUT_SEARCH}
                                     />
                                 </div>
-                                <div className="col-lg-3">
-                                    <FormItem
-                                        data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                                        name="branchId"
-                                        onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
-                                        type={variables.SELECT}
-                                        placeholder="Chọn cơ sở"
-                                        allowClear={false}
-                                    />
-                                </div>
+                                {
+                                    !defaultBranch?.id && (
+                                        <div className="col-lg-3">
+                                            <FormItem
+                                                data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                                                name="branchId"
+                                                onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                                                type={variables.SELECT}
+                                                placeholder="Chọn cơ sở"
+                                                allowClear={false}
+                                            />
+                                        </div>
+                                    )
+                                }
+                                {
+                                    defaultBranch?.id && (
+                                        <div className="col-lg-3">
+                                            <FormItem
+                                                data={defaultBranchs}
+                                                name="branchId"
+                                                onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                                                type={variables.SELECT}
+                                                placeholder="Chọn cơ sở"
+                                                allowClear={false}
+                                            />
+                                        </div>
+                                    )
+                                }
 
                                 <div className="col-lg-3">
                                     <FormItem

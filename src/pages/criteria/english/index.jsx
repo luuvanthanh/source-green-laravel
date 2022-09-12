@@ -51,10 +51,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         BranchId: query?.BranchId || defaultBranch?.id,
-        StudentId: query?.StudentId || defaultBranch?.id,
-        ClassId: query?.ClassId || defaultBranch?.id,
+        StudentId: query?.StudentId,
+        ClassId: query?.ClassId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         TimetableActivityDetailId: null,
@@ -462,8 +463,9 @@ class Index extends PureComponent {
       students,
       match: { params },
       loading: { effects },
+      defaultBranch,
     } = this.props;
-    const { loadData, search } = this.state;
+    const { loadData, search, defaultBranchs } = this.state;
     const loading = effects['criteriaEnglish/GET_DATA'];
     return (
       <>
@@ -484,17 +486,36 @@ class Index extends PureComponent {
                 ref={this.formRef}>
                 <div className="row">
                   <div className="col-lg-10 d-flex">
-                    <div className="col-lg-3">
-                      <FormItem
-                        label="Cơ sở"
-                        data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                        name="BranchId"
-                        onChange={(event) => this.onChangeSelectBranch(event, 'BranchId')}
-                        type={variables.SELECT}
-                        placeholder="Chọn cơ sở"
-                        allowClear={false}
-                      />
-                    </div>
+                    {
+                      !defaultBranch?.id && (
+                        <div className="col-lg-3">
+                          <FormItem
+                            label="Cơ sở"
+                            data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                            name="BranchId"
+                            onChange={(event) => this.onChangeSelectBranch(event, 'BranchId')}
+                            type={variables.SELECT}
+                            placeholder="Chọn cơ sở"
+                            allowClear={false}
+                          />
+                        </div>
+                      )
+                    }
+                    {
+                      defaultBranch?.id && (
+                        <div className="col-lg-3">
+                          <FormItem
+                            label="Cơ sở"
+                            data={defaultBranchs}
+                            name="BranchId"
+                            onChange={(event) => this.onChangeSelectBranch(event, 'BranchId')}
+                            type={variables.SELECT}
+                            placeholder="Chọn cơ sở"
+                            allowClear={false}
+                          />
+                        </div>
+                      )
+                    }
 
                     <div className="col-lg-3">
                       <FormItem

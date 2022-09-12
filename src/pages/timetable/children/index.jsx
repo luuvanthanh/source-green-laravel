@@ -44,19 +44,21 @@ const Index = memo(() => {
     fromDate: null,
     toDate: null,
     type: 'timeGridWeek',
-    branchId: defaultBranch?.id,
+    branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId,
     timetableSettingId: query?.timetableSettingId,
   });
 
   const timelineColumns = Helper.generateTimeline(duration, fromTime, toTime);
 
+  const [defaultBranchs,] = useState(defaultBranch?.id ? [defaultBranch] : []);
   const [showColumn, setShowColumn] = useState(false);
   const [listSubjects, setListSubjects] = useState({
     data: [],
     visible: false,
     title: '',
   });
+
 
   const debouncedSearchDate = debounce((fromDate = moment(), toDate = moment(), type) => {
     setSearch((prev) => ({
@@ -148,21 +150,21 @@ const Index = memo(() => {
           if (type) {
             setSearch((prev) => ({
               ...prev,
-              classId: head(response)?.id,
+              // classId: head(response)?.id,
               branchId: idBranch
             }));
-            formRef.setFieldsValue({
-              classId: head(response)?.id,
-            });
+            // formRef.setFieldsValue({
+            //   classId: head(response)?.id,
+            // });
           } else {
             setSearch((prev) => ({
               ...prev,
-              classId: query.classId || head(response)?.id,
+              // classId: query.classId || head(response)?.id,
               branchId: idBranch
             }));
-            formRef.setFieldsValue({
-              classId: query?.classId || head(response)?.id,
-            });
+            // formRef.setFieldsValue({
+            //   classId: query?.classId || head(response)?.id,
+            // });
           }
         }
       },
@@ -175,10 +177,7 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          formRef.setFieldsValue({
-            branchId: query?.branchId || head(response)?.id,
-          });
-          getClass(query?.branchId || head(response)?.id);
+          getClass(query?.branchId || defaultBranch?.id);
         }
       },
     });
@@ -189,6 +188,13 @@ const Index = memo(() => {
       onLoad();
     }
   }, [search.branchId, search.classId, search.timetableSettingId]);
+
+
+  // useEffect(() => {
+  //   if (search.branchId) {
+  //     getClass();
+  //   }
+  // }, [search.branchId]);
 
   useEffect(() => {
     getYears();
@@ -906,6 +912,8 @@ const Index = memo(() => {
           <Form
             initialValues={{
               ...search,
+              // branchId: search.branchId || null,
+              // Class: search.Class || null,
             }}
             layout="vertical"
             form={formRef}
@@ -922,17 +930,32 @@ const Index = memo(() => {
                   allowClear={false}
                 />
               </div>
-              <div className="col-lg-4">
-                <FormItem
-                  className="ant-form-item-row"
-                  data={branches}
-                  label="CƠ SỞ"
-                  name="branchId"
-                  onChange={(event) => onChangeSelectBranch(event)}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
+              {!defaultBranch?.id && (
+                <div className="col-lg-4">
+                  <FormItem
+                    className="ant-form-item-row"
+                    data={branches}
+                    label="CƠ SỞ"
+                    name="branchId"
+                    onChange={(event) => onChangeSelectBranch(event)}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+              )}
+              {defaultBranch?.id && (
+                <div className="col-lg-4">
+                  <FormItem
+                    className="ant-form-item-row"
+                    data={defaultBranchs}
+                    label="CƠ SỞ"
+                    name="branchId"
+                    onChange={(event) => onChangeSelectBranch(event)}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+              )}
               <div className="col-lg-4">
                 <FormItem
                   className="ant-form-item-row"

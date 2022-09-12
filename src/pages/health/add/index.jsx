@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { List, Radio, Form, message, Spin } from 'antd';
 import { Helmet } from 'react-helmet';
-import { history, useParams } from 'umi';
+import { history, useParams, useLocation } from 'umi';
 import { isEmpty, toString } from 'lodash';
 
 import Button from '@/components/CommonComponent/Button';
@@ -30,8 +30,10 @@ const Index = memo(() => {
     menuData,
     branches,
     classes,
+    defaultBranch,
   } = useSelector(({ loading, user, healthAdd, menu }) => ({
     user: user.user,
+    defaultBranch: user.defaultBranch,
     loading,
     details: healthAdd.details,
     error: healthAdd.error,
@@ -47,19 +49,21 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const filterRef = useRef();
   const formRef = useRef();
+  const { query } = useLocation();
   const [studentId, setStudentId] = useState(null);
   const [students, setStudents] = useState([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [defaultBranchs,] = useState(defaultBranch?.id ? [defaultBranch] : []);
   const [searchStudents, setSearchStudents] = useState({
     totalCount: 0,
     classStatus: 'HAS_CLASS',
+    position: query?.position || defaultBranch?.id,
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
     class: null,
   });
   const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
-
   /**
    * Function change radio
    * @param {string} radio value of editor
@@ -222,18 +226,39 @@ const Index = memo(() => {
                   Danh sách học sinh
                 </Heading>
 
-                <Form layout="vertical" ref={filterRef}>
+                <Form layout="vertical" ref={filterRef}
+                  initialValues={{
+                    ...searchStudents,
+                  }}
+                >
                   <Pane className={csx('border-bottom')}>
                     <Pane className={csx('row')}>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          data={branches}
-                          label="Cơ sở"
-                          name="position"
-                          type={variables.SELECT}
-                          onChange={onChangeBranches}
-                        />
-                      </Pane>
+                      {
+                        !defaultBranch?.id && (
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              data={branches}
+                              label="Cơ sở"
+                              name="position"
+                              type={variables.SELECT}
+                              onChange={onChangeBranches}
+                            />
+                          </Pane>
+                        )
+                      }
+                      {
+                        defaultBranch?.id && (
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              data={defaultBranchs}
+                              label="Cơ sở"
+                              name="position"
+                              type={variables.SELECT}
+                              onChange={onChangeBranches}
+                            />
+                          </Pane>
+                        )
+                      }
                       <Pane className="col-lg-6">
                         <FormItem
                           data={classes}
