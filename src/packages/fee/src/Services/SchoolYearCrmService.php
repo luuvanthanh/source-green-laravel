@@ -21,6 +21,8 @@ class SchoolYearCrmService
             'start_date' => $data->StartDate,
             'end_date' => $data->EndDate,
             'total_month' => $data->TotalMonth,
+            'is_check' => $data->IsCheck,
+            'content' => $data->Content
         ];
 
         $result = Http::withToken($token)->post(self::url(), $params);
@@ -45,6 +47,8 @@ class SchoolYearCrmService
             'start_date' => $data->StartDate,
             'end_date' => $data->EndDate,
             'total_month' => $data->TotalMonth,
+            'is_check' => $data->IsCheck,
+            'content' => $data->Content
         ];
 
         $result = Http::withToken($token)->put(self::url() . '/' . $id, $params);
