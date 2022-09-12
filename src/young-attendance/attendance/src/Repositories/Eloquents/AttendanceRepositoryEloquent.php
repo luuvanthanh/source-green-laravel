@@ -90,13 +90,14 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
      */
     public function create(array $attributes)
     {
+        $attributes['schoolYear'] = $this->getSchoolYear();
         $now = Carbon::now('GMT+7')->format('H:i:s');
 
         switch ($attributes['status']) {
-            case 3:
+            case Attendance::STATUS['HAVE_IN']:
                 $attributes['checkIn'] = $now;
                 break;
-            case 4:
+            case Attendance::STATUS['HAVE_OUT']:
                 $attributes['checkOut'] = $now;
                 break;
             default:
@@ -128,9 +129,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $reason = $attendance->reason;
             $attendanceReason = $attendance->attendanceReason ? $attendance->attendanceReason->Content : null;
 
-            if ($attendance->Status == 3 || $attendance->Status == 4) {
-                $action = $attendance->Status == 3 ? 'Vào lớp' : 'Ra về';
+            if ($attendance->Status == Attendance::STATUS['HAVE_IN'] || $attendance->Status == Attendance::STATUS['HAVE_OUT']) {
+                $action = $attendance->Status == Attendance::STATUS['HAVE_IN'] ? 'Vào lớp' : 'Ra về';
                 AttendanceLog::create([
+                    'SchoolYearId' => $attributes['schoolYear'],
                     'EmployeeId' => $attributes['employeeId'],
                     'AttendanceId' => $attendance->Id,
                     'Action' => $action,
@@ -152,15 +154,15 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $nameStudent = $attendance->student->FullName;
             $message = '';
             switch ($attendance->Status) {
-                case 2:
+                case Attendance::STATUS['UNPAID_LEAVE']:
                     $date = $attendance->Date->format('d-m-Y');
                     $message = 'Bé' . ' ' . $nameStudent . ' ' . 'vắng không phép ngày' . ' ' . $date;
                     break;
-                case 3:
+                case Attendance::STATUS['HAVE_IN']:
                     $timeCheckIn = $attendance->CheckIn;
                     $message = 'Bé' . ' ' .  $nameStudent . ' ' . 'đã vào lớp lúc' . ' ' . $timeCheckIn;
                     break;
-                case 4:
+                case Attendance::STATUS['HAVE_OUT']:
                     $timeCheckOut = $attendance->CheckOut;
 
                     $textTransporter = '';
@@ -203,9 +205,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $reason = $attendance->reason;
             $attendanceReason = $attendance->attendanceReason ? $attendance->attendanceReason->Content : null;
 
-            if ($attendance->Status == 3 || $attendance->Status == 4) {
-                $action = $attendance->Status == 3 ? 'Vào lớp' : 'Ra về';
+            if ($attendance->Status == Attendance::STATUS['HAVE_IN'] || $attendance->Status == Attendance::STATUS['HAVE_OUT']) {
+                $action = $attendance->Status == Attendance::STATUS['HAVE_IN'] ? 'Vào lớp' : 'Ra về';
                 AttendanceLog::create([
+                    'SchoolYearId' => $attributes['schoolYear'],
                     'EmployeeId' => $attributes['employeeId'],
                     'AttendanceId' => $attendance->Id,
                     'Action' => $action,
@@ -228,15 +231,15 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $message = '';
 
             switch ($attendance->Status) {
-                case 2:
+                case Attendance::STATUS['UNPAID_LEAVE']:
                     $date = $attendance->Date->format('d-m-Y');
                     $message = 'Bé' . ' ' . $nameStudent . ' ' . 'vắng không phép ngày' . ' ' . $date;
                     break;
-                case 3:
+                case Attendance::STATUS['HAVE_IN']:
                     $timeCheckIn = $attendance->CheckIn;
                     $message = 'Bé' . ' ' . $nameStudent . ' ' . 'đã vào lớp lúc' . ' ' . $timeCheckIn;
                     break;
-                case 4:
+                case Attendance::STATUS['HAVE_OUT']:
                     $timeCheckOut = $attendance->CheckOut;
                     $textTransporter = '';
                     if (!is_null($attendance->studentTransporter)) {
