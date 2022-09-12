@@ -82,7 +82,6 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
         DB::beginTransaction();
         try {
             $schoolYear = SchoolYear::create($attributes);
-
             $totalMonth = 0;
             $dataTimeTable = [];
 
