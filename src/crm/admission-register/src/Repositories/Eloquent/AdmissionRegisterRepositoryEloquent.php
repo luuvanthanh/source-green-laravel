@@ -15,6 +15,7 @@ use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
+use GGPHP\Crm\Fee\Models\SchoolYear;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -112,6 +113,11 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
             });
         }
 
+        if (!empty($attributes['school_year_id'])) {
+            $schoolYearId = explode(',', $attributes['school_year_id']);
+            $this->model = $this->model->whereIn('school_year_id', $schoolYearId);
+        }
+
         if (!empty($attributes['limit'])) {
             $admissionRegister = $this->paginate($attributes['limit']);
         } else {
@@ -123,6 +129,7 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
 
     public function create(array $attributes)
     {
+        $attributes['school_year_id'] = $this->getSchoolYear();
         \DB::beginTransaction();
         try {
             $admissionRegister = AdmissionRegister::create($attributes);
@@ -258,5 +265,12 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
         }
 
         return StudentService::createStudent($data);
+    }
+
+    public function getSchoolYear()
+    {
+        $schoolYear = SchoolYear::where('is_check', true)->first();
+
+        return !is_null($schoolYear) ? $schoolYear->id : null;
     }
 }
