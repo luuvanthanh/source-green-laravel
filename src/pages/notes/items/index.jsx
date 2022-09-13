@@ -54,18 +54,19 @@ class Index extends PureComponent {
       user
     } = props;
     this.state = {
+      dataYear: user ? user?.schoolYear : {},
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
-        from: query?.from
-          ? moment(query?.from).format(variables.DATE_FORMAT.DATE_AFTER)
-          : moment().startOf('months'),
-        to: query?.to
-          ? moment(query?.to).format(variables.DATE_FORMAT.DATE_AFTER)
-          : moment().endOf('months'),
+        from:  query?.from
+        ? query?.from
+        : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        to:query?.to
+        ? query?.to
+        : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         status: query?.status || variablesModules.STATUS.CONFIRMING,
@@ -251,6 +252,25 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
+    const {
+      years,
+    } = this.props;
+    if (type === 'schoolYearId') {
+      const data = years?.find(i => i.id === e);
+      this.setStateData({
+        dataYear: data,
+      });
+      this.setState(
+        (prevState) => ({
+          search: {
+            ...prevState.search,
+            from: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+            to: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+          },
+        }),
+      );
+      this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+    }
     this.debouncedSearch(e, type);
   };
 
@@ -448,7 +468,7 @@ class Index extends PureComponent {
       loading: { effects },
       years,
     } = this.props;
-    const { search, defaultBranchs } = this.state;
+    const { search, defaultBranchs, dataYear } = this.state;
     const loading = effects['noteItems/GET_DATA'];
     return (
       <>
@@ -519,19 +539,25 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="date"
-                    onChange={(event) => this.onChangeDateRank(event, 'date')}
-                    type={variables.RANGE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
                     data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
                     name="schoolYearId"
                     onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
                     type={variables.SELECT}
                     placeholder="Chọn năm học"
                     allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </div>
               </div>

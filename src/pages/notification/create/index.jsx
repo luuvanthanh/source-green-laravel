@@ -104,6 +104,7 @@ const Index = memo(() => {
             ...searchParent,
             total: response.totalCount,
             page: variables.PAGINATION.PAGE,
+            KeyWord: value?.trim(),
             limit: variables.PAGINATION.PAGE_SIZE,
           });
         }
@@ -398,6 +399,7 @@ const Index = memo(() => {
       payload: {
         branchId: searchParent.branchId,
         classId: value,
+        KeyWord: searchParent?.KeyWord,
         page: 1,
         limit: 10,
       },

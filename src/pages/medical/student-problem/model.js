@@ -45,6 +45,7 @@ export default {
       years: payload.parsePayload?.map((item) => ({
         id: item.id,
         name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+        ...item,
       })) || [],
     }),
   },
