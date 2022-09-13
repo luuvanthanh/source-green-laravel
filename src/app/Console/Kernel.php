@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use GGPHP\Attendance\Jobs\AttendanceJob;
+use GGPHP\Fee\Jobs\UpdateSchoolYearJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,7 +26,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('attendance')->everyMinute();
+        $schedule->job(new UpdateSchoolYearJob())->dailyAt('06:00');
+        $schedule->job(new AttendanceJob())->everyThirtyMinutes();
+        // $schedule->command('attendance')->everyMinute();
     }
 
     /**
