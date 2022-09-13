@@ -36,6 +36,9 @@ const Index = memo(() => {
   const [visibleProgress, setVisibleProgress] = useState(false);
   const [inProgessSuccess, setInProgessSuccess] = useState(false);
   const [visibleUpload, setVisibleUpload] = useState(false);
+
+  const [checkNotication, setCheckNotication] = useState(false);
+
   const [search, setSearch] = useState({
     status: 'PENDING',
     uploadDate: query?.uploadDate || moment(),
@@ -111,6 +114,10 @@ const Index = memo(() => {
       ...prevSearch,
       uploadDate: moment()
     }));
+    notification.success({
+      message: 'Thông báo',
+      description: 'Bạn đã cập nhật thành công dữ liệu',
+    });
     filterRef?.current?.setFieldsValue({ uploadDate: moment() });
   }, []);
 
@@ -138,6 +145,17 @@ const Index = memo(() => {
     setImages(data);
   }, [data]);
 
+
+  useEffect(() => {
+    if (checkNotication) {
+      notification.error({
+        message: 'Thông báo',
+        description: 'Một số hình ảnh chưa nhận dạng được',
+      });
+      setCheckNotication(false);
+    }
+  }, [checkNotication]);
+
   const hiddenProgress = () => {
     setVisibleProgress(false);
   };
@@ -157,16 +175,12 @@ const Index = memo(() => {
       .withUrl(URL_API_REALTIME, options)
       .withHubProtocol(protocol)
       .build();
-
     connection.on('ProgressImage', (message) => {
       if (message) {
         setProgress(message?.data?.progress || 0);
         if (message?.data?.status === 'finished') {
           if (message?.data?.hasImgUndefined) {
-            notification.error({
-              message: 'Thông báo',
-              description: 'Một số hình ảnh chưa nhận dạng được',
-            });
+            setCheckNotication(true);
           }
           setInProgessSuccess(true);
           setVisibleProgress(false);

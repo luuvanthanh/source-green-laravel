@@ -14,6 +14,7 @@ export function get(params) {
         }),
         isUTC: true,
       }),
+      maxResultCount: 1000,
     },
   });
 }
