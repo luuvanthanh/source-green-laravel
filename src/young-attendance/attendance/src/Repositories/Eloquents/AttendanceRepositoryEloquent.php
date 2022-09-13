@@ -395,6 +395,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         $date = !empty($attributes['date']) ? $attributes['date'] : Carbon::now('GMT+7')->format('Y-m-d');
         $arrayHoliday = $this->getHoliday($date);
         $attributes['schoolYearId'] = $this->getSchoolYear();
+        json_decode($attributes['schoolYearId'], true);
 
         if (!array_key_exists($date, $arrayHoliday)) {
             $timetableSetting = TimetableSetting::whereDate('FromDate', '<=', $date)->whereDate('ToDate', '>=', $date)->first();
