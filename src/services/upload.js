@@ -34,5 +34,6 @@ export const uploadWatermark = (files) => {
     prefix: API_UPLOAD,
     method: 'POST',
     data: formData,
+    cancelNotification: true,
   });
 };
