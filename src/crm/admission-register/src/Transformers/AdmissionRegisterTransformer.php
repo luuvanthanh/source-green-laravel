@@ -7,6 +7,7 @@ use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
 use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Category\Transformers\StatusAdmissionRegisterTransformer;
 use GGPHP\Crm\CustomerLead\Transformers\StudentInfoTransformer;
+use GGPHP\Crm\Fee\Transformers\SchoolYearTransformer;
 
 /**
  * Class CityTransformer.
@@ -32,7 +33,10 @@ class AdmissionRegisterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'parentInfo', 'statusAdmissionRegister', 'testInput', 'medicalInfo', 'confirmTransporter', 'childEvaluateInfo', 'studentByChargeNow', 'branch'];
+    protected $availableIncludes = [
+        'studentInfo', 'parentInfo', 'statusAdmissionRegister', 'testInput', 'medicalInfo', 'confirmTransporter',
+        'childEvaluateInfo', 'studentByChargeNow', 'branch', 'schoolYear'
+    ];
 
     /**
      * Transform the CategoryDetail entity.
@@ -124,5 +128,14 @@ class AdmissionRegisterTransformer extends BaseTransformer
         }
 
         return $this->item($admissionRegister->branch, new BranchTransformer, 'Branch');
+    }
+
+    public function includeSchoolYear(AdmissionRegister $admissionRegister)
+    {
+        if (empty($admissionRegister->schoolYear)) {
+            return null;
+        }
+
+        return $this->item($admissionRegister->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }

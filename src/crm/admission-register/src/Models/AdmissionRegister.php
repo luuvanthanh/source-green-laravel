@@ -7,6 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Category\Models\StatusAdmissionRegister;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
+use GGPHP\Crm\Fee\Models\SchoolYear;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AdmissionRegister extends UuidModel
@@ -94,5 +95,10 @@ class AdmissionRegister extends UuidModel
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'school_year_id');
     }
 }

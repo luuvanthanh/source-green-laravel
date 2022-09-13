@@ -29,6 +29,7 @@ class CreateAdmissionRegisterRequest extends FormRequest
         return [
             'customer_lead_id' => [
                 'required',
+                'exists:customer_leads,id',
                 function ($attribute, $value, $fail) {
                     $customerLead = CustomerLead::find($value);
 
