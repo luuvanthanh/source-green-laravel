@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 class EventTypesTableSeeder extends Seeder
@@ -59,16 +61,6 @@ class EventTypesTableSeeder extends Seeder
             ),
             4 => 
             array (
-                'id' => '4aa58748-a62b-4b31-b303-7f5f6e03d037',
-                'code' => 'BL',
-                'name' => 'Blacklist',
-                'type' => 'Đối tượng',
-                'created_at' => '2021-11-17 16:04:03',
-                'updated_at' => '2021-11-17 16:04:03',
-                'deleted_at' => NULL,
-            ),
-            5 => 
-            array (
                 'id' => 'e12763d5-127e-43c4-b74d-1d099daf2a8e',
                 'code' => 'BHR',
                 'name' => 'Bán hàng rong',
@@ -77,7 +69,7 @@ class EventTypesTableSeeder extends Seeder
                 'updated_at' => '2021-11-17 16:04:18',
                 'deleted_at' => NULL,
             ),
-            6 => 
+            5 => 
             array (
                 'id' => 'b72ee25e-5c27-4189-b522-87aca0f2f08b',
                 'code' => 'RAC',
@@ -85,6 +77,16 @@ class EventTypesTableSeeder extends Seeder
                 'type' => 'Đối tượng',
                 'created_at' => '2021-11-17 16:04:38',
                 'updated_at' => '2021-11-17 16:04:38',
+                'deleted_at' => NULL,
+            ),
+            6 => 
+            array (
+                'id' => '4aa58748-a62b-4b31-b303-7f5f6e03d037',
+                'code' => 'BL',
+                'name' => 'Đối tượng cần theo dõi',
+                'type' => 'Đối tượng',
+                'created_at' => '2021-11-17 16:04:03',
+                'updated_at' => '2021-11-17 16:04:03',
                 'deleted_at' => NULL,
             ),
         ));

@@ -63,6 +63,7 @@ class TravelAgencyTransformer extends BaseTransformer
             'locality' => $locality,
             'service_type' => $serviceType,
             'travel_agency_additional_information_count' =>  $model->travel_agency_additional_information_count,
+            'count_tour_guide' =>  $model->travelAgencyAdditionalInformation->count(),
         ];
     }
 

@@ -135,6 +135,24 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             $this->model = $this->model->whereIn('status', $attributes['status']);
         }
 
+        if (!empty($attributes['services_id'])) {
+            $this->model = $this->model->whereHas('cameraService', function ($q) use ($attributes) {
+                $q->whereIn('ai_service_id', explode(',', $attributes['services_id']))->where('is_on', true);
+            });
+        }
+
+        if (request()->route()->getName() == 'cameras-share' || request()->route()->getName() == 'cameras-stream-share') {
+            $this->model = $this->model->select(
+                'id',
+                'name',
+                'address',
+                'lat',
+                'long',
+                'gop',
+                'status',
+            );
+        }
+
         if (empty($attributes['limit'])) {
             $result = $this->all();
         } else {

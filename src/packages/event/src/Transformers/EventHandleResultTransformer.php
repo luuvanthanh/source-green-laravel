@@ -49,7 +49,7 @@ class EventHandleResultTransformer extends BaseTransformer
      * Include EventAdditionalInformation
      * @param EventHandleResult $fault
      */
-    public function includeUserEdit(EventHandleResult $model)
+    public function includeUserHandle(EventHandleResult $model)
     {
         if (is_null($model->userHandle)) {
             return;

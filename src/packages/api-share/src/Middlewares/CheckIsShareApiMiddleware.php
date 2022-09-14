@@ -5,6 +5,7 @@ namespace GGPHP\ApiShare\Middlewares;
 use Closure;
 use GGPHP\ApiShare\Exceptions\AccessApiException;
 use GGPHP\ApiShare\Models\ApiShare;
+use GGPHP\VerificationCode\Models\VerificationCode;
 
 class CheckIsShareApiMiddleware
 {
@@ -14,6 +15,18 @@ class CheckIsShareApiMiddleware
 
         $apiShare = ApiShare::where('name_route', $routeName)->first();
         if (!$apiShare->is_share) {
+            throw AccessApiException::notAccessApi();
+        }
+
+        $verificationCode = request()->verification_code;
+
+        if (empty($verificationCode)) {
+            throw AccessApiException::notAccessApi();
+        }
+
+        $verificationCode  = VerificationCode::where('code', $verificationCode)->first();
+
+        if (is_null($verificationCode)) {
             throw AccessApiException::notAccessApi();
         }
 

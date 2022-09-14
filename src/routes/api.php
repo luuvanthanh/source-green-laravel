@@ -98,5 +98,6 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\NasConfig\RouteRegistrar::routes();
         \GGPHP\SystemConfig\RouteRegistrar::routes();
         \GGPHP\AiService\RouteRegistrar::routes();
+        \GGPHP\VerificationCode\RouteRegistrar::routes();
     });
 });

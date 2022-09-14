@@ -155,6 +155,20 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             return $this->model->get();
         }
 
+        if (request()->route()->getName() == 'tour-guides-share' || request()->route()->getName() == 'tour-guides-identification-share') {
+            $this->model = $this->model->select(
+                'full_name',
+                'sex',
+                'id_card',
+                'date_of_birth',
+                'degree',
+                'professional_certificate',
+                'nationality',
+                'home_town',
+                'resident',
+            );
+        }
+
         if (empty($attributes['limit'])) {
             $tourGuide = $this->all();
         } else {

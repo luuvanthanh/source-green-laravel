@@ -8,10 +8,10 @@ use Exception;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Laravel\Passport\Exceptions\OAuthServerException;
 use Laravel\Passport\TokenRepository;
 use Lcobucci\JWT\Parser as JwtParser;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ServerRequestInterface;
 use Response;
 
@@ -43,7 +43,7 @@ class AccessTokenController extends ATController
             $data = json_decode($content, true);
 
             if (isset($data['error'])) {
-                throw new OAuthServerException('The user credentials were incorrect.', 6, 'invalid_credentials', 401);
+                return $this->error('Đăng nhập không thành công', 'Đăng nhập không thành công, vui lòng kiểm tra lại!', 400);
             }
 
             if (!empty($request->getParsedBody()['player_id'])) {
@@ -51,16 +51,16 @@ class AccessTokenController extends ATController
             }
 
             return Response::json(collect($data));
-        } catch (ModelNotFoundException $e) {
-            // email notfound
-            if ($e instanceof ModelNotFoundException) {
-                return $this->error('Invalid_credentials', 'User does not exist. Please try again', 400);
-            }
-        } catch (OAuthServerException $e) {
-            //password not correct..token not granted
-            return $this->error('Invalid_credentials', 'Password is not correct', 401);
         } catch (Exception $e) {
-            return response(['error' => 'unsupported_grant_type', 'message' => 'The authorization grant type is not supported by the authorization server.', 'hint' => 'Check that all required parameters have been provided'], 400);
+
+            if ($e instanceof ModelNotFoundException) {
+                return $this->error('Nhập sai tài khoản', 'Nhập sai tài khoản, vui lòng kiểm tra lại!', 400, 'username');
+            }
+            if ($e instanceof OAuthServerException) {
+                return $this->error('Nhập sai mật khẩu', 'Nhập sai mật khẩu, vui lòng kiểm tra lại!', 400, 'password');
+            }
+
+            return $this->error('Đăng nhập không thành công', 'Đăng nhập không thành công, vui lòng kiểm tra lại!', 400);
         }
     }
 }
