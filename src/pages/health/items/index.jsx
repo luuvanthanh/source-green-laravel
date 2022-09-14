@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce, get, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -54,7 +54,7 @@ class Index extends PureComponent {
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
-        classId: query.classId,
+        classId: query.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         keyWord: query?.keyWord,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         branchId: query.branchId || defaultBranch?.id,
@@ -135,7 +135,7 @@ class Index extends PureComponent {
     });
     this.props.dispatch({
       type: 'health/GET_YEARS',
-      payload: { },
+      payload: {},
     });
   };
 
@@ -321,6 +321,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
       location: { pathname },
+      user,
     } = this.props;
     const { search, defaultBranchs } = this.state;
     const loading = effects['health/GET_DATA'];
@@ -380,7 +381,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-4">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -430,8 +431,8 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
-  years :PropTypes.arrayOf(PropTypes.any),
-  user:  PropTypes.objectOf(PropTypes.any),
+  years: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {

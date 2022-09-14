@@ -58,6 +58,7 @@ class Index extends PureComponent {
       search: {
         diseaseName: query?.diseaseName,
         branchId: query?.branchId || defaultBranch?.id,
+        classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -141,7 +142,7 @@ class Index extends PureComponent {
     }
     this.props.dispatch({
       type: 'medicaReceived/GET_YEARS',
-      payload: { },
+      payload: {},
     });
   };
 
@@ -386,6 +387,7 @@ class Index extends PureComponent {
       years,
       match: { params },
       loading: { effects },
+      user
     } = this.props;
     const { search, visible, objects, defaultBranchs } = this.state;
     const loading = effects['medicaReceived/GET_DATA'];
@@ -491,7 +493,7 @@ class Index extends PureComponent {
           </div>
           {!objects.isReceived &&
             Helper.getDate(head(objects?.status)?.date, variables.DATE_FORMAT.DATE_AFTER) ===
-              Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) && (
+            Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) && (
               <div
                 className={classnames(
                   styles['modal-footer'],
@@ -559,7 +561,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -620,8 +622,8 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
-  years :PropTypes.arrayOf(PropTypes.any),
-  user:  PropTypes.objectOf(PropTypes.any),
+  years: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Typography } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get } from 'lodash';
+import { debounce, isEmpty, get, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -39,6 +39,7 @@ const mapStateToProps = ({ absentStudents, loading, user }) => ({
   branches: absentStudents.branches,
   classes: absentStudents.classes,
   defaultBranch: user.defaultBranch,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -49,11 +50,12 @@ class Index extends PureComponent {
     const {
       location: { query },
       defaultBranch,
+      user
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
-        classId: query?.classId,
+        classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         fullName: query?.fullName,
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -400,6 +402,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
       location: { pathname },
+      user,
     } = this.props;
     const { search, defaultBranchs } = this.state;
     const loading = effects['absentStudents/GET_DATA'];
@@ -459,7 +462,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -505,6 +508,7 @@ Index.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -517,6 +521,7 @@ Index.defaultProps = {
   classes: [],
   branches: [],
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;

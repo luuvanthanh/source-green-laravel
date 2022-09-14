@@ -35,6 +35,7 @@ const mapStateToProps = ({ waterBottles, loading, user }) => ({
   data: waterBottles.data,
   defaultBranch: user.defaultBranch,
   pagination: waterBottles.pagination,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -47,6 +48,7 @@ class Index extends PureComponent {
     const {
       defaultBranch,
       location: { query },
+      user
     } = props;
     this.state = {
       visible: false,
@@ -54,7 +56,7 @@ class Index extends PureComponent {
       search: {
         keyWord: query?.keyWord,
         action: query?.action,
-        classId: query?.classId,
+        classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -307,10 +309,10 @@ class Index extends PureComponent {
         payload: {
           reportDate: moment(),
           data: values.data.map((item) => ({
-              studentId: student?.id,
-              type: item.type,
-              applyDate: item.applyDate,
-            })),
+            studentId: student?.id,
+            type: item.type,
+            applyDate: item.applyDate,
+          })),
         },
         callback: (response) => {
           if (response) {
@@ -365,6 +367,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
       defaultBranch,
+      user
     } = this.props;
     const { search, visible, waterBottles, classes, branches, defaultBranchs } = this.state;
     const loading = effects['waterBottles/GET_DATA'];
@@ -405,9 +408,9 @@ class Index extends PureComponent {
             initialValues={{
               data: !isEmpty(waterBottles)
                 ? waterBottles.map((item) => ({
-                    ...item,
-                    applyDate: moment(item.applyDate),
-                  }))
+                  ...item,
+                  applyDate: moment(item.applyDate),
+                }))
                 : [{}],
             }}
           >
@@ -545,7 +548,7 @@ class Index extends PureComponent {
                     allowClear={false}
                     placeholder="Chọn lớp"
                     type={variables.SELECT}
-                    data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                   />
                 </div>
               </div>
@@ -578,6 +581,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -588,6 +592,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;

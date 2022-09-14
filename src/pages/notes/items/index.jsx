@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { debounce, get, isEmpty } from 'lodash';
+import { debounce, get, isEmpty, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -59,14 +59,14 @@ class Index extends PureComponent {
       search: {
         keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
-        classId: query?.classId,
+        classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
-        from:  query?.from
-        ? query?.from
-        : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        to:query?.to
-        ? query?.to
-        : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        from: query?.from
+          ? query?.from
+          : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        to: query?.to
+          ? query?.to
+          : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         status: query?.status || variablesModules.STATUS.CONFIRMING,
@@ -153,7 +153,7 @@ class Index extends PureComponent {
     }
     this.props.dispatch({
       type: 'noteItems/GET_YEARS',
-      payload: { },
+      payload: {},
     });
   };
 
@@ -467,6 +467,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
       years,
+      user,
     } = this.props;
     const { search, defaultBranchs, dataYear } = this.state;
     const loading = effects['noteItems/GET_DATA'];
@@ -530,7 +531,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -592,8 +593,8 @@ Index.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
-  years :PropTypes.arrayOf(PropTypes.any),
-  user:  PropTypes.objectOf(PropTypes.any),
+  years: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
