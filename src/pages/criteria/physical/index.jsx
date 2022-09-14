@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -39,6 +39,7 @@ const mapStateToProps = ({ criteriaPhysical, loading, user }) => ({
   students: criteriaPhysical.students,
   subject: criteriaPhysical.subject,
   defaultBranch: user.defaultBranch,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -49,13 +50,14 @@ class Index extends PureComponent {
     const {
       defaultBranch,
       location: { query },
+      user
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         BranchId: query?.BranchId || defaultBranch?.id,
         StudentId: query?.StudentId,
-        ClassId: query?.ClassId,
+        ClassId: query?.ClassId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         TimetableActivityDetailId: null,
@@ -462,6 +464,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
       defaultBranch,
+      user
     } = this.props;
     const { loadData, search, defaultBranchs } = this.state;
     const loading = effects['criteriaPhysical/GET_DATA'];
@@ -518,7 +521,7 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         label="Lớp"
-                        data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                        data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                         name="ClassId"
                         onChange={(event) => this.onChangeSelect(event, 'ClassId')}
                         type={variables.SELECT}
@@ -613,6 +616,7 @@ Index.propTypes = {
   defaultBranch: PropTypes.objectOf(PropTypes.any),
   students: PropTypes.arrayOf(PropTypes.any),
   subject: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -628,6 +632,7 @@ Index.defaultProps = {
   defaultBranch: {},
   students: [],
   subject: [],
+  user: {},
 };
 
 export default Index;

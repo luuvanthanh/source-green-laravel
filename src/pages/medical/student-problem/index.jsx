@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -58,15 +58,16 @@ class Index extends PureComponent {
         KeyWord: query?.KeyWord,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         branchId: query?.branchId || defaultBranch?.id,
+        classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         date: query.date ? moment(query.date) : moment(),
-        from:  query?.from
-        ? query?.from
-        : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        to:query?.to
-        ? query?.to
-        : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        from: query?.from
+          ? query?.from
+          : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        to: query?.to
+          ? query?.to
+          : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
       },
     };
     setIsMounted(true);
@@ -140,7 +141,7 @@ class Index extends PureComponent {
     });
     this.props.dispatch({
       type: 'medicalStudentProblem/GET_YEARS',
-      payload: { },
+      payload: {},
     });
   };
 
@@ -171,7 +172,7 @@ class Index extends PureComponent {
   onChange = (e, type) => {
     this.debouncedSearch(e.target.value, type);
   };
-  
+
   /**
    * Function change select
    * @param {object} e value of select
@@ -390,8 +391,9 @@ class Index extends PureComponent {
       defaultBranch,
       match: { params },
       loading: { effects },
+      user
     } = this.props;
-    const { search, defaultBranchs,dataYear } = this.state;
+    const { search, defaultBranchs, dataYear } = this.state;
 
     const loading = effects['medicalStudentProblem/GET_DATA'];
     return (
@@ -446,7 +448,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -513,8 +515,8 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
-  years :PropTypes.arrayOf(PropTypes.any),
-  user:  PropTypes.objectOf(PropTypes.any),
+  years: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
