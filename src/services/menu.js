@@ -211,6 +211,7 @@ export async function getLeftMenuProfile() {
             '/ho-so-doi-tuong/cau-hinh/lop-hoc',
             '/ho-so-doi-tuong/cau-hinh/lop-hoc/tao-moi',
             '/ho-so-doi-tuong/cau-hinh/lop-hoc/:id/chi-tiet',
+            '/ho-so-doi-tuong/cau-hinh/lop-hoc/:id/danh-sach',
           ],
           permission: [permissions.HSDT],
           pro: true,
@@ -527,11 +528,7 @@ export async function getLeftMenuConfiguration() {
         {
           title: 'Năm học',
           key: 'school-year',
-          url: [
-            '/cau-hinh/nam-hoc',
-            '/cau-hinh/nam-hoc/tao-moi',
-            '/cau-hinh/nam-hoc/:id/chi-tiet',
-          ],
+          url: ['/cau-hinh/nam-hoc', '/cau-hinh/nam-hoc/tao-moi', '/cau-hinh/nam-hoc/:id/chi-tiet'],
           permission: [permissions.CAUHINH],
         },
       ],
