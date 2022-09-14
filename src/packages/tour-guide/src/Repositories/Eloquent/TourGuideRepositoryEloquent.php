@@ -402,12 +402,14 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
 
     public function syncTourGuide()
     {
+        $token = token_csdl();
+
         $limit = 500;
 
-        $pages = SyncTourGuideService::getPage($limit);
+        $pages = SyncTourGuideService::getPage($limit, $token);
 
         for ($page = 1; $page <= $pages; $page++) {
-            dispatch(new ImportTourGuideJob($page, $limit, 'NEW', null));
+            dispatch(new ImportTourGuideJob($page, $limit, 'NEW', null, $token));
         }
 
         return [];
@@ -426,6 +428,7 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         ini_set('max_execution_time', '30000');
         $max = 100;
         $total = TourGuide::count();
+        $token = token_csdl();
 
         $pages = ceil($total / $max);
 
@@ -435,7 +438,7 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
 
             $legacy = TourGuide::whereNotNull('sync_data_id')->skip($start)->take($max)->get();
 
-            dispatch(new ImportTourGuideJob(null, null, 'ADD_IMAGE', $legacy));
+            dispatch(new ImportTourGuideJob(null, null, 'ADD_IMAGE', $legacy, $token));
         }
 
         return [];

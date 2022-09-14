@@ -20,11 +20,11 @@ class SyncTravelAgencyService
         return env('URL_SYNC_DATA') . '/nghiepvu/dichvudulich/ds/LUHA/';
     }
 
-    private static function getLoaiHinhDichVu($id)
+    private static function getLoaiHinhDichVu($id, $token)
     {
         $url = env('URL_SYNC_DATA') . '/dungchung/loaihinhdichvudulich/id/' . $id;
 
-        $source = Http::get($url);
+        $source = Http::withToken($token)->get($url);
         if ($source->status() != 200) {
             throw new Exception($source->body(), $source->status());
         }
@@ -34,10 +34,10 @@ class SyncTravelAgencyService
         return $data;
     }
 
-    private static function getDiaBan($id)
+    private static function getDiaBan($id, $token)
     {
         $url = env('URL_SYNC_DATA') . '/dungchung/diaban/quanhuyen/' . $id;
-        $source = Http::get($url);
+        $source = Http::withToken($token)->get($url);
         if ($source->status() != 200) {
             throw new Exception($source->body(), $source->status());
         }
@@ -46,17 +46,17 @@ class SyncTravelAgencyService
         return $data;
     }
 
-    public static function result($page, $limit)
+    public static function result($page, $limit, $token)
     {
 
-        $listTravelAgencys = self::getDataTravelAgency($page, $limit);
+        $listTravelAgencys = self::getDataTravelAgency($page, $limit, $token);
 
-        $result = self::processData($listTravelAgencys);
+        $result = self::processData($listTravelAgencys, $token);
 
         self::insertTravelAgency($result);
     }
 
-    public static function getPage($limit)
+    public static function getPage($limit, $token)
     {
         $params = [
             'page' => 1,
@@ -68,19 +68,20 @@ class SyncTravelAgencyService
         ];
 
 
-        $source = Http::get(self::getUrl(), $params);
+        $source = Http::withToken($token)->get(self::getUrl(), $params);
         if ($source->status() != 200) {
             throw new Exception($source->body(), $source->status());
         }
 
         $data = json_decode($source->body(), true);
+
         $totalLogTime = $data['pagination']['totalItemsCount'];
         $pages = round($totalLogTime / $limit + 1);
 
         return $pages;
     }
 
-    public static function getDataTravelAgency($page, $limit)
+    public static function getDataTravelAgency($page, $limit, $token)
     {
         $params = [
             'page' => $page,
@@ -96,14 +97,14 @@ class SyncTravelAgencyService
         ];
 
 
-        $source = Http::get(self::getUrl(), $params);
+        $source = Http::withToken($token)->get(self::getUrl(), $params);
 
         $data = json_decode($source->body(), true);
 
         return $data;
     }
 
-    public static function processData($listTravelAgencys)
+    public static function processData($listTravelAgencys, $token)
     {
         if (empty($listTravelAgencys['result'])) {
             return [];
@@ -119,11 +120,11 @@ class SyncTravelAgencyService
 
             if (is_null($travelAgency)) {
                 $now = Carbon::now()->format('Y-m-d H:m:s');
-                $loaihinhdichvu = self::getLoaiHinhDichVu($item['loaiHinhDichVu']);
+                $loaihinhdichvu = self::getLoaiHinhDichVu($item['loaiHinhDichVu'], $token);
 
                 $diaban = null;
                 if (!empty($item['diaBan'])) {
-                    $diaban = self::getDiaBan($item['diaBan']);
+                    $diaban = self::getDiaBan($item['diaBan'], $token);
                 }
 
                 $itemDetail = [

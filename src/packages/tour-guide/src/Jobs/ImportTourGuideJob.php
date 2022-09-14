@@ -17,18 +17,20 @@ class ImportTourGuideJob implements ShouldQueue
     protected $limit;
     protected $type;
     protected $legacy;
+    protected $token;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($page, $limit, $type, $legacy)
+    public function __construct($page, $limit, $type, $legacy, $token)
     {
         $this->page = $page;
         $this->limit = $limit;
         $this->type = $type;
         $this->legacy = $legacy;
+        $this->token = $token;
     }
 
     /**
@@ -40,10 +42,10 @@ class ImportTourGuideJob implements ShouldQueue
     {
         switch ($this->type) {
             case 'NEW':
-                SyncTourGuideService::result($this->page, $this->limit);
+                SyncTourGuideService::result($this->page, $this->limit, $this->token);
                 break;
             case 'ADD_IMAGE':
-                SyncTourGuideService::insertImage($this->legacy);
+                SyncTourGuideService::insertImage($this->legacy, $this->token);
                 break;
         }
     }
