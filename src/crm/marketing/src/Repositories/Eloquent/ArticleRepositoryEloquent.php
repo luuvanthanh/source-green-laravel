@@ -4,6 +4,8 @@ namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
 use GGPHP\Crm\Facebook\Models\Page;
 use GGPHP\Crm\Facebook\Services\FacebookService;
+use GGPHP\Crm\Marketing\Jobs\PublishPagePost;
+use GGPHP\Crm\Marketing\Jobs\UpdatePagePost;
 use GGPHP\Crm\Marketing\Jobs\UpdatePagePostWithVideo;
 use GGPHP\Crm\Marketing\Models\Article;
 use GGPHP\Crm\Marketing\Models\ArticleCommentInfo;
@@ -98,10 +100,10 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             foreach ($attributes['data_page'] as $value) {
                 $urls = [];
                 $value['message'] = $article->name . "\n" . $article->content;
+                $pageId = Page::where('page_id_facebook', $value['page_id'])->select('id')->first();
 
                 if ($article->file_image == '[]') {
-                    $response = FacebookService::publishPagePost($value);
-                    $facebook_post_id = $response->id;
+                    dispatch(new PublishPagePost($value, $urls = null, $action = null, $article, $pageId));
                 } else {
                     $paths = json_decode($article->file_image);
 
@@ -117,37 +119,36 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                     }
                     if ($video) {
                         $value['description'] = $article->name . "\n" . $article->content;
-                        $response = FacebookService::publishPagePostWithVideo($value, $urls);
-
-                        $video_id = $response->id;
+                        dispatch(new PublishPagePost($value, $urls, $action = 'video', $article, $pageId));
                     } else {
-                        $response = FacebookService::publishPagePostWithImage($value, $urls);
-                        $facebook_post_id = $response->id;
+                        dispatch(new PublishPagePost($value, $urls, $action = 'image', $article, $pageId));
                     }
                 }
-
-
-                $pageId = Page::where('page_id_facebook', $value['page_id'])->select('id')->first();
-
-                if (isset($video_id)) {
-                    $data = [
-                        'article_id' => $article->id,
-                        'video_id' => $video_id,
-                        'page_id' => $pageId->id
-                    ];
-                } else {
-                    $data = [
-                        'article_id' => $article->id,
-                        'facebook_post_id' => $facebook_post_id,
-                        'page_id' => $pageId->id
-                    ];
-                }
-
-                PostFacebookInfo::create($data);
             }
         }
 
         return $response;
+    }
+
+    public static function storePostFacebookInfo($article, $action, $pageId, $response)
+    {
+        if ($action == 'video') {
+            $video_id = $response->id;
+            $data = [
+                'article_id' => $article->id,
+                'video_id' => $video_id,
+                'page_id' => $pageId->id
+            ];
+        } else {
+            $facebook_post_id = $response->id;
+            $data = [
+                'article_id' => $article->id,
+                'facebook_post_id' => $facebook_post_id,
+                'page_id' => $pageId->id
+            ];
+        }
+
+        PostFacebookInfo::create($data);
     }
 
     public function postFacebookInfo($attributes)
@@ -297,7 +298,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                         $dataPage['message'] = $article->name . "\n" . $article->content;
 
                         if ($article->file_image == '[]') {
-                            $response = FacebookService::updatePagePost($dataPage);
+                            dispatch(new UpdatePagePost($dataPage, $urls = null, $action = null));
                         } else {
                             $paths = json_decode($article->file_image);
                             foreach ($paths as $path) {
@@ -317,12 +318,11 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                                 } else {
                                     $dataPage['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
                                 }
-                               
+
                                 $dataPage['description'] = $article->name . "\n" . $article->content;
-                                
-                                $response = FacebookService::updatePagePostWithVideo($dataPage, $urls);
+                                dispatch(new UpdatePagePost($dataPage, $urls, $action = 'video'));
                             } else {
-                                $response = FacebookService::updatePagePostWithImage($dataPage, $urls);
+                                dispatch(new UpdatePagePost($dataPage, $urls, $action = 'image'));
                             }
                         }
                     }
@@ -333,7 +333,5 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             \DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
-
-        return $this->parserResult($article);
     }
 }

@@ -8,6 +8,8 @@ use GGPHP\Crm\Marketing\Http\Requests\CreateArticleRequest;
 use GGPHP\Crm\Marketing\Http\Requests\DeleteArticleRequest;
 use GGPHP\Crm\Marketing\Http\Requests\PostArticleFacebookRequest;
 use GGPHP\Crm\Marketing\Http\Requests\UpdateArticleRequest;
+use GGPHP\Crm\Marketing\Jobs\PostArticleFacebook;
+use GGPHP\Crm\Marketing\Jobs\UpdateArticle;
 use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
 
 class ArticleController extends Controller
@@ -79,7 +81,7 @@ class ArticleController extends Controller
 
         $article = $this->articleRepository->updateArticle($credentials, $id);
 
-        return $this->success($article, trans('lang::messages.common.modifySuccess'));
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
     }
 
     /**
@@ -101,7 +103,7 @@ class ArticleController extends Controller
             $attributes = $request->all();
             $response = $this->articleRepository->postArticleFacebook($attributes);
 
-            return $this->success((array) $response, trans('Đăng bài viết lên facebook thành công'));
+            return $this->success([], trans('Đăng bài viết lên facebook thành công'));
         } catch (\Throwable $th) {
             $statusCode = 500;
 

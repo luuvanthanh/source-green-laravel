@@ -393,7 +393,7 @@ class FacebookService
         }
 
         $graphNode = $response->getBody();
-
+        //dd(json_decode($graphNode));
         return json_decode($graphNode);
     }
 
