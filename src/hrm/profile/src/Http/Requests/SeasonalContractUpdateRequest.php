@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Profile\Http\Rules\ContractUpdateRule;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Profile\Models\SeasonalContract;
@@ -27,6 +28,8 @@ class SeasonalContractUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $seasonalContract = SeasonalContract::findOrFail($this->id);
+
         return [
             'id' => 'required',
             'employeeId' => [
@@ -37,16 +40,6 @@ class SeasonalContractUpdateRequest extends FormRequest
 
                     if (!is_null($seasonalContract)  && $seasonalContract->Id != request()->id) {
                         return $fail('Hợp đồng không phải là mới nhất, không được phép chỉnh sửa.');
-                    }
-                },
-            ],
-            'contractNumber' => [
-                'string',
-                function ($attribute, $value, $fail) {
-                    $shift = SeasonalContract::where('ContractNumber', $value)->where('Id', '!=', request()->id)->where('EmployeeId', request()->employeeId)->first();
-
-                    if (!is_null($shift)) {
-                        return $fail('Số hợp đồng đã tồn tại.');
                     }
                 },
             ],
@@ -72,6 +65,12 @@ class SeasonalContractUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
+            'ordinalNumber' => [
+                'nullable',
+                'string',
+                new ContractUpdateRule($seasonalContract, $this->numberForm, $this->id)
+            ]
         ];
     }
 }

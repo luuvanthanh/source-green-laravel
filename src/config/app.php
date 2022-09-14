@@ -217,7 +217,8 @@ return [
         GGPHP\TrainingTeacher\TrainingModuleBoard\Providers\TrainingModuleBoardServiceProvider::class,
         GGPHP\TrainingTeacher\TrainingSchedule\Providers\TrainingScheduleServiceProvider::class,
         GGPHP\ManualCalculation\Providers\ManualCalculationServiceProvider::class,
-        GGPHP\TeacherTimekeeping\Providers\TeacherTimekeepingServiceProvider::class
+        GGPHP\TeacherTimekeeping\Providers\TeacherTimekeepingServiceProvider::class,
+        GGPHP\BusRegistration\Providers\BusRegistrationServiceProvider::class,
     ],
 
     /*

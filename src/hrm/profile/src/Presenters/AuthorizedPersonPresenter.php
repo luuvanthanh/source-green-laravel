@@ -2,25 +2,25 @@
 
 namespace GGPHP\Profile\Presenters;
 
-use GGPHP\Profile\Transformers\CollaboratorContractTransformer;
+use GGPHP\Profile\Transformers\AuthorizedPersonTransformer;
 use Prettus\Repository\Presenter\FractalPresenter;
 
 /**
- * Class CollaboratorContractPresenter.
+ * Class AuthorizedPersonPresenter.
  *
  * @package namespace GGPHP\Profile\Presenters;
  */
-class CollaboratorContractPresenter extends FractalPresenter
+class AuthorizedPersonPresenter extends FractalPresenter
 {
     /**
      * @var string
      */
-    public $resourceKeyItem = 'CollaboratorContract';
+    public $resourceKeyItem = 'AuthorizedPerson';
 
     /**
      * @var string
      */
-    public $resourceKeyCollection = 'CollaboratorContract';
+    public $resourceKeyCollection = 'AuthorizedPerson';
 
     /**
      * Transformer
@@ -29,6 +29,6 @@ class CollaboratorContractPresenter extends FractalPresenter
      */
     public function getTransformer()
     {
-        return new CollaboratorContractTransformer();
+        return new AuthorizedPersonTransformer();
     }
 }

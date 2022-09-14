@@ -3,11 +3,13 @@
 namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use Exception;
 use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Profile\Presenters\ProbationaryContractPresenter;
+use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
@@ -21,6 +23,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent implements ProbationaryContractRepository
 {
+    const TI_LE_THU_VIEC = 'TI_LE_THU_VIEC';
 
     /**
      * @var array
@@ -152,6 +155,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         \DB::beginTransaction();
         try {
             $probationaryContract = ProbationaryContract::create($attributes);
+
+            resolve(LabourContractRepository::class)->created($probationaryContract, $attributes);
             $totalAllowance = 0;
             $basicSalary = 0;
 
@@ -159,7 +164,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 $parameterValue = ParamaterValue::find($value['parameterValueId']);
 
                 if ($parameterValue->Code != 'LUONG_CB') {
-                    $totalAllowance += $value['value'];
+                    if ($parameterValue->Code != self::TI_LE_THU_VIEC) {
+                        $totalAllowance += $value['value'];
+                    } else {
+                        $salaryRatio = $value['value'] < 1 ? $value['value'] * 100 : $value['value'];
+                    }
                 } else {
                     $basicSalary = $value['value'];
                 }
@@ -169,7 +178,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
             $probationaryContract->update([
                 'TotalAllowance' => $totalAllowance,
-                'BasicSalary' => $basicSalary
+                'BasicSalary' => $basicSalary,
+                'SalaryRatio' => isset($salaryRatio) ? $salaryRatio : null
             ]);
             $probationaryContract->employee->update(['DateOff' => null]);
 
@@ -205,6 +215,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new Exception($e->getMessage(), $e->getCode());
         }
 
         return parent::find($probationaryContract->Id);
@@ -212,11 +223,13 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
     public function update(array $attributes, $id)
     {
-        $probationaryContract = ProbationaryContract::findOrFail($id);
 
+        $probationaryContract = ProbationaryContract::findOrFail($id);
         \DB::beginTransaction();
         try {
             $probationaryContract->update($attributes);
+
+            resolve(LabourContractRepository::class)->updated($probationaryContract->refresh(), $attributes);
 
             $probationaryContract->parameterValues()->detach();
 
@@ -227,7 +240,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 $parameterValue = ParamaterValue::find($value['parameterValueId']);
 
                 if ($parameterValue->Code != 'LUONG_CB') {
-                    $totalAllowance += $value['value'];
+                    if ($parameterValue->Code != self::TI_LE_THU_VIEC) {
+                        $totalAllowance += $value['value'];
+                    } else {
+                        $salaryRatio = $value['value'] < 1 ? $value['value'] * 100 : $value['value'];
+                    }
                 } else {
                     $basicSalary = $value['value'];
                 }
@@ -237,7 +254,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
             $probationaryContract->update([
                 'TotalAllowance' => $totalAllowance,
-                'BasicSalary' => $basicSalary
+                'BasicSalary' => $basicSalary,
+                'SalaryRatio' => isset($salaryRatio) ? $salaryRatio : null
             ]);
 
             $positionLevel = $probationaryContract->positionLevel;
@@ -277,23 +295,46 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new Exception($e->getMessage(), $e->getCode());
         }
 
         return parent::find($probationaryContract->Id);
     }
 
+    public function delete($id)
+    {
+        $probationaryContract = ProbationaryContract::findOrFail($id);
+
+        $probationaryContract->parameterValues()->detach();
+
+        return $probationaryContract->delete();
+    }
     public function exportWord($id)
     {
         $labourContract = ProbationaryContract::findOrFail($id);
-        $now = Carbon::now();
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
+
+        if ($labourContract->SalaryRatio) {
+            $salaryRatio = $labourContract->SalaryRatio;
+        } else {
+            $probationRate = $labourContract->parameterValues()->where('Code', self::TI_LE_THU_VIEC)->first();
+
+            if ($probationRate) {
+                $salaryRatio  = $probationRate->ValueDefault < 1 ? $probationRate->ValueDefault * 100 : $probationRate->ValueDefault;
+            }
+        }
 
         $salary = $labourContract->BasicSalary;
         $allowance =  $labourContract->TotalAllowance;
 
+        // Lương thực nhận
+        // $probationSalary = isset($salaryRatio) ? $salary * $salaryRatio / 100 : $salary;
+
         $total = $salary + $allowance;
         $employee = $labourContract->employee;
+
         $params = [
-            'contractNumber' => $labourContract->ContractNumber,
+            'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
@@ -311,7 +352,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             // 'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'month' => $labourContract->Month ? $labourContract->Month : '........',
-            'salaryRatio' => $labourContract->SalaryRatio ? $labourContract->SalaryRatio : '........',
+            'salaryRatio' => isset($salaryRatio) ? $salaryRatio : '........',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
             'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . ' - ' . $labourContract->division->Name : '........',
@@ -325,12 +366,77 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         return $this->wordExporterServices->exportWord('probationary_contract', $params);
     }
 
-    public function delete($id)
+    public function exportWordEnglish($id)
     {
-        $probationaryContract = ProbationaryContract::findOrFail($id);
+        $labourContract = ProbationaryContract::findOrFail($id);
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
 
-        $probationaryContract->parameterValues()->detach();
+        $employee = $labourContract->employee;
+        $params = [
+            'typeVn' => 'THỬ VIỆC',
+            'typeEnglish' => 'PROBATIONARY',
+            'contractNumber' => $contractNumber,
+            'dateNow' => $labourContract->ContractDate->format('d'),
+            'monthNow' => $labourContract->ContractDate->format('m'),
+            'yearNow' => $labourContract->ContractDate->format('Y'),
+            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
+            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
+            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
+            'nationality' => $employee->Nationality ? $employee->Nationality : '........',
+            'idCard' => $employee->IdCard ? $employee->IdCard : '........',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '........',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
+            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
+            'adress' => $employee->Address ? $employee->Address : '.......',
+            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
+            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
+            'position' => $labourContract->position ? $labourContract->position->Name : '........',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
+            'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
+            'salary' => number_format($labourContract->BasicSalary),
+        ];
 
-        return $probationaryContract->delete();
+        return $this->wordExporterServices->exportWord('contract_english', $params);
+    }
+
+    public function exportWordAuthority($id)
+    {
+        $labourContract = ProbationaryContract::findOrFail($id);
+        $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
+
+        $employee = $labourContract->employee;
+        $params = [
+            'typeVn' => 'THỬ VIỆC',
+            'typeEnglish' => 'PROBATIONARY',
+            'contractNumber' => $contractNumber,
+            'dateNow' => $labourContract->ContractDate->format('d'),
+            'monthNow' => $labourContract->ContractDate->format('m'),
+            'yearNow' => $labourContract->ContractDate->format('Y'),
+            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
+            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
+            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
+            'nationality' => $employee->Nationality ? $employee->Nationality : '........',
+            'idCard' => $employee->IdCard ? $employee->IdCard : '........',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '........',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
+            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
+            'adress' => $employee->Address ? $employee->Address : '.......',
+            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
+            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
+            'position' => $labourContract->position ? $labourContract->position->Name : '........',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
+            'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
+            'salary' => number_format($labourContract->BasicSalary),
+        ];
+
+        return $this->wordExporterServices->exportWord('authority_contract', $params);
     }
 }
