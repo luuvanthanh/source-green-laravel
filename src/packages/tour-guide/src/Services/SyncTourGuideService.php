@@ -24,17 +24,17 @@ class SyncTourGuideService
         return env('URL_SYNC_DATA') . '/nghiepvu/huongdanvien/idhdv/' . $id;
     }
 
-    public static function result($page, $limit)
+    public static function result($page, $limit, $token)
     {
 
-        $listTourGuides = self::getDataTourGuide($page, $limit);
+        $listTourGuides = self::getDataTourGuide($page, $limit, $token);
 
-        $result = self::processData($listTourGuides);
+        $result = self::processData($listTourGuides, $token);
 
         self::insertTourGuide($result);
     }
 
-    public static function getPage($limit)
+    public static function getPage($limit, $token)
     {
         $params = [
             'page' => 1,
@@ -49,7 +49,7 @@ class SyncTourGuideService
             'tuNgay' => '',
         ];
 
-        $source = Http::get(self::getUrl(), $params);
+        $source = Http::withToken($token)->get(self::getUrl(), $params);
 
         if ($source->status() != 200) {
             throw new Exception($source->body(), $source->status());
@@ -62,7 +62,7 @@ class SyncTourGuideService
         return $pages;
     }
 
-    public static function getDataTourGuide($page, $limit)
+    public static function getDataTourGuide($page, $limit, $token)
     {
         $params = [
             'page' => $page,
@@ -78,14 +78,14 @@ class SyncTourGuideService
         ];
 
 
-        $source = Http::get(self::getUrl(), $params);
+        $source = Http::withToken($token)->get(self::getUrl(), $params);
 
         $data = json_decode($source->body(), true);
 
         return $data;
     }
 
-    public static function processData($listTourGuides)
+    public static function processData($listTourGuides, $token)
     {
         if (empty($listTourGuides['result'])) {
             return [];
@@ -112,7 +112,7 @@ class SyncTourGuideService
                 $cardTypeId =  $item['loai'] == 0 ? 'cb5aa272-6274-4f8e-8253-abe36e5cb5e4' : 'babee3af-d5a4-4906-80f3-a70f115e96f9';
                 $now = Carbon::now()->format('Y-m-d H:m:s');
 
-                $sourceDetail = Http::get(self::getUrlDetail($item['id']));
+                $sourceDetail = Http::withToken($token)->get(self::getUrlDetail($item['id']));
                 $dataDetail = json_decode($sourceDetail->body(), true);
 
 
@@ -176,7 +176,7 @@ class SyncTourGuideService
         TourGuide::insert($listTourGuides);
     }
 
-    public static function insertImage($listTourGuides)
+    public static function insertImage($listTourGuides, $token)
     {
         foreach ($listTourGuides as $key => $value) {
             if (!is_null($value->getAvatar())) {
@@ -186,7 +186,7 @@ class SyncTourGuideService
                 continue;
             }
 
-            $source = Http::get(self::getUrlDetail($value->sync_data_id));
+            $source = Http::withToken($token)->get(self::getUrlDetail($value->sync_data_id));
 
             if ($source->status() != 200) {
                 throw new Exception($source->body(), $source->status());
@@ -224,7 +224,8 @@ class SyncTourGuideService
             $value->update([
                 'url_sso_image' => $url,
             ]);
-            // $value->addMediaFromUrl($url)->usingName($data['result']['hinhanh'][0]['filename'])->preservingOriginal()->toMediaCollection('avatar');
+
+            $value->addMediaFromUrl($url)->preservingOriginal()->toMediaCollection('avatar');
         }
 
         return true;
