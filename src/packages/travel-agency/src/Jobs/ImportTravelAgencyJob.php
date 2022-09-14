@@ -16,17 +16,19 @@ class ImportTravelAgencyJob implements ShouldQueue
     protected $page;
     protected $limit;
     protected $legacy;
+    protected $token;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($page, $limit, $legacy)
+    public function __construct($page, $limit, $legacy, $token)
     {
         $this->page = $page;
         $this->limit = $limit;
         $this->legacy = $legacy;
+        $this->token = $token;
     }
 
     /**
@@ -36,6 +38,6 @@ class ImportTravelAgencyJob implements ShouldQueue
      */
     public function handle()
     {
-        SyncTravelAgencyService::result($this->page, $this->limit);
+        SyncTravelAgencyService::result($this->page, $this->limit, $this->token);
     }
 }

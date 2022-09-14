@@ -160,6 +160,10 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
 
         $user->update($attributes);
 
+        if (is_null($attributes['avatar'])) {
+            $user->clearMediaCollection('avatar');
+        }
+
         // Check if avatar null, remove avatar
         if (!empty($attributes['avatar'])) {
             $user->addMediaFromDisk($attributes['avatar']['path'])->usingName($attributes['avatar']['file_name'])->preservingOriginal()->toMediaCollection('avatar');

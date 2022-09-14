@@ -31,8 +31,8 @@ class RoleDeleteRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $role = Role::findOrFail($value);
 
-                    if ($role->users) {
-                        return $fail('Dữ liệu đã được sư dụng');
+                    if (!$role->users->isEmpty()) {
+                        return $fail('Dữ liệu đã được sử dụng');
                     }
                 },
             ],
