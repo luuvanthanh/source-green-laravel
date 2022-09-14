@@ -188,7 +188,7 @@ class Index extends PureComponent {
           },
         });
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
@@ -239,6 +239,12 @@ class Index extends PureComponent {
         width: 80,
         render: (record) => (
           <div className={styles['list-button']}>
+            <Button
+              color="primary"
+              icon="list"
+              onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
+              permission="CAUHINH"
+            />
             <Button
               color="primary"
               icon="edit"
