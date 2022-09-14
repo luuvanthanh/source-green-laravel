@@ -136,7 +136,7 @@ class SyncTravelAgencyService
                     'number_of_seasonal_worker' => $item['soLuongNhanLucThoiVu'],
                     'travel_permit' => $item['giayPhepKinhDoanh'],
                     'account_name' => $item['taiKhoan'],
-                    'service_type' => $loaihinhdichvu['result']['ma'],
+                    'service_type' => isset($loaihinhdichvu['result']) ?  $loaihinhdichvu['result']['ma'] : 1,
                     'license_date' => $item['ngayCapGpkd'],
                     'phone' => $item['sdt'],
                     'status' => $item['trangThai'],
