@@ -354,7 +354,8 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 'on_flag' => $attributes['is_recording']
             ];
 
-            VmsCoreServices::onOffRecord($dataOnOffRecord);
+            $url = $camera->cameraServer->vms_url;
+            VmsCoreServices::onOffRecord($url, $dataOnOffRecord);
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -383,7 +384,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 'on_flag' => $attributes['is_streaming']
             ];
 
-            VmsCoreServices::onOffStream($dataOnOffStream);
+            $url = $camera->cameraServer->vms_url;
+
+            VmsCoreServices::onOffStream($url, $dataOnOffStream);
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -406,7 +409,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:i:s'),
         ];
 
-        $result = VmsCoreServices::getPlayback($dataBackup);
+        $url = $camera->cameraServer->vms_url;
+
+        $result = VmsCoreServices::getPlayback($url, $dataBackup);
 
         if ($result->stream_name) {
             $result->stream_url = env('MEDIA_URL')  . '/live' . '/' . $result->stream_name . '.flv';
@@ -426,7 +431,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             'stream_name' => $attributes['stream_name']
         ];
 
-        $result = VmsCoreServices::stopPlayback($dataBackup);
+        $url = $camera->cameraServer->vms_url;
+
+        $result = VmsCoreServices::stopPlayback($url, $dataBackup);
 
         return $result;
     }
@@ -442,8 +449,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             'begin_datetime' => Carbon::parse($attributes['start_time'])->format('d-m-Y H:i:s'),
             'end_datetime' => Carbon::parse($attributes['end_time'])->format('d-m-Y H:i:s'),
         ];
+        $url = $camera->cameraServer->vms_url;
 
-        $result = VmsCoreServices::exportVideo($dataBackup);
+        $result = VmsCoreServices::exportVideo($url, $dataBackup);
 
         return $result;
     }
@@ -583,13 +591,20 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
 
             $service = AiService::find($attributes['ai_service_id']);
 
+            $camera = Camera::find($id);
+            $url =  $camera->cameraServer->ai_service_url;
+
             $dataCameraService = [
-                'camID' => $id,
-                'no_service' => $service->number,
-                'on_flag' => $attributes['is_on'],
+                'server_id' => $camera->cameraServer->uuid,
+                'cam_id' => $id,
+                'service_id' => $service->number,
             ];
 
-            // AiApiServices::onOfServiceCamera($dataCameraService);
+            if ($attributes['is_on']) {
+                AiApiServices::onCameraAiService($url, $dataCameraService);
+            } else {
+                AiApiServices::offCameraAiService($url, $dataCameraService);
+            }
 
             DB::commit();
         } catch (\Throwable $th) {

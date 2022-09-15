@@ -7,9 +7,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VmsCoreServices
 {
-    public static function startCamera(array $attributes)
+    public static function startCamera($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/cam_start';
+        $url = $url . '/vms_core/cam_start';
 
         $response = Http::asForm()->post($url, $attributes);
 
@@ -24,9 +24,9 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function updateCamera(array $attributes)
+    public static function updateCamera($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/cam_update';
+        $url = $url . '/vms_core/cam_update';
 
         $response = Http::asForm()->post($url, $attributes);
 
@@ -41,9 +41,9 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function stopCamera(array $attributes)
+    public static function stopCamera($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/cam_stop';
+        $url = $url . '/vms_core/cam_stop';
 
         $response = Http::asForm()->post($url, $attributes);
 
@@ -58,9 +58,9 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function onOffRecord(array $attributes)
+    public static function onOffRecord($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/turn_on_off_backup';
+        $url = $url . '/vms_core/turn_on_off_backup';
 
         $response = Http::asForm()->post($url, $attributes);
 
@@ -75,9 +75,9 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function onOffStream(array $attributes)
+    public static function onOffStream($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/turn_on_off_streaming';
+        $url = $url . '/vms_core/turn_on_off_streaming';
 
         $response = Http::asForm()->post($url, $attributes);
 
@@ -92,9 +92,9 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function getPlayback(array $attributes)
+    public static function getPlayback($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/get_backup_and_playback';
+        $url = $url . '/vms_core/get_backup_and_playback';
 
         $response = Http::asForm()->post($url, $attributes);
 
@@ -109,9 +109,9 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function stopPlayback(array $attributes)
+    public static function stopPlayback($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/stop_playback';
+        $url = $url . '/vms_core/stop_playback';
 
         $response = Http::asForm()->post($url, $attributes);
 
@@ -126,9 +126,9 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function exportVideo(array $attributes)
+    public static function exportVideo($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/download_backup_video';
+        $url = $url . '/vms_core/download_backup_video';
 
         $response = Http::asForm()->get($url, $attributes);
 

@@ -7,9 +7,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VmsCoreServices
 {
-    public static function activatedVmsCore($attributes)
+    public static function activatedVmsCore($url, $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/start';
+        $url = $url . '/vms_core/start';
 
         $response = Http::asForm()->post($url, $attributes);
 
@@ -24,9 +24,9 @@ class VmsCoreServices
         return json_decode($response->body());
     }
 
-    public static function deactivationVmsCore(array $attributes)
+    public static function deactivationVmsCore($url, array $attributes)
     {
-        $url = env('VMS_CORE_URL') . '/vms_core/stop';
+        $url = $url . '/vms_core/stop';
 
         $response = Http::asForm()->post($url, $attributes);
 

@@ -27,7 +27,7 @@ class CameraServer extends UuidModel
         'ipv4', 'ipv6', 'nas_folder', 'status', 'user_id', 'uuid',
         'root_path_bk', 'second_interval_bk', 'media_server_url', 'clip_root_path',
         'log_root_path', 'log_level', 'backup_video_day_passed',
-        'clip_video_day_passed', 'loggings_day_passed'
+        'clip_video_day_passed', 'loggings_day_passed', 'vms_url', 'ai_service_url', 'server_name'
     ];
 
     /**
