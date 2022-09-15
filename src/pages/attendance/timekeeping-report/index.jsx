@@ -37,6 +37,7 @@ const mapStateToProps = ({ timekeepingReport, loading, user }) => ({
   pagination: timekeepingReport.pagination,
   branches: timekeepingReport.branches,
   classes: timekeepingReport.classes,
+  years: timekeepingReport.years,
   defaultBranch: user.defaultBranch,
   user: user.user,
 });
@@ -53,14 +54,16 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      dataYear: user ? user?.schoolYear : {},
       search: {
         classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         fullName: query?.fullName,
         branchId: query?.branchId || defaultBranch?.id,
+        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: query?.endDate ? moment(query?.endDate) : moment().endOf('months'),
-        startDate: query?.startDate ? moment(query?.startDate) : moment().startOf('months'),
+        endDate: query?.endDate ? moment(query?.endDate) : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        startDate: query?.startDate ? moment(query?.startDate) : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
       },
     };
     setIsMounted(true);
@@ -92,6 +95,10 @@ class Index extends PureComponent {
   loadCategories = () => {
     const { search } = this.state;
     const { defaultBranch } = this.props;
+    this.props.dispatch({
+      type: 'timekeepingReport/GET_YEARS',
+      payload: {},
+    });
     if (search.branchId) {
       this.props.dispatch({
         type: 'timekeepingReport/GET_CLASSES',
@@ -256,6 +263,26 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
+    const {
+      years,
+    } = this.props;
+    if (type === 'schoolYearId') {
+      const data = years?.find(i => i.id === e);
+      this.setStateData({
+        dataYear: data,
+      });
+      this.setState(
+        (prevState) => ({
+          search: {
+            ...prevState.search,
+            startDate: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+            endDate: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+          },
+        }),
+      );
+      this.formRef.
+        current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+    }
     this.debouncedSearch(e, type);
   };
 
@@ -485,10 +512,11 @@ class Index extends PureComponent {
       pagination,
       defaultBranch,
       match: { params },
+      years,
       user,
       loading: { effects },
     } = this.props;
-    const { search, defaultBranchs } = this.state;
+    const { search, defaultBranchs, dataYear } = this.state;
     const loading = effects['timekeepingReport/GET_DATA'];
 
     return (
@@ -558,10 +586,25 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
                     name="date"
                     onChange={(event) => this.onChangeDateRank(event, 'date')}
                     type={variables.RANGE_PICKER}
-                    disabledDate={Helper.disabledDateRank}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </div>
               </div>
@@ -595,6 +638,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  years: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
 };
@@ -607,6 +651,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   branches: [],
+  years: [],
   classes: [],
   defaultBranch: {},
   user: {},

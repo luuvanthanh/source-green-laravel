@@ -2,7 +2,7 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { Form, Input } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
-import { connect, withRouter,history } from 'umi';
+import { connect, withRouter, history } from 'umi';
 import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -225,7 +225,7 @@ const General = memo(
           </Pane>
           <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             {
-              details?.disable_status &&  details?.register_status !== "CANCEL_REGISTER" ?
+              details?.disable_status && details?.register_status !== "CANCEL_REGISTER" ?
                 <>
                   <Button color="success" size="large" loading={effects['crmMarketingManageAdd/DELETE_REGISTERS']} className="mr10" onClick={onCancel}>
                     Huỷ đăng ký

@@ -325,7 +325,7 @@ class Index extends PureComponent {
         className: 'min-width-80',
         width: 80,
         render: (text, record, index) =>
-          `TB${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
+          (`TB${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`),
       },
       {
         title: 'Thời gian gửi',
@@ -341,6 +341,7 @@ class Index extends PureComponent {
       {
         title: 'Năm học',
         key: 'year',
+        width: 200,
         className: 'min-width-200',
         render: (record) => record?.schoolYear?.yearFrom ? <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text> : "",
       },
