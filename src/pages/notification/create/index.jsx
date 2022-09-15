@@ -742,7 +742,7 @@ const Index = memo(() => {
                         <FormItem
                           label="Bộ phận"
                           name="divisionId"
-                          data={divisions}
+                          data={[{ id: null, name: 'Chọn tất cả bộ phận' }, ...divisions]}
                           type={variables.SELECT}
                           onChange={onChangeDivision}
                         />
@@ -856,7 +856,7 @@ const Index = memo(() => {
                         <FormItem
                           label="Lớp"
                           name="ClassId"
-                          data={dataClass}
+                          data={[{ id: null, name: 'Chọn tất cả lớp' }, ...dataClass]}
                           type={variables.SELECT}
                           onChange={onChangeClass}
                         />

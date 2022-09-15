@@ -229,10 +229,17 @@ class Index extends PureComponent {
                 )
             },
             {
+                title: 'Năm học',
+                key: 'year',
+                width: 150,
+                className: 'min-width-150',
+                render: (record) => record?.schoolYear?.yearFrom ? <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text> : "",
+            },
+            {
                 title: 'Tuổi (tháng)',
                 key: 'birth_day',
                 width: 150,
-                render: (record) => <Text size="normal">{record?.age} Tháng</Text>,
+                render: (record) => <Text size="normal">{record?.age_month} Tháng</Text>,
             },
             {
                 title: 'Cơ sở',

@@ -34,6 +34,7 @@ export function get(data = {}) {
         'absentType',
         'absentReason',
         'employee',
+        'schoolYear',
       ]),
       search: Helper.convertParamSearchConvert({}),
     },

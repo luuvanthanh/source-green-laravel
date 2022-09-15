@@ -1,5 +1,5 @@
 import request from '@/utils/requestLavarel';
-import { Helper} from '@/utils';
+import { Helper } from '@/utils';
 
 export function get(data = {}) {
   return request('/v1/report-test-semesters', {
@@ -9,8 +9,9 @@ export function get(data = {}) {
       limit: data.limit,
       page: data.page,
       include: Helper.convertIncludes([
-       'testSemester.testSemesterDetail.testSemesterDetailChildren',
-       'classStudent.class'
+        'testSemester.testSemesterDetail.testSemesterDetailChildren',
+        'classStudent.class',
+        'schoolYear',
       ]),
     },
   });

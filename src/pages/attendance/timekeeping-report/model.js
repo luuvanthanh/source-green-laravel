@@ -5,6 +5,7 @@ export default {
   namespace: 'timekeepingReport',
   state: {
     data: [],
+    years: [],
     pagination: {},
     branches: [],
     classes: [],
@@ -47,6 +48,15 @@ export default {
     REMOVE_DATA: (state, { payload }) => ({
       ...state,
       data: state.data.filter((item) => item.id !== payload),
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years:
+        payload.parsePayload?.map((item) => ({
+          id: item.id,
+          name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+          ...item,
+        })) || [],
     }),
   },
   effects: {
@@ -107,6 +117,22 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },
