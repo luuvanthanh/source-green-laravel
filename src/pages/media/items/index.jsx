@@ -182,8 +182,9 @@ const Index = memo(() => {
         sentDateTo: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
       }));
       filterRef.current.setFieldsValue({ rangeTime: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+    } else {
+      changeFilterDebouce(name, value);
     }
-    changeFilterDebouce(name, value);
   };
 
   const fetchClasses = (branchId) => {
@@ -305,7 +306,7 @@ const Index = memo(() => {
                     <FormItem
                       name="branchId"
                       type={variables.SELECT}
-                      data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
+                      data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...category?.branches]}
                       onChange={(value) => changeFilterBranch('branchId')(value)}
                       allowClear={false}
                     />
@@ -326,7 +327,7 @@ const Index = memo(() => {
                   <FormItem
                     name="classId"
                     type={variables.SELECT}
-                    data={user?.role === "Teacher" ? [...category?.classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...category?.classes]}
+                    data={user?.role === "Teacher" ? [...category?.classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...category?.classes]}
                     onChange={(value) => changeFilter('classId')(value)}
                     allowClear={false}
                   />
