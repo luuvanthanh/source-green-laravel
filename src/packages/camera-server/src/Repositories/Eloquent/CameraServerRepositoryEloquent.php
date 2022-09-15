@@ -130,7 +130,8 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
                 ]),
             ];
 
-            VmsCoreServices::activatedVmsCore($dataActive);
+            $url = $cameraServer->vms_url;
+            VmsCoreServices::activatedVmsCore($url, $dataActive);
             \DB::commit();
             return parent::parserResult($cameraServer);
         } catch (\Throwable $th) {
@@ -203,7 +204,9 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
                 ])
             ];
 
-            VmsCoreServices::activatedVmsCore($dataActive);
+            $url = $cameraServer->vms_url;
+
+            VmsCoreServices::activatedVmsCore($url, $dataActive);
             \DB::commit();
 
             return parent::parserResult($cameraServer);
@@ -243,7 +246,8 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
                 ])
             ];
 
-            VmsCoreServices::activatedVmsCore($dataActive);
+            $url = $cameraServer->vms_url;
+            VmsCoreServices::activatedVmsCore($url, $dataActive);
             \DB::commit();
 
             return parent::parserResult($cameraServer);
@@ -263,8 +267,9 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
             $dataDeactive = [
                 'server_id' => $cameraServer->uuid
             ];
+            $url = $cameraServer->vms_url;
 
-            VmsCoreServices::deactivationVmsCore($dataDeactive);
+            VmsCoreServices::deactivationVmsCore($url, $dataDeactive);
 
 
             return parent::parserResult($cameraServer);
