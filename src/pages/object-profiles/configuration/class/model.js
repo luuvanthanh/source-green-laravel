@@ -4,6 +4,7 @@ export default {
   namespace: 'classes',
   state: {
     data: [],
+    branches: [],
     pagination: {
       total: 0,
     },
@@ -27,6 +28,10 @@ export default {
           ...payload,
         },
       },
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload.parsePayload,
     }),
   },
   effects: {
@@ -55,6 +60,22 @@ export default {
         yield saga.put({
           type: 'GET_DATA',
           payload: payload.pagination,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: {
+            parsePayload: response,
+          },
         });
       } catch (error) {
         yield saga.put({

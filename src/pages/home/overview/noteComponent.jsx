@@ -18,12 +18,12 @@ const { TabPane } = Tabs;
 
 const Index = memo(({ classId, branchId }) => {
   const dispatch = useDispatch();
-  const [ { notes, detailsNote }, loading] = useSelector(({ loading: { effects }, overView }) => [
+  const [{ notes, detailsNote }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
     effects,
   ]);
 
-  const [visible, setVisible ] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
@@ -166,14 +166,14 @@ const Index = memo(({ classId, branchId }) => {
             </div>
             <div className="col-md-6 py20 border-top">
               {
-                detailsNote?.status === variables.STATUS.CONFIRMING ? 
-                "" : 
-                <>  
-              <p className="mb5">Giáo viên đã nhận</p>
-              <p className="font-weight-bold">
-                {`${detailsNote?.employee?.fullName || ''} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}`}
-              </p>
-                </>
+                detailsNote?.status === variables.STATUS.CONFIRMING ?
+                  "" :
+                  <>
+                    <p className="mb5">Giáo viên đã nhận</p>
+                    <p className="font-weight-bold">
+                      {`${detailsNote?.employee?.fullName || ''} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}`}
+                    </p>
+                  </>
               }
             </div>
           </div>
