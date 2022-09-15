@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->job(new UpdateSchoolYearJob())->dailyAt('06:00');
+        // $schedule->job(new UpdateSchoolYearJob())->dailyAt('06:00');
         $schedule->job(new AttendanceJob())->everyThirtyMinutes();
         // $schedule->command('attendance')->everyMinute();
     }

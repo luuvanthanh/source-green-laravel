@@ -293,4 +293,21 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
             $schoolYear->update(['SchoolYearCrmId' => $item['id']]);
         }
     }
+
+    public function updateAllIsCheckInSchoolYear()
+    {
+        $now = now()->format('Y-m-d');
+
+        SchoolYear::whereNotIn('Id', function ($query) use ($now) {
+            $query->select('Id')->from('fee.SchoolYears')->whereDate('StartDate', '<=', $now)->whereDate('EndDate', '>=', $now)->where('IsCheck', true);
+        })->update(['IsCheck' => false]);
+    }
+
+    public function updateIsCheckSchoolYear($attributes, $id)
+    {
+        $schoolYear = SchoolYear::findOrFail($id);
+        $updateSchoolYear = !is_null($schoolYear) ? $schoolYear->update($attributes) : null;
+
+        return parent::find($schoolYear->Id);
+    }
 }

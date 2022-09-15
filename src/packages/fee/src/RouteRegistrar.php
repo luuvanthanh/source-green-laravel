@@ -71,6 +71,10 @@ class RouteRegistrar extends CoreRegistrar
 
             //update fee policies from crm
             Route::post('fee-policie-crm', 'FeePolicieController@feePolicieCrm');
+
+            Route::get('update-all-is-check-in-school-year', 'SchoolYearController@updateAllIsCheckInSchoolYear');
+
+            Route::put('update-is-check-school-years/{id}', 'SchoolYearController@updateIsCheckSchoolYear');
         });
     }
 
