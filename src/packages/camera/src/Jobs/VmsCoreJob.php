@@ -17,16 +17,18 @@ class VmsCoreJob implements ShouldQueue
 
     protected $data;
     protected $type;
+    protected $url;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($data, $type)
+    public function __construct($data, $type, $url)
     {
         $this->data = $data;
         $this->type = $type;
+        $this->url = $url;
     }
 
     /**
@@ -38,13 +40,13 @@ class VmsCoreJob implements ShouldQueue
     {
         switch ($this->type) {
             case 'CREATE_CAMERA':
-                VmsCoreServices::startCamera($this->data);
+                VmsCoreServices::startCamera($this->url, $this->data);
                 break;
             case 'UPDATE_CAMERA':
-                VmsCoreServices::updateCamera($this->data);
+                VmsCoreServices::updateCamera($this->url, $this->data);
                 break;
             case 'DELETE_CAMERA':
-                VmsCoreServices::stopCamera($this->data);
+                VmsCoreServices::stopCamera($this->url, $this->data);
                 break;
 
             default:

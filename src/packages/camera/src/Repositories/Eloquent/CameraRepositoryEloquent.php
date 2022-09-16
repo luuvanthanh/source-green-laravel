@@ -206,7 +206,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                     ],
                 ]),
             ];
-            dispatch(new VmsCoreJob($dataStartCamera, 'CREATE_CAMERA'));
+            $url = $camera->cameraServer->vms_url;
+
+            dispatch(new VmsCoreJob($dataStartCamera, 'CREATE_CAMERA', $url));
         } catch (\Throwable $e) {
             DB::rollback();
             throw new HttpException(500, $e->getMessage());
@@ -267,7 +269,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 ]),
             ];
 
-            dispatch(new VmsCoreJob($dataStartCamera, 'UPDATE_CAMERA'));
+            $url = $camera->cameraServer->vms_url;
+
+            dispatch(new VmsCoreJob($dataStartCamera, 'UPDATE_CAMERA', $url));
         } catch (\Throwable $e) {
             DB::rollback();
             throw new HttpException(500, $e->getMessage());
@@ -297,7 +301,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 'server_id' => $camera->cameraServer->uuid,
                 'cam_id' =>  $camera->id,
             ];
-            dispatch(new VmsCoreJob($dataDeleteCamera, 'DELETE_CAMERA'));
+            $url = $camera->cameraServer->vms_url;
+
+            dispatch(new VmsCoreJob($dataDeleteCamera, 'DELETE_CAMERA', $url));
 
             $camera->delete();
 
@@ -678,7 +684,9 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             'cam_id' =>  $camera->id,
         ];
 
-        dispatch(new VmsCoreJob($dataDeleteCamera, 'DELETE_CAMERA'));
+        $url = $camera->cameraServer->vms_url;
+
+        dispatch(new VmsCoreJob($dataDeleteCamera, 'DELETE_CAMERA', $url));
 
         return true;
     }
