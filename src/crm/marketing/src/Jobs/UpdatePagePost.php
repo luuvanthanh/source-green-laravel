@@ -16,6 +16,7 @@ class UpdatePagePost implements ShouldQueue
 
     public $retryAfter = 3600;
     public $timeout = 3610;
+    public $tries = 1;
 
     protected $dataPage;
     protected $urls;

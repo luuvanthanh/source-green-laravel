@@ -16,6 +16,7 @@ class PublishPagePost implements ShouldQueue
 
     public $retryAfter = 3600;
     public $timeout = 3610;
+    public $tries = 1;
 
     protected $value;
     protected $urls;
