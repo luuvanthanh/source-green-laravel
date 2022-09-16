@@ -432,7 +432,7 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           mountedSet(setEmployees, response.parsePayload);
-          mountedSet(setSearchEmployee, {
+          setSearchEmployee({
             ...searchEmployee,
             page: variables.PAGINATION.PAGE,
             limit: variables.PAGINATION.PAGE_SIZE,
@@ -443,10 +443,14 @@ const Index = memo(() => {
         }
       },
     });
-  }, 600);
+  }, 300);
 
   const onChangeSearch = (value) => {
     debouncedSearchUser(value);
+    setSearchEmployee({
+      ...searchEmployee,
+      fullName: value,
+    });
   };
 
   const changeCheckboxEmployee = (id) => {
@@ -475,7 +479,6 @@ const Index = memo(() => {
       payload: {
         ...searchEmployee,
         total: undefined,
-        abc: "ádasdasd",
         page: searchEmployee.page + 1,
       },
       callback: (response, error) => {
