@@ -45,8 +45,8 @@ const Index = memo(() => {
     search: query?.search,
     creationTimeFrom: query?.creationTimeFrom
       ? moment(query?.creationTimeFrom)
-      : moment().startOf('weeks'),
-    creationTimeTo: query?.creationTimeTo ? moment(query?.creationTimeTo) : moment().endOf('weeks'),
+      : moment().startOf('weeks')?.format(variables.DATE_FORMAT.DATE_AFTER),
+    creationTimeTo: query?.creationTimeTo ? moment(query?.creationTimeTo) : moment().endOf('weeks')?.format(variables.DATE_FORMAT.DATE_AFTER),
   });
   const [groupIds, setGroupIds] = useState([]);
   const [validateDescription, setValidateDescription] = useState(false);

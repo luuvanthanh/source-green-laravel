@@ -27,7 +27,7 @@ const Index = memo(({ classId, branchId }) => {
   const [search, setSearch] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
-    status: variables.STATUS.CONFIRMING
+    status: variables.STATUS.CONFIRMING,
   });
 
   const fetchDataNotes = () => {
@@ -69,15 +69,33 @@ const Index = memo(({ classId, branchId }) => {
     setVisible(true);
     dispatch({
       type: 'overView/GET_DETAILS_NOTE',
-      payload: { id }
+      payload: { id },
     });
   };
 
   const changeTab = (tab) => {
     setSearch((prev) => ({
       ...prev,
-      status: tab
+      status: tab,
     }));
+  };
+  const onFormTeacher = (value, type) => {
+    const data = value?.student?.class?.classTeachers?.find((i) => i?.isLead);
+    if(type === 'received') {
+      return (
+        <>
+          {`${data?.employee?.fullName || ''} lúc ${Helper.getDate(
+            detailsNote?.confirmedTime,
+            variables.DATE_FORMAT.TIME_DATE_MONTH,
+          )}`}
+        </>
+      );
+    }
+      return (
+        <>
+          {`${data?.employee?.fullName || ''}`}
+        </>
+      );
   };
 
   return (
@@ -93,30 +111,36 @@ const Index = memo(({ classId, branchId }) => {
         <div className={classnames('px15', styles['header-modal'])}>
           <div className="row">
             <div className="col-12 mt20">
-              <p className="mb0">{Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+              <p className="mb0">
+                {Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}
+              </p>
               <h5 className="font-size-24 my5 font-weight-bold">{detailsNote?.name}</h5>
               <p className="font-size-16">{detailsNote?.description}</p>
-              {
-                !_.isEmpty(detailsNote.fileImage) && (
-                  <Image.PreviewGroup>
-                    {JSON.parse(detailsNote.fileImage).map((item, index) => (
-                      <div key={index} className="container-preview-image" style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}>
-                        <Image
-                          key={index}
-                          width={129}
-                          height={100}
-                          className="mb10"
-                          src={`${API_UPLOAD}${item}`}
-                        />
-                      </div>
-                    ))}
-                  </Image.PreviewGroup>
-                )
-              }
+              {!_.isEmpty(detailsNote.fileImage) && (
+                <Image.PreviewGroup>
+                  {JSON.parse(detailsNote.fileImage).map((item, index) => (
+                    <div
+                      key={index}
+                      className="container-preview-image"
+                      style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}
+                    >
+                      <Image
+                        key={index}
+                        width={129}
+                        height={100}
+                        className="mb10"
+                        src={`${API_UPLOAD}${item}`}
+                      />
+                    </div>
+                  ))}
+                </Image.PreviewGroup>
+              )}
             </div>
             <div className="col-md-6 py20 border-top">
               <AvatarTable
-                fileImage={Helper.getPathAvatarJson(detailsNote?.student?.studentParents[0]?.parent?.fileImage)}
+                fileImage={Helper.getPathAvatarJson(
+                  detailsNote?.student?.studentParents[0]?.parent?.fileImage,
+                )}
                 fullName={detailsNote?.student?.studentParents[0]?.parent?.fullName}
                 description="Phụ huynh"
                 size={50}
@@ -137,7 +161,9 @@ const Index = memo(({ classId, branchId }) => {
                 </span>
                 <div className="ml10">
                   <p className={classnames('mb0', styles.class)}>Lớp</p>
-                  <p className="font-weight-bold font-size-14 mb0">{detailsNote?.student?.class?.name || ''}</p>
+                  <p className="font-weight-bold font-size-14 mb0">
+                    {detailsNote?.student?.class?.name || ''}
+                  </p>
                 </div>
               </div>
             </div>
@@ -151,7 +177,9 @@ const Index = memo(({ classId, branchId }) => {
                 />
                 <div className="ml10">
                   <p className={classnames('mb0', styles.class)}>Giáo viên</p>
-                  <p className="font-weight-bold font-size-14 mb0">{detailsNote?.employee?.fullName || ''}</p>
+                  <p className="font-weight-bold font-size-14 mb0">
+                  {onFormTeacher(detailsNote, 'teacher')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -159,22 +187,26 @@ const Index = memo(({ classId, branchId }) => {
               <p className="mb5">Trạng thái</p>
               <div className={styles['btn-status']}>
                 {Helper.tagStatus(
-                  `${detailsNote?.status === variables.STATUS.CONFIRMING ? variables.STATUS.VALID : ''}`,
-                  `${detailsNote?.status === variables.STATUS.CONFIRMING ? 'Chưa nhận' : 'Đã nhận'}`
+                  `${
+                    detailsNote?.status === variables.STATUS.CONFIRMING
+                      ? variables.STATUS.VALID
+                      : ''
+                  }`,
+                  `${
+                    detailsNote?.status === variables.STATUS.CONFIRMING ? 'Chưa nhận' : 'Đã nhận'
+                  }`,
                 )}
               </div>
             </div>
             <div className="col-md-6 py20 border-top">
-              {
-                detailsNote?.status === variables.STATUS.CONFIRMING ?
-                  "" :
-                  <>
-                    <p className="mb5">Giáo viên đã nhận</p>
-                    <p className="font-weight-bold">
-                      {`${detailsNote?.employee?.fullName || ''} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}`}
-                    </p>
-                  </>
-              }
+              {detailsNote?.status === variables.STATUS.CONFIRMING ? (
+                ''
+              ) : (
+                <>
+                  <p className="mb5">Giáo viên đã nhận</p>
+                  <p className="font-weight-bold">{onFormTeacher(detailsNote, 'received')}</p>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -184,8 +216,12 @@ const Index = memo(({ classId, branchId }) => {
         <div className={styles['body-tab']}>
           <div className={styles['header-tab']}>
             <div>
-              <img src='/images/home/speech.svg' alt="notification" className={styles.icon} />
-              <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Ghi chú</span>
+              <img src="/images/home/speech.svg" alt="notification" className={styles.icon} />
+              <span
+                className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}
+              >
+                Ghi chú
+              </span>
             </div>
             <p className={classnames('mb0', 'font-size-14')}>{notes?.length || 0}</p>
           </div>
@@ -214,14 +250,23 @@ const Index = memo(({ classId, branchId }) => {
                     onClick={() => getDetails(item.id)}
                     aria-hidden="true"
                   >
-                    <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                    <div
+                      className={classnames(
+                        'd-flex',
+                        'align-items-center',
+                        'justify-content-between',
+                        styles['header-content-tab'],
+                      )}
+                    >
                       <AvatarTable
                         className="full-name-bold"
                         fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
                         fullName={item?.student?.fullName}
                         size={36}
                       />
-                      <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+                      <p className={classnames('mb0', styles.date)}>
+                        {Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}
+                      </p>
                     </div>
                     <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.name || ''}</p>
                   </div>
