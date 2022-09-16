@@ -400,7 +400,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         if (!array_key_exists($date, $arrayHoliday)) {
             $timetableSetting = TimetableSetting::whereDate('FromDate', '<=', $date)->whereDate('ToDate', '>=', $date)->first();
 
-            if (!is_null($timetableSetting) && Carbon::parse($date)->dayOfWeek != Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek != Carbon::SUNDAY) {
+            if (!is_null($timetableSetting) && Carbon::parse($date)->dayOfWeek != Carbon::SUNDAY) {
                 foreach ($students as $student) {
                     $nowHours = !empty($attributes['time']) ? $attributes['time'] : Carbon::now('GMT+7')->format('H:i:s');
 
