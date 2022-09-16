@@ -91,7 +91,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
         return $article;
     }
 
-    public function postArticleFacebook($attributes)
+    public static function postArticleFacebook($attributes)
     {
         $response = [];
         $article = Article::findOrFail($attributes['article_id']);

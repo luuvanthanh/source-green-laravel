@@ -101,8 +101,8 @@ class ArticleController extends Controller
     {
         try {
             $attributes = $request->all();
-            $response = $this->articleRepository->postArticleFacebook($attributes);
-
+            
+            dispatch(new PostArticleFacebook($attributes));
             return $this->success([], trans('Đăng bài viết lên facebook thành công'));
         } catch (\Throwable $th) {
             $statusCode = 500;
