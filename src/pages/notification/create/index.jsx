@@ -15,7 +15,7 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import { useSelector, useDispatch } from 'dva';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
-import { head, size, isEmpty, debounce } from 'lodash';
+import { head, size, isEmpty, debounce, omit } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
@@ -68,6 +68,7 @@ const Index = memo(() => {
     hasMore: true,
     branchId: defaultBranch?.id || null,
     loading: false,
+    classStatus: 'ALL',
   });
   const [employees, setEmployees] = useState([]);
   const [parents, setParents] = useState([]);
@@ -246,7 +247,7 @@ const Index = memo(() => {
         payload: {
           ...searchParent,
           branchId: details?.branch?.id,
-          classId: details?.class?.id,
+          class: details?.class?.id,
           total: undefined,
         },
         callback: (response) => {
@@ -279,7 +280,7 @@ const Index = memo(() => {
               ...searchParent,
               total: response.totalCount,
               branchId: details?.branch?.id,
-              classId: details?.class?.id,
+              class: details?.class?.id,
               hasMore: true,
             });
           }
@@ -323,11 +324,26 @@ const Index = memo(() => {
         }
       },
     });
+    dispatch({
+      type: 'notificationAdd/GET_PARENTS',
+      payload: {
+        ...searchParent,
+      },
+      callback: (response) => {
+        if (response) {
+          mountedSet(
+            setParents,
+            response.items,
+          );
+          mountedSet(setSearchParent, { ...searchParent, total: response.totalCount, loading: false });
+        }
+      },
+    });
   };
 
   const onChangeBranchParent = (value) => {
     formRef.current.setFieldsValue({
-      ClassId: "Chọn",
+      class: "Chọn",
     });
     dispatch({
       type: 'notificationAdd/GET_CLASS',
@@ -393,15 +409,17 @@ const Index = memo(() => {
     mountedSet(setSearchParent, {
       ...searchParent, loading: true, page: 1,
       limit: 10,
+      classStatus: 'HAS_CLASS',
     });
     dispatch({
       type: 'notificationAdd/GET_PARENTS',
       payload: {
         branchId: searchParent.branchId,
-        classId: value,
+        class: value,
         KeyWord: searchParent?.KeyWord,
         page: 1,
         limit: 10,
+        classStatus: 'HAS_CLASS',
       },
       callback: (response) => {
         if (response) {
@@ -410,7 +428,8 @@ const Index = memo(() => {
             ...searchParent,
             skipCount: 0,
             total: response.totalCount,
-            classId: value,
+            class: value,
+            classStatus: 'HAS_CLASS',
             page: 1,
             limit: 10,
             hasMore: true,
@@ -532,6 +551,7 @@ const Index = memo(() => {
   };
 
   const changeAll = (type, event) => {
+
     if (type === variablesModules.TYPE.EMPLOYEE) {
       mountedSet(setIsAllEmployees, event.target.checked);
     } else {
@@ -542,6 +562,8 @@ const Index = memo(() => {
   const onFinish = (values) => {
     const payload = {
       ...values,
+      classId: values.class,
+      ...omit(values, 'class'),
       RemindDate: checkTime
         ? Helper.getDateTime({
           value: Helper.setDate({
@@ -633,7 +655,7 @@ const Index = memo(() => {
               title: response.title,
               branchId: response?.branch?.id,
               divisionId: response?.division?.id,
-              ClassId: response?.class?.id,
+              class: response?.class?.id,
               IsReminded: response?.isReminded,
               RemindTime: moment(response?.remindTime, variables.DATE_FORMAT.HOUR),
               RemindDate: moment(response.remindDate),
@@ -680,6 +702,81 @@ const Index = memo(() => {
   }, [params.id]);
   const onchangCheck = (e) => {
     setCheckTime(e.target.checked);
+  };
+
+  const changeSend = () => {
+    const values = formRef.current.getFieldsValue();
+    const payload = {
+      ...values,
+      id: params?.id,
+      RemindDate: checkTime
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.RemindDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        })
+        : Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(),
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+      RemindTime: checkTime
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.RemindTime,
+          }),
+          format: variables.DATE_FORMAT.HOUR,
+          isUTC: false,
+        })
+        : Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(),
+          }),
+          format: variables.DATE_FORMAT.HOUR,
+          isUTC: false,
+        }),
+      content,
+      sentDate: moment(),
+      isAllEmployees,
+      isAllParents,
+      employeeNews:
+        type === variablesModules.TYPE.EMPLOYEE && !isAllEmployees
+          ? employees.filter((item) => item.checked).map((item) => ({ employeeId: item.id }))
+          : [],
+      parentNews:
+        type === variablesModules.TYPE.PARENT && !isAllParents
+          ? parents.filter((item) => item.checked).map((item) => ({ parentId: item.id }))
+          : [],
+    };
+    dispatch({
+      type: 'notificationAdd/SEND',
+      payload,
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
   };
 
   return (
@@ -858,7 +955,7 @@ const Index = memo(() => {
                       <Pane className="col-lg-6">
                         <FormItem
                           label="Lớp"
-                          name="ClassId"
+                          name="class"
                           data={[{ id: null, name: 'Chọn tất cả lớp' }, ...dataClass]}
                           type={variables.SELECT}
                           onChange={onChangeClass}
@@ -880,7 +977,7 @@ const Index = memo(() => {
                         checked={isAllParents}
                         onChange={(event) => changeAll(variablesModules.TYPE.PARENT, event)}
                       >
-                        Tất cả phụ huynh
+                        Tất cả học sinh
                       </Checkbox>
                     </FormItemAntd>
                   </Pane>
@@ -900,21 +997,25 @@ const Index = memo(() => {
                           >
                             <List
                               dataSource={parents}
-                              renderItem={({ id, fullName, fileImage, checked }) =>
+                              renderItem={(i) =>
                               (
-                                <ListItem key={id} className={styles.listItem}>
+                                <ListItem key={i?.id} className={styles.listItem}>
                                   <Pane className="px20 w-100 d-flex align-items-center">
                                     <Checkbox
-                                      defaultChecked={checked}
+                                      checked={i?.checked}
                                       className="mr15"
-                                      onChange={() => changeCheckboxParent(id)}
+                                      onChange={() => changeCheckboxParent(i?.id)}
                                     />
                                     <Pane className={styles.userInformation}>
                                       <AvatarTable
-                                        fileImage={Helper.getPathAvatarJson(fileImage)}
+                                        fileImage={Helper.getPathAvatarJson(i?.fileImage)}
                                       />
                                       <Pane>
-                                        <h3>{fullName}</h3>
+                                        <h3>{i?.fullName}</h3>
+                                        <div className='d-flex'>
+                                          {i?.class && i?.studentParents?.length > 0 ? (<p className='pr5'>{i?.class?.name} -</p>) : <p >{i?.class?.name}</p>}
+                                          {i?.studentParents?.length > 0 && (<p className='text-danger'>Chưa có phụ huynh</p>)}
+                                        </div>
                                       </Pane>
                                     </Pane>
                                   </Pane>
@@ -928,11 +1029,9 @@ const Index = memo(() => {
                     )}
 
                   <Pane className="p20">
-                    {!isAllParents && (
-                      <Text color="dark" size="normal">
-                        Đã chọn {size(parents?.filter((item) => item.checked))} phụ huynh
-                      </Text>
-                    )}
+                    <Text color="dark" size="normal">
+                      Đã chọn {size(parents?.filter((item) => item.checked))} học sinh
+                    </Text>
                   </Pane>
                 </>
               )}
@@ -1019,7 +1118,7 @@ const Index = memo(() => {
                   </Pane>
                 </Pane>
               </Pane>
-              <Pane className="p20">
+              <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
                 <Button
                   color="success"
                   size="large"
@@ -1036,6 +1135,24 @@ const Index = memo(() => {
                     !parents.find((item) => item.checked) &&
                     !isAllEmployees &&
                     !isAllParents
+                  }
+                >
+                  Lưu
+                </Button>
+                <Button
+                  color="primary"
+                  size="large"
+                  className='ml10'
+                  loading={
+                    loading['notificationAdd/SEND']
+                  }
+                  style={{ marginLeft: 'auto' }}
+                  onClick={() => changeSend()}
+                  disabled={
+                    !employees.find((item) => item.checked) &&
+                    !parents.find((item) => item.checked) &&
+                    !isAllEmployees &&
+                    !isAllParents || (details?.sentDate && params?.id)
                   }
                 >
                   Gửi
