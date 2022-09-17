@@ -4,7 +4,9 @@ import { omit } from 'lodash';
 export function get(params = {}) {
   return request('/posts', {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+    },
   });
 }
 

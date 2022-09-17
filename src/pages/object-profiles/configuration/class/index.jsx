@@ -12,7 +12,6 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import ability from '@/utils/ability';
 
 let isMounted = true;
 /**
@@ -30,10 +29,13 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ classes, loading }) => ({
+const mapStateToProps = ({ classes, loading, user }) => ({
   data: classes.data,
   error: classes.error,
   pagination: classes.pagination,
+  branches: classes.branches,
+  defaultBranch: user.defaultBranch,
+  user: user.user,
   loading,
 });
 @connect(mapStateToProps)
@@ -44,11 +46,14 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      defaultBranch,
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         KeyWord: query?.KeyWord,
         page: query?.page || variables.PAGINATION.PAGE,
+        Branch: query?.Branch || defaultBranch?.id,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
     };
@@ -57,11 +62,19 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
     setIsMounted(false);
   }
+
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'classes/GET_BRANCHES',
+      payload: {},
+    });
+  };
 
   /**
    * Set state properties
@@ -123,6 +136,10 @@ class Index extends PureComponent {
    */
   onChange = (e, type) => {
     this.debouncedSearch(e.target.value, type);
+  };
+
+  onChangeStatus = (e, type) => {
+    this.debouncedSearch(e, type);
   };
 
   /**
@@ -188,7 +205,7 @@ class Index extends PureComponent {
           },
         });
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
@@ -198,6 +215,7 @@ class Index extends PureComponent {
   header = () => {
     const {
       location: { pathname },
+      user,
     } = this.props;
     const columns = [
       {
@@ -222,12 +240,6 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
-        title: 'NĂM',
-        key: 'year',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.year}</Text>,
-      },
-      {
         title: 'CƠ SỞ',
         key: 'branch',
         className: 'min-width-150',
@@ -235,29 +247,33 @@ class Index extends PureComponent {
       },
       {
         key: 'actions',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-200',
+        width: 200,
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="CAUHINH"
-            />
-            <Button
-              color="danger"
-              icon="remove"
-              onClick={() => this.onRemove(record.id)}
-              permission="CAUHINH"
-            />
-          </div>
+          <>
+            {user?.roleCode === "principal" && (
+              <div className={styles['list-button']}>
+                <Button
+                  color="primary"
+                  icon="list"
+                  onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
+                />
+                <Button
+                  color="primary"
+                  icon="edit"
+                  onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+                />
+                <Button
+                  color="danger"
+                  icon="remove"
+                  onClick={() => this.onRemove(record.id)}
+                />
+              </div>)}
+          </>
         ),
       },
     ];
-    return !ability.can('CAUHINH', 'CAUHINH')
-      ? columns.filter((item) => item.key !== 'actions')
-      : columns;
+    return columns;
   };
 
   render() {
@@ -268,8 +284,10 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
+      defaultBranch,
+      branches
     } = this.props;
-    const { search } = this.state;
+    const { search, defaultBranchs } = this.state;
     const loading = effects['classes/GET_DATA'];
     return (
       <>
@@ -295,7 +313,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-12">
+                <div className="col-lg-4">
                   <FormItem
                     name="KeyWord"
                     onChange={(event) => this.onChange(event, 'KeyWord')}
@@ -303,6 +321,30 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
+                {!defaultBranch?.id && (
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                      name="Branch"
+                      onChange={(event) => this.onChangeStatus(event, 'Branch')}
+                      type={variables.SELECT}
+                      placeholder="Chọn cơ sở"
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="Branch"
+                      onChange={(event) => this.onChangeStatus(event, 'Branch')}
+                      type={variables.SELECT}
+                      placeholder="Chọn cơ sở"
+                      allowClear={false}
+                    />
+                  </div>
+                )}
               </div>
             </Form>
             <Table
@@ -335,6 +377,9 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -345,6 +390,9 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  defaultBranch: {},
+  branches: [],
+  user: {},
 };
 
 export default Index;

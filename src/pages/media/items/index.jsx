@@ -4,7 +4,7 @@ import { Form } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import moment from 'moment';
-import { debounce } from 'lodash';
+import { debounce, head } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -25,13 +25,15 @@ const Index = memo(() => {
   const [
     { pagination, error, data, years },
     loading,
-    { defaultBranch,user },
+    { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, media, user }) => [media, effects, user]);
 
   const history = useHistory();
   const { query, pathname } = useLocation();
 
   const filterRef = useRef();
+
+  const [dataYear, setDataYear] = useState(user ? user?.schoolYear : {});
 
   const [category, setCategory] = useState({
     branches: [],
@@ -41,11 +43,11 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    sentDateFrom: query?.sentDateFrom || moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
-    sentDateTo: query?.sentDateTo || moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+    sentDateFrom: query?.sentDateFrom || moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+    sentDateTo: query?.sentDateTo || moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
     description: query?.description,
     branchId: query?.branchId || defaultBranch?.id,
-    classId: query?.classId,
+    classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
     schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
   });
 
@@ -170,7 +172,19 @@ const Index = memo(() => {
   }, 300);
 
   const changeFilter = (name) => (value) => {
-    changeFilterDebouce(name, value);
+    if (name === 'schoolYearId') {
+      const data = years?.find(i => i.id === value);
+      setDataYear(data);
+      setSearch((prevSearch) => ({
+        ...prevSearch,
+        [name]: value,
+        sentDateFrom: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        sentDateTo: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+      }));
+      filterRef.current.setFieldsValue({ rangeTime: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+    } else {
+      changeFilterDebouce(name, value);
+    }
   };
 
   const fetchClasses = (branchId) => {
@@ -292,7 +306,7 @@ const Index = memo(() => {
                     <FormItem
                       name="branchId"
                       type={variables.SELECT}
-                      data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
+                      data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...category?.branches]}
                       onChange={(value) => changeFilterBranch('branchId')(value)}
                       allowClear={false}
                     />
@@ -313,16 +327,9 @@ const Index = memo(() => {
                   <FormItem
                     name="classId"
                     type={variables.SELECT}
-                    data={[{ name: 'Chọn tất cả', id: null }, ...category?.classes]}
+                    data={user?.role === "Teacher" ? [...category?.classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...category?.classes]}
                     onChange={(value) => changeFilter('classId')(value)}
                     allowClear={false}
-                  />
-                </Pane>
-                <Pane className="col-lg-3">
-                  <FormItem
-                    name="rangeTime"
-                    type={variables.RANGE_PICKER}
-                    onChange={changeFilterDate}
                   />
                 </Pane>
                 <Pane className="col-lg-3">
@@ -333,6 +340,19 @@ const Index = memo(() => {
                     type={variables.SELECT}
                     placeholder="Chọn năm học"
                     allowClear={false}
+                  />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    name="rangeTime"
+                    type={variables.RANGE_PICKER}
+                    onChange={changeFilterDate}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </Pane>
               </Pane>

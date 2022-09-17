@@ -23,6 +23,7 @@ export function get(data = {}) {
         'attendance',
         'absent',
         'classStudent.class',
+        'attendance.schoolYear',
       ]),
     },
   });

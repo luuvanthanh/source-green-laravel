@@ -1,8 +1,8 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { List, Radio, Form, message, Spin } from 'antd';
 import { Helmet } from 'react-helmet';
-import { history, useParams } from 'umi';
-import { isEmpty, toString } from 'lodash';
+import { history, useParams, useLocation } from 'umi';
+import { isEmpty, toString, head } from 'lodash';
 
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
@@ -30,8 +30,11 @@ const Index = memo(() => {
     menuData,
     branches,
     classes,
+    defaultBranch,
+    user
   } = useSelector(({ loading, user, healthAdd, menu }) => ({
     user: user.user,
+    defaultBranch: user.defaultBranch,
     loading,
     details: healthAdd.details,
     error: healthAdd.error,
@@ -47,19 +50,21 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const filterRef = useRef();
   const formRef = useRef();
+  const { query } = useLocation();
   const [studentId, setStudentId] = useState(null);
   const [students, setStudents] = useState([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [defaultBranchs,] = useState(defaultBranch?.id ? [defaultBranch] : []);
   const [searchStudents, setSearchStudents] = useState({
     totalCount: 0,
     classStatus: 'HAS_CLASS',
+    position: query?.position || defaultBranch?.id,
+    class: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
-    class: null,
   });
   const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
-
   /**
    * Function change radio
    * @param {string} radio value of editor
@@ -207,6 +212,14 @@ const Index = memo(() => {
       type: 'healthAdd/GET_BRANCHES',
       payload: {},
     });
+    if (defaultBranch?.id) {
+      dispatch({
+        type: 'healthAdd/GET_CLASSES',
+        payload: {
+          branch: defaultBranch?.id,
+        },
+      });
+    }
   }, []);
 
   return (
@@ -222,21 +235,42 @@ const Index = memo(() => {
                   Danh sách học sinh
                 </Heading>
 
-                <Form layout="vertical" ref={filterRef}>
+                <Form layout="vertical" ref={filterRef}
+                  initialValues={{
+                    ...searchStudents,
+                  }}
+                >
                   <Pane className={csx('border-bottom')}>
                     <Pane className={csx('row')}>
+                      {
+                        !defaultBranch?.id && (
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              data={branches}
+                              label="Cơ sở"
+                              name="position"
+                              type={variables.SELECT}
+                              onChange={onChangeBranches}
+                            />
+                          </Pane>
+                        )
+                      }
+                      {
+                        defaultBranch?.id && (
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              data={defaultBranchs}
+                              label="Cơ sở"
+                              name="position"
+                              type={variables.SELECT}
+                              onChange={onChangeBranches}
+                            />
+                          </Pane>
+                        )
+                      }
                       <Pane className="col-lg-6">
                         <FormItem
-                          data={branches}
-                          label="Cơ sở"
-                          name="position"
-                          type={variables.SELECT}
-                          onChange={onChangeBranches}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          data={classes}
+                          data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                           label="Lớp"
                           name="class"
                           type={variables.SELECT}

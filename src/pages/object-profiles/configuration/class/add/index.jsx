@@ -177,9 +177,9 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-6">
+                  {/* <div className="col-lg-6">
                     <FormItem label="NĂM" name="year" rules={[]} type={variables.INPUT_COUNT} />
-                  </div>
+                  </div> */}
                   <div className="col-lg-6">
                     <FormItem
                       data={branches}
@@ -189,8 +189,6 @@ class Index extends PureComponent {
                       type={variables.SELECT}
                     />
                   </div>
-                </div>
-                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       data={classTypes}

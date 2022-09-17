@@ -40,6 +40,7 @@ const mapStateToProps = ({ medicaFollow, loading, user }) => ({
   configs: medicaFollow.configs,
   error: medicaFollow.error,
   defaultBranch: user.defaultBranch,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -50,12 +51,14 @@ class Index extends PureComponent {
     const {
       defaultBranch,
       location: { query },
+      user
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         diseaseName: query?.diseaseName,
         branchId: query?.branchId || defaultBranch?.id,
+        classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -432,6 +435,7 @@ class Index extends PureComponent {
       defaultBranch,
       match: { params },
       loading: { effects },
+      user
     } = this.props;
     const { search, visible, objects, defaultBranchs } = this.state;
     const loading = effects['medicaFollow/GET_DATA'];
@@ -583,7 +587,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                     name="classId"
                     allowClear={false}
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
@@ -636,6 +640,7 @@ Index.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   configs: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -650,6 +655,7 @@ Index.defaultProps = {
   classes: [],
   configs: [],
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;

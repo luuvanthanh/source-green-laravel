@@ -506,6 +506,12 @@ export default [
             authority: [permissions.HSDT],
           },
           {
+            path: '/ho-so-doi-tuong/cau-hinh/lop-hoc/:id/danh-sach',
+            component: './object-profiles/configuration/class/list',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
             path: '/ho-so-doi-tuong/cau-hinh/co-so',
             component: './object-profiles/configuration/branches',
             wrappers: ['@/wrappers/auth'],

@@ -5,9 +5,10 @@ export default {
   namespace: 'absentStudents',
   state: {
     data: [],
+    years: [],
     pagination: {},
     branches: [],
-    classes: []
+    classes: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -32,6 +33,15 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload.items,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years:
+        payload.parsePayload?.map((item) => ({
+          id: item.id,
+          name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+          ...item,
+        })) || [],
     }),
   },
   effects: {
@@ -72,6 +82,22 @@ export default {
             payload: response,
           });
         }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
+          },
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

@@ -89,7 +89,9 @@ export default {
     SET_MEDICAL: (state, { payload }) => ({
       ...state,
       medicalCheck: payload.parsePayload[0],
-      medical: payload?.parsePayload?.map((item, index) => ({ ...item.childHeathDevelop[0], index })) || [], ///.map((item,index)=> ({...item?.childHeathDevelop, index})) || [],
+      medical:
+        payload?.parsePayload?.map((item, index) => ({ ...item.childHeathDevelop[0], index })) ||
+        [], ///.map((item,index)=> ({...item?.childHeathDevelop, index})) || [],
     }),
     SET_CATEGORY_MEDICAL: (state, { payload }) => ({
       ...state,
@@ -161,7 +163,7 @@ export default {
         });
       }
     },
-    *GET_STUDENTS_ID({ payload , callback}, saga) {
+    *GET_STUDENTS_ID({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getStudentsId, payload);
         callback(response.parsePayload);
@@ -390,7 +392,7 @@ export default {
         });
       }
     },
-    *GET_DETAILS_ID({ payload,callback }, saga) {
+    *GET_DETAILS_ID({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.details, payload);
         callback(response?.parsePayload);
@@ -407,7 +409,7 @@ export default {
         });
       }
     },
-    *GET_DATA_FILE({ payload,callback }, saga) {
+    *GET_DATA_FILE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getDataFile, payload);
         callback(response?.parsePayload);

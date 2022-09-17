@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { useSelector, useParams, useDispatch, useLocation, useHistory } from 'dva';
 import { isEmpty, findIndex } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import moment from 'moment';
+// import moment from 'moment';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -19,14 +19,13 @@ import Loading from '@/components/CommonComponent/Loading';
 const Index = memo(() => {
   const [
     menuData,
-    { details, error },
-    loading
+    { details, error, physicals },
+    loading,
   ] = useSelector(({ menu, physicalDetails, loading: { effects } }) => [
     menu.menuLeftPhysical,
     physicalDetails,
     effects,
   ]);
-
 
   const location = useLocation();
   const params = useParams();
@@ -49,32 +48,40 @@ const Index = memo(() => {
       dispatch({
         type: 'physicalDetails/GET_DETAILS',
         payload: {
-          id: params?.id
+          id: params?.id,
         },
+      });
+      dispatch({
+        type: 'physicalDetails/GET_PHYSICAL',
       });
     }
   }, [params?.id]);
 
   useEffect(() => {
     if (!isEmpty(details?.studentCriterias)) {
-      const weight = details?.studentCriterias.find(item => item?.criteriaGroupProperty?.property === "Cân nặng");
-      const height = details?.studentCriterias.find(item => item?.criteriaGroupProperty?.property === "Chiều cao");
-      setData([{
-        id: uuidv4(),
-        weight: {
-          ...weight,
-          old: weight?.value || 0,
-          value: '',
+      const weight = details?.studentCriterias.find(
+        (item) => item?.criteriaGroupProperty?.property === 'Cân nặng',
+      );
+      const height = details?.studentCriterias.find(
+        (item) => item?.criteriaGroupProperty?.property === 'Chiều cao',
+      );
+      setData([
+        {
+          id: uuidv4(),
+          weight: {
+            ...weight,
+            old: weight?.value || 0,
+            value: '',
+          },
+          height: {
+            ...height,
+            old: height?.value,
+            value: '',
+          },
         },
-        height: {
-          ...height,
-          old: height?.value,
-          value: '',
-        }
-      }]);
+      ]);
     }
   }, [details]);
-
 
   const onChange = (value, record, name) => {
     const index = findIndex([...data], (item) => item?.id === record?.id);
@@ -83,8 +90,8 @@ const Index = memo(() => {
       ...record,
       [name]: {
         ...record[name],
-        value
-      }
+        value,
+      },
     };
     setData(newData);
   };
@@ -98,7 +105,7 @@ const Index = memo(() => {
           key: 'old',
           className: 'min-width-100',
           align: 'center',
-          render: (record) => record?.height.old || 0
+          render: (record) => record?.height.old || 0,
         },
         {
           title: 'Mới',
@@ -118,9 +125,9 @@ const Index = memo(() => {
                 <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
               )}
             </>
-          )
+          ),
         },
-      ]
+      ],
     },
     {
       title: 'Cân nặng (kg)',
@@ -130,7 +137,7 @@ const Index = memo(() => {
           key: 'old',
           className: 'min-width-100',
           align: 'center',
-          render: (record) =>  record?.weight?.old || 30
+          render: (record) => record?.weight?.old || 30,
         },
         {
           title: 'Mới',
@@ -150,56 +157,38 @@ const Index = memo(() => {
                 <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
               )}
             </>
-          )
+          ),
         },
-      ]
+      ],
     },
   ];
 
   const onFinish = () => {
-    const checkErrorTable = !isEmpty(data) ?
-      !!(data.find(item => !item?.height?.value || !item?.weight?.value ))
+    const checkErrorTable = !isEmpty(data)
+      ? !!data.find((item) => !item?.height?.value || !item?.weight?.value)
       : true;
     setErrorTable(checkErrorTable);
-    if(checkErrorTable) {
+    if (checkErrorTable) {
       return true;
     }
     const payload = [];
-    [...data].forEach(item => {
+    [...data].forEach((item) => {
       if (item?.weight?.value) {
         payload.push({
-          id: item?.weight?.id,
-          studentCriteriaRequest: {
-            reportDate: Helper.getDateTime({
-              value: Helper.setDate({
-                ...variables.setDateData,
-                originValue: moment(),
-              }),
-              isUTC: false,
-            }),
-            criteriaGroupPropertyId: item?.weight?.criteriaGroupProperty?.id || '',
-            studentId: params?.id || '',
-            value: String(item?.weight?.value || 0),
-            note: ""
-          }
+          reportDate: item?.weight?.reportDate,
+          criteriaGroupPropertyId: physicals.find((i) => i.code === 'WEIGHT').id || '',
+          studentId: params?.id || '',
+          value: String(item?.weight?.value || 0),
+          note: '',
         });
       }
       if (item?.height?.value) {
         payload.push({
-          id: item?.height?.id,
-          studentCriteriaRequest: {
-            reportDate: Helper.getDateTime({
-              value: Helper.setDate({
-                ...variables.setDateData,
-                originValue: moment(),
-              }),
-              isUTC: false,
-            }),
-            criteriaGroupPropertyId: item?.height?.criteriaGroupProperty?.id || '',
-            studentId: params?.id || '',
-            value: String(item?.height?.value || 0),
-            note: ""
-          }
+          reportDate: item?.height?.reportDate,
+          criteriaGroupPropertyId: physicals.find((i) => i.code === 'HEIGHT').id || '',
+          studentId: params?.id || '',
+          value: String(item?.height?.value || 0),
+          note: '',
         });
       }
     });
@@ -215,7 +204,11 @@ const Index = memo(() => {
   };
 
   return (
-    <Loading loading={loading['physicalDetails/GET_DETAILS']} isError={error.isError} params={{ error, goBack: location?.pathname.replace('/nhap-the-chat', '') }}>
+    <Loading
+      loading={loading['physicalDetails/GET_DETAILS']}
+      isError={error.isError}
+      params={{ error, goBack: location?.pathname.replace('/nhap-the-chat', '') }}
+    >
       <Helmet title="Nhập thể chất" />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
         <Breadcrumbs last="Nhập thể chất" menu={menuData} />
@@ -230,10 +223,18 @@ const Index = memo(() => {
               />
               <Pane className="row">
                 <Pane className="col-lg-6 mt15">
-                  <Text size="normal">Cơ sở: <span className="font-weight-bold">{details?.student?.class?.branch?.name || ''}</span></Text>
+                  <Text size="normal">
+                    Cơ sở:{' '}
+                    <span className="font-weight-bold">
+                      {details?.student?.class?.branch?.name || ''}
+                    </span>
+                  </Text>
                 </Pane>
                 <Pane className="col-lg-6 mt15">
-                  <Text size="normal">Lớp: <span className="font-weight-bold">{details?.student?.class?.name || ''}</span></Text>
+                  <Text size="normal">
+                    Lớp:{' '}
+                    <span className="font-weight-bold">{details?.student?.class?.name || ''}</span>
+                  </Text>
                 </Pane>
               </Pane>
               <Pane className="py20">
@@ -255,7 +256,9 @@ const Index = memo(() => {
                   size="large"
                   color="success"
                   onClick={onFinish}
-                  loading={loading['physicalDetails/GET_DETAILS'] || loading['physicalDetails/UPDATE']}
+                  loading={
+                    loading['physicalDetails/GET_DETAILS'] || loading['physicalDetails/UPDATE']
+                  }
                 >
                   LƯU
                 </Button>

@@ -30,11 +30,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ notifications, loading,user }) => ({
+const mapStateToProps = ({ notifications, loading, user }) => ({
   data: notifications.data,
   pagination: notifications.pagination,
   error: notifications.error,
-  branches: notifications.branches, 
+  branches: notifications.branches,
   years: notifications.years,
   user: user.user,
   defaultBranch: user.defaultBranch,
@@ -53,6 +53,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      dataYear: user ? user?.schoolYear : {},
       search: {
         keyWord: query?.keyWord,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -61,10 +62,10 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         fromDate: query?.fromDate
           ? query?.fromDate
-          : moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+          : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
         toDate: query?.toDate
           ? query?.toDate
-          : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+          : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
       },
     };
     setIsMounted(true);
@@ -116,7 +117,7 @@ class Index extends PureComponent {
   loadCategories = () => {
     this.props.dispatch({
       type: 'notifications/GET_YEARS',
-      payload: { },
+      payload: {},
     });
     this.props.dispatch({
       type: 'notifications/GET_BRANCHES',
@@ -268,7 +269,26 @@ class Index extends PureComponent {
   };
 
   onChangeStatus = (e, type) => {
+    const {
+      years,
+    } = this.props;
     this.debouncedSearch(e, type);
+    if (type === 'schoolYearId') {
+      const data = years?.find(i => i.id === e);
+      this.setStateData({
+        dataYear: data,
+      });
+      this.setState(
+        (prevState) => ({
+          search: {
+            ...prevState.search,
+            fromDate: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+            toDate: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+          },
+        }),
+      );
+      this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+    }
   };
 
   /**
@@ -305,7 +325,7 @@ class Index extends PureComponent {
         className: 'min-width-80',
         width: 80,
         render: (text, record, index) =>
-          `TB${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
+          (`TB${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`),
       },
       {
         title: 'Thời gian gửi',
@@ -321,6 +341,7 @@ class Index extends PureComponent {
       {
         title: 'Năm học',
         key: 'year',
+        width: 200,
         className: 'min-width-200',
         render: (record) => record?.schoolYear?.yearFrom ? <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text> : "",
       },
@@ -401,7 +422,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    const { search, defaultBranchs } = this.state;
+    const { search, defaultBranchs, dataYear } = this.state;
     const loading = effects['notifications/GET_DATA'];
     return (
       <>
@@ -440,19 +461,25 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="date"
-                    onChange={(event) => this.onChangeDateRank(event, 'date')}
-                    type={variables.RANGE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
                     data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
                     name="schoolYearId"
                     onChange={(event) => this.onChangeStatus(event, 'schoolYearId')}
                     type={variables.SELECT}
                     placeholder="Chọn năm học"
                     allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </div>
                 {!defaultBranch?.id && (
@@ -517,9 +544,9 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
-  user:  PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
-  years :PropTypes.arrayOf(PropTypes.any),
+  years: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 

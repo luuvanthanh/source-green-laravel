@@ -61,6 +61,8 @@ const Index = memo(() => {
   const [searchText, setSearchText] = useState('');
   const [checkClass, setCheckClass] = useState('');
 
+  const [defaultBranchs,] = useState(defaultBranch?.id ? [defaultBranch] : []);
+
   const onLoad = () => {
     dispatch({
       type: 'extendedClass/GET_DATA',
@@ -661,16 +663,34 @@ const Index = memo(() => {
             </div>
             <div className={stylesModule.main}>
               <div className={stylesModule.header}>
-                <div>
-                  <SelectCus
-                    dataSet={branches}
-                    placeholder="Chọn cơ sở"
-                    className={stylesModule.select}
-                    allowClear={false}
-                    value={search.branchId}
-                    onChange={(branchId) => setSearch((prev) => ({ ...prev, branchId }))}
-                  />
-                </div>
+                {
+                  !defaultBranch?.id && (
+                    <div>
+                      <SelectCus
+                        dataSet={branches}
+                        placeholder="Chọn cơ sở"
+                        className={stylesModule.select}
+                        allowClear={false}
+                        value={search.branchId}
+                        onChange={(branchId) => setSearch((prev) => ({ ...prev, branchId }))}
+                      />
+                    </div>
+                  )
+                }
+                {
+                  defaultBranch?.id && (
+                    <div>
+                      <SelectCus
+                        dataSet={defaultBranchs}
+                        placeholder="Chọn cơ sở"
+                        className={stylesModule.select}
+                        allowClear={false}
+                        value={search.branchId}
+                        onChange={(branchId) => setSearch((prev) => ({ ...prev, branchId }))}
+                      />
+                    </div>
+                  )
+                }
                 <div className={stylesModule.header__action}>
                   <button
                     type="button"

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -40,6 +40,7 @@ const mapStateToProps = ({ medicalStudentProblem, loading, user, reportAngleTool
   branches: medicalStudentProblem.branches,
   pagination: medicalStudentProblem.pagination,
   defaultBranch: user.defaultBranch,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -50,6 +51,7 @@ class Index extends PureComponent {
     const {
       defaultBranch,
       location: { query },
+      user
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
@@ -65,7 +67,7 @@ class Index extends PureComponent {
             moment(query?.FromDate),
             moment(query?.ToDate),
           ],
-        ClassId: query?.ClassId,
+        ClassId: query?.ClassId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
       },
       dataIDSearch: [],
     };
@@ -149,14 +151,14 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           studentName: search?.studentName,
-        branchId: search?.branchId,
-        ClassId: search?.ClassId,
-        page: search?.page || variables.PAGINATION.PAGE,
-        limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
-        FromDate: search?.FromDate,
-        ToDate: search?.ToDate,
-        ToolGroupId: search?.ToolGroupId,
-        ToolDetailId: search?.ToolDetailId,
+          branchId: search?.branchId,
+          ClassId: search?.ClassId,
+          page: search?.page || variables.PAGINATION.PAGE,
+          limit: search?.limit || variables.PAGINATION.PAGE_SIZE,
+          FromDate: search?.FromDate,
+          ToDate: search?.ToDate,
+          ToolGroupId: search?.ToolGroupId,
+          ToolDetailId: search?.ToolDetailId,
           SearchDate: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
@@ -791,6 +793,7 @@ class Index extends PureComponent {
       defaultBranch,
       match: { params },
       loading: { effects },
+      user,
     } = this.props;
     const { search, defaultBranchs } = this.state;
     const loading = effects['reportAngleTools/GET_DATA'];
@@ -849,7 +852,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                     name="ClassId"
                     onChange={(event) => this.onChangeSelect(event, 'ClassId')}
                     type={variables.SELECT}
@@ -923,6 +926,7 @@ Index.propTypes = {
   defaultBranch: PropTypes.objectOf(PropTypes.any),
   toolDetails: PropTypes.arrayOf(PropTypes.any),
   toolGroups: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -938,6 +942,7 @@ Index.defaultProps = {
   defaultBranch: {},
   toolDetails: [],
   toolGroups: [],
+  user: {},
 };
 
 export default Index;

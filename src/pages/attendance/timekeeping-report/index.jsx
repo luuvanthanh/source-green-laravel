@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, size } from 'lodash';
+import { debounce, isEmpty, size, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -37,7 +37,9 @@ const mapStateToProps = ({ timekeepingReport, loading, user }) => ({
   pagination: timekeepingReport.pagination,
   branches: timekeepingReport.branches,
   classes: timekeepingReport.classes,
+  years: timekeepingReport.years,
   defaultBranch: user.defaultBranch,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -48,13 +50,16 @@ class Index extends PureComponent {
     const {
       defaultBranch,
       location: { query },
+      user,
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      dataYear: user ? user?.schoolYear : {},
       search: {
-        classId: query?.classId,
+        classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         fullName: query?.fullName,
         branchId: query?.branchId || defaultBranch?.id,
+        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: query?.endDate ? moment(query?.endDate) : moment().endOf('months'),
@@ -90,6 +95,10 @@ class Index extends PureComponent {
   loadCategories = () => {
     const { search } = this.state;
     const { defaultBranch } = this.props;
+    this.props.dispatch({
+      type: 'timekeepingReport/GET_YEARS',
+      payload: {},
+    });
     if (search.branchId) {
       this.props.dispatch({
         type: 'timekeepingReport/GET_CLASSES',
@@ -254,6 +263,27 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
+    const {
+      years,
+      user
+    } = this.props;
+    if (type === 'schoolYearId') {
+      const data = years?.find(i => i.id === e);
+      this.setStateData({
+        dataYear: data,
+      });
+      this.setState(
+        (prevState) => ({
+          search: {
+            ...prevState.search,
+            startDate: user?.schoolYear?.id === e ? moment().startOf('months') : moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+            endDate: user?.schoolYear?.id === e ? moment().endtOf('months') : moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+          },
+        }),
+      );
+      this.formRef.
+        current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+    }
     this.debouncedSearch(e, type);
   };
 
@@ -483,9 +513,11 @@ class Index extends PureComponent {
       pagination,
       defaultBranch,
       match: { params },
+      years,
+      user,
       loading: { effects },
     } = this.props;
-    const { search, defaultBranchs } = this.state;
+    const { search, defaultBranchs, dataYear } = this.state;
     const loading = effects['timekeepingReport/GET_DATA'];
 
     return (
@@ -546,7 +578,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -555,10 +587,25 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
                     name="date"
                     onChange={(event) => this.onChangeDateRank(event, 'date')}
                     type={variables.RANGE_PICKER}
-                    disabledDate={Helper.disabledDateRank}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </div>
               </div>
@@ -592,7 +639,9 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  years: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -603,8 +652,10 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   branches: [],
+  years: [],
   classes: [],
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;

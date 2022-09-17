@@ -5,6 +5,7 @@ export default {
   namespace: 'attendances',
   state: {
     data: [],
+    years: [],
     pagination: {},
     attendancesReasons: [],
     branches: [],
@@ -52,6 +53,15 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload.items,
+    }),
+    SET_YEARS: (state, { payload }) => ({
+      ...state,
+      years:
+        payload.parsePayload?.map((item) => ({
+          id: item.id,
+          name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+          ...item,
+        })) || [],
     }),
   },
   effects: {
@@ -128,6 +138,22 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_YEARS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getYears, payload);
+        yield saga.put({
+          type: 'SET_YEARS',
+          payload: {
+            parsePayload: response,
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

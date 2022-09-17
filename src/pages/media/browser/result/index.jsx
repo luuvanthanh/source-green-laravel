@@ -3,7 +3,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useLocation } from 'umi';
 import { Helmet } from 'react-helmet';
-import { size, isEmpty, includes } from 'lodash';
+import { size, isEmpty, includes, head } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
 import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt, notification } from 'antd';
@@ -29,7 +29,8 @@ const Index = memo(() => {
   const [
     { data },
     loading,
-  ] = useSelector(({ loading: { effects }, mediaResult }) => [mediaResult, effects]);
+    { user },
+  ] = useSelector(({ loading: { effects }, mediaResult, user }) => [mediaResult, effects, user]);
 
   const history = useHistory();
   const { query, pathname } = useLocation();
@@ -45,8 +46,10 @@ const Index = memo(() => {
     search: query?.search,
     creationTimeFrom: query?.creationTimeFrom
       ? moment(query?.creationTimeFrom)
-      : moment().startOf('weeks'),
-    creationTimeTo: query?.creationTimeTo ? moment(query?.creationTimeTo) : moment().endOf('weeks'),
+      : moment().startOf('weeks')?.format(variables.DATE_FORMAT.DATE_AFTER),
+    creationTimeTo: query?.creationTimeTo
+      ? moment(query?.creationTimeTo)
+      : moment().endOf('weeks')?.format(variables.DATE_FORMAT.DATE_AFTER),
   });
   const [groupIds, setGroupIds] = useState([]);
   const [validateDescription, setValidateDescription] = useState(false);
@@ -61,14 +64,13 @@ const Index = memo(() => {
 
   const groupSelect = (id) => ({ target: { checked } }) => {
     setGroupIds((prev) => (checked ? [...prev, id] : prev.filter((selectId) => selectId !== id)));
-    const index = classifyData.findIndex(item => item.id === id);
+    const index = classifyData.findIndex((item) => item.id === id);
     formRef?.current?.setFields([
       {
         name: ['description', index],
         errors: '',
       },
     ]);
-
   };
 
   const fetchMedia = useCallback(() => {
@@ -78,6 +80,15 @@ const Index = memo(() => {
         ...search,
         status: localVariables.CLASSIFY_STATUS.VALIDATING,
         maxResultCount: variables.PAGINATION.SIZEMAX,
+        branchId:
+          [
+            variables.LIST_ROLE_CODE.PRINCIPAL,
+            variables.LIST_ROLE_CODE.CEO,
+            variables.LIST_ROLE_CODE.TEACHER,
+          ].includes(user.roleCode) && user.defaultBranch.id,
+        classId:
+          [variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode) &&
+          head(user?.objectInfo?.classTeachers).classId,
       },
     });
     history.push({
@@ -141,9 +152,9 @@ const Index = memo(() => {
           prev.map((post) =>
             post.id === postId
               ? {
-                ...post,
-                files: (post?.files || []).filter((file) => file.id !== image.id),
-              }
+                  ...post,
+                  files: (post?.files || []).filter((file) => file.id !== image.id),
+                }
               : post,
           ),
         );
@@ -156,9 +167,9 @@ const Index = memo(() => {
       prev.map((post) =>
         post.id === postId
           ? {
-            ...post,
-            description: e?.target?.value,
-          }
+              ...post,
+              description: e?.target?.value,
+            }
           : post,
       ),
     );
@@ -179,12 +190,15 @@ const Index = memo(() => {
     dispatch({
       type: 'mediaResult/VALIDATE',
       payload: req,
-      callback: () => {
-        fetchMedia();
-        notification.success({
-          message: 'Thông báo',
-          description: 'Bạn đã gửi thành công dữ liệu',
-        });
+      callback: (response) => {
+        if (response) {
+          notification.success({
+            message: 'Thông báo',
+            description: 'Bạn đã gửi thành công dữ liệu',
+          });
+          setClassifyData((prev) => prev.filter((i) => i.id !== id));
+        }
+        // fetchMedia();
       },
     });
   };
@@ -229,7 +243,7 @@ const Index = memo(() => {
       payload: [id],
       callback: (response) => {
         if (response) {
-          setRecordedFiles(recordedFiles?.filter(i => i?.id !== id));
+          setRecordedFiles(recordedFiles?.filter((i) => i?.id !== id));
         }
       },
     });
@@ -291,26 +305,31 @@ const Index = memo(() => {
 
   useEffect(async () => {
     if (validateDescription) {
-      formRef.current.validateFields().then(() => {
-        const payload = [...classifyData].filter(item => includes(groupIds, item?.id))?.map((item) => ({
-          id: item?.id,
-          description: item?.description,
-          removeFiles: item?.removeFiles,
-        }));
-        return dispatch({
-          type: 'mediaResult/VALIDATE_ALL',
-          payload,
-          callback: () => {
-            fetchMedia();
-            notification.success({
-              message: 'Thông báo',
-              description: 'Bạn đã gửi thành công dữ liệu',
-            });
-          },
+      formRef.current
+        .validateFields()
+        .then(() => {
+          const payload = [...classifyData]
+            .filter((item) => includes(groupIds, item?.id))
+            ?.map((item) => ({
+              id: item?.id,
+              description: item?.description,
+              removeFiles: item?.removeFiles,
+            }));
+          return dispatch({
+            type: 'mediaResult/VALIDATE_ALL',
+            payload,
+            callback: () => {
+              fetchMedia();
+              notification.success({
+                message: 'Thông báo',
+                description: 'Bạn đã gửi thành công dữ liệu',
+              });
+            },
+          });
+        })
+        .finally(() => {
+          setValidateDescription(false);
         });
-      }).finally(() => {
-        setValidateDescription(false);
-      });
     }
     return true;
   }, [validateDescription]);
@@ -384,7 +403,11 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="col-lg-9 d-flex justify-content-end">
-                <Dropdown overlay={menu} trigger={['click']} disabled={loading['mediaResult/VALIDATE_ALL'] || loading['mediaResult/GET_DATA']}>
+                <Dropdown
+                  overlay={menu}
+                  trigger={['click']}
+                  disabled={loading['mediaResult/VALIDATE_ALL'] || loading['mediaResult/GET_DATA']}
+                >
                   <ButtonAnt>
                     Thao tác <DownOutlined />
                   </ButtonAnt>
@@ -471,7 +494,7 @@ const Index = memo(() => {
                         {
                           ...variables.RULES.EMPTY,
                           required: validateDescription ? includes(groupIds, post?.id) : true,
-                        }
+                        },
                       ]}
                       placeholder="Nhập mô tả"
                       name={['description', index]}
@@ -479,7 +502,10 @@ const Index = memo(() => {
 
                     <Pane className="row">
                       {(post?.files || []).map((image) => (
-                        <Pane className={csx('col-lg-2 my10 col-4', styles.imageWrapper)} key={image?.id}>
+                        <Pane
+                          className={csx('col-lg-2 my10 col-4', styles.imageWrapper)}
+                          key={image?.id}
+                        >
                           <img
                             className="d-block w-100"
                             src={`${API_UPLOAD}${image?.url}`}
@@ -530,15 +556,18 @@ const Index = memo(() => {
                   </Pane>
                 ))}
               </Pane>
-              {
-                total < totalCount && (
-                  <div className={styles.more}>
-                    <Button color="success"
-                      className="ml20"
-                      loading={loading['mediaResult/GET_RECORDED_FILES']} onClick={() => onLoadMoreFiles()} >Load More</Button>
-                  </div>
-                )
-              }
+              {total < totalCount && (
+                <div className={styles.more}>
+                  <Button
+                    color="success"
+                    className="ml20"
+                    loading={loading['mediaResult/GET_RECORDED_FILES']}
+                    onClick={() => onLoadMoreFiles()}
+                  >
+                    Load More
+                  </Button>
+                </div>
+              )}
             </Pane>
           </>
         )}

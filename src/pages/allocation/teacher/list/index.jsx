@@ -30,20 +30,33 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ loading }) => ({
+const mapStateToProps = ({ loading, user }) => ({
   loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
   formRef = React.createRef();
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    const {
+      defaultBranch,
+      location: { query },
+    } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       branches: [],
       classes: [],
       students: [],
       teachers: [],
+      search: {
+        key: query?.key,
+        page: query?.page || variables.PAGINATION.PAGE,
+        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        branchId: query?.branchId || defaultBranch?.id,
+        classId: query?.classId,
+      },
     };
     setIsMounted(true);
   }
@@ -72,6 +85,7 @@ class Index extends PureComponent {
 
   fetchBranches = () => {
     const { dispatch } = this.props;
+    const { search } = this.state;
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
@@ -82,6 +96,21 @@ class Index extends PureComponent {
         }
       },
     });
+    if (search?.branchId) {
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: search?.branchId,
+        },
+        callback: (res) => {
+          if (res) {
+            this.setStateData({
+              classes: res?.items || [],
+            });
+          }
+        },
+      });
+    }
   };
 
   fetchClasses = (branchId) => {
@@ -165,9 +194,15 @@ class Index extends PureComponent {
   }
 
   render() {
-    const { students, branches, classes, teachers } = this.state;
+    const {
+      defaultBranch,
+      location: { query },
+    } = this.props;
+    const { students, branches, classes, teachers, defaultBranchs } = this.state;
     return (
-      <Form layout="vertical" ref={this.formRef}>
+      <Form layout="vertical" ref={this.formRef} initialValues={{
+        branch: query?.branchId || defaultBranch?.id,
+      }}>
         <Helmet title="Danh sách" />
         <div
           className={classnames(
@@ -208,16 +243,34 @@ class Index extends PureComponent {
           <div className={stylesAllocation['wrapper-container']}>
             <div className={stylesAllocation['search-container']}>
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    allowClear={false}
-                    name="branch"
-                    type={variables.SELECT}
-                    placeholder="Chọn cơ sở"
-                    onChange={this.fetchClasses}
-                    data={branches}
-                  />
-                </div>
+                {
+                  !defaultBranch?.id && (
+                    <div className="col-lg-3">
+                      <FormItem
+                        allowClear={false}
+                        name="branch"
+                        type={variables.SELECT}
+                        placeholder="Chọn cơ sở"
+                        onChange={this.fetchClasses}
+                        data={branches}
+                      />
+                    </div>
+                  )
+                }
+                {
+                  defaultBranch?.id && (
+                    <div className="col-lg-3">
+                      <FormItem
+                        allowClear={false}
+                        name="branch"
+                        type={variables.SELECT}
+                        placeholder="Chọn cơ sở"
+                        onChange={this.fetchClasses}
+                        data={defaultBranchs}
+                      />
+                    </div>
+                  )
+                }
                 <div className="col-lg-3">
                   <FormItem
                     name="class"
@@ -304,10 +357,14 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   dispatch: {},
+  defaultBranch: {},
+  location: {},
 };
 
 export default Index;

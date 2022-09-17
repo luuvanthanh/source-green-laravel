@@ -422,7 +422,7 @@ const Index = memo(({ classId, branchId }) => {
                 Y tế
               </span>
             </div>
-            <p className={classnames('mb0', 'font-size-14')}>12</p>
+            <p className={classnames('mb0', 'font-size-14')}>{medicals?.length}</p>
           </div>
           <Tabs onChange={changeTab} activeKey={search?.status}>
             {variablesModules.MEDICAL.map(({ id, name }) => (

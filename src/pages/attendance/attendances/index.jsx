@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Button, Modal, message } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce, get, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -35,6 +35,7 @@ const mapStateToProps = ({ attendances, loading, user }) => ({
   user: user.user,
   data: attendances.data,
   classes: attendances.classes,
+  years: attendances.years,
   branches: attendances.branches,
   defaultBranch: user.defaultBranch,
   pagination: attendances.pagination,
@@ -51,13 +52,17 @@ class Index extends PureComponent {
     const {
       location: { query },
       defaultBranch,
+      user
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      dataYear: user ? user?.schoolYear : {},
       search: {
         classId: query?.classId,
         nameStudent: query?.nameStudent,
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
+        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         date: query?.date
           ? Helper.getDate(query.date, variables.DATE_FORMAT.DATE_AFTER)
@@ -115,6 +120,10 @@ class Index extends PureComponent {
       });
     }
 
+    dispatch({
+      type: 'attendances/GET_YEARS',
+      payload: {},
+    });
     dispatch({
       type: 'attendances/GET_BRANCHES',
       payload: {},
@@ -326,6 +335,13 @@ class Index extends PureComponent {
       ),
     },
     {
+      title: 'Năm học',
+      key: 'class',
+      className: 'min-width-180',
+      width: 180,
+      render: (record) => head(record?.attendance)?.schoolYearId && (<>{head(record?.attendance)?.schoolYear?.yearFrom} - {head(record?.attendance)?.schoolYear?.yearTo}</>),
+    },
+    {
       title: 'Cơ sở',
       key: 'branch',
       className: 'min-width-180',
@@ -408,8 +424,11 @@ class Index extends PureComponent {
       loading: { effects },
       branches,
       classes,
+      years,
+      defaultBranch,
     } = this.props;
-    const { search, visible, object } = this.state;
+    const { search, visible, object, defaultBranchs, dataYear } = this.state;
+
     const loading = effects['attendances/GET_DATA'];
     return (
       <>
@@ -481,15 +500,32 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
+                {
+                  !defaultBranch?.id && (
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                        name="branchId"
+                        onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                      />
+                    </div>
+                  )
+                }
+                {
+                  defaultBranch?.id && (
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={defaultBranchs}
+                        name="branchId"
+                        onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                      />
+                    </div>
+                  )
+                }
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
@@ -501,9 +537,25 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
                     name="date"
                     onChange={(event) => this.onChangeDate(event, 'date')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </div>
               </div>
@@ -540,6 +592,7 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  years: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -554,6 +607,7 @@ Index.defaultProps = {
   pagination: {},
   defaultBranch: {},
   attendancesReasons: [],
+  years: [],
 };
 
 export default Index;
