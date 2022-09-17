@@ -75,6 +75,17 @@ const Parents = memo(
       [switchType],
     );
 
+    useEffect(() => {
+      formRef.current.setFieldsValue({
+        farther: {
+          sex: 'MALE',
+        },
+        mother: {
+          sex: 'FEMALE',
+        },
+      });
+    }, []);
+
     const detailForm = (key, sex) => {
       switch (formType[key]) {
         case infomationTypes.create:
@@ -120,6 +131,7 @@ const Parents = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Giới tính"
+                    disabled
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -355,7 +367,7 @@ const Parents = memo(
             </Pane>
           </Loading>
         </Pane>
-      </Form>
+      </Form >
     );
   },
 );
