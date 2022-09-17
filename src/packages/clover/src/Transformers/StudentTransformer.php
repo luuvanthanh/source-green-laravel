@@ -86,7 +86,7 @@ class StudentTransformer extends BaseTransformer
 
         if ($student->attendance->isNotEmpty()) {
             $newColection =  $student->attendance->filter(function ($value, $key) {
-                return $value->Date->dayOfWeek != Carbon::SUNDAY && $value->Date->dayOfWeek != Carbon::SATURDAY;
+                return $value->Date->dayOfWeek != Carbon::SUNDAY;
             });
         }
 
