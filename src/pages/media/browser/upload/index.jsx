@@ -28,10 +28,14 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   const formRef = useRef();
 
   const dispatch = useDispatch();
-  const [loading, defaultBranch] = useSelector(({ loading: { effects }, user }) => [effects, user]);
+  const [loading, { defaultBranch, user }] = useSelector(({ loading: { effects }, user }) => [
+    effects,
+    user,
+  ]);
   const [fileList, setFileList] = useState([]);
   const [students, setStudents] = useState([]);
   const [type, setType] = useState(DEFAULT_TYPE);
+  const [branches, setBranches] = useState([]);
 
   const addFile = ({ file }) => {
     const { beforeUpload } = imageUploadProp;
@@ -91,6 +95,8 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
     });
   };
 
+  // console.log(user);
+
   const fetchStudents = () => {
     dispatch({
       type: 'categories/GET_STUDENTS',
@@ -104,10 +110,33 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
         }
       },
     });
+    dispatch({
+      type: 'categories/GET_BRANCHES',
+      callback: (res) => {
+        if (res) {
+          setBranches(res.parsePayload);
+        }
+      },
+    });
   };
 
   useEffect(() => {
     fetchStudents();
+  }, []);
+
+  useEffect(() => {
+    if (
+      [
+        variables.LIST_ROLE_CODE.TEACHER,
+        variables.LIST_ROLE_CODE.PRINCIPAL,
+        variables.LIST_ROLE_CODE.CEO,
+      ].includes(user.roleCode) &&
+      type === 'TARGET'
+    ) {
+      formRef.setFieldsValue({
+        branchId: user.defaultBranch.id,
+      });
+    }
   }, []);
 
   const cancelModal = () => {
@@ -142,26 +171,45 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
               onChange={({ target: { value } }) => setType(value)}
             />
           </Pane>
-          {
-            fileList?.length > 0 && (
-              <Pane className={csx(styles['wrapper-delete'])} onClick={() => setFileList([])}>
-                <h3 className={styles.title}>Xoá tất cả</h3>
-              </Pane>
-            )
-          }
+          {fileList?.length > 0 && (
+            <Pane className={csx(styles['wrapper-delete'])} onClick={() => setFileList([])}>
+              <h3 className={styles.title}>Xoá tất cả</h3>
+            </Pane>
+          )}
         </div>
 
         {type === 'TARGET' && (
           <>
-            <Pane>
-              <FormItem
-                label="Tên trẻ"
-                name="studentId"
-                type={variables.SELECT}
-                data={students}
-                options={['id', 'fullName']}
-                rules={[variables.RULES.EMPTY]}
-              />
+            <Pane className="row">
+              <Pane className="col-lg-6">
+                <FormItem
+                  label="Cơ sở"
+                  name="branchId"
+                  type={variables.SELECT}
+                  data={branches}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
+              <Pane className="col-lg-6">
+                <FormItem
+                  label="Lớp"
+                  name="classId"
+                  type={variables.SELECT}
+                  data={students}
+                  options={['id', 'fullName']}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
+              <Pane className="col-lg-12">
+                <FormItem
+                  label="Tên trẻ"
+                  name="studentId"
+                  type={variables.SELECT}
+                  data={students}
+                  options={['id', 'fullName']}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
             </Pane>
             <Pane>
               <FormItem label="Mô tả" name="description" type={variables.INPUT} />
@@ -182,7 +230,10 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
               <Pane className="row" style={{ width: 'calc(100% + 15px)' }}>
                 {fileList.map((file, index) => (
                   <Pane
-                    className={csx('col-lg-3 col-md-4 col-sm-4  col-4 my10', imageStyles.imageWrapper)}
+                    className={csx(
+                      'col-lg-3 col-md-4 col-sm-4  col-4 my10',
+                      imageStyles.imageWrapper,
+                    )}
                     key={index}
                   >
                     <img
@@ -230,8 +281,8 @@ Index.propTypes = {
 };
 
 Index.defaultProps = {
-  onOk: () => { },
-  onCancel: () => { },
+  onOk: () => {},
+  onCancel: () => {},
 };
 
 export default Index;

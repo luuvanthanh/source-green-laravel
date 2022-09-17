@@ -336,6 +336,20 @@ export const variables = {
     FOURTH: 'Lần 4',
     FIVETH: 'Lần 5',
   },
+  LIST_ROLE_CODE: {
+    STAFF: 'staff',
+    PARENT: 'parent',
+    TEACHER: 'teacher',
+    NURSEMAID: 'nursemaid',
+    PRINCIPAL: 'principal',
+    ADMIN: 'admin',
+    SALE: 'sale',
+    HR: 'hr',
+    COOK: 'cook',
+    HELTHCARE: 'healthcare',
+    CUSTOMERLEAD: 'customerlead',
+    CEO: 'ceo',
+  },
 };
 
 export default variables;

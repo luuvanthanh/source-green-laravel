@@ -8,6 +8,7 @@ export default {
       isError: false,
       data: {},
     },
+    physicals: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -18,6 +19,10 @@ export default {
         isError: false,
         data: {},
       },
+    }),
+    SET_PHYSICAL: (state, { payload }) => ({
+      ...state,
+      physicals: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -52,6 +57,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_PHYSICAL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getPhysical, payload);
+        yield saga.put({
+          type: 'SET_PHYSICAL',
+          payload: response.items,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },
