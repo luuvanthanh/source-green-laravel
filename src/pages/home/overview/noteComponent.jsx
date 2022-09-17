@@ -81,21 +81,21 @@ const Index = memo(({ classId, branchId }) => {
   };
   const onFormTeacher = (value, type) => {
     const data = value?.student?.class?.classTeachers?.find((i) => i?.isLead);
-    if(type === 'received') {
+    if (type === 'received') {
       return (
         <>
-          {`${data?.employee?.fullName || ''} lúc ${Helper.getDate(
+          {`${value?.employee?.fullName || ''} lúc ${Helper.getDate(
             detailsNote?.confirmedTime,
             variables.DATE_FORMAT.TIME_DATE_MONTH,
           )}`}
         </>
       );
     }
-      return (
-        <>
-          {`${data?.employee?.fullName || ''}`}
-        </>
-      );
+    return (
+      <>
+        {`${data?.employee?.fullName || ''}`}
+      </>
+    );
   };
 
   return (
@@ -178,7 +178,7 @@ const Index = memo(({ classId, branchId }) => {
                 <div className="ml10">
                   <p className={classnames('mb0', styles.class)}>Giáo viên</p>
                   <p className="font-weight-bold font-size-14 mb0">
-                  {onFormTeacher(detailsNote, 'teacher')}
+                    {onFormTeacher(detailsNote, 'teacher')}
                   </p>
                 </div>
               </div>
@@ -187,13 +187,11 @@ const Index = memo(({ classId, branchId }) => {
               <p className="mb5">Trạng thái</p>
               <div className={styles['btn-status']}>
                 {Helper.tagStatus(
-                  `${
-                    detailsNote?.status === variables.STATUS.CONFIRMING
-                      ? variables.STATUS.VALID
-                      : ''
+                  `${detailsNote?.status === variables.STATUS.CONFIRMING
+                    ? variables.STATUS.VALID
+                    : ''
                   }`,
-                  `${
-                    detailsNote?.status === variables.STATUS.CONFIRMING ? 'Chưa nhận' : 'Đã nhận'
+                  `${detailsNote?.status === variables.STATUS.CONFIRMING ? 'Chưa nhận' : 'Đã nhận'
                   }`,
                 )}
               </div>

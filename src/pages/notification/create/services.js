@@ -1,4 +1,6 @@
 import request from '@/utils/request';
+import { omit } from 'lodash';
+import { Helper } from '@/utils';
 
 export function add(data = {}) {
   return request('/news', {
@@ -29,5 +31,27 @@ export function getClass(data = {}) {
     params: {
       ...data,
     },
+  });
+}
+
+export function getParents(params = {}) {
+  return request(`/students`, {
+    method: 'GET',
+    params: {
+      ...params,
+      studentStatus: 'OFFICAL',
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
+
+export function send(data = {}) {
+  return request('/news/send', {
+    method: 'POST',
+    data,
+    parse: true,
+    editNotification: true,
+    cancelNotification: true,
   });
 }

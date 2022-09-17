@@ -88,7 +88,7 @@ export default {
     },
     *GET_PARENTS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(categories.getParents, payload);
+        const response = yield saga.call(services.getParents, payload);
         callback(response);
       } catch (error) {
         callback(null, error);
@@ -97,6 +97,18 @@ export default {
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
+        callback(payload);
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã lưu thông báo thành công',
+        });
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *SEND({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.send, payload);
         callback(payload);
         notification.success({
           message: 'Thông báo',
