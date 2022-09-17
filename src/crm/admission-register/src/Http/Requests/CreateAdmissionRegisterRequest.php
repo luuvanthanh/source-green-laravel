@@ -5,6 +5,7 @@ namespace GGPHP\Crm\AdmissionRegister\Http\Requests;
 use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
 use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\Fee\Models\SchoolYear;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateAdmissionRegisterRequest extends FormRequest
@@ -31,7 +32,7 @@ class CreateAdmissionRegisterRequest extends FormRequest
                 'required',
                 'exists:customer_leads,id',
                 function ($attribute, $value, $fail) {
-                    $customerLead = CustomerLead::find($value);
+                    $customerLead = CustomerLead::findOrFail($value);
 
                     if (is_null($customerLead->email) && (is_null($customerLead->phone) || is_null($customerLead->orther_phone))) {
                         return $fail('Thông tin Email và Số điện thoại không được trống');
@@ -63,5 +64,17 @@ class CreateAdmissionRegisterRequest extends FormRequest
             'parent_wish' => 'string',
             'children_note' => 'string'
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = Parent::all();
+
+        if (!empty($data['date_register'])) {
+            $schoolYear = SchoolYear::whereDate('start_date', '<=', $data['date_register'])->whereDate('end_date', '>=', $data['date_register'])->first();
+            $data['school_year_id'] = $schoolYear->id;
+        }
+
+        return $data;
     }
 }

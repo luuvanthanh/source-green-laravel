@@ -129,7 +129,6 @@ class AdmissionRegisterRepositoryEloquent extends BaseRepository implements Admi
 
     public function create(array $attributes)
     {
-        $attributes['school_year_id'] = $this->getSchoolYear();
         \DB::beginTransaction();
         try {
             $admissionRegister = AdmissionRegister::create($attributes);

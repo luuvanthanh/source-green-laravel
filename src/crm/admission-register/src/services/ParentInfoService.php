@@ -11,7 +11,7 @@ class ParentInfoService
         if (!is_null($customerLead)) {
             $dataCustomerLead = [
                 'full_name' => $customerLead->full_name,
-                'birth_date' => $customerLead->birth_date,
+                'birth_date' => !empty($customerLead->birth_date) ? $customerLead->birth_date : null,
                 'sex' => $customerLead->sex,
                 'email' => $customerLead->email,
                 'phone' => $customerLead->phone,
