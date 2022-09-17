@@ -136,13 +136,15 @@ class AbsentCreateRequest extends FormRequest
         $data = parent::all();
         $weekend = resolve(StudentRepository::class)->holidays($data['startDate'], $data['endDate']);
 
-        $data['expectedDate'] = $data['expectedDate'] - $weekend;
+        if (!empty($data['expectedDate'])) {
+            $data['expectedDate'] = $data['expectedDate'] - $weekend;
+        }
         $schoolYear = SchoolYear::where('IsCheck', true)->first();
 
         if (!is_null($schoolYear)) {
             $data['schoolYearId'] = $schoolYear->Id;
         }
-        
+
         return $data;
     }
 }
