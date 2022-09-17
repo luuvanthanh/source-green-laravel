@@ -12,7 +12,6 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import ability from '@/utils/ability';
 
 let isMounted = true;
 /**
@@ -36,6 +35,7 @@ const mapStateToProps = ({ classes, loading, user }) => ({
   pagination: classes.pagination,
   branches: classes.branches,
   defaultBranch: user.defaultBranch,
+  user: user.user,
   loading,
 });
 @connect(mapStateToProps)
@@ -215,6 +215,7 @@ class Index extends PureComponent {
   header = () => {
     const {
       location: { pathname },
+      user,
     } = this.props;
     const columns = [
       {
@@ -246,35 +247,33 @@ class Index extends PureComponent {
       },
       {
         key: 'actions',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-200',
+        width: 200,
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="list"
-              onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
-              permission="CAUHINH"
-            />
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="CAUHINH"
-            />
-            <Button
-              color="danger"
-              icon="remove"
-              onClick={() => this.onRemove(record.id)}
-              permission="CAUHINH"
-            />
-          </div>
+          <>
+            {user?.roleCode === "principal" && (
+              <div className={styles['list-button']}>
+                <Button
+                  color="primary"
+                  icon="list"
+                  onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
+                />
+                <Button
+                  color="primary"
+                  icon="edit"
+                  onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+                />
+                <Button
+                  color="danger"
+                  icon="remove"
+                  onClick={() => this.onRemove(record.id)}
+                />
+              </div>)}
+          </>
         ),
       },
     ];
-    return !ability.can('CAUHINH', 'CAUHINH')
-      ? columns.filter((item) => item.key !== 'actions')
-      : columns;
+    return columns;
   };
 
   render() {
@@ -380,6 +379,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -392,6 +392,7 @@ Index.defaultProps = {
   error: {},
   defaultBranch: {},
   branches: [],
+  user: {},
 };
 
 export default Index;

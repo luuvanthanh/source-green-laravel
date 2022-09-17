@@ -4,7 +4,7 @@ import { Form } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import moment from 'moment';
-import { debounce } from 'lodash';
+import { debounce, head } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -46,7 +46,7 @@ const Index = memo(() => {
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     keyWord: query?.keyWord,
     branchId: query?.branchId || defaultBranch?.id,
-    classId: query?.classId,
+    classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
     schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
   });
 
@@ -248,9 +248,9 @@ const Index = memo(() => {
         ...search,
         isOverWeight: 'true',
       },
-      callback: () => {},
+      callback: () => { },
     });
-    
+
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),
@@ -330,7 +330,7 @@ const Index = memo(() => {
                   <FormItem
                     name="classId"
                     type={variables.SELECT}
-                    data={[{ name: 'Chọn tất cả', id: null }, ...category?.classes]}
+                    data={user?.role === "Teacher" ? [...category?.classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...category?.classes]}
                     onChange={(value) => changeFilter('classId')(value)}
                     allowClear={false}
                   />

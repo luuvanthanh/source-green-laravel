@@ -62,8 +62,8 @@ class Index extends PureComponent {
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: query?.endDate ? moment(query?.endDate) : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        startDate: query?.startDate ? moment(query?.startDate) : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        endDate: query?.endDate ? moment(query?.endDate) : moment().endOf('months'),
+        startDate: query?.startDate ? moment(query?.startDate) : moment().startOf('months'),
       },
     };
     setIsMounted(true);
@@ -265,6 +265,7 @@ class Index extends PureComponent {
   onChangeSelect = (e, type) => {
     const {
       years,
+      user
     } = this.props;
     if (type === 'schoolYearId') {
       const data = years?.find(i => i.id === e);
@@ -275,8 +276,8 @@ class Index extends PureComponent {
         (prevState) => ({
           search: {
             ...prevState.search,
-            startDate: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-            endDate: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+            startDate: user?.schoolYear?.id === e ? moment().startOf('months') : moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+            endDate: user?.schoolYear?.id === e ? moment().endtOf('months') : moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
           },
         }),
       );

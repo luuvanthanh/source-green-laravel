@@ -56,6 +56,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      dataYear: user ? user?.schoolYear : {},
       search: {
         classId: query?.classId,
         nameStudent: query?.nameStudent,
@@ -338,7 +339,7 @@ class Index extends PureComponent {
       key: 'class',
       className: 'min-width-180',
       width: 180,
-      render: (record) => head(record?.attendance).schoolYearId && (<>{head(record?.attendance).schoolYear?.yearFrom} - {head(record?.attendance)?.schoolYear?.yearTo}</>),
+      render: (record) => head(record?.attendance)?.schoolYearId && (<>{head(record?.attendance)?.schoolYear?.yearFrom} - {head(record?.attendance)?.schoolYear?.yearTo}</>),
     },
     {
       title: 'Cơ sở',
@@ -426,7 +427,7 @@ class Index extends PureComponent {
       years,
       defaultBranch,
     } = this.props;
-    const { search, visible, object, defaultBranchs } = this.state;
+    const { search, visible, object, defaultBranchs, dataYear } = this.state;
 
     const loading = effects['attendances/GET_DATA'];
     return (
@@ -549,6 +550,12 @@ class Index extends PureComponent {
                     name="date"
                     onChange={(event) => this.onChangeDate(event, 'date')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </div>
               </div>
