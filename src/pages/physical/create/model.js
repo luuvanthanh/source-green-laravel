@@ -7,6 +7,7 @@ export default {
     branches: [],
     classes: [],
     details: {},
+    physicals: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -26,6 +27,10 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload,
+    }),
+    SET_PHYSICAL: (state, { payload }) => ({
+      ...state,
+      physicals: payload,
     }),
   },
   effects: {
@@ -61,7 +66,29 @@ export default {
     },
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
+        const response = yield saga.call(services.getStudents, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_PHYSICAL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getPhysical, payload);
+        yield saga.put({
+          type: 'SET_PHYSICAL',
+          payload: response.items,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STUDENTS_OFFICAL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getStudents, payload);
         callback(response);
       } catch (error) {
         callback(null, error);

@@ -12,3 +12,13 @@ export function update(data = {}) {
     data,
   });
 }
+
+export function getPhysical(params = {}) {
+  return request('/criteria-group-properties', {
+    method: 'GET',
+    params: {
+      ...params,
+      type: 'PHYSICAL',
+    },
+  });
+}

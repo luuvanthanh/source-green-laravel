@@ -25,7 +25,7 @@ const { Item: ListItem } = List;
 const Index = memo(() => {
   const [
     menuData,
-    { branches, classes, error },
+    { branches, classes, error, physicals },
     loading,
   ] = useSelector(({ menu, physicalCreate, loading: { effects } }) => [
     menu.menuLeftPhysical,
@@ -52,7 +52,7 @@ const Index = memo(() => {
   const [students, setStudents] = useState([]);
   const [studentsPost, setStudentsPost] = useState([]);
   const [reLoadData, setReLoadData] = useState(false);
-  const [errorTable, setErrorTable] = useState(false);
+  // const [errorTable, setErrorTable] = useState(false);
 
   useEffect(() => {
     mounted.current = true;
@@ -63,6 +63,9 @@ const Index = memo(() => {
     dispatch({
       type: 'physicalCreate/GET_BRANCHES',
       payload: {},
+    });
+    dispatch({
+      type: 'physicalCreate/GET_PHYSICAL',
     });
   }, []);
 
@@ -90,7 +93,7 @@ const Index = memo(() => {
     dispatch({
       type: 'physicalCreate/GET_CLASSES',
       payload: {
-        branch: branchId
+        branch: branchId,
       },
     });
   };
@@ -111,7 +114,9 @@ const Index = memo(() => {
           let newStudent = [];
           if (!isEmpty(response?.items)) {
             if (!isEmpty(studentsPost)) {
-              newStudent = response?.items.filter(item => !(studentsPost.find(object => object?.student?.id === item?.student?.id)));
+              newStudent = response?.items.filter(
+                (item) => !studentsPost.find((object) => object?.student?.id === item?.student?.id),
+              );
             } else {
               newStudent = response?.items;
             }
@@ -145,7 +150,9 @@ const Index = memo(() => {
           let newStudent = [];
           if (!isEmpty(response?.items)) {
             if (!isEmpty(studentsPost)) {
-              newStudent = response?.items.filter(item => !(studentsPost.find(object => object?.student?.id === item?.student?.id)));
+              newStudent = response?.items.filter(
+                (item) => !studentsPost.find((object) => object?.student?.id === item?.student?.id),
+              );
             } else {
               newStudent = response?.items;
             }
@@ -165,17 +172,16 @@ const Index = memo(() => {
   };
 
   const changeCheckboxEmployee = (e, id) => {
-    const newStudent = [...students].map((item) => (item?.student?.id === id ? { ...item, checked: !item?.checked } : item));
+    const newStudent = [...students].map((item) =>
+      item?.student?.id === id ? { ...item, checked: !item?.checked } : item,
+    );
     if (size([...newStudent].filter((item) => !item?.checked)) === 0) {
       setIsAllStudents(true);
     }
     if (size([...newStudent].filter((item) => item?.checked)) === 0) {
       setIsAllStudents(false);
     }
-    mountedSet(
-      setStudents,
-      newStudent
-    );
+    mountedSet(setStudents, newStudent);
   };
 
   const handleInfiniteOnLoad = () => {
@@ -193,7 +199,14 @@ const Index = memo(() => {
       },
       callback: (response, error) => {
         if (response) {
-          mountedSet(setStudents, students.concat(isAllStudent ? response.items.map(item => ({ ...item, checked: true })) : response.items));
+          mountedSet(
+            setStudents,
+            students.concat(
+              isAllStudent
+                ? response.items.map((item) => ({ ...item, checked: true }))
+                : response.items,
+            ),
+          );
           mountedSet(setSearchStudents, {
             ...searchStudent,
             total: response.totalCount,
@@ -211,9 +224,15 @@ const Index = memo(() => {
 
   const changeAll = (event) => {
     if (event.target.checked) {
-      mountedSet(setStudents, [...students].map(item => ({ ...item, checked: true })));
+      mountedSet(
+        setStudents,
+        [...students].map((item) => ({ ...item, checked: true })),
+      );
     } else {
-      mountedSet(setStudents, [...students].map(item => ({ ...item, checked: false })));
+      mountedSet(
+        setStudents,
+        [...students].map((item) => ({ ...item, checked: false })),
+      );
     }
     mountedSet(setIsAllStudents, event.target.checked);
   };
@@ -225,8 +244,8 @@ const Index = memo(() => {
       ...record,
       [name]: {
         ...record[name],
-        new: value
-      }
+        new: value,
+      },
     };
     setStudentsPost(newStudentsPost);
   };
@@ -242,15 +261,13 @@ const Index = memo(() => {
           fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
           fullName={record?.student?.fullName || ''}
         />
-      )
+      ),
     },
     {
       title: 'Tuổi (tháng)',
       key: 'age',
       className: 'min-width-120',
-      render: (record) => (
-        <Text size="normal">{record?.student?.age || 0} tháng</Text>
-      ),
+      render: (record) => <Text size="normal">{record?.student?.age || 0} tháng</Text>,
     },
     {
       title: 'Chiều cao (cm)',
@@ -262,7 +279,7 @@ const Index = memo(() => {
           align: 'center',
           render: (record) => (
             <span className="font-weight-bold text-danger">{record?.height?.value || 0}</span>
-          )
+          ),
         },
         {
           title: 'Mới',
@@ -282,9 +299,9 @@ const Index = memo(() => {
                 <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
               )} */}
             </>
-          )
+          ),
         },
-      ]
+      ],
     },
     {
       title: 'Cân nặng (kg)',
@@ -296,7 +313,7 @@ const Index = memo(() => {
           align: 'center',
           render: (record) => (
             <span className="font-weight-bold text-danger">{record?.weight?.value || 0}</span>
-          )
+          ),
         },
         {
           title: 'Mới',
@@ -316,19 +333,29 @@ const Index = memo(() => {
                 <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
               )} */}
             </>
-          )
+          ),
         },
-      ]
+      ],
     },
   ];
 
   const handleApply = () => {
-    const newStudent = [...students].filter(item => !item.checked);
+    const newStudent = [...students].filter((item) => !item.checked);
     setStudents(newStudent);
     if (newStudent?.length <= 7 && searchStudent?.total > 7) {
       setReLoadData(true);
     }
-    setStudentsPost(studentsPost.concat([...students].filter(item => item.checked)));
+    setStudentsPost(
+      studentsPost.concat(
+        [...students]
+          .filter((item) => item.checked)
+          .map((i) => ({
+            ...i,
+            height: { value: i?.height?.value },
+            weight: { value: i?.weight?.value },
+          })),
+      ),
+    );
   };
 
   useEffect(() => {
@@ -346,41 +373,35 @@ const Index = memo(() => {
     //   return true;
     // }
     const payload = [];
-    [...studentsPost].forEach(item => {
+    [...studentsPost].forEach((item) => {
       if (item?.weight?.new) {
         payload.push({
-          id: item?.weight?.id,
-          studentCriteriaRequest: {
-            reportDate: Helper.getDateTime({
-              value: Helper.setDate({
-                ...variables.setDateData,
-                originValue: moment(),
-              }),
-              isUTC: false,
+          reportDate: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(),
             }),
-            criteriaGroupPropertyId: item?.weight?.criteriaGroupProperty?.id || '',
-            studentId: item?.student?.id || '',
-            value: String(item?.weight?.new || 0),
-            note: ""
-          }
+            isUTC: false,
+          }),
+          criteriaGroupPropertyId: physicals.find((i) => i.code === 'WEIGHT').id || '',
+          studentId: item?.student?.id || '',
+          value: String(item?.weight?.new || 0),
+          note: '',
         });
       }
       if (item?.height?.new) {
         payload.push({
-          id: item?.height?.id,
-          studentCriteriaRequest: {
-            reportDate: Helper.getDateTime({
-              value: Helper.setDate({
-                ...variables.setDateData,
-                originValue: moment(),
-              }),
-              isUTC: false,
+          reportDate: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(),
             }),
-            criteriaGroupPropertyId: item?.height?.criteriaGroupProperty?.id || '',
-            studentId: item?.student?.id || '',
-            value: String(item?.height?.new || 0),
-            note: ""
-          }
+            isUTC: false,
+          }),
+          criteriaGroupPropertyId: physicals.find((i) => i.code === 'HEIGHT').id || '',
+          studentId: item?.student?.id || '',
+          value: String(item?.height?.new || 0),
+          note: '',
         });
       }
     });
@@ -434,10 +455,7 @@ const Index = memo(() => {
               </Pane>
               <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
                 <FormItemAntd label="Người nhận thông báo">
-                  <Checkbox
-                    checked={isAllStudent}
-                    onChange={(event) => changeAll(event)}
-                  >
+                  <Checkbox checked={isAllStudent} onChange={(event) => changeAll(event)}>
                     Tất cả học sinh
                   </Checkbox>
                 </FormItemAntd>
@@ -454,7 +472,10 @@ const Index = memo(() => {
                     <List
                       loading={searchStudent.loading}
                       dataSource={students}
-                      renderItem={({ student: { id, fullName, positionLevel, fileImage }, checked }) => (
+                      renderItem={({
+                        student: { id, fullName, positionLevel, fileImage },
+                        checked,
+                      }) => (
                         <ListItem key={id} className={styles.listItem}>
                           <Pane className="px20 w-100 d-flex align-items-center">
                             <Checkbox
@@ -498,7 +519,9 @@ const Index = memo(() => {
             <Pane className="card">
               <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
                 <Pane className="mb20">
-                  <Heading type="form-title">Nhập thể chất <span className="text-danger">*</span></Heading>
+                  <Heading type="form-title">
+                    Nhập thể chất <span className="text-danger">*</span>
+                  </Heading>
                 </Pane>
               </Pane>
               <Pane className="p20">
