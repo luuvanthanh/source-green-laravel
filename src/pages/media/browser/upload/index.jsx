@@ -1,7 +1,7 @@
-import { memo, useState, useEffect, useRef } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Modal, Upload, Form } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { isEqual, size } from 'lodash';
+import { head, isEqual, size } from 'lodash';
 import { useDispatch, useSelector } from 'dva';
 import csx from 'classnames';
 import PropTypes from 'prop-types';
@@ -25,7 +25,7 @@ const uploadTypes = [
 const DEFAULT_TYPE = 'AUTO';
 
 const Index = memo(({ onOk, onCancel, ...props }) => {
-  const formRef = useRef();
+  const [formRef] = Form.useForm();
 
   const dispatch = useDispatch();
   const [loading, { defaultBranch, user }] = useSelector(({ loading: { effects }, user }) => [
@@ -36,6 +36,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   const [students, setStudents] = useState([]);
   const [type, setType] = useState(DEFAULT_TYPE);
   const [branches, setBranches] = useState([]);
+  const [classes, setClasses] = useState([]);
 
   const addFile = ({ file }) => {
     const { beforeUpload } = imageUploadProp;
@@ -129,15 +130,31 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
       [
         variables.LIST_ROLE_CODE.TEACHER,
         variables.LIST_ROLE_CODE.PRINCIPAL,
-        variables.LIST_ROLE_CODE.CEO,
+        variables.LIST_ROLE_CODE.SALE,
       ].includes(user.roleCode) &&
       type === 'TARGET'
     ) {
       formRef.setFieldsValue({
         branchId: user.defaultBranch.id,
       });
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: user.defaultBranch.id,
+        },
+        callback: (response) => {
+          if (response) {
+            setClasses(response.items);
+            if ([variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode)) {
+              formRef.setFieldsValue({
+                classId: head(user?.objectInfo?.classTeachers).classId,
+              });
+            }
+          }
+        },
+      });
     }
-  }, []);
+  }, [user, type]);
 
   const cancelModal = () => {
     if (
@@ -157,7 +174,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
         initialValues={{
           uploadType: DEFAULT_TYPE,
         }}
-        ref={formRef}
+        form={formRef}
         onFinish={upload}
       >
         <div className={csx(styles['wrapper-top'], 'row')}>
@@ -188,6 +205,11 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
                   type={variables.SELECT}
                   data={branches}
                   rules={[variables.RULES.EMPTY]}
+                  disabled={[
+                    variables.LIST_ROLE_CODE.TEACHER,
+                    variables.LIST_ROLE_CODE.PRINCIPAL,
+                    variables.LIST_ROLE_CODE.CEO,
+                  ].includes(user.roleCode)}
                 />
               </Pane>
               <Pane className="col-lg-6">
@@ -195,9 +217,9 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
                   label="Lớp"
                   name="classId"
                   type={variables.SELECT}
-                  data={students}
-                  options={['id', 'fullName']}
+                  data={classes}
                   rules={[variables.RULES.EMPTY]}
+                  disabled={[variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode)}
                 />
               </Pane>
               <Pane className="col-lg-12">
