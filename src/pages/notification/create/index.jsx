@@ -482,7 +482,7 @@ const Index = memo(() => {
   const changeCheckboxParent = (id) => {
     mountedSet(
       setParents,
-      parents.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)),
+      parents.map((item) => (item?.student?.id === id ? { ...item, checked: !item.checked } : item)),
     );
   };
 
@@ -609,7 +609,7 @@ const Index = memo(() => {
           : [],
       parentNews:
         type === variablesModules.TYPE.PARENT && !isAllParents
-          ? parents.filter((item) => item.checked).map((item) => ({ parentId: item.id }))
+          ? parents.filter((item) => item.checked).map((item) => ({ parentId: item?.student?.id }))
           : [],
     };
     dispatch({
@@ -999,22 +999,22 @@ const Index = memo(() => {
                               dataSource={parents}
                               renderItem={(i) =>
                               (
-                                <ListItem key={i?.id} className={styles.listItem}>
+                                <ListItem key={i?.student?.id} className={styles.listItem}>
                                   <Pane className="px20 w-100 d-flex align-items-center">
                                     <Checkbox
                                       checked={i?.checked}
                                       className="mr15"
-                                      onChange={() => changeCheckboxParent(i?.id)}
+                                      onChange={() => changeCheckboxParent(i?.student?.id)}
                                     />
                                     <Pane className={styles.userInformation}>
                                       <AvatarTable
-                                        fileImage={Helper.getPathAvatarJson(i?.fileImage)}
+                                        fileImage={Helper.getPathAvatarJson(i?.student?.fileImage)}
                                       />
                                       <Pane>
-                                        <h3>{i?.fullName}</h3>
+                                        <h3>{i?.student?.fullName}</h3>
                                         <div className='d-flex'>
-                                          {i?.class && i?.studentParents?.length > 0 ? (<p className='pr5'>{i?.class?.name} -</p>) : <p >{i?.class?.name}</p>}
-                                          {i?.studentParents?.length > 0 && (<p className='text-danger'>Chưa có phụ huynh</p>)}
+                                          {i?.student?.class && !i?.hasParentAccount ? (<p className='pr5'>{i?.class?.name} -</p>) : <p >{i?.class?.name}</p>}
+                                          {!i?.hasParentAccount && (<p className='text-danger'>Chưa có phụ huynh</p>)}
                                         </div>
                                       </Pane>
                                     </Pane>
