@@ -23,7 +23,7 @@ import localVariables from '../../utils/variables';
 
 const Index = memo(() => {
   const formRef = useRef();
-  const filterRef = useRef();
+  const [filterRef] = Form.useForm();
 
   const dispatch = useDispatch();
   const [
@@ -50,15 +50,26 @@ const Index = memo(() => {
     creationTimeTo: query?.creationTimeTo
       ? moment(query?.creationTimeTo)
       : moment().endOf('weeks')?.format(variables.DATE_FORMAT.DATE_AFTER),
+    branchId: query?.branchId || user.defaultBranch.id,
+    classId: query?.classId || head(user?.objectInfo?.classTeachers)?.classId,
   });
   const [groupIds, setGroupIds] = useState([]);
   const [validateDescription, setValidateDescription] = useState(false);
+  const [branches, setBranches] = useState([]);
+  const [classes, setClasses] = useState([]);
 
   const changeFilterDate = (values) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       creationTimeFrom: values ? values[0].format(variables.DATE_FORMAT.DATE_AFTER) : null,
       creationTimeTo: values ? values[1].format(variables.DATE_FORMAT.DATE_AFTER) : null,
+    }));
+  };
+
+  const changeFilter = (value, type) => {
+    setSearch((prev) => ({
+      ...prev,
+      [`${type}`]: value,
     }));
   };
 
@@ -80,15 +91,15 @@ const Index = memo(() => {
         ...search,
         status: localVariables.CLASSIFY_STATUS.VALIDATING,
         maxResultCount: variables.PAGINATION.SIZEMAX,
-        branchId:
-          [
-            variables.LIST_ROLE_CODE.PRINCIPAL,
-            variables.LIST_ROLE_CODE.CEO,
-            variables.LIST_ROLE_CODE.TEACHER,
-          ].includes(user.roleCode) && user.defaultBranch.id,
-        classId:
-          [variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode) &&
-          head(user?.objectInfo?.classTeachers).classId,
+        // branchId:
+        //   [
+        //     variables.LIST_ROLE_CODE.PRINCIPAL,
+        //     variables.LIST_ROLE_CODE.SALE,
+        //     variables.LIST_ROLE_CODE.TEACHER,
+        //   ].includes(user.roleCode) && user.defaultBranch.id,
+        // classId:
+        //   [variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode) &&
+        //   head(user?.objectInfo?.classTeachers).classId,
       },
     });
     history.push({
@@ -340,6 +351,14 @@ const Index = memo(() => {
 
   useEffect(() => {
     fetchRecordedFiles();
+    dispatch({
+      type: 'categories/GET_BRANCHES',
+      callback: (res) => {
+        if (res) {
+          setBranches(res.parsePayload);
+        }
+      },
+    });
   }, []);
 
   useEffect(() => {
@@ -373,6 +392,36 @@ const Index = memo(() => {
     </Menu>
   );
 
+  useEffect(() => {
+    if (
+      [
+        variables.LIST_ROLE_CODE.TEACHER,
+        variables.LIST_ROLE_CODE.PRINCIPAL,
+        variables.LIST_ROLE_CODE.SALE,
+      ].includes(user.roleCode)
+    ) {
+      filterRef.setFieldsValue({
+        branchId: user.defaultBranch.id,
+      });
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: user.defaultBranch.id,
+        },
+        callback: (response) => {
+          if (response) {
+            setClasses(response.items);
+            if ([variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode)) {
+              filterRef.setFieldsValue({
+                classId: head(user?.objectInfo?.classTeachers).classId,
+              });
+            }
+          }
+        },
+      });
+    }
+  }, [user]);
+
   return (
     <>
       <Helmet title="Duyệt hình" />
@@ -384,12 +433,14 @@ const Index = memo(() => {
         <Pane className="mb20">
           <Form
             layout="vertical"
-            ref={filterRef}
+            form={filterRef}
             initialValues={{
               rangeTime: [
                 search?.creationTimeFrom ? moment(search?.creationTimeFrom) : null,
                 search?.creationTimeTo ? moment(search?.creationTimeTo) : null,
               ],
+              branchId: query?.branchId || null,
+              classId: query?.classId || null,
             }}
           >
             <Pane className="row">
@@ -401,8 +452,31 @@ const Index = memo(() => {
                   className="mb-0"
                 />
               </Pane>
-
-              <Pane className="col-lg-9 d-flex justify-content-end">
+              <Pane className="col-lg-3">
+                <FormItem
+                  name="branchId"
+                  type={variables.SELECT}
+                  data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...branches]}
+                  rules={[variables.RULES.EMPTY]}
+                  disabled={[
+                    variables.LIST_ROLE_CODE.TEACHER,
+                    variables.LIST_ROLE_CODE.PRINCIPAL,
+                    variables.LIST_ROLE_CODE.CEO,
+                  ].includes(user.roleCode)}
+                  onChange={(e) => changeFilter(e, 'branchId')}
+                />
+              </Pane>
+              <Pane className="col-lg-3">
+                <FormItem
+                  name="classId"
+                  type={variables.SELECT}
+                  data={[{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                  rules={[variables.RULES.EMPTY]}
+                  disabled={[variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode)}
+                  onChange={(e) => changeFilter(e, 'classId')}
+                />
+              </Pane>
+              <Pane className="col-lg-3 d-flex justify-content-end">
                 <Dropdown
                   overlay={menu}
                   trigger={['click']}
