@@ -65,7 +65,7 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: query?.endDate
           ? query?.endDate
-          : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+          : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
         startDate: query?.startDate
           ? query?.startDate
           : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),

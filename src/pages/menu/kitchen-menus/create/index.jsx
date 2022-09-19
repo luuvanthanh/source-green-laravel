@@ -25,8 +25,8 @@ const Index = memo(() => {
     menuData,
     loading,
     { branches, classTypes, foodCommons, meals, error },
-    {user},
-  ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, kitchenMenusCreate,user }) => [
+    { user, defaultBranch },
+  ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, kitchenMenusCreate, user }) => [
     menuLeftChildren,
     effects,
     kitchenMenusCreate,
@@ -34,6 +34,8 @@ const Index = memo(() => {
   ]);
   const dispatch = useDispatch();
   const params = useParams();
+
+  const [defaultBranchs] = useState(defaultBranch?.id ? [defaultBranch] : []);
 
   const [visible, setVisible] = useState(false);
   const [object, setObect] = useState({});
@@ -107,19 +109,19 @@ const Index = memo(() => {
       type: params.id ? 'kitchenMenusCreate/UPDATE' : 'kitchenMenusCreate/ADD',
       payload: params.id
         ? {
-            ...payload,
-            fromDate:
-              fromDate === null ? null : moment(fromDate).format('YYYY-MM-DD'),
-            toDate: toDate === null ? null : moment(toDate).format('YYYY-MM-DD'),
-            ...params,
-          }
+          ...payload,
+          fromDate:
+            fromDate === null ? null : moment(fromDate).format('YYYY-MM-DD'),
+          toDate: toDate === null ? null : moment(toDate).format('YYYY-MM-DD'),
+          ...params,
+        }
         : {
-            ...payload,
-            fromDate:
-              fromDate === null ? null : moment(fromDate).format('YYYY-MM-DD'),
-            toDate: toDate === null ? null : moment(toDate).format('YYYY-MM-DD'),
-            ...params,
-          },
+          ...payload,
+          fromDate:
+            fromDate === null ? null : moment(fromDate).format('YYYY-MM-DD'),
+          toDate: toDate === null ? null : moment(toDate).format('YYYY-MM-DD'),
+          ...params,
+        },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -845,7 +847,7 @@ const Index = memo(() => {
       <Pane style={{ padding: 20, paddingBottom: 0 }} className={styles.wrapper}>
         <Pane className="row">
           <Pane className="col-lg-12">
-            <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
+            <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{ branchId: defaultBranch?.id }}>
               <Loading
                 loading={
                   loading['kitchenMenusCreate/GET_DATA'] ||
@@ -866,16 +868,30 @@ const Index = memo(() => {
                       <Pane className="col-2">{onTimeForm()}</Pane>
                       {params?.id ? (
                         <>
-                          <Pane className="col-3">
-                            <FormItem
-                              data={branches}
-                              label="Cơ sở"
-                              name="branchId"
-                              type={variables.SELECT}
-                              rules={[variables.RULES.EMPTY]}
-                              disabled
-                            />
-                          </Pane>
+                          {!defaultBranch?.id && (
+                            <Pane className="col-3">
+                              <FormItem
+                                data={branches}
+                                label="Cơ sở"
+                                name="branchId"
+                                type={variables.SELECT}
+                                rules={[variables.RULES.EMPTY]}
+                                disabled
+                              />
+                            </Pane>
+                          )}
+                          {defaultBranch?.id && (
+                            <Pane className="col-3">
+                              <FormItem
+                                data={defaultBranchs}
+                                label="Cơ sở"
+                                name="branchId"
+                                type={variables.SELECT}
+                                rules={[variables.RULES.EMPTY]}
+                                disabled
+                              />
+                            </Pane>
+                          )}
                           <Pane className="col-3">
                             <FormItem
                               data={classTypes}
@@ -889,15 +905,28 @@ const Index = memo(() => {
                         </>
                       ) : (
                         <>
-                          <Pane className="col-3">
-                            <FormItem
-                              data={branches}
-                              label="Cơ sở"
-                              name="branchId"
-                              type={variables.SELECT}
-                              rules={[variables.RULES.EMPTY]}
-                            />
-                          </Pane>
+                          {!defaultBranch?.id && (
+                            <Pane className="col-3">
+                              <FormItem
+                                data={branches}
+                                label="Cơ sở"
+                                name="branchId"
+                                type={variables.SELECT}
+                                rules={[variables.RULES.EMPTY]}
+                              />
+                            </Pane>
+                          )}
+                          {defaultBranch?.id && (
+                            <Pane className="col-3">
+                              <FormItem
+                                data={defaultBranchs}
+                                label="Cơ sở"
+                                name="branchId"
+                                type={variables.SELECT}
+                                rules={[variables.RULES.EMPTY]}
+                              />
+                            </Pane>
+                          )}
                           <Pane className="col-3">
                             <FormItem
                               data={classTypes}
@@ -1143,7 +1172,7 @@ const Index = memo(() => {
                       </div>
                     ))}
                   {/* {!params.id && user?.roleCode !== "sale" && ( */}
-                    {!params.id && (user?.roleCode !== "sale" || user?.roleCode !== "teacher") &&  (
+                  {!params.id && (user?.roleCode !== "sale" || user?.roleCode !== "teacher") && (
                     <Pane className="py20 d-flex justify-content-between align-items-center">
                       <p
                         className="btn-delete"
@@ -1167,7 +1196,7 @@ const Index = memo(() => {
                       </Button>
                     </Pane>
                   )}
-                 {params.id && (user?.roleCode !== "sale" || user?.roleCode !== "teacher") &&  (
+                  {params.id && (user?.roleCode !== "sale" || user?.roleCode !== "teacher") && (
                     <Pane className="py20 d-flex justify-content-between align-items-center">
                       <p
                         className="btn-delete"
@@ -1199,7 +1228,7 @@ const Index = memo(() => {
           </Pane>
         </Pane>
       </Pane>
-     </Pane>
+    </Pane>
   );
 });
 
