@@ -149,6 +149,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
         type: 'categories/GET_STUDENTS',
         payload: {
           branchId: user.defaultBranch.id,
+          studentStatus: "OFFICAL",
           class: user.roleCode === variables.LIST_ROLE_CODE.TEACHER ? head(user?.objectInfo?.classTeachers).classId : undefined,
           ClassStatus: user.roleCode === variables.LIST_ROLE_CODE.TEACHER ? 'HAS_CLASS' : 'ALL',
           ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
@@ -204,6 +205,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
         type: 'categories/GET_STUDENTS',
         payload: {
           branchId: value,
+          studentStatus: "OFFICAL",
           ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
         },
         callback: (res) => {
@@ -224,6 +226,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
         payload: {
           ...search,
           class: value,
+          studentStatus: "OFFICAL",
           ClassStatus: 'HAS_CLASS',
           ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
         },
