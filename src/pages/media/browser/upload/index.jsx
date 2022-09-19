@@ -28,7 +28,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   const [formRef] = Form.useForm();
 
   const dispatch = useDispatch();
-  const [loading, { defaultBranch, user }] = useSelector(({ loading: { effects }, user }) => [
+  const [loading, { user }] = useSelector(({ loading: { effects }, user }) => [
     effects,
     user,
   ]);
@@ -37,6 +37,10 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   const [type, setType] = useState(DEFAULT_TYPE);
   const [branches, setBranches] = useState([]);
   const [classes, setClasses] = useState([]);
+  const [search, setSearch] = useState({
+    branchId: undefined,
+    class: undefined,
+  });
 
   const addFile = ({ file }) => {
     const { beforeUpload } = imageUploadProp;
@@ -62,7 +66,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   };
 
   const recorded = (infoFiles) => {
-    const { getFieldsValue } = formRef?.current;
+    const { getFieldsValue } = formRef;
 
     const req = {
       ...getFieldsValue(),
@@ -84,8 +88,8 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
       type: 'upload/UPLOAD_WATER_MARK',
       payload: fileList,
       showNotification: false,
-      callback: ({ results = [] }) => {
-        const files = results.map((result) => result?.fileInfo);
+      callback: (res) => {
+        const files = res?.results.map((result) => result?.fileInfo);
         if (type === 'AUTO') {
           recordedUpload(files);
         }
@@ -99,18 +103,6 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
   // console.log(user);
 
   const fetchStudents = () => {
-    dispatch({
-      type: 'categories/GET_STUDENTS',
-      payload: {
-        branchId: defaultBranch?.defaultBranch?.id,
-        ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-      },
-      callback: (res) => {
-        if (res) {
-          setStudents(res?.items);
-        }
-      },
-    });
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
@@ -153,18 +145,95 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
           }
         },
       });
+      dispatch({
+        type: 'categories/GET_STUDENTS',
+        payload: {
+          branchId: user.defaultBranch.id,
+          class: user.roleCode === variables.LIST_ROLE_CODE.TEACHER ? head(user?.objectInfo?.classTeachers).classId : undefined,
+          ClassStatus: user.roleCode === variables.LIST_ROLE_CODE.TEACHER ? 'HAS_CLASS' : 'ALL',
+          ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+        },
+        callback: (res) => {
+          if (res) {
+            setStudents(res?.items);
+          }
+        },
+      });
+      setSearch({
+        ...search,
+        branchId: user.defaultBranch.id,
+        ClassStatus: 'ALL',
+      });
     }
   }, [user, type]);
 
   const cancelModal = () => {
     if (
       loading['upload/UPLOAD'] ||
-      loading['mediaUpload/UPLOAD'] ||
-      loading['mediaUpload/CREATE']
+      loading['mediaUpload/UPLOAD']
     ) {
       return;
     }
     onCancel();
+  };
+
+  const changeFilter = (value, type) => {
+    if (type === 'branchId') {
+      setSearch({
+        ...search,
+        branchId: value,
+        ClassStatus: 'ALL',
+      });
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: value,
+        },
+        callback: (response) => {
+          if (response) {
+            setClasses(response.items);
+            if ([variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode)) {
+              formRef.setFieldsValue({
+                classId: head(user?.objectInfo?.classTeachers).classId,
+              });
+            }
+          }
+        },
+      });
+      dispatch({
+        type: 'categories/GET_STUDENTS',
+        payload: {
+          branchId: value,
+          ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+        },
+        callback: (res) => {
+          if (res) {
+            setStudents(res?.items);
+          }
+        },
+      });
+    }
+    if (type === 'classId') {
+      setSearch({
+        ...search,
+        class: value,
+        ClassStatus: 'HAS_CLASS',
+      });
+      dispatch({
+        type: 'categories/GET_STUDENTS',
+        payload: {
+          ...search,
+          class: value,
+          ClassStatus: 'HAS_CLASS',
+          ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+        },
+        callback: (res) => {
+          if (res) {
+            setStudents(res?.items);
+          }
+        },
+      });
+    };
   };
 
   return (
@@ -204,12 +273,12 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
                   name="branchId"
                   type={variables.SELECT}
                   data={branches}
-                  rules={[variables.RULES.EMPTY]}
                   disabled={[
                     variables.LIST_ROLE_CODE.TEACHER,
                     variables.LIST_ROLE_CODE.PRINCIPAL,
                     variables.LIST_ROLE_CODE.CEO,
                   ].includes(user.roleCode)}
+                  onChange={(e) => changeFilter(e, 'branchId')}
                 />
               </Pane>
               <Pane className="col-lg-6">
@@ -217,9 +286,9 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
                   label="Lớp"
                   name="classId"
                   type={variables.SELECT}
-                  data={classes}
-                  rules={[variables.RULES.EMPTY]}
+                  data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
                   disabled={[variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode)}
+                  onChange={(e) => changeFilter(e, 'classId')}
                 />
               </Pane>
               <Pane className="col-lg-12">
@@ -303,8 +372,8 @@ Index.propTypes = {
 };
 
 Index.defaultProps = {
-  onOk: () => {},
-  onCancel: () => {},
+  onOk: () => { },
+  onCancel: () => { },
 };
 
 export default Index;

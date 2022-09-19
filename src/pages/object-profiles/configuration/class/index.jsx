@@ -209,14 +209,38 @@ class Index extends PureComponent {
     });
   };
 
-  /**
-   * Function header table
-   */
-  header = () => {
+  onFormBtn = (record) => {
     const {
       location: { pathname },
       user,
     } = this.props;
+    if (user?.roleCode === variables.LIST_ROLE_CODE.PRINCIPAL || user?.roleCode === variables.LIST_ROLE_CODE.ADMIN) {
+      return (
+        <div className={styles['list-button']}>
+          <Button
+            color="primary"
+            icon="list"
+            onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
+          />
+          <Button
+            color="primary"
+            icon="edit"
+            onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+          />
+          <Button
+            color="danger"
+            icon="remove"
+            onClick={() => this.onRemove(record.id)}
+          />
+        </div>);
+    };
+    return "";
+  };
+
+  /**
+   * Function header table
+   */
+  header = () => {
     const columns = [
       {
         title: 'STT',
@@ -251,24 +275,7 @@ class Index extends PureComponent {
         width: 200,
         render: (record) => (
           <>
-            {user?.roleCode === "principal" || user?.roleCode === "admin" && (
-              <div className={styles['list-button']}>
-                <Button
-                  color="primary"
-                  icon="list"
-                  onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
-                />
-                <Button
-                  color="primary"
-                  icon="edit"
-                  onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-                />
-                <Button
-                  color="danger"
-                  icon="remove"
-                  onClick={() => this.onRemove(record.id)}
-                />
-              </div>)}
+            {this?.onFormBtn(record)}
           </>
         ),
       },
