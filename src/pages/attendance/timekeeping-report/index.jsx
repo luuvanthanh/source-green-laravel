@@ -276,13 +276,13 @@ class Index extends PureComponent {
         (prevState) => ({
           search: {
             ...prevState.search,
-            startDate: user?.schoolYear?.id === e ? moment().startOf('months') : moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-            endDate: user?.schoolYear?.id === e ? moment().endtOf('months') : moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+            startDate: user?.schoolYear?.id === e ? moment().startOf('months') : moment(data?.startDate).startOf('months'),
+            endDate: user?.schoolYear?.id === e ? moment().endOf('months') : moment(data?.startDate).endOf('months'),
           },
         }),
       );
       this.formRef.
-        current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+        current.setFieldsValue({ date: user?.schoolYear?.id === e ? [moment().startOf('months'), moment().endOf('months')] : [moment(data?.startDate).startOf('months'), moment(data?.startDate).endOf('months')], isset_history_care: undefined });
     }
     this.debouncedSearch(e, type);
   };

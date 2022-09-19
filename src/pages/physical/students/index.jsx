@@ -156,12 +156,12 @@ const Index = memo(() => {
                   </span>
                 </>
             }
-            {
+            {user?.schoolYear?.id === search?.schoolYearId && (
               record?.openHeight ?
                 <img src="/images/icon/save.svg" alt="group" className={styleModule['icon-edit']} onClick={() => onchangOpen(index, 'height', 'save', record)} role="presentation" />
                 :
                 <img src="/images/icon/edit.svg" alt="group" className={styleModule['icon-edit']} onClick={() => onchangOpen(index, 'height', 'edit', record)} role="presentation" />
-            }
+            )}
           </div>
         ) : (
           ''
@@ -192,12 +192,12 @@ const Index = memo(() => {
                   </span>
                 </>
             }
-            {
+            {user?.schoolYear?.id === search?.schoolYearId && (
               record?.openWight ?
                 <img src="/images/icon/save.svg" alt="group" className={styleModule['icon-edit']} onClick={() => onchangOpen(index, 'weight', 'save', record)} role="presentation" />
                 :
                 <img src="/images/icon/edit.svg" alt="group" className={styleModule['icon-edit']} onClick={() => onchangOpen(index, 'weight', 'edit', record)} role="presentation" />
-            }
+            )}
           </div>
         ) : (
           ''

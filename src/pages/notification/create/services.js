@@ -35,7 +35,7 @@ export function getClass(data = {}) {
 }
 
 export function getParents(params = {}) {
-  return request(`/students`, {
+  return request(`/students/get-with-parent-account`, {
     method: 'GET',
     params: {
       ...params,

@@ -208,6 +208,23 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
+    const {
+      years,
+      user,
+    } = this.props;
+    if (type === 'schoolYearId') {
+      const data = years?.find(i => i.id === e);
+      this.setState(
+        (prevState) => ({
+          dataYear: data,
+          search: {
+            ...prevState.search,
+            date: user?.schoolYear?.id === e ? Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) : moment(data?.startDate),
+          },
+        }),
+      );
+      this.formRef.current.setFieldsValue({ date: user?.schoolYear?.id === e ? moment() : moment(data?.startDate) });
+    }
     this.debouncedSearch(e, type);
   };
 
