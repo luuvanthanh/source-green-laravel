@@ -50,7 +50,7 @@ const Index = memo(() => {
     creationTimeTo: query?.creationTimeTo
       ? moment(query?.creationTimeTo)
       : moment().endOf('weeks')?.format(variables.DATE_FORMAT.DATE_AFTER),
-    branchId: query?.branchId || user.defaultBranch.id,
+    branchId: query?.branchId || user?.defaultBranch?.id,
     classId: query?.classId || head(user?.objectInfo?.classTeachers)?.classId,
   });
   const [groupIds, setGroupIds] = useState([]);
@@ -71,6 +71,24 @@ const Index = memo(() => {
       ...prev,
       [`${type}`]: value,
     }));
+    if (type === 'branchId') {
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: value,
+        },
+        callback: (response) => {
+          if (response) {
+            setClasses(response.items);
+            if ([variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode)) {
+              filterRef.setFieldsValue({
+                classId: head(user?.objectInfo?.classTeachers).classId,
+              });
+            }
+          }
+        },
+      });
+    }
   };
 
   const groupSelect = (id) => ({ target: { checked } }) => {
@@ -163,9 +181,9 @@ const Index = memo(() => {
           prev.map((post) =>
             post.id === postId
               ? {
-                  ...post,
-                  files: (post?.files || []).filter((file) => file.id !== image.id),
-                }
+                ...post,
+                files: (post?.files || []).filter((file) => file.id !== image.id),
+              }
               : post,
           ),
         );
@@ -178,9 +196,9 @@ const Index = memo(() => {
       prev.map((post) =>
         post.id === postId
           ? {
-              ...post,
-              description: e?.target?.value,
-            }
+            ...post,
+            description: e?.target?.value,
+          }
           : post,
       ),
     );
