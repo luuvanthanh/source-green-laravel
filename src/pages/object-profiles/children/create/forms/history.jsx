@@ -73,6 +73,10 @@ const Index = memo(() => {
           id: params.id,
         },
       });
+      dispatch({
+        type: 'OPchildrenAdd/GET_DETAILS',
+        payload: params,
+      });
     }
   }, [params?.id]);
 

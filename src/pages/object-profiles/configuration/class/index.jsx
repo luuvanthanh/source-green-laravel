@@ -251,7 +251,7 @@ class Index extends PureComponent {
         width: 200,
         render: (record) => (
           <>
-            {user?.roleCode === "principal" && (
+            {user?.roleCode === "principal" || user?.roleCode === "admin" && (
               <div className={styles['list-button']}>
                 <Button
                   color="primary"

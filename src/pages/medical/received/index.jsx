@@ -570,19 +570,19 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="date"
-                    onChange={(event) => this.onChangeDate(event, 'date')}
-                    type={variables.DATE_PICKER}
-                    allowClear={false}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
                     data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
                     name="schoolYearId"
                     onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
                     type={variables.SELECT}
                     placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.DATE_PICKER}
                     allowClear={false}
                   />
                 </div>
