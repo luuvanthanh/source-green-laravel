@@ -475,7 +475,6 @@ const Index = memo(() => {
                   name="branchId"
                   type={variables.SELECT}
                   data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...branches]}
-                  rules={[variables.RULES.EMPTY]}
                   disabled={[
                     variables.LIST_ROLE_CODE.TEACHER,
                     variables.LIST_ROLE_CODE.PRINCIPAL,
@@ -489,7 +488,6 @@ const Index = memo(() => {
                   name="classId"
                   type={variables.SELECT}
                   data={[{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
-                  rules={[variables.RULES.EMPTY]}
                   disabled={[variables.LIST_ROLE_CODE.TEACHER].includes(user.roleCode)}
                   onChange={(e) => changeFilter(e, 'classId')}
                 />
