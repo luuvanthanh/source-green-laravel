@@ -8,12 +8,14 @@ const Index = memo(() => {
 
   return (
     <>
-    {!isEmpty(user?.schoolYear?.id)  && (
-      <div className={styles['wrapper-container']}>
-       <h3 className={styles?.title}>Năm học: </h3>
-       <h3 className={styles?.content}>{user?.schoolYear?.yearFrom} - {user?.schoolYear?.yearTo}</h3>
-    </div>
-    )}
+      {!isEmpty(user?.schoolYear?.id) && (
+        <div className={styles['wrapper-container']}>
+          <h3 className={styles?.title}>Năm học: </h3>
+          <h3 className={styles?.content}>
+            {user?.schoolYear?.yearFrom} - {user?.schoolYear?.yearTo}
+          </h3>
+        </div>
+      )}
     </>
   );
 });

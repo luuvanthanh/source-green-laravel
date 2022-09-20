@@ -72,6 +72,7 @@ class Index extends PureComponent {
         status: query?.status || variablesModules.STATUS.CONFIRMING,
       },
     };
+    setIsMounted(true);
   }
 
   componentDidMount() {
