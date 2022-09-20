@@ -58,16 +58,7 @@ class HolidayController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $holiday = $this->holidayRepository->all();
-        } else {
-            $holiday = $this->holidayRepository->paginate($limit);
-        }
+        $holiday = $this->holidayRepository->getAll($request->all());
 
         return $this->success($holiday, trans('lang::messages.common.getListSuccess'));
     }
