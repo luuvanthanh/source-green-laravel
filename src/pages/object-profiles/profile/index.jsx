@@ -4,6 +4,7 @@ import { useLocation } from 'umi';
 import classnames from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 
+import { head } from 'lodash';
 import common from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -26,6 +27,7 @@ const General = memo(() => {
     groupProperty,
     detailsStudent,
     defaultBranch,
+    user
   ] = useSelector(({ OPProfile, user }) => [
     OPProfile.branches,
     OPProfile.classes,
@@ -34,6 +36,7 @@ const General = memo(() => {
     OPProfile.groupProperty,
     OPProfile.detailsStudent,
     user.defaultBranch,
+    user.user,
   ]);
   const dispatch = useDispatch();
   const [loadData, setLoadData] = useState(false);
@@ -50,6 +53,7 @@ const General = memo(() => {
     id: query?.id,
     SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
     branchId: query?.branchId || defaultBranch?.id,
+    classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
   });
 
   const BAR = {
@@ -364,7 +368,7 @@ const General = memo(() => {
                 <div className="col-lg-3">
                   <FormItem
                     label="Lớp"
-                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => onChangeSelect(event, 'classId')}
                     type={variables.SELECT}

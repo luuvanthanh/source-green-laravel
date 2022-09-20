@@ -38,10 +38,12 @@ export default {
     }),
     SET_YEARS: (state, { payload }) => ({
       ...state,
-      years: payload.parsePayload?.map((item) => ({
-        id: item.id,
-        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
-      })) || [],
+      years:
+        payload.parsePayload?.map((item) => ({
+          id: item.id,
+          name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+          ...item,
+        })) || [],
     }),
     SET_CLASS_TYPES: (state, { payload }) => ({
       ...state,

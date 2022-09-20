@@ -18,7 +18,7 @@ import moment from 'moment';
 const Index = memo(() => {
   const dispatch = useDispatch();
   const [
-    { pagination, error, data, branches, classTypes,years },
+    { pagination, error, data, branches, classTypes, years },
     loading,
     { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, kitchenMenus, user }) => [kitchenMenus, effects, user]);
@@ -28,12 +28,14 @@ const Index = memo(() => {
 
   const filterRef = useRef();
   const mounted = useRef(false);
+  const [dataYear, setDataYear] = useState(user ? user?.schoolYear : {});
   const [search, setSearch] = useState({
     ...query,
     branchId: query.branchId || defaultBranch?.id,
     page: query?.page || variables.PAGINATION.PAGE,
     schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+    date: query?.date || Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
     Month: query?.Month ? query?.Month : moment().startOf('month').format('MM'),
     Year: query?.Year ? query?.Year : Helper.getDate(moment(), variables.DATE_FORMAT.YEAR),
   });
@@ -56,8 +58,8 @@ const Index = memo(() => {
                 `${pathname}?${Helper.convertParamSearchConvert(
                   {
                     ...search,
-                    Month: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_MONTH),
-                    Year: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
+                    // Month: Helper.getDate(search.date, variables.DATE_FORMAT.MONTH),
+                    // Year: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
                   },
                   variables.QUERY_STRING,
                 )}`,
@@ -115,7 +117,7 @@ const Index = memo(() => {
       fixed: 'right',
       render: (record) => (
         <div className="d-flex justify-content-end">
-         {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
+          {user?.roleCode === "sale" || user?.roleCode === "teacher" ? "" : (
             <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
           )}
           <Button
@@ -157,16 +159,29 @@ const Index = memo(() => {
   }, 300);
 
   const changeFilter = (e) => (value) => {
-    setSearch((prevSearch) => ({
-      ...prevSearch,
-      [e]: value,
-    }));
+    if (e === 'schoolYearId') {
+      const data = years?.find(i => i.id === value);
+      filterRef.current.setFieldsValue({ date: moment(data?.startDate) });
+      setDataYear(data);
+      setSearch((prevSearch) => ({
+        ...prevSearch,
+        [e]: value,
+        Month: moment(data?.startDate).startOf('month').format('MM'),
+        Year: Helper.getDate(moment(data?.startDate), variables.DATE_FORMAT.YEAR),
+      }));
+    } else {
+      setSearch((prevSearch) => ({
+        ...prevSearch,
+        [e]: value,
+      }));
+    }
   };
 
   const changeMonthFilter = (name) => (value) => {
     changeFilterDebouce(name, value);
     setSearch((prevSearch) => ({
       ...prevSearch,
+      [name]: Helper.getDate(value, variables.DATE_FORMAT.DATE_AFTER),
       Month: moment(value).startOf('month').format('MM'),
       Year: Helper.getDate(value, variables.DATE_FORMAT.YEAR),
     }));
@@ -181,8 +196,8 @@ const Index = memo(() => {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          Month: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_MONTH),
-          Year: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
+          // Month: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_MONTH),
+          // Year: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
         },
         variables.QUERY_STRING,
       )}`,
@@ -217,7 +232,7 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Danh sách thực đơn</Heading>
-          {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
+          {user?.roleCode === "sale" || user?.roleCode === "teacher" ? "" : (
             <Button
               className="ml-auto"
               color="success"
@@ -279,6 +294,12 @@ const Index = memo(() => {
                     name="date"
                     onChange={(e) => changeMonthFilter('date')(e)}
                     allowClear={false}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </Pane>
                 <Pane className="col-lg-3">
@@ -311,3 +332,4 @@ const Index = memo(() => {
 });
 
 export default Index;
+

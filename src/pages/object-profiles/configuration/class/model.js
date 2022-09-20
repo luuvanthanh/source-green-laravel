@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -60,6 +61,10 @@ export default {
         yield saga.put({
           type: 'GET_DATA',
           payload: payload.pagination,
+        });
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã xoá thành công dữ liệu',
         });
       } catch (error) {
         yield saga.put({
