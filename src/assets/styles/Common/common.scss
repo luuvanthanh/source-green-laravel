@@ -308,6 +308,23 @@
   }
 }
 
+.list-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .item {
+    margin: 0 5px;
+    & :hover {
+      color: #27a600;
+      border: none !important;
+    }
+  }
+  & :hover {
+    border: 1px solid #27a600 !important;
+  }
+}
+
 .content-form {
   padding: 8px 24px 24px;
 

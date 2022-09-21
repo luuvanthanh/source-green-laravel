@@ -418,8 +418,8 @@ const Index = memo(() => {
 
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
-      <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
-      <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
+      <Helmet title={params.id ? 'Chỉnh sửa thể chất' : 'Tạo thể chất'} />
+      <Breadcrumbs last={params.id ? 'Chỉnh sửa thể chất' : 'Tạo thể chất'} menu={menuData} />
       <Pane className="pr20 pl20">
         <Pane className="row">
           <Pane className="col-lg-4">
@@ -454,7 +454,7 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
-                <FormItemAntd label="Người nhận thông báo">
+                <FormItemAntd label="Học sinh cần nhập thể chất">
                   <Checkbox checked={isAllStudent} onChange={(event) => changeAll(event)}>
                     Tất cả học sinh
                   </Checkbox>

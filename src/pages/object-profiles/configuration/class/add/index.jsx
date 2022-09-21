@@ -27,13 +27,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, classesAdd, classType }) => ({
+const mapStateToProps = ({ menu, loading, classesAdd, classType, user }) => ({
   menuData: menu.menuLeftObjectProfiles,
   loading,
   details: classesAdd.details,
   branches: classesAdd.branches,
   error: classesAdd.error,
   classTypes: classType.data,
+  defaultBranch: user.defaultBranch,
 });
 
 @connect(mapStateToProps)
@@ -42,7 +43,12 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    const {
+      defaultBranch,
+    } = props;
+    this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+    };
     setIsMounted(true);
   }
 
@@ -138,8 +144,10 @@ class Index extends PureComponent {
       branches,
       menuData,
       loading: { effects },
-      classTypes
+      classTypes,
+      defaultBranch
     } = this.props;
+    const { defaultBranchs } = this.state;
     const loadingSubmit = effects['classesAdd/ADD'] || effects['classesAdd/UPDATE'];
     const loading = effects['classesAdd/GET_DETAILS'];
     return (
@@ -151,6 +159,9 @@ class Index extends PureComponent {
           colon={false}
           ref={this.formRef}
           onFinish={this.onFinish}
+          initialValues={{
+            branchId: defaultBranch?.id,
+          }}
         >
           <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/ho-so-doi-tuong/cau-hinh/lop-hoc' }}>
             <div className={styles['content-form']}>
@@ -182,7 +193,7 @@ class Index extends PureComponent {
                   </div> */}
                   <div className="col-lg-6">
                     <FormItem
-                      data={branches}
+                      data={defaultBranch?.id ? defaultBranchs : branches}
                       label="CƠ SỞ"
                       name="branchId"
                       rules={[variables.RULES.EMPTY]}
@@ -248,6 +259,7 @@ Index.propTypes = {
   menuData: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classTypes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -258,7 +270,8 @@ Index.defaultProps = {
   error: {},
   menuData: [],
   branches: [],
-  classTypes: []
+  classTypes: [],
+  defaultBranch: {},
 };
 
 export default Index;

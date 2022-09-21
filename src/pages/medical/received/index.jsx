@@ -55,6 +55,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      dataYear: user ? user?.schoolYear : {},
       search: {
         diseaseName: query?.diseaseName,
         branchId: query?.branchId || defaultBranch?.id,
@@ -197,6 +198,23 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
+    const {
+      years,
+      user,
+    } = this.props;
+    if (type === 'schoolYearId') {
+      const data = years?.find(i => i.id === e);
+      this.setState(
+        (prevState) => ({
+          dataYear: data,
+          search: {
+            ...prevState.search,
+            date: user?.schoolYear?.id === e ? Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) : moment(data?.startDate),
+          },
+        }),
+      );
+      this.formRef.current.setFieldsValue({ date: user?.schoolYear?.id === e ? moment() : moment(data?.startDate) });
+    }
     this.debouncedSearch(e, type);
   };
 
@@ -389,7 +407,7 @@ class Index extends PureComponent {
       loading: { effects },
       user
     } = this.props;
-    const { search, visible, objects, defaultBranchs } = this.state;
+    const { search, visible, objects, defaultBranchs, dataYear } = this.state;
     const loading = effects['medicaReceived/GET_DATA'];
     const loadingSubmit = effects['medicaReceived/RECEIVED'];
     return (
@@ -561,7 +579,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -584,6 +602,12 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'date')}
                     type={variables.DATE_PICKER}
                     allowClear={false}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
                   />
                 </div>
               </div>
