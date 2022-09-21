@@ -338,7 +338,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'adress' => $employee->Address ? $employee->Address : '.......',
             'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
-            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'from' => $labourContract->ContractFrom ? 'ngày ' . $labourContract->ContractFrom->format('d') . ' tháng ' . $labourContract->ContractFrom->format('m') . ' năm ' . $labourContract->ContractFrom->format('Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
             'position' => $labourContract->position ? $labourContract->position->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
@@ -424,7 +424,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'adress' => $employee->Address ? $employee->Address : '.......',
             'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
-            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'from' => $labourContract->ContractFrom ? 'ngày ' . $labourContract->ContractFrom->format('d') . ' tháng ' . $labourContract->ContractFrom->format('m') . ' năm ' . $labourContract->ContractFrom->format('Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
             'position' => $labourContract->position ? $labourContract->position->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
@@ -607,14 +607,22 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
 
         $employee = resolve(UserRepository::class)->skipPresenter()->find($contract->EmployeeId);
 
-        $now = Carbon::now();
+        $represent = $contract->represent;
+
+        if (is_null($represent)) {
+            $positionRepresent = '';
+        } else {
+            $positionRepresent = $represent->positionLevelNow ? $represent->positionLevelNow->position->Name : '';
+        }
 
         $params = [
             '${number_contract}' => $contract->OrdinalNumber ? $contract->OrdinalNumber . '/' . $contract->NumberForm : $contract->ContractNumber,
             '${date_contract}' => $contract->ContractDate->format('d-m-Y'),
-            '${day}' => $now->format('d'),
-            '${month}' => $now->format('m'),
-            '${year}' => $now->format('Y'),
+            '${day}' => $contract->ContractDate->format('d'),
+            '${month}' => $contract->ContractDate->format('m'),
+            '${year}' => $contract->ContractDate->format('Y'),
+            '${represent}' => !is_null($represent) ? $represent->FullName : '',
+            '${position}' =>  $positionRepresent,
             '${employee}' => $employee->FullName,
             '${birthday}' => $employee->DateOfBirth->format('d-m-Y'),
             '${born}' => $employee->PlaceOfBirth,
@@ -630,7 +638,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             '${total}' => number_format($contract->BasicSalary + $contract->TotalAllowance)
 
         ];
-        
+
         return $this->wordExporterServices->exportWord('contract_addendum', $params);
     }
 }
