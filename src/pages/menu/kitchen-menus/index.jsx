@@ -161,12 +161,12 @@ const Index = memo(() => {
   const changeFilter = (e) => (value) => {
     if (e === 'schoolYearId') {
       const data = years?.find(i => i.id === value);
-      filterRef.current.setFieldsValue({ date: moment(data?.startDate) });
+      filterRef.current.setFieldsValue({ date: data?.id === user?.schoolYear?.id ? moment() : moment(data?.startDate) });
       setDataYear(data);
       setSearch((prevSearch) => ({
         ...prevSearch,
         [e]: value,
-        Month: moment(data?.startDate).startOf('month').format('MM'),
+        Month: data?.id === user?.schoolYear?.id ? moment().startOf('month').format('MM') : moment(data?.startDate).startOf('month').format('MM'),
         Year: Helper.getDate(moment(data?.startDate), variables.DATE_FORMAT.YEAR),
       }));
     } else {
@@ -290,6 +290,16 @@ const Index = memo(() => {
                 </Pane>
                 <Pane className="col-lg-3">
                   <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    name="schoolYearId"
+                    onChange={(e) => changeFilter('schoolYearId')(e)}
+                    type={variables.SELECT}
+                    placeholder="Chọn năm học"
+                    allowClear={false}
+                  />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
                     type={variables.MONTH_PICKER}
                     name="date"
                     onChange={(e) => changeMonthFilter('date')(e)}
@@ -300,16 +310,6 @@ const Index = memo(() => {
                       (dataYear?.endDate &&
                         current >= moment(dataYear?.endDate).endOf('day'))
                     }
-                  />
-                </Pane>
-                <Pane className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
-                    name="schoolYearId"
-                    onChange={(e) => changeFilter('schoolYearId')(e)}
-                    type={variables.SELECT}
-                    placeholder="Chọn năm học"
-                    allowClear={false}
                   />
                 </Pane>
               </Pane>

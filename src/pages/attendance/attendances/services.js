@@ -34,7 +34,7 @@ export function add(data) {
     method: 'POST',
     data,
     params: {
-      include: Helper.convertIncludes(['timekeeping', 'class', 'attendance']),
+      include: Helper.convertIncludes(['timekeeping', 'class', 'attendance', 'schoolYear']),
     },
   });
 }

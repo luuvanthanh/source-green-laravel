@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -28,7 +27,7 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
+
 const mapStateToProps = ({ classes, loading, user }) => ({
   data: classes.data,
   error: classes.error,
@@ -186,14 +185,9 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'classes/REMOVE',
           payload: {
@@ -203,9 +197,13 @@ class Index extends PureComponent {
               page: search.page,
             },
           },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
         });
       },
-      onCancel() { },
     });
   };
 
@@ -216,18 +214,21 @@ class Index extends PureComponent {
     } = this.props;
     if (user?.roleCode === variables.LIST_ROLE_CODE.PRINCIPAL || user?.roleCode === variables.LIST_ROLE_CODE.ADMIN) {
       return (
-        <div className={styles['list-button']}>
+        <div className={styles['list-buttons']}>
           <Button
+            className={styles.item}
             color="primary"
             icon="list"
             onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
           />
           <Button
+            className={styles.item}
             color="primary"
             icon="edit"
             onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
           />
           <Button
+            className={styles.item}
             color="danger"
             icon="remove"
             onClick={() => this.onRemove(record.id)}
@@ -283,6 +284,25 @@ class Index extends PureComponent {
     return columns;
   };
 
+  onFormAdd = () => {
+    const {
+      location: { pathname },
+      user,
+    } = this.props;
+    if (user?.roleCode === variables.LIST_ROLE_CODE.PRINCIPAL || user?.roleCode === variables.LIST_ROLE_CODE.ADMIN) {
+      return (
+        <Button
+          color="success"
+          icon="plus"
+          onClick={() => history.push(`${pathname}/tao-moi`)}
+        >
+          Thêm mới
+        </Button>
+      );
+    };
+    return "";
+  };
+
   render() {
     const {
       error,
@@ -290,11 +310,11 @@ class Index extends PureComponent {
       match: { params },
       pagination,
       loading: { effects },
-      location: { pathname },
       defaultBranch,
       branches
     } = this.props;
     const { search, defaultBranchs } = this.state;
+
     const loading = effects['classes/GET_DATA'];
     return (
       <>
@@ -302,14 +322,7 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">DANH SÁCH LỚP</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="CAUHINH"
-            >
-              Thêm mới
-            </Button>
+            {this?.onFormAdd()}
           </div>
           <div className={styles['block-table']}>
             <Form

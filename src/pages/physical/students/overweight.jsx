@@ -309,7 +309,7 @@ const Index = memo(() => {
                     <FormItem
                       name="branchId"
                       type={variables.SELECT}
-                      data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
+                      data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...category?.branches]}
                       onChange={(value) => changeFilterBranch('branchId', value)}
                       allowClear={false}
                     />

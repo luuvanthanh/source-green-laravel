@@ -270,7 +270,7 @@ const Index = memo(() => {
                       }
                       <Pane className="col-lg-6">
                         <FormItem
-                          data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
+                          data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                           label="Lớp"
                           name="class"
                           type={variables.SELECT}

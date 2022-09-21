@@ -548,7 +548,7 @@ class Index extends PureComponent {
                     allowClear={false}
                     placeholder="Chọn lớp"
                     type={variables.SELECT}
-                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả', id: null }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                   />
                 </div>
               </div>

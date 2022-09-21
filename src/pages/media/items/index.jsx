@@ -204,9 +204,9 @@ const Index = memo(() => {
     });
   };
 
-  const changeFilterBranch = (name) => (value) => {
-    changeFilterDebouce(name, value);
-    fetchClasses(name);
+  const onChangeSelectBranch = (e, type) => {
+    changeFilterDebouce(type, e);
+    fetchClasses(e);
   };
 
   const changeFilterDate = (values) => {
@@ -307,7 +307,7 @@ const Index = memo(() => {
                       name="branchId"
                       type={variables.SELECT}
                       data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...category?.branches]}
-                      onChange={(value) => changeFilterBranch('branchId')(value)}
+                      onChange={(event) => onChangeSelectBranch(event, 'branchId')}
                       allowClear={false}
                     />
                   </Pane>
@@ -318,7 +318,7 @@ const Index = memo(() => {
                       name="branchId"
                       type={variables.SELECT}
                       data={defaultBranch?.id ? [defaultBranch] : []}
-                      onChange={(value) => changeFilterBranch('branchId')(value)}
+                      onChange={(event) => onChangeSelectBranch(event, 'branchId')}
                       allowClear={false}
                     />
                   </Pane>
