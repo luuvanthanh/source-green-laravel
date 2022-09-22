@@ -14,6 +14,7 @@ use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
+use Illuminate\Support\Facades\Storage;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -309,7 +310,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
         return $probationaryContract->delete();
     }
-    public function exportWord($id)
+    public function exportWord($id, $response = null)
     {
         $labourContract = ProbationaryContract::findOrFail($id);
         $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
@@ -363,7 +364,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'total' => number_format($total),
         ];
 
-        return $this->wordExporterServices->exportWord('probationary_contract', $params);
+        return $this->wordExporterServices->exportWord('probationary_contract', $params, $response);
     }
 
     public function exportWordEnglish($id)
@@ -438,5 +439,21 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         ];
 
         return $this->wordExporterServices->exportWord('authority_contract', $params);
+    }
+
+    public function previewProbationaryContractExportWord($id)
+    {
+        $probationaryContract = ProbationaryContract::findOrFail($id);
+        $fileName = $probationaryContract->Id . '.docx';
+        $filePath = $this->exportWord($id, 'url');
+        $file = Storage::disk('local')->get($filePath);
+
+        Storage::disk('local')->put('public/files/' . $fileName, $file);
+
+        return [
+            'data' => [
+                'url' => env('URL_FILE') . $fileName
+            ]
+        ];
     }
 }
