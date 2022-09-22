@@ -142,4 +142,11 @@ class ProbationaryContractController extends Controller
 
         return $result;
     }
+
+    public function previewProbationaryContractExportWord($id)
+    {
+        $result = $this->probationaryContractRepository->previewProbationaryContractExportWord($id);
+
+        return $this->success($result, trans('lang::messages.common.getListSuccess'));
+    }
 }

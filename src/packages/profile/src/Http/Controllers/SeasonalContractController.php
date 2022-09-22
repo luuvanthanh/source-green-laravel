@@ -145,4 +145,11 @@ class SeasonalContractController extends Controller
 
         return $result;
     }
+
+    public function previewSeasonalContractExportWord($id)
+    {
+        $result = $this->seasonalContractRepository->previewSeasonalContractExportWord($id);
+
+        return $this->success($result, trans('lang::messages.common.getListSuccess'));
+    }
 }

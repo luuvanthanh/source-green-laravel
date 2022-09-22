@@ -104,6 +104,12 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('contract-addendum/{labour_contract_id}', 'LabourContractController@contractAddendum');
 
             \Route::resource('authorized-persons', 'AuthorizedPersonController');
+
+            \Route::get('preview-probationary-contract-export-word/{id}', 'ProbationaryContractController@previewProbationaryContractExportWord');
+
+            \Route::get('preview-labour-contract-export-word/{id}', 'LabourContractController@previewLabourContractExportWord');
+
+            \Route::get('preview-seasonal-contract-export-word/{id}', 'SeasonalContractController@previewSeasonalContractExportWord');
         });
     }
 }
