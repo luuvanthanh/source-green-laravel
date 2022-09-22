@@ -605,7 +605,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     public function contractAddendum($id, $response = null)
     {
         $contract = $this->model->find($id);
-
+       
         $employee = resolve(UserRepository::class)->skipPresenter()->find($contract->EmployeeId);
 
         $represent = $contract->represent;
@@ -633,6 +633,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             '${place_provider}' => $employee->PlaceOfIssueIdCard,
             '${household}' => $employee->Address,
             '${place}' => $employee->PermanentAddress,
+            '${from}' => $contract->ContractFrom ? 'ngày ' . $contract->ContractFrom->format('d') . ' tháng ' . $contract->ContractFrom->format('m') . ' năm ' . $contract->ContractFrom->format('Y') : '........',
             '${phone}' => $employee->PhoneNumber,
             '${salary}' => number_format($contract->BasicSalary),
             '${allowance}' => number_format($contract->TotalAllowance),
