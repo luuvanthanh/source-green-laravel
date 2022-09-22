@@ -28,7 +28,6 @@ class CreatePayrollSessionsTable extends Migration
             $table->decimal('Deduction', 12, 2)->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
-            // $table->foreign('PayrollId')->references('Id')->on('Payrolls')->onDelete('cascade');
         });
     }
 

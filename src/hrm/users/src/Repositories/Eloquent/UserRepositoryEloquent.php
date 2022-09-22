@@ -163,48 +163,48 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $user = User::create($attributes);
             $this->created($attributes, $user);
 
-            $data = [
-                'full_name' => $user->FullName,
-                'employee_id_hrm' => $user->Id,
-                'file_image' => $user->FileImage,
-                'code' => $user->Code
-            ];
+            // $data = [
+            //     'full_name' => $user->FullName,
+            //     'employee_id_hrm' => $user->Id,
+            //     'file_image' => $user->FileImage,
+            //     'code' => $user->Code
+            // ];
 
-            $employeeCrm = CrmService::createEmployee($data);
+            // $employeeCrm = CrmService::createEmployee($data);
 
-            if (isset($employeeCrm->data->id)) {
-                $user->EmployeeIdCrm = $employeeCrm->data->id;
-                $user->update();
-            }
-            $dataAccountant = [
-                "application" => 1,
-                "businessObjectGroupCode" => "NV",
-                "businessObjectRequest" => [
-                    "name" => $user->FullName,
-                    "branchId" => "00000000-0000-0000-0000-000000000000",
-                    "abbreviations" => "",
-                    "code" => $user->Code,
-                    "email" => $user->Email,
-                    "fax" => $user->Fax,
-                    "phone" => $user->PhoneNumber,
-                    "identityCard" => $user->IdCard,
-                    "taxCode" => $user->TaxCode,
-                    "address" => $user->Address,
-                    "invoiceAddress" => "",
-                    "description" => $user->Description,
-                    "utilities" => "",
-                    "bankAccounts" => "",
-                    "rating" => 0,
-                    "orderIndex" => 0,
-                    "businessObjectType" => "EMPLOYEE",
-                    "refId" => $user->Id,
-                ]
-            ];
-            $employeeAccountant = AccountantService::createEmployee($dataAccountant);
+            // if (isset($employeeCrm->data->id)) {
+            //     $user->EmployeeIdCrm = $employeeCrm->data->id;
+            //     $user->update();
+            // }
+            // $dataAccountant = [
+            //     "application" => 1,
+            //     "businessObjectGroupCode" => "NV",
+            //     "businessObjectRequest" => [
+            //         "name" => $user->FullName,
+            //         "branchId" => "00000000-0000-0000-0000-000000000000",
+            //         "abbreviations" => "",
+            //         "code" => $user->Code,
+            //         "email" => $user->Email,
+            //         "fax" => $user->Fax,
+            //         "phone" => $user->PhoneNumber,
+            //         "identityCard" => $user->IdCard,
+            //         "taxCode" => $user->TaxCode,
+            //         "address" => $user->Address,
+            //         "invoiceAddress" => "",
+            //         "description" => $user->Description,
+            //         "utilities" => "",
+            //         "bankAccounts" => "",
+            //         "rating" => 0,
+            //         "orderIndex" => 0,
+            //         "businessObjectType" => "EMPLOYEE",
+            //         "refId" => $user->Id,
+            //     ]
+            // ];
+            // $employeeAccountant = AccountantService::createEmployee($dataAccountant);
 
-            if (!is_null($employeeAccountant)) {
-                $user->update(['AccountantId' => $employeeAccountant->id]);
-            }
+            // if (!is_null($employeeAccountant)) {
+            //     $user->update(['AccountantId' => $employeeAccountant->id]);
+            // }
 
             \DB::commit();
         } catch (\Throwable $th) {
@@ -237,47 +237,47 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $user->update($attributes);
             $this->updated($attributes, $user);
 
-            $dataAccountant = [
-                "application" => 1,
-                "businessObjectGroupCode" => "NV",
-                "id" => $user->AccountantId,
-                "businessObjectRequest" => [
-                    "name" => $user->FullName,
-                    "branchId" => "00000000-0000-0000-0000-000000000000",
-                    "abbreviations" => "",
-                    "code" => $user->Code,
-                    "email" => $user->Email,
-                    "fax" => $user->Fax,
-                    "phone" => $user->PhoneNumber,
-                    "identityCard" => $user->IdCard,
-                    "taxCode" => $user->TaxCode,
-                    "address" => $user->Address,
-                    "invoiceAddress" => "",
-                    "description" => $user->Description,
-                    "utilities" => "",
-                    "bankAccounts" => "",
-                    "rating" => 0,
-                    "orderIndex" => 0,
-                    "businessObjectType" => "EMPLOYEE",
-                    "refId" => $user->Id,
-                ]
-            ];
+            // $dataAccountant = [
+            //     "application" => 1,
+            //     "businessObjectGroupCode" => "NV",
+            //     "id" => $user->AccountantId,
+            //     "businessObjectRequest" => [
+            //         "name" => $user->FullName,
+            //         "branchId" => "00000000-0000-0000-0000-000000000000",
+            //         "abbreviations" => "",
+            //         "code" => $user->Code,
+            //         "email" => $user->Email,
+            //         "fax" => $user->Fax,
+            //         "phone" => $user->PhoneNumber,
+            //         "identityCard" => $user->IdCard,
+            //         "taxCode" => $user->TaxCode,
+            //         "address" => $user->Address,
+            //         "invoiceAddress" => "",
+            //         "description" => $user->Description,
+            //         "utilities" => "",
+            //         "bankAccounts" => "",
+            //         "rating" => 0,
+            //         "orderIndex" => 0,
+            //         "businessObjectType" => "EMPLOYEE",
+            //         "refId" => $user->Id,
+            //     ]
+            // ];
 
-            if (!is_null($user->AccountantId)) {
-                AccountantService::updateEmployee($dataAccountant);
-            }
+            // if (!is_null($user->AccountantId)) {
+            //     AccountantService::updateEmployee($dataAccountant);
+            // }
 
-            $data = [
-                'full_name' => $user->FullName,
-                'employee_id_hrm' => $user->Id,
-                'file_image' => $user->FileImage,
-                'code' => $user->Code
-            ];
-            $employeeIdCrm = $user->EmployeeIdCrm;
+            // $data = [
+            //     'full_name' => $user->FullName,
+            //     'employee_id_hrm' => $user->Id,
+            //     'file_image' => $user->FileImage,
+            //     'code' => $user->Code
+            // ];
+            // $employeeIdCrm = $user->EmployeeIdCrm;
 
-            if (!is_null($employeeIdCrm)) {
-                CrmService::updateEmployee($data, $employeeIdCrm);
-            }
+            // if (!is_null($employeeIdCrm)) {
+            //     CrmService::updateEmployee($data, $employeeIdCrm);
+            // }
 
             \DB::commit();
         } catch (\Throwable $th) {
