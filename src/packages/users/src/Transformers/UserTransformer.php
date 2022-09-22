@@ -50,7 +50,7 @@ class UserTransformer extends BaseTransformer
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel',
         'classTeacher', 'positionLevelNow', 'businessCard', 'degree',
         'trainingMajor', 'trainingSchool', 'labourContract', 'manualCalculation', 'branchDefault', 'probationaryContract',
-        'resignationDecision', 'authorizedPersion','authorizedPersonEffectIn'
+        'resignationDecision', 'authorizedPersion', 'authorizedPersonEffectIn'
     ];
 
     /**
@@ -70,6 +70,8 @@ class UserTransformer extends BaseTransformer
             }
         }
 
+        $hasAccount = $this->checkEmployeeHasAccount($model);
+
         $attributes = [
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'totalWorks' => $model->totalWorks,
@@ -82,9 +84,21 @@ class UserTransformer extends BaseTransformer
             'totalWorkHoliday' => $model->totalWorkHoliday,
             'busRegistrationSummary' => $model->busRegistrationSummary,
             'totalBusRegistration' => $model->totalBusRegistration,
+            'hasAccount' => $hasAccount
         ];
 
         return $attributes;
+    }
+
+    public function checkEmployeeHasAccount($model)
+    {
+        $hasAccount = false;
+
+        if (!is_null($model->account)) {
+            $hasAccount = true;
+        }
+
+        return $hasAccount;
     }
 
     /**
