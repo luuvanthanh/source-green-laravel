@@ -90,7 +90,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
      */
     public function create(array $attributes)
     {
-        $attributes['schoolYear'] = $this->getSchoolYear();
         $now = Carbon::now('GMT+7')->format('H:i:s');
 
         switch ($attributes['status']) {

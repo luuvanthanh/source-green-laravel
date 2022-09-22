@@ -83,6 +83,41 @@ class AttendanceCreateRequest extends FormRequest
                     return true;
                 },
             ],
+            'schoolYearId' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $attendance = Attendance::where('StudentId', $this->studentId)->where('Date', $this->date)->first();
+
+                    if (!is_null($attendance) && !is_null($attendance->SchoolYearId) && $attendance->SchoolYearId != $value) {
+                        return $fail('Thời điểm hiện tại không trùng khớp năm học cấu hình.');
+                    }
+
+                    return true;
+                },
+            ]
+        ];
+    }
+
+    /**
+     * all
+     *
+     * @param  mixed $keys
+     * @return void
+     */
+    public function all($keys = null)
+    {
+        $data = Parent::all();
+        $schoolYear = SchoolYear::where('IsCheck', true)->first();
+
+        $data['schoolYearId'] = !is_null($schoolYear) ? $schoolYear->Id : null;
+
+        return $data;
+    }
+
+    public function messages()
+    {
+        return [
+            'schoolYearId.required'  => 'Thời điểm hiện tại không thuộc bất kỳ năm học nào.',
         ];
     }
 }
