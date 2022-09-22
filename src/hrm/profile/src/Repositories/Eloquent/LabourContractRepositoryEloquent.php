@@ -175,7 +175,6 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
 
     public function create(array $attributes)
     {
-        dd(1);
         \DB::beginTransaction();
         try {
             $labourContract = LabourContract::create($attributes);
