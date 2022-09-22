@@ -17,7 +17,6 @@ class CreateBusRegistrationTable extends Migration
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->uuid('EmployeeId');
-            // $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('Date')->nullable();
             $table->float('HourNumber');
             $table->string('Note')->nullable();
