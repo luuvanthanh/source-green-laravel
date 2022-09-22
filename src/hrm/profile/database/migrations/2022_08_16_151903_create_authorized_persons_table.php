@@ -21,7 +21,7 @@ class CreateAuthorizedPersonsTable extends Migration
             $table->string('PowerOfAttorney')->nullable();
             $table->timestamp('CreationTime');
             $table->timestamp('LastModificationTime');
-            $table->foreign('EmployeeId')->references('Id')->on('Employees');
+            // $table->foreign('EmployeeId')->references('Id')->on('Employees');
             $table->softDeletes('DeletionTime', 0);
         });
     }
