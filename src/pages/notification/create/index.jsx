@@ -15,7 +15,7 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import { useSelector, useDispatch } from 'dva';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
-import { head, size, isEmpty, debounce, omit } from 'lodash';
+import { head, size, isEmpty, debounce } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
@@ -52,6 +52,9 @@ const Index = memo(() => {
   const [isAllParents, setIsAllParents] = useState(false);
   const [type, setType] = useState(variablesModules.TYPE.EMPLOYEE);
 
+  const [checkboxAll, setCheckboxAll] = useState(false);
+  const [checkboxAllEmployees, setCheckboxAllEmployees] = useState(false);
+
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
@@ -72,8 +75,8 @@ const Index = memo(() => {
   });
   const [employees, setEmployees] = useState([]);
   const [parents, setParents] = useState([]);
-  const [employeesActive, setEmployeesActive] = useState([]);
-  const [parentsActive, setParentsActive] = useState(undefined);
+  // const [employeesActive, setEmployeesActive] = useState([]);
+  // const [parentsActive, setParentsActive] = useState(undefined);
   const [dataClass, setDataClass] = useState([]);
 
   const onChangeEditor = (value) => {
@@ -256,7 +259,7 @@ const Index = memo(() => {
               setParents,
               response.items?.map((item) => {
                 const itemEmloyee = details.parentNews?.find(
-                  (itemE) => itemE?.parent?.id === item?.id,
+                  (itemE) => itemE?.student?.id === item?.student?.id,
                 );
                 return {
                   ...item,
@@ -342,9 +345,9 @@ const Index = memo(() => {
   };
 
   const onChangeBranchParent = (value) => {
-    formRef.current.setFieldsValue({
-      class: "Chọn",
-    });
+    // formRef.current.setFieldsValue({
+    //   class: "Chọn",
+    // });
     dispatch({
       type: 'notificationAdd/GET_CLASS',
       payload: {
@@ -379,6 +382,8 @@ const Index = memo(() => {
   };
 
   const onChangeDivision = (value) => {
+    setIsAllEmployees(false);
+    setCheckboxAllEmployees(true);
     mountedSet(setSearchEmployee, { ...searchEmployee, loading: true });
     dispatch({
       type: 'notificationAdd/GET_EMPLOYEES',
@@ -406,6 +411,8 @@ const Index = memo(() => {
   };
 
   const onChangeClass = (value) => {
+    setIsAllParents(false);
+    setCheckboxAll(true);
     mountedSet(setSearchParent, {
       ...searchParent, loading: true, page: 1,
       limit: 10,
@@ -477,6 +484,10 @@ const Index = memo(() => {
       setEmployees,
       employees.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)),
     );
+    const dataCheck = employees?.filter(i => i?.checked);
+    if (dataCheck?.length <= 1) {
+      mountedSet(setIsAllEmployees, false);
+    }
   };
 
   const changeCheckboxParent = (id) => {
@@ -484,6 +495,10 @@ const Index = memo(() => {
       setParents,
       parents.map((item) => (item?.student?.id === id ? { ...item, checked: !item.checked } : item)),
     );
+    const dataCheckParent = parents?.filter(i => i?.checked);
+    if (dataCheckParent?.length <= 1) {
+      mountedSet(setIsAllParents, false);
+    }
   };
 
   const handleInfiniteOnLoad = () => {
@@ -502,7 +517,38 @@ const Index = memo(() => {
       },
       callback: (response, error) => {
         if (response) {
-          mountedSet(setEmployees, employees.concat(response.parsePayload));
+          if (checkboxAllEmployees) {
+            if (isAllEmployees) {
+              mountedSet(setEmployees, employees.concat(response.parsePayload?.map(i => ({
+                ...i,
+                checked: true,
+              }))));
+            }
+            else {
+              mountedSet(setEmployees, employees.concat(response.parsePayload));
+            }
+          } else if (params.id) {
+            mountedSet(setEmployees, employees.concat(
+              response.parsePayload?.map((item) => {
+                const itemEmloyee = details.employeeNews?.find(
+                  (itemE) => itemE?.employee?.id === item.id,
+                );
+                return {
+                  ...item,
+                  checked: !!itemEmloyee,
+                };
+              }),
+            ));
+          }
+          else if (isAllParents) {
+            mountedSet(setEmployees, employees.concat(response.parsePayload?.map(i => ({
+              ...i,
+              checked: true,
+            }))));
+          }
+          else {
+            mountedSet(setEmployees, employees.concat(response.parsePayload));
+          }
           mountedSet(setSearchEmployee, {
             ...searchEmployee,
             total: response.pagination.total,
@@ -534,7 +580,39 @@ const Index = memo(() => {
       },
       callback: (response, error) => {
         if (response) {
-          mountedSet(setParents, parents.concat(response.items));
+          if (checkboxAll) {
+            if (isAllParents) {
+              mountedSet(setParents, parents.concat(response.items?.map(i => ({
+                ...i,
+                checked: true,
+              }))));
+            }
+            else {
+              mountedSet(setParents, parents.concat(response.items));
+            }
+          } else if (params.id) {
+            mountedSet(setParents, parents.concat(
+              response.items?.map((item) => {
+                const itemEmloyee = details.parentNews?.find(
+                  (itemE) => itemE?.student?.id === item?.student?.id,
+                );
+                return {
+                  ...item,
+                  checked: !!itemEmloyee,
+                };
+              }),
+            ));
+          }
+          else if (isAllParents) {
+            mountedSet(setParents, parents.concat(response.items?.map(i => ({
+              ...i,
+              checked: true,
+            }))));
+          }
+          else {
+            mountedSet(setParents, parents.concat(response.items));
+          }
+
           mountedSet(setSearchParent, {
             ...searchParent,
             total: response.totalCount,
@@ -554,8 +632,22 @@ const Index = memo(() => {
 
     if (type === variablesModules.TYPE.EMPLOYEE) {
       mountedSet(setIsAllEmployees, event.target.checked);
+      mountedSet(
+        setEmployees,
+        employees?.map((item) => ({
+          ...item,
+          checked: !!event.target.checked,
+        })),
+      );
     } else {
       mountedSet(setIsAllParents, event.target.checked);
+      mountedSet(
+        setParents,
+        parents?.map((item) => ({
+          ...item,
+          checked: !!event.target.checked,
+        })),
+      );
     }
   };
 
@@ -563,8 +655,8 @@ const Index = memo(() => {
     const payload = {
       ...values,
       classId: values.class,
-      ...omit(values, 'class'),
-      RemindDate: checkTime
+      class: undefined,
+      RemindDate: values?.IsReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -572,16 +664,8 @@ const Index = memo(() => {
           }),
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
-        })
-        : Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
-      RemindTime: checkTime
+        }) : undefined,
+      RemindTime: values?.IsReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -589,28 +673,26 @@ const Index = memo(() => {
           }),
           format: variables.DATE_FORMAT.HOUR,
           isUTC: false,
-        })
-        : Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-          }),
-          format: variables.DATE_FORMAT.HOUR,
-          isUTC: false,
-        }),
+        }) : undefined,
       id: params.id,
       content,
-      sentDate: moment(),
+      // sentDate: moment(),
       isAllEmployees,
-      isAllParents,
-      employeeNews:
-        type === variablesModules.TYPE.EMPLOYEE && !isAllEmployees
-          ? employees.filter((item) => item.checked).map((item) => ({ employeeId: item.id }))
+      isAllStudents: isAllParents,
+      employeeIds:
+        !isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
+          ? employees.filter((item) => item.checked).map((item) => (item.id))
           : [],
-      parentNews:
-        type === variablesModules.TYPE.PARENT && !isAllParents
-          ? parents.filter((item) => item.checked).map((item) => ({ parentId: item?.student?.id }))
+      studentIds:
+        !isAllParents && type === variablesModules.TYPE.PARENT
+          ? parents.filter((item) => item.checked).map((item) => (item?.student?.id))
           : [],
+      excludedEmployeeIds: isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
+        ? employees.filter((item) => !item.checked).map((item) => (item.id))
+        : [],
+      excludedStudentIds: isAllParents && type === variablesModules.TYPE.PARENT
+        ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
+        : [],
     };
     dispatch({
       type: params.id ? 'notificationAdd/UPDATE' : 'notificationAdd/ADD',
@@ -657,8 +739,8 @@ const Index = memo(() => {
               divisionId: response?.division?.id,
               class: response?.class?.id,
               IsReminded: response?.isReminded,
-              RemindTime: moment(response?.remindTime, variables.DATE_FORMAT.HOUR),
-              RemindDate: moment(response.remindDate),
+              RemindTime: response?.isReminded ? moment(response?.remindTime, variables.DATE_FORMAT.HOUR) : undefined,
+              RemindDate: response?.isReminded ? moment(response.remindDate) : undefined,
             });
             // mountedSet(
             //   setParents,
@@ -672,16 +754,17 @@ const Index = memo(() => {
             //     };
             //   }),
             // );
+            mountedSet(setCheckTime, response.isReminded);
             mountedSet(setIsAllEmployees, response.isAllEmployees);
-            mountedSet(setIsAllParents, response.isAllParents);
-            mountedSet(setEmployeesActive, response?.employeeNews);
-            mountedSet(
-              setParentsActive,
-              response?.parentNews?.map((i) => ({
-                ...i,
-                checked: true,
-              })),
-            );
+            mountedSet(setIsAllParents, response.isAllStudents);
+            // mountedSet(setEmployeesActive, response?.employeeNews);
+            // mountedSet(
+            //   setParentsActive,
+            //   response?.parentNews?.map((i) => ({
+            //     ...i,
+            //     checked: true,
+            //   })),
+            // );
           }
           if (response?.branch?.id) {
             dispatch({
@@ -708,8 +791,9 @@ const Index = memo(() => {
     const values = formRef.current.getFieldsValue();
     const payload = {
       ...values,
-      id: params?.id,
-      RemindDate: checkTime
+      classId: values.class,
+      class: undefined,
+      RemindDate: values?.IsReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -717,16 +801,8 @@ const Index = memo(() => {
           }),
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
-        })
-        : Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
-      RemindTime: checkTime
+        }) : undefined,
+      RemindTime: values?.IsReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -734,27 +810,26 @@ const Index = memo(() => {
           }),
           format: variables.DATE_FORMAT.HOUR,
           isUTC: false,
-        })
-        : Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-          }),
-          format: variables.DATE_FORMAT.HOUR,
-          isUTC: false,
-        }),
+        }) : undefined,
+      id: params.id,
       content,
-      sentDate: moment(),
+      // sentDate: moment(),
       isAllEmployees,
-      isAllParents,
-      employeeNews:
-        type === variablesModules.TYPE.EMPLOYEE && !isAllEmployees
-          ? employees.filter((item) => item.checked).map((item) => ({ employeeId: item.id }))
+      isAllStudents: isAllParents,
+      employeeIds:
+        !isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
+          ? employees.filter((item) => item.checked).map((item) => (item.id))
           : [],
-      parentNews:
-        type === variablesModules.TYPE.PARENT && !isAllParents
-          ? parents.filter((item) => item.checked).map((item) => ({ parentId: item.id }))
+      studentIds:
+        !isAllParents && type === variablesModules.TYPE.PARENT
+          ? parents.filter((item) => item.checked).map((item) => (item?.student?.id))
           : [],
+      excludedEmployeeIds: isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
+        ? employees.filter((item) => !item.checked).map((item) => (item.id))
+        : [],
+      excludedStudentIds: isAllParents && type === variablesModules.TYPE.PARENT
+        ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
+        : [],
     };
     dispatch({
       type: 'notificationAdd/SEND',
@@ -857,68 +932,62 @@ const Index = memo(() => {
                         type={variables.INPUT_SEARCH}
                         onChange={(e) => onChangeSearch(e.target.value)}
                       />
-                      <Checkbox
-                        checked={isAllEmployees}
-                        onChange={(event) => changeAll(variablesModules.TYPE.EMPLOYEE, event)}
-                      >
-                        Tất cả nhân viên
-                      </Checkbox>
+                      {employees?.length > 0 && (
+                        <Checkbox
+                          checked={isAllEmployees}
+                          onChange={(event) => changeAll(variablesModules.TYPE.EMPLOYEE, event)}
+                        >
+                          Tất cả nhân viên
+                        </Checkbox>
+                      )}
                     </FormItemAntd>
                   </Pane>
-                  {!isAllEmployees &&
-                    ((employeesActive?.length > 0 && params?.id) ||
-                      !params?.id ||
-                      (parentsActive?.length > 0 && params?.id)) && (
-                      <Pane className="border-bottom">
-                        <Scrollbars autoHeight autoHeightMax="40vh">
-                          <InfiniteScroll
-                            hasMore={!searchEmployee.loading && searchEmployee.hasMore}
-                            initialLoad={searchEmployee.loading}
-                            loadMore={handleInfiniteOnLoad}
-                            pageStart={0}
-                            useWindow={false}
-                          >
-                            <List
-                              loading={searchEmployee.loading}
-                              dataSource={employees}
-                              renderItem={({ id, fullName, positionLevel, fileImage }) => {
-                                const checked = employeesActive.find(
-                                  (item) => item.employee.id === id,
-                                );
+                  <Pane className="border-bottom">
+                    <Scrollbars autoHeight autoHeightMax="40vh">
+                      <InfiniteScroll
+                        hasMore={!searchEmployee.loading && searchEmployee.hasMore}
+                        initialLoad={searchEmployee.loading}
+                        loadMore={handleInfiniteOnLoad}
+                        pageStart={0}
+                        useWindow={false}
+                      >
+                        <List
+                          loading={searchEmployee.loading}
+                          dataSource={employees}
+                          renderItem={({ id, fullName, fileImage, checked, hasAccount, positionLevelNow }) => (
+                            <ListItem key={id} className={styles.listItem}>
+                              <Pane className="px20 w-100 d-flex align-items-center">
+                                <Checkbox
+                                  checked={checked}
+                                  className="mr15"
+                                  onChange={() => changeCheckboxEmployee(id)}
+                                />
+                                <Pane className={styles.userInformation}>
+                                  <AvatarTable
+                                    fileImage={Helper.getPathAvatarJson(fileImage)}
+                                  />
+                                  <Pane>
+                                    <h3>{fullName}</h3>
+                                    <div className='d-flex'>
+                                      {positionLevelNow.position?.name && !hasAccount ? (<p className='pr5'>{positionLevelNow.position?.name} -</p>) : <p >{positionLevelNow.position?.name}</p>}
+                                      {!hasAccount && (<p className='text-danger'>Chưa có tài khoản</p>)}
+                                    </div>
+                                  </Pane>
+                                </Pane>
+                              </Pane>
+                            </ListItem>
+                          )
+                          }
+                        />
+                      </InfiniteScroll>
+                    </Scrollbars>
+                  </Pane>
 
-                                return (
-                                  <ListItem key={id} className={styles.listItem}>
-                                    <Pane className="px20 w-100 d-flex align-items-center">
-                                      <Checkbox
-                                        defaultChecked={checked}
-                                        className="mr15"
-                                        onChange={() => changeCheckboxEmployee(id)}
-                                      />
-                                      <Pane className={styles.userInformation}>
-                                        <AvatarTable
-                                          fileImage={Helper.getPathAvatarJson(fileImage)}
-                                        />
-                                        <Pane>
-                                          <h3>{fullName}</h3>
-                                          <p>{head(positionLevel)?.position?.name}</p>
-                                        </Pane>
-                                      </Pane>
-                                    </Pane>
-                                  </ListItem>
-                                );
-                              }}
-                            />
-                          </InfiniteScroll>
-                        </Scrollbars>
-                      </Pane>
-                    )}
 
                   <Pane className="p20">
-                    {!isAllEmployees && (
-                      <Text color="dark" size="normal">
-                        Đã chọn {size(employees?.filter((item) => item.checked))} nhân viên
-                      </Text>
-                    )}
+                    <Text color="dark" size="normal">
+                      Đã chọn {size(employees?.filter((item) => item.checked))} nhân viên
+                    </Text>
                   </Pane>
                 </>
               )}
@@ -971,62 +1040,61 @@ const Index = memo(() => {
                       </Pane>
                     </Pane>
                   </Pane>
-                  <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
-                    <FormItemAntd label="Người nhận thông báo">
-                      <Checkbox
-                        checked={isAllParents}
-                        onChange={(event) => changeAll(variablesModules.TYPE.PARENT, event)}
-                      >
-                        Tất cả học sinh
-                      </Checkbox>
-                    </FormItemAntd>
-                  </Pane>
+                  {parents?.length > 0 && (
+                    <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
+                      <FormItemAntd label="Người nhận thông báo">
+                        <Checkbox
+                          checked={isAllParents}
+                          onChange={(event) => changeAll(variablesModules.TYPE.PARENT, event)}
+                        >
+                          Tất cả học sinh
+                        </Checkbox>
+                      </FormItemAntd>
+                    </Pane>
+                  )}
 
-                  {!isAllParents &&
-                    ((parentsActive?.length > 0 && params?.id) ||
-                      !params?.id ||
-                      (employeesActive?.length > 0 && params?.id)) && (
-                      <Pane className="border-bottom">
-                        <Scrollbars autoHeight autoHeightMax="40vh">
-                          <InfiniteScroll
-                            hasMore={!searchParent.loading && searchParent.hasMore}
-                            initialLoad={searchParent.loading}
-                            loadMore={handleInfiniteOnLoadParent}
-                            pageStart={0}
-                            useWindow={false}
-                          >
-                            <List
-                              dataSource={parents}
-                              renderItem={(i) =>
-                              (
-                                <ListItem key={i?.student?.id} className={styles.listItem}>
-                                  <Pane className="px20 w-100 d-flex align-items-center">
-                                    <Checkbox
-                                      checked={i?.checked}
-                                      className="mr15"
-                                      onChange={() => changeCheckboxParent(i?.student?.id)}
+                  {
+                    <Pane className="border-bottom">
+                      <Scrollbars autoHeight autoHeightMax="40vh">
+                        <InfiniteScroll
+                          hasMore={!searchParent.loading && searchParent.hasMore}
+                          initialLoad={searchParent.loading}
+                          loadMore={handleInfiniteOnLoadParent}
+                          pageStart={0}
+                          useWindow={false}
+                        >
+                          <List
+                            dataSource={parents}
+                            renderItem={(i) =>
+                            (
+                              <ListItem key={i?.student?.id} className={styles.listItem}>
+                                <Pane className="px20 w-100 d-flex align-items-center">
+                                  <Checkbox
+                                    checked={i?.checked}
+                                    className="mr15"
+                                    onChange={() => changeCheckboxParent(i?.student?.id)}
+                                  />
+                                  <Pane className={styles.userInformation}>
+                                    <AvatarTable
+                                      fileImage={Helper.getPathAvatarJson(i?.student?.fileImage)}
                                     />
-                                    <Pane className={styles.userInformation}>
-                                      <AvatarTable
-                                        fileImage={Helper.getPathAvatarJson(i?.student?.fileImage)}
-                                      />
-                                      <Pane>
-                                        <h3>{i?.student?.fullName}</h3>
-                                        <div className='d-flex'>
-                                          {i?.student?.class && !i?.hasParentAccount ? (<p className='pr5'>{i?.class?.name} -</p>) : <p >{i?.class?.name}</p>}
-                                          {!i?.hasParentAccount && (<p className='text-danger'>Chưa có phụ huynh</p>)}
-                                        </div>
-                                      </Pane>
+                                    <Pane>
+                                      <h3>{i?.student?.fullName}</h3>
+                                      <div className='d-flex'>
+                                        {i?.student?.class && !i?.hasParentAccount ? (<p className='pr5'>{i?.class?.name} -</p>) : <p >{i?.class?.name}</p>}
+                                        {!i?.hasParentAccount && (<p className='text-danger'>Chưa có tài khoản PH</p>)}
+                                      </div>
                                     </Pane>
                                   </Pane>
-                                </ListItem>
-                              )
-                              }
-                            />
-                          </InfiniteScroll>
-                        </Scrollbars>
-                      </Pane>
-                    )}
+                                </Pane>
+                              </ListItem>
+                            )
+                            }
+                          />
+                        </InfiniteScroll>
+                      </Scrollbars>
+                    </Pane>
+                  }
 
                   <Pane className="p20">
                     <Text color="dark" size="normal">
@@ -1102,20 +1170,26 @@ const Index = memo(() => {
                       onClick={onchangCheck}
                     />
                   </Pane>
-                  <Pane className="mr15">
-                    <FormItem
-                      name="RemindDate"
-                      type={variables.DATE_PICKER}
-                      rules={checkTime ? [variables.RULES.EMPTY] : []}
-                    />
-                  </Pane>
-                  <Pane>
-                    <FormItem
-                      name="RemindTime"
-                      type={variables.TIME_PICKER}
-                      rules={checkTime ? [variables.RULES.EMPTY] : []}
-                    />
-                  </Pane>
+                  {
+                    checkTime && (
+                      <>
+                        <Pane className="mr15">
+                          <FormItem
+                            name="RemindDate"
+                            type={variables.DATE_PICKER}
+                            rules={checkTime ? [variables.RULES.EMPTY] : []}
+                          />
+                        </Pane>
+                        <Pane>
+                          <FormItem
+                            name="RemindTime"
+                            type={variables.TIME_PICKER}
+                            rules={checkTime ? [variables.RULES.EMPTY] : []}
+                          />
+                        </Pane>
+                      </>
+                    )
+                  }
                 </Pane>
               </Pane>
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>

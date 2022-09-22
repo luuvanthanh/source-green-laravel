@@ -13,7 +13,8 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import ability from '@/utils/ability';
-import stylesModule from './styles.module.scss';
+import HelperModules from './utils/Helper';
+// import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -318,20 +319,20 @@ class Index extends PureComponent {
    */
   header = () => {
     const columns = [
-      {
-        title: 'Mã ID',
-        key: 'index',
-        align: 'center',
-        className: 'min-width-80',
-        width: 80,
-        render: (text, record, index) =>
-          (`TB${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`),
-      },
+      // {
+      //   title: 'Mã ID',
+      //   key: 'index',
+      //   align: 'center',
+      //   className: 'min-width-80',
+      //   width: 80,
+      //   render: (text, record, index) =>
+      //     (`TB${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`),
+      // },
       {
         title: 'Thời gian gửi',
         key: 'sentDate',
-        className: 'min-width-180',
-        width: 180,
+        className: 'min-width-120',
+        width: 120,
         render: (record) => (
           <Text size="normal">
             {Helper.getDate(record.sentDate, variables.DATE_FORMAT.DATE_TIME)}
@@ -341,40 +342,50 @@ class Index extends PureComponent {
       {
         title: 'Năm học',
         key: 'year',
-        width: 200,
-        className: 'min-width-200',
+        width: 120,
+        className: 'min-width-120',
         render: (record) => record?.schoolYear?.yearFrom ? <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text> : "",
       },
       {
+        title: 'Tiêu đề',
+        key: 'title',
+        className: 'min-width-300',
+        width: 300,
+        render: (record) => <Text size="normal">{record.title}</Text>,
+      },
+      {
+        title: 'Trạng thái',
+        key: 'status',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => HelperModules.tagStatusSend(record.sentDate),
+      },
+      // {
+      //   title: 'Nội dung',
+      //   key: 'content',
+      //   className: 'min-width-200',
+      //   render: (record) => (
+      //     <div
+      //       className={stylesModule['wrapper-content']}
+      //       style={{ maxHeight: '100px', overflowY: 'auto' }}
+      //       dangerouslySetInnerHTML={{ __html: record.content }}
+      //     />
+      //   ),
+      // },
+      {
         title: 'Cơ sở',
         key: 'branches',
-        className: 'min-width-200',
+        className: 'min-width-150',
+        width: 150,
         render: (record) => <Text size="normal">{record?.branch?.name}</Text>,
       },
       {
         title: 'Người gửi',
         key: 'sender',
         className: 'min-width-150',
+        width: 150,
         render: (record) => (
           <Text size="normal">{record?.sender?.objectInfo?.fullName || record?.sender?.name}</Text>
-        ),
-      },
-      {
-        title: 'Tiêu đề',
-        key: 'title',
-        className: 'min-width-200',
-        render: (record) => <Text size="normal">{record.title}</Text>,
-      },
-      {
-        title: 'Nội dung',
-        key: 'content',
-        className: 'min-width-200',
-        render: (record) => (
-          <div
-            className={stylesModule['wrapper-content']}
-            style={{ maxHeight: '100px', overflowY: 'auto' }}
-            dangerouslySetInnerHTML={{ __html: record.content }}
-          />
         ),
       },
       {
@@ -383,26 +394,31 @@ class Index extends PureComponent {
         width: 80,
         fixed: 'right',
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={(event) => {
-                event.stopPropagation();
-                history.push(`/thong-bao/${record.id}/chinh-sua`);
-              }}
-              permission="THONGBAO"
-            />
-            <Button
-              color="danger"
-              icon="remove"
-              onClick={(event) => {
-                event.stopPropagation();
-                this.onRemove(record.id);
-              }}
-              permission="THONGBAO"
-            />
-          </div>
+          <>
+            {
+              !record?.sentDate &&
+              <div className={styles['list-button']}>
+                <Button
+                  color="primary"
+                  icon="edit"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    history.push(`/thong-bao/${record.id}/chinh-sua`);
+                  }}
+                  permission="THONGBAO"
+                />
+                <Button
+                  color="danger"
+                  icon="remove"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    this.onRemove(record.id);
+                  }}
+                  permission="THONGBAO"
+                />
+              </div>
+            }
+          </>
         ),
       },
     ];
