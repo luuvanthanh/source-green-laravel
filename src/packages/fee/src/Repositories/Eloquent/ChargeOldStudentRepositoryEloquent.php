@@ -2,10 +2,14 @@
 
 namespace GGPHP\Fee\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use CloudCreativity\LaravelJsonApi\Utils\Arr;
+use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use GGPHP\Fee\Models\ClassType;
 use GGPHP\Fee\Models\DetailPaymentAccountant;
+use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\Fee\Presenters\ChargeOldStudentPresenter;
 use GGPHP\Fee\Repositories\Contracts\ChargeOldStudentRepository;
 use GGPHP\Fee\Services\ChargeOldStudentService;
@@ -215,11 +219,31 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 ];
             }
         }
- 
+
         if (!empty($dataCrm)) {
             ChargeOldStudentService::updateStatusStudentCrm($dataCrm);
         }
 
         return parent::find($chargeOldStudent->Id);
+    }
+
+    public function getMonthAgeDetailStudent(array $attributes): array
+    {
+        $schoolYear = SchoolYear::find($attributes['schoolYearId']);
+        $student = Student::find($attributes['studentId']);
+
+        foreach ($schoolYear->changeParameter->changeParameterDetail as $value) {
+
+            $ageMonth = Carbon::parse($student->DayOfBirth)->diffInMonths($value->Date);
+            $classType = ClassType::where('From', '<=', $ageMonth)->where('To', '>=', $ageMonth)->first();
+
+            $data[$value->Date] = [
+                'month' => $value->Date,
+                'ageMont' => $ageMonth,
+                'classType' => !empty($classType->Name) ? $classType->Name : null
+            ];
+        }
+
+        return $data;
     }
 }

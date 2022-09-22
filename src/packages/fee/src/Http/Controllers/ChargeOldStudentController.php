@@ -5,6 +5,7 @@ namespace GGPHP\Fee\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Fee\Http\Requests\CreateChargeOldStudentRequest;
 use GGPHP\Fee\Http\Requests\CreateDetailPaymentAccountantRequest;
+use GGPHP\Fee\Http\Requests\GetStudentDetailRequest;
 use GGPHP\Fee\Http\Requests\UpdateChargeOldStudentRequest;
 use GGPHP\Fee\Repositories\Contracts\ChargeOldStudentRepository;
 use Illuminate\Http\Request;
@@ -119,5 +120,12 @@ class ChargeOldStudentController extends Controller
         $chargeOldStudents = $this->chargeOldStudentRepository->chargeOldStudentDetailPayment($request->all());
 
         return $this->success($chargeOldStudents, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function getMonthAgeDetailStudent(GetStudentDetailRequest $request)
+    {
+        $chargeOldStudents = $this->chargeOldStudentRepository->getMonthAgeDetailStudent($request->all());
+
+        return $this->success(['data' => $chargeOldStudents], trans('lang::messages.common.getListSuccess'));
     }
 }
