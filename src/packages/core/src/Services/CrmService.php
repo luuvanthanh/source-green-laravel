@@ -44,6 +44,24 @@ class CrmService
         return json_decode($response->body());
     }
 
+    public static function syncEmployee($attributes)
+    {
+        $url = env('CRM_URL') . '/api/v1/sync-employees';
+        $token = request()->bearerToken();
+
+        $response = Http::withToken($token)->post($url, $attributes);
+
+        if ($response->failed()) {
+            $message = "Có lỗi từ api CRM";
+            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
+                $message = "CRM: " . json_decode($response->body())->error->message;
+            }
+            throw new HttpException(500, $message);
+        }
+
+        return json_decode($response->body());
+    }
+
     public static function createBranch(array $attributes)
     {
         $url = env('CRM_URL') . '/api/v1/branches';
@@ -86,6 +104,24 @@ class CrmService
 
         $response = Http::withToken($token)->delete($url);
 
+        if ($response->failed()) {
+            $message = "Có lỗi từ api CRM";
+            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
+                $message = "CRM: " . json_decode($response->body())->error->message;
+            }
+            throw new HttpException(500, $message);
+        }
+
+        return json_decode($response->body());
+    }
+
+    public static function syncBranch($attributes)
+    {
+        $url = env('CRM_URL') . '/api/v1/sync-branch';
+        $token = request()->bearerToken();
+
+        $response = Http::withToken($token)->post($url, $attributes);
+        
         if ($response->failed()) {
             $message = "Có lỗi từ api CRM";
             if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
