@@ -62,7 +62,7 @@ export function getEmployees(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['positionLevelNow','positionLevelNow.position']),
+      include: Helper.convertIncludes(['positionLevelNow', 'positionLevelNow.division']),
     },
   });
 }

@@ -143,7 +143,7 @@ const Index = memo(() => {
         ...searchStudent,
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.PAGE_SIZE,
-        classId: value,
+        class: value,
       },
       callback: (response) => {
         if (response) {
@@ -162,7 +162,7 @@ const Index = memo(() => {
             ...searchStudent,
             page: variables.PAGINATION.PAGE,
             limit: variables.PAGINATION.PAGE_SIZE,
-            classId: value,
+            class: value,
             total: response.totalCount,
             loading: false,
           });

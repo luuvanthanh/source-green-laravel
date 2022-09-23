@@ -115,6 +115,8 @@ const Index = memo(() => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       [name]: value,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
     }));
   }, 300);
 

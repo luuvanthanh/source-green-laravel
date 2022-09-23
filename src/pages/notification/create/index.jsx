@@ -485,7 +485,7 @@ const Index = memo(() => {
       employees.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)),
     );
     const dataCheck = employees?.filter(i => i?.checked);
-    if (dataCheck?.length <= 1) {
+    if (dataCheck?.length <= 1 && head(dataCheck)?.id === id) {
       mountedSet(setIsAllEmployees, false);
     }
   };
@@ -496,7 +496,7 @@ const Index = memo(() => {
       parents.map((item) => (item?.student?.id === id ? { ...item, checked: !item.checked } : item)),
     );
     const dataCheckParent = parents?.filter(i => i?.checked);
-    if (dataCheckParent?.length <= 1) {
+    if (dataCheckParent?.length <= 1 && head(dataCheckParent)?.id === id) {
       mountedSet(setIsAllParents, false);
     }
   };
@@ -651,25 +651,27 @@ const Index = memo(() => {
     }
   };
 
-  const onFinish = (values) => {
+  const onFinish = () => {
+    const values = formRef.current.getFieldsValue();
     const payload = {
       ...values,
       classId: values.class,
       class: undefined,
-      RemindDate: values?.IsReminded
+      isReminded: !!values?.isReminded,
+      remindDate: values?.isReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
-            originValue: values.RemindDate,
+            originValue: values.remindDate,
           }),
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
         }) : undefined,
-      RemindTime: values?.IsReminded
+      remindTime: values?.isReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
-            originValue: values.RemindTime,
+            originValue: values.remindTime,
           }),
           format: variables.DATE_FORMAT.HOUR,
           isUTC: false,
@@ -694,27 +696,55 @@ const Index = memo(() => {
         ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
         : [],
     };
-    dispatch({
-      type: params.id ? 'notificationAdd/UPDATE' : 'notificationAdd/ADD',
-      payload,
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
+    if (values?.title) {
+      if (values?.isReminded) {
+        if (values?.remindDate && values?.remindTime) {
+          dispatch({
+            type: params.id ? 'notificationAdd/UPDATE' : 'notificationAdd/ADD',
+            payload,
+            callback: (response, error) => {
+              if (response) {
+                history.goBack();
+              }
+              if (error) {
+                if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                  error?.validationErrors.forEach((item) => {
+                    formRef.current.setFields([
+                      {
+                        name: head(item.members),
+                        errors: [item.message],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
         }
-        if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              formRef.current.setFields([
-                {
-                  name: head(item.members),
-                  errors: [item.message],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
+      } else {
+        dispatch({
+          type: params.id ? 'notificationAdd/UPDATE' : 'notificationAdd/ADD',
+          payload,
+          callback: (response, error) => {
+            if (response) {
+              history.goBack();
+            }
+            if (error) {
+              if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                error?.validationErrors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: head(item.members),
+                      errors: [item.message],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+      }
+    }
   };
 
   useEffect(() => {
@@ -738,9 +768,9 @@ const Index = memo(() => {
               branchId: response?.branch?.id,
               divisionId: response?.division?.id,
               class: response?.class?.id,
-              IsReminded: response?.isReminded,
-              RemindTime: response?.isReminded ? moment(response?.remindTime, variables.DATE_FORMAT.HOUR) : undefined,
-              RemindDate: response?.isReminded ? moment(response.remindDate) : undefined,
+              isReminded: response?.isReminded,
+              remindTime: response?.isReminded ? moment(response?.remindTime, variables.DATE_FORMAT.HOUR) : undefined,
+              remindDate: response?.isReminded ? moment(response.remindDate) : undefined,
             });
             // mountedSet(
             //   setParents,
@@ -793,20 +823,21 @@ const Index = memo(() => {
       ...values,
       classId: values.class,
       class: undefined,
-      RemindDate: values?.IsReminded
+      isReminded: !!values?.isReminded,
+      remindDate: values?.isReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
-            originValue: values.RemindDate,
+            originValue: values.remindDate,
           }),
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
         }) : undefined,
-      RemindTime: values?.IsReminded
+      remindTime: values?.isReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
-            originValue: values.RemindTime,
+            originValue: values.remindTime,
           }),
           format: variables.DATE_FORMAT.HOUR,
           isUTC: false,
@@ -831,27 +862,55 @@ const Index = memo(() => {
         ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
         : [],
     };
-    dispatch({
-      type: 'notificationAdd/SEND',
-      payload,
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
+    if (values?.title) {
+      if (values?.isReminded) {
+        if (values?.remindDate && values?.remindTime) {
+          dispatch({
+            type: 'notificationAdd/SEND',
+            payload,
+            callback: (response, error) => {
+              if (response) {
+                history.goBack();
+              }
+              if (error) {
+                if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                  error?.validationErrors.forEach((item) => {
+                    formRef.current.setFields([
+                      {
+                        name: head(item.members),
+                        errors: [item.message],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
         }
-        if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              formRef.current.setFields([
-                {
-                  name: head(item.members),
-                  errors: [item.message],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
+      } else {
+        dispatch({
+          type: 'notificationAdd/SEND',
+          payload,
+          callback: (response, error) => {
+            if (response) {
+              history.goBack();
+            }
+            if (error) {
+              if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                error?.validationErrors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: head(item.members),
+                      errors: [item.message],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+      }
+    }
   };
 
   return (
@@ -861,7 +920,6 @@ const Index = memo(() => {
       initialValues={{
         branchId: defaultBranch?.id || null,
       }}
-      onFinish={onFinish}
     >
       <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
       <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
@@ -969,7 +1027,7 @@ const Index = memo(() => {
                                   <Pane>
                                     <h3>{fullName}</h3>
                                     <div className='d-flex'>
-                                      {positionLevelNow.position?.name && !hasAccount ? (<p className='pr5'>{positionLevelNow.position?.name} -</p>) : <p >{positionLevelNow.position?.name}</p>}
+                                      {positionLevelNow.division?.name && !hasAccount ? (<p className='pr5'>{positionLevelNow.division?.name} -</p>) : <p >{positionLevelNow.division?.name}</p>}
                                       {!hasAccount && (<p className='text-danger'>Chưa có tài khoản</p>)}
                                     </div>
                                   </Pane>
@@ -1081,7 +1139,7 @@ const Index = memo(() => {
                                     <Pane>
                                       <h3>{i?.student?.fullName}</h3>
                                       <div className='d-flex'>
-                                        {i?.student?.class && !i?.hasParentAccount ? (<p className='pr5'>{i?.class?.name} -</p>) : <p >{i?.class?.name}</p>}
+                                        {i?.student?.class && !i?.hasParentAccount ? (<p className='pr5'>{i?.student?.class?.name} -</p>) : <p >{i?.student?.class?.name}</p>}
                                         {!i?.hasParentAccount && (<p className='text-danger'>Chưa có tài khoản PH</p>)}
                                       </div>
                                     </Pane>
@@ -1164,7 +1222,7 @@ const Index = memo(() => {
                     <FormItem
                       className="checkbox-row checkbox-small p0"
                       label="Đặt hẹn giờ gửi"
-                      name="IsReminded"
+                      name="isReminded"
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"
                       onClick={onchangCheck}
@@ -1175,14 +1233,14 @@ const Index = memo(() => {
                       <>
                         <Pane className="mr15">
                           <FormItem
-                            name="RemindDate"
+                            name="remindDate"
                             type={variables.DATE_PICKER}
                             rules={checkTime ? [variables.RULES.EMPTY] : []}
                           />
                         </Pane>
                         <Pane>
                           <FormItem
-                            name="RemindTime"
+                            name="remindTime"
                             type={variables.TIME_PICKER}
                             rules={checkTime ? [variables.RULES.EMPTY] : []}
                           />
@@ -1204,6 +1262,7 @@ const Index = memo(() => {
                   }
                   style={{ marginLeft: 'auto' }}
                   htmlType="submit"
+                  onClick={() => onFinish()}
                   disabled={
                     !employees.find((item) => item.checked) &&
                     !parents.find((item) => item.checked) &&
@@ -1217,6 +1276,7 @@ const Index = memo(() => {
                   color="primary"
                   size="large"
                   className='ml10'
+                  htmlType="submit"
                   loading={
                     loading['notificationAdd/SEND']
                   }
