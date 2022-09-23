@@ -232,17 +232,20 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
         $schoolYear = SchoolYear::find($attributes['schoolYearId']);
         $student = Student::find($attributes['studentId']);
 
-        foreach ($schoolYear->changeParameter->changeParameterDetail as $value) {
+        foreach ($schoolYear->changeParameter->changeParameterDetail as $key => $value) {
 
             $ageMonth = Carbon::parse($student->DayOfBirth)->diffInMonths($value->Date);
             $classType = ClassType::where('From', '<=', $ageMonth)->where('To', '>=', $ageMonth)->first();
 
-            $data[$value->Date] = [
+            $data['countClassType'][] = $classType->Id;
+            $data['detailStudent'][$value->Date] = [
                 'month' => $value->Date,
                 'ageMont' => $ageMonth,
-                'classType' => !empty($classType->Name) ? $classType->Name : null
+                'classType' => !empty($classType->Name) ? $classType->Name : null,
+                'classTypeId' => $classType->Id
             ];
         }
+        $data['countClassType'] = array_values(array_unique($data['countClassType']));
 
         return $data;
     }

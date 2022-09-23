@@ -355,18 +355,18 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         $monthStudied = $monthAdmission->diffInMonths(Carbon::parse($monthStart->StartDate)->floorMonth()) + 1;
 
                                         // tháng học kỳ 2
-                                        $monthsemester2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                        $monthSemester2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                                             ->whereHas('paymentForm', function ($query) {
                                                 $query->where('Code', self::SEMESTER2);
                                             })->get();
-                                        $totalMonthsemester2 = 0;
+                                        $totalMonthSemester2 = 0;
 
-                                        foreach ($monthsemester2 as $value) {
-                                            $totalMonthsemester2 += $value->FullMonth;
+                                        foreach ($monthSemester2 as $value) {
+                                            $totalMonthSemester2 += $value->FullMonth;
                                         }
 
-                                        if ($totalMonthsemester2 > 0 && $totalWeekStudyInMonth > 0) {
-                                            $result = $money / $totalMonthsemester2 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester2 - $monthStudied);
+                                        if ($totalMonthSemester2 > 0 && $totalWeekStudyInMonth > 0) {
+                                            $result = $money / $totalMonthSemester2 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthSemester2 - $monthStudied);
                                         }
                                         break;
                                     case self::YEAR:
@@ -388,9 +388,23 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             }
                             break;
                         case self::MEAL_FEE:
-                            $feeDetail = $feePolicie->moneyMeal()
-                                ->where('ClassTypeId', $attributes['classTypeId'])
+                            $listMonthAge = resolve(ChargeOldStudentRepositoryEloquent::class)->getMonthAgeDetailStudent($attributes);
+
+                            $getFirstFeeDetail = $feePolicie->moneyMeal()
+                                ->where('ClassTypeId', $listMonthAge['countClassType'][0])
                                 ->where('PaymentFormId', $detail->paymentFormId)->first();
+
+                            foreach ($listMonthAge['detailStudent'] as $key => $valueMonthAge) {
+                                $feeDetail = $feePolicie->moneyMeal()
+                                    ->where('ClassTypeId', $valueMonthAge['classTypeId'])
+                                    ->where('PaymentFormId', $detail->paymentFormId)->first();
+                                $listMonthAge['detailStudent'][$key]['money'] = $feeDetail->Money;
+                            }
+
+                            // dd($listMonthAge['detailStudent']);
+
+                            // dd(array_sum(array_column($feeDetail->ToArray(), 'Money')), $paymentForm->Code);
+
                             $arrDate = $this->getDatesFromRange($begin->format('Y-m-d'), $end->format('Y-m-d'));
 
                             foreach ($arrDate as $key => $value) {
@@ -409,9 +423,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             }
 
                             $totalDaySemester1 = count(array_diff($arrDate, $arrFlatten));
-
                             if (!is_null($feeDetail)) {
-                                $money = $feeDetail->Money;
+                                $money = $getFirstFeeDetail->Money;
+
                                 switch ($paymentForm->Code) {
                                     case self::SEMESTER1:
                                         $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
@@ -430,6 +444,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                                 $query->where('Date', '!=', $month->Date);
                                                 $query->where('StartDate', '>', $month->EndDate);
                                             })->get();
+
+                                        // dd($monthSemesterLeft1);
 
                                         $totalSchoolDate = array_sum(array_column($monthSemesterLeft1->toArray(), 'SchoolDay')) + $totalDaySemester1;
                                         $result = $money * $totalSchoolDate;
@@ -520,7 +536,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             $data[] = $result;
         }
 
-        $detailData = $this->expectedToCollectMoney($attributes, $schooleYear, $data, $feePolicie);
+        $detailData = $this->expectedToCollectMoney($attributes, $schooleYear, $data, $feePolicie, $listMonthAge);
 
         return [
             'data' => $data,
@@ -556,7 +572,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         }
     }
 
-    public function expectedToCollectMoney($attributes, $schooleYear, $dataTuition, $feePolicie)
+    public function expectedToCollectMoney($attributes, $schooleYear, $dataTuition, $feePolicie, $listMonthAge)
     {
         $startDate = $schooleYear->StartDate;
         $endDate = $schooleYear->EndDate;
@@ -594,7 +610,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                         }
                         break;
                     case self::MONTH:
-
                         if ($applyDate == $month->format('Y-m')) {
                             $fee[] = [
                                 'fee_id' => $feeTuiTion->Id,
