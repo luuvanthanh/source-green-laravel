@@ -245,7 +245,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     public function update(array $attributes, $id)
     {
         $labourContract = LabourContract::findOrFail($id);
-
+        
         \DB::beginTransaction();
         try {
             $labourContract->update($attributes);
@@ -599,13 +599,15 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             return null;
         }
 
-        $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
+        if (!is_null($model->OrdinalNumber)) {
+            $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
+        }
     }
 
     public function contractAddendum($id, $response = null)
     {
         $contract = $this->model->find($id);
-       
+
         $employee = resolve(UserRepository::class)->skipPresenter()->find($contract->EmployeeId);
 
         $represent = $contract->represent;
