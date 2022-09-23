@@ -80,7 +80,7 @@ export default {
     },
     *GET_EMPLOYEES({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(categories.getEmployees, payload);
+        const response = yield saga.call(services.getEmployees, payload);
         callback(response);
       } catch (error) {
         callback(null, error);
