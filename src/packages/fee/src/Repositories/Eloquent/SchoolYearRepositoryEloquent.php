@@ -312,7 +312,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
         return parent::find($schoolYear->Id);
     }
 
-    public function getDetailSchoolYear($attributes)
+    public function getDetailSchoolYear($attributes): array
     {
         $schoolYear = $this->model->find($attributes['schoolYearId']);
 
