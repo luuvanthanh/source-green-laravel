@@ -130,11 +130,11 @@ const Index = memo(() => {
                           style={{ paddingTop: 10, paddingBottom: 10 }}
                         >
                           <AvatarTable
-                            fileImage={Helper.getPathAvatarJson(item?.parent?.fileImage)}
+                            fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
                           />
                           <Pane>
-                            <h3>{item?.parent?.fullName}</h3>
-                            <p>Phụ huynh</p>
+                            <h3>{item?.student?.fullName}</h3>
+                            <p>Học sinh </p>
                           </Pane>
                         </Pane>
                       ))}
