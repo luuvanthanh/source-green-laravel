@@ -93,6 +93,8 @@ class RouteRegistrar extends CoreRegistrar
 
             //post-detail-payment-accountant
             Route::post('charge-old-student-detail-payments', 'ChargeOldStudentController@chargeOldStudentDetailPayment')->name('accountant.charge-old-student-detail-payments');
+
+            Route::get('get-detail-school-years', 'SchoolYearController@getDetailSchoolYear')->name('accountant.get-detail-school-years');
         });
     }
 }
