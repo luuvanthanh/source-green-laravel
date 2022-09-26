@@ -118,7 +118,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 });
             });
         }
-        
+
         if (!empty('timekeeping')) {
             $this->model = $this->model->when(!empty($attributes['endDate']), function ($query) use ($attributes) {
                 $arr = explode('-', $attributes['endDate']);
@@ -143,6 +143,20 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 $query->whereDate('DateApply', '<=', $now->format('Y-m-d'));
                 $query->whereDate('DateApply', '<=', $attributes['dateApply']);
                 $query->where('IsEffect', true);
+            });
+        }
+
+        if (!empty($attributes['divisionCode'])) {
+            $arr = explode(',', $attributes['divisionCode']);
+            $this->model = $this->model->whereHas('positionLevelNow.division', function ($query) use ($arr) {
+                $query->whereIn('Code', $arr);
+            });
+        }
+
+        if (!empty($attributes['positionCode'])) {
+            $arr = explode(',', $attributes['positionCode']);
+            $this->model = $this->model->whereHas('positionLevelNow.position', function ($query) use ($arr) {
+                $query->whereIn('Code', $arr);
             });
         }
 
