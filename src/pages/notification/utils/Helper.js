@@ -1,8 +1,8 @@
 import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size } from 'lodash';
 import Tag from '@/components/CommonComponent/Tag';
-import Text from '@/components/CommonComponent/Text';
-import { variables } from './variables';
 import moment from 'moment';
+import { variables } from './variables';
+import Text from '@/components/CommonComponent/Text';
 
 export default class Helpers {
   static tagStatus = (type) => {
@@ -44,5 +44,12 @@ export default class Helpers {
       default:
         return 'CN';
     }
+  };
+
+  static tagStatusSend = (type) => {
+    if (type) {
+      return <Tag color="success">{variables.STATUS_NAME_SEND.SEND}</Tag>;
+    }
+    return <Tag color="yellow">{variables.STATUS_NAME_SEND.NOT_SEND}</Tag>;
   };
 }

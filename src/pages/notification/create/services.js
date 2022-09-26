@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import requestLaravel from '@/utils/requestLavarel';
 import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
@@ -53,5 +54,15 @@ export function send(data = {}) {
     parse: true,
     editNotification: true,
     cancelNotification: true,
+  });
+}
+
+export function getEmployees(params = {}) {
+  return requestLaravel('/v1/employees', {
+    method: 'GET',
+    params: {
+      ...params,
+      include: Helper.convertIncludes(['positionLevelNow', 'positionLevelNow.division']),
+    },
   });
 }

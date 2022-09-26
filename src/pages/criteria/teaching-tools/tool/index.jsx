@@ -115,6 +115,8 @@ const Index = memo(() => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       [name]: value,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
     }));
   }, 300);
 
@@ -165,7 +167,7 @@ const Index = memo(() => {
                     type={variables.INPUT_SEARCH}
                     name="keyWord"
                     onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
-                    placeholder="Nhập từ khóa tìm kiếm"
+                    placeholder="Nhập tên giáo cụ để tìm kiếm"
                   />
                 </Pane>
               </Pane>

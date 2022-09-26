@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import * as categories from '@/services/categories';
 import * as services from './services';
 
@@ -118,13 +119,18 @@ export default {
         });
       }
     },
-    *REMOVE_STUDENT({ payload }, saga) {
+    *REMOVE_STUDENT({ payload, callback }, saga) {
       try {
-        yield saga.call(services.removeStudent, payload.id);
+        const response = yield saga.call(services.removeStudent, payload.id);
         yield saga.put({
           type: 'GET_DATA',
           payload: payload.pagination,
         });
+        notification.success({
+          message: 'Thông báo',
+          description: 'Bạn đã xoá thành công dữ liệu',
+        });
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

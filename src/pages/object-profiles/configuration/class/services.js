@@ -17,6 +17,8 @@ export function remove(id) {
   return request(`/classes/${id}`, {
     method: 'DELETE',
     parse: true,
+    editNotification: true,
+    cancelNotification: true,
   });
 }
 

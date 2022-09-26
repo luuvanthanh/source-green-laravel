@@ -23,9 +23,9 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { pagination, data ,years},
+    { pagination, data, years },
     loading,
-    { defaultBranch,user },
+    { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, physicalStudents, user }) => [
     physicalStudents,
     effects,
@@ -248,7 +248,7 @@ const Index = memo(() => {
         ...search,
         isUnderWeight: 'true',
       },
-      callback: () => {},
+      callback: () => { },
     });
     history.push({
       pathname,
@@ -308,7 +308,7 @@ const Index = memo(() => {
                     <FormItem
                       name="branchId"
                       type={variables.SELECT}
-                      data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
+                      data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...category?.branches]}
                       onChange={(value) => changeFilterBranch('branchId', value)}
                       allowClear={false}
                     />
@@ -329,7 +329,7 @@ const Index = memo(() => {
                   <FormItem
                     name="classId"
                     type={variables.SELECT}
-                    data={[{ name: 'Chọn tất cả', id: null }, ...category?.classes]}
+                    data={[{ name: 'Chọn tất cả lớp', id: null }, ...category?.classes]}
                     onChange={(value) => changeFilter('classId')(value)}
                     allowClear={false}
                   />

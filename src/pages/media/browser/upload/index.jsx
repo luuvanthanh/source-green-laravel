@@ -58,9 +58,11 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
     dispatch({
       type: 'mediaUpload/UPLOAD',
       payload: infoFiles,
-      callback: () => {
+      callback: (res) => {
         setFileList([]);
-        onOk();
+        if (res) {
+          onOk();
+        }
       },
     });
   };
@@ -76,9 +78,11 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
     dispatch({
       type: 'mediaUpload/CREATE',
       payload: req,
-      callback: () => {
+      callback: (res) => {
         setFileList([]);
-        onOk();
+        if (res) {
+          onOk();
+        }
       },
     });
   };

@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Modal } from 'antd';
+import { Form, Modal, notification } from 'antd';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
@@ -15,11 +15,12 @@ import { variables } from '@/utils/variables';
 const mapStateToProps = ({ loading, OPParentsAdd }) => ({
   loading,
   details: OPParentsAdd.detailsAccount,
+  detailsGeneral: OPParentsAdd.details,
   error: OPParentsAdd.error,
   roles: OPParentsAdd.roles,
 });
 const Index = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, roles }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, roles, detailsGeneral }) => {
     const formRef = useRef();
     const formRefModal = useRef();
 
@@ -46,24 +47,31 @@ const Index = memo(
      * @param {object} values values of form
      */
     const onFinish = (values) => {
-      dispatch({
-        type: details?.user?.id ? 'OPParentsAdd/UPDATE_ACCOUNT' : 'OPParentsAdd/ADD_ACCOUNT',
-        payload: { ...details, ...values, id: params.id },
-        callback: (response, error) => {
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
+      if (!detailsGeneral?.email) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Bạn cần bổ sung email ở thông tin cơ bản',
+        });
+      } else {
+        dispatch({
+          type: details?.user?.id ? 'OPParentsAdd/UPDATE_ACCOUNT' : 'OPParentsAdd/ADD_ACCOUNT',
+          payload: { ...details, ...values, id: params.id, email: detailsGeneral?.email, },
+          callback: (response, error) => {
+            if (error) {
+              if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                error?.validationErrors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: head(item.members),
+                      errors: [item.message],
+                    },
+                  ]);
+                });
+              }
             }
-          }
-        },
-      });
+          },
+        });
+      }
     };
 
     const changePassword = () => {
@@ -113,6 +121,7 @@ const Index = memo(
         });
       }
     }, [details]);
+
 
     return (
       <>
@@ -172,14 +181,6 @@ const Index = memo(
                       label="Tên tài khoản"
                       type={variables.INPUT}
                       rules={[variables.RULES.EMPTY_INPUT]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name="email"
-                      label="Email"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                     />
                   </Pane>
                   {!details?.userName && (
@@ -245,15 +246,17 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   roles: PropTypes.arrayOf(PropTypes.any),
+  detailsGeneral: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   roles: [],
+  detailsGeneral: {},
 };
 
 export default withRouter(connect(mapStateToProps)(Index));

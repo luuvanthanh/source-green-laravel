@@ -22,11 +22,15 @@ export const variables = {
   TYPE: {
     EMPLOYEE: 'EMPLOYEE',
     PARENT: 'PARENT',
-    BRANCH: 'BRANCH'
+    BRANCH: 'BRANCH',
   },
   ACTION_TYPE: {
     POST: 'gửi thông báo',
     PUT: 'sửa thông báo',
+  },
+  STATUS_NAME_SEND: {
+    SEND: 'Đã gửi',
+    NOT_SEND: 'Chưa gửi',
   },
 };
 

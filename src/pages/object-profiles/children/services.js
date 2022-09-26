@@ -38,6 +38,8 @@ export function removeStudent(id) {
   return request(`/students/delete-by-conditional/${id}`, {
     method: 'DELETE',
     parse: true,
+    editNotification: true,
+    cancelNotification: true,
   });
 }
 

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -42,6 +42,7 @@ const mapStateToProps = ({ OPchildren, loading, user }) => ({
   branches: OPchildren.branches,
   pagination: OPchildren.pagination,
   defaultBranch: user.defaultBranch,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -52,6 +53,7 @@ class Index extends PureComponent {
     const {
       defaultBranch,
       location: { query },
+      user,
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
@@ -59,7 +61,7 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
-        class: query?.class,
+        class: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         branchId: query?.branchId || defaultBranch?.id,
         classStatus: 'ALL',
         isStoreStaus: false,
@@ -364,6 +366,7 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      user,
       branches,
       classes,
       pagination,
@@ -407,7 +410,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm"
+                    placeholder="Nhập Tên/Mã HS để tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
@@ -437,7 +440,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                     name="class"
                     onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}
@@ -487,6 +490,7 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -499,6 +503,7 @@ Index.defaultProps = {
   branches: [],
   classes: [],
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;

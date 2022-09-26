@@ -15,6 +15,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { isEmpty } from 'lodash';
 import { Scrollbars } from 'react-custom-scrollbars';
 import variablesModules from '../utils/variables';
+import HelperModules from '../utils/Helper';
 import stylesModule from '../styles.module.scss';
 
 const { Item: ListItem } = List;
@@ -65,8 +66,9 @@ const Index = memo(() => {
           <Pane className="row">
             <Pane className="col-lg-6">
               <Pane className="card">
-                <Pane className="border-bottom" style={{ padding: 20 }}>
+                <Pane className="border-bottom d-flex justify-content-between" style={{ padding: 20 }}>
                   <Heading type="form-title">Thông tin chung</Heading>
+                  <div>{HelperModules.tagStatusSend(details.sentDate)}</div>
                 </Pane>
 
                 <Pane className="border-bottom" style={{ padding: 20 }}>
@@ -128,11 +130,11 @@ const Index = memo(() => {
                           style={{ paddingTop: 10, paddingBottom: 10 }}
                         >
                           <AvatarTable
-                            fileImage={Helper.getPathAvatarJson(item?.parent?.fileImage)}
+                            fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
                           />
                           <Pane>
-                            <h3>{item?.parent?.fullName}</h3>
-                            <p>Phụ huynh</p>
+                            <h3>{item?.student?.fullName}</h3>
+                            <p>Học sinh </p>
                           </Pane>
                         </Pane>
                       ))}
@@ -200,16 +202,18 @@ const Index = memo(() => {
                     <div className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
                   </Pane>
                 </Pane>
-                <Pane className="p20">
-                  <Button
-                    color="success"
-                    size="large"
-                    style={{ marginLeft: 'auto' }}
-                    onClick={() => history.push(`/thong-bao/${params.id}/chinh-sua`)}
-                  >
-                    Sửa
-                  </Button>
-                </Pane>
+                {!details?.sentDate &&
+                  <Pane className="p20">
+                    <Button
+                      color="success"
+                      size="large"
+                      style={{ marginLeft: 'auto' }}
+                      onClick={() => history.push(`/thong-bao/${params.id}/chinh-sua`)}
+                    >
+                      Sửa
+                    </Button>
+                  </Pane>
+                }
               </Pane>
             </Pane>
           </Pane>
