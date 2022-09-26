@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Fee\Jobs\CreateSchoolYearCrmJob;
 use GGPHP\Fee\Jobs\UpdateSchoolYearCrmJob;
+use GGPHP\Fee\Models\PaymentForm;
 use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\Fee\Presenters\SchoolYearPresenter;
 use GGPHP\Fee\Repositories\Contracts\SchoolYearRepository;
@@ -309,5 +310,66 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
         $updateSchoolYear = !is_null($schoolYear) ? $schoolYear->update($attributes) : null;
 
         return parent::find($schoolYear->Id);
+    }
+
+    public function getDetailSchoolYear($attributes): array
+    {
+        $schoolYear = $this->model->find($attributes['schoolYearId']);
+
+        foreach ($schoolYear->fixedParameter as $value) {
+            switch ($value->paymentForm->Code) {
+                case PaymentForm::CODE['NAM']:
+                    $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail->ToArray();
+                    $data[$value->paymentForm->Code] = [
+                        'paymentForm' => $value->paymentForm->Code,
+                        'paymentFormId' => $value->PaymentFormId,
+                        'startDate' => $schoolYear->StartDate,
+                        'endDate' => $schoolYear->EndDate,
+                        'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth'))
+                    ];
+                    break;
+                case PaymentForm::CODE['HOCKY1']:
+                    $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $value->PaymentFormId)->get()->ToArray();
+                    $data[$value->paymentForm->Code] = [
+                        'paymentForm' => $value->paymentForm->Code,
+                        'paymentFormId' => $value->PaymentFormId,
+                        'startDate' => current($changeParameterDetail)['StartDate'],
+                        'endDate' => end($changeParameterDetail)['EndDate'],
+                        'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth'))
+                    ];
+                    break;
+                case PaymentForm::CODE['HOCKY2']:
+                    $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $value->PaymentFormId)->get()->ToArray();
+                    $data[$value->paymentForm->Code] = [
+                        'paymentForm' => $value->paymentForm->Code,
+                        'paymentFormId' => $value->PaymentFormId,
+                        'startDate' => current($changeParameterDetail)['StartDate'],
+                        'endDate' => end($changeParameterDetail)['EndDate'],
+                        'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth'))
+                    ];
+                    break;
+                case PaymentForm::CODE['HOCKY1_HOCKY2']:
+                    $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $value->PaymentFormId)->get()->ToArray();
+                    $data[$value->paymentForm->Code] = [
+                        'paymentForm' => $value->paymentForm->Code,
+                        'paymentFormId' => $value->PaymentFormId,
+                        'startDate' => current($changeParameterDetail)['StartDate'],
+                        'endDate' => end($changeParameterDetail)['EndDate'],
+                        'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth'))
+                    ];
+                    break;
+                case PaymentForm::CODE['THANG']:
+                    $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $value->PaymentFormId)->get()->ToArray();
+                    $data[$value->paymentForm->Code] = [
+                        'paymentForm' => $value->paymentForm->Code,
+                        'paymentFormId' => $value->PaymentFormId,
+                        'startDate' => current($changeParameterDetail)['StartDate'],
+                        'endDate' => end($changeParameterDetail)['EndDate'],
+                        'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth'))
+                    ];
+                    break;
+            }
+        }
+        return $data;
     }
 }

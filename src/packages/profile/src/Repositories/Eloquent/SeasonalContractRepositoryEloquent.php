@@ -13,6 +13,7 @@ use GGPHP\Profile\Repositories\Contracts\SeasonalContractRepository;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
+use Illuminate\Support\Facades\Storage;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -170,7 +171,7 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
         return $seasonalContract->delete();
     }
 
-    public function exportWord($id)
+    public function exportWord($id, $response = null)
     {
         $labourContract = SeasonalContract::findOrFail($id);
         $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
@@ -200,7 +201,7 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'month' => $labourContract->Month ? $labourContract->Month : '........',
             'salaryRatio' => $labourContract->SalaryRatio ? $labourContract->SalaryRatio : '........',
-            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'from' => $labourContract->ContractFrom ? 'ngày ' . $labourContract->ContractFrom->format('d') . ' tháng ' . $labourContract->ContractFrom->format('m') . ' năm ' . $labourContract->ContractFrom->format('Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
             'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . ' - ' . $labourContract->division->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Address : '........',
@@ -210,7 +211,7 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
             'total' => number_format($total),
         ];
 
-        return $this->wordExporterServices->exportWord('labour_contract', $params);
+        return $this->wordExporterServices->exportWord('labour_contract', $params, $response);
     }
 
 
@@ -287,5 +288,21 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
         ];
 
         return $this->wordExporterServices->exportWord('authority_contract', $params);
+    }
+
+    public function previewSeasonalContractExportWord($id)
+    {
+        $seasonalContract = SeasonalContract::findOrFail($id);
+        $fileName = $seasonalContract->Id . '.docx';
+        $filePath = $this->exportWord($id, 'url');
+        $file = Storage::disk('local')->get($filePath);
+
+        Storage::disk('local')->put('public/files/' . $fileName, $file);
+
+        return [
+            'data' => [
+                'url' => env('URL_FILE') . $fileName
+            ]
+        ];
     }
 }

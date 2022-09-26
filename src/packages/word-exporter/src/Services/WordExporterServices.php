@@ -75,7 +75,7 @@ class WordExporterServices
         $this->resultFolder = config('word-exporter.' . $this->disk . '.results');
     }
 
-    public function exportWord($teamplate, $param)
+    public function exportWord($teamplate, $param, $response = null)
     {
         $templateFile = $this->configs[$teamplate]['template'];
         $resultFile = $this->configs[$teamplate]['result'] ?? $templateFile;
@@ -100,7 +100,11 @@ class WordExporterServices
 
         $templateProcessor->saveAs($resultFileUrl);
 
-        return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
+        if ($response == 'url') {
+            return $this->resultFolder . '/' . $resultFile;
+        } else {
+            return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
+        }
     }
 
     public function exportWordTransfer($teamplate, $param)

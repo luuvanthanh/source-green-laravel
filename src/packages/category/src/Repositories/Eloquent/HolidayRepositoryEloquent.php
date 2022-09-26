@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Category\Models\Holiday;
 use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Category\Presenters\HolidayPresenter;
@@ -51,6 +52,23 @@ class HolidayRepositoryEloquent extends CoreRepositoryEloquent implements Holida
     public function presenter()
     {
         return HolidayPresenter::class;
+    }
+
+    public function getAll($attributes)
+    {
+        if (!empty($attributes['month'])) {
+            $this->model = $this->model->with(['holidayDetail' => function ($q) use ($attributes) {
+                $q->whereMonth('StartDate', Carbon::parse($attributes['month'])->month);
+            }]);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $holiday = $this->paginate($attributes['limit']);
+        } else {
+            $holiday = $this->get();
+        }
+
+        return $holiday;
     }
 
     public function createOrUpdate(array $attributes)

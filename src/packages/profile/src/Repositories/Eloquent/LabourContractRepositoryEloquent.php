@@ -22,6 +22,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Exception;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class LabourContractRepositoryEloquent.
@@ -244,7 +245,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     public function update(array $attributes, $id)
     {
         $labourContract = LabourContract::findOrFail($id);
-
+        
         \DB::beginTransaction();
         try {
             $labourContract->update($attributes);
@@ -314,7 +315,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         return parent::find($labourContract->Id);
     }
 
-    public function exportWord($id)
+    public function exportWord($id, $response = null)
     {
         $labourContract = LabourContract::findOrFail($id);
         $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
@@ -338,7 +339,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'adress' => $employee->Address ? $employee->Address : '.......',
             'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
-            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'from' => $labourContract->ContractFrom ? 'ngày ' . $labourContract->ContractFrom->format('d') . ' tháng ' . $labourContract->ContractFrom->format('m') . ' năm ' . $labourContract->ContractFrom->format('Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
             'position' => $labourContract->position ? $labourContract->position->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
@@ -346,10 +347,10 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'salary' => number_format($labourContract->BasicSalary),
         ];
 
-        return $this->wordExporterServices->exportWord('labour_contract', $params);
+        return $this->wordExporterServices->exportWord('labour_contract', $params, $response);
     }
 
-    public function exportWordEnglish($id)
+    public function exportWordEnglish($id, $response = null)
     {
         $labourContract = LabourContract::findOrFail($id);
         $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
@@ -395,10 +396,10 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'position' => $positionRepresent
         ];
 
-        return $this->wordExporterServices->exportWord('contract_english', $params);
+        return $this->wordExporterServices->exportWord('contract_english', $params, $response);
     }
 
-    public function exportWordAuthority($id)
+    public function exportWordAuthority($id, $response = null)
     {
         $labourContract = LabourContract::findOrFail($id);
         $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
@@ -424,7 +425,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'adress' => $employee->Address ? $employee->Address : '.......',
             'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
-            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'from' => $labourContract->ContractFrom ? 'ngày ' . $labourContract->ContractFrom->format('d') . ' tháng ' . $labourContract->ContractFrom->format('m') . ' năm ' . $labourContract->ContractFrom->format('Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
             'position' => $labourContract->position ? $labourContract->position->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
@@ -433,7 +434,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'represent_name' => $labourContract->represent ? $labourContract->represent->FullName : '',
         ];
 
-        return $this->wordExporterServices->exportWord('authority_contract', $params);
+        return $this->wordExporterServices->exportWord('authority_contract', $params, $response);
     }
 
     public function delete($id)
@@ -598,23 +599,33 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             return null;
         }
 
-        $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
+        if (!is_null($model->OrdinalNumber)) {
+            $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
+        }
     }
 
-    public function contractAddendum($id)
+    public function contractAddendum($id, $response = null)
     {
         $contract = $this->model->find($id);
 
         $employee = resolve(UserRepository::class)->skipPresenter()->find($contract->EmployeeId);
 
-        $now = Carbon::now();
+        $represent = $contract->represent;
+
+        if (is_null($represent)) {
+            $positionRepresent = '';
+        } else {
+            $positionRepresent = $represent->positionLevelNow ? $represent->positionLevelNow->position->Name : '';
+        }
 
         $params = [
             '${number_contract}' => $contract->OrdinalNumber ? $contract->OrdinalNumber . '/' . $contract->NumberForm : $contract->ContractNumber,
             '${date_contract}' => $contract->ContractDate->format('d-m-Y'),
-            '${day}' => $now->format('d'),
-            '${month}' => $now->format('m'),
-            '${year}' => $now->format('Y'),
+            '${day}' => $contract->ContractDate->format('d'),
+            '${month}' => $contract->ContractDate->format('m'),
+            '${year}' => $contract->ContractDate->format('Y'),
+            '${represent}' => !is_null($represent) ? $represent->FullName : '',
+            '${position}' =>  $positionRepresent,
             '${employee}' => $employee->FullName,
             '${birthday}' => $employee->DateOfBirth->format('d-m-Y'),
             '${born}' => $employee->PlaceOfBirth,
@@ -624,13 +635,41 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             '${place_provider}' => $employee->PlaceOfIssueIdCard,
             '${household}' => $employee->Address,
             '${place}' => $employee->PermanentAddress,
+            '${from}' => $contract->ContractFrom ? 'ngày ' . $contract->ContractFrom->format('d') . ' tháng ' . $contract->ContractFrom->format('m') . ' năm ' . $contract->ContractFrom->format('Y') : '........',
             '${phone}' => $employee->PhoneNumber,
             '${salary}' => number_format($contract->BasicSalary),
             '${allowance}' => number_format($contract->TotalAllowance),
             '${total}' => number_format($contract->BasicSalary + $contract->TotalAllowance)
 
         ];
-        
-        return $this->wordExporterServices->exportWord('contract_addendum', $params);
+
+        return $this->wordExporterServices->exportWord('contract_addendum', $params, $response);
+    }
+
+    public function previewLabourContractExportWord($id, $attributes)
+    {
+        $labourContract = LabourContract::findOrFail($id);
+        if ($attributes['action'] == 'contract') {
+            $filePath = $this->exportWord($id, 'url');
+            $fileName = $labourContract->Id . '-contract' . '.docx';
+        } elseif ($attributes['action'] == 'contract_authority') {
+            $fileName = $labourContract->Id . '-contract-authority' . '.docx';
+            $filePath = $this->exportWordAuthority($id, 'url');
+        } elseif ($attributes['action'] == 'contract_english') {
+            $fileName = $labourContract->Id . '-contract-english' . '.docx';
+            $filePath = $this->exportWordEnglish($id, 'url');
+        } elseif ($attributes['action'] == 'contract_addendum') {
+            $fileName = $labourContract->Id . '-contract-addendum' . '.docx';
+            $filePath = $this->contractAddendum($id, 'url');
+        }
+
+        $file = Storage::disk('local')->get($filePath);
+        Storage::disk('local')->put('public/files/' . $fileName, $file);
+
+        return [
+            'data' => [
+                'url' => env('URL_FILE') . $fileName
+            ]
+        ];
     }
 }

@@ -172,4 +172,11 @@ class LabourContractController extends Controller
 
         return $result;
     }
+
+    public function previewLabourContractExportWord($id, Request $request)
+    {
+        $result = $this->labourContractRepository->previewLabourContractExportWord($id, $request->all());
+
+        return $this->success($result, trans('lang::messages.common.getListSuccess'));
+    }
 }

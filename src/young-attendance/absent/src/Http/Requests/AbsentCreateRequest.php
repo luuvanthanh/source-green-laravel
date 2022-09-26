@@ -3,6 +3,9 @@
 namespace GGPHP\YoungAttendance\Absent\Http\Requests;
 
 use Carbon\Carbon;
+use DateInterval;
+use DatePeriod;
+use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Clover\Repositories\Contracts\StudentRepository;
 use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
@@ -67,6 +70,7 @@ class AbsentCreateRequest extends FormRequest
                 'date_format:Y-m-d',
                 'after_or_equal:startDate',
             ],
+            'schoolYearId' => 'required'
         ];
     }
 
@@ -132,19 +136,49 @@ class AbsentCreateRequest extends FormRequest
 
     public function all($keys = null)
     {
-
         $data = parent::all();
         $weekend = resolve(StudentRepository::class)->holidays($data['startDate'], $data['endDate']);
+        $holidayDetail = HolidayDetail::where('StartDate', '>=', $data['startDate'])->where('EndDate', '<=', $data['endDate'])->get();
+        $dateArr = [];
+
+        foreach ($holidayDetail as $value) {
+            $dateArr[] = $this->getAllDates($value->StartDate, $value->EndDate);
+        }
+        $sumDate = count(call_user_func_array('array_merge', $dateArr)) + $weekend;
 
         if (!empty($data['expectedDate'])) {
-            $data['expectedDate'] = $data['expectedDate'] - $weekend;
+            $data['expectedDate'] = $data['expectedDate'] - $sumDate;
         }
-        $schoolYear = SchoolYear::where('IsCheck', true)->first();
 
-        if (!is_null($schoolYear)) {
-            $data['schoolYearId'] = $schoolYear->Id;
-        }
+        $schoolYear = SchoolYear::where('IsCheck', true)->first();
+        $data['schoolYearId'] = !is_null($schoolYear) ? $schoolYear->Id : null;
 
         return $data;
+    }
+
+    function getAllDates($startingDate, $endingDate): array
+    {
+        $datesArray = [];
+        $startingDate = strtotime($startingDate);
+        $endingDate = strtotime($endingDate);
+
+        for ($currentDate = $startingDate; $currentDate <= $endingDate; $currentDate += (86400)) {
+            $date = date('Y-m-d', $currentDate);
+            $dateCarbon = Carbon::parse($date);
+
+            if ($dateCarbon->isSaturday() || $dateCarbon->isSunday()) {
+                continue;
+            }
+            $datesArray[] = $date;
+        }
+
+        return $datesArray;
+    }
+
+    public function messages()
+    {
+        return [
+            'schoolYearId.required'  => 'Thời điểm hiện tại không thuộc bất kỳ năm học nào.',
+        ];
     }
 }

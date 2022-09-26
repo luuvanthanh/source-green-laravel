@@ -4,6 +4,7 @@ namespace GGPHP\Fee\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Fee\Http\Requests\CreateSchoolYearRequest;
+use GGPHP\Fee\Http\Requests\GetDetailSchoolYearRequest;
 use GGPHP\Fee\Http\Requests\UpdateIsCheckSchoolYearRequest;
 use GGPHP\Fee\Http\Requests\UpdateSchoolYearRequest;
 use GGPHP\Fee\Repositories\Contracts\SchoolYearRepository;
@@ -121,5 +122,12 @@ class SchoolYearController extends Controller
         $schoolYears = $this->schoolYearRepository->updateIsCheckSchoolYear($request->all(), $id);
 
         return $this->success($schoolYears, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function getDetailSchoolYear(GetDetailSchoolYearRequest $request)
+    {
+        $schoolYears = $this->schoolYearRepository->getDetailSchoolYear($request->all());
+
+        return $this->success(['data' => array_values($schoolYears)], trans('lang::messages.common.getInfoSuccess'));
     }
 }

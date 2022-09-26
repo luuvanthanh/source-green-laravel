@@ -75,6 +75,8 @@ class RouteRegistrar extends CoreRegistrar
             Route::get('update-all-is-check-in-school-year', 'SchoolYearController@updateAllIsCheckInSchoolYear');
 
             Route::put('update-is-check-school-years/{id}', 'SchoolYearController@updateIsCheckSchoolYear');
+
+            Route::get('get-month-age-detail-students', 'ChargeOldStudentController@getMonthAgeDetailStudent');
         });
     }
 
@@ -91,6 +93,8 @@ class RouteRegistrar extends CoreRegistrar
 
             //post-detail-payment-accountant
             Route::post('charge-old-student-detail-payments', 'ChargeOldStudentController@chargeOldStudentDetailPayment')->name('accountant.charge-old-student-detail-payments');
+
+            Route::get('get-detail-school-years', 'SchoolYearController@getDetailSchoolYear')->name('accountant.get-detail-school-years');
         });
     }
 }

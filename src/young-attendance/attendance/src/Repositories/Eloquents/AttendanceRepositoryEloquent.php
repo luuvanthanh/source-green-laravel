@@ -90,7 +90,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
      */
     public function create(array $attributes)
     {
-        $attributes['schoolYear'] = $this->getSchoolYear();
         $now = Carbon::now('GMT+7')->format('H:i:s');
 
         switch ($attributes['status']) {
@@ -208,7 +207,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             if ($attendance->Status == Attendance::STATUS['HAVE_IN'] || $attendance->Status == Attendance::STATUS['HAVE_OUT']) {
                 $action = $attendance->Status == Attendance::STATUS['HAVE_IN'] ? 'Vào lớp' : 'Ra về';
                 AttendanceLog::create([
-                    'SchoolYearId' => $attributes['schoolYear'],
+                    'SchoolYearId' => $attributes['schoolYearId'],
                     'EmployeeId' => $attributes['employeeId'],
                     'AttendanceId' => $attendance->Id,
                     'Action' => $action,
