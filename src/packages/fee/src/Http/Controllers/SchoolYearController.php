@@ -128,6 +128,6 @@ class SchoolYearController extends Controller
     {
         $schoolYears = $this->schoolYearRepository->getDetailSchoolYear($request->all());
 
-        return $this->success(['data' => $schoolYears], trans('lang::messages.common.getInfoSuccess'));
+        return $this->success(['data' => array_values($schoolYears)], trans('lang::messages.common.getInfoSuccess'));
     }
 }
