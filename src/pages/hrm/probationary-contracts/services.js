@@ -40,3 +40,10 @@ export function remove(id) {
     parse: true,
   });
 }
+
+export function getExcel(params = {}) {
+  return request(`/v1/preview-probationary-contract-export-word/${params?.id}`, {
+    method: 'GET',
+    params: {},
+  });
+}
