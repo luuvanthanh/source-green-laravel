@@ -292,13 +292,13 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             }
 
             $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $labourContract->DivisionId)->where([['StartDate', '<=', $labourContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $labourContract->ContractFrom->format('Y-m-d')]])->first();
-
+            
             if (!is_null($divisionShift)) {
                 $dataSchedule = [
                     'employeeId' => $attributes['employeeId'],
                     'shiftId' => $divisionShift->ShiftId,
                     'startDate' => $labourContract->ContractFrom->format('Y-m-d'),
-                    'endDate' => $labourContract->ContractTo->format('Y-m-d'),
+                    'endDate' => !is_null($labourContract->ContractTo) ? $labourContract->ContractTo->format('Y-m-d') : null,
                     'interval' => 1,
                     'repeatBy' => 'daily',
                 ];
@@ -599,13 +599,15 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             return null;
         }
 
-        $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
+        if (!is_null($model->OrdinalNumber)) {
+            $numberFormContract->update(['OrdinalNumber' => $model->OrdinalNumber]);
+        }
     }
 
     public function contractAddendum($id, $response = null)
     {
         $contract = $this->model->find($id);
-       
+
         $employee = resolve(UserRepository::class)->skipPresenter()->find($contract->EmployeeId);
 
         $represent = $contract->represent;

@@ -397,13 +397,11 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             foreach ($listMonthAge['detailStudent'] as $key => $valueMonthAge) {
                                 $feeDetail = $feePolicie->moneyMeal()
                                     ->where('ClassTypeId', $valueMonthAge['classTypeId'])
-                                    ->where('PaymentFormId', $detail->paymentFormId)->first();
+                                    ->where('PaymentFormId', $detail->paymentFormId)
+                                    ->first();
+
                                 $listMonthAge['detailStudent'][$key]['money'] = $feeDetail->Money;
                             }
-
-                            // dd($listMonthAge['detailStudent']);
-
-                            // dd(array_sum(array_column($feeDetail->ToArray(), 'Money')), $paymentForm->Code);
 
                             $arrDate = $this->getDatesFromRange($begin->format('Y-m-d'), $end->format('Y-m-d'));
 
@@ -423,9 +421,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             }
 
                             $totalDaySemester1 = count(array_diff($arrDate, $arrFlatten));
-                            if (!is_null($feeDetail)) {
-                                $money = $getFirstFeeDetail->Money;
 
+                            if (!is_null($feeDetail)) {
+                                $money = !is_null($getFirstFeeDetail) ? $getFirstFeeDetail->Money : 0;
                                 switch ($paymentForm->Code) {
                                     case self::SEMESTER1:
                                         $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
@@ -445,10 +443,11 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                                 $query->where('StartDate', '>', $month->EndDate);
                                             })->get();
 
-                                        // dd($monthSemesterLeft1);
-
-                                        $totalSchoolDate = array_sum(array_column($monthSemesterLeft1->toArray(), 'SchoolDay')) + $totalDaySemester1;
-                                        $result = $money * $totalSchoolDate;
+                                        $sumSemesterLeft1 = 0;
+                                        foreach ($monthSemesterLeft1 as $key => $valueSemester1) {
+                                            $sumSemesterLeft1 += $listMonthAge['detailStudent'][$valueSemester1->Date]['money'] * $valueSemester1->SchoolDay;
+                                        }
+                                        $result = $money * $totalDaySemester1 + $sumSemesterLeft1;
                                         break;
                                     case self::SEMESTER2:
                                         $isMonth = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
@@ -468,8 +467,12 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                                 $query->where('StartDate', '>', $month->EndDate);
                                             })->get();
 
-                                        $totalSchoolDate = array_sum(array_column($monthSemesterLeft2->toArray(), 'SchoolDay')) + $totalDaySemester1;
-                                        $result = $money * $totalSchoolDate;
+                                        $sumSemesterLeft1 = 0;
+                                        foreach ($monthSemesterLeft2 as $key => $valueSemester2) {
+                                            $sumSemesterLeft1 += $listMonthAge['detailStudent'][$valueSemester2->Date]['money'] * $valueSemester2->SchoolDay;
+                                        }
+
+                                        $result = $listMonthAge['detailStudent'][$month->Date]['money'] * $totalDaySemester1 + $sumSemesterLeft1;
                                         break;
                                     case self::YEAR:
                                         // tháng còn lại năm học
@@ -479,11 +482,16 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                                 $query->where('Date', '!=', $month->Date);
                                             })->get();
 
-                                        $totalSchoolDate = array_sum(array_column($monthLeft->toArray(), 'SchoolDay')) + $totalDaySemester1;
-                                        $result = $money * $totalSchoolDate;
+                                        $sumAllYear = 0;
+                                        foreach ($monthLeft as $key => $valueAllYear) {
+                                            $sumAllYear += $listMonthAge['detailStudent'][$valueAllYear->Date]['money'] * $valueAllYear->SchoolDay;
+                                        }
+                                        dd($listMonthAge['detailStudent']);
+                                        $result = $listMonthAge['detailStudent'][$month->Date]['money'] * $totalDaySemester1 + $sumAllYear;
+
                                         break;
                                     case self::MONTH:
-                                        $result = $totalDaySemester1 * $money;
+                                        $result = $totalDaySemester1 * $listMonthAge['detailStudent'][$month->Date]['money'];
                                         $moneyMonth = $money;
                                         break;
                                 }
@@ -589,7 +597,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 $paymentForm = PaymentForm::find($value['paymentFormId']);
                 $value['applyDate'] = Carbon::parse($value['applyDate']);
                 $applyDate = $value['applyDate']->format('Y-m');
-
                 switch ($paymentForm->Code) {
                     case self::YEAR:
                         if ($applyDate == $month->format('Y-m')) {
@@ -621,11 +628,11 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                         } else {
                             switch ($feeTuiTion->Type) {
                                 case self::MEAL_FEE:
-                                    $changeParamDetail = $schooleYear->changeParameter->changeParameterDetail()->whereYear('StartDate', $month->format('Y'))->whereMonth('StartDate', $month->format('m'))->first();
-                                    $result = $changeParamDetail->SchoolDay * $value['moneyMonth'];
-
                                     if ($month->format('Y-m') >= $applyDate) {
+                                        $changeParamDetail = $schooleYear->changeParameter->changeParameterDetail()->where('Date', $month->setDay(1)->format('Y-m-d'))->first();
+                                        $result = $listMonthAge['detailStudent'][$month->setDay(1)->format('Y-m-d')]['money'] * $changeParamDetail->SchoolDay;
                                         $totalMoneyMonth += $result;
+
                                         $fee[] = [
                                             'fee_id' => $feeTuiTion->Id,
                                             'fee_name' => $feeTuiTion->Name,
@@ -831,6 +838,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'feeId' => $feeTuiTion->Id,
                                 ];
                                 $dataAttributes = [
+                                    'studentId' => $attributes['studentId'],
                                     'classTypeId' => $attributes['classTypeId'],
                                     'schoolYearId' => $attributes['schoolYearId'],
                                     'student' => $attributes['student'],
@@ -845,6 +853,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'money' => $moneyFeePolicies['money'],
                                     'fee_id_crm' => $feeTuiTion->FeeCrmId
                                 ];
+                                $totalMoneyMonth += $moneyFeePolicies['money'];
                             } else if (!is_null($firstMonthHk2)  && ($month->format('Y-m') ==  Carbon::parse($firstMonthHk2->Date)->format('Y-m'))) {
                                 $dayAdmission = $month->format('Y-m') == $value['applyDate']->format('Y-m') ? $dayAdmission : $firstMonthHk2->StartDate;
                                 $detail = [];
@@ -854,6 +863,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 ];
 
                                 $dataAttributes = [
+                                    'studentId' => $attributes['studentId'],
                                     'classTypeId' => $attributes['classTypeId'],
                                     'schoolYearId' => $attributes['schoolYearId'],
                                     'student' => $attributes['student'],
@@ -869,6 +879,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     'money' => $moneyFeePolicies['money'],
                                     'fee_id_crm' => $feeTuiTion->FeeCrmId
                                 ];
+                                $totalMoneyMonth += $moneyFeePolicies['money'];
                             } else {
                                 $fee[] = [
                                     'fee_id' => $feeTuiTion->Id,
