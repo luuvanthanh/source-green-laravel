@@ -96,7 +96,7 @@ class TestSemesterTransformer extends BaseTransformer
             $cancel = isset($status[3]) ? $status[3] : 0;
 
             if (!empty(request()->classId)) {
-                $student = Student::where('ClassId', request()->classId)->get();
+                $student = Student::where('ClassId', request()->classId)->where('Status', Student::OFFICAL)->get();
                 $totalStudent = $student->count();
                 $untesting = $totalStudent - ($testing + $finish + $cancel);
             }
