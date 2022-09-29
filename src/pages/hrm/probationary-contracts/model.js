@@ -99,6 +99,22 @@ export default {
         callback(null, error);
       }
     },
+    *GET_EXCEL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getExcel, payload);
+        window
+          .open(
+            `https://view.officeapps.live.com/op/view.aspx?src=${response?.payload?.url}`,
+            '_blank',
+          )
+          .focus();
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

@@ -40,3 +40,10 @@ export function remove(id) {
     parse: true,
   });
 }
+
+export function getExcel(params = {}) {
+  return request(`/v1/preview-labour-contract-export-word/${params?.idTable}`, {
+    method: 'GET',
+    params: { action: params?.isModalRadio },
+  });
+}

@@ -1,9 +1,9 @@
 export const variables = {
   TYPES: [
-    { value: 'labours-contracts-export-word', label: 'Hợp đồng không uỷ quyền' },
-    { value: 'labours-contracts-export-word-authority', label: 'Hợp đồng uỷ quyền' },
-    { value: 'labours-contracts-export-word-english', label: 'Hợp đồng song ngữ' },
-    { value: 'contract-addendum', label: 'Phụ lục hợp đồng' },
+    { value: 'contract', label: 'Hợp đồng không uỷ quyền' },
+    { value: 'contract_authority', label: 'Hợp đồng uỷ quyền' },
+    { value: 'contract_english', label: 'Hợp đồng song ngữ' },
+    { value: 'contract_addendum', label: 'Phụ lục hợp đồng' },
   ],
   TYPE: {
     AUTHORITY: 'labours-contracts-export-word-authority',
