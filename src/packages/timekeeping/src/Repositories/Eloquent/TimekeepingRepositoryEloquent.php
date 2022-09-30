@@ -175,7 +175,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         } else {
             $result = $employeesByStore->paginate($attributes['limit']);
         }
-
         foreach ($result as &$employee) {
             $employee = $this->calculatorTimekeepingReport($employee, $attributes);
         }
@@ -1184,5 +1183,36 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         return array_values($responseTimeKeepingUser);
+    }
+
+    public function getTimekeepingReportByBranch($attributes)
+    {
+        $attributeNoteLimit = $attributes;
+        unset($attributeNoteLimit['limit']);
+        $timekeepingReports = $this->timekeepingReport($attributeNoteLimit, $parser = true);
+
+        $result = [];
+        foreach ($timekeepingReports as $key => $user) {
+            $branchName = $user->positionLevelNow->branch->Name;
+            $divisionName = $user->positionLevelNow->division->Name;
+
+            if (!array_key_exists($branchName, $result)) {
+                $result[$branchName] = [
+                    'BranchName' => $branchName,
+                    'Division' => []
+                ];
+            }
+
+            if (!array_key_exists($divisionName, $result[$branchName]['Division'])) {
+                $result[$branchName]['Division'][$divisionName] = [
+                    'DivisionName' => $divisionName,
+                    'ListUser' => [$user->toArray()]
+                ];
+            } else {
+                $result[$branchName]['Division'][$divisionName]['ListUser'][] = $user->toArray();
+            }
+        }
+
+        return $result;
     }
 }
