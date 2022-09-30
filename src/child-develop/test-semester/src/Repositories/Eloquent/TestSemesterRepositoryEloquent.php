@@ -270,7 +270,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
         if (!empty($attributes['branchId'])) {
             $arrayBranch = explode(',', $attributes['branchId']);
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent.classes', function ($q) use ($arrayBranch) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classes', function ($q) use ($arrayBranch) {
                 $q->whereIn('BranchId', $arrayBranch);
             });
         }
