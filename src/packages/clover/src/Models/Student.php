@@ -40,7 +40,7 @@ class Student extends UuidModel
         'Source', 'ParentWish', 'ParentWith', 'FullName', 'Note', 'LaborNumber', 'Sex', 'DayOfBirth', 'Age', 'Address', 'Health', 'ClassId',
         'FartherId', 'MotherId', 'CreatorId', 'LastModifierId', 'ConcurrencyStamp', 'DeleterId', 'DeletionTime', 'ExtraProperties', 'IsDeleted',
         'CardNumber', 'Code', 'Comments', 'StudentId', 'RegisterDate', 'StartDate', 'Status', 'FileImage', 'City', 'District', 'Street', 'Ward',
-        'WithdrawApplicationDate', 'WithdrawApplicationNote', 'WithdrawApplicationReason', 'RestoredDate'
+        'WithdrawApplicationDate', 'WithdrawApplicationNote', 'WithdrawApplicationReason', 'RestoredDate', 'BranchId'
     ];
 
     /**
@@ -107,5 +107,10 @@ class Student extends UuidModel
     public function chargeOldStudent()
     {
         return $this->hasMany(ChargeOldStudent::class, 'StudentId');
+    }
+
+    public function classes()
+    {
+        return $this->belongsTo(\GGPHP\Clover\Models\Classes::class, 'ClassId', 'Id');
     }
 }

@@ -103,12 +103,8 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         if (!empty($attributes['branchId'])) {
-            $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
-                $q->whereHas('classStudent', function ($q1) use ($attributes) {
-                    $q1->whereHas('classes', function ($q2) use ($attributes) {
-                        $q2->where('BranchId', $attributes['branchId']);
-                    });
-                });
+            $this->model = $this->model->whereHas('student.classStudent.classes', function ($q) use ($attributes) {
+                $q->where('BranchId', $attributes['branchId']);
             });
         }
 
@@ -139,7 +135,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         if (empty($testSemester['data']) && !empty($attributes['classId'])) {
-            $testSemester['countStudent'] = Student::where('ClassId', $attributes['classId'])->get()->count();
+            $testSemester['countStudent'] = Student::where('ClassId', $attributes['classId'])->where('Status', Student::OFFICAL)->get()->count();
         }
 
         return $testSemester;
@@ -268,9 +264,14 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         if (!empty($attributes['classId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($attributes) {
-                $arrayClass = explode(',', $attributes['classId']);
-                $query->whereIn('ClassId', $arrayClass);
+            $arrayClass = explode(',', $attributes['classId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('ClassId', $arrayClass);
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $arrayBranch = explode(',', $attributes['branchId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classes', function ($q) use ($arrayBranch) {
+                $q->whereIn('BranchId', $arrayBranch);
             });
         }
 
@@ -309,7 +310,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         });
 
         if (!empty($attributes['branchId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent.classes', function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classes', function ($query) use ($attributes) {
                 $query->where('BranchId', $attributes['branchId']);
             });
         }
