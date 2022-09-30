@@ -26,6 +26,10 @@ export const menu = [
     label: 'Quyết định khen thưởng, kỷ luật',
   },
   {
+    key: 'salary-increases',
+    label: 'Quyết định tăng lương',
+  },
+  {
     key: 'contract',
     label: 'Hợp đồng lao động',
   },
