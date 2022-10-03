@@ -20,7 +20,25 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
+      data: Object.keys(payload.payload).map((key) => ({
+        id: key,
+        name: key,
+        children:
+          payload?.payload[key]?.Division &&
+          Object.keys(payload?.payload[key]?.Division).map((keyParent) => ({
+            key: `${key}-${keyParent}`,
+            name: keyParent,
+            children:
+              payload?.payload[key]?.Division[keyParent]?.ListUser &&
+              Object.keys(payload?.payload[key]?.Division[keyParent]?.ListUser).map(
+                (keyProduct) => ({
+                  key: `${key}-${keyParent}-${keyProduct}`,
+                  name: keyProduct,
+                  ...(payload?.payload[key]?.Division[keyParent]?.ListUser[keyProduct] || {}),
+                }),
+              ),
+          })),
+      })),
       pagination: payload.pagination,
     }),
     SET_HOLIDAYS: (state, { payload }) => ({
