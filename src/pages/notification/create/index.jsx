@@ -474,6 +474,7 @@ const Index = memo(() => {
 
   const onChangeSearch = (value) => {
     debouncedSearchUser(value);
+    setIsAllEmployees(false);
     setSearchEmployee({
       ...searchEmployee,
       fullName: value,
@@ -988,7 +989,7 @@ const Index = memo(() => {
                   <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
                     <FormItemAntd label="Người nhận thông báo">
                       <FormItem
-                        name="FullName"
+                        name="keyWord"
                         placeholder="Nhập từ khóa tìm kiếm"
                         type={variables.INPUT_SEARCH}
                         onChange={(e) => onChangeSearch(e.target.value)}
