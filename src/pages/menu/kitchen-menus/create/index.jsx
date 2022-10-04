@@ -99,7 +99,7 @@ const Index = memo(() => {
           item?.menuMealDetails?.map((menuItem) => ({
             ...(menuItem.isAdd
               ? omit(menuItem, 'id', 'isAdd')
-              : { ...omit(menuItem, 'originId'), id: menuItem.originId }),
+              : { ...omit(menuItem, 'originId'), id: menuItem?.foodId ? menuItem.originId : undefined }),
           })) || undefined,
         name: item.menuMealDetails ? item.name : undefined,
         id: item?.isAdd ? undefined : item.id || item.originId,
@@ -265,9 +265,9 @@ const Index = memo(() => {
       }
       o[el.foodOrderIndex].week.push({
         dayOfWeek: el.dayOfWeek,
-        id: el?.id || uuidv4(),
+        id: el.foodId === "00000000-0000-0000-0000-000000000000" ? null : el?.id || uuidv4(),
         originId: el.id,
-        foodId: el.foodId,
+        foodId: el.foodId === "00000000-0000-0000-0000-000000000000" ? null : el.foodId,
       });
       return r;
     }, []);
