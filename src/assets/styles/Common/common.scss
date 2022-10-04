@@ -1341,7 +1341,11 @@
       justify-content: space-between;
       margin: 10px 0;
     }
-
+    .content {
+      .label {
+        text-align: right;
+      }
+    }
     .image-container {
       display: flex;
       align-items: center;

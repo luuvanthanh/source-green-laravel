@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState, useEffect } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useLocation, useHistory } from 'umi';
@@ -8,6 +8,7 @@ import { debounce } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
+import classnames from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
@@ -34,63 +35,45 @@ const Index = memo(() => {
     keyWord: query?.keyWord,
   });
 
-  const columns = [
-    {
-      title: 'Mã ID',
-      key: 'id',
-      className: 'min-width-70',
-      render: (record) => record.code,
-    },
-    {
-      title: 'Tên thời kỳ nhạy cảm',
-      key: 'name',
-      className: 'min-width-200',
-      render: (record) => <Text size="normal">{record.name} </Text>,
-    },
-    {
-      title: 'Ghi chú',
-      key: 'description',
-      className: 'min-width-200',
-      render: (record) => <Text size="normal">{record.note} </Text>,
-    },
-    {
-      key: 'action',
-      className: 'min-width-80',
-      width: 80,
-      render: (record) => (
-        <div className={styles['list-button']}>
-          <Button
-            color="success"
-            ghost
-            onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
-          >
-            Chi tiết
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  const paginationProps = useMemo(
-    () => ({
-      size: 'default',
-      total: pagination?.total || 0,
-      pageSize: variables.PAGINATION.PAGE_SIZE,
-      defaultCurrent: Number(search.page),
-      current: Number(search.page),
-      hideOnSinglePage: (pagination?.total || 0) <= 10,
-      showSizeChanger: false,
-      pageSizeOptions: false,
-      onChange: (page, limit) => {
-        setSearch((prev) => ({
-          ...prev,
-          page,
-          limit,
-        }));
+  const header = () => {
+    const columns = [
+      {
+        title: 'Mã ID',
+        key: 'id',
+        className: 'min-width-70',
+        render: (record) => record.code,
       },
-    }),
-    [pagination],
-  );
+      {
+        title: 'Tên thời kỳ nhạy cảm',
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => <Text size="normal">{record.name} </Text>,
+      },
+      {
+        title: 'Ghi chú',
+        key: 'description',
+        className: 'min-width-200',
+        render: (record) => <Text size="normal">{record.note} </Text>,
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="success"
+              ghost
+              onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
+          </div>
+        ),
+      },
+    ];
+    return columns;
+  };
 
   const changeFilterDebouce = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -123,6 +106,23 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
+  const changePagination = ({ page, limit }) => {
+    setSearch((prev) => ({
+      ...prev,
+      page,
+      limit,
+    }));
+  };
+
+  const paginations = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
+
   return (
     <>
       <Helmet title="Thời kỳ nhạy cảm" />
@@ -139,37 +139,40 @@ const Index = memo(() => {
           </Button>
         </Pane>
 
-        <Pane className="card">
-          <Pane className="p20">
-            <Form
-              layout="vertical"
-              ref={filterRef}
-              initialValues={{
-                ...search,
-              }}
-            >
-              <Pane className="row">
-                <Pane className="col-lg-3">
-                  <FormItem
-                    type={variables.INPUT_SEARCH}
-                    name="keyWord"
-                    onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                  />
-                </Pane>
+        <Pane className={classnames(styles['block-table'])}>
+          <Form
+            layout="vertical"
+            ref={filterRef}
+            initialValues={{
+              ...search,
+            }}
+          >
+            <Pane className="row">
+              <Pane className="col-lg-3">
+                <FormItem
+                  type={variables.INPUT_SEARCH}
+                  name="keyWord"
+                  onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
+                  placeholder="Nhập tên thời kỳ nhạy cảm để tìm kiếm"
+                />
               </Pane>
-            </Form>
+            </Pane>
+          </Form>
 
-            <Table
-              columns={columns}
-              dataSource={data}
-              loading={loading['sensitivePeriod/GET_DATA']}
-              isError={error.isError}
-              pagination={paginationProps}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
-          </Pane>
+          <Table
+            columns={header()}
+            dataSource={data}
+            pagination={paginations(pagination)}
+            loading={loading['sensitivePeriod/GET_DATA']}
+            isError={error.isError}
+            params={{
+              header: header(),
+              type: 'table',
+            }}
+            bordered
+            rowKey={(record) => record.id}
+            scroll={{ x: '100%' }}
+          />
         </Pane>
       </Pane>
     </>
