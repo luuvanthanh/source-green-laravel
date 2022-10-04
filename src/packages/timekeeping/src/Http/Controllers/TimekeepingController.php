@@ -143,8 +143,12 @@ class TimekeepingController extends Controller
 
     public function getTimekeepingReportByBranch(GetTimekeepingRequest $request)
     {
-        $employeesByStore = $this->timekeepingRepository->getTimekeepingReportByBranch($request->all());
+        try {
+            $employeesByStore = $this->timekeepingRepository->getTimekeepingReportByBranch($request->all());
 
-        return $this->success(['data' => $employeesByStore], trans('lang::messages.common.getInfoSuccess'));
+            return $this->success(['data' => $employeesByStore], trans('lang::messages.common.getInfoSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getCode());
+        }
     }
 }

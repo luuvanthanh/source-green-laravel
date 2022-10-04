@@ -292,7 +292,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             }
 
             $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $labourContract->DivisionId)->where([['StartDate', '<=', $labourContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $labourContract->ContractFrom->format('Y-m-d')]])->first();
-            
+
             if (!is_null($divisionShift)) {
                 $dataSchedule = [
                     'employeeId' => $attributes['employeeId'],
@@ -337,7 +337,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
             'adress' => $employee->Address ? $employee->Address : '.......',
-            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'phone' => $employee->PhoneNumber ? $employee->PhoneNumber : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'from' => $labourContract->ContractFrom ? 'ngày ' . $labourContract->ContractFrom->format('d') . ' tháng ' . $labourContract->ContractFrom->format('m') . ' năm ' . $labourContract->ContractFrom->format('Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
@@ -384,7 +384,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
             'adress' => $employee->Address ? $employee->Address : '.......',
-            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'phone' => $employee->PhoneNumber ? $employee->PhoneNumber : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
@@ -423,7 +423,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
             'adress' => $employee->Address ? $employee->Address : '.......',
-            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'phone' => $employee->PhoneNumber ? $employee->PhoneNumber : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'from' => $labourContract->ContractFrom ? 'ngày ' . $labourContract->ContractFrom->format('d') . ' tháng ' . $labourContract->ContractFrom->format('m') . ' năm ' . $labourContract->ContractFrom->format('Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
@@ -618,6 +618,17 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             $positionRepresent = $represent->positionLevelNow ? $represent->positionLevelNow->position->Name : '';
         }
 
+        $liabilityAllowance = null;
+        $parameterValues = $contract->parameterValues;
+        
+        if (!empty($parameterValues)) {
+            $liabilityAllowance = $parameterValues->map(function ($item) {
+                if ($item->Code == 'PC_TRACH_NHIEM') {
+                    return $item->pivot->Value;
+                }
+            })->sum();
+        }
+        
         $params = [
             '${number_contract}' => $contract->OrdinalNumber ? $contract->OrdinalNumber . '/' . $contract->NumberForm : $contract->ContractNumber,
             '${date_contract}' => $contract->ContractDate->format('d-m-Y'),
@@ -639,10 +650,11 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             '${phone}' => $employee->PhoneNumber,
             '${salary}' => number_format($contract->BasicSalary),
             '${allowance}' => number_format($contract->TotalAllowance),
+            '${liability_allowance}' => !is_null($liabilityAllowance) ? number_format($liabilityAllowance) : 0,
             '${total}' => number_format($contract->BasicSalary + $contract->TotalAllowance)
 
         ];
-
+        
         return $this->wordExporterServices->exportWord('contract_addendum', $params, $response);
     }
 
@@ -664,6 +676,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         }
 
         $file = Storage::disk('local')->get($filePath);
+        
         Storage::disk('local')->put('public/files/' . $fileName, $file);
 
         return [
