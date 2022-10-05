@@ -1733,7 +1733,7 @@ export async function getLeftMenuHRM() {
           title: 'Báo cáo danh sách nhân viên thôi việc',
           key: 'employee-leave',
           url: ['/quan-ly-nhan-su/bao-cao/nhan-vien-thoi-viec'],
-          permission: [permissions.HSDT],
+          permission: [permissions.HRM],
           pro: true,
         },
       ],
