@@ -19,6 +19,7 @@ import { head, size, isEmpty, debounce } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
+import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
 
 const { Item: FormItemAntd } = Form;
@@ -926,7 +927,10 @@ const Index = memo(() => {
       }}
     >
       <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
-      <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
+      <div className='d-flex justify-content-between align-items-center'>
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
+        <div className='pr10'>{HelperModules.tagStatusSend("NOT_SEND")}</div>
+      </div>
       <Pane className="pr20 pl20">
         <Pane className="row">
           <Pane className="col-lg-6">
@@ -935,7 +939,16 @@ const Index = memo(() => {
                 <Pane className="mb20">
                   <Heading type="form-title">Thông tin chung</Heading>
                 </Pane>
-
+                <Pane className="col-lg-6 p0">
+                  <FormItemAntd label="Danh mục (Loại thông báo / nhắc nhở)" className='m0'>
+                    <FormItem
+                      name="divisionId"
+                      // data={[{ id: null, name: 'Chọn tất cả bộ phận' }, ...divisions]}
+                      type={variables.SELECT}
+                      onChange={onChangeDivision}
+                    />
+                  </FormItemAntd>
+                </Pane>
                 <FormItemAntd label="Đối tượng nhận">
                   <RadioGroup
                     options={variablesModules.TYPES}

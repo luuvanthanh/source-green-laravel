@@ -2203,6 +2203,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
+          {
+            path: '/thong-bao/cau-hinh',
+            component: './notication-configuration',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THONGBAO],
+          },
+          {
+            path: '/thong-bao/cau-hinh/tao-moi',
+            component: './notication-configuration/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THONGBAO],
+          },
+          {
+            path: '/thong-bao/cau-hinh/:id/chi-tiet',
+            component: './notication-configuration/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THONGBAO],
+          },
         ],
       },
       // NOTIFICATION
@@ -3219,6 +3237,12 @@ export default [
           {
             path: '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/:id/chi-tiet',
             component: './child-develop/assessment-period/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-gia-da-duyet',
+            component: './child-develop/list-of-reviews',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
