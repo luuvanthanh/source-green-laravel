@@ -12,7 +12,7 @@ class TestSemesterDetailChildren extends UuidModel
     protected $table = 'TestSemesterDetailChildrens';
 
     protected $fillable = [
-        'ChildEvaluateDetailId', 'ChildEvaluateDetailChildrenId', 'TestSemesterDetailId', 'ChildEvaluateId'
+        'ChildEvaluateDetailId', 'ChildEvaluateDetailChildrenId', 'TestSemesterDetailId', 'ChildEvaluateId', 'Score'
     ];
 
     public function testSemesterDetail()

@@ -10,7 +10,7 @@ class TestSemesterDetail extends UuidModel
     protected $table = 'TestSemesterDetails';
 
     protected $fillable = [
-        'CategorySkillId', 'TestSemesterId', 'Status', 'SerialNumber'
+        'CategorySkillId', 'TestSemesterId', 'Status', 'SerialNumber', 'TotalScore'
     ];
 
     const STATUS = [

@@ -6,10 +6,12 @@ use GGPHP\Core\Models\UuidModel;
 
 class ChildEvaluateDetail extends UuidModel
 {
+    const TOTAL_SCORE = 10;
+
     protected $table = 'ChildEvaluateDetails';
 
     protected $fillable = [
-        'NameCriteria', 'InputAssessment', 'PeriodicAssessment', 'Use', 'ChildEvaluateId'
+        'NameCriteria', 'InputAssessment', 'PeriodicAssessment', 'Use', 'ChildEvaluateId', 'TotalScore'
     ];
 
     public function childEvaluate()
