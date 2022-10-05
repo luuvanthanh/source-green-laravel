@@ -30,6 +30,8 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('teacher-timekeepings', 'TeacherTimekeepingController');
+
+            \Route::post('store-teacher-timekeepings', 'TeacherTimekeepingController@storeTeacherTimekeeping');
         });
     }
 }
