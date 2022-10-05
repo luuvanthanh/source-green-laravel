@@ -334,7 +334,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                         $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail->ToArray();
                         $data[] = [
                             'paymentForm' => self::CODE_CONVERT['NAM'],
-                            'paymentFormId' => $value->PaymentFormId,
+                            'paymentFormId' => $value->Id,
                             'startDate' => $schoolYear->StartDate,
                             'endDate' => $schoolYear->EndDate,
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
@@ -345,7 +345,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                         $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $value->PaymentFormId)->get()->ToArray();
                         $data[] = [
                             'paymentForm' => self::CODE_CONVERT['HOCKY1'],
-                            'paymentFormId' => $value->PaymentFormId,
+                            'paymentFormId' => $value->Id,
                             'startDate' => current($changeParameterDetail)['StartDate'],
                             'endDate' => end($changeParameterDetail)['EndDate'],
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
@@ -356,7 +356,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                         $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $value->PaymentFormId)->get()->ToArray();
                         $data[] = [
                             'paymentForm' => self::CODE_CONVERT['HOCKY2'],
-                            'paymentFormId' => $value->PaymentFormId,
+                            'paymentFormId' => $value->Id,
                             'startDate' => current($changeParameterDetail)['StartDate'],
                             'endDate' => end($changeParameterDetail)['EndDate'],
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
@@ -367,7 +367,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                         $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $value->PaymentFormId)->get()->ToArray();
                         $data[] = [
                             'paymentForm' => self::CODE_CONVERT['HOCKY1_HOCKY2'],
-                            'paymentFormId' => $value->PaymentFormId,
+                            'paymentFormId' => $value->Id,
                             'startDate' => current($changeParameterDetail)['StartDate'],
                             'endDate' => end($changeParameterDetail)['EndDate'],
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
@@ -378,7 +378,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                         $changeParameterDetail = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $value->PaymentFormId)->get()->ToArray();
                         $data[] = [
                             'paymentForm' => self::CODE_CONVERT['THANG'],
-                            'paymentFormId' => $value->PaymentFormId,
+                            'paymentFormId' => $value->Id,
                             'startDate' => current($changeParameterDetail)['StartDate'],
                             'endDate' => end($changeParameterDetail)['EndDate'],
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
