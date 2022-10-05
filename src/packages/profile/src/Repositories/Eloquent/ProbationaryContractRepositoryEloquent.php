@@ -330,10 +330,17 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
         // Lương thực nhận
         // $probationSalary = isset($salaryRatio) ? $salary * $salaryRatio / 100 : $salary;
+        $represent = $labourContract->represent;
+
+        if (is_null($represent)) {
+            $positionRepresent = '';
+        } else {
+            $positionRepresent = $represent->positionLevelNow ? $represent->positionLevelNow->position->Name : '';
+        }
 
         $total = $salary + $allowance;
         $employee = $labourContract->employee;
-
+        
         $params = [
             'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
@@ -341,6 +348,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'yearNow' => $labourContract->ContractDate->format('Y'),
             'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
             'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'represent' => !is_null($represent) ? $represent->FullName : '',
+            'position' =>  $positionRepresent,
             'fullName' => $employee->FullName ? $employee->FullName : '........',
             'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
             'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
