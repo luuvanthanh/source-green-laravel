@@ -117,7 +117,7 @@ export default {
         });
       }
     },
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
         if (response) {
@@ -126,6 +126,7 @@ export default {
             payload: response,
           });
         }
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

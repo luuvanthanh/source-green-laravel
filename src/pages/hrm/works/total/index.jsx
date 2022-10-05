@@ -31,7 +31,6 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ works, loading }) => ({
-  data: works.data,
   pagination: works.pagination,
   error: works.error,
   holidays: works.holidays,
@@ -51,6 +50,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        data: [],
         fullName: query?.fullName,
         branchId: query?.branchId,
         divisionId: query?.divisionId,
@@ -141,6 +141,40 @@ class Index extends PureComponent {
       type: 'works/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response, error) => {
+        if (response) {
+          this.setStateData(
+            () => ({
+              data: Object.keys(response.payload).map((key) => ({
+                id: key,
+                name: key,
+                children:
+                  response?.payload[key]?.Division &&
+                  Object.keys(response?.payload[key]?.Division).map((keyParent) => ({
+                    key: `${key}-${keyParent}`,
+                    name: keyParent,
+                    children:
+                      response?.payload[key]?.Division[keyParent]?.ListUser &&
+                      Object.keys(response?.payload[key]?.Division[keyParent]?.ListUser).map(
+                        (keyProduct) => ({
+                          key: `${key}-${keyParent}-${keyProduct}`,
+                          name: keyProduct,
+                          ...(response?.payload[key]?.Division[keyParent]?.ListUser[keyProduct] || {}),
+                        }),
+                      ),
+                  })),
+              })),
+            }),
+          );
+        }
+        if (error) {
+          this.setStateData(
+            () => ({
+              data: [],
+            }),
+          );
+        }
       },
     });
     history.push(
@@ -626,8 +660,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      data,
-      error,
       employees,
       pagination,
       match: { params },
@@ -635,7 +667,7 @@ class Index extends PureComponent {
       divisions,
       branches,
     } = this.props;
-    const { search, downloading } = this.state;
+    const { search, downloading, data } = this.state;
     const loading = effects['works/GET_DATA'];
     return (
       <>
@@ -715,8 +747,8 @@ class Index extends PureComponent {
                 columns={this.header(params)}
                 dataSource={data}
                 loading={loading}
-                error={error}
-                isError={error.isError}
+                // error={error}
+                // isError={error.isError}
                 defaultExpandAllRows
                 className="table-work"
                 childrenColumnName="children"
@@ -738,12 +770,10 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
   holidays: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
@@ -752,12 +782,10 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  data: [],
   pagination: {},
   loading: {},
   dispatch: {},
   location: {},
-  error: {},
   holidays: [],
   divisions: [],
   branches: [],

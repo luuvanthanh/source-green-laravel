@@ -83,6 +83,12 @@ async function covertData(response) {
     }
     return dataRoot;
   }
+  if (response.status === 400) {
+    notification.error({
+      message: 'Thông báo',
+      description: get(dataRoot, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+    });
+  }
   return response;
 }
 // response interceptor, handling response
