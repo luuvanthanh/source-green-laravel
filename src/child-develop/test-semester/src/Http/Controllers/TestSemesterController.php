@@ -192,4 +192,11 @@ class TestSemesterController extends Controller
 
         return $this->success($testSemester, trans('lang::messages.common.getInfoSuccess'));
     }
+
+    public function approvedTestSemesterMultiple(Request $request)
+    {
+        $testSemester = $this->testSemesterRepository->approvedTestSemesterMultiple($request->all());
+
+        return $this->success($testSemester, trans('lang::messages.common.getInfoSuccess'));
+    }
 }
