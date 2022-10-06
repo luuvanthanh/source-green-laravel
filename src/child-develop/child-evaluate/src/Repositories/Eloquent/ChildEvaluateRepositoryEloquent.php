@@ -60,8 +60,8 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $this->model = $this->model->where('Age', $attributes['age']);
         }
 
-        if (!empty($attributes['CategorySkillId'])) {
-            $this->model = $this->model->where('CategorySkillId', $attributes['CategorySkillId']);
+        if (!empty($attributes['categorySkillId'])) {
+            $this->model = $this->model->where('CategorySkillId', $attributes['categorySkillId']);
         }
 
         if (!empty($attributes['key'])) {
