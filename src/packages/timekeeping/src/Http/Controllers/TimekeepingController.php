@@ -151,4 +151,15 @@ class TimekeepingController extends Controller
             return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getCode());
         }
     }
+
+    public function exportExcelTimekeepingByBranch(Request $request)
+    {
+        $result = $this->timekeepingRepository->exportExcelTimekeepingByBranch($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }

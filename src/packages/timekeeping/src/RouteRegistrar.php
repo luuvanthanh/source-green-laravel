@@ -72,6 +72,13 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'timekeeping.summary',
                 'group' => 'Công',
             ]);
+
+            \Route::get('export-excel-timekeeping-by-branch', [
+                'comment' => 'Xuất excel tổng hợp công theo cơ sở',
+                'uses' => 'TimekeepingController@exportExcelTimekeepingByBranch',
+                'as' => 'timekeeping.summary',
+                'group' => 'Công',
+            ]);
         });
     }
 

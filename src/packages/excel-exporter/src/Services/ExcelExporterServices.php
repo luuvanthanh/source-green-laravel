@@ -49,6 +49,9 @@ class ExcelExporterServices
         'salary_template_go_to_bank_foreigner' => [
             'template' => 'salary_template_go_to_bank_foreigner.xlsx',
         ],
+        'timekeeping_report_by_branch' => [
+            'template' => 'timekeeping_report_by_branch.xlsx',
+        ],
     ];
 
     protected $disk;
@@ -78,7 +81,7 @@ class ExcelExporterServices
 
         $templateFileUrl = $this->endPoint . '/' . $this->templateFolder . '/' . $templateFile;
         $resultFileUrl = $this->endPoint . '/' . $this->resultFolder . '/' . $resultFile;
-
+        
         if (!file_exists($templateFileUrl)) {
             return config('excel-exporter.error.template-not-found');
         }
