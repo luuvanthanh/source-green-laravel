@@ -316,7 +316,7 @@ class Index extends PureComponent {
     const dataBranch = branches?.find(i => i?.id === search?.branchId);
     this.setStateData({ downloading: true });
     await Helper.exportExcel(
-      `/v1/timekeeping-report-export`,
+      `/v1/export-excel-timekeeping-by-branch`,
       {
         ...omit(search, 'page', 'limit'),
         startDate: Helper.getDateTime({

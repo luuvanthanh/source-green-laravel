@@ -58,8 +58,7 @@ async function covertData(response) {
         description: 'Bạn đã cập nhật thành công dữ liệu',
       });
     }
-  }
-  if (response.status >= 200 && response.status < 300) {
+  } else if (response.status >= 200 && response.status < 300) {
     const schema = normalize(dataRoot, {
       camelizeTypeValues: false,
       camelizeKeys: false,
@@ -82,13 +81,13 @@ async function covertData(response) {
       };
     }
     return dataRoot;
-  }
-  if (response.status === 400) {
+  } else {
     notification.error({
       message: 'Thông báo',
       description: get(dataRoot, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
     });
   }
+
   return response;
 }
 // response interceptor, handling response
