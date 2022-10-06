@@ -185,4 +185,11 @@ class TestSemesterController extends Controller
 
         return $this->success($reportTestSemester, trans('lang::messages.common.getListSuccess'));
     }
+
+    public function approvedTestSemester(Request $request, $id)
+    {
+        $testSemester = $this->testSemesterRepository->approvedTestSemester($request->all(), $id);
+
+        return $this->success($testSemester, trans('lang::messages.common.getInfoSuccess'));
+    }
 }

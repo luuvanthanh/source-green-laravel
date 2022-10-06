@@ -15,7 +15,7 @@ class TestSemester extends UuidModel
 
     protected $fillable = [
         'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus', 'Strength',
-        'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId', 'SchoolYearId'
+        'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId', 'SchoolYearId', 'TimeApproved', 'TimePendingApproved'
     ];
 
     const STATUS = [
@@ -29,6 +29,7 @@ class TestSemester extends UuidModel
         'UNSENT' => 0,
         'UNQUALIFIED' => 1,
         'APPROVED' => 2,
+        'PENDING_APPROVED' => 3
     ];
 
     const TYPE = [

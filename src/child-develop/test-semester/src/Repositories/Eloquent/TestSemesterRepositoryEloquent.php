@@ -202,6 +202,15 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
     public function update(array $attributes, $id)
     {
         $testSemester = $this->model::find($id);
+
+        if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['PENDING_APPROVED']) {
+            $attributes['timePendingApproved'] = now()->format('Y-m-d H:i:s');
+        }
+
+        if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['APPROVED']) {
+            $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
+        }
+
         $testSemester->update($attributes);
 
         return parent::find($id);
@@ -330,5 +339,37 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         $testSemesterDetail->update(['TotalScore' => $totalScore]);
+    }
+
+    public function approvedTestSemester(array $attributes, $id)
+    {
+        $testSemester = $this->model()::find($id);
+        dd($testSemester, $id);
+
+        // $nameStudent = $student->FullName;
+        // $images =  json_decode($student->FileImage);
+        // $urlImage = '';
+
+        // if (!empty($images)) {
+        //     $urlImage = env('IMAGE_URL') . $images[0];
+        // }
+
+        // $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
+        // $message = 'Bé' . ' ' . $nameStudent . ' ' . 'đã ra về lúc' . ' ' . $timeCheckOut;
+
+
+        // if (!empty($userId)) {
+        //     $dataNoti = [
+        //         'users' => $userId,
+        //         'title' => $nameStudent,
+        //         'imageURL' => $urlImage,
+        //         'message' => $message,
+        //         'moduleType' => 6,
+        //         'moduleCode' => 'ATTENDANCE',
+        //         'refId' => $student->Id,
+        //     ];
+
+        // dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+        // }
     }
 }
