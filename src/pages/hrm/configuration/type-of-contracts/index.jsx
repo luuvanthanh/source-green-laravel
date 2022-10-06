@@ -211,7 +211,7 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'LOẠI',
+        title: 'PHÂN LOẠI',
         key: 'type',
         className: 'min-width-150',
         render: (record) => (

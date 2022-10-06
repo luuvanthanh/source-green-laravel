@@ -132,6 +132,7 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+        callback(null, error);
       }
     },
     *GET_HOLIDAYS({ payload }, saga) {
