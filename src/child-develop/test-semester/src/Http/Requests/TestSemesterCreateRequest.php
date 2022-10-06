@@ -4,6 +4,7 @@ namespace GGPHP\ChildDevelop\TestSemester\Http\Requests;
 
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
+use GGPHP\Fee\Models\SchoolYear;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TestSemesterCreateRequest extends FormRequest
@@ -26,6 +27,7 @@ class TestSemesterCreateRequest extends FormRequest
     public function rules()
     {
         return [
+            'schoolYearId' => 'nullable|check_exists:fee.SchoolYears,Id',
             'assessmentPeriodId' => 'required|exists:AssessmentPeriods,Id',
             'studentId' => 'required|check_exists:object.Students,Id',
             'status' => 'required|in:' . implode(',', array_keys(TestSemester::STATUS)),
@@ -38,5 +40,15 @@ class TestSemesterCreateRequest extends FormRequest
             'detail.isCheck.*.childEvaluateDetailId' => 'exists:ChildEvaluateDetails,Id',
             'detail.isCheck.*.childEvaluateDetailChildrenId' => 'exists:ChildEvaluateDetailChildrens,Id'
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = Parent::all();
+        $schoolYear = SchoolYear::where('IsCheck', true)->first();
+
+        $data['schoolYearId'] = !is_null($schoolYear) ? $schoolYear->Id : null;
+
+        return $data;
     }
 }

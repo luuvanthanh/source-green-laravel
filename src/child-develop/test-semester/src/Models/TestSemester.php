@@ -7,13 +7,15 @@ use GGPHP\ChildDevelop\Category\Models\AssessmentPeriod;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ClassType;
+use GGPHP\Fee\Models\SchoolYear;
 
 class TestSemester extends UuidModel
 {
     protected $table = 'TestSemesters';
 
     protected $fillable = [
-        'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus', 'Strength', 'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId'
+        'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus', 'Strength',
+        'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId', 'SchoolYearId'
     ];
 
     const STATUS = [
@@ -57,5 +59,10 @@ class TestSemester extends UuidModel
     public function user()
     {
         return $this->belongsTo(User::class, 'EmployeeId');
+    }
+
+    public function schoolYearId()
+    {
+        return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
 }
