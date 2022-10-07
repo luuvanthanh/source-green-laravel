@@ -468,12 +468,12 @@ class Index extends PureComponent {
           </div>
           <div className={styles['modal-content']}>
             <h3 className={styles.title}>Thông tin chung</h3>
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
+            <div className="d-flex justify-content-between align-items-center row">
+              <div className='col-lg-6'>
                 <p className={styles.label}>Triệu chứng</p>
                 <p className={styles.norm}>{objects?.diseaseName}</p>
               </div>
-              <div className="text-right">
+              <div className="text-right col-lg-6">
                 <p className={styles.label}>Nơi đặt thuốc</p>
                 <p className={styles.norm}>{objects?.medicineLocation}</p>
               </div>
@@ -481,12 +481,18 @@ class Index extends PureComponent {
             <hr />
             {objects?.medicines?.map(({ id, files, name, medicineTimes }) => (
               <div key={id}>
-                <h3 className={styles.title}>
+                <h3 className={styles.title} >
                   UỐNG THUỐC {head(medicineTimes)?.medicineTimeType?.description?.toUpperCase()}
                 </h3>
-                <div className={styles.list}>
-                  <div className={styles.item}>
-                    <div className={styles['image-container']}>
+                <div className={classnames(
+                  styles.list
+                )}>
+                  <div className={classnames(styles.item,
+                    'row',
+                  )}>
+                    <div className={classnames(styles['image-container'],
+                      'col-lg-6',
+                    )}>
                       {Helper.isJSON(files) && (
                         <div>
                           <Image.PreviewGroup>
@@ -509,7 +515,7 @@ class Index extends PureComponent {
                         <p className={styles.norm}>{name}</p>
                       </div>
                     </div>
-                    <div className={styles.content}>
+                    <div className="text-right col-lg-6">
                       <p className={styles.label}>Nội dung</p>
                       <p className={styles.norm}>{head(medicineTimes)?.note}</p>
                     </div>
