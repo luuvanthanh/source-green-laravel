@@ -292,8 +292,9 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
 
     public function previewSeasonalContractExportWord($id)
     {
+        $string = substr(uniqid(), 7);
         $seasonalContract = SeasonalContract::findOrFail($id);
-        $fileName = $seasonalContract->Id . '.docx';
+        $fileName = $seasonalContract->Id . $string . '.docx';
         $filePath = $this->exportWord($id, 'url');
         $file = Storage::disk('local')->get($filePath);
 

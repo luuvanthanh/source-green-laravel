@@ -148,4 +148,13 @@ class UserController extends Controller
     {
         $this->employeeRepository->updateLastName();
     }
+
+    public function reportEmployeeInfo(Request $request)
+    {
+        $attributes = $request->all();
+
+        $employees = $this->employeeRepository->reportEmployeeInfo($attributes);
+
+        return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
+    }
 }
