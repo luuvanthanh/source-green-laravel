@@ -176,6 +176,7 @@ const renderChildren = (
       placeholder={placeholder || 'Chọn'}
       showSearch
       disabledOptions={disabledOptions}
+      showArrow
     />
   ),
   tags: (

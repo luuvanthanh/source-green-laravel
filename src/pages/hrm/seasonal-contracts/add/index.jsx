@@ -36,6 +36,7 @@ function Index() {
   const [parameterValues, setParameterValues] = useState([]);
   const [show, setShow] = useState(false);
   const [dataFormContarct, setDataFormContarct] = useState([]);
+  const [numberMonth, setNumberMonth] = useState(0);
 
   const loadCategories = () => {
     dispatch({
@@ -160,13 +161,34 @@ function Index() {
         employeeId: value,
       },
       callback: (response) => {
-        if (!isEmpty(response)) {
+        if (response?.length > 0) {
           const details = head(response);
           formRef.setFieldsValue({
             ...omit(details, 'typeOfContractId'),
-            contractDate: details.contractDate && moment(details.contractDate),
+            contractDate: null,
+            ordinalNumber: null,
             contractFrom: details.contractFrom && moment(details.contractFrom),
             contractTo: details.contractTo && moment(details.contractTo),
+          });
+        } else {
+          formRef.setFieldsValue({
+            contractDate: null,
+            contractNumber: null,
+            ordinalNumber: null,
+            typeOfContractId: null,
+            month: null,
+            date: null,
+            divisionId: null,
+            positionId: null,
+            branchId: null,
+            contractFrom: null,
+            contractTo: null,
+            workDetail: null,
+            workTime: null,
+            joinSocialInsurance: null,
+            project: null,
+            nameProject: null,
+            representId: null,
           });
         }
       },
@@ -349,6 +371,10 @@ function Index() {
     });
   };
 
+  const onChangeMonth = (e) => {
+    setNumberMonth(e);
+  };
+
   return (
     <>
       <Breadcrumbs
@@ -454,7 +480,8 @@ function Index() {
                     label="Số tháng hợp đồng"
                     name="month"
                     type={variables.INPUT_COUNT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT_MONTH]}
+                    rules={[variables.RULES.EMPTY]}
+                    onChange={onChangeMonth}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -462,7 +489,7 @@ function Index() {
                     label="Số ngày hợp đồng"
                     name="date"
                     type={variables.INPUT_COUNT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.MIN_LENGTH_INPUT]}
+                    rules={numberMonth > 0 ? [] : [variables.RULES.EMPTY, variables.RULES.MIN_LENGTH_INPUT]}
                   />
                 </div>
                 <div className="col-lg-4">
