@@ -132,7 +132,13 @@ function Index() {
   };
 
   const exportFile = (id) => {
-    Helper.exportExcel(`/v1/seasonal-contracts-export-word/${id}`, {}, 'HopDongThoiVu.docx');
+    // Helper.exportExcel(`/v1/seasonal-contracts-export-word/${id}`, {}, 'HopDongThoiVu.docx');
+    dispatch({
+      type: 'seasonalContracts/GET_EXCEL',
+      payload: {
+        id,
+      },
+    });
   };
 
   /**

@@ -35,7 +35,6 @@ function Index() {
 
   const [parameterValues, setParameterValues] = useState([]);
   const [show, setShow] = useState(false);
-  const [isValid, setIsValid] = useState(false);
   const [dataFormContarct, setDataFormContarct] = useState([]);
 
   const loadCategories = () => {
@@ -83,21 +82,6 @@ function Index() {
         contractTo: details.contractTo && moment(details.contractTo),
       });
 
-      if (details.contractFrom && details.contractTo) {
-        if (moment(details.contractTo).diff(moment(details.contractFrom), 'days') > 366) {
-          setIsValid(true);
-          formRef.setFields([
-            {
-              name: 'month',
-              errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-            },
-            {
-              name: 'date',
-              errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-            },
-          ]);
-        }
-      }
       setparameterValues(
         details.parameterValues.map((item) => ({
           ...item,
@@ -117,35 +101,20 @@ function Index() {
           .add(month || 0, 'months')
           .add(date || 0, 'day'),
       });
-      const yearPoint = moment(contractFrom).add(12, 'months');
-      const timeContract = moment(contractFrom)
-        .add(month || 0, 'months')
-        .add(date || 0, 'days');
-      if (timeContract.isAfter(yearPoint)) {
-        setIsValid(false);
-        formRef.setFields([
-          {
-            name: 'month',
-            errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-          },
-          {
-            name: 'date',
-            errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-          },
-        ]);
-      } else {
-        setIsValid(true);
-        formRef.setFields([
-          {
-            name: 'month',
-            errors: '',
-          },
-          {
-            name: 'date',
-            errors: '',
-          },
-        ]);
-      }
+      // const yearPoint = moment(contractFrom).add(12, 'months');
+      // const timeContract = moment(contractFrom)
+      //   .add(month || 0, 'months')
+      //   .add(date || 0, 'days');
+      formRef.setFields([
+        {
+          name: 'month',
+          errors: '',
+        },
+        {
+          name: 'date',
+          errors: '',
+        },
+      ]);
     }
   };
 
@@ -217,7 +186,7 @@ function Index() {
     const payload = {
       ...values,
       id: params.id,
-      ordinalNumber: head(dataFormContarct)?.ordinalNumber,
+      ordinalNumber: values?.ordinalNumber,
       numberForm: head(dataFormContarct)?.numberForm,
       numberFormContractId: head(dataFormContarct)?.id,
       type: 'SEASONAL',
@@ -252,40 +221,27 @@ function Index() {
       nameProject: values.project ? values.nameProject : null,
     };
 
-    if (!isValid) {
-      dispatch({
-        type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
-        payload,
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+    dispatch({
+      type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
+      payload,
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              formRef.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                formRef.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    } else {
-      formRef.setFields([
-        {
-          name: 'month',
-          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-        },
-        {
-          name: 'date',
-          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-        },
-      ]);
-    }
+        }
+      },
+    });
   };
 
   const onRemove = (record) => {

@@ -44,30 +44,30 @@ const Index = memo(() => {
         payload: params.id ? {
           id: params.id,
           categorySkillId: values.categorySkillId ? values.categorySkillId : details.categorySkillId,
-          age: values.age ? Number( values.age) : Number(details.age),
-          use:  values.use,
+          age: values.age ? Number(values.age) : Number(details.age),
+          use: values.use,
           detail: values.data.map((i) => ({
             nameCriteria: i?.nameCriteria,
-            inputAssessment: i?.inputAssessment ? i?.inputAssessment : false ,
+            inputAssessment: i?.inputAssessment ? i?.inputAssessment : false,
             periodicAssessment: i?.periodicAssessment ? i?.periodicAssessment : false,
             use: i?.use ? i?.use : false,
             detailChildren: i?.childEvaluateDetailChildren ? i?.childEvaluateDetailChildren?.map((item) => ({
-              content: item.content, use: item.use ? item.use  : false
+              content: item.content, use: item.use ? item.use : false
             })) : [],
           }))
         }
           :
           {
-            categorySkillId: values.categorySkillId ? values.categorySkillId : false, 
-            age: values.age ? Number (values.age) : false,
-            use:  values.use ? values.use  : false,
+            categorySkillId: values.categorySkillId ? values.categorySkillId : false,
+            age: values.age ? Number(values.age) : false,
+            use: values.use ? values.use : false,
             detail: values.data.map((item) => ({
               nameCriteria: item?.nameCriteria,
-              inputAssessment: item?.inputAssessment ? item?.inputAssessment  : false ,
-              periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment: false,
+              inputAssessment: item?.inputAssessment ? item?.inputAssessment : false,
+              periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment : false,
               use: item?.use ? item?.use : false,
               detailChildren: item?.childEvaluateDetailChildren ? item?.childEvaluateDetailChildren?.map((item) => ({
-                content: item.content, use: item.use ? item.use  : false
+                content: item.content, use: item.use ? item.use : false
               })) : [],
             }))
           },
@@ -102,18 +102,18 @@ const Index = memo(() => {
   }, []);
 
   useEffect(() => {
-    if(params.id) {
-    dispatch({
-      type: 'childDevelopReviewScenarioAdd/GET_DATA',
-      payload: params,
-      callback: (response) => {
-        if (response) {
-          form.setFieldsValue({
-            data: response.parsePayload.childEvaluateDetail,
-          });
-        }
-      },
-    });
+    if (params.id) {
+      dispatch({
+        type: 'childDevelopReviewScenarioAdd/GET_DATA',
+        payload: params,
+        callback: (response) => {
+          if (response) {
+            form.setFieldsValue({
+              data: response.parsePayload.childEvaluateDetail,
+            });
+          }
+        },
+      });
     }
   }, [params.id]);
 
@@ -187,7 +187,7 @@ const Index = memo(() => {
             <Pane className="card p20">
               <Pane className="row">
                 <Form.List name="data">
-                  {(fields, { add, remove }) => (
+                  {(fields, { remove }) => (
                     <>
                       {fields.map((field, index) => (
                         <>
@@ -346,7 +346,7 @@ const Index = memo(() => {
                           </Pane>
                         </>
                       ))}
-                      <Pane className="pl20 pb20 pt20" >
+                      {/* <Pane className="pl20 pb20 pt20" >
                         <Button
                           color="success"
                           ghost
@@ -357,7 +357,7 @@ const Index = memo(() => {
                         >
                           Thêm tiêu chí
                         </Button>
-                      </Pane>
+                      </Pane> */}
                     </>
                   )}
                 </Form.List>

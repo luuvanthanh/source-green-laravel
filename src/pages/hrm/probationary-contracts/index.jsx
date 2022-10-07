@@ -221,7 +221,13 @@ class Index extends PureComponent {
   };
 
   export = (id) => {
-    Helper.exportExcel(`/v1/probationary-contracts-export-word/${id}`, {}, 'HopDongThuViec.docx');
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'probationaryContracts/GET_EXCEL',
+      payload: {
+        id,
+      },
+    });
   };
 
   /**

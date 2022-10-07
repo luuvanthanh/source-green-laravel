@@ -353,7 +353,7 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Giá trị',
+        title: 'Giá trị (VNĐ)',
         key: 'values',
         dataIndex: 'valueDefault',
         className: 'min-width-120',

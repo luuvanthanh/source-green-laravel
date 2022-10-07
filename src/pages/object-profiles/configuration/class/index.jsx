@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Tooltip } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -215,24 +215,30 @@ class Index extends PureComponent {
     if (user?.roleCode === variables.LIST_ROLE_CODE.PRINCIPAL || user?.roleCode === variables.LIST_ROLE_CODE.ADMIN) {
       return (
         <div className={styles['list-buttons']}>
-          <Button
-            className={styles.item}
-            color="primary"
-            icon="list"
-            onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
-          />
-          <Button
-            className={styles.item}
-            color="primary"
-            icon="edit"
-            onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-          />
-          <Button
-            className={styles.item}
-            color="danger"
-            icon="remove"
-            onClick={() => this.onRemove(record.id)}
-          />
+          <Tooltip placement="top" title="Danh Sách lớp">
+            <Button
+              className={styles.item}
+              color="primary"
+              icon="list"
+              onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
+            />
+          </Tooltip>
+          <Tooltip placement="top" title="Chi tiết">
+            <Button
+              className={styles.item}
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            />
+          </Tooltip>
+          <Tooltip placement="top" title="Xoá">
+            <Button
+              className={styles.item}
+              color="danger"
+              icon="remove"
+              onClick={() => this.onRemove(record.id)}
+            />
+          </Tooltip>
         </div>);
     };
     return "";

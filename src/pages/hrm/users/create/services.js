@@ -546,3 +546,25 @@ export function working(params = {}) {
     parse: true,
   });
 }
+
+export function getSalaryIncreases(params = {}) {
+  return requestLavarel('/v1/salary-increases', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes(['employee', 'absentType']),
+      employeeId: params.id,
+    },
+  });
+}
+
+export function removeSalaryIncreases(id) {
+  return requestLavarel(`/v1/salary-increases/${id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}

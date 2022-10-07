@@ -509,7 +509,7 @@ class Index extends PureComponent {
                         <p className={styles.norm}>{name}</p>
                       </div>
                     </div>
-                    <div>
+                    <div className={styles.content}>
                       <p className={styles.label}>Nội dung</p>
                       <p className={styles.norm}>{head(medicineTimes)?.note}</p>
                     </div>

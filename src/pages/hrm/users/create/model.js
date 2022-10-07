@@ -5,6 +5,7 @@ export default {
   namespace: 'HRMusersAdd',
   state: {
     details: {},
+    dataSalaryIncreases: [],
     detailsAccount: {},
     roles: [],
     error: {
@@ -173,6 +174,11 @@ export default {
     SET_POSITION_LEVELS: (state, { payload }) => ({
       ...state,
       positionLevels: payload.parsePayload,
+    }),
+    SET_SALARY_INCREASES: (state, { payload }) => ({
+      ...state,
+      dataSalaryIncreases: payload.parsePayload,
+      pagination: payload.pagination,
     }),
   },
   effects: {
@@ -835,6 +841,30 @@ export default {
     *WORKING({ payload, callback }, saga) {
       try {
         yield saga.call(services.working, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_SALARY_INCREASES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSalaryIncreases, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_SALARY_INCREASES',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *REMOVE_SALARY_INCREASES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeSalaryIncreases, payload.id);
         callback(payload);
       } catch (error) {
         callback(null, error);

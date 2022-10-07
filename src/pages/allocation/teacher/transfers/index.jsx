@@ -31,10 +31,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ allocationTeacherTransfers, loading }) => ({
+const mapStateToProps = ({ allocationTeacherTransfers, loading, user }) => ({
   loading,
   data: allocationTeacherTransfers.data,
   pagination: allocationTeacherTransfers.pagination,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -42,13 +43,18 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
+    const {
+      defaultBranch,
+    } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       teachers: [],
       selectedTeachers: [],
       loadingTeacher: false,
       classes: [],
       submitLoading: false,
       classId: '',
+
     };
     setIsMounted(true);
   }
@@ -76,7 +82,7 @@ class Index extends PureComponent {
   };
 
   fetchBranches = () => {
-    const { dispatch } = this.props;
+    const { dispatch, defaultBranch } = this.props;
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
@@ -87,6 +93,21 @@ class Index extends PureComponent {
         }
       },
     });
+    if (defaultBranch?.id) {
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: defaultBranch?.id,
+        },
+        callback: (res) => {
+          if (res) {
+            this.setStateData({
+              classes: res?.items || [],
+            });
+          }
+        },
+      });
+    }
   };
 
   fetchClasses = (branchId) => {
@@ -182,6 +203,9 @@ class Index extends PureComponent {
 
   render() {
     const {
+      defaultBranch,
+    } = this.props;
+    const {
       classes,
       branches,
       teachers,
@@ -189,12 +213,12 @@ class Index extends PureComponent {
       classId,
       loadingTeacher,
       submitLoading,
+      defaultBranchs,
     } = this.state;
     const classChange =
       !_.isEmpty(classes) && classId ? classes.filter((item) => item.id !== classId) : [];
-
     return (
-      <Form layout="vertical" colon={false} ref={this.formRef} onFinish={this.finishForm}>
+      <Form layout="vertical" colon={false} initialValues={{ branch: defaultBranch?.id }} ref={this.formRef} onFinish={this.finishForm}>
         <Helmet title="Điều chuyển giáo viên" />
         <div
           className={classnames(
@@ -241,18 +265,38 @@ class Index extends PureComponent {
                     Danh sách giáo viên
                   </Text>
                   <div className="row mt-3">
-                    <div className="col-lg-6">
-                      <FormItem
-                        className="mb-0"
-                        label="Cơ sở"
-                        allowClear={false}
-                        name="branch"
-                        type={variables.SELECT}
-                        placeholder="Chọn cơ sở"
-                        onChange={this.fetchClasses}
-                        data={branches}
-                      />
-                    </div>
+                    {
+                      !defaultBranch?.id && (
+                        <div className="col-lg-6">
+                          <FormItem
+                            className="mb-0"
+                            label="Cơ sở"
+                            allowClear={false}
+                            name="branch"
+                            type={variables.SELECT}
+                            placeholder="Chọn cơ sở"
+                            onChange={this.fetchClasses}
+                            data={branches}
+                          />
+                        </div>
+                      )
+                    }
+                    {
+                      defaultBranch?.id && (
+                        <div className="col-lg-6">
+                          <FormItem
+                            className="mb-0"
+                            label="Cơ sở"
+                            allowClear={false}
+                            name="branch"
+                            type={variables.SELECT}
+                            placeholder="Chọn cơ sở"
+                            onChange={this.fetchClasses}
+                            data={defaultBranchs}
+                          />
+                        </div>
+                      )
+                    }
                     <div className="col-lg-6">
                       <FormItem
                         className="mb-0"
@@ -375,10 +419,12 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any)
 };
 
 Index.defaultProps = {
   dispatch: {},
+  defaultBranch: {},
 };
 
 export default Index;

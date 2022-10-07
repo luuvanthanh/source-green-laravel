@@ -27,6 +27,7 @@ import AppointsForm from './forms/appoints';
 import DecisionRewardsForm from './forms/decision-rewards';
 import PositionLevels from './forms/position-levels';
 import MaternityLeaves from './forms/maternity-leaves';
+import SalaryIncreases from './forms/salary-increases';
 
 import { menu, defaultKey } from './menu';
 
@@ -39,6 +40,7 @@ const forms = {
   bank: <BankForm />,
   timework: <TimeworkForm />,
   transfers: <TransfersForm />,
+  'salary-increases': <SalaryIncreases />,
   contract: <ContractForm />,
   probationaryContract: <ProbationaryContractForm />,
   insurrances: <InsurranceForm />,

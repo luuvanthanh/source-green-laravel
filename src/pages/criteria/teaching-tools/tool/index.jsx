@@ -1,9 +1,10 @@
-import { memo, useMemo, useRef, useState, useEffect } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Image } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { debounce } from 'lodash';
+import classnames from 'classnames';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -34,82 +35,64 @@ const Index = memo(() => {
     keyWord: query?.keyWord,
   });
 
-  const columns = [
-    {
-      title: 'Mã ID',
-      key: 'id',
-      className: 'min-width-70',
-      render: (record) => record.code,
-    },
-    {
-      title: 'Hình ảnh',
-      key: 'image',
-      className: 'min-width-100',
-      width: 170,
-      render: (record) => (
-        <div className="d-flex align-items-center">
-          <Image.PreviewGroup>
-            {Helper.isJSON(record?.fileUrl) &&
-              JSON.parse(record?.fileUrl).map((item, index) => (
-                <div key={index} className="group-image">
-                  <Image
-                    key={index}
-                    width={60}
-                    height={60}
-                    src={`${API_UPLOAD}${item.url}`}
-                    data-viewmore={`+${JSON.parse(record?.fileUrl)?.length - 1}`}
-                    fallback="/default-upload.png"
-                  />
-                </div>
-              ))}
-          </Image.PreviewGroup>
-        </div>
-      ),
-    },
-    {
-      title: 'Giáo cụ',
-      key: 'name',
-      className: 'min-width-200',
-      render: (record) => <Text size="normal">{record.name} </Text>,
-    },
-    {
-      key: 'action',
-      className: 'min-width-80',
-      width: 80,
-      render: (record) => (
-        <div className={styles['list-button']}>
-          <Button
-            color="success"
-            ghost
-            onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
-          >
-            Chi tiết
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  const paginationProps = useMemo(
-    () => ({
-      size: 'default',
-      total: pagination?.total || 0,
-      pageSize: variables.PAGINATION.PAGE_SIZE,
-      defaultCurrent: Number(search.page),
-      current: Number(search.page),
-      hideOnSinglePage: (pagination?.total || 0) <= 10,
-      showSizeChanger: false,
-      pageSizeOptions: false,
-      onChange: (page, limit) => {
-        setSearch((prev) => ({
-          ...prev,
-          page,
-          limit,
-        }));
+  const header = () => {
+    const columns = [
+      {
+        title: 'Mã ID',
+        key: 'id',
+        className: 'min-width-70',
+        render: (record) => record.code,
       },
-    }),
-    [pagination],
-  );
+      {
+        title: 'Hình ảnh',
+        key: 'image',
+        className: 'min-width-100',
+        width: 170,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Image.PreviewGroup>
+              {Helper.isJSON(record?.fileUrl) &&
+                JSON.parse(record?.fileUrl).map((item, index) => (
+                  <div key={index} className="group-image">
+                    <Image
+                      key={index}
+                      width={60}
+                      height={60}
+                      src={`${API_UPLOAD}${item.url}`}
+                      data-viewmore={`+${JSON.parse(record?.fileUrl)?.length - 1}`}
+                      fallback="/default-upload.png"
+                    />
+                  </div>
+                ))}
+            </Image.PreviewGroup>
+          </div>
+        ),
+      },
+      {
+        title: 'Giáo cụ',
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => <Text size="normal">{record.name} </Text>,
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="success"
+              ghost
+              onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
+          </div>
+        ),
+      },
+    ];
+    return columns;
+  };
 
   const changeFilterDebouce = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -129,6 +112,12 @@ const Index = memo(() => {
       type: 'criteriaTool/GET_DATA',
       payload: { ...search },
     });
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch({
+        ...search,
+      }),
+    });
   }, [search]);
 
   useEffect(() => {
@@ -136,8 +125,25 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
+  const changePagination = ({ page, limit }) => {
+    setSearch((prev) => ({
+      ...prev,
+      page,
+      limit,
+    }));
+  };
+
+  const paginations = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
+
   return (
-    <>
+    <div >
       <Helmet title="Danh sách giáo cụ" />
       <Pane className="p20">
         <Pane className="d-flex mb20">
@@ -152,40 +158,42 @@ const Index = memo(() => {
           </Button>
         </Pane>
 
-        <Pane className="card">
-          <Pane className="p20">
-            <Form
-              layout="vertical"
-              ref={filterRef}
-              initialValues={{
-                ...search,
-              }}
-            >
-              <Pane className="row">
-                <Pane className="col-lg-3">
-                  <FormItem
-                    type={variables.INPUT_SEARCH}
-                    name="keyWord"
-                    onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
-                    placeholder="Nhập tên giáo cụ để tìm kiếm"
-                  />
-                </Pane>
+        <Pane className={classnames(styles['block-table'])}>
+          <Form
+            layout="vertical"
+            ref={filterRef}
+            initialValues={{
+              ...search,
+            }}
+          >
+            <Pane className="row">
+              <Pane className="col-lg-3">
+                <FormItem
+                  type={variables.INPUT_SEARCH}
+                  name="keyWord"
+                  onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
+                  placeholder="Nhập tên giáo cụ để tìm kiếm"
+                />
               </Pane>
-            </Form>
-
-            <Table
-              columns={columns}
-              dataSource={data}
-              loading={loading['criteriaTool/GET_DATA']}
-              isError={error.isError}
-              pagination={paginationProps}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
-          </Pane>
+            </Pane>
+          </Form>
+          <Table
+            columns={header()}
+            dataSource={data}
+            pagination={paginations(pagination)}
+            loading={loading['criteriaTool/GET_DATA']}
+            isError={error.isError}
+            params={{
+              header: header(),
+              type: 'table',
+            }}
+            bordered
+            rowKey={(record) => record.id}
+            scroll={{ x: '100%' }}
+          />
         </Pane>
       </Pane>
-    </>
+    </div>
   );
 });
 

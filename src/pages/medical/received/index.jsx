@@ -57,7 +57,7 @@ class Index extends PureComponent {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       dataYear: user ? user?.schoolYear : {},
       search: {
-        diseaseName: query?.diseaseName,
+        keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
@@ -549,8 +549,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="diseaseName"
-                    onChange={(event) => this.onChange(event, 'diseaseName')}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Nhập tên học sinh để tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
