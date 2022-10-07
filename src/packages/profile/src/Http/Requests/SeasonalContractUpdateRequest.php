@@ -60,8 +60,16 @@ class SeasonalContractUpdateRequest extends FormRequest
                         return $fail('Thời hạn từ phải lớn hơn thời hạn từ của hợp đồng thử việc gần nhất ' . $probationaryContract->ContractFrom->format('d-m-Y'));
                     }
 
-                    if (!is_null($labourContract) && $value <= $labourContract->ContractTo->format('Y-m-d')) {
-                        return $fail('Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng lao động gần nhất ' . $labourContract->ContractTo->format('d-m-Y'));
+                    if (!is_null($labourContract)) {
+                        $typeOfContract = $labourContract->typeOfContract;
+                        
+                        if (!is_null($typeOfContract) && $typeOfContract->Code =='VTH') {
+                            return $fail('Đã có hợp đồng lao động vô thời hạn, không được chỉnh sửa ngày hợp đồng đến hợp đồng thời vụ.');
+                        }
+                    
+                        if ($value <= $labourContract->ContractTo->format('Y-m-d')) {
+                            return $fail('Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng lao động gần nhất ' . $labourContract->ContractTo->format('d-m-Y'));
+                        }
                     }
                 },
             ],

@@ -340,7 +340,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
         $total = $salary + $allowance;
         $employee = $labourContract->employee;
-        
+
         $params = [
             'contractNumber' => $contractNumber,
             'dateNow' => $labourContract->ContractDate->format('d'),
@@ -452,8 +452,9 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
     public function previewProbationaryContractExportWord($id)
     {
+        $string = substr(uniqid(), 7);
         $probationaryContract = ProbationaryContract::findOrFail($id);
-        $fileName = $probationaryContract->Id . '.docx';
+        $fileName = $probationaryContract->Id . $string . '.docx';
         $filePath = $this->exportWord($id, 'url');
         $file = Storage::disk('local')->get($filePath);
 

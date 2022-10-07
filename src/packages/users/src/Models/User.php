@@ -15,6 +15,8 @@ use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
 use GGPHP\Profile\Models\AuthorizedPerson;
+use GGPHP\Profile\Models\HealthInsurance;
+use GGPHP\Profile\Models\Insurrance;
 use GGPHP\ResignationDecision\Models\ResignationDecision;
 use GGPHP\Salary\Models\PayrollSession;
 use GGPHP\Timekeeping\Models\Timekeeping;
@@ -372,5 +374,15 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function payrollSession()
     {
         return $this->hasMany(PayrollSession::class, 'EmployeeId');
+    }
+
+    public function insurance()
+    {
+        return $this->hasMany(Insurrance::class, 'EmployeeId');
+    }
+
+    public function healthInsurance()
+    {
+        return $this->hasOne(HealthInsurance::class, 'EmployeeId');
     }
 }

@@ -9,7 +9,7 @@ class HealthInsurance extends UuidModel
     protected $table = 'HealthInsurances';
 
     protected $fillable = [
-        'InsuranceNumber', 'MedicalTreatmentPlace', 'EmployeeId'
+        'InsuranceNumber', 'MedicalTreatmentPlace', 'EmployeeId', 'HospitalCode'
     ];
 
     public function employee()

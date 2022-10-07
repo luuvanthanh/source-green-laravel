@@ -618,9 +618,9 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             $positionRepresent = $represent->positionLevelNow ? $represent->positionLevelNow->position->Name : '';
         }
 
-        $liabilityAllowance = null;
+        $liabilityAllowance = 0;
         $parameterValues = $contract->parameterValues;
-        
+
         if (!empty($parameterValues)) {
             $liabilityAllowance = $parameterValues->map(function ($item) {
                 if ($item->Code == 'PC_TRACH_NHIEM') {
@@ -628,7 +628,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                 }
             })->sum();
         }
-        
+
         $params = [
             '${number_contract}' => $contract->OrdinalNumber ? $contract->OrdinalNumber . '/' . $contract->NumberForm : $contract->ContractNumber,
             '${date_contract}' => $contract->ContractDate->format('d-m-Y'),
@@ -649,34 +649,36 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             '${from}' => $contract->ContractFrom ? 'ngày ' . $contract->ContractFrom->format('d') . ' tháng ' . $contract->ContractFrom->format('m') . ' năm ' . $contract->ContractFrom->format('Y') : '........',
             '${phone}' => $employee->PhoneNumber,
             '${salary}' => number_format($contract->BasicSalary),
-            '${allowance}' => number_format($contract->TotalAllowance),
+            '${allowance}' => number_format($contract->TotalAllowance - $liabilityAllowance),
             '${liability_allowance}' => !is_null($liabilityAllowance) ? number_format($liabilityAllowance) : 0,
             '${total}' => number_format($contract->BasicSalary + $contract->TotalAllowance)
 
         ];
-        
+
         return $this->wordExporterServices->exportWord('contract_addendum', $params, $response);
     }
 
     public function previewLabourContractExportWord($id, $attributes)
     {
+        $string = substr(uniqid(), 7);
+
         $labourContract = LabourContract::findOrFail($id);
         if ($attributes['action'] == 'contract') {
             $filePath = $this->exportWord($id, 'url');
-            $fileName = $labourContract->Id . '-contract' . '.docx';
+            $fileName = $labourContract->Id . $string . '-contract' . '.docx';
         } elseif ($attributes['action'] == 'contract_authority') {
-            $fileName = $labourContract->Id . '-contract-authority' . '.docx';
+            $fileName = $labourContract->Id . $string . '-contract-authority' . '.docx';
             $filePath = $this->exportWordAuthority($id, 'url');
         } elseif ($attributes['action'] == 'contract_english') {
-            $fileName = $labourContract->Id . '-contract-english' . '.docx';
+            $fileName = $labourContract->Id . $string . '-contract-english' . '.docx';
             $filePath = $this->exportWordEnglish($id, 'url');
         } elseif ($attributes['action'] == 'contract_addendum') {
-            $fileName = $labourContract->Id . '-contract-addendum' . '.docx';
+            $fileName = $labourContract->Id . $string . '-contract-addendum' . '.docx';
             $filePath = $this->contractAddendum($id, 'url');
         }
 
         $file = Storage::disk('local')->get($filePath);
-        
+
         Storage::disk('local')->put('public/files/' . $fileName, $file);
 
         return [
