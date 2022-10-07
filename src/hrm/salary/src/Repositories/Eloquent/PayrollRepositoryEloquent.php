@@ -2,11 +2,15 @@
 
 namespace GGPHP\Salary\Repositories\Eloquent;
 
+use alhimik1986\PhpExcelTemplator\params\CallbackParam;
+use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
 use GGPHP\BusRegistration\Repositories\Eloquent\BusRegistrationRepositoryEloquent;
+use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Category\Models\ParamaterFormula;
 use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Category\Models\ParameterTax;
+use GGPHP\Core\Models\CoreModel;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\OtherDeclaration\Models\OtherDeclaration;
@@ -16,13 +20,10 @@ use GGPHP\Salary\Presenters\PayrollPresenter;
 use GGPHP\Salary\Repositories\Contracts\PayrollRepository;
 use GGPHP\Timekeeping\Repositories\Eloquent\TimekeepingRepositoryEloquent;
 use GGPHP\Users\Models\User;
-use Illuminate\Container\Container as Application;
-use Prettus\Repository\Criteria\RequestCriteria;
-use alhimik1986\PhpExcelTemplator\params\CallbackParam;
-use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
-use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\WorkHour\Repositories\Eloquent\WorkHourRepositoryEloquent;
+use Illuminate\Container\Container as Application;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -32,6 +33,15 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements PayrollRepository
 {
+    const CODE_BUS = 'PC_BUS';
+    const NAME_BUS = 'Phụ cấp bus';
+    const LUONG_CTV_NN_KHOAN = 'LUONG_CTV_NN_KHOAN';
+    const LUONG_CTV_NN_NGAY = 'LUONG_CTV_NN_NGAY';
+    const TRUY_LINH = 'TRUY_LINH';
+    const LUONG_CB = 'LUONG_CB';
+    const LUONG_CTV_VN_KHOAN = 'LUONG_CTV_VN_KHOAN';
+    const LUONG_CTV_VN_NGAY = 'LUONG_CTV_VN_NGAY';
+
     protected $fieldSearchable = [
         'Id',
         'CreationTime',
@@ -40,15 +50,17 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
     public function __construct(
         ExcelExporterServices $excelExporterServices,
         TimekeepingRepositoryEloquent $timekeepingRepositoryEloquent,
-        // BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
+        BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
         WorkHourRepositoryEloquent $workHourRepositoryEloquent,
-        Application $app
+        Application $app,
+        CoreModel $core
     ) {
         parent::__construct($app);
         $this->excelExporterServices = $excelExporterServices;
-        // $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
+        $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
         $this->timekeepingRepositoryEloquent = $timekeepingRepositoryEloquent;
         $this->workHourRepositoryEloquent = $workHourRepositoryEloquent;
+        $this->core = $core;
     }
 
     /**
@@ -93,6 +105,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $employeeId = explode(',', $attributes['employeeId']);
                     $q2->whereIn('Id', $employeeId);
                 }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+                    $q2->where('IsForeigner', true);
+                }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+                    $q2->where('IsForeigner', false);
+                }
             });
         }])->first();
 
@@ -108,13 +128,22 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $payroll = Payroll::findOrFail($attributes['id']);
         $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
         $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
-
         $dataInsert = [];
         $numberOfWorkdays = 0;
         $columnBasicSalaryAndAllowance = [];
         $columnIncurredAllowance = [];
 
-        $employees = User::where('Status', User::STATUS['WORKING'])->get();
+        $employees = User::where('Status', User::STATUS['WORKING'])->whereHas('workHours', function ($query) use ($startDate, $endDate) {
+            $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
+        })->orWhereHas('manualCalculation', function ($query) use ($startDate, $endDate) {
+            $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
+        })->whereHas('labourContract', function ($q1) use ($startDate, $endDate) {
+            $q1->where([['ContractFrom', '<=', $endDate], ['ContractTo', '>=', $startDate]]);
+        })->orWhereHas('probationaryContract', function ($q2) use ($endDate, $startDate) {
+            $q2->where([['ContractFrom', '<=', $endDate], ['ContractTo', '>=', $startDate]]);
+        })->orWhereHas('labourContract', function ($q3) use ($endDate) {
+            $q3->where('ContractFrom', '>=', $endDate);
+        })->get();
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
 
@@ -179,13 +208,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
-        $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+        $parameter['SO_NGUOIPHUTHUOC'] = $dependentPerson;
         $isSocialInsurance = false;
 
         $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
             'startDate' => $startDate,
             'endDate' => $endDate,
         ])->totalWorks;
+
         $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail->where('EmployeeId', $employee->Id)->first();
 
         $overtime = $this->workHourRepositoryEloquent->calculatorWorkHourReport($employee, $holiday);
@@ -223,56 +253,40 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $isMaternity = true;
         }
 
-        if (!is_null($otherDeclarationDetail)) {
-            if (!is_null($otherDeclarationDetail->Detail)) {
-                $incurredAllowance = json_decode($otherDeclarationDetail->Detail);
-                foreach ($incurredAllowance as $itemIncurredAllowance) {
-                    $value = isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
+        $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ])->totalBusRegistration;
 
-                    if ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_NLD') {
-                        $parameter['DIEU_CHINH_BHXH_NLD'] = $value;
-                        $socialInsuranceAdjustedEmployee = $value;
-                    } elseif ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_CTT') {
-                        $parameter['DIEU_CHINH_BHXH_CTT'] = $value;
-                        $socialInsuranceAdjustedCompany = $value;
-                    } elseif ($itemIncurredAllowance->code === 'DONG_GOP_TU_THIEN') {
-                        $parameter['DONG_GOP_TU_THIEN'] = $value;
-                        $charity = $value;
-                    } elseif ($itemIncurredAllowance->code === 'THANH_TOAN_TU_BHXH') {
-                        $parameter['THANH_TOAN_TU_BHXH'] = $value;
-                        $socialInsurancePayment = $value;
-                    } elseif ($itemIncurredAllowance->code === 'SO_TIEN_TAM_UNG') {
-                        $parameter['SO_TIEN_TAM_UNG'] = $value;
-                        $advance = $value;
-                    } elseif (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
-                        $columnIncurredAllowance[$itemIncurredAllowance->code] = [
-                            'code' => $itemIncurredAllowance->code,
-                            'name' => $itemIncurredAllowance->name,
-                        ];
-                    }
+        $contract = $employee->labourContract()->where(function ($q1) use ($month) {
+            $q1->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month);
+        })->orWhere(function ($q2) use ($month) {
+            $q2->where('ContractFrom', '<=', $month)->where('ContractTo', null);
+        })->orderBy('CreationTime', 'DESC')->first();
 
-                    $parameter[$itemIncurredAllowance->code] = isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
-                }
-            }
-        }
-
-        $incurredAllowance = json_encode($incurredAllowance);
-
-        $totalBusRegistration = 0;
-        // $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
-        //     'startDate' => $startDate,
-        //     'endDate' => $endDate,
-        // ])->totalBusRegistration;
-
-        $isProbation = false;
-
-        $contract = $employee->labourContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
         if (is_null($contract)) {
             $contract = $employee->probationaryContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
             if (!is_null($contract)) {
                 $isProbation = true;
             }
         }
+
+        // phụ cấp xe bus
+        $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
+        $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
+
+        $busAllowance = 0;
+        $formularBusAllowance = ParamaterFormula::where('Code', 'PC_BUS')->first();
+
+        if (!is_null($formularBusAllowance) && !is_null($contract)) {
+            $busAllowance = $this->getFormular(json_decode($formularBusAllowance->Recipe), $contract, $parameter);
+            $busAllowance = eval('return ' . $busAllowance . ';');
+        }
+
+        $parameter['PC_BUS'] = $busAllowance;
+
+        $isProbation = false;
+
         $dateStartWork = null;
 
         if (!is_null($contract) && $totalWorks > 0) {
@@ -280,9 +294,68 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
             $parameterValues = $contract->parameterValues;
 
-            $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
-            $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
+
             $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = $totalWorks;
+
+            if (!is_null($otherDeclarationDetail)) {
+                if (!is_null($otherDeclarationDetail->Detail)) {
+                    $incurredAllowance = json_decode($otherDeclarationDetail->Detail);
+
+                    foreach ($incurredAllowance as $itemIncurredAllowance) {
+                        $value = isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
+
+                        if ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_NLD') {
+                            $parameter['DIEU_CHINH_BHXH_NLD'] = $value;
+                            $socialInsuranceAdjustedEmployee = $value;
+                        } elseif ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_CTT') {
+                            $parameter['DIEU_CHINH_BHXH_CTT'] = $value;
+                            $socialInsuranceAdjustedCompany = $value;
+                        } elseif ($itemIncurredAllowance->code === 'DONG_GOP_TU_THIEN') {
+                            $parameter['DONG_GOP_TU_THIEN'] = $value;
+                            $charity = $value;
+                        } elseif ($itemIncurredAllowance->code === 'THANH_TOAN_TU_BHXH') {
+                            $parameter['THANH_TOAN_TU_BHXH'] = $value;
+                            $socialInsurancePayment = $value;
+                        } elseif ($itemIncurredAllowance->code === 'SO_TIEN_TAM_UNG') {
+                            $parameter['SO_TIEN_TAM_UNG'] = $value;
+                            $advance = $value;
+                        } elseif ($itemIncurredAllowance->code === 'SO_GIO_DI_XE_BUS') {
+
+                            $columnIncurredAllowance[$itemIncurredAllowance->code] = [
+                                'code' => $itemIncurredAllowance->code,
+                                'name' => $itemIncurredAllowance->name,
+                            ];
+
+                            $columnIncurredAllowance['PC_BUS'] = [
+                                'code' => 'PC_BUS',
+                                'name' => 'Phụ cấp bus',
+                            ];
+                            $item = array_search('SO_GIO_DI_XE_BUS', array_column($incurredAllowance, 'code'));
+                            $incurredAllowance[$item]->value = $totalBusRegistration;
+
+                            $incurredAllowance[] = (object)[
+                                'code' => self::CODE_BUS,
+                                'name' => self::NAME_BUS,
+                                'applyDate' => $itemIncurredAllowance->applyDate,
+                                'valueDefault' => $busAllowance,
+                                'note' => $itemIncurredAllowance->note,
+                                'type' => $itemIncurredAllowance->type,
+                                'value' => $busAllowance
+                            ];
+                        } elseif (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
+                            $columnIncurredAllowance[$itemIncurredAllowance->code] = [
+                                'code' => $itemIncurredAllowance->code,
+                                'name' => $itemIncurredAllowance->name,
+                            ];
+                        }
+
+
+                        $parameter[$itemIncurredAllowance->code] = isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
+                    }
+                }
+            }
+
+            $incurredAllowance = json_encode($incurredAllowance);
 
             //Lương cơ bản và phụ cấp
             $basicSalaryAndAllowance = [];
@@ -347,33 +420,46 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
             //bhxh nld
             $socialInsuranceEmployee = 0;
-            $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
 
-            if (!is_null($formularSocialInsuranceEmployee)) {
-                $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
-                $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+            if (!$isSocialInsurance) {
+                $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
+
+                if (!is_null($formularSocialInsuranceEmployee)) {
+                    $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
+                    $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+                }
             }
             $parameter['BHXH_NLD'] = $socialInsuranceEmployee;
 
             //bhyt nld
             $healthInsuranceEmployee = 0;
-            $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
 
-            if (!is_null($formularHealthInsuranceEmployee)) {
-                $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
-                $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+            if (!$isSocialInsurance) {
+                $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
+
+                if (!is_null($formularHealthInsuranceEmployee)) {
+                    $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
+                    $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+                }
             }
             $parameter['BHYT_NLD'] = $healthInsuranceEmployee;
 
             //bhtn nld
             $unemploymentInsuranceEmployee = 0;
-            $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
 
-            if (!is_null($formularUnemploymentInsuranceEmployee)) {
-                $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
-                $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+            if (!$isSocialInsurance) {
+                $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
+
+                if (!is_null($formularUnemploymentInsuranceEmployee)) {
+                    $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
+                    $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+                }
             }
             $parameter['BHTN_NLD'] = $unemploymentInsuranceEmployee;
+
+            if (!$isSocialInsurance) {
+                $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
+            }
 
             //Tổng bh nld
             $totalEmployeeInsurance = 0;
@@ -387,42 +473,59 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
             //bhxh cty
             $socialInsuranceCompany = 0;
-            $formularSocialInsuranceCompany = ParamaterFormula::where('Code', 'BHXH_CTT')->first();
 
-            if (!is_null($formularSocialInsuranceCompany)) {
-                $socialInsuranceCompany = $this->getFormular(json_decode($formularSocialInsuranceCompany->Recipe), $contract, $parameter);
-                $socialInsuranceCompany = eval('return ' . $socialInsuranceCompany . ';');
+            if (!$isSocialInsurance) {
+                $formularSocialInsuranceCompany = ParamaterFormula::where('Code', 'BHXH_CTT')->first();
+
+                if (!is_null($formularSocialInsuranceCompany)) {
+                    $socialInsuranceCompany = $this->getFormular(json_decode($formularSocialInsuranceCompany->Recipe), $contract, $parameter);
+                    $socialInsuranceCompany = eval('return ' . $socialInsuranceCompany . ';');
+                }
             }
+
             $parameter['BHXH_CTT'] = $socialInsuranceCompany;
 
             //bhyt cty
             $healthInsuranceCompany = 0;
-            $formularHealthInsuranceCompany = ParamaterFormula::where('Code', 'BHYT_CTT')->first();
 
-            if (!is_null($formularHealthInsuranceCompany)) {
-                $healthInsuranceCompany = $this->getFormular(json_decode($formularHealthInsuranceCompany->Recipe), $contract, $parameter);
-                $healthInsuranceCompany = eval('return ' . $healthInsuranceCompany . ';');
+            if (!$isSocialInsurance) {
+                $formularHealthInsuranceCompany = ParamaterFormula::where('Code', 'BHYT_CTT')->first();
+
+                if (!is_null($formularHealthInsuranceCompany)) {
+                    $healthInsuranceCompany = $this->getFormular(json_decode($formularHealthInsuranceCompany->Recipe), $contract, $parameter);
+                    $healthInsuranceCompany = eval('return ' . $healthInsuranceCompany . ';');
+                }
             }
+
             $parameter['BHYT_CTT'] = $healthInsuranceCompany;
 
             //bhtn cty
             $unemploymentInsuranceCompany = 0;
-            $formularUnemploymentInsuranceCompany = ParamaterFormula::where('Code', 'BHTN_CTT')->first();
 
-            if (!is_null($formularUnemploymentInsuranceCompany)) {
-                $unemploymentInsuranceCompany = $this->getFormular(json_decode($formularUnemploymentInsuranceCompany->Recipe), $contract, $parameter);
-                $unemploymentInsuranceCompany = eval('return ' . $unemploymentInsuranceCompany . ';');
+            if (!$isSocialInsurance) {
+                $formularUnemploymentInsuranceCompany = ParamaterFormula::where('Code', 'BHTN_CTT')->first();
+
+                if (!is_null($formularUnemploymentInsuranceCompany)) {
+                    $unemploymentInsuranceCompany = $this->getFormular(json_decode($formularUnemploymentInsuranceCompany->Recipe), $contract, $parameter);
+                    $unemploymentInsuranceCompany = eval('return ' . $unemploymentInsuranceCompany . ';');
+                }
             }
             $parameter['BHTN_CTT'] = $unemploymentInsuranceCompany;
 
+            if (!$isSocialInsurance) {
+                $parameter['DIEU_CHINH_BHXH_CTT'] = 0;
+            }
+
             //Tổng bh cty
             $totalCompanyInsurance = 0;
+
             $formularTotalCompanyInsurance = ParamaterFormula::where('Code', 'TONG_BH_CTT')->first();
 
             if (!is_null($formularTotalCompanyInsurance)) {
                 $totalCompanyInsurance = $this->getFormular(json_decode($formularTotalCompanyInsurance->Recipe), $contract, $parameter);
                 $totalCompanyInsurance = eval('return ' . $totalCompanyInsurance . ';');
             }
+
             $parameter['TONG_BH_CTT'] = $totalCompanyInsurance;
 
             //phí công đoàn
@@ -434,16 +537,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $unionDues = eval('return ' . $unionDues . ';');
             }
             $parameter['PHI_CONG_DOAN'] = $unionDues;
-
-            // phụ cấp xe bus
-            $busAllowance = 0;
-            $formularBusAllowance = ParamaterFormula::where('Code', 'PC_BUS')->first();
-
-            if (!is_null($formularBusAllowance)) {
-                $busAllowance = $this->getFormular(json_decode($formularBusAllowance->Recipe), $contract, $parameter);
-                $busAllowance = eval('return ' . $busAllowance . ';');
-            }
-            $parameter['PC_BUS'] = $busAllowance;
 
             // phụ cấp theo hd
             $contractAllowance = 0;
@@ -610,6 +703,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'OtWeekday' => $otWeekday,
                 'OtWeekend' => $otWeekend,
                 'OtHoliday' => $otHoliday,
+                'BusAllowance' => $busAllowance,
+                'TotalBusRegistration' => $totalBusRegistration
             ];
         }
 
@@ -622,7 +717,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
-        $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+        $parameter['SO_NGUOIPHUTHUOC'] = $dependentPerson;
         $isSocialInsurance = false;
 
         $overtime = $this->workHourRepositoryEloquent->calculatorWorkHourReport($employee, $holiday);
@@ -757,33 +852,43 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
                 //bhxh nld
                 $socialInsuranceEmployee = 0;
-                $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
+                if (!$isSocialInsurance) {
+                    $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
 
-                if (!is_null($formularSocialInsuranceEmployee)) {
-                    $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
-                    $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+                    if (!is_null($formularSocialInsuranceEmployee)) {
+                        $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
+                        $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+                    }
                 }
                 $parameter['BHXH_NLD'] = $socialInsuranceEmployee;
 
                 //bhyt nld
                 $healthInsuranceEmployee = 0;
-                $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
+                if (!$isSocialInsurance) {
+                    $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
 
-                if (!is_null($formularHealthInsuranceEmployee)) {
-                    $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
-                    $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+                    if (!is_null($formularHealthInsuranceEmployee)) {
+                        $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
+                        $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+                    }
                 }
                 $parameter['BHYT_NLD'] = $healthInsuranceEmployee;
 
                 //bhtn nld
                 $unemploymentInsuranceEmployee = 0;
-                $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
+                if (!$isSocialInsurance) {
+                    $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
 
-                if (!is_null($formularUnemploymentInsuranceEmployee)) {
-                    $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
-                    $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+                    if (!is_null($formularUnemploymentInsuranceEmployee)) {
+                        $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
+                        $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+                    }
                 }
                 $parameter['BHTN_NLD'] = $unemploymentInsuranceEmployee;
+
+                if (!$isSocialInsurance) {
+                    $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
+                }
 
                 //Tổng bh nld
                 $totalEmployeeInsurance = 0;
@@ -902,6 +1007,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'OtWeekday' => $otWeekday,
                     'OtWeekend' => $otWeekend,
                     'OtHoliday' => $otHoliday,
+                    'BusAllowance' => $busAllowance,
+                    'TotalBusRegistration' => $totalBusRegistration
                 ];
             }
         } else {
@@ -1154,11 +1261,12 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'OtWeekday' => $otWeekday,
                     'OtWeekend' => $otWeekend,
                     'OtHoliday' => $otHoliday,
+                    'BusAllowance' => $busAllowance,
+                    'TotalBusRegistration' => $totalBusRegistration
 
                 ];
             }
         }
-
         return true;
     }
 
@@ -1255,6 +1363,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $employeeId = explode(',', $attributes['employeeId']);
                     $q2->whereIn('Id', $employeeId);
                 }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+                    $q2->where('IsForeigner', $attributes['salaryForeigner']);
+                }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+                    $q2->where('IsForeigner', $attributes['salaryForeigner']);
+                }
             });
         }])->first();
         $params = [];
@@ -1318,7 +1434,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $basicSalaryAllowance[] = $basicSalaryAllowanceValue->name;
             $bsa[] = "Lương cơ bản + Phụ Cấp";
 
-            if (!array_key_exists($basicSalaryAllowanceValue->code, $totalBsa)) {
+            if (!array_key_exists($basicSalaryAllowanceValue->name, $totalBsa)) {
                 $totalBsa[$basicSalaryAllowanceValue->code] = 0;
             }
         }
@@ -1330,13 +1446,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $columnIncurredAllowance = [];
         $ai = [];
         $totalAi = [];
+
         if (!empty(json_decode($payroll->ColumnIncurredAllowance))) {
 
             foreach (json_decode($payroll->ColumnIncurredAllowance) as $columnIncurredAllowanceValue) {
                 $columnIncurredAllowance[] = $columnIncurredAllowanceValue->name;
                 $ai[] = "Phụ cấp phát sinh trong tháng";
 
-                if (!array_key_exists($columnIncurredAllowanceValue->code, $totalAi)) {
+                if (!array_key_exists($columnIncurredAllowanceValue->name, $totalAi)) {
                     $totalAi[$columnIncurredAllowanceValue->code] = 0;
                 }
             }
@@ -1451,9 +1568,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $keyBasicSalaryAllowance = array_search($value, array_column($basicSalaryAllowanceEmployee, 'name'));
 
                 if ($keyBasicSalaryAllowance) {
-                    $valueBasicSalaryAllowance[] = $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value;
+                    $valueBasicSalaryAllowance[] = $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value ?? 0;
 
-                    $totalBsa[$basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->code] += $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value;
+                    $totalBsa[$basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->code] += $basicSalaryAllowanceEmployee[$keyBasicSalaryAllowance]->value ?? 0;
                 } else {
                     $valueBasicSalaryAllowance[] = 0;
                 };
@@ -1461,13 +1578,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
             $incurredAllowanceEmployee = json_decode($payrollDetail->IncurredAllowance);
             $valueIncurredAllowance = [];
+
             foreach ($columnIncurredAllowance as $value) {
                 $keyColumnIncurredAllowance = array_search($value, array_column($incurredAllowanceEmployee, 'name'));
 
                 if ($keyColumnIncurredAllowance) {
-                    $valueIncurredAllowance[] = $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value;
+                    $valueIncurredAllowance[] = $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value ?? 0;
 
-                    $totalAi[$incurredAllowanceEmployee[$keyColumnIncurredAllowance]->code] += $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value;
+                    $totalAi[$incurredAllowanceEmployee[$keyColumnIncurredAllowance]->code] += $incurredAllowanceEmployee[$keyColumnIncurredAllowance]->value ?? 0;
                 } else {
                     $valueIncurredAllowance[] = 0;
                 };
@@ -1574,7 +1692,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $params['{total_social_insurance_payment}'] = number_format($total_social_insurance_payment);
         $params['{total_advance}'] = number_format($total_advance);
         $params['{total_actually_received}'] = number_format($total_actually_received);
-
         $endColumnBasicSalaryAllowance = null;
         $listMerge = [];
         $callbacks = [
@@ -2283,6 +2400,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             '[[total_value_allowances_incurred]]' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
+                $sheet->getStyle($cell_coordinate)->getNumberFormat()
+                    ->setFormatCode('#,##0');
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
                 $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
@@ -2540,7 +2659,1023 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             },
 
         ];
-        // dd($params);
-        return $this->excelExporterServices->export('salary_month', $params, $callbacks, $events);
+
+        if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+            return $this->excelExporterServices->export('salary_month_foreigner', $params, $callbacks, $events);
+        } elseif (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+            return $this->excelExporterServices->export('salary_month', $params, $callbacks, $events);
+        }
+    }
+
+    public function exportSalaryPaymentTemplate($attributes)
+    {
+        dd(1);
+        $payrolls = $this->payrollEmployeeByBranch($attributes);
+
+        $params = [];
+        $params['{month}'] = Carbon::parse($payrolls['month'])->format('m.Y');
+        $params['[stt]'] = [];
+        $params['[full_name]'] = [];
+        $params['[cash]'] = [];
+        $params['[payment]'] = [];
+        $params['{time}'] = 'Ngày' . '    ' . 'tháng ' . Carbon::parse($payrolls['month'])->format('m') . ' Năm ' . Carbon::parse($payrolls['month'])->format('Y');
+        unset($payrolls['month']);
+        $totalCash = 0;
+        $totalPayment = 0;
+        foreach ($payrolls as $payroll) {
+            $totalActuallyReceivedCash = 0;
+            $totalActuallyReceivedPayment = 0;
+            foreach ($payroll as $key => $value) {
+                $totalActuallyReceivedCash += !is_null($value['bank_number_of_account']) ? 0 : $value['actually_received'];
+                $totalActuallyReceivedPayment += !is_null($value['bank_number_of_account']) ? $value['actually_received'] : 0;
+                $params['[stt]'][] += $key + 1;
+                $params['[full_name]'][] = $value['employee'];
+                $params['[cash]'][] = !is_null($value['bank_number_of_account']) ? 0 : $value['actually_received'];
+                $params['[payment]'][] = !is_null($value['bank_number_of_account']) ? $value['actually_received'] : 0;
+            }
+
+            $params['[stt]'][] = 'TỔNG TIỀN LƯƠNG ' . strtoupper($value['branch_name']) . ',merge';
+            $params['[full_name]'][] = '';
+            $params['[cash]'][] = $totalActuallyReceivedCash . ',bold';
+            $params['[payment]'][] = $totalActuallyReceivedPayment . ',bold';
+            $totalCash += $totalActuallyReceivedCash;
+            $totalPayment += $totalActuallyReceivedPayment;
+        }
+        $params['[stt]'][] = 'TỔNG CỘNG' . ',merge_total';
+        $params['[full_name]'][] = '';
+        $params['[cash]'][] = $totalCash . ',bold_total';
+        $params['[payment]'][] = $totalPayment . ',bold_total';
+
+        $listMerge = [];
+        $callbacks = [
+            '[stt]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+                $value = explode(',', $value);
+                if ($value[count($value) - 1] == 'merge') {
+                    $merge = $cell_coordinate . ':' . 'B' . $currentRow;
+                    $listMerge[] = $merge;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($merge)->getAlignment()->setHorizontal('left');
+                    $sheet->getStyle($merge)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('FF1600'));
+                }
+
+                if ($value[count($value) - 1] == 'merge_total') {
+                    $merge = $cell_coordinate . ':' . 'B' . $currentRow;
+                    $listMerge[] = $merge;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($merge)->getAlignment()->setHorizontal('left');
+                    $sheet->getStyle($merge)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[cash]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+                $value = explode(',', $value);
+
+                if ($value[count($value) - 1] == 'bold') {
+                    $bold = $cell_coordinate . ':' . 'D' . $currentRow;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($bold)->getAlignment()->setHorizontal('right');
+                    $sheet->getStyle($bold)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('FF1600'));
+                }
+
+                if ($value[count($value) - 1] == 'bold_total') {
+                    $bold = $cell_coordinate . ':' . 'D' . $currentRow;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($bold)->getAlignment()->setHorizontal('right');
+                    $sheet->getStyle($bold)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[payment]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+                $value = explode(',', $value);
+
+                if ($value[count($value) - 1] == 'bold') {
+                    $bold = $cell_coordinate . ':' . 'D' . $currentRow;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($bold)->getAlignment()->setHorizontal('right');
+                    $sheet->getStyle($bold)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('FF1600'));
+                }
+
+                if ($value[count($value) - 1] == 'bold_total') {
+                    $bold = $cell_coordinate . ':' . 'D' . $currentRow;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($bold)->getAlignment()->setHorizontal('right');
+                    $sheet->getStyle($bold)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            }
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge) {
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+            },
+        ];
+
+        if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+            return $this->excelExporterServices->export('salary_payment_template_foreigner', $params, $callbacks, $events);
+        } elseif (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+            return $this->excelExporterServices->export('salary_payment_template', $params, $callbacks, $events);
+        }
+    }
+
+    public function payrollEmployeeByBranch($attributes)
+    {
+        $result = [];
+        $payroll = Payroll::where('Id', $attributes['id'])->with(['payrollDetail' => function ($query) use ($attributes) {
+            $query->whereHas('employee', function ($q2) use ($attributes) {
+                $q2->tranferHistory($attributes);
+
+                if (!empty($attributes['fullName'])) {
+                    $q2->whereLike('FullName', $attributes['fullName']);
+                }
+
+                if (!empty($attributes['employeeId'])) {
+                    $employeeId = explode(',', $attributes['employeeId']);
+                    $q2->whereIn('Id', $employeeId);
+                }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+                    $q2->where('IsForeigner', true);
+                }
+
+                if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+                    $q2->where('IsForeigner', false);
+                }
+            });
+        }])->first();
+        $result['month'] = $payroll->Month;
+        $payrollDetails = $payroll->payrollDetail;
+
+        foreach ($payrollDetails as $payrollDetail) {
+            $employee = $payrollDetail->employee;
+
+            $positionLevelNow = $employee->positionLevelNow;
+
+            $branch = $positionLevelNow->branch;
+
+            if (array_key_exists($branch->id, $result)) {
+                $result[$branch->Id][] = [
+                    'branch_name' => $branch->Name,
+                    'employee' => $employee->FullName,
+                    'employee_code' => $employee->Code,
+                    'bank_number_of_account' => $employee->BankNumberOfAccount,
+                    'bank_name' => $employee->BankName,
+                    'actually_received' => $payrollDetail->ActuallyReceived
+                ];
+            } else {
+                $result[$branch->Id][] = [
+                    'branch_name' => $branch->Name,
+                    'employee' => $employee->FullName,
+                    'employee_code' => $employee->Code,
+                    'bank_number_of_account' => $employee->BankNumberOfAccount,
+                    'bank_name' => $employee->BankName,
+                    'actually_received' => $payrollDetail->ActuallyReceived
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    public function exportSalaryTemplateGoToBank($attributes)
+    {
+        $payrolls = $this->payrollEmployeeByBranch($attributes);
+
+        $params = [];
+        $params['{month}'] = Carbon::parse($payrolls['month'])->format('m.Y');
+        $params['[stt]'] = [];
+        $params['[code]'] = [];
+        $params['[full_name]'] = [];
+        $params['[bank_number_of_account]'] = [];
+        $params['[bank_name]'] = [];
+        $params['[actually_received]'] = [];
+        $params['[note]'] = [];
+        $params['{time}'] = 'Ngày' . '    ' . 'tháng ' . Carbon::parse($payrolls['month'])->format('m') . ' Năm ' . Carbon::parse($payrolls['month'])->format('Y');
+        unset($payrolls['month']);
+        $totalSalary = 0;
+        foreach ($payrolls as $payroll) {
+            $totalActuallyReceivedByBranch = 0;
+            foreach ($payroll as $key => $value) {
+                if (!is_null($value['bank_number_of_account']) && !is_null($value['bank_name'])) {
+                    $totalActuallyReceivedByBranch += $value['actually_received'];
+                    $params['[stt]'][] += $key + 1;
+                    $params['[code]'][] = $value['employee_code'];
+                    $params['[full_name]'][] = $value['employee'];
+                    $params['[bank_number_of_account]'][] = $value['bank_number_of_account'];
+                    $params['[bank_name]'][] = $value['bank_name'];
+                    $params['[actually_received]'][] = $value['actually_received'];
+                    $params['[note]'][] = $this->core->convert_vi_to_en($value['employee']);
+                }
+            }
+
+            $params['[stt]'][] = 'TOTAL ' . strtoupper($value['branch_name']) . ',merge';
+            $params['[code]'][] = '';
+            $params['[full_name]'][] = 'fill_style';
+            $params['[bank_number_of_account]'][] = 'fill_style';
+            $params['[bank_name]'][] = 'fill_style';
+            $params['[actually_received]'][] = $totalActuallyReceivedByBranch . ',bold';
+            $params['[note]'][] = 'fill_style';
+            $totalSalary += $totalActuallyReceivedByBranch;
+        }
+        $params['[stt]'][] = 'TỔNG CỘNG' . ',merge_total';
+        $params['[code]'][] = '';
+        $params['[full_name]'][] = 'fill_style_total';
+        $params['[bank_number_of_account]'][] = 'fill_style_total';
+        $params['[bank_name]'][] = 'fill_style_total';
+        $params['[actually_received]'][] = $totalSalary . ',bold_total';
+        $params['[note]'][] = 'fill_style_total';
+
+        $listMerge = [];
+        $callbacks = [
+            '[stt]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+                $value = explode(',', $value);
+                if ($value[count($value) - 1] == 'merge') {
+                    $merge = $cell_coordinate . ':' . 'B' . $currentRow;
+                    $listMerge[] = $merge;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($merge)->getAlignment()->setHorizontal('left');
+                    $sheet->getStyle($merge)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('FF1600'));
+                }
+
+                if ($value[count($value) - 1] == 'merge_total') {
+                    $merge = $cell_coordinate . ':' . 'B' . $currentRow;
+                    $listMerge[] = $merge;
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($merge)->getAlignment()->setHorizontal('left');
+                    $sheet->getStyle($merge)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[full_name]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'fill_style') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                }
+
+                if ($value == 'fill_style_total') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[bank_number_of_account]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'fill_style') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                }
+
+                if ($value == 'fill_style_total') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[bank_name]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'fill_style') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                }
+
+                if ($value == 'fill_style_total') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[actually_received]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+                $value = explode(',', $value);
+
+                if ($value[count($value) - 1] == 'bold') {
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('FF1600'));
+                }
+
+                if ($value[count($value) - 1] == 'bold_total') {
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                    $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            },
+            '[note]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'fill_style') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('B8CCE4');
+                }
+
+                if ($value == 'fill_style_total') {
+                    $sheet->getCell($cell_coordinate)->setValue('');
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FCD5B5');
+                }
+            }
+
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge) {
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+            },
+        ];
+
+        if (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'true') {
+            return $this->excelExporterServices->export('salary_template_go_to_bank_foreigner', $params, $callbacks, $events);
+        } elseif (!empty($attributes['salaryForeigner']) && $attributes['salaryForeigner'] == 'false') {
+            return $this->excelExporterServices->export('salary_template_go_to_bank', $params, $callbacks, $events);
+        }
+    }
+
+    public function payRollSessionForeigner($attributes)
+    {
+        $payroll = Payroll::findOrFail($attributes['id']);
+        $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
+        $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+        $parameter = [];
+
+        $employees = User::where('Status', User::STATUS['WORKING'])->where('IsForeigner', true)
+            ->whereHas('seasonalContract', function ($q1) use ($startDate, $endDate) {
+                $q1->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
+            })->get();
+
+        $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
+
+        if (!is_null($otherDeclaration)) {
+            foreach ($employees as $employee) {
+                $seasonalContract = $employee->seasonalContract()->where('ContractFrom', '<=', $startDate)->where('ContractTo', '>=', $endDate)->first();
+                $parameterValues = $seasonalContract->parameterValues()->where('Code', self::LUONG_CTV_NN_NGAY)->orWhere('Code', self::LUONG_CTV_NN_KHOAN)->first();
+
+                $numberOfWorkdays = $otherDeclaration->NumberOfWorkdays;
+                $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                ])->totalWorks;
+
+                $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = $totalWorks;
+                $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
+                if (!is_null($parameterValues)) {
+
+                    $actuallyReceived = 0;
+                    $paramaterFormula = ParamaterFormula::where('Code', 'TN_CTV_NN')->first();
+
+                    if (!is_null($paramaterFormula)) {
+                        $actuallyReceived = $this->getFormular(json_decode($paramaterFormula->Recipe), $seasonalContract, $parameter);
+                        $actuallyReceived = eval('return ' . $actuallyReceived . ';');
+                    }
+
+                    $defineValueTax = ParamaterValue::where('Code', 'MUC_DONG_THUE_CTV_NN')->first();
+
+                    $data['EmployeeId'] = $employee->Id;
+                    $data['BasicSalary'] = $parameterValues->pivot->Value;
+                    $data['WorkDay'] = $totalWorks;
+                    $data['Allowance'] = 0;
+                    $data['PersonalIncomeTax'] = 0;
+                    $data['TaxPayment'] = 0;
+                    $data['ValueSalary'] = $actuallyReceived;
+                    $data['Deduction'] = 0;
+
+                    if (!is_null($defineValueTax) && $actuallyReceived > $defineValueTax->ValueDefault) {
+                        $data['PersonalIncomeTax'] = $actuallyReceived;
+                        $data['TaxPayment'] = $actuallyReceived * 0.1;
+                    }
+
+                    $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail()->where('EmployeeId', $employee->Id)->first();
+
+                    if (!is_null($otherDeclarationDetail)) {
+                        $arrDetail = json_decode($otherDeclarationDetail->Detail, true);
+                        $checkCode = array_search(self::TRUY_LINH, array_column($arrDetail, 'code'));
+
+                        if ($checkCode !== false) {
+                            $data['Deduction'] = $arrDetail[$checkCode]['valueDefault'];
+                        }
+                    }
+                    $data['TotalIncome'] = $actuallyReceived + $data['Deduction'] - $data['TaxPayment'];
+                } else {
+                    $data['EmployeeId'] = $employee->Id;
+                    $data['BasicSalary'] = 0;
+                    $data['WorkDay'] = $totalWorks;
+                    $data['Allowance'] = 0;
+                    $data['PersonalIncomeTax'] = 0;
+                    $data['TaxPayment'] = 0;
+                    $data['Deduction'] = 0;
+                    $data['TotalIncome'] = 0;
+                    $data['ValueSalary'] = 0;
+                }
+
+                if (!empty($employee->payrollSession)) {
+                    $employee->payrollSession()->delete();
+                }
+                $payroll->payrollSession()->create($data);
+                $payroll->update(['isSessionSalary' => true]);
+            }
+        }
+
+        return parent::find($payroll->Id);
+    }
+
+    public function getPayRollSession($attributes)
+    {
+        $payroll = Payroll::where('Month', $attributes['month'])->first();
+        $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
+        $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+        $orderByBranch = $payroll->payrollSession()->with(['employee.seasonalContract' => function ($query) {
+            $query->orderBy('BranchId');
+        }])->whereHas('employee', function ($query) use ($attributes) {
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            $query->tranferHistory($attributes);
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $result = [];
+        foreach ($orderByBranch as $value) {
+            $seasonalContract = $value->employee->seasonalContract()->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]])->first();
+
+            if (!array_key_exists($seasonalContract->BranchId, $result)) {
+                $payrollSession = $payroll->payrollSession()->whereHas('employee.seasonalContract', function ($query) use ($seasonalContract) {
+                    $query->where('BranchId', $seasonalContract->BranchId);
+                })->with(['employee' => function ($query) {
+                    $query->select('Id', 'FullName', 'Code');
+                }])->get();
+
+                $result[$seasonalContract->branch->Name] = [
+                    'BranchId' => $seasonalContract->BranchId,
+                    'TotalInCome' => array_sum(array_column($payrollSession->ToArray(), 'TotalIncome')),
+                    'WorkDay' => array_sum(array_column($payrollSession->ToArray(), 'WorkDay')),
+                    'PersonalIncomeTax' => array_sum(array_column($payrollSession->ToArray(), 'PersonalIncomeTax')),
+                    'TaxPayment' => array_sum(array_column($payrollSession->ToArray(), 'TaxPayment')),
+                    'Deduction' => array_sum(array_column($payrollSession->ToArray(), 'Deduction')),
+                    'ValueSalary' => array_sum(array_column($payrollSession->ToArray(), 'ValueSalary')),
+                    'Allowance' => array_sum(array_column($payrollSession->ToArray(), 'Allowance')),
+                    'BasicSalary' => array_sum(array_column($payrollSession->ToArray(), 'BasicSalary')),
+                ];
+                $result[$seasonalContract->branch->Name]['DataDetail'] = $payrollSession;
+            }
+        }
+
+        $result['TotalSum'] = [
+            'BranchTotalInCome' => array_sum(array_column($result, 'TotalInCome')),
+            'TotalWorkDay' => array_sum(array_column($result, 'WorkDay')),
+            'TotalPersonalIncomeTax' => array_sum(array_column($result, 'PersonalIncomeTax')),
+            'TotalTaxPayment' => array_sum(array_column($result, 'TaxPayment')),
+            'TotalDeduction' => array_sum(array_column($result, 'Deduction')),
+            'TotalValueSalary' => array_sum(array_column($result, 'ValueSalary')),
+            'TotalAllowance' => array_sum(array_column($result, 'Allowance')),
+            'TotalBasicSalary' => array_sum(array_column($result, 'BasicSalary')),
+        ];
+
+        return $result;
+    }
+
+    public function payRollSessionLocal($attributes)
+    {
+        $payroll = Payroll::findOrFail($attributes['id']);
+        $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
+        $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+        $parameter = [];
+        $employees = User::where('Status', User::STATUS['WORKING'])->where('IsForeigner', false)
+            ->whereHas('seasonalContract', function ($q1) use ($startDate, $endDate) {
+                $q1->where([['ContractFrom', '<=', $startDate], ['ContractTo', '>=', $endDate]]);
+            })->get();
+
+        $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
+
+        if (!is_null($otherDeclaration)) {
+            foreach ($employees as $employee) {
+                $seasonalContract = $employee->seasonalContract()->where('ContractFrom', '<=', $startDate)->where('ContractTo', '>=', $endDate)->first();
+                $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                ])->totalWorks;
+
+                $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = (int) $totalWorks;
+                $parameter['SO_NGAY_CHUAN'] = (int) $otherDeclaration->NumberOfWorkdays;
+                $data = $this->storeDataPayrollSessionLocal($seasonalContract, $parameter, $employee, $otherDeclaration);
+
+                if (!empty($employee->payrollSession)) {
+                    $employee->payrollSession()->delete();
+                }
+                $payroll->payrollSession()->create($data);
+                $payroll->update(['isSessionSalary' => true]);
+            }
+        }
+        return parent::find($payroll->Id);
+    }
+
+    public function storeDataPayrollSessionLocal($seasonalContract, array $parameter, $employee, $otherDeclaration)
+    {
+        $parameterValues = $seasonalContract->parameterValues()->where('Code', self::LUONG_CTV_VN_KHOAN)->orWhere('Code', self::LUONG_CTV_VN_NGAY)->first();
+
+        if (!is_null($parameterValues)) {
+            //Lương thực tế
+            $actuallyReceived = 0;
+            $paramaterFormula = ParamaterFormula::where('Code', 'LUONG_THUC_TE_CTV')->first();
+
+            if (!is_null($paramaterFormula)) {
+                $actuallyReceived = $this->getFormular(json_decode($paramaterFormula->Recipe), $seasonalContract, $parameter);
+                $actuallyReceived = eval('return ' . $actuallyReceived . ';');
+            }
+
+            //Lương thực tế và phụ cấp
+            $actuallyAllowance = 0;
+            $paramaterFormula = ParamaterFormula::where('Code', 'TONG_THUNHAP_CTV_VN')->first();
+
+            if (!is_null($paramaterFormula)) {
+                $actuallyAllowance = $this->getFormular(json_decode($paramaterFormula->Recipe), $seasonalContract, $parameter);
+                $actuallyAllowance = eval('return ' . $actuallyAllowance . ';');
+            }
+
+            $data['EmployeeId'] = $employee->Id;
+            $data['BasicSalary'] = $parameterValues->pivot->Value;
+            $data['WorkDay'] = $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'];
+            $data['Allowance'] = $actuallyAllowance - $actuallyReceived;
+            $data['PersonalIncomeTax'] = 0;
+            $data['TaxPayment'] = 0;
+            $data['Deduction'] = 0;
+            $data['ValueSalary'] = $actuallyReceived;
+
+            $defineValueTax = ParamaterValue::where('Code', 'MUC_DONG_THUE_CTV_VN')->first();
+
+            if (!is_null($defineValueTax) && $actuallyReceived > $defineValueTax->ValueDefault) {
+                $data['PersonalIncomeTax'] = $actuallyReceived;
+                $data['TaxPayment'] = $actuallyReceived * 0.1;
+            }
+            $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail()->where('EmployeeId', $employee->Id)->first();
+
+            if (!is_null($otherDeclarationDetail)) {
+                $arrDetail = json_decode($otherDeclarationDetail->Detail, true);
+                $checkCode = array_search(self::TRUY_LINH, array_column($arrDetail, 'code'));
+
+                if ($checkCode !== false) {
+                    $data['Deduction'] = $arrDetail[$checkCode]['valueDefault'];
+                }
+            }
+            $data['TotalIncome'] = $actuallyAllowance + $data['Deduction'] - $data['TaxPayment'];
+        } else {
+            $data['EmployeeId'] = $employee->Id;
+            $data['BasicSalary'] = 0;
+            $data['WorkDay'] = $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'];
+            $data['Allowance'] = 0;
+            $data['PersonalIncomeTax'] = 0;
+            $data['TaxPayment'] = 0;
+            $data['Deduction'] = 0;
+            $data['TotalIncome'] = 0;
+            $data['ValueSalary'] = 0;
+        }
+
+        return $data;
+    }
+
+    public function payrollGroupByBranch(array $attributes)
+    {
+        $payroll = Payroll::where('Month', $attributes['month'])->first();
+        $startDate = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
+        $endDate = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+        $payrollDetail = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($startDate, $endDate, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->with(['employee' => function ($query) {
+            $query->select('Id', 'FullName', 'Code');
+        }])->get();
+
+        $result['ColumnBasicSalaryAndAllowance'] = json_decode($payroll->ColumnBasicSalaryAndAllowance, true);
+        $result['ColumnIncurredAllowance'] = json_decode($payroll->ColumnIncurredAllowance, true);
+        $result['ListBranch'] = [];
+
+        foreach ($payrollDetail as $value) {
+            $contract = $this->checkContract($value, $startDate, $endDate);
+            $branchName = $value->employee->positionLevelNow->branch->Name;
+            $divisionName = $value->employee->positionLevelNow->division->Name;
+
+            $value['BasicSalaryAndAllowance'] = json_decode($value->BasicSalaryAndAllowance, true);
+            $value['IncurredAllowance'] = json_decode($value->IncurredAllowance, true);
+
+            if (!is_null($contract)) {
+                if (!array_key_exists($branchName, $result['ListBranch'])) {
+                    $result['ListBranch'][$branchName] = [
+                        'BranchName' => $branchName,
+                        'TotalIncome' => $value->TotalIncome,
+                        'ActuallyReceived' => $value->ActuallyReceived,
+                        'KpiBonus' => $value->KpiBonus,
+                        'OtNoTax' => $value->OtNoTax,
+                        'OtTax' => $value->OtTax,
+                        'TotalWork' => $value->TotalWork,
+                        'TotalIncomeMonth' => $value->TotalIncomeMonth,
+                        'SocialInsuranceEmployee' => $value->SocialInsuranceEmployee,
+                        'HealthInsuranceEmployee' => $value->HealthInsuranceEmployee,
+                        'UnemploymentInsuranceEmployee' => $value->UnemploymentInsuranceEmployee,
+                        'UnemploymentInsuranceCompany' => $value->UnemploymentInsuranceCompany,
+                        'UnionDues' => $value->UnionDues,
+                        'TotalReduce' => $value->TotalReduce,
+                        'SocialInsuranceCompany' => $value->SocialInsuranceCompany,
+                        'HealthInsuranceCompany' => $value->HealthInsuranceCompany,
+                        'PersonalIncomeTax' => $value->PersonalIncomeTax,
+                        'BasicSalaryAndAllowance' => $this->branchBasicSalaryAndAllowance($payroll, $contract, $attributes),
+                        'IncurredAllowance' => $this->branchIncurredAllowance($payroll, $payrollDetail, $contract, $attributes),
+                        'ListDivision' => []
+                    ];
+                } else {
+                    $result['ListBranch'][$branchName]['TotalIncome'] += $value->TotalIncome;
+                    $result['ListBranch'][$branchName]['ActuallyReceived'] += $value->ActuallyReceived;
+                    $result['ListBranch'][$branchName]['KpiBonus'] += $value->KpiBonus;
+                    $result['ListBranch'][$branchName]['OtNoTax'] += $value->OtNoTax;
+                    $result['ListBranch'][$branchName]['OtTax'] += $value->OtTax;
+                    $result['ListBranch'][$branchName]['TotalWork'] += $value->TotalWork;
+                    $result['ListBranch'][$branchName]['TotalIncomeMonth'] += $value->TotalIncomeMonth;
+                    $result['ListBranch'][$branchName]['SocialInsuranceEmployee'] += $value->SocialInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['HealthInsuranceEmployee'] += $value->HealthInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['UnemploymentInsuranceEmployee'] += $value->UnemploymentInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['UnemploymentInsuranceCompany'] += $value->UnemploymentInsuranceCompany;
+                    $result['ListBranch'][$branchName]['UnionDues'] += $value->UnionDues;
+                    $result['ListBranch'][$branchName]['TotalReduce'] += $value->TotalReduce;
+                    $result['ListBranch'][$branchName]['SocialInsuranceCompany'] += $value->SocialInsuranceCompany;
+                    $result['ListBranch'][$branchName]['HealthInsuranceCompany'] += $value->HealthInsuranceCompany;
+                    $result['ListBranch'][$branchName]['PersonalIncomeTax'] += $value->PersonalIncomeTax;
+                }
+
+                if (!array_key_exists($divisionName, $result['ListBranch'][$branchName]['ListDivision'])) {
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName] = [
+                        'DivisionName' => $divisionName,
+                        'TotalIncome' => $value->TotalIncome,
+                        'ActuallyReceived' => $value->ActuallyReceived,
+                        'KpiBonus' => $value->KpiBonus,
+                        'OtNoTax' => $value->OtNoTax,
+                        'OtTax' => $value->OtTax,
+                        'TotalWork' => $value->TotalWork,
+                        'TotalIncomeMonth' => $value->TotalIncomeMonth,
+                        'SocialInsuranceEmployee' => $value->SocialInsuranceEmployee,
+                        'HealthInsuranceEmployee' => $value->HealthInsuranceEmployee,
+                        'UnemploymentInsuranceEmployee' => $value->UnemploymentInsuranceEmployee,
+                        'UnemploymentInsuranceCompany' => $value->UnemploymentInsuranceCompany,
+                        'UnionDues' => $value->UnionDues,
+                        'TotalReduce' => $value->TotalReduce,
+                        'SocialInsuranceCompany' => $value->SocialInsuranceCompany,
+                        'HealthInsuranceCompany' => $value->HealthInsuranceCompany,
+                        'PersonalIncomeTax' => $value->PersonalIncomeTax,
+                        'BasicSalaryAndAllowance' => $this->divisionBasicSalaryAndAllowance($payroll, $contract, $attributes),
+                        'IncurredAllowance' => $this->divisionIncurredAllowance($payroll, $payrollDetail, $contract, $attributes)
+                    ];
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['payrollDetail'][] = $value;
+                } else {
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['ActuallyReceived'] += $value->ActuallyReceived;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalIncome'] += $value->TotalIncome;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['KpiBonus'] += $value->KpiBonus;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['OtNoTax'] += $value->OtNoTax;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['OtTax'] += $value->OtTax;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalWork'] += $value->TotalWork;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalIncomeMonth'] += $value->TotalIncomeMonth;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['SocialInsuranceEmployee'] += $value->SocialInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['HealthInsuranceEmployee'] += $value->HealthInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['UnemploymentInsuranceEmployee'] += $value->UnemploymentInsuranceEmployee;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['UnemploymentInsuranceCompany'] += $value->UnemploymentInsuranceCompany;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['UnionDues'] += $value->UnionDues;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['TotalReduce'] += $value->TotalReduce;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['SocialInsuranceCompany'] += $value->SocialInsuranceCompany;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['HealthInsuranceCompany'] += $value->HealthInsuranceCompany;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['PersonalIncomeTax'] += $value->PersonalIncomeTax;
+                    $result['ListBranch'][$branchName]['ListDivision'][$divisionName]['payrollDetail'][] = $value;
+                }
+            }
+        }
+        $result['Total'] = [
+            'TotalIncome' => array_sum(array_column($result['ListBranch'], 'TotalIncome')),
+            'ActuallyReceived' => array_sum(array_column($result['ListBranch'], 'ActuallyReceived')),
+            'KpiBonus' => array_sum(array_column($result['ListBranch'], 'KpiBonus')),
+            'OtNoTax' => array_sum(array_column($result['ListBranch'], 'OtNoTax')),
+            'OtTax' => array_sum(array_column($result['ListBranch'], 'OtTax')),
+            'TotalWork' => array_sum(array_column($result['ListBranch'], 'TotalWork')),
+            'TotalIncomeMonth' => array_sum(array_column($result['ListBranch'], 'TotalIncomeMonth')),
+            'SocialInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'SocialInsuranceEmployee')),
+            'HealthInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'HealthInsuranceEmployee')),
+            'UnemploymentInsuranceEmployee' => array_sum(array_column($result['ListBranch'], 'UnemploymentInsuranceEmployee')),
+            'UnemploymentInsuranceCompany' => array_sum(array_column($result['ListBranch'], 'UnemploymentInsuranceCompany')),
+            'UnionDues' => array_sum(array_column($result['ListBranch'], 'UnionDues')),
+            'TotalReduce' => array_sum(array_column($result['ListBranch'], 'TotalReduce')),
+            'SocialInsuranceCompany' => array_sum(array_column($result['ListBranch'], 'SocialInsuranceCompany')),
+            'HealthInsuranceCompany' => array_sum(array_column($result['ListBranch'], 'HealthInsuranceCompany')),
+            'PersonalIncomeTax' => array_sum(array_column($result['ListBranch'], 'PersonalIncomeTax')),
+            'BasicSalaryAndAllowance' => $this->sumOfTotalBasicSalaryAndAllowance($payrollDetail),
+            'ColumnIncurredAllowance' => $this->sumOfTotalColumnIncurredAllowance($payrollDetail),
+        ];
+
+        return $result;
+    }
+
+    function groupByAllowance($array, $key)
+    {
+        $return = array();
+        foreach ($array as $val) {
+            $return[$val[$key]][] = $val;
+        }
+        return $return;
+    }
+
+    public function branchBasicSalaryAndAllowance($payroll, $contract, $attributes)
+    {
+        $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($contract, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $column = [];
+        foreach (array_column($payrollDetailSum->ToArray(), 'BasicSalaryAndAllowance') as $valueColumn) {
+            $column[] = json_decode($valueColumn, true);
+        }
+        $groupKey = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
+        $data = $this->sumGroupByKey($groupKey);
+
+        return $data;
+    }
+
+    public function divisionBasicSalaryAndAllowance($payroll, $contract, $attributes)
+    {
+        $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($contract, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $column = [];
+        foreach (array_column($payrollDetailSum->ToArray(), 'BasicSalaryAndAllowance') as $valueColumn) {
+            $column[] = json_decode($valueColumn, true);
+        }
+        $groupKey = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
+        $data = $this->sumGroupByKey($groupKey);
+
+        return $data;
+    }
+
+    public function sumOfTotalBasicSalaryAndAllowance($payrollDetail)
+    {
+        $column = [];
+        foreach (array_column($payrollDetail->ToArray(), 'BasicSalaryAndAllowance') as $valueColumn) {
+            $column[] = $valueColumn;
+        }
+        $groupPC = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
+        $data = $this->sumGroupByKey($groupPC);
+
+        return $data;
+    }
+
+    public function sumOfTotalColumnIncurredAllowance($payrollDetail)
+    {
+        $column = [];
+        foreach (array_column($payrollDetail->ToArray(), 'IncurredAllowance') as $valueColumn) {
+            $column[] = $valueColumn;
+        }
+        $groupPC = $this->groupByAllowance(call_user_func_array('array_merge', $column), 'code');
+        $data = $this->sumGroupByKey($groupPC);
+
+        return $data;
+    }
+
+    public function checkContract($value, $startDate, $endDate)
+    {
+
+        $contract = $value->employee->labourContract()->where(function ($q1) use ($startDate, $endDate) {
+            $q1->where([['ContractFrom', '<=', $endDate], ['ContractTo', '>=', $startDate]]);
+        })->orWhere(function ($q2) use ($endDate) {
+            $q2->where('ContractFrom', '<=', $endDate)->where('ContractTo', null);
+        })->orderBy('CreationTime', 'DESC')->first();
+
+        if (is_null($contract)) {
+            $contract = $value->employee->probationaryContract()->where('ContractFrom', '<=', $endDate)->where('ContractTo', '>=', $startDate)->orderBy('CreationTime', 'DESC')->first();
+        }
+
+        return !empty($contract) ? $contract : null;
+    }
+
+    public function divisionIncurredAllowance($payroll, $payrollDetail, $contract, $attributes)
+    {
+        $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($contract, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $groupIncurredAllowance = [];
+        foreach ($payrollDetailSum as $value) {
+            if (count(json_decode($value->IncurredAllowance, true)) <= 0) {
+                continue;
+            }
+            $groupIncurredAllowance[] = json_decode($value->IncurredAllowance, true);
+        }
+        $groupKey = $this->groupByAllowance(call_user_func_array('array_merge', $groupIncurredAllowance), 'code');
+        $data = $this->sumGroupByKey($groupKey);
+
+        return $data;
+    }
+
+    public function branchIncurredAllowance($payroll, $payrollDetail, $contract, $attributes)
+    {
+        $payrollDetailSum = $payroll->payrollDetail()->whereHas('employee', function ($query) use ($contract, $attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $branchId = explode(',', $attributes['branchId']);
+                    $q->whereIn('BranchId', $branchId);
+                }
+
+                if (!empty($attributes['divisionId'])) {
+                    $divisionId = explode(',', $attributes['divisionId']);
+                    $q->whereIn('DivisionId', $divisionId);
+                }
+
+                if (!empty($attributes['positionId'])) {
+                    $positionId = explode(',', $attributes['positionId']);
+                    $q->whereIn('PositionId', $positionId);
+                }
+            });
+
+            if (!empty($attributes['employeeId'])) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('Id', $employeeId);
+            }
+
+            if (!empty($attributes['isForeigner'])) {
+                $query->where('IsForeigner', $attributes['isForeigner']);
+            }
+        })->get();
+
+        $groupIncurredAllowance = [];
+        foreach ($payrollDetailSum as $value) {
+            if (count(json_decode($value->IncurredAllowance, true)) <= 0) {
+                continue;
+            }
+            $groupIncurredAllowance[] = json_decode($value->IncurredAllowance, true);
+        }
+
+        $groupKey = $this->groupByAllowance(call_user_func_array('array_merge', $groupIncurredAllowance), 'code');
+        $data = $this->sumGroupByKey($groupKey);
+
+        return $data;
+    }
+
+    public function sumGroupByKey($arrayGroupKey)
+    {
+        $data = [];
+        foreach ($arrayGroupKey as $key => $valueGroup) {
+            $data[$key] = array_sum(array_column($valueGroup, 'value'));
+        }
+
+        return $data;
     }
 }

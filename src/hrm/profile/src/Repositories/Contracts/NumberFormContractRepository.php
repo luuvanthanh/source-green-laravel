@@ -5,10 +5,10 @@ namespace GGPHP\Profile\Repositories\Contracts;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface CollaboratorContractRepository.
+ * Interface InsurranceRepository.
  *
  * @package namespace App\Repositories\Contracts;
  */
-interface CollaboratorContractRepository extends RepositoryInterface
+interface NumberFormContractRepository extends RepositoryInterface
 {
 }

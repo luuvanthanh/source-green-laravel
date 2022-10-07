@@ -69,7 +69,8 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'Nation', 'IdCard', 'DateOfIssueIdCard', 'PlaceOfIssueIdCard', 'Religion', 'WorkDate',
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
-        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'Description', 'Category'
+        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'Description', 'Category',
+        'FileAttached', 'IsForeigner', 'LastName'
     ];
 
     protected $dateTimeFields = [
@@ -375,5 +376,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function TeacherTimekeeping()
     {
         return $this->hasMany(TeacherTimekeeping::class, 'EmployeeId');
+    }
+
+    public function updateLastName()
+    {
+        $this->employeeRepository->updateLastName();
     }
 }

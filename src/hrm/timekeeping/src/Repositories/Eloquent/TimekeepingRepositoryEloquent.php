@@ -5,6 +5,7 @@ namespace GGPHP\Timekeeping\Repositories\Eloquent;
 use alhimik1986\PhpExcelTemplator\params\CallbackParam;
 use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
+use Exception;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\HolidayDetail;
@@ -169,6 +170,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 ->orWhere('DateOff', null);
         });
 
+        $employeesByStore->orderBy('LastName', 'ASC');
+
         if (empty($attributes['limit'])) {
             $result = $employeesByStore->get();
         } else {
@@ -214,6 +217,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         if (!is_null($contract)) {
+            if (!$contract->ContractFrom) {
+                throw new Exception('Vui lòng hoàn thành hợp đồng của ' . $contract->employee->FullName, 400);
+            }
+
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
         }
         // thoi gian cham cong
@@ -1139,29 +1146,28 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             } else {
                 $timekeepingReport = 1;
             }
-            $changeKey = array_flip(ManualCalculation::TYPE);
 
             switch ($value->Type) {
                 case ManualCalculation::TYPE['X']:
-                    $type = $changeKey[1];
+                    $type = array_keys(ManualCalculation::TYPE)[ManualCalculation::TYPE['X']];
                     break;
                 case ManualCalculation::TYPE['K']:
                     $timekeepingReport = 0;
-                    $type = $changeKey[2];
+                    $type = array_keys(ManualCalculation::TYPE)[ManualCalculation::TYPE['K']];
                     break;
                 case ManualCalculation::TYPE['F']:
-                    $type = $changeKey[3];
+                    $type = array_keys(ManualCalculation::TYPE)[ManualCalculation::TYPE['F']];
                     break;
                 case ManualCalculation::TYPE['X/2']:
-                    $type = $changeKey[5];
-                    break;
-                case ManualCalculation::TYPE['K/2']:
-                    $timekeepingReport = 0.5;
-                    $type = $changeKey[6];
+                    $type = array_keys(ManualCalculation::TYPE)[ManualCalculation::TYPE['X/2']];
                     break;
                 case ManualCalculation::TYPE['F/2']:
                     $timekeepingReport = 0.5;
-                    $type = $changeKey[7];
+                    $type = array_keys(ManualCalculation::TYPE)[ManualCalculation::TYPE['F/2']];
+                    break;
+                case ManualCalculation::TYPE['K/2']:
+                    $timekeepingReport = 0.5;
+                    $type = array_keys(ManualCalculation::TYPE)[ManualCalculation::TYPE['K/2']];
                     break;
             }
 

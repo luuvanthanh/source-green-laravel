@@ -13,7 +13,8 @@ class ProbationaryContract extends UuidModel
     protected $fillable = [
         'ContractNumber', 'ContractDate', 'TypeOfContractId', 'EmployeeId', 'SalaryRatio',
         'Month', 'DivisionId', 'ContractFrom', 'ContractTo', 'PositionId', 'Work',
-        'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary', 'IsSocialInsurance', 'IsEffect','File'
+        'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary', 'IsSocialInsurance', 'IsEffect',
+        'RepresentId', 'OrdinalNumber', 'NumberForm'
     ];
 
     protected $dateTimeFields = [
@@ -82,5 +83,13 @@ class ProbationaryContract extends UuidModel
     public function positionLevel()
     {
         return $this->morphOne('GGPHP\PositionLevel\Models\PositionLevel', 'positionLevelTable', 'ModelType', 'ModelId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function represent()
+    {
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'RepresentId');
     }
 }

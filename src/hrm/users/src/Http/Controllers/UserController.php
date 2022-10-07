@@ -5,6 +5,7 @@ namespace GGPHP\Users\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Users\Http\Requests\UserCreateRequest;
 use GGPHP\Users\Http\Requests\UserUpdateRequest;
+use GGPHP\Users\Http\Requests\UserUpdateStatusRequest;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Illuminate\Http\Request;
@@ -133,5 +134,30 @@ class UserController extends Controller
         ], $id);
 
         return $this->success($employee, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function sendEmployeeAccountant()
+    {
+        $employee = $this->employeeRepository->sendEmployeeAccountant();
+        return $this->success(['data' => $employee], trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function syncEmployee()
+    {
+        $employee = $this->employeeRepository->syncEmployee();
+
+        return $this->success($employee, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function updateStatusEmployee(UserUpdateStatusRequest $request, $id)
+    {
+        $employee = $this->employeeRepository->updateStatusEmployee($request->all(), $id);
+
+        return $this->success($employee, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function updateLastName()
+    {
+        $this->employeeRepository->updateLastName();
     }
 }
