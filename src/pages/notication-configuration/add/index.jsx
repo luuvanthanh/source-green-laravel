@@ -159,7 +159,7 @@ const Index = memo(() => {
                   <Pane className="row">
                     <Pane className="col-lg-12">
                       <FormItem
-                        label="Tên tiêu chí"
+                        label="Tên danh mục"
                         name="ssss"
                         type={variables.INPUT}
                         rules={[variables.RULES.EMPTY]}
@@ -173,7 +173,7 @@ const Index = memo(() => {
                             <p className={stylesModule.norm}>Đối tượng tạo</p>
                           </div>
                           <div className={stylesModule.col}>
-                            <p className={stylesModule.norm}>Đối tượng tạo</p>
+                            <p className={stylesModule.norm}>Đối tượng duyệt</p>
                           </div>
                           <div className={stylesModule.cols}>
                             <p className={stylesModule.norm} >Đối tượng nhận</p>
@@ -201,9 +201,9 @@ const Index = memo(() => {
                                       <div className={classnames(stylesModule.col)}>
                                         <FormItem
                                           className="checkbox-row checkbox-small pb10"
-                                          label="ĐG định kỳ"
-                                          fieldKey={[fieldItem.fieldKey, 'a']}
-                                          name={[fieldItem.name, 'a']}
+                                          label="Cần duyệt"
+                                          fieldKey={[fieldItem.fieldKey, 'c']}
+                                          name={[fieldItem.name, 'c']}
                                           type={variables.CHECKBOX_FORM}
                                           valuePropName="checked"
                                         />
@@ -217,7 +217,7 @@ const Index = memo(() => {
                                       <div className={classnames(stylesModule.col)}>
                                         <FormItem
                                           className="checkbox-row checkbox-small pb10"
-                                          label="ĐG định kỳ"
+                                          label="Nhân viên"
                                           fieldKey={[fieldItem.fieldKey, 'a']}
                                           name={[fieldItem.name, 'a']}
                                           type={variables.CHECKBOX_FORM}
@@ -225,9 +225,9 @@ const Index = memo(() => {
                                         />
                                         <FormItem
                                           className="checkbox-row checkbox-small"
-                                          label="ĐG định kỳ"
-                                          fieldKey={[fieldItem.fieldKey, 'a']}
-                                          name={[fieldItem.name, 'a']}
+                                          label="Phụ huynh"
+                                          fieldKey={[fieldItem.fieldKey, 'b']}
+                                          name={[fieldItem.name, 'b']}
                                           type={variables.CHECKBOX_FORM}
                                           valuePropName="checked"
                                         />

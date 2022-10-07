@@ -942,7 +942,7 @@ const Index = memo(() => {
                 <Pane className="col-lg-6 p0">
                   <FormItemAntd label="Danh mục (Loại thông báo / nhắc nhở)" className='m0'>
                     <FormItem
-                      name="divisionId"
+                      // name="divisionId"
                       // data={[{ id: null, name: 'Chọn tất cả bộ phận' }, ...divisions]}
                       type={variables.SELECT}
                       onChange={onChangeDivision}
