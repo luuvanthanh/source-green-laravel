@@ -32,6 +32,20 @@ export const variables = {
     SEND: 'Đã gửi',
     NOT_SEND: 'Chưa gửi',
   },
+  STATUS_TABS: [
+    {
+      id: 'ALL',
+      name: 'Tất cả',
+    },
+    {
+      id: 'SAVE_DRAFT',
+      name: 'Lưu nháp',
+    },
+    {
+      id: 'PENDING',
+      name: 'Chờ duyệt',
+    },
+  ],
 };
 
 export default variables;

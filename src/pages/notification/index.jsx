@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -13,9 +13,11 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import ability from '@/utils/ability';
+import variablesModules from './utils/variables';
 import HelperModules from './utils/Helper';
 // import stylesModule from './styles.module.scss';
 
+const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -67,6 +69,7 @@ class Index extends PureComponent {
         toDate: query?.toDate
           ? query?.toDate
           : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        status: query?.status || variablesModules.STATUS_TABS.ALL,
       },
     };
     setIsMounted(true);
@@ -524,6 +527,14 @@ class Index extends PureComponent {
                 )}
               </div>
             </Form>
+            <Tabs
+              activeKey={search?.status || variablesModules.STATUS.NEW}
+              onChange={(event) => this.onChangeSelectStatus(event, 'status')}
+            >
+              {variablesModules.STATUS_TABS.map((item) => (
+                <TabPane tab={`${item.name} (${pagination.total})`} key={item.id} />
+              ))}
+            </Tabs>
             <Table
               columns={this.header(params)}
               dataSource={data}
