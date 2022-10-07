@@ -146,6 +146,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             });
         }
 
+        if (!empty($attributes['code'])) {
+            $arrCode = explode(',', $attributes['code']);
+            $this->model = $this->model->whereIn('Code', $arrCode);
+        }
+
         if (empty($attributes['limit'])) {
             $users = $this->get();
         } else {
