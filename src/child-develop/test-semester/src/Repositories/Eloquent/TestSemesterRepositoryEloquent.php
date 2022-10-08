@@ -16,6 +16,8 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container as Application;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -206,6 +208,15 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
     public function update(array $attributes, $id)
     {
         $testSemester = $this->model::find($id);
+
+        if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['PENDING_APPROVED']) {
+            $attributes['timePendingApproved'] = now()->format('Y-m-d H:i:s');
+        }
+
+        if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['APPROVED']) {
+            $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
+        }
+
         $testSemester->update($attributes);
 
         return parent::find($id);
@@ -334,5 +345,103 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         $testSemesterDetail->update(['TotalScore' => $totalScore]);
+    }
+
+    public function approvedTestSemester(array $attributes, $id)
+    {
+        $testSemester = $this->model()::find($id);
+        $student = $testSemester->student;
+        $studentAccount = $testSemester->student->parent()->with('account')->get();
+        $images =  json_decode($student->FileImage);
+        $urlImage = '';
+
+        if (!empty($images)) {
+            $urlImage = env('IMAGE_URL') . $images[0];
+        }
+        $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
+
+        if (!empty($studentAccount)) {
+            $dataNoti = [
+                'users' => array_column($studentAccount->pluck('account')->toArray(), 'AppUserId'),
+                'title' => $student->FullName,
+                'imageURL' => $urlImage,
+                'message' => $message,
+                'moduleType' => 22,
+                'refId' => $testSemester->Id,
+            ];
+            dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNoti));
+        }
+
+        return parent::find($testSemester->Id);
+    }
+
+    public function approvedTestSemesterMultiple(array $attributes)
+    {
+        DB::beginTransaction();
+        try {
+            $testSemesters = $this->model()::WhereIn('Id', explode(',', $attributes['id']))->get();
+
+            if (!empty($attributes['status']) && $attributes['status'] == true) {
+                $this->model = $this->model->where('ApprovalStatus', TestSemester::APPROVAL_STATUS['PENDING_APPROVED']);
+
+                if (!empty($attributes['branchId'])) {
+                    $this->model = $this->model->whereHas('student.classes', function ($q) use ($attributes) {
+                        $q->where('BranchId', $attributes['branchId']);
+                    });
+                }
+
+                if (!empty($attributes['classId'])) {
+                    $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
+                        $query->where('ClassId', $attributes['classId']);
+                    });
+                }
+
+                if (!empty($attributes['assessmentPeriodId'])) {
+                    $this->model = $this->model->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
+                }
+
+                if (!empty($attributes['schoolYearId'])) {
+                    $this->model = $this->model->where('SchoolYearId', $attributes['schoolYearId']);
+                }
+
+                if (!empty($attributes['key'])) {
+                    $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
+                        $q->whereLike('FullName', $attributes['key']);
+                    });
+                }
+
+                $testSemesters = $this->model->orderBy('CreationTime')->get();
+            }
+
+            foreach ($testSemesters as $key => $testSemester) {
+                $student = $testSemester->student;
+                $studentAccount = $testSemester->student->parent()->with('account')->get();
+
+                $images =  json_decode($student->FileImage);
+                $urlImage = '';
+
+                if (!empty($images)) {
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
+                $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
+
+                if (!empty($studentAccount)) {
+                    $dataNoti = [
+                        'users' => array_column($studentAccount->pluck('account')->toArray(), 'AppUserId'),
+                        'title' => $student->FullName,
+                        'imageURL' => $urlImage,
+                        'message' => $message,
+                        'moduleType' => 22,
+                        'refId' => $testSemester->Id,
+                    ];
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNoti));
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+        }
+
+        return parent::find($testSemesters->first()->Id);
     }
 }
