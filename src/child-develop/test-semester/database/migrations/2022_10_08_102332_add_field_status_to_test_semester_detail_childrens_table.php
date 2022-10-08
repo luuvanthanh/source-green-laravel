@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldHospitalCodeToHealthInsurancesTable extends Migration
+class AddFieldStatusToTestSemesterDetailChildrensTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddFieldHospitalCodeToHealthInsurancesTable extends Migration
      */
     public function up()
     {
-        Schema::table('HealthInsurances', function (Blueprint $table) {
-            $table->string('HospitalCode')->nullable();
+        Schema::table('TestSemesterDetailChildrens', function (Blueprint $table) {
+            $table->integer('Status')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddFieldHospitalCodeToHealthInsurancesTable extends Migration
      */
     public function down()
     {
-        Schema::table('HealthInsurances', function (Blueprint $table) {
-            $table->dropColumn('HospitalCode');
+        Schema::table('TestSemesterDetailChildrens', function (Blueprint $table) {
+            $table->dropColumn('Status');
         });
     }
 }

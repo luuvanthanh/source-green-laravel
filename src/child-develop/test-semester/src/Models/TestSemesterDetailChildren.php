@@ -11,8 +11,13 @@ class TestSemesterDetailChildren extends UuidModel
 {
     protected $table = 'TestSemesterDetailChildrens';
 
+    const STATUS = [
+        'CHECKED' => 1,
+        'UNCHECK' => 2
+    ];
+
     protected $fillable = [
-        'ChildEvaluateDetailId', 'ChildEvaluateDetailChildrenId', 'TestSemesterDetailId', 'ChildEvaluateId', 'Score', 'Age'
+        'ChildEvaluateDetailId', 'ChildEvaluateDetailChildrenId', 'TestSemesterDetailId', 'ChildEvaluateId', 'Score', 'Age', 'Status'
     ];
 
     public function testSemesterDetail()

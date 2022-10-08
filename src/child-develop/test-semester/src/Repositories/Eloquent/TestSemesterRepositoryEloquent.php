@@ -339,8 +339,13 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         $totalScore = 0;
 
         foreach ($attributes['detail']['isCheck'] as $value) {
-            $totalScore += $value['score'];
+            $value['status'] = TestSemesterDetailChildren::STATUS[$value['status']];
             $value['testSemesterDetailId'] = $testSemesterDetail->Id;
+
+            if ($value['status'] === TestSemesterDetailChildren::STATUS['CHECKED']) {
+                $totalScore += $value['score'];
+            }
+
             TestSemesterDetailChildren::create($value);
         }
 

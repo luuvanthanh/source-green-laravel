@@ -5,6 +5,7 @@ namespace GGPHP\ChildDevelop\TestSemester\Transformers;
 use GGPHP\ChildDevelop\ChildEvaluate\Transformers\ChildEvaluateDetailChildrenTransformer;
 use GGPHP\ChildDevelop\ChildEvaluate\Transformers\ChildEvaluateDetailTransformer;
 use GGPHP\ChildDevelop\ChildEvaluate\Transformers\ChildEvaluateTransformer;
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetailChildren;
 use GGPHP\Core\Transformers\BaseTransformer;
 
@@ -44,7 +45,9 @@ class TestSemesterDetailChildrenTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'Status' => array_search($model->Status, TestSemesterDetailChildren::STATUS)
+        ];
     }
 
     public function includeChildEvaluateDetail(TestSemesterDetailChildren $testSemesterDetailChildren)

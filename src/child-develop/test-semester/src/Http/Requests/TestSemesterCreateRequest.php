@@ -4,6 +4,7 @@ namespace GGPHP\ChildDevelop\TestSemester\Http\Requests;
 
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetailChildren;
 use GGPHP\Fee\Models\SchoolYear;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -38,7 +39,8 @@ class TestSemesterCreateRequest extends FormRequest
             'detail.isCheck.*.score' => 'numeric',
             'detail.isCheck.*.childEvaluateId' => 'exists:ChildEvaluates,Id',
             'detail.isCheck.*.childEvaluateDetailId' => 'exists:ChildEvaluateDetails,Id',
-            'detail.isCheck.*.childEvaluateDetailChildrenId' => 'exists:ChildEvaluateDetailChildrens,Id'
+            'detail.isCheck.*.childEvaluateDetailChildrenId' => 'exists:ChildEvaluateDetailChildrens,Id',
+            'detail.isCheck.*.status' => 'in:' . implode(',', array_keys(TestSemesterDetailChildren::STATUS)),
         ];
     }
 
