@@ -3,17 +3,20 @@
 namespace GGPHP\Users\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\Branch;
+use GGPHP\Category\Models\Division;
+use GGPHP\Category\Models\Position;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Core\Services\AccountantService;
 use GGPHP\Core\Services\CrmService;
-use GGPHP\Profile\Models\LabourContract;
-use GGPHP\Profile\Models\ProbationaryContract;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Container\Container as Application;
 
 /**
  * Class UserRepositoryEloquent.
@@ -22,6 +25,18 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepository
 {
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        Application $app,
+        ExcelExporterServices $excelExporterServices
+    ) {
+        parent::__construct($app);
+        $this->excelExporterServices = $excelExporterServices;
+    }
+
     /**
      * @var array
      */
@@ -416,6 +431,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     public function reportEmployeeInfo($attributes)
     {
         $users = $this->getUser($attributes, true);
+        $total = $users->get()->count();
 
         if (empty($attributes['limit'])) {
             $users = $users->get();
@@ -433,7 +449,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 'endDateProbationary' => $this->getDateProbationary($user, 'end'),
                 'endDateWorking' => $this->getEndDateWorking($user),
                 'workingSeniority' => $this->getWorkingSeniority($user, $attributes['date']),
-                'gender' => $user->Gender,
+                'gender' => $user->Gender == 'MALE' ? 'Nam' : 'Nữ',
                 'dateOfBirth' => Carbon::parse($user->DateOfBirth)->format('d/m/Y'),
                 'placeOfBirth' => $user->PlaceOfBirth,
                 'idCard' => $user->IdCard,
@@ -458,8 +474,25 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 'phoneNumberContact' => $user->PhoneNumber
             ];
         })->toArray();
+        $meta = [];
 
-        return $results;
+        if (isset(request()->limit)) {
+            $meta = [
+                'pagination' => [
+                    'count' => $users->count(),
+                    'current_page' => (int) request()->page,
+                    'per_page' => (int) request()->limit,
+                    'total' => $total,
+                    'total_pages' => ceil((int) $total / request()->limit)
+                ]
+            ];
+        }
+
+        $data = [
+            'results' => $results,
+            'meta' => $meta
+        ];
+        return $data;
     }
 
     public function getPosition($user)
@@ -630,7 +663,10 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
     public function getSpouse($user)
     {
-        $spouse = $user->children()->whereLike('Relationship', 'chồng')->orWhereLike('Relationship', 'vợ')->first();
+        $spouse = $user->children()->where(function ($query) {
+            $query->whereLike('Relationship', 'chồng')->orWhereLike('Relationship', 'vợ');
+        })->first();
+        
         $nameSpouse = !is_null($spouse) ? $spouse->FullName : '';
 
         return $nameSpouse;
@@ -646,5 +682,75 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         $nameChildren = !empty($nameChildren) ? implode(', ', $nameChildren) : '';
 
         return $nameChildren;
+    }
+
+    public function exportExcelReportEmployeeInfo($attributes)
+    {
+        $users = $this->reportEmployeeInfo($attributes);
+
+        $branch = null;
+        $division = null;
+        $position = null;
+        $date = Carbon::parse($attributes['date'])->format('d/m/Y');
+        $employee = null;
+
+        if (!empty($attributes['branchId'])) {
+            $branch = Branch::find($attributes['branchId']);
+        }
+
+        if (!empty($attributes['divisionId'])) {
+            $division = Division::find($attributes['divisionId']);
+        }
+
+        if (!empty($attributes['positionId'])) {
+            $position = Position::find($attributes['positionId']);
+        }
+
+        if (!empty($attributes['employeeId'])) {
+            $employee = User::find($attributes['employeeId']);
+        }
+
+        $params['{branch}'] = !is_null($branch) ? $branch->Name : 'Tất cả cơ sở';
+        $params['{division}'] = !is_null($branch) ? $division->Name : 'Tất cả bộ phận';
+        $params['{position}'] = !is_null($position) ? $position->Name : 'Tất cả chức vụ';
+        $params['{date}'] = $date;
+        $params['{employee}'] = !is_null($employee) ? $employee->FullName : 'Tất cả nhân viên';
+
+        foreach ($users['results'] as $key => $user) {
+            $params['[number]'][] = ++$key;
+            $params['[code]'][] = $user['code'];
+            $params['[fullName]'][] = $user['fullName'];
+            $params['[position]'][] = $user['position'];
+            $params['[startDateWorking]'][] = $user['startDateWorking'];
+            $params['[startDateProbationary]'][] = $user['startDateProbationary'];
+            $params['[endDateProbationary]'][] = $user['endDateProbationary'];
+            $params['[endDateWorking]'][] = $user['endDateWorking'];
+            $params['[workingSeniority]'][] = $user['workingSeniority'];
+            $params['[gender]'][] = $user['gender'];
+            $params['[dateOfBirth]'][] = $user['dateOfBirth'];
+            $params['[placeOfBirth]'][] = $user['placeOfBirth'];
+            $params['[idCard]'][] = $user['idCard'];
+            $params['[dateOfIssueIdCard]'][] = $user['dateOfIssueIdCard'];
+            $params['[placeOfIssueIdCard]'][] = $user['placeOfIssueIdCard'];
+            $params['[permanentAddress]'][] = $user['permanentAddress'];
+            $params['[address]'][] = $user['address'];
+            $params['[phoneNumber]'][] = $user['phoneNumber'];
+            $params['[numberDependentPerson]'][] = $user['numberDependentPerson'];
+            $params['[taxCode]'][] = $user['taxCode'];
+            $params['[numberSocialInsurance]'][] = $user['numberSocialInsurance'];
+            $params['[medicalTreatmentPlace]'][] = $user['medicalTreatmentPlace'];
+            $params['[hospitalCode]'][] = $user['hospitalCode'];
+            $params['[email]'][] = $user['email'];
+            $params['[bankNumberOfAccount]'][] = $user['bankNumberOfAccount'];
+            $params['[beneficiaryName]'][] = $user['beneficiaryName'];
+            $params['[bankName]'][] = $user['bankName'];
+            $params['[typeOfContract]'][] = $user['typeOfContract'];
+            $params['[startDateContract]'][] = $user['startDateContract'];
+            $params['[spouse]'][] = $user['spouse'];
+            $params['[children]'][] = $user['children'];
+            $params['[phoneNumberContact]'][] = $user['phoneNumberContact'];
+        }
+
+        return $this->excelExporterServices->export('export_excel_employee_info', $params);
     }
 }

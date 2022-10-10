@@ -52,6 +52,9 @@ class ExcelExporterServices
         'timekeeping_report_by_branch' => [
             'template' => 'timekeeping_report_by_branch.xlsx',
         ],
+        'export_excel_employee_info' => [
+            'template' => 'export_excel_employee_info.xlsx',
+        ],
     ];
 
     protected $disk;
@@ -81,7 +84,7 @@ class ExcelExporterServices
 
         $templateFileUrl = $this->endPoint . '/' . $this->templateFolder . '/' . $templateFile;
         $resultFileUrl = $this->endPoint . '/' . $this->resultFolder . '/' . $resultFile;
-        
+
         if (!file_exists($templateFileUrl)) {
             return config('excel-exporter.error.template-not-found');
         }
