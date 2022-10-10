@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, head } from 'lodash';
+import { debounce, isEmpty, head, size } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -34,10 +34,10 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ listOfReviews, loading, user }) => ({
   loading,
-  data: listOfReviews.data,
   pagination: listOfReviews.pagination,
   classes: listOfReviews.classes,
   branches: listOfReviews.branches,
+  assessmentPeriod: listOfReviews.assessmentPeriod,
   defaultBranch: user.defaultBranch,
   years: listOfReviews.years,
   user: user.user,
@@ -55,20 +55,21 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      data: [],
       search: {
-        keyWord: query?.keyWord,
+        key: query?.key,
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
-        from: query?.from
-          ? query?.from
-          : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        to: query?.to
-          ? query?.to
-          : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        // from: query?.from
+        //   ? query?.from
+        //   : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        // to: query?.to
+        //   ? query?.to
+        //   : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        status: query?.status || variablesModules.STATUS.CONFIRMING,
+        approvalStatus: query?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED,
       },
     };
     setIsMounted(true);
@@ -113,7 +114,7 @@ class Index extends PureComponent {
     this.setStateData(
       {
         search: {
-          keyWord: query?.keyWord,
+          key: query?.key,
           branchId: query?.branchId,
           classId: query?.classId,
           from: query?.from
@@ -124,7 +125,7 @@ class Index extends PureComponent {
             : moment().endOf('months'),
           page: query?.page || variables.PAGINATION.PAGE,
           limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-          status: query?.status || variablesModules.STATUS.CONFIRMING,
+          approvalStatus: query?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED,
         },
       },
       () => {
@@ -155,6 +156,14 @@ class Index extends PureComponent {
       type: 'listOfReviews/GET_YEARS',
       payload: {},
     });
+    if (search.schoolYearId) {
+      this.props.dispatch({
+        type: 'listOfReviews/GET_ASESSMENT_PERIOD',
+        payload: {
+          schoolYearId: search.schoolYearId,
+        },
+      });
+    }
   };
 
   /**
@@ -169,6 +178,13 @@ class Index extends PureComponent {
       type: 'listOfReviews/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            data: response.parsePayload,
+          });
+        }
       },
     });
     history.push({
@@ -270,6 +286,12 @@ class Index extends PureComponent {
         }),
       );
       this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+      this.props.dispatch({
+        type: 'listOfReviews/GET_ASESSMENT_PERIOD',
+        payload: {
+          schoolYearId: e,
+        },
+      });
     }
     this.debouncedSearch(e, type);
   };
@@ -356,13 +378,48 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeItem = (record) => {
+    const self = this;
+    this.props.dispatch({
+      type: 'listOfReviews/ADD_ONE_ITEM_REVIEW',
+      payload: {
+        id: record?.id,
+      },
+      callback: (response) => {
+        if (response) {
+          self.onLoad();
+        }
+      },
+    });
+  };
+
+  onClickAddReview = (type) => {
+    const { data, search } = this.state;
+    const { dispatch } = this.props;
+    const self = this;
+    dispatch({
+      type: 'listOfReviews/ADD_REVIEW',
+      payload: {
+        id: data?.filter((item) => item?.isActive)?.map((item) => item.id),
+        status: type === 'all' ? true : null,
+        schoolYearId: type === 'all' ? search?.schoolYearId : null,
+        branchId: type === 'all' ? search?.branchId : null,
+        classId: type === 'all' ? search?.classId : null,
+        assessmentPeriodId: type === 'all' ? search?.assessmentPeriodId : null,
+      },
+      callback: (response) => {
+        if (response) {
+          self.onLoad();
+        }
+      },
+    });
+  };
+
   /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
+    const { search } = this.state;
     const columns = [
       {
         title: 'STT ',
@@ -376,36 +433,36 @@ class Index extends PureComponent {
         title: 'Thời gian duyệt',
         key: 'name',
         width: 250,
-        render: (record) => record?.full_name,
+        render: (record) => Helper.getDate(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? record?.timePendingApproved : record?.timeApproved, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Loại đánh giá',
         key: 'email',
         width: 200,
-        render: (record) => record?.email,
+        render: (record) => record?.assessmentPeriod?.nameAssessmentPeriod?.name,
       },
       {
         title: 'Cơ sở',
-        key: 'phone',
+        key: 'branch',
         width: 150,
-        render: (record) => record?.phone,
+        render: (record) => record?.student?.classStudent?.class?.branch?.name,
       },
       {
         title: 'Lớp',
-        key: 'status',
+        key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record?.phone,
+        render: (record) => record?.student?.classStudent?.class?.name,
       },
       {
         title: 'Học sinh',
-        key: 'status',
-        className: 'min-width-150',
-        width: 150,
+        key: 'fullName',
+        className: 'min-width-250',
+        width: 250,
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record.file_image)}
-            fullName={record?.full_name}
+            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+            fullName={record?.student?.fullName}
           />
         ),
       },
@@ -419,13 +476,8 @@ class Index extends PureComponent {
               color="success"
               className="ml5"
               icon="redo2"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              onClick={() => this.onChangeItem(record)}
             />
-            {/* {
-              record?.status === 'NOT_MOVE' && (
-                <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-              )
-            } */}
           </div>
         ),
       },
@@ -435,7 +487,7 @@ class Index extends PureComponent {
 
   onSelectChange = (e) => {
     this.setStateData((prevState) => ({
-      dataSource: prevState?.dataSource?.map((item) => ({
+      data: prevState?.data?.map((item) => ({
         ...item,
         isActive: !!e.includes(item.id),
       })),
@@ -444,16 +496,17 @@ class Index extends PureComponent {
 
   render() {
     const {
-      data,
       classes,
       branches,
       pagination,
       defaultBranch,
+      assessmentPeriod,
       match: { params },
       loading: { effects },
       years,
       user,
     } = this.props;
+    const { data } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
@@ -471,13 +524,14 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách đánh giá đã duyệt</Text>
             <div className='d-flex'>
-              <Button color="primary" icon="redo2" className="ml-2" onClick={this.onChangeExcel}>
+              <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview()}>
                 Gửi đánh giá đã chọn
               </Button>
               <Button
                 color="success"
                 icon="redo2"
                 className="ml-2"
+                onClick={() => this.onClickAddReview('all')}
               >
                 Gửi tất cả
               </Button>
@@ -485,11 +539,11 @@ class Index extends PureComponent {
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
-              activeKey={search?.status || variablesModules.STATUS.NEW}
-              onChange={(event) => this.onChangeSelectStatus(event, 'status')}
+              activeKey={search?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED}
+              onChange={(event) => this.onChangeSelectStatus(event, 'approvalStatus')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={item.name} key={item.id} />
+                <TabPane tab={`${item.name}`} key={item.id} />
               ))}
             </Tabs>
             <Form
@@ -498,6 +552,7 @@ class Index extends PureComponent {
                 date: search.from && search.to && [moment(search.from), moment(search.to)],
                 branchId: search.branchId || null,
                 classId: search.classId || null,
+                assessmentPeriodId: search.assessmentPeriodId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -546,17 +601,18 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
-                    name="classId"
-                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    data={user?.role === "Teacher" ? [...assessmentPeriod?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả kỳ đánh giá', id: null }, ...assessmentPeriod]}
+                    name="assessmentPeriodId"
+                    options={['id', 'name']}
+                    onChange={(event) => this.onChangeSelect(event, 'assessmentPeriodId')}
                     type={variables.SELECT}
                     allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Nhập từ khóa tìm kiếm theo tên"
                     type={variables.INPUT_SEARCH}
                   />
@@ -586,7 +642,6 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
@@ -596,11 +651,11 @@ Index.propTypes = {
   defaultBranch: PropTypes.objectOf(PropTypes.any),
   years: PropTypes.arrayOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
+  assessmentPeriod: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
-  data: [],
   pagination: {},
   loading: {},
   dispatch: {},
@@ -610,6 +665,7 @@ Index.defaultProps = {
   defaultBranch: {},
   years: [],
   user: {},
+  assessmentPeriod: [],
 };
 
 export default Index;

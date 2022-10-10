@@ -4,12 +4,9 @@ import * as services from './services';
 export default {
   namespace: 'listOfReviews',
   state: {
-    data: [
-      {
-        id: '123',
-      },
-    ],
+    data: [],
     years: [],
+    assessmentPeriod: [],
     pagination: {
       total: 0,
     },
@@ -20,7 +17,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      // data: payload.parsePayload,
+      data: payload.parsePayload,
       pagination: payload.pagination,
     }),
     SET_BRANCHES: (state, { payload }) => ({
@@ -39,6 +36,13 @@ export default {
           name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
           ...item,
         })) || [],
+    }),
+    SET_ASESSMENT_PERIOD: (state, { payload }) => ({
+      ...state,
+      assessmentPeriod: payload.parsePayload?.map((i) => ({
+        ...i,
+        name: i?.nameAssessmentPeriod.name,
+      })),
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -79,17 +83,13 @@ export default {
         });
       }
     },
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
+          payload: response,
         });
       } catch (error) {
         yield saga.put({
@@ -98,9 +98,17 @@ export default {
         });
       }
     },
-    *ADD({ payload, callback }, saga) {
+    *ADD_ONE_ITEM_REVIEW({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
+        yield saga.call(services.addOneItem, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_REVIEW({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addReview, payload);
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
@@ -136,6 +144,20 @@ export default {
           payload: {
             parsePayload: response,
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_ASESSMENT_PERIOD({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getAssessmentPeriod, payload);
+        yield saga.put({
+          type: 'SET_ASESSMENT_PERIOD',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({

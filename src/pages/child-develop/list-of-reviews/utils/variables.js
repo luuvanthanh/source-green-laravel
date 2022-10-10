@@ -8,6 +8,8 @@ export const variables = {
     SENT: 'SENT',
     CONFIRMING: 'CONFIRMING',
     CONFIRMED: 'CONFIRMED',
+    PENDING_APPROVED: 'PENDING_APPROVED',
+    APPROVED: 'APPROVED',
   },
   STATUS_NAME: {
     IN_PROGRESS: 'Đang trao đổi',
@@ -20,11 +22,11 @@ export const variables = {
   },
   STATUS_TABS: [
     {
-      id: 'CONFIRMING',
+      id: 'PENDING_APPROVED',
       name: 'Chờ gửi',
     },
     {
-      id: 'CONFIRMED',
+      id: 'APPROVED',
       name: 'Đã gửi',
     },
   ],
