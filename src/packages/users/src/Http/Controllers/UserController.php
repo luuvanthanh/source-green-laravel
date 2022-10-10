@@ -3,6 +3,7 @@
 namespace GGPHP\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\Users\Http\Requests\EmployeeInfoRequest;
 use GGPHP\Users\Http\Requests\UserCreateRequest;
 use GGPHP\Users\Http\Requests\UserUpdateRequest;
 use GGPHP\Users\Http\Requests\UserUpdateStatusRequest;
@@ -149,12 +150,23 @@ class UserController extends Controller
         $this->employeeRepository->updateLastName();
     }
 
-    public function reportEmployeeInfo(Request $request)
+    public function reportEmployeeInfo(EmployeeInfoRequest $request)
     {
         $attributes = $request->all();
 
         $employees = $this->employeeRepository->reportEmployeeInfo($attributes);
 
-        return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
+        return $this->success(['data' => $employees['results'], 'meta' => $employees['meta']], trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function exportExcelReportEmployeeInfo(EmployeeInfoRequest $request)
+    {
+        $result = $this->employeeRepository->exportExcelReportEmployeeInfo($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
     }
 }
