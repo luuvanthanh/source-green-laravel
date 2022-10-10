@@ -62,7 +62,7 @@ class TestSemester extends UuidModel
         return $this->belongsTo(User::class, 'EmployeeId');
     }
 
-    public function schoolYearId()
+    public function schoolYear()
     {
         return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
