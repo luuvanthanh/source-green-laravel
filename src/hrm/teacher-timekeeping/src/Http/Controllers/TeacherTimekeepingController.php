@@ -111,4 +111,19 @@ class TeacherTimekeepingController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeTeacherTimekeeping(Request $request)
+    {
+        $attribute = $request->all();
+
+        $teacherTimekeeping = $this->teacherTimekeepingRepository->storeTeacherTimekeeping($attribute);
+
+        return $this->success($teacherTimekeeping, trans('lang::messages.common.createSuccess'));
+    }
 }
