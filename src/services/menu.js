@@ -1736,6 +1736,13 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
           pro: true,
         },
+        {
+          title: 'Báo cáo thông tin nhân viên',
+          key: 'staff-information',
+          url: ['/quan-ly-nhan-su/bao-cao/thong-tin-nhan-vien'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
       ],
     },
   ];

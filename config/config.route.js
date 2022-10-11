@@ -1833,6 +1833,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
+          {
+            path: '/quan-ly-nhan-su/bao-cao/thong-tin-nhan-vien',
+            component: './hrm/report/staff-information',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
         ],
       },
       // HRM

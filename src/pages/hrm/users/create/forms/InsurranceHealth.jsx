@@ -99,6 +99,13 @@ const Index = memo(() => {
                   type={variables.INPUT}
                 />
               </Pane>
+              <Pane className="col-lg-6">
+                <FormItem
+                  name="hospitalCode"
+                  label="Mã bệnh viện"
+                  type={variables.INPUT}
+                />
+              </Pane>
             </Pane>
           </Pane>
 
