@@ -32,6 +32,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('teacher-timekeepings', 'TeacherTimekeepingController');
 
             \Route::post('store-teacher-timekeepings', 'TeacherTimekeepingController@storeTeacherTimekeeping');
+
+            \Route::put('update-teacher-timekeepings/{id}', 'TeacherTimekeepingController@updateTeacherTimekeeping');
         });
     }
 }
