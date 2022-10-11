@@ -51,7 +51,8 @@ class StudentTransformer extends BaseTransformer
             'age_month' => Carbon::parse($model->DayOfBirth)->diffInMonths(now()),
             'refund' => $model->refund,
             'dateOff' => $model->dateOff,
-            'numberDayOff' => $model->numberDayOff
+            'numberDayOff' => $model->numberDayOff,
+            'age' => Carbon::parse($model->DayOfBirth)->diffInMonths(now()),
         ];
     }
 

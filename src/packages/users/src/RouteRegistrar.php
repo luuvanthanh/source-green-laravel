@@ -82,6 +82,14 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('update-last-name', [
                 'uses' => 'UserController@updateLastName',
             ]);
+
+            \Route::get('report-employee-info', [
+                'uses' => 'UserController@reportEmployeeInfo',
+            ]);
+
+            \Route::get('export-excel-report-employee-info', [
+                'uses' => 'UserController@exportExcelReportEmployeeInfo',
+            ]);
         });
     }
 
