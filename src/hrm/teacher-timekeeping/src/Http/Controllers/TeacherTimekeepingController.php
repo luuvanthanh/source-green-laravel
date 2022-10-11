@@ -4,6 +4,7 @@ namespace GGPHP\TeacherTimekeeping\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\TeacherTimekeeping\Http\Requests\CreatTeacherTimekeepingRequest;
+use GGPHP\TeacherTimekeeping\Http\Requests\StoreTeacherTimekeepingRequest;
 use GGPHP\TeacherTimekeeping\Http\Requests\UpdateTeacherTimekeepingRequest;
 use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
 use GGPHP\TeacherTimekeeping\Repositories\Contracts\TeacherTimekeepingRepository;
@@ -123,6 +124,13 @@ class TeacherTimekeepingController extends Controller
         $attribute = $request->all();
 
         $teacherTimekeeping = $this->teacherTimekeepingRepository->storeTeacherTimekeeping($attribute);
+
+        return $this->success($teacherTimekeeping, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function updateTeacherTimekeeping(StoreTeacherTimekeepingRequest $request, $id)
+    {
+        $teacherTimekeeping = $this->teacherTimekeepingRepository->storeTeacherTimekeeping($request->all());
 
         return $this->success($teacherTimekeeping, trans('lang::messages.common.createSuccess'));
     }

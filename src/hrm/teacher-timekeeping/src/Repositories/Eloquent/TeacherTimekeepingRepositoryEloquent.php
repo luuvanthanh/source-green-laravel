@@ -113,7 +113,7 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
     public function storeTeacherTimekeeping(array $attribute)
     {
         if (!empty($attribute['createRows'])) {
-            foreach ($attribute['createRows'] as $key => $value) {
+            foreach ($attribute['createRows'] as $value) {
                 $value['status'] = TeacherTimekeeping::STATUS[$value['status']];
                 $value['type'] = TeacherTimekeeping::TYPE[$value['type']];
 
@@ -122,7 +122,7 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
         }
 
         if (!empty($attribute['updateRows'])) {
-            foreach ($attribute['updateRows'] as $key => $value) {
+            foreach ($attribute['updateRows'] as $value) {
                 $value['status'] = TeacherTimekeeping::STATUS[$value['status']];
                 $value['type'] = TeacherTimekeeping::TYPE[$value['type']];
 
