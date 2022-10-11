@@ -100,12 +100,15 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             if (!empty($attributes['detail'])) {
                 $childEvaluate['detail'] = $this->storeDetail($childEvaluate->Id, $attributes['detail']);
             }
-            $data = $childEvaluate->toArray();
-            $childEvaluateCrmId = ChildEvaluateCrmServices::createChildEvaluate($data, $childEvaluate->Id);
 
-            if (isset($childEvaluateCrmId->data->id)) {
-                $updateCrmId = ChildEvaluate::find($childEvaluate->Id);
-                $updateCrmId->update(['ChildEvaluateCrmId' => $childEvaluateCrmId->data->id]);
+            if ($attributes['detail'][0]['inputAssessment']) {
+                $data = $childEvaluate->toArray();
+                $childEvaluateCrmId = ChildEvaluateCrmServices::createChildEvaluate($data, $childEvaluate->Id);
+
+                if (isset($childEvaluateCrmId->data->id)) {
+                    $updateCrmId = ChildEvaluate::find($childEvaluate->Id);
+                    $updateCrmId->update(['ChildEvaluateCrmId' => $childEvaluateCrmId->data->id]);
+                }
             }
 
             \DB::commit();
@@ -164,10 +167,13 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
                 ChildEvaluateDetail::where('ChildEvaluateId', $childEvaluate->Id)->delete();
                 $childEvaluate['detail'] = $this->storeDetail($childEvaluate->Id, $attributes['detail']);
             }
-            $data = $childEvaluate->toArray();
 
-            if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
-                ChildEvaluateCrmServices::updateChildEvaluate($data, $childEvaluate->ChildEvaluateCrmId);
+            if ($attributes['detail'][0]['inputAssessment']) {
+                $data = $childEvaluate->toArray();
+
+                if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
+                    ChildEvaluateCrmServices::updateChildEvaluate($data, $childEvaluate->ChildEvaluateCrmId);
+                }
             }
 
             \DB::commit();
