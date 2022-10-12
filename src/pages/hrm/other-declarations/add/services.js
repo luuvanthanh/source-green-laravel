@@ -85,3 +85,12 @@ export function details(data) {
     parse: true,
   });
 }
+
+export function getWork(params) {
+  return request(`/v1/calculator-work`, {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
