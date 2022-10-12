@@ -22,7 +22,8 @@ class ChildEvaluate extends UuidModel
         '24-30' => 5,
         '30-36' => 6,
         '36-50' => 7,
-        '50-60' => 8
+        '50-60' => 8,
+        '61-72' => 9
     ];
 
     public function childEvaluateDetail()

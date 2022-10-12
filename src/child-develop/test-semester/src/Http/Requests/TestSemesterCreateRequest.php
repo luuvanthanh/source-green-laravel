@@ -36,11 +36,11 @@ class TestSemesterCreateRequest extends FormRequest
             'detail.isCheck' => 'array',
             'detail.categorySkillId' => 'exists:CategorySkills,Id',
             'detail.status' => 'in:' . implode(',', array_keys(TestSemesterDetail::STATUS)),
-            'detail.isCheck.*.score' => 'numeric',
+            'detail.isCheck.*.score' => 'nullable|numeric',
             'detail.isCheck.*.childEvaluateId' => 'exists:ChildEvaluates,Id',
             'detail.isCheck.*.childEvaluateDetailId' => 'exists:ChildEvaluateDetails,Id',
             'detail.isCheck.*.childEvaluateDetailChildrenId' => 'exists:ChildEvaluateDetailChildrens,Id',
-            'detail.isCheck.*.status' => 'in:' . implode(',', array_keys(TestSemesterDetailChildren::STATUS)),
+            'detail.isCheck.*.status' => 'nullable|in:' . implode(',', array_keys(TestSemesterDetailChildren::STATUS)),
         ];
     }
 
