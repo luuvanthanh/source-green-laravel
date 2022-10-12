@@ -79,10 +79,9 @@ class WordExporterServices
     {
         $templateFile = $this->configs[$teamplate]['template'];
         $resultFile = $this->configs[$teamplate]['result'] ?? $templateFile;
-
+        
         $templateFileUrl = $this->endPoint . '/' . $this->templateFolder . '/' . $templateFile;
         $resultFileUrl = $this->endPoint . '/' . $this->resultFolder . '/' . $resultFile;
-
         if (!file_exists($templateFileUrl)) {
             return config('excel-exporter.error.template-not-found');
         }
@@ -95,11 +94,10 @@ class WordExporterServices
         foreach ($param as $key => $value) {
             $param[$key] = htmlspecialchars($value);
         }
-
         $templateProcessor->setValues($param);
-
+        
         $templateProcessor->saveAs($resultFileUrl);
-
+    
         if ($response == 'url') {
             return $this->resultFolder . '/' . $resultFile;
         } else {

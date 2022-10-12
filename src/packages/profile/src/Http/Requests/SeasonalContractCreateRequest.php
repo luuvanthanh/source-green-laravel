@@ -69,8 +69,16 @@ class SeasonalContractCreateRequest extends FormRequest
                         return $fail('Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng thời vụ gần nhất ' . $seasonalContract->ContractTo->format('d-m-Y'));
                     }
 
-                    if (!is_null($labourContract) && $value <= $labourContract->ContractTo->format('Y-m-d')) {
-                        return $fail('Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng lao động gần nhất ' . $labourContract->ContractTo->format('d-m-Y'));
+                    if (!is_null($labourContract)) {
+                        $typeOfContract = $labourContract->typeOfContract;
+                        
+                        if (!is_null($typeOfContract) && $typeOfContract->Code =='VTH') {
+                            return $fail('Đã có hợp đồng lao động vô thời hạn, không được tạo hợp đồng thời vụ.');
+                        }
+                    
+                        if ($value <= $labourContract->ContractTo->format('Y-m-d')) {
+                            return $fail('Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất ' . $labourContract->ContractTo->format('d-m-Y'));
+                        }
                     }
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractTo->format('Y-m-d')) {

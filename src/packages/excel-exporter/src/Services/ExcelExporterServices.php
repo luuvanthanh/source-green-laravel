@@ -49,6 +49,12 @@ class ExcelExporterServices
         'salary_template_go_to_bank_foreigner' => [
             'template' => 'salary_template_go_to_bank_foreigner.xlsx',
         ],
+        'timekeeping_report_by_branch' => [
+            'template' => 'timekeeping_report_by_branch.xlsx',
+        ],
+        'export_excel_employee_info' => [
+            'template' => 'export_excel_employee_info.xlsx',
+        ],
     ];
 
     protected $disk;
