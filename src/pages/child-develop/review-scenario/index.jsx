@@ -240,15 +240,16 @@ class Index extends PureComponent {
         width: 150,
         className: 'min-width-150',
         render: (record) => <Text size="normal">
-          {record.age === '0' ? '0 - 6 ' : ""}  
-          {record.age === '1' ? '6 - 9 ' : ""}  
-          {record.age === '2' ? '9 - 12 ' : ""}  
-          {record.age === '3' ? '12 - 18 ' : ""}  
-          {record.age === '4' ? '18 - 24 ' : ""}  
-          {record.age === '5' ? '24 - 30 ' : ""}  
-          {record.age === '6' ? '30 - 36 ' : ""}  
-          {record.age === '7' ? '36 - 50 ' : ""}  
-          {record.age === '8' ? '50- 60 ' : ""}  
+          {record.age === '0' ? '0 - 6 ' : ""}
+          {record.age === '1' ? '6 - 9 ' : ""}
+          {record.age === '2' ? '9 - 12 ' : ""}
+          {record.age === '3' ? '12 - 18 ' : ""}
+          {record.age === '4' ? '18 - 24 ' : ""}
+          {record.age === '5' ? '24 - 30 ' : ""}
+          {record.age === '6' ? '30 - 36 ' : ""}
+          {record.age === '7' ? '36 - 50 ' : ""}
+          {record.age === '8' ? '50- 60 ' : ""}
+          {record.age === '9' ? '61- 72 ' : ""}
           Tháng</Text>,
       },
       {
