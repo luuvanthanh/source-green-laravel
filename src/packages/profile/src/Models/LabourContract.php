@@ -17,7 +17,7 @@ class LabourContract extends UuidModel
         'ContractNumber', 'ContractDate', 'TypeOfContractId', 'EmployeeId', 'Year',
         'Month', 'DivisionId', 'ContractFrom', 'ContractTo', 'PositionId', 'Work',
         'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary', 'IsSocialInsurance', 'IsEffect',
-        'RepresentId', 'OrdinalNumber', 'NumberForm'
+        'RepresentId', 'OrdinalNumber', 'NumberForm', 'IsAuthority'
     ];
 
     protected $dateTimeFields = [
