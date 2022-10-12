@@ -90,6 +90,14 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('export-excel-report-employee-info', [
                 'uses' => 'UserController@exportExcelReportEmployeeInfo',
             ]);
+
+            \Route::get('report-employee-history', [
+                'uses' => 'UserController@reportEmployeeHistory',
+            ]);
+
+            \Route::get('detail-employee-history', [
+                'uses' => 'UserController@detailEmployeeHistory',
+            ]);
         });
     }
 

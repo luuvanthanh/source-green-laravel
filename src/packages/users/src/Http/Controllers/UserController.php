@@ -169,4 +169,22 @@ class UserController extends Controller
 
         return $result;
     }
+
+    public function reportEmployeeHistory(Request $request)
+    {
+        $attributes = $request->all();
+
+        $employees = $this->employeeRepository->reportEmployeeHistory($attributes);
+
+        return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function detailEmployeeHistory(Request $request)
+    {
+        $attributes = $request->all();
+
+        $employees = $this->employeeRepository->detailEmployeeHistory($attributes);
+
+        return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
+    }
 }

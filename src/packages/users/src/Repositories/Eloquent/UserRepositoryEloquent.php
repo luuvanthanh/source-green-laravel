@@ -3,6 +3,7 @@
 namespace GGPHP\Users\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Appoint\Models\Appoint;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\Position;
@@ -10,6 +11,10 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Core\Services\AccountantService;
 use GGPHP\Core\Services\CrmService;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\ResignationDecision\Models\ResignationDecision;
+use GGPHP\Reward\Models\DecisionReward;
+use GGPHP\SalaryIncrease\Models\SalaryIncrease;
+use GGPHP\Transfer\Models\Transfer;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
@@ -444,7 +449,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 'code' => $user->Code,
                 'fullName' => $user->FullName,
                 'position' => $user->positionLevelNow ? $this->getPosition($user) : '',
-                'startDateWorking' => $this->getStartDateWorking($user),
+                'startDateWorking' => $this->getStartDateWorking($user, $format = 'd/m/Y'),
                 'startDateProbationary' => $this->getDateProbationary($user, 'start'),
                 'endDateProbationary' => $this->getDateProbationary($user, 'end'),
                 'endDateWorking' => $this->getEndDateWorking($user),
@@ -505,22 +510,22 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         return $positionName;
     }
 
-    public function getStartDateWorking($user)
+    public function getStartDateWorking($user, $format)
     {
         $labourContract = $user->labourContract()->orderBy('ContractFrom', 'asc')->first();
         $probationaryContract = $user->probationaryContract()->orderBy('ContractFrom', 'asc')->first();
         $startDateWorking = '';
 
         if (!is_null($labourContract) && is_null($probationaryContract)) {
-            $startDateWorking = !is_null($labourContract->ContractFrom) ? Carbon::parse($labourContract->ContractFrom)->format('d/m/Y') : '';
+            $startDateWorking = !is_null($labourContract->ContractFrom) ? Carbon::parse($labourContract->ContractFrom)->format($format) : '';
         } elseif (is_null($labourContract) && !is_null($probationaryContract)) {
-            $startDateWorking = !is_null($probationaryContract->ContractFrom) ? Carbon::parse($probationaryContract->ContractFrom)->format('d/m/Y') : '';
+            $startDateWorking = !is_null($probationaryContract->ContractFrom) ? Carbon::parse($probationaryContract->ContractFrom)->format($format) : '';
         } elseif (!is_null($labourContract) && !is_null($probationaryContract)) {
             if (!is_null($labourContract->ContractFrom) && !is_null($probationaryContract->ContractFrom)) {
                 if (Carbon::parse($labourContract->ContractFrom)->format('dmY') < Carbon::parse($probationaryContract->ContractFrom)->format('dmY')) {
-                    $startDateWorking = Carbon::parse($labourContract->ContractFrom)->format('d/m/Y');
+                    $startDateWorking = Carbon::parse($labourContract->ContractFrom)->format($format);
                 } else {
-                    $startDateWorking = Carbon::parse($probationaryContract->ContractFrom)->format('d/m/Y');
+                    $startDateWorking = Carbon::parse($probationaryContract->ContractFrom)->format($format);
                 }
             }
         }
@@ -666,7 +671,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         $spouse = $user->children()->where(function ($query) {
             $query->whereLike('Relationship', 'chồng')->orWhereLike('Relationship', 'vợ');
         })->first();
-        
+
         $nameSpouse = !is_null($spouse) ? $spouse->FullName : '';
 
         return $nameSpouse;
@@ -752,5 +757,225 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         return $this->excelExporterServices->export('export_excel_employee_info', $params);
+    }
+
+    public function reportEmployeeHistory($attributes)
+    {
+        $users = $this->getUser($attributes, true);
+        $users = $users->get();
+
+        $result = [];
+        foreach ($users as $key => $user) {
+            $positionLevelNow = $user->positionLevelNow;
+            $branchName = !is_null($positionLevelNow) ? $positionLevelNow->branch->Name : null;
+
+            if (!is_null($branchName)) {
+                if (!array_key_exists($branchName, $result)) {
+                    $result[$branchName] = [
+                        'branchName' => $branchName,
+                        'listEmployee' => [$this->getUserInfo($user)]
+                    ];
+                } else {
+                    $result[$branchName]['listEmployee'][] = $this->getUserInfo($user);
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function getUserInfo($user)
+    {
+        $dateNow =  Carbon::now()->format('d/m/Y');
+        $data = [
+            'id' => $user->Id,
+            'fullName' => $user->FullName,
+            'dateOfBirth' => Carbon::parse($user->DateOfBirth)->format('d/m/Y'),
+            'phoneNumber' => $user->PhoneNumber,
+            'address' => $user->Address,
+            'numberSocialInsurance' => $this->getSocialInsurance($user),
+            'gender' => $user->Gender == 'MALE' ? 'Nam' : 'Nữ',
+            'startDateWorking' => $this->getStartDateWorking($user, $format = 'd/m/Y'),
+            'dateNow' => $dateNow,
+            'numberMonthWorking' => $this->getNumberMonthWorking($user, $dateNow, $this->getStartDateWorking($user, $format = 'Y-m-d')),
+            'numberAbsent' => '',
+            'absent' => '',
+            'remainingAbsent' => '',
+            'division' => $user->positionLevelNow ? $this->getDivision($user) : '',
+            'position' => $user->positionLevelNow ? $this->getPosition($user) : '',
+            'numberLabourContract' => $this->getNumberLabourContract($user),
+            'contractDate' => $this->getContractDate($user),
+            'typeOfContract' => $this->getTypeOfContract($user),
+        ];
+
+        return $data;
+    }
+
+    public function getNumberMonthWorking($user, $date, $startDateWorking)
+    {
+        $date = Carbon::parse($date);
+        $numberYearWork = 0;
+        $numberMonthWork = 0;
+
+        if (!is_null($startDateWorking)) {
+            $startDateWorking = Carbon::parse($startDateWorking);
+            $quantityWorking = $startDateWorking->diff($date);
+            $numberMonthWork = $quantityWorking->m;
+            $numberYearWork = $quantityWorking->y;
+        }
+
+        $result = $numberYearWork * 12 + $numberMonthWork;
+
+        return $result;
+    }
+
+    public function getDivision($user)
+    {
+        $divisionName = '';
+        if (!is_null($user->positionLevelNow->division)) {
+            $divisionName = $user->positionLevelNow->division->Name;
+        }
+
+        return $divisionName;
+    }
+
+    public function getNumberLabourContract($user)
+    {
+        $labourContract = $user->labourContract()->orderBy('ContractFrom', 'asc')->first();
+
+        $numberLabourContract = '';
+
+        if (!is_null($labourContract)) {
+            $ordinalNumber = $labourContract->OrdinalNumber;
+            $numberForm = $labourContract->NumberForm;
+
+            $numberLabourContract = $ordinalNumber . '/' . $numberForm;
+        }
+
+        return $numberLabourContract;
+    }
+
+    public function getContractDate($user)
+    {
+        $labourContract = $user->labourContract()->orderBy('ContractFrom', 'asc')->first();
+
+        $contractDate = !is_null($labourContract) ? $labourContract->ContractDate->format('d/m/Y') : '';
+
+        return $contractDate;
+    }
+
+    public function detailEmployeeHistory($attributes)
+    {
+        $user = User::find($attributes['employeeId']);
+        $positionLevelNow = $user->positionLevelNow;
+        $branchName = !is_null($positionLevelNow) ? $positionLevelNow->branch->Name : null;
+        $data = $this->getUserInfo($user);
+        $data['branch'] = $branchName;
+        $appoint = $this->getAppoint($attributes);
+        $transfer = $this->getTransfer($attributes);
+        $decisionReward = $this->getDecisionReward($attributes);
+        $salaryIncrease = $this->getSalaryIncrease($attributes);
+        $resignationDecision = $this->getResignationDecision($attributes);
+        $data['appoint'] = $appoint;
+        $data['transfer'] = $transfer;
+        $data['decisionReward'] = $decisionReward;
+        $data['salaryIncrease'] = $salaryIncrease;
+        $data['resignationDecision'] = $resignationDecision;
+
+        return $data;
+    }
+
+    public function getAppoint($attributes)
+    {
+        $appoints = Appoint::whereHas('appointDetails', function ($query) use ($attributes) {
+            $query->where('EmployeeId', $attributes['employeeId']);
+        })->get();
+
+        $dataAppoint = [];
+        foreach ($appoints as $key => $appoint) {
+
+            $appointDetail = $appoint->appointDetails()->first();
+            $position = !is_null($appointDetail->position) ? $appointDetail->position->Name : '';
+            $dataAppoint[] = [
+                'decisionNumber' => $appoint->DecisionNumber,
+                'timeApply' => $appoint->TimeApply->format('d/m/Y'),
+                'position' => $position
+            ];
+        }
+
+        return $dataAppoint;
+    }
+
+    public function getTransfer($attributes)
+    {
+        $transfers = Transfer::whereHas('transferDetails', function ($query) use ($attributes) {
+            $query->where('EmployeeId', $attributes['employeeId']);
+        })->get();
+
+        $dataTransfer = [];
+
+        foreach ($transfers as $key => $transfer) {
+            $dataTransfer[] = [
+                'decisionNumber' => $transfer->DecisionNumber,
+                'timeApply' => $transfer->TimeApply->format('d/m/Y'),
+                'reason' => $transfer->Reason
+            ];
+        }
+
+        return $dataTransfer;
+    }
+
+    public function getDecisionReward($attributes)
+    {
+        $decisionRewards = DecisionReward::whereHas('decisionRewardDetails', function ($query) use ($attributes) {
+            $query->where('EmployeeId', $attributes['employeeId']);
+        })->get();
+
+        $dataDecisionReward = [];
+
+        foreach ($decisionRewards as $key => $decisionReward) {
+            $decisionRewardDetail = $decisionReward->decisionRewardDetails()->first();
+            $dataDecisionReward[] = [
+                'decisionNumber' => $decisionReward->DecisionNumber,
+                'timeApply' => $decisionRewardDetail->TimeApply->format('d/m/Y'),
+                'reason' => $decisionReward->Reason
+            ];
+        }
+
+        return $dataDecisionReward;
+    }
+
+    public function getSalaryIncrease($attributes)
+    {
+        $salaryIncreases = SalaryIncrease::where('EmployeeId', $attributes['employeeId'])->get();
+
+        $dataSalaryIncrease = [];
+
+        foreach ($salaryIncreases as $key => $salaryIncrease) {
+            $dataSalaryIncrease[] = [
+                'decisionNumber' => $salaryIncrease->DecisionNumber,
+                'timeApply' => $salaryIncrease->TimeApply->format('d/m/Y'),
+                'reason' => $salaryIncrease->Reason
+            ];
+        }
+
+        return $dataSalaryIncrease;
+    }
+
+    public function getResignationDecision($attributes)
+    {
+        $resignationDecisions = ResignationDecision::where('EmployeeId', $attributes['employeeId'])->get();
+
+        $dataResignationDecision = [];
+
+        foreach ($resignationDecisions as $key => $resignationDecision) {
+            $dataResignationDecision[] = [
+                'decisionNumber' => $resignationDecision->DecisionNumber,
+                'timeApply' => $resignationDecision->TimeApply->format('d/m/Y'),
+                'reason' => $resignationDecision->Reason
+            ];
+        }
+
+        return $dataResignationDecision;
     }
 }
