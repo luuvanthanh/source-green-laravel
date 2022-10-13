@@ -42,7 +42,7 @@ export const feature = {
       permission: [permissions.HA],
     },
     {
-      title: 'Ghi chú',
+      title: 'Dặn dò từ phụ huynh',
       src: '/images/home/pages.svg',
       animation: animationImage.note,
       url: '/ghi-chu',
