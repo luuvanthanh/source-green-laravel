@@ -1193,23 +1193,28 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         $result = [];
         foreach ($timekeepingReports as $key => $user) {
-            $branchName = $user->positionLevelNow->branch->Name;
-            $divisionName = $user->positionLevelNow->division->Name;
+            $positionLevelNow = $user->positionLevelNow;
+            $branchName = !is_null($positionLevelNow->branch) ? $positionLevelNow->branch->Name : '';
+            $divisionName = !is_null($positionLevelNow->division) ? $positionLevelNow->division->Name : ' ';
 
-            if (!array_key_exists($branchName, $result)) {
-                $result[$branchName] = [
-                    'BranchName' => $branchName,
-                    'Division' => []
-                ];
-            }
+            if (!is_null($branchName)) {
+                if (!array_key_exists($branchName, $result)) {
+                    $result[$branchName] = [
+                        'BranchName' => $branchName,
+                        'Division' => []
+                    ];
+                }
 
-            if (!array_key_exists($divisionName, $result[$branchName]['Division'])) {
-                $result[$branchName]['Division'][$divisionName] = [
-                    'DivisionName' => $divisionName,
-                    'ListUser' => [$user->toArray()]
-                ];
-            } else {
-                $result[$branchName]['Division'][$divisionName]['ListUser'][] = $user->toArray();
+                if (!is_null($divisionName)) {
+                    if (!array_key_exists($divisionName, $result[$branchName]['Division'])) {
+                        $result[$branchName]['Division'][$divisionName] = [
+                            'DivisionName' => $divisionName,
+                            'ListUser' => [$user->toArray()]
+                        ];
+                    } else {
+                        $result[$branchName]['Division'][$divisionName]['ListUser'][] = $user->toArray();
+                    }
+                }
             }
         }
 
