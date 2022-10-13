@@ -89,8 +89,8 @@ class Index extends PureComponent {
     const loading = effects['notesDetails/GET_DATA'];
     return (
       <div className="pr20 pl20">
-        <Helmet title="Chi tiết ghi chú" />
-        <Breadcrumbs last="Chi tiết ghi chú" menu={menuData} />
+        <Helmet title="Chi tiết dặn dò" />
+        <Breadcrumbs last="Chi tiết dặn dò" menu={menuData} />
         <div className="row">
           <div className="col-lg-8 offset-lg-2">
             <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/ghi-chu' }}>

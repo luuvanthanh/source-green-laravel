@@ -474,11 +474,11 @@ class Index extends PureComponent {
     const loading = effects['noteItems/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách ghi chú" />
+        <Helmet title="Danh sách dặn dò từ phụ huynh" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách ghi chú</Text>
+            <Text color="dark">Danh sách dặn dò từ phụ huynh</Text>
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
