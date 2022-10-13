@@ -6,13 +6,21 @@ use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetail;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetailChildren;
 use GGPHP\Core\Models\UuidModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemesterDetailChildren extends UuidModel
 {
+    use SoftDeletes;
+
     protected $table = 'TestSemesterDetailChildrens';
 
+    const STATUS = [
+        'CHECKED' => 1,
+        'UNCHECK' => 2
+    ];
+
     protected $fillable = [
-        'ChildEvaluateDetailId', 'ChildEvaluateDetailChildrenId', 'TestSemesterDetailId', 'ChildEvaluateId'
+        'ChildEvaluateDetailId', 'ChildEvaluateDetailChildrenId', 'TestSemesterDetailId', 'ChildEvaluateId', 'Score', 'Age', 'Status'
     ];
 
     public function testSemesterDetail()

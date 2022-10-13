@@ -330,6 +330,13 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
         // Lương thực nhận
         // $probationSalary = isset($salaryRatio) ? $salary * $salaryRatio / 100 : $salary;
+        $represent = $labourContract->represent;
+
+        if (is_null($represent)) {
+            $positionRepresent = '';
+        } else {
+            $positionRepresent = $represent->positionLevelNow ? $represent->positionLevelNow->position->Name : '';
+        }
 
         $total = $salary + $allowance;
         $employee = $labourContract->employee;
@@ -341,6 +348,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'yearNow' => $labourContract->ContractDate->format('Y'),
             'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
             'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'represent' => !is_null($represent) ? $represent->FullName : '',
+            'position' =>  $positionRepresent,
             'fullName' => $employee->FullName ? $employee->FullName : '........',
             'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
             'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
@@ -350,7 +359,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? ($employee->PlaceOfIssueIdCard) : '........',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
             'adress' => $employee->Address ? $employee->Address : '.......',
-            // 'phone' => $employee->Phone ? $employee->Phone : '.......',
+            // 'phone' => $employee->PhoneNumber ? $employee->PhoneNumber : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'month' => $labourContract->Month ? $labourContract->Month : '........',
             'salaryRatio' => isset($salaryRatio) ? $salaryRatio : '........',
@@ -362,6 +371,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'salary' => number_format($salary),
             'allowance' => number_format($allowance),
             'total' => number_format($total),
+            'base' => $labourContract->IsAuthority ? '-     Căn cứ giấy ủy quyền ngày 17.8.2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
         ];
 
         return $this->wordExporterServices->exportWord('probationary_contract', $params, $response);
@@ -391,7 +401,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
             'adress' => $employee->Address ? $employee->Address : '.......',
-            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'phone' => $employee->PhoneNumber ? $employee->PhoneNumber : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
@@ -428,7 +438,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
             'adress' => $employee->Address ? $employee->Address : '.......',
-            'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'phone' => $employee->PhoneNumber ? $employee->PhoneNumber : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
@@ -443,8 +453,9 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
     public function previewProbationaryContractExportWord($id)
     {
+        $string = substr(uniqid(), 7);
         $probationaryContract = ProbationaryContract::findOrFail($id);
-        $fileName = $probationaryContract->Id . '.docx';
+        $fileName = $probationaryContract->Id . $string . '.docx';
         $filePath = $this->exportWord($id, 'url');
         $file = Storage::disk('local')->get($filePath);
 

@@ -60,8 +60,8 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $this->model = $this->model->where('Age', $attributes['age']);
         }
 
-        if (!empty($attributes['CategorySkillId'])) {
-            $this->model = $this->model->where('CategorySkillId', $attributes['CategorySkillId']);
+        if (!empty($attributes['categorySkillId'])) {
+            $this->model = $this->model->where('CategorySkillId', $attributes['categorySkillId']);
         }
 
         if (!empty($attributes['key'])) {
@@ -100,12 +100,15 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             if (!empty($attributes['detail'])) {
                 $childEvaluate['detail'] = $this->storeDetail($childEvaluate->Id, $attributes['detail']);
             }
-            $data = $childEvaluate->toArray();
-            $childEvaluateCrmId = ChildEvaluateCrmServices::createChildEvaluate($data, $childEvaluate->Id);
 
-            if (isset($childEvaluateCrmId->data->id)) {
-                $updateCrmId = ChildEvaluate::find($childEvaluate->Id);
-                $updateCrmId->update(['ChildEvaluateCrmId' => $childEvaluateCrmId->data->id]);
+            if ($attributes['detail'][0]['inputAssessment']) {
+                $data = $childEvaluate->toArray();
+                $childEvaluateCrmId = ChildEvaluateCrmServices::createChildEvaluate($data, $childEvaluate->Id);
+
+                if (isset($childEvaluateCrmId->data->id)) {
+                    $updateCrmId = ChildEvaluate::find($childEvaluate->Id);
+                    $updateCrmId->update(['ChildEvaluateCrmId' => $childEvaluateCrmId->data->id]);
+                }
             }
 
             \DB::commit();
@@ -113,18 +116,20 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             \DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
-        return parent::all();
+        return parent::find($childEvaluate->Id);
     }
 
     public function storeDetail($id, $detail)
     {
         $arrDetail = [];
         foreach ($detail as $value) {
+            $value['totalScore'] = ChildEvaluateDetail::TOTAL_SCORE;
             $value['ChildEvaluateId'] = $id;
             $detail = ChildEvaluateDetail::create($value);
 
             if (!empty($value['detailChildren'])) {
-                $detail['detailChildren'] = $this->storeDetailChildren($detail->Id, $value['detailChildren']);
+                $score = ChildEvaluateDetail::TOTAL_SCORE / count($value['detailChildren']);
+                $detail['detailChildren'] = $this->storeDetailChildren($detail->Id, $value['detailChildren'], $score);
             }
 
             $arrDetail[] = $detail->toArray();
@@ -133,17 +138,18 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         return $arrDetail;
     }
 
-    public function storeDetailChildren($id, $detailChildrent)
+    public function storeDetailChildren($id, $detailChildren, $score)
     {
         $arrChildren = [];
-        foreach ($detailChildrent as $value) {
+        foreach ($detailChildren as $value) {
+            $value['score'] = $score;
             $value['ChildEvaluateDetailId'] = $id;
-            $detailChildrent = ChildEvaluateDetailChildren::create($value);
+            $detailChildren = ChildEvaluateDetailChildren::create($value);
 
             $arrChildren[] = [
-                'child_evaluate_detail_children_clover_id' => $detailChildrent->Id,
-                'content' => $detailChildrent->Content,
-                'use' =>  $detailChildrent->Use
+                'child_evaluate_detail_children_clover_id' => $detailChildren->Id,
+                'content' => $detailChildren->Content,
+                'use' =>  $detailChildren->Use
             ];
         }
 
@@ -161,10 +167,13 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
                 ChildEvaluateDetail::where('ChildEvaluateId', $childEvaluate->Id)->delete();
                 $childEvaluate['detail'] = $this->storeDetail($childEvaluate->Id, $attributes['detail']);
             }
-            $data = $childEvaluate->toArray();
-            
-            if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
-                ChildEvaluateCrmServices::updateChildEvaluate($data, $childEvaluate->ChildEvaluateCrmId);
+
+            if ($attributes['detail'][0]['inputAssessment']) {
+                $data = $childEvaluate->toArray();
+
+                if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
+                    ChildEvaluateCrmServices::updateChildEvaluate($data, $childEvaluate->ChildEvaluateCrmId);
+                }
             }
 
             \DB::commit();

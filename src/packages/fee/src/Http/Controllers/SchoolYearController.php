@@ -124,10 +124,10 @@ class SchoolYearController extends Controller
         return $this->success($schoolYears, trans('lang::messages.common.createSuccess'));
     }
 
-    public function getDetailSchoolYear(GetDetailSchoolYearRequest $request)
+    public function getDetailSchoolYear(Request $request)
     {
         $schoolYears = $this->schoolYearRepository->getDetailSchoolYear($request->all());
 
-        return $this->success(['data' => array_values($schoolYears)], trans('lang::messages.common.getInfoSuccess'));
+        return $this->success(['data' => $schoolYears], trans('lang::messages.common.getInfoSuccess'));
     }
 }

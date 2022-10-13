@@ -16,6 +16,10 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container as Application;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+
+use function Symfony\Component\Translation\t;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -103,7 +107,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         if (!empty($attributes['branchId'])) {
-            $this->model = $this->model->whereHas('student.classStudent.classes', function ($q) use ($attributes) {
+            $this->model = $this->model->whereHas('student.classes', function ($q) use ($attributes) {
                 $q->where('BranchId', $attributes['branchId']);
             });
         }
@@ -145,46 +149,26 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
     {
         \DB::beginTransaction();
         try {
+            $testSemester = $this->model::where('StudentId', $attributes['studentId'])->where('AssessmentPeriodId', $attributes['assessmentPeriodId'])->first();
 
-            $testSemester = TestSemester::where('StudentId', $attributes['studentId'])->where('AssessmentPeriodId', $attributes['assessmentPeriodId'])->first();
+            if ($attributes['status'] == TestSemester::STATUS['UNTESTING'] || $attributes['status'] == TestSemester::STATUS['TESTING'] || $attributes['status'] == TestSemester::STATUS['FINISH']) {
+                if (is_null($testSemester)) {
+                    $student = Student::find($attributes['studentId']);
+                    $attributes['TimeAgeTestSemester'] = Carbon::parse($student->DayOfBirth)->diffInMonths(now());
+                    $testSemester = $this->model::create($attributes);
+                } else {
+                    $testSemester->update($attributes);
+                }
 
-            if (!empty($attributes['status'])) {
-                $attributes['status'] = TestSemester::STATUS[$attributes['status']];
-            }
-
-            if (is_null($testSemester)) {
-
-                $student = Student::where('Id', $attributes['studentId'])->first();
-                $birthday = Carbon::parse($student->DayOfBirth);
-                $today = Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'));
-                $numberOfMonth = $birthday->diffInMonths($today);
-                $attributes['TimeAgeTestSemester'] = $numberOfMonth;
-
-                $testSemester = TestSemester::create($attributes);
+                if (!empty($attributes['detail']['isCheck'])) {
+                    $this->storeTestSemesterDetail($attributes, $testSemester);
+                }
             } else {
-                $testSemester->update($attributes);
-            }
-
-            if (!empty($attributes['detail']['isCheck'])) {
-
-                $detail = $testSemester->testSemesterDetail->where('CategorySkillId', $attributes['detail']['categorySkillId'])->first();
-
-                if (!is_null($detail)) {
-                    $detail->delete();
-                }
-
-                $attributes['detail']['testSemesterId'] = $testSemester->Id;
-                $attributes['detail']['status'] = TestSemesterDetail::STATUS[$attributes['detail']['status']];
-                $attributes['detail']['serialNumber'] = TestSemesterDetail::max('SerialNumber') + 1;
-                $testSemesterDetail = TestSemesterDetail::create($attributes['detail']);
-                foreach ($attributes['detail']['isCheck'] as $value) {
-                    $value['testSemesterDetailId'] = $testSemesterDetail->Id;
-                    TestSemesterDetailChildren::create($value);
-                }
-            }
-
-            if (!empty($attributes['status']) && $attributes['status'] == 3) {
                 $testSemester->testSemesterDetail()->delete();
+                $testSemester->update([
+                    'status' => TestSemester::STATUS['CANCEL'],
+                    'approvalStatus' => TestSemester::APPROVAL_STATUS['UNSENT']
+                ]);
             }
 
             \DB::commit();
@@ -225,7 +209,16 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
     public function update(array $attributes, $id)
     {
-        $testSemester = TestSemester::find($id);
+        $testSemester = $this->model::find($id);
+
+        if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['PENDING_APPROVED']) {
+            $attributes['timePendingApproved'] = now()->format('Y-m-d H:i:s');
+        }
+
+        if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['APPROVED']) {
+            $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
+        }
+
         $testSemester->update($attributes);
 
         return parent::find($id);
@@ -337,5 +330,102 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         return $student;
+    }
+
+    public function storeTestSemesterDetail($attributes, $testSemester)
+    {
+        $testSemester->testSemesterDetail()->where('CategorySkillId', $attributes['detail']['categorySkillId'])->delete();
+        $attributes['detail']['testSemesterId'] = $testSemester->Id;
+        $attributes['detail']['serialNumber'] = TestSemesterDetail::max('SerialNumber') + 1;
+        $testSemesterDetail = TestSemesterDetail::create($attributes['detail']);
+        $totalScore = 0;
+
+        foreach ($attributes['detail']['isCheck'] as $value) {
+
+            if (!empty($value['status'])) {
+                $value['status'] = TestSemesterDetailChildren::STATUS[$value['status']];
+
+                if ($value['status'] === TestSemesterDetailChildren::STATUS['CHECKED']) {
+                    $totalScore += $value['score'];
+                }
+            }
+            $value['testSemesterDetailId'] = $testSemesterDetail->Id;
+
+            TestSemesterDetailChildren::create($value);
+        }
+
+        $testSemesterDetail->update(['TotalScore' => $totalScore]);
+    }
+
+    public function approvedTestSemester(array $attributes)
+    {
+        if (!empty($attributes['id'])) {
+            $testSemesters = $this->model()::WhereIn('Id', explode(',', $attributes['id']))->get();
+        } else {
+            $this->model = $this->model->where('ApprovalStatus', TestSemester::APPROVAL_STATUS['PENDING_APPROVED']);
+
+            if (!empty($attributes['branchId'])) {
+                $this->model = $this->model->whereHas('student.classes', function ($q) use ($attributes) {
+                    $q->where('BranchId', $attributes['branchId']);
+                });
+            }
+
+            if (!empty($attributes['classId'])) {
+                $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
+                    $query->where('ClassId', $attributes['classId']);
+                });
+            }
+
+            if (!empty($attributes['assessmentPeriodId'])) {
+                $this->model = $this->model->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
+            }
+
+            if (!empty($attributes['schoolYearId'])) {
+                $this->model = $this->model->where('SchoolYearId', $attributes['schoolYearId']);
+            }
+
+            if (!empty($attributes['key'])) {
+                $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
+                    $q->whereLike('FullName', $attributes['key']);
+                });
+            }
+
+            $testSemesters = $this->model->orderBy('CreationTime')->get();
+        }
+
+        if (count($testSemesters) > 0) {
+
+            foreach ($testSemesters as $testSemester) {
+                $testSemester->update([
+                    'timeApproved' => now()->format('Y-m-d H:i:s'),
+                    'approvalStatus' => TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']]
+                ]);
+
+                $student = $testSemester->student;
+                $studentAccount = $testSemester->student->parent()->with('account')->get();
+
+                $images =  json_decode($student->FileImage);
+                $urlImage = '';
+
+                if (!empty($images)) {
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
+                $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
+
+                if (!empty($studentAccount)) {
+                    $dataNoti = [
+                        'users' => array_column($studentAccount->pluck('account')->toArray(), 'AppUserId'),
+                        'title' => $student->FullName,
+                        'imageURL' => $urlImage,
+                        'message' => $message,
+                        'moduleType' => 22,
+                        'refId' => $testSemester->Id,
+                    ];
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNoti));
+                }
+            }
+        }
+
+        return parent::all();
     }
 }

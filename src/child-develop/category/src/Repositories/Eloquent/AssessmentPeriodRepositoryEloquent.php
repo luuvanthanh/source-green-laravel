@@ -74,6 +74,10 @@ class AssessmentPeriodRepositoryEloquent extends BaseRepository implements Asses
             });
         }
 
+        if (!empty($attributes['schoolYearId'])) {
+            $this->model = $this->model->where('SchoolYearId', $attributes['schoolYearId']);
+        }
+
         if (!empty($attributes['limit'])) {
             $assessmentPeriod = $this->paginate($attributes['limit']);
         } else {

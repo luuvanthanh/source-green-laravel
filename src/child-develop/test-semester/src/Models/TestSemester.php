@@ -7,13 +7,17 @@ use GGPHP\ChildDevelop\Category\Models\AssessmentPeriod;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ClassType;
+use GGPHP\Fee\Models\SchoolYear;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemester extends UuidModel
 {
+    use SoftDeletes;
     protected $table = 'TestSemesters';
 
     protected $fillable = [
-        'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus', 'Strength', 'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId'
+        'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus', 'Strength',
+        'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId', 'SchoolYearId', 'TimeApproved', 'TimePendingApproved'
     ];
 
     const STATUS = [
@@ -27,6 +31,7 @@ class TestSemester extends UuidModel
         'UNSENT' => 0,
         'UNQUALIFIED' => 1,
         'APPROVED' => 2,
+        'PENDING_APPROVED' => 3
     ];
 
     const TYPE = [
@@ -57,5 +62,10 @@ class TestSemester extends UuidModel
     public function user()
     {
         return $this->belongsTo(User::class, 'EmployeeId');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
 }

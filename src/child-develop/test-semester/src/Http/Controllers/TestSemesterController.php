@@ -5,6 +5,7 @@ namespace GGPHP\ChildDevelop\TestSemester\Http\Controllers;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterCreateRequest;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
@@ -86,6 +87,14 @@ class TestSemesterController extends Controller
 
         if (!empty($attributes['approvalStatus'])) {
             $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
+        }
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = TestSemester::STATUS[$attributes['status']];
+        }
+
+        if (!empty($attributes['detail']) && $attributes['detail']['status']) {
+            $attributes['detail']['status'] = TestSemesterDetail::STATUS[$attributes['detail']['status']];
         }
 
         $testSemester = $this->testSemesterRepository->create($attributes);
@@ -175,5 +184,12 @@ class TestSemesterController extends Controller
         $reportTestSemester = $this->testSemesterRepository->reportTestSemester($request->all());
 
         return $this->success($reportTestSemester, trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function approvedTestSemester(Request $request)
+    {
+        $testSemester = $this->testSemesterRepository->approvedTestSemester($request->all());
+
+        return $this->success($testSemester, trans('lang::messages.common.getInfoSuccess'));
     }
 }

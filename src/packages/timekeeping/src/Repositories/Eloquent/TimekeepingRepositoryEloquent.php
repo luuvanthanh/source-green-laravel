@@ -175,7 +175,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         } else {
             $result = $employeesByStore->paginate($attributes['limit']);
         }
-
         foreach ($result as &$employee) {
             $employee = $this->calculatorTimekeepingReport($employee, $attributes);
         }
@@ -1184,5 +1183,359 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         return array_values($responseTimeKeepingUser);
+    }
+
+    public function getTimekeepingReportByBranch($attributes)
+    {
+        $attributeNoteLimit = $attributes;
+        unset($attributeNoteLimit['limit']);
+        $timekeepingReports = $this->timekeepingReport($attributeNoteLimit, $parser = true);
+
+        $result = [];
+        foreach ($timekeepingReports as $key => $user) {
+            $positionLevelNow = $user->positionLevelNow;
+            $branchName = !is_null($positionLevelNow->branch) ? $positionLevelNow->branch->Name : '';
+            $divisionName = !is_null($positionLevelNow->division) ? $positionLevelNow->division->Name : ' ';
+
+            if (!is_null($branchName)) {
+                if (!array_key_exists($branchName, $result)) {
+                    $result[$branchName] = [
+                        'BranchName' => $branchName,
+                        'Division' => []
+                    ];
+                }
+
+                if (!is_null($divisionName)) {
+                    if (!array_key_exists($divisionName, $result[$branchName]['Division'])) {
+                        $result[$branchName]['Division'][$divisionName] = [
+                            'DivisionName' => $divisionName,
+                            'ListUser' => [$user->toArray()]
+                        ];
+                    } else {
+                        $result[$branchName]['Division'][$divisionName]['ListUser'][] = $user->toArray();
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function exportExcelTimekeepingByBranch($attributes)
+    {
+        $results = $this->getTimekeepingReportByBranch($attributes);
+
+        $branch = '.............';
+        $division = '.............';
+        if (!empty($attributes['branchId'])) {
+            $branch = Branch::find($attributes['branchId'])->Name;
+        }
+
+        if (!empty($attributes['divisionId'])) {
+            $division = Division::find($attributes['divisionId'])->Name;
+        }
+
+        $params = [];
+        $params['{month}'] = Carbon::parse($attributes['endDate'])->format('m');
+        $params['{branch}'] = $branch;
+        $params['{division}'] = $division;
+        $params['{note}'] = '';
+        $params['{work}'] = '';
+        $params['{sign}'] = '';
+        $params['[number]'] = [];
+        $params['[fullName]'] = [];
+        $params['[totalWork]'] = [];
+        $params['[sign]'] = [];
+        $init_value = [];
+        $month = [];
+        $color_branch = [];
+        $color_division = [];
+
+        $period = Carbon::create($attributes['startDate'])->daysUntil($attributes['endDate']);
+        $period->setLocale('vi_VN');
+        $params['[[date]]'][] = iterator_to_array($period->map(function (Carbon $date) use (&$init_value, &$month, &$color_branch, &$color_division) {
+            $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+
+            $month[] = 'Tháng ' . $date->format('m');
+            if ($check === 'Saturday' || $check === 'Sunday') {
+                $init_value[$date->format('Y-m-d')] = ''; // cuối tuần
+                $color_branch[$date->format('Y-m-d')] = '';
+                $color_division[$date->format('Y-m-d')] = '';
+            } else {
+                $init_value[$date->format('Y-m-d')] = '-';
+                $color_branch[$date->format('Y-m-d')] = 'color_branch';
+                $color_division[$date->format('Y-m-d')] = 'color_division';
+            }
+
+            return $date->format('d');
+        }));
+
+        foreach ($results as $key => $result) {
+            $params['[number]'][] = $result['BranchName'] . '.branch';
+            $params['[fullName]'][] = '-';
+            $params['[[values]]'][] = array_values($color_branch);
+            $params['[totalWork]'][] = 'branch';
+            $params['[sign]'][] = '';
+            foreach ($result['Division'] as $key => $value) {
+                $params['[number]'][] = $value['DivisionName'] . '.division';
+                $params['[fullName]'][] = '+';
+                $params['[[values]]'][] = array_values($color_division);
+                $params['[totalWork]'][] = 'division';
+                $params['[sign]'][] = '';
+
+                foreach ($value['ListUser'] as $key => $user) {
+                    $params['[number]'][] = ++$key;
+                    $params['[fullName]'][] = $user['FullName'];
+                    $values = $init_value;
+                    if (!empty($user['timeKeepingReport'])) {
+                        foreach ($user['timeKeepingReport'] as $item) {
+                            if ($item['type'] == 'WK') {
+                                $values[$item['date']] = '';
+                            } else {
+                                $values[$item['date']] = $item['type'] ? $item['type'] : '_';
+                            }
+                        }
+                    }
+                    $params['[[values]]'][] = array_values($values);
+                    $params['[totalWork]'][] = $user['totalWorks'];
+                    $params['[sign]'][] = '';
+                }
+            }
+        }
+
+        $params['[[month]]'][] = array_values($month);
+        $listMerge = [];
+        $listRowTs = [];
+
+        $callbacks = [
+            '[[month]]' => function (CallbackParam $param) use (&$listMerge) {
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                if ($cell_coordinate == 'C3') {
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                    for ($i = 0; $i < count($param->param[$row_index]); $i++) {
+                        $adjustedColumnIndex = $columnIndex + $i;
+                        if ($param->param[$row_index][$i] != $firstValue) {
+
+                            $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+
+                            $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                            $firstValue = $param->param[$row_index][$i];
+                        }
+
+                        if ($i == count($param->param[$row_index]) - 1) {
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                        }
+                    }
+                }
+
+                foreach ($mergeCoordinate as $key => $coordinate) {
+                    if ($key % 2 != 0) {
+                        $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
+                        $listMerge[] = $merge;
+                    }
+                }
+            },
+            '[[values]]' => function (CallbackParam $param) use (&$listMerge, &$listRowTs) {
+                $sheet = $param->sheet;
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $value = $param->param[$row_index][$col_index];
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+
+                if ($value == '') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('5b9bd5');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                }
+
+                if ($value == 'NV') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('c0504d');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue(null);
+                }
+
+                if ($value == 'L') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('fbe4d5');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                }
+
+                if ($value == 'TS') {
+                    $mergeCoordinate[] = $cell_coordinate;
+
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('ffff00');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+
+                    $firstValue = $param->param[$row_index][$col_index];
+
+                    if (!in_array($row_index, $listRowTs)) {
+                        $listRowTs[] = $row_index;
+                        for ($i = $col_index; $i < count($param->param[$row_index]); $i++) {
+                            $adjustedColumnIndex = $columnIndex++;
+                            if ($param->param[$row_index][$i] != $firstValue) {
+
+                                $valueBefor = $param->param[$row_index][$i - 1];
+
+                                if ($valueBefor == 'TS') {
+                                    $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+
+                                    $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                                } elseif ($param->param[$row_index][$i] == 'TS' && $valueBefor != 'TS') {
+                                    $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                                    $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                                }
+
+                                $firstValue = $param->param[$row_index][$i];
+                            }
+
+                            if ($i == count($param->param[$row_index]) - 1 && $param->param[$row_index][$i] == 'TS') {
+                                $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                                $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            }
+                        }
+                    }
+
+                    foreach ($mergeCoordinate as $key => $coordinate) {
+                        if ($key % 2 != 0) {
+                            $merge = $mergeCoordinate[$key - 1] . ':' . $mergeCoordinate[$key];
+                            $listMerge[] = $merge;
+                        }
+                    }
+                }
+
+                if ($value == 'color_branch') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FBBC03');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue(null);
+                }
+
+                if ($value == 'color_division') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FEF2CC');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue(null);
+                }
+
+                $sheet->getColumnDimension($currentColumn)->setWidth(3);
+            },
+            '{note}' => function (CallbackParam $param) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $lastCol = 'AJ' . $currentRow;
+                $merge = $cell_coordinate . ':' . $lastCol;
+
+                $sheet->mergeCells($merge);
+
+                $sheet->getRowDimension($currentRow)->setRowHeight(80);
+            },
+            '{work}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ':' . $mergeCol;
+
+                $listMerge[] = $merge;
+            },
+            '{sign}' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ':' . $mergeCol;
+
+                $listMerge[] = $merge;
+            },
+            '[fullName]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == '-') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FBBC03');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue(null);
+                }
+
+                if ($value == '+') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FEF2CC');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue(null);
+                }
+            },
+            '[number]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+                $value = explode('.', $value);
+
+                if ($value[count($value) - 1] == 'branch') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FBBC03');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                }
+
+                if ($value[count($value) - 1] == 'division') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FEF2CC');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue($value[0]);
+                }
+            },
+            '[totalWork]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $value =  $sheet->getCell($cell_coordinate)->getValue();
+
+                if ($value == 'branch' && !empty($value)) {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FBBC03');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue(null);
+                }
+
+                if ($value == 'division' && !empty($value)) {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('FEF2CC');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue(null);
+                }
+            },
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge) {
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+                $sheet->mergeCells('A1:AJ2');
+            },
+
+        ];
+
+        return $this->excelExporterServices->export('timekeeping_report_by_branch', $params, $callbacks, $events);
     }
 }
