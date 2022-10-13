@@ -6,6 +6,8 @@ use GGPHP\Core\Models\UuidModel;
 
 class Position extends UuidModel
 {
+    const HIEUTRUONG = 'HT';
+
     public $incrementing = false;
 
     /**

@@ -3,6 +3,7 @@
 namespace GGPHP\ChildDevelop\TestSemester\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\Position;
 use GGPHP\ChildDevelop\TestSemester\Presenters\TestSemesterPresenter;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
@@ -11,6 +12,7 @@ use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetailChildren;
 use GGPHP\ChildDevelop\TestSemester\Services\StudentServices;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
+use GGPHP\Users\Models\User;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -147,7 +149,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
     public function create(array $attributes)
     {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $testSemester = $this->model::where('StudentId', $attributes['studentId'])->where('AssessmentPeriodId', $attributes['assessmentPeriodId'])->first();
 
@@ -171,9 +173,9 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 ]);
             }
 
-            \DB::commit();
+            DB::commit();
         } catch (\Throwable $th) {
-            \DB::rollback();
+            DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
 
@@ -219,7 +221,45 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
         }
 
+        $student = $testSemester->student;
+        $branchId = $student->classes->BranchId;
+
+        $employee = User::whereHas('positionLevelNow', function ($q) use ($branchId) {
+            $q->where('BranchId', $branchId)->whereHas('position', function ($query) {
+                $query->where('Code', Position::HIEUTRUONG);
+            });
+        })->with('account')->get();
+
+        if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['UNQUALIFIED']) {
+            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS['APPROVED'];
+            $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
+            $parentAccount = $testSemester->student->parent()->with('account')->get();
+
+            $images =  json_decode($student->FileImage);
+            $urlImage = '';
+
+            if (!empty($images)) {
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+            $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
+
+            $arrId = array_merge(array_column($employee->pluck('account')->toArray(), 'AppUserId'), array_column($parentAccount->pluck('account')->toArray(), 'AppUserId'));
+
+            if (!empty($arrId)) {
+                $dataNotiCation = [
+                    'users' => $arrId,
+                    'title' => $student->FullName,
+                    'imageURL' => $urlImage,
+                    'message' => $message,
+                    'moduleType' => 22,
+                    'refId' => $testSemester->Id,
+                ];
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+            }
+        }
+
         $testSemester->update($attributes);
+        $testSemester->testSemesterHeadmaster()->attach(array_column($employee->ToArray(), 'Id'));
 
         return parent::find($id);
     }
