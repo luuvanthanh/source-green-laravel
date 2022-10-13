@@ -308,14 +308,14 @@ class Index extends PureComponent {
     return null;
   };
 
-  exportExcel = async () => {
+  exportExcel = () => {
     const {
       branches,
     } = this.props;
     const { search } = this.state;
     const dataBranch = branches?.find(i => i?.id === search?.branchId);
     this.setStateData({ downloading: true });
-    await Helper.exportExcel(
+    Helper.exportExcel(
       `/v1/export-excel-timekeeping-by-branch`,
       {
         ...omit(search, 'page', 'limit'),

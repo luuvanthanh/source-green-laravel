@@ -62,9 +62,21 @@ const Index = memo(() => {
                 reason: undefined,
                 timeApply: undefined,
                 note: undefined,
-                detail: [],
             });
         }
+    };
+
+    const handleModal = () => {
+        mountedSet(setVisible, true);
+        mountedSet(setObjects, {});
+        form.setFieldsValue({
+            decisionNumber: undefined,
+            decisionDate: undefined,
+            reason: undefined,
+            timeApply: undefined,
+            note: undefined,
+            details: [{}],
+        });
     };
 
     const cancelModal = () => {
@@ -79,7 +91,7 @@ const Index = memo(() => {
                 ...record,
                 decisionDate: record.decisionDate && moment(record.decisionDate),
                 timeApply: record.timeApply && moment(record.timeApply),
-                detail: record.parameterValues.map((item) => ({
+                details: record.parameterValues.map((item) => ({
                     ...item,
                     parameterValueId: item?.pivot?.parameterValueId,
                     value: item?.pivot?.value,
@@ -121,7 +133,7 @@ const Index = memo(() => {
                     id: objects.id,
                     ...values,
                     employeeId: details?.id,
-                    detail: values?.detail?.map((item) => ({
+                    detail: values?.details?.map((item) => ({
                         ...item,
                         date: moment(item.date).format(variables.DATE_FORMAT.DATE_AFTER),
                         endTime: moment(item.endTime).format(variables.DATE_FORMAT.TIME_FULL),
@@ -256,10 +268,10 @@ const Index = memo(() => {
 
     const onChangeParamaterValues = (value, index) => {
         if (form) {
-            const { detail } = form.getFieldsValue();
-            const valueParamter = categories.paramaterValues.find((item) => item.id === value);
+            const { details } = form.getFieldsValue();
+            const valueParamter = categories.paramaterValues?.find((item) => item.id === value);
             form.setFieldsValue({
-                detail: detail.map((item, indexDetail) => {
+                details: details?.map((item, indexDetail) => {
                     if (indexDetail === index) {
                         return {
                             ...item,
@@ -307,7 +319,7 @@ const Index = memo(() => {
                     layout="vertical"
                     form={form}
                     initialValues={{
-                        detail: [{}],
+                        details: [{}],
                     }}
                 >
                     <div className={styles['content-form']}>
@@ -362,7 +374,7 @@ const Index = memo(() => {
                             </div>
                             <div className="row">
                                 <div className="col-lg-12">
-                                    <Form.List name="detail">
+                                    <Form.List name="details">
                                         {(fields, { add, remove }) => (
                                             <div>
                                                 {fields.map((field, index) => (
@@ -452,7 +464,7 @@ const Index = memo(() => {
                 </Pane>
 
                 <Pane style={{ padding: 20 }}>
-                    <Button color="success" ghost icon="plus" onClick={handleOk}>
+                    <Button color="success" ghost icon="plus" onClick={() => handleModal()}>
                         Thêm
                     </Button>
                 </Pane>
