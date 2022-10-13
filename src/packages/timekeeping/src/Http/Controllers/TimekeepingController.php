@@ -148,19 +148,24 @@ class TimekeepingController extends Controller
 
             return $this->success(['data' => $employeesByStore], trans('lang::messages.common.getInfoSuccess'));
         } catch (\Throwable $th) {
-            dd($th);
+
             return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getCode());
         }
     }
 
     public function exportExcelTimekeepingByBranch(Request $request)
     {
-        $result = $this->timekeepingRepository->exportExcelTimekeepingByBranch($request->all());
 
-        if (is_string($result)) {
-            return $this->error('Export failed', trans('Template not found'), 400);
+        try {
+            $result = $this->timekeepingRepository->exportExcelTimekeepingByBranch($request->all());
+
+            if (is_string($result)) {
+                return $this->error('Export failed', trans('Template not found'), 400);
+            }
+
+            return $result;
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getCode());
         }
-
-        return $result;
     }
 }
