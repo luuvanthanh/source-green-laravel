@@ -6,9 +6,12 @@ use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetail;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetailChildren;
 use GGPHP\Core\Models\UuidModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemesterDetailChildren extends UuidModel
 {
+    use SoftDeletes;
+
     protected $table = 'TestSemesterDetailChildrens';
 
     const STATUS = [
