@@ -424,6 +424,7 @@ const Index = () => {
                 <FormItem
                   data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
                   name="branchId"
+                  placeholder="Chọn cơ sở"
                   onChange={(event) => onChangeSelect(event, 'branchId')}
                   type={variables.SELECT}
                 />
@@ -435,6 +436,7 @@ const Index = () => {
                   onChange={(event) => onChangeMonth(event, 'date')}
                   type={variables.MONTH_PICKER}
                   allowClear={false}
+                  placeholder="Chọn ngày"
                 />
               </div>
 
@@ -442,6 +444,7 @@ const Index = () => {
                 <FormItem
                   data={employees}
                   name="employeeId"
+                  placeholder="Chọn nhân viên"
                   onChange={(event) => onChangeSelectMultiple(event, 'employeeId')}
                   type={variables.SELECT_MUTILPLE}
                 />

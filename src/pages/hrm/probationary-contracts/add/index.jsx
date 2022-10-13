@@ -291,7 +291,7 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Giá trị',
+        title: 'Giá trị (đ)',
         key: 'values',
         dataIndex: 'valueDefault',
         className: 'min-width-120',
@@ -425,6 +425,9 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
           onValuesChange={this.formUpdate}
+          initialValues={{
+            isAuthority: true,
+          }}
         >
           <div className={styles['content-form']}>
             <Loading
@@ -580,10 +583,18 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>
-                  <div className="col-lg-2">
+                  <div className="col-lg-3">
                     <FormItem
                       label="Không tham gia BHXH"
                       name="isSocialInsurance"
+                      type={variables.CHECKBOX_FORM}
+                      valuePropName="checked"
+                    />
+                  </div>
+                  <div className="col-lg-3">
+                    <FormItem
+                      label="Hợp đồng ủy quyền"
+                      name="isAuthority"
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"
                     />

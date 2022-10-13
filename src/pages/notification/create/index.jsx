@@ -46,6 +46,7 @@ const Index = memo(() => {
   const mountedSet = (action, value) => mounted?.current && action(value);
   const dispatch = useDispatch();
 
+  const [checkboxInput, setCheckboxInput] = useState(!params?.id);
   const [content, setContent] = useState('');
   const [isAllEmployees, setIsAllEmployees] = useState(false);
   const [checkTime, setCheckTime] = useState(undefined);
@@ -473,6 +474,7 @@ const Index = memo(() => {
 
   const onChangeSearch = (value) => {
     debouncedSearchUser(value);
+    setIsAllEmployees(false);
     setSearchEmployee({
       ...searchEmployee,
       fullName: value,
@@ -480,6 +482,7 @@ const Index = memo(() => {
   };
 
   const changeCheckboxEmployee = (id) => {
+    setCheckboxInput(true);
     mountedSet(
       setEmployees,
       employees.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)),
@@ -491,6 +494,7 @@ const Index = memo(() => {
   };
 
   const changeCheckboxParent = (id) => {
+    setCheckboxInput(true);
     mountedSet(
       setParents,
       parents.map((item) => (item?.student?.id === id ? { ...item, checked: !item.checked } : item)),
@@ -629,7 +633,7 @@ const Index = memo(() => {
   };
 
   const changeAll = (type, event) => {
-
+    setCheckboxInput(true);
     if (type === variablesModules.TYPE.EMPLOYEE) {
       mountedSet(setIsAllEmployees, event.target.checked);
       mountedSet(
@@ -985,7 +989,7 @@ const Index = memo(() => {
                   <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
                     <FormItemAntd label="Người nhận thông báo">
                       <FormItem
-                        name="FullName"
+                        name="keyWord"
                         placeholder="Nhập từ khóa tìm kiếm"
                         type={variables.INPUT_SEARCH}
                         onChange={(e) => onChangeSearch(e.target.value)}
@@ -1043,9 +1047,17 @@ const Index = memo(() => {
 
 
                   <Pane className="p20">
-                    <Text color="dark" size="normal">
-                      Đã chọn {size(employees?.filter((item) => item.checked))} nhân viên
-                    </Text>
+                    {
+                      !checkboxInput ?
+                        <Text color="dark" size="normal">
+                          Đã chọn {size(details?.employeeNews)} nhân viên
+                        </Text>
+                        :
+
+                        <Text color="dark" size="normal">
+                          Đã chọn {size(employees?.filter((item) => item.checked))} nhân viên
+                        </Text>
+                    }
                   </Pane>
                 </>
               )}
@@ -1155,9 +1167,16 @@ const Index = memo(() => {
                   }
 
                   <Pane className="p20">
-                    <Text color="dark" size="normal">
-                      Đã chọn {size(parents?.filter((item) => item.checked))} học sinh
-                    </Text>
+                    {
+                      !checkboxInput ?
+                        <Text color="dark" size="normal">
+                          Đã chọn {size(details?.parentNews)} Học sinh
+                        </Text>
+                        :
+                        <Text color="dark" size="normal">
+                          Đã chọn {size(parents?.filter((item) => item.checked))} học sinh
+                        </Text>
+                    }
                   </Pane>
                 </>
               )}
@@ -1267,7 +1286,8 @@ const Index = memo(() => {
                     !employees.find((item) => item.checked) &&
                     !parents.find((item) => item.checked) &&
                     !isAllEmployees &&
-                    !isAllParents
+                    !isAllParents &&
+                    checkboxInput
                   }
                 >
                   Lưu
@@ -1286,7 +1306,9 @@ const Index = memo(() => {
                     !employees.find((item) => item.checked) &&
                     !parents.find((item) => item.checked) &&
                     !isAllEmployees &&
+                    checkboxInput &&
                     !isAllParents || (details?.sentDate && params?.id)
+
                   }
                 >
                   Gửi

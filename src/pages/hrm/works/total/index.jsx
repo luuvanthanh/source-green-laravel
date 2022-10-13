@@ -13,6 +13,7 @@ import { variables, Helper } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -30,7 +31,6 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ works, loading }) => ({
-  data: works.data,
   pagination: works.pagination,
   error: works.error,
   holidays: works.holidays,
@@ -50,6 +50,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        data: [],
         fullName: query?.fullName,
         branchId: query?.branchId,
         divisionId: query?.divisionId,
@@ -140,6 +141,40 @@ class Index extends PureComponent {
       type: 'works/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response, error) => {
+        if (response) {
+          this.setStateData(
+            () => ({
+              data: Object.keys(response.payload).map((key) => ({
+                id: key,
+                name: key,
+                children:
+                  response?.payload[key]?.Division &&
+                  Object.keys(response?.payload[key]?.Division).map((keyParent) => ({
+                    key: `${key}-${keyParent}`,
+                    name: keyParent,
+                    children:
+                      response?.payload[key]?.Division[keyParent]?.ListUser &&
+                      Object.keys(response?.payload[key]?.Division[keyParent]?.ListUser).map(
+                        (keyProduct) => ({
+                          key: `${key}-${keyParent}-${keyProduct}`,
+                          name: keyProduct,
+                          ...(response?.payload[key]?.Division[keyParent]?.ListUser[keyProduct] || {}),
+                        }),
+                      ),
+                  })),
+              })),
+            }),
+          );
+        }
+        if (error) {
+          this.setStateData(
+            () => ({
+              data: [],
+            }),
+          );
+        }
       },
     });
     history.push(
@@ -273,15 +308,15 @@ class Index extends PureComponent {
     return null;
   };
 
-  exportExcel = async () => {
+  exportExcel = () => {
     const {
       branches,
     } = this.props;
     const { search } = this.state;
     const dataBranch = branches?.find(i => i?.id === search?.branchId);
     this.setStateData({ downloading: true });
-    await Helper.exportExcel(
-      `/v1/timekeeping-report-export`,
+    Helper.exportExcel(
+      `/v1/export-excel-timekeeping-by-branch`,
       {
         ...omit(search, 'page', 'limit'),
         startDate: Helper.getDateTime({
@@ -504,9 +539,7 @@ class Index extends PureComponent {
         className={classnames(styles['item-schedules'], {
           [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
         })}
-      >
-        -
-      </Link>
+      />
     );
   };
 
@@ -543,27 +576,60 @@ class Index extends PureComponent {
     ];
     const arrayHeader = [
       {
-        title: 'Nhân viên',
-        key: 'fullName',
-        className: 'min-width-200 col-fixed-200',
+        title: 'STT',
+        key: 'no',
+        align: 'center',
         width: 200,
-        fixed: 'left',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record.fileImage)}
-            fullName={record.fullName}
-          />
-        ),
+        className: classnames('max-width-200', 'min-width-200', 'col-fixed-200'),
+        render: (value, record, index) => {
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']}>
+                {value?.children ?
+                  <>
+                    {value?.name}
+                  </> : <>   {Helper.serialOrder(search?.page, index, search?.limit)}</>
+                }
+              </div>
+            ),
+            props: {},
+          };
+          return obj;
+        },
       },
       {
-        title: 'Bộ phận',
-        key: 'division',
+        title: 'Nhân viên',
+        key: 'FullName',
         align: 'center',
-        width: 120,
-        fixed: 'left',
-        className: classnames('max-width-120', 'min-width-120', 'col-fixed-120'),
-        render: (record) => this.getDivisions(record?.positionLevel, search?.divisionId),
+        width: 250,
+        className: classnames('max-width-250', 'min-width-250', 'col-fixed-250'),
+        render: (value, record) => {
+          const obj = {
+            children: (
+              <div className={stylesModule['table-name']} >
+                {value?.children ?
+                  <>
+                  </> : <>  <AvatarTable
+                    fileImage={Helper.getPathAvatarJson(record.FileImage)}
+                    fullName={record.FullName}
+                  /></>
+                }
+              </div>
+            ),
+            props: {},
+          };
+          return obj;
+        },
       },
+      // {
+      //   title: 'Bộ phận',
+      //   key: 'division',
+      //   align: 'center',
+      //   width: 120,
+      //   fixed: 'left',
+      //   className: classnames('max-width-120', 'min-width-120', 'col-fixed-120'),
+      //   render: (record) => this.getDivisions(record?.positionLevel, search?.divisionId),
+      // },
     ];
 
     const arrayMonth = Helper.treeDate(
@@ -594,8 +660,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      data,
-      error,
       employees,
       pagination,
       match: { params },
@@ -603,7 +667,7 @@ class Index extends PureComponent {
       divisions,
       branches,
     } = this.props;
-    const { search, downloading } = this.state;
+    const { search, downloading, data } = this.state;
     const loading = effects['works/GET_DATA'];
     return (
       <>
@@ -677,22 +741,26 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
-              bordered
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              error={error}
-              isError={error.isError}
-              className="table-work"
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '60vh' }}
-            />
+            <div className={stylesModule['wrapper-table']}>
+              <Table
+                bordered
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                // error={error}
+                // isError={error.isError}
+                defaultExpandAllRows
+                className="table-work"
+                childrenColumnName="children"
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record?.name || record?.id}
+                scroll={{ x: '100%', y: '60vh' }}
+              />
+            </div>
           </div>
         </div>
       </>
@@ -702,12 +770,10 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
   holidays: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
@@ -716,12 +782,10 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  data: [],
   pagination: {},
   loading: {},
   dispatch: {},
   location: {},
-  error: {},
   holidays: [],
   divisions: [],
   branches: [],

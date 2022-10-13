@@ -35,8 +35,8 @@ function Index() {
 
   const [parameterValues, setParameterValues] = useState([]);
   const [show, setShow] = useState(false);
-  const [isValid, setIsValid] = useState(false);
   const [dataFormContarct, setDataFormContarct] = useState([]);
+  const [numberMonth, setNumberMonth] = useState(0);
 
   const loadCategories = () => {
     dispatch({
@@ -76,6 +76,7 @@ function Index() {
       if (details?.project) {
         setShow(true);
       }
+      setNumberMonth(details?.month);
       formRef.setFieldsValue({
         ...details,
         contractDate: details.contractDate && moment(details.contractDate),
@@ -83,21 +84,6 @@ function Index() {
         contractTo: details.contractTo && moment(details.contractTo),
       });
 
-      if (details.contractFrom && details.contractTo) {
-        if (moment(details.contractTo).diff(moment(details.contractFrom), 'days') > 366) {
-          setIsValid(true);
-          formRef.setFields([
-            {
-              name: 'month',
-              errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-            },
-            {
-              name: 'date',
-              errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-            },
-          ]);
-        }
-      }
       setparameterValues(
         details.parameterValues.map((item) => ({
           ...item,
@@ -117,35 +103,20 @@ function Index() {
           .add(month || 0, 'months')
           .add(date || 0, 'day'),
       });
-      const yearPoint = moment(contractFrom).add(12, 'months');
-      const timeContract = moment(contractFrom)
-        .add(month || 0, 'months')
-        .add(date || 0, 'days');
-      if (timeContract.isAfter(yearPoint)) {
-        setIsValid(false);
-        formRef.setFields([
-          {
-            name: 'month',
-            errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-          },
-          {
-            name: 'date',
-            errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-          },
-        ]);
-      } else {
-        setIsValid(true);
-        formRef.setFields([
-          {
-            name: 'month',
-            errors: '',
-          },
-          {
-            name: 'date',
-            errors: '',
-          },
-        ]);
-      }
+      // const yearPoint = moment(contractFrom).add(12, 'months');
+      // const timeContract = moment(contractFrom)
+      //   .add(month || 0, 'months')
+      //   .add(date || 0, 'days');
+      formRef.setFields([
+        {
+          name: 'month',
+          errors: '',
+        },
+        {
+          name: 'date',
+          errors: '',
+        },
+      ]);
     }
   };
 
@@ -191,13 +162,35 @@ function Index() {
         employeeId: value,
       },
       callback: (response) => {
-        if (!isEmpty(response)) {
+        if (response?.length > 0) {
           const details = head(response);
           formRef.setFieldsValue({
             ...omit(details, 'typeOfContractId'),
-            contractDate: details.contractDate && moment(details.contractDate),
+            contractDate: null,
+            ordinalNumber: null,
             contractFrom: details.contractFrom && moment(details.contractFrom),
             contractTo: details.contractTo && moment(details.contractTo),
+          });
+        } else {
+          formRef.setFieldsValue({
+            contractDate: null,
+            contractNumber: null,
+            ordinalNumber: null,
+            typeOfContractId: null,
+            month: null,
+            date: null,
+            divisionId: null,
+            positionId: null,
+            branchId: null,
+            contractFrom: null,
+            contractTo: null,
+            workDetail: null,
+            workTime: null,
+            joinSocialInsurance: false,
+            isAuthority: true,
+            project: false,
+            nameProject: null,
+            representId: null,
           });
         }
       },
@@ -217,7 +210,7 @@ function Index() {
     const payload = {
       ...values,
       id: params.id,
-      ordinalNumber: head(dataFormContarct)?.ordinalNumber,
+      ordinalNumber: values?.ordinalNumber,
       numberForm: head(dataFormContarct)?.numberForm,
       numberFormContractId: head(dataFormContarct)?.id,
       type: 'SEASONAL',
@@ -252,40 +245,27 @@ function Index() {
       nameProject: values.project ? values.nameProject : null,
     };
 
-    if (!isValid) {
-      dispatch({
-        type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
-        payload,
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+    dispatch({
+      type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
+      payload,
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              formRef.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                formRef.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    } else {
-      formRef.setFields([
-        {
-          name: 'month',
-          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-        },
-        {
-          name: 'date',
-          errors: ['Tổng số tháng và ngày vượt quá 12 tháng'],
-        },
-      ]);
-    }
+        }
+      },
+    });
   };
 
   const onRemove = (record) => {
@@ -316,7 +296,7 @@ function Index() {
         ),
       },
       {
-        title: 'Giá trị',
+        title: 'Giá trị (đ)',
         key: 'values',
         dataIndex: 'valueDefault',
         className: 'min-width-120',
@@ -393,6 +373,10 @@ function Index() {
     });
   };
 
+  const onChangeMonth = (e) => {
+    setNumberMonth(e);
+  };
+
   return (
     <>
       <Breadcrumbs
@@ -405,6 +389,9 @@ function Index() {
         form={formRef}
         onFinish={onFinish}
         onValuesChange={formUpdate}
+        initialValues={{
+          isAuthority: true,
+        }}
       >
         <div className={styles['content-form']}>
           <Loading
@@ -498,7 +485,8 @@ function Index() {
                     label="Số tháng hợp đồng"
                     name="month"
                     type={variables.INPUT_COUNT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT_MONTH]}
+                    rules={[variables.RULES.EMPTY]}
+                    onChange={onChangeMonth}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -506,7 +494,7 @@ function Index() {
                     label="Số ngày hợp đồng"
                     name="date"
                     type={variables.INPUT_COUNT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.MIN_LENGTH_INPUT]}
+                    rules={numberMonth > 0 ? [] : [variables.RULES.EMPTY, variables.RULES.MIN_LENGTH_INPUT]}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -575,10 +563,27 @@ function Index() {
                     rules={[variables.RULES.EMPTY]}
                   />
                 </div>
+                <div className="col-lg-8">
+                  <FormItem
+                    data={Staff}
+                    options={['id', 'fullName']}
+                    label="Đại diện ký hợp đồng bên Clover"
+                    name="representId"
+                    type={variables.SELECT}
+                  />
+                </div>
                 <div className="col-lg-4">
                   <FormItem
                     label="Không tham gia BHXH"
                     name="joinSocialInsurance"
+                    type={variables.CHECKBOX_FORM}
+                    valuePropName="checked"
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <FormItem
+                    label="Hợp đồng ủy quyền"
+                    name="isAuthority"
                     type={variables.CHECKBOX_FORM}
                     valuePropName="checked"
                   />
@@ -602,15 +607,6 @@ function Index() {
                     />
                   </div>
                 )}
-                <div className="col-lg-8">
-                  <FormItem
-                    data={Staff}
-                    options={['id', 'fullName']}
-                    label="Đại diện ký hợp đồng bên Clover"
-                    name="representId"
-                    type={variables.SELECT}
-                  />
-                </div>
               </div>
               {!isEmpty(parameterValues) && (
                 <>

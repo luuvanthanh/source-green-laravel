@@ -231,8 +231,16 @@ class Index extends PureComponent {
 
   export = () => {
     const { idTable, isModalRadio } = this.state;
-    Helper.exportExcel(`/v1/${isModalRadio}/${idTable}`, {}, `HopDongLaoDong.docx`);
+    // Helper.exportExcel(`/v1/${isModalRadio}/${idTable}`, {}, `HopDongLaoDong.docx`);
     this.setState({ isModalVisible: false });
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'laboursContracts/GET_EXCEL',
+      payload: {
+        idTable,
+        isModalRadio,
+      },
+    });
   };
 
   showModal = (id) => {
@@ -411,7 +419,7 @@ class Index extends PureComponent {
                 icon="export"
                 className="ml-2"
                 onClick={() => this.showModal(record.id)}
-                // onClick={() => this.export(record.id)}
+              // onClick={() => this.export(record.id)}
               />
             </li>
           </ul>
