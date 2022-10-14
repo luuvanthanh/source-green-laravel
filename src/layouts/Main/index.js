@@ -69,7 +69,7 @@ const OBJECTS = {
   },
   NOTES: {
     icon: '/images/home/pages.svg',
-    title: 'Ghi chú',
+    title: 'Dặn dò từ phụ huynh',
     menu: 'menuLeftNotes',
   },
   TIME_TABLE: {
