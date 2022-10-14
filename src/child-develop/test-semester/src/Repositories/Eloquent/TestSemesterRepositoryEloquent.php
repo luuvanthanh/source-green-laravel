@@ -164,11 +164,13 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                     $this->storeTestSemesterDetail($attributes, $testSemester);
                 }
             } else {
-                $testSemester->testSemesterDetail()->delete();
-                $testSemester->update([
-                    'status' => TestSemester::STATUS['CANCEL'],
-                    'approvalStatus' => TestSemester::APPROVAL_STATUS['UNSENT']
-                ]);
+                if (!is_null($testSemester)) {
+                    $testSemester->testSemesterDetail()->delete();
+                    $testSemester->update([
+                        'status' => TestSemester::STATUS['CANCEL'],
+                        'approvalStatus' => TestSemester::APPROVAL_STATUS['UNSENT']
+                    ]);
+                }
             }
 
             \DB::commit();
