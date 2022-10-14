@@ -154,7 +154,7 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         }
 
         return $arrChildren;
-    }
+    }   
 
     public function update(array $attributes, $id)
     {
@@ -164,10 +164,10 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $childEvaluate->update($attributes);
 
             if (!empty($attributes['detail'])) {
-                $childEvaluate['detail'] = $this->updateDetail($childEvaluate, $attributes['detail']);
+                $childEvaluate['detail'] = $this->updateDetail($childEvaluate, $attributes['detail'][0]);
             }
 
-            if ($attributes['detail']['inputAssessment']) {
+            if ($attributes['detail'][0]['inputAssessment']) {
                 $data = $childEvaluate->toArray();
 
                 if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
