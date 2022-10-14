@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Collapse } from 'antd';
 import { head, isEmpty, get } from 'lodash';
@@ -35,6 +35,8 @@ const Index = memo(() => {
     error: childDevelopReviewScenarioAdd.error,
   }));
 
+  const [removeId, setRemoveId] = useState([]);
+
   const loadingSubmit = effects[`childDevelopReviewScenarioAdd/UPDATE`] || effects[`childDevelopReviewScenarioAdd/ADD`];
 
   const onFinish = () => {
@@ -51,9 +53,19 @@ const Index = memo(() => {
             inputAssessment: i?.inputAssessment ? i?.inputAssessment : false,
             periodicAssessment: i?.periodicAssessment ? i?.periodicAssessment : false,
             use: i?.use ? i?.use : false,
-            detailChildren: i?.childEvaluateDetailChildren ? i?.childEvaluateDetailChildren?.map((item) => ({
-              content: item.content, use: item.use ? item.use : false
-            })) : [],
+            id: i?.id,
+            // detailChildren: i?.childEvaluateDetailChildren ? i?.childEvaluateDetailChildren?.map((item) => ({
+            //   content: item.content, use: item.use ? item.use : false
+            // })) : [],
+            detailChildren: {
+              createRows: i?.childEvaluateDetailChildren.filter((i) => !i?.id).map(item => ({
+                content: item.content, use: item.use ? item.use : false
+              })),
+              updateRows: i?.childEvaluateDetailChildren.filter((item) => item.id).map(item => ({
+                content: item.content, use: item.use ? item.use : false, id: item?.id
+              })),
+              deleteRows: removeId,
+            }
           }))
         }
           :
@@ -67,7 +79,7 @@ const Index = memo(() => {
               periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment : false,
               use: item?.use ? item?.use : false,
               detailChildren: item?.childEvaluateDetailChildren ? item?.childEvaluateDetailChildren?.map((item) => ({
-                content: item.content, use: item.use ? item.use : false
+                content: item.content, use: item.use ? item.use : false,
               })) : [],
             }))
           },
@@ -277,62 +289,61 @@ const Index = memo(() => {
                                               </div>
                                             </div>
                                             <Form.List label="Hình thức tiếp cận" name={[field.name, 'childEvaluateDetailChildren']} fieldKey={[field.fieldKey, 'childEvaluateDetailChildren']}>
-                                              {(fieldss, { add, remove }) => (
-                                                <Pane>
-                                                  {fieldss.map((fieldItem, index) => (
-                                                    <>
-                                                      <Pane
-                                                        key={index}
-                                                        className="d-flex"
-                                                      >
-                                                        <div className={stylesModule['card-item']}>
-                                                          <div className={classnames(stylesModule.col)}>
-                                                            <FormItem
-                                                              className={stylesModule.item}
-                                                              fieldKey={[fieldItem.fieldKey, 'content']}
-                                                              name={[fieldItem.name, 'content']}
-                                                              type={variables.TEXTAREA}
-                                                              rules={[variables.RULES.EMPTY_INPUT]}
-                                                            />
+                                              {(fieldss, { remove }) => (
+                                                <>
+                                                  {fieldss.map((fieldItem, indexItem) => {
+                                                    const data = form?.getFieldsValue();
+                                                    const itemData = data?.data[index]?.childEvaluateDetailChildren?.find((item, indexWater) => indexWater === indexItem);
+                                                    return (
+                                                      <>
+                                                        <Pane
+                                                          key={indexItem}
+                                                          className="d-flex"
+                                                        >
+                                                          <div className={stylesModule['card-item']}>
+                                                            <div className={classnames(stylesModule.col)}>
+                                                              <FormItem
+                                                                className={stylesModule.item}
+                                                                fieldKey={[fieldItem.fieldKey, 'content']}
+                                                                name={[fieldItem.name, 'content']}
+                                                                type={variables.TEXTAREA}
+                                                                rules={[variables.RULES.EMPTY_INPUT]}
+                                                              />
+                                                            </div>
+                                                            <div className={classnames(stylesModule.col)}>
+                                                              <FormItem
+                                                                valuePropName='checked'
+                                                                name={[fieldItem.name, 'use']}
+                                                                fieldKey={[fieldItem.fieldKey, 'use']}
+                                                                type={variables.SWITCH}
+                                                              />
+                                                            </div>
+                                                            <div className={classnames(stylesModule.col)}>
+                                                              {fields.length > 0 && (
+                                                                <div className={styles['list-button']}>
+                                                                  <button
+                                                                    className={styles['button-circle']}
+                                                                    onClick={() => {
+                                                                      remove(indexItem);
+                                                                      setRemoveId([...removeId, itemData.id]);
+                                                                    }}
+                                                                    // onClick={() => 
+                                                                    //   onClickDeleteItem( remove === remove(), indexItem, itemData)
+                                                                    // }
+                                                                    type="button"
+                                                                  >
+                                                                    <span className="icon-remove" />
+                                                                  </button>
+                                                                </div>
+                                                              )}
+                                                            </div>
                                                           </div>
-                                                          <div className={classnames(stylesModule.col)}>
-                                                            <FormItem
-                                                              valuePropName='checked'
-                                                              name={[fieldItem.name, 'use']}
-                                                              fieldKey={[fieldItem.fieldKey, 'use']}
-                                                              type={variables.SWITCH}
-                                                            />
-                                                          </div>
-                                                          <div className={classnames(stylesModule.col)}>
-                                                            {fields.length > 0 && (
-                                                              <div className={styles['list-button']}>
-                                                                <button
-                                                                  className={styles['button-circle']}
-                                                                  onClick={() => {
-                                                                    remove(index);
-                                                                  }}
-                                                                  type="button"
-                                                                >
-                                                                  <span className="icon-remove" />
-                                                                </button>
-                                                              </div>
-                                                            )}
-                                                          </div>
-                                                        </div>
-                                                      </Pane>
-                                                    </>
-                                                  ))}
-                                                  <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer " >
-                                                    <span
-                                                      onClick={() => add()}
-                                                      role="presentation"
-                                                      className={stylesModule.add}
-                                                    >
-                                                      <span className="icon-plus-circle mr5" />
-                                                      Thêm
-                                                    </span>
-                                                  </Pane>
-                                                </Pane>
+                                                        </Pane>
+                                                      </>
+
+                                                    );
+                                                  })}
+                                                </>
                                               )}
                                             </Form.List>
                                           </div>
