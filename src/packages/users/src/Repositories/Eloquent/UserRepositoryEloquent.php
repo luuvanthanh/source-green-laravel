@@ -797,7 +797,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             'gender' => $user->Gender == 'MALE' ? 'Nam' : 'Nữ',
             'startDateWorking' => $this->getStartDateWorking($user, $format = 'd/m/Y'),
             'dateNow' => $dateNow,
-            'numberMonthWorking' => $this->getNumberMonthWorking($user, $dateNow, $this->getStartDateWorking($user, $format = 'Y-m-d')),
+            'numberMonthWorking' => $this->getNumberMonthWorking($user, Carbon::now(), $this->getStartDateWorking($user, $format = 'Y-m-d')),
             'numberAbsent' => '',
             'absent' => '',
             'remainingAbsent' => '',
@@ -813,7 +813,6 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
     public function getNumberMonthWorking($user, $date, $startDateWorking)
     {
-        $date = Carbon::parse($date);
         $numberYearWork = 0;
         $numberMonthWork = 0;
 
