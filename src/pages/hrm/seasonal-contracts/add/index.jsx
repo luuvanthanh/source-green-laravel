@@ -76,6 +76,7 @@ function Index() {
       if (details?.project) {
         setShow(true);
       }
+      setNumberMonth(details?.month);
       formRef.setFieldsValue({
         ...details,
         contractDate: details.contractDate && moment(details.contractDate),
@@ -185,8 +186,9 @@ function Index() {
             contractTo: null,
             workDetail: null,
             workTime: null,
-            joinSocialInsurance: null,
-            project: null,
+            joinSocialInsurance: false,
+            isAuthority: true,
+            project: false,
             nameProject: null,
             representId: null,
           });
@@ -294,7 +296,7 @@ function Index() {
         ),
       },
       {
-        title: 'Giá trị',
+        title: 'Giá trị (đ)',
         key: 'values',
         dataIndex: 'valueDefault',
         className: 'min-width-120',
@@ -387,6 +389,9 @@ function Index() {
         form={formRef}
         onFinish={onFinish}
         onValuesChange={formUpdate}
+        initialValues={{
+          isAuthority: true,
+        }}
       >
         <div className={styles['content-form']}>
           <Loading
@@ -558,10 +563,27 @@ function Index() {
                     rules={[variables.RULES.EMPTY]}
                   />
                 </div>
+                <div className="col-lg-8">
+                  <FormItem
+                    data={Staff}
+                    options={['id', 'fullName']}
+                    label="Đại diện ký hợp đồng bên Clover"
+                    name="representId"
+                    type={variables.SELECT}
+                  />
+                </div>
                 <div className="col-lg-4">
                   <FormItem
                     label="Không tham gia BHXH"
                     name="joinSocialInsurance"
+                    type={variables.CHECKBOX_FORM}
+                    valuePropName="checked"
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <FormItem
+                    label="Hợp đồng ủy quyền"
+                    name="isAuthority"
                     type={variables.CHECKBOX_FORM}
                     valuePropName="checked"
                   />
@@ -585,15 +607,6 @@ function Index() {
                     />
                   </div>
                 )}
-                <div className="col-lg-8">
-                  <FormItem
-                    data={Staff}
-                    options={['id', 'fullName']}
-                    label="Đại diện ký hợp đồng bên Clover"
-                    name="representId"
-                    type={variables.SELECT}
-                  />
-                </div>
               </div>
               {!isEmpty(parameterValues) && (
                 <>

@@ -1,5 +1,5 @@
 import request from '@/utils/requestLavarel';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
 
 export function getUsers(params = {}) {
   return request('/v1/employees', {
@@ -14,21 +14,57 @@ export function getUsers(params = {}) {
 export function getParamaterValues(params = {}) {
   return request(`/v1/paramater-values`, {
     method: 'GET',
-    params
+    params,
   });
 }
 
 export function add(data = {}) {
   return request('/v1/salary-increases', {
     method: 'POST',
-    data,
+    data: {
+      ...data,
+      timeApply: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.timeApply,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      decisionDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.decisionDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }
 
 export function update(data = {}) {
   return request(`/v1/salary-increases/${data.id}`, {
     method: 'PUT',
-    data,
+    data: {
+      ...data,
+      timeApply: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.timeApply,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      decisionDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.decisionDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }
 
