@@ -160,7 +160,7 @@ export const feature = {
       src: '/images/home/childDevelop.svg',
       animation: animationImage.childDevelop,
       url: '/su-phat-trien-cua-tre',
-      permission: [permissions.CTH],
+      permission: [permissions.SUPHATTRIENCUATRE],
     },
     {
       title: 'Chiến dịch Email',
