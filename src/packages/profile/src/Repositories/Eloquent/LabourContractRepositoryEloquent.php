@@ -345,7 +345,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => number_format($labourContract->BasicSalary), 
-            'base' => $labourContract->IsAuthority ? '-      Căn cứ giấy ủy quyền ngày 17.8.2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
+            'base' => $labourContract->IsAuthority ? '-      Căn cứ giấy ủy quyền ngày 17-8-2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
         ];
 
         return $this->wordExporterServices->exportWord('labour_contract', $params, $response);
@@ -433,7 +433,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => number_format($labourContract->BasicSalary),
             'represent_name' => $labourContract->represent ? $labourContract->represent->FullName : '',
-            'base' => $labourContract->IsAuthority ? '-      Căn cứ giấy ủy quyền ngày 17.8.2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
+            'base' => $labourContract->IsAuthority ? '-      Căn cứ giấy ủy quyền ngày 17-8-2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
         ];
 
         return $this->wordExporterServices->exportWord('authority_contract', $params, $response);
@@ -654,7 +654,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             '${allowance}' => number_format($contract->TotalAllowance - $liabilityAllowance),
             '${liability_allowance}' => !is_null($liabilityAllowance) ? number_format($liabilityAllowance) : 0,
             '${total}' => number_format($contract->BasicSalary + $contract->TotalAllowance),
-            'base' => $contract->IsAuthority ? '-      Căn cứ giấy ủy quyền ngày 17.8.2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
+            'base' => $contract->IsAuthority ? '-      Căn cứ giấy ủy quyền ngày 17-8-2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
 
         ];
 
