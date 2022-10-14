@@ -371,7 +371,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'salary' => number_format($salary),
             'allowance' => number_format($allowance),
             'total' => number_format($total),
-            'base' => $labourContract->IsAuthority ? '-     Căn cứ giấy ủy quyền ngày 17-8-2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
+            'base' => $labourContract->IsAuthority ? '-	    Căn cứ giấy ủy quyền ngày 17-08-2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
         ];
 
         return $this->wordExporterServices->exportWord('probationary_contract', $params, $response);
