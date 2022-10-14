@@ -164,11 +164,10 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $childEvaluate->update($attributes);
 
             if (!empty($attributes['detail'])) {
-                ChildEvaluateDetail::where('ChildEvaluateId', $childEvaluate->Id)->delete();
-                $childEvaluate['detail'] = $this->storeDetail($childEvaluate->Id, $attributes['detail']);
+                $childEvaluate['detail'] = $this->updateDetail($childEvaluate, $attributes['detail']);
             }
 
-            if ($attributes['detail'][0]['inputAssessment']) {
+            if ($attributes['detail']['inputAssessment']) {
                 $data = $childEvaluate->toArray();
 
                 if (!is_null($childEvaluate->ChildEvaluateCrmId)) {
@@ -223,5 +222,46 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         }
 
         return parent::find($childEvaluate->Id);
+    }
+
+    public function updateDetail($childEvaluate, $attributes)
+    {
+        $childEvaluateDetail = $childEvaluate->childEvaluateDetail()->find($attributes['id']);
+        $attributes['totalScore'] = ChildEvaluateDetail::TOTAL_SCORE;
+        $childEvaluateDetail->update($attributes);
+
+        if (!empty($attributes['detailChildren'])) {
+            $childEvaluateDetailChildren = $this->updateDetailChildren($childEvaluateDetail, $attributes['detailChildren']);
+        }
+
+        $score = ChildEvaluateDetail::TOTAL_SCORE / count($childEvaluateDetailChildren);
+        foreach ($childEvaluateDetailChildren as $key => $value) {
+            $value->update(['Score' => $score]);
+        }
+
+        return $childEvaluateDetail;
+    }
+
+    public function updateDetailChildren($childEvaluateDetail, $attributes)
+    {
+        if (!empty($attributes['createRows'])) {
+            foreach ($attributes['createRows'] as $key => $valueCreate) {
+                $valueCreate['ChildEvaluateDetailId'] = $childEvaluateDetail->Id;
+                ChildEvaluateDetailChildren::create($valueCreate);
+            }
+        }
+
+        if (!empty($attributes['updateRows'])) {
+            foreach ($attributes['updateRows'] as $key => $valueUpdate) {
+                $childEvaluateDetailChildren = $childEvaluateDetail->childEvaluateDetailChildren()->find($valueUpdate['id']);
+                $childEvaluateDetailChildren->update($valueUpdate);
+            }
+        }
+
+        if (!empty($attributes['deleteRows'])) {
+            $childEvaluateDetail->childEvaluateDetailChildren()->whereIn('Id', $attributes['deleteRows'])->delete();
+        }
+
+        return $childEvaluateDetail->childEvaluateDetailChildren;
     }
 }
