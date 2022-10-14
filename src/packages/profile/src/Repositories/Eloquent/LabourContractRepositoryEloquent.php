@@ -654,7 +654,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             '${allowance}' => number_format($contract->TotalAllowance - $liabilityAllowance),
             '${liability_allowance}' => !is_null($liabilityAllowance) ? number_format($liabilityAllowance) : 0,
             '${total}' => number_format($contract->BasicSalary + $contract->TotalAllowance),
-            'base' => $contract->IsAuthority ? '-	    Căn cứ giấy ủy quyền ngày 17-08-2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
+            'base' => $contract->IsAuthority ? '-      Căn cứ giấy ủy quyền ngày 17-08-2020 về việc ủy quyền ký hồ sơ đã được Giám đốc điều hành ủy quyền cho bà Nguyễn Thị Hồng An' : ''
 
         ];
 
