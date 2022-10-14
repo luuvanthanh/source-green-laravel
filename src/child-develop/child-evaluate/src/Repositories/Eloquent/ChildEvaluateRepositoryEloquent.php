@@ -154,7 +154,7 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         }
 
         return $arrChildren;
-    }   
+    }
 
     public function update(array $attributes, $id)
     {
@@ -234,12 +234,15 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $childEvaluateDetailChildren = $this->updateDetailChildren($childEvaluateDetail, $attributes['detailChildren']);
         }
 
-        $score = ChildEvaluateDetail::TOTAL_SCORE / count($childEvaluateDetailChildren);
-        foreach ($childEvaluateDetailChildren as $key => $value) {
+        $score = ChildEvaluateDetail::TOTAL_SCORE / count($childEvaluateDetailChildren['dataForCount']);
+        foreach ($childEvaluateDetailChildren['dataForCount'] as $key => $value) {
             $value->update(['Score' => $score]);
         }
 
-        return $childEvaluateDetail;
+        $childEvaluateDetail['detailChildren'] = $childEvaluateDetailChildren['detailChildren'];
+        $arrDetail[] = $childEvaluateDetail->toArray();
+
+        return $arrDetail;
     }
 
     public function updateDetailChildren($childEvaluateDetail, $attributes)
@@ -247,14 +250,29 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         if (!empty($attributes['createRows'])) {
             foreach ($attributes['createRows'] as $key => $valueCreate) {
                 $valueCreate['ChildEvaluateDetailId'] = $childEvaluateDetail->Id;
-                ChildEvaluateDetailChildren::create($valueCreate);
+                $detailChildren = ChildEvaluateDetailChildren::create($valueCreate);
+
+                $arrChildren[] = [
+                    'child_evaluate_detail_children_clover_id' => $detailChildren->Id,
+                    'content' => $detailChildren->Content,
+                    'use' =>  $detailChildren->Use
+                ];
             }
         }
 
         if (!empty($attributes['updateRows'])) {
             foreach ($attributes['updateRows'] as $key => $valueUpdate) {
                 $childEvaluateDetailChildren = $childEvaluateDetail->childEvaluateDetailChildren()->find($valueUpdate['id']);
-                $childEvaluateDetailChildren->update($valueUpdate);
+
+                if (!is_null($childEvaluateDetailChildren)) {
+                    $childEvaluateDetailChildren->update($valueUpdate);
+                }
+
+                $arrChildren[] = [
+                    'child_evaluate_detail_children_clover_id' => $childEvaluateDetailChildren->Id,
+                    'content' => $childEvaluateDetailChildren->Content,
+                    'use' =>  $childEvaluateDetailChildren->Use
+                ];
             }
         }
 
@@ -262,6 +280,9 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $childEvaluateDetail->childEvaluateDetailChildren()->whereIn('Id', $attributes['deleteRows'])->delete();
         }
 
-        return $childEvaluateDetail->childEvaluateDetailChildren;
+        $result['dataForCount'] = $childEvaluateDetail->childEvaluateDetailChildren;
+        $result['detailChildren'] = $arrChildren;
+
+        return $result;
     }
 }

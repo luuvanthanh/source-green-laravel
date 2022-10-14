@@ -3,6 +3,8 @@
 namespace GGPHP\ChildDevelop\TestSemester\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetailChildren;
 use GGPHP\ChildDevelop\TestSemester\Presenters\TestSemesterPresenter;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
@@ -429,5 +431,44 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         return parent::all();
+    }
+
+    public function updateMultiple(array $attributes)
+    {
+        foreach ($attributes as $key => $value) {
+            $testSemester = $this->model->find($value['id']);
+
+            if (is_null($testSemester)) {
+                continue;
+            }
+
+            $testSemester->update($value);
+        }
+
+        return parent::all();
+    }
+
+    public function updateScore(array $attributes, $id)
+    {
+        $testSemester = $this->model::find($id);
+        $a = [];
+        foreach ($testSemester->testSemesterDetail as $key => $valueDetail) {
+
+            $getScore = 0;
+            foreach ($valueDetail->testSemesterDetailChildren as $key2 => $value) {
+                $childEvaluateDetailChildren = ChildEvaluateDetailChildren::find($value->ChildEvaluateDetailChildrenId);
+
+                $childEvaluate = ChildEvaluate::find($value->ChildEvaluateId);
+                $getScore += !empty($childEvaluateDetailChildren) ? $childEvaluateDetailChildren->Score : 0;
+                $value->update([
+                    'Score' => !empty($childEvaluateDetailChildren) ? $childEvaluateDetailChildren->Score : 0,
+                    'Age' => $childEvaluate->Age
+                ]);
+            }
+
+            $valueDetail->update(['TotalScore' => $getScore]);
+        }
+
+        return parent::find($id);
     }
 }
