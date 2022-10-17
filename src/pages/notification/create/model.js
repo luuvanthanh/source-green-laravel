@@ -7,6 +7,8 @@ export default {
   state: {
     branches: [],
     divisions: [],
+    category: [],
+    module: [],
     details: {},
   },
   reducers: {
@@ -31,6 +33,14 @@ export default {
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
+    }),
+    SET_CATEGORY: (state, { payload }) => ({
+      ...state,
+      category: payload.items,
+    }),
+    SET_MODULE: (state, { payload }) => ({
+      ...state,
+      module: payload,
     }),
   },
   effects: {
@@ -132,6 +142,35 @@ export default {
         callback(response);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_CATEGORY({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCategory, payload);
+        yield saga.put({
+          type: 'SET_CATEGORY',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_MODULE({ payload,callback }, saga) {
+      try {
+        const response = yield saga.call(services.getModule, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_MODULE',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

@@ -29,7 +29,7 @@ const { Item: ListItem } = List;
 const Index = memo(() => {
   const [
     menuData,
-    { branches, divisions },
+    { branches, divisions,category },
     loading,
     { defaultBranch },
   ] = useSelector(({ menu, notificationAdd, loading: { effects }, user }) => [
@@ -56,6 +56,9 @@ const Index = memo(() => {
 
   const [checkboxAll, setCheckboxAll] = useState(false);
   const [checkboxAllEmployees, setCheckboxAllEmployees] = useState(false);
+
+  const [variableData, setVariableData] = useState([]);
+
 
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -134,6 +137,10 @@ const Index = memo(() => {
     });
     dispatch({
       type: 'notificationAdd/GET_DIVISIONS',
+      payload: {},
+    });
+    dispatch({
+      type: 'notificationAdd/GET_CATEGORY',
       payload: {},
     });
   }, []);
@@ -767,10 +774,22 @@ const Index = memo(() => {
                 ? variablesModules.TYPE.EMPLOYEE
                 : variablesModules.TYPE.PARENT,
             );
-
+            dispatch({
+              type: 'notificationAdd/GET_MODULE',
+              payload: {id:response?.moduleId},
+              callback: (response) => {
+                if (response) {
+                 setVariableData(response?.map(i=>({
+                  value: i?.code,
+                  label: i?.name,
+                 })));
+                }
+              },
+            });
             formRef.current.setFieldsValue({
               title: response.title,
               branchId: response?.branch?.id,
+              moduleId: response?.moduleId,
               divisionId: response?.division?.id,
               class: response?.class?.id,
               isReminded: response?.isReminded,
@@ -918,6 +937,21 @@ const Index = memo(() => {
     }
   };
 
+const onChangeModule = (e) => {
+dispatch({
+  type: 'notificationAdd/GET_MODULE',
+  payload: {id:e},
+  callback: (response) => {
+    if (response) {
+     setVariableData(response?.map(i=>({
+      value: i?.code,
+      label: i?.name,
+     })));
+    }
+  },
+});
+};
+
   return (
     <Form
       layout="vertical"
@@ -942,16 +976,16 @@ const Index = memo(() => {
                 <Pane className="col-lg-6 p0">
                   <FormItemAntd label="Danh mục (Loại thông báo / nhắc nhở)" className='m0'>
                     <FormItem
-                      // name="divisionId"
-                      // data={[{ id: null, name: 'Chọn tất cả bộ phận' }, ...divisions]}
+                       name="moduleId"
+                       data={ category}
                       type={variables.SELECT}
-                      onChange={onChangeDivision}
+                      onChange={onChangeModule}
                     />
                   </FormItemAntd>
                 </Pane>
                 <FormItemAntd label="Đối tượng nhận">
                   <RadioGroup
-                    options={variablesModules.TYPES}
+                    options={variableData}
                     value={type}
                     onChange={onChangeType}
                   />

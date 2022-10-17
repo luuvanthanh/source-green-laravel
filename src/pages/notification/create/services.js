@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import requestLaravel from '@/utils/requestLavarel';
+import requestSSO from '@/utils/requestSSO';
 import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
@@ -63,6 +64,27 @@ export function getEmployees(params = {}) {
     params: {
       ...params,
       include: Helper.convertIncludes(['positionLevelNow', 'positionLevelNow.division']),
+    },
+  });
+}
+
+
+export function getCategory(params = {}) {
+  return requestSSO(`/api/module`, {
+    method: 'GET',
+    params: {
+      ...params,
+      Code: 'QUY_TRINH_THONG_BAO',
+      MaxResultCount : 1000
+    },
+  });
+}
+
+export function getModule(params = {}) {
+  return request(`/news/get-business-object-type/module/${params.id}`, {
+    method: 'GET',
+    params: {
+      ...params
     },
   });
 }

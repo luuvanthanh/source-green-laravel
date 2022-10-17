@@ -17,7 +17,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      // data: payload.parsePayload,
+      data: payload.items?.map((item) => ({ ...item, children: undefined })),
       pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
@@ -73,7 +73,7 @@ export default {
         });
       }
     },
-    *UPDATE_USE({ payload, callback }, saga) {
+    *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.updateUse, payload);
         callback(payload);
