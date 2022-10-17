@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Switch } from 'antd';
+import { Switch, Modal } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -11,7 +11,9 @@ import Table from '@/components/CommonComponent/Table';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import stylesModule from './styles.module.scss';
 
+const { confirm } = Modal;
 let isMounted = true;
 /**
  * Set isMounted
@@ -164,6 +166,40 @@ class Index extends PureComponent {
   };
 
   /**
+* Function remove items
+* @param {uid} id id of items
+*/
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    confirm({
+      centered: true,
+      okText: 'Xóa',
+      cancelText: 'Không',
+      wrapClassName: 'wrapper-modal',
+      content: (
+        <>
+          <div className={stylesModule['wrapper-coincide-title']}>Bạn có chắc chắn muốn xóa quy trình này?</div>
+        </>
+      ),
+      onOk() {
+        dispatch({
+          type: 'noticationConfiguration/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+      onCancel() { },
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
@@ -182,7 +218,7 @@ class Index extends PureComponent {
         title: 'Danh mục (Loại)',
         key: 'school-year',
         className: 'min-width-200',
-        render: (record) => `${record?.yearFrom} - ${record?.yearTo}`,
+        render: (record) => record?.name,
       },
       {
         title: 'Trạng thái',
@@ -197,11 +233,11 @@ class Index extends PureComponent {
             }}
           >
             <Switch
-              checked={record?.isCheck}
+              checked={record?.isActive}
               onChange={() => {
                 const payload = {
                   id: record?.id,
-                  isCheck: !record?.isCheck,
+                  isActive: !record?.isActive,
                 };
                 this.props.dispatch({
                   type: 'noticationConfiguration/UPDATE',
@@ -225,21 +261,18 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: "Cấu hình",
+        title: 'Thao tác',
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        width: 125,
+        fixed: 'right',
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="success"
-              icon="copy"
-              onClick={() => history.push(`thong-bao/cau-hinh/${record?.id}/chi-tiet`)}
-            />
+          <div className="d-flex justify-content-end">
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
             <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push(`thong-bao/cau-hinh/${record?.id}/chi-tiet`)}
+              className='ml10'
+              onClick={() => history.push(`/thong-bao/cau-hinh/${record.id}/chi-tiet`)}
             />
           </div>
         ),
@@ -269,7 +302,6 @@ class Index extends PureComponent {
           </div>
           <div className={styles['block-table']}>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -278,8 +310,9 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              bordered={false}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

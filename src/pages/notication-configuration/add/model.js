@@ -3,8 +3,10 @@ import * as services from './services';
 export default {
   namespace: 'noticationConfigurationAdd',
   state: {
-    details: [],
+    details: {},
     skill: [],
+    dataBrowseObject: [],
+    dataRecipients: [],
     error: {
       isError: false,
       data: {},
@@ -14,7 +16,15 @@ export default {
     INIT_STATE: (state) => ({ ...state, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      details: payload.parsePayload,
+      details: payload,
+    }),
+    SET_BROWSE_OBJECT: (state, { payload }) => ({
+      ...state,
+      dataBrowseObject: payload.items,
+    }),
+    SET_CRECIPIENTS: (state, { payload }) => ({
+      ...state,
+      dataRecipients: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -82,6 +92,34 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_BROWSE_OBJECT({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBrowseObject, payload);
+        yield saga.put({
+          type: 'SET_BROWSE_OBJECT',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CRECIPIENTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRecipients, payload);
+        yield saga.put({
+          type: 'SET_CRECIPIENTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

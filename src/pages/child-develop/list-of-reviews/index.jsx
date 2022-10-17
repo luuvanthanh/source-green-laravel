@@ -472,12 +472,16 @@ class Index extends PureComponent {
         fixed: 'right',
         render: (record) => (
           <div className="d-flex flex-row-reverse">
-            <Button
-              color="success"
-              className="ml5"
-              icon="redo2"
-              onClick={() => this.onChangeItem(record)}
-            />
+            {
+              search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
+                <Button
+                  color="success"
+                  className="ml5"
+                  icon="redo2"
+                  onClick={() => this.onChangeItem(record)}
+                />
+              )
+            }
           </div>
         ),
       },
@@ -624,7 +628,7 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
-              rowSelection={{ ...rowSelection }}
+              rowSelection={search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? { ...rowSelection } : null}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),

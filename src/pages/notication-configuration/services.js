@@ -1,24 +1,17 @@
-import request from '@/utils/requestLavarel';
-import { Helper } from '@/utils';
+import request from '@/utils/requestSSO';
 
 export function get(params = {}) {
-  return request('/v1/child-evaluates', {
+  return request('/api/module', {
     method: 'GET',
     params: {
       ...params,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes([
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'categorySkill'
-      ]),
+      Code: 'QUY_TRINH_THONG_BAO',
     },
   });
 }
 
 export function remove(id = {}) {
-  return request(`/v1/child-evaluates/${id}`, {
+  return request(`/api/module/${id}`, {
     method: 'DELETE',
     parse: true,
   });
@@ -33,13 +26,10 @@ export function getSkill() {
   });
 }
 
-
 export function updateUse(data = {}) {
-  return request(`/v1/update-is-use/${data.id}`, {
+  return request(`/api/module/${data.id}`, {
     method: 'PUT',
-    data: {
-      use: data.use,
-    },
+    data,
     parse: true,
   });
 }

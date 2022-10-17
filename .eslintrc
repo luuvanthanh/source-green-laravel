@@ -1,6 +1,11 @@
 {
   "parser": "babel-eslint",
-  "extends": ["airbnb", "prettier", "plugin:node/recommended", "plugin:security/recommended"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:node/recommended",
+    "plugin:security/recommended"
+  ],
   "env": {
     "browser": true,
     "node": true,
@@ -24,7 +29,8 @@
     "APP_ID_FB": true,
     "io": true,
     "URL_EMAIL_MARKETING": true,
-    "URL_SOCKET_LIVE" : true
+    "URL_SOCKET_LIVE": true,
+    "API_SSO_NEW": true
   },
   "rules": {
     "react/jsx-wrap-multilines": 0,
@@ -34,7 +40,10 @@
     "import/no-unresolved": [
       2,
       {
-        "ignore": ["^@/", "^umi/"]
+        "ignore": [
+          "^@/",
+          "^umi/"
+        ]
       }
     ],
     "linebreak-style": 0,
@@ -48,10 +57,16 @@
     "react/jsx-filename-extension": [
       0,
       {
-        "extensions": [".js", ".jsx"]
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
       }
     ],
-    "react/destructuring-assignment": [0, "always"],
+    "react/destructuring-assignment": [
+      0,
+      "always"
+    ],
     "no-unused-vars": [
       "error",
       {
@@ -76,10 +91,16 @@
     "no-console": "error"
   },
   "settings": {
-    "polyfills": ["fetch", "promises", "url"]
+    "polyfills": [
+      "fetch",
+      "promises",
+      "url"
+    ]
   },
   "parserOptions": {
     "sourceType": "module"
   },
-  "plugins": ["react"]
+  "plugins": [
+    "react"
+  ]
 }

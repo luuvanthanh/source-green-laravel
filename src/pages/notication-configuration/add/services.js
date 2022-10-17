@@ -1,25 +1,27 @@
-import request from '@/utils/requestLavarel';
+import request from '@/utils/requestSSO';
 import { Helper } from '@/utils';
+import { omit } from 'lodash';
 
 export function add(data = {}) {
-  return request('/v1/child-evaluates', {
+  return request('/api/function-processes', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/v1/child-evaluates/${data.id}`, {
+  return request(`/api/function-processes/${data.moduleId}`, {
     method: 'PUT',
     data: {
       ...data,
+      ...omit(data, 'moduleId'),
     },
     parse: true,
   });
 }
 
 export function getData(params = {}) {
-  return request(`/v1/child-evaluates/${params.id}`, {
+  return request(`/api/function-processes/${params.id}`, {
     method: 'GET',
     params: {
       ...params,
@@ -44,5 +46,19 @@ export function getSkill() {
     params: {
       orderBy: 'Name',
     },
+  });
+}
+
+export function getBrowseObject() {
+  return request(`/api/identity/roles/all`, {
+    method: 'GET',
+    params: {},
+  });
+}
+
+export function getRecipients() {
+  return request(`/api/business-object-type`, {
+    method: 'GET',
+    params: {},
   });
 }

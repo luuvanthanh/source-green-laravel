@@ -71,16 +71,17 @@ export function getAssessmentPeriod(params = {}) {
 }
 
 export function addOneItem(params = {}) {
-  return request(`/v1/approved-test-semesters/${params?.id}`, {
+  return request(`/v1/approved-test-semesters`, {
     method: 'GET',
     params: {
       approvalStatus: 'APPROVED',
+      id: [params?.id],
     },
   });
 }
 
 export function addReview(params = {}) {
-  return request('/v1/approved-test-semester-multiple', {
+  return request('/v1/approved-test-semesters', {
     method: 'GET',
     params: {
       ...params,
