@@ -155,7 +155,6 @@ class TimekeepingController extends Controller
 
     public function exportExcelTimekeepingByBranch(Request $request)
     {
-
         try {
             $result = $this->timekeepingRepository->exportExcelTimekeepingByBranch($request->all());
 
