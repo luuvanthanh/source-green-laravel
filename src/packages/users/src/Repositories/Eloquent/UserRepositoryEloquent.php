@@ -7,6 +7,7 @@ use GGPHP\Appoint\Models\Appoint;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\Position;
+use GGPHP\Config\Models\ConfigNotification;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Core\Services\AccountantService;
 use GGPHP\Core\Services\CrmService;
@@ -976,5 +977,44 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         return $dataResignationDecision;
+    }
+
+    public function getEmployeeBirthday()
+    {
+        $dateNow = Carbon::now();
+
+        $employeeBirthday =  User::whereMonth('DateOfBirth', $dateNow->format('m'))->whereDay('DateOfBirth', $dateNow->format('d'))->get();
+
+        $dataEmployeeBirthday = $employeeBirthday->map(function ($item) use ($dateNow) {
+            return [
+                'fileImage' => $item->FileImage,
+                'fullName' => $item->FullName,
+                'division' => $item->positionLevelNow ? $this->getDivision($item) : '',
+                'age' => $item->DateOfBirth->diffInYears($dateNow)
+            ];
+        })->toArray();
+
+        $configNotification = ConfigNotification::where('Type', ConfigNotification::TYPE['BIRTHDAY'])->first();
+        $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
+
+
+        $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))->whereDay('DateOfBirth', '>', $dateNow->format('d'))
+            ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
+
+        $dataEmployeeBirthdayUpcoming = $employeeBirthdayUpcoming->map(function ($item) use ($dateConfigNotification) {
+            return [
+                'fileImage' => $item->FileImage,
+                'fullName' => $item->FullName,
+                'division' => $item->positionLevelNow ? $this->getDivision($item) : '',
+                'dateOfBirth' => $item->DateOfBirth ? $item->DateOfBirth->format('d/m/Y') : '',
+                'age' => $item->DateOfBirth->diffInYears($dateConfigNotification)
+            ];
+        })->toArray();
+
+
+        return [
+            'dataEmployeeBirthday' => $dataEmployeeBirthday,
+            'dataEmployeeBirthdayUpcoming' => $dataEmployeeBirthdayUpcoming
+        ];
     }
 }

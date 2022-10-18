@@ -98,6 +98,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('detail-employee-history', [
                 'uses' => 'UserController@detailEmployeeHistory',
             ]);
+
+            \Route::get('employee-birthday', [
+                'uses' => 'UserController@employeeBirthday',
+            ]);
         });
     }
 
