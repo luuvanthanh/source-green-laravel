@@ -200,7 +200,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         try {
             $this->creating($attributes);
             $user = User::create($attributes);
-            $this->created($attributes, $user);
+            //$this->created($attributes, $user);
 
             $data = [
                 'full_name' => $user->FullName,
