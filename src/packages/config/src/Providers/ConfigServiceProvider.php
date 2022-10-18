@@ -2,7 +2,9 @@
 
 namespace GGPHP\Config\Providers;
 
+use GGPHP\Config\Repositories\Contracts\ConfigNotificationRepository;
 use GGPHP\Config\Repositories\Contracts\ConfigRepository;
+use GGPHP\Config\Repositories\Eloquent\ConfigNotificationRepositoryEloquent;
 use GGPHP\Config\Repositories\Eloquent\ConfigRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,5 +31,6 @@ class ConfigServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(ConfigRepository::class, ConfigRepositoryEloquent::class);
+        $this->app->bind(ConfigNotificationRepository::class, ConfigNotificationRepositoryEloquent::class);
     }
 }
