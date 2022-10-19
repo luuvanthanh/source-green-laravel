@@ -68,7 +68,7 @@ const Index = memo(() => {
               <Pane className="card">
                 <Pane className="border-bottom d-flex justify-content-between" style={{ padding: 20 }}>
                   <Heading type="form-title">Thông tin chung</Heading>
-                  <div>{HelperModules.tagStatusSend(details.sentDate)}</div>
+                  <div>{HelperModules.tagStatusSend(details?.status)}</div>
                 </Pane>
 
                 <Pane className="border-bottom" style={{ padding: 20 }}>

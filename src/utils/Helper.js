@@ -1141,11 +1141,11 @@ export default class Helpers {
    */
   static paginationNet = ({ pagination, query, callback }) => ({
     size: 'default',
-    total: pagination.total,
+    total: pagination?.total,
     pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
     defaultCurrent: Number(query?.page || variables.PAGINATION.PAGE),
     current: Number(query?.page || variables.PAGINATION.PAGE),
-    hideOnSinglePage: pagination.total <= 10,
+    hideOnSinglePage: pagination?.total <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
     locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },

@@ -41,6 +41,7 @@ const mapStateToProps = ({ notifications, loading, user }) => ({
   years: notifications.years,
   user: user.user,
   defaultBranch: user.defaultBranch,
+  category: notifications.category,
   loading,
 });
 @connect(mapStateToProps)
@@ -125,6 +126,10 @@ class Index extends PureComponent {
     });
     this.props.dispatch({
       type: 'notifications/GET_BRANCHES',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'notifications/GET_CATEGORY',
       payload: {},
     });
   };
@@ -361,7 +366,7 @@ class Index extends PureComponent {
         key: 'status',
         className: 'min-width-150',
         width: 150,
-        render: (record) => HelperModules.tagStatusSend(record.sentDate),
+        render: (record) => HelperModules.tagStatusSend(record.status),
       },
       // {
       //   title: 'Nội dung',
@@ -437,6 +442,7 @@ class Index extends PureComponent {
       pagination,
       branches,
       years,
+      category,
       defaultBranch,
       match: { params },
       loading: { effects },
@@ -501,6 +507,16 @@ class Index extends PureComponent {
                     }
                   />
                 </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả module' }, ...category]}
+                    name="moduleId"
+                    onChange={(event) => this.onChangeStatus(event, 'moduleId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn module"
+                    allowClear={false}
+                  />
+                </div>
                 {!defaultBranch?.id && (
                   <div className="col-lg-3">
                     <FormItem
@@ -532,7 +548,7 @@ class Index extends PureComponent {
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={`${item.name} (${pagination.total})`} key={item.id} />
+                <TabPane tab={`${item.name}`} key={item.id} />
               ))}
             </Tabs>
             <Table
@@ -575,6 +591,7 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   years: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  category: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -589,6 +606,7 @@ Index.defaultProps = {
   branches: [],
   years: [],
   defaultBranch: {},
+  category: [],
 };
 
 export default Index;

@@ -29,7 +29,7 @@ const { Item: ListItem } = List;
 const Index = memo(() => {
   const [
     menuData,
-    { branches, divisions },
+    { branches, divisions, category },
     loading,
     { defaultBranch },
   ] = useSelector(({ menu, notificationAdd, loading: { effects }, user }) => [
@@ -56,6 +56,9 @@ const Index = memo(() => {
 
   const [checkboxAll, setCheckboxAll] = useState(false);
   const [checkboxAllEmployees, setCheckboxAllEmployees] = useState(false);
+
+  const [variableData, setVariableData] = useState([]);
+
 
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -134,6 +137,10 @@ const Index = memo(() => {
     });
     dispatch({
       type: 'notificationAdd/GET_DIVISIONS',
+      payload: {},
+    });
+    dispatch({
+      type: 'notificationAdd/GET_CATEGORY',
       payload: {},
     });
   }, []);
@@ -691,13 +698,13 @@ const Index = memo(() => {
           ? employees.filter((item) => item.checked).map((item) => (item.id))
           : [],
       studentIds:
-        !isAllParents && type === variablesModules.TYPE.PARENT
+        !isAllParents && type === variablesModules.TYPE.STUDENT
           ? parents.filter((item) => item.checked).map((item) => (item?.student?.id))
           : [],
       excludedEmployeeIds: isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
         ? employees.filter((item) => !item.checked).map((item) => (item.id))
         : [],
-      excludedStudentIds: isAllParents && type === variablesModules.TYPE.PARENT
+      excludedStudentIds: isAllParents && type === variablesModules.TYPE.STUDENT
         ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
         : [],
     };
@@ -765,12 +772,24 @@ const Index = memo(() => {
               setType,
               !isEmpty(response.employeeNews)
                 ? variablesModules.TYPE.EMPLOYEE
-                : variablesModules.TYPE.PARENT,
+                : variablesModules.TYPE.STUDENT,
             );
-
+            dispatch({
+              type: 'notificationAdd/GET_MODULE',
+              payload: { id: response?.moduleId },
+              callback: (response) => {
+                if (response) {
+                  setVariableData(response?.map(i => ({
+                    value: i?.code,
+                    label: i?.name,
+                  })));
+                }
+              },
+            });
             formRef.current.setFieldsValue({
               title: response.title,
               branchId: response?.branch?.id,
+              moduleId: response?.moduleId,
               divisionId: response?.division?.id,
               class: response?.class?.id,
               isReminded: response?.isReminded,
@@ -857,13 +876,13 @@ const Index = memo(() => {
           ? employees.filter((item) => item.checked).map((item) => (item.id))
           : [],
       studentIds:
-        !isAllParents && type === variablesModules.TYPE.PARENT
+        !isAllParents && type === variablesModules.TYPE.STUDENT
           ? parents.filter((item) => item.checked).map((item) => (item?.student?.id))
           : [],
       excludedEmployeeIds: isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
         ? employees.filter((item) => !item.checked).map((item) => (item.id))
         : [],
-      excludedStudentIds: isAllParents && type === variablesModules.TYPE.PARENT
+      excludedStudentIds: isAllParents && type === variablesModules.TYPE.STUDENT
         ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
         : [],
     };
@@ -918,6 +937,117 @@ const Index = memo(() => {
     }
   };
 
+  const onApprove = () => {
+    const values = formRef.current.getFieldsValue();
+    const payload = {
+      ...values,
+      classId: values.class,
+      class: undefined,
+      isReminded: !!values?.isReminded,
+      remindDate: values?.isReminded
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.remindDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }) : undefined,
+      remindTime: values?.isReminded
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.remindTime,
+          }),
+          format: variables.DATE_FORMAT.HOUR,
+          isUTC: false,
+        }) : undefined,
+      id: params.id,
+      content,
+      // sentDate: moment(),
+      isAllEmployees,
+      isAllStudents: isAllParents,
+      employeeIds:
+        !isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
+          ? employees.filter((item) => item.checked).map((item) => (item.id))
+          : [],
+      studentIds:
+        !isAllParents && type === variablesModules.TYPE.STUDENT
+          ? parents.filter((item) => item.checked).map((item) => (item?.student?.id))
+          : [],
+      excludedEmployeeIds: isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
+        ? employees.filter((item) => !item.checked).map((item) => (item.id))
+        : [],
+      excludedStudentIds: isAllParents && type === variablesModules.TYPE.STUDENT
+        ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
+        : [],
+    };
+    if (values?.title) {
+      if (values?.isReminded) {
+        if (values?.remindDate && values?.remindTime) {
+          dispatch({
+            type: 'notificationAdd/ADD_APPROVE',
+            payload,
+            callback: (response, error) => {
+              if (response) {
+                history.goBack();
+              }
+              if (error) {
+                if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                  error?.validationErrors.forEach((item) => {
+                    formRef.current.setFields([
+                      {
+                        name: head(item.members),
+                        errors: [item.message],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
+        }
+      } else {
+        dispatch({
+          type: 'notificationAdd/ADD_APPROVE',
+          payload,
+          callback: (response, error) => {
+            if (response) {
+              history.goBack();
+            }
+            if (error) {
+              if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                error?.validationErrors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: head(item.members),
+                      errors: [item.message],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+      }
+    }
+  };
+
+  const onChangeModule = (e) => {
+    dispatch({
+      type: 'notificationAdd/GET_MODULE',
+      payload: { id: e },
+      callback: (response) => {
+        if (response) {
+          setVariableData(response?.map(i => ({
+            value: i?.code,
+            label: i?.name,
+          })));
+        }
+      },
+    });
+  };
+
   return (
     <Form
       layout="vertical"
@@ -929,7 +1059,7 @@ const Index = memo(() => {
       <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
       <div className='d-flex justify-content-between align-items-center'>
         <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
-        <div className='pr10'>{HelperModules.tagStatusSend("NOT_SEND")}</div>
+        {params?.id && <div className='pr10'>{HelperModules.tagStatusSend(details?.status)}</div>}
       </div>
       <Pane className="pr20 pl20">
         <Pane className="row">
@@ -942,16 +1072,16 @@ const Index = memo(() => {
                 <Pane className="col-lg-6 p0">
                   <FormItemAntd label="Danh mục (Loại thông báo / nhắc nhở)" className='m0'>
                     <FormItem
-                      // name="divisionId"
-                      // data={[{ id: null, name: 'Chọn tất cả bộ phận' }, ...divisions]}
+                      name="moduleId"
+                      data={category}
                       type={variables.SELECT}
-                      onChange={onChangeDivision}
+                      onChange={onChangeModule}
                     />
                   </FormItemAntd>
                 </Pane>
                 <FormItemAntd label="Đối tượng nhận">
                   <RadioGroup
-                    options={variablesModules.TYPES}
+                    options={variableData}
                     value={type}
                     onChange={onChangeType}
                   />
@@ -1074,7 +1204,7 @@ const Index = memo(() => {
                   </Pane>
                 </>
               )}
-              {type === variablesModules.TYPE.PARENT && (
+              {type === variablesModules.TYPE.STUDENT && (
                 <>
                   <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
                     <Pane className="row">
@@ -1128,7 +1258,7 @@ const Index = memo(() => {
                       <FormItemAntd label="Người nhận thông báo">
                         <Checkbox
                           checked={isAllParents}
-                          onChange={(event) => changeAll(variablesModules.TYPE.PARENT, event)}
+                          onChange={(event) => changeAll(variablesModules.TYPE.STUDENT, event)}
                         >
                           Tất cả học sinh
                         </Checkbox>
@@ -1283,49 +1413,67 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-                <Button
-                  color="success"
-                  size="large"
-                  loading={
-                    loading['notificationAdd/GET_BRANCHES'] ||
-                    loading['notificationAdd/GET_DIVISIONS'] ||
-                    loading['notificationAdd/ADD'] ||
-                    loading['notificationAdd/UPDATE']
-                  }
-                  style={{ marginLeft: 'auto' }}
-                  htmlType="submit"
-                  onClick={() => onFinish()}
-                  disabled={
-                    !employees.find((item) => item.checked) &&
-                    !parents.find((item) => item.checked) &&
-                    !isAllEmployees &&
-                    !isAllParents &&
-                    checkboxInput
-                  }
-                >
-                  Lưu
-                </Button>
-                <Button
-                  color="primary"
-                  size="large"
-                  className='ml10'
-                  htmlType="submit"
-                  loading={
-                    loading['notificationAdd/SEND']
-                  }
-                  style={{ marginLeft: 'auto' }}
-                  onClick={() => changeSend()}
-                  disabled={
-                    !employees.find((item) => item.checked) &&
-                    !parents.find((item) => item.checked) &&
-                    !isAllEmployees &&
-                    checkboxInput &&
-                    !isAllParents || (details?.sentDate && params?.id)
+                {
+                  details?.status === variablesModules.STATUS_NAME_STATUS.Approving ?
+                    <Button
+                      color="primary"
+                      size="large"
+                      loading={
+                        loading['notificationAdd/ADD_APPROVE']
+                      }
+                      style={{ marginLeft: 'auto' }}
+                      htmlType="submit"
+                      onClick={() => onApprove()}
+                    >
+                      Duyệt
+                    </Button>
+                    :
+                    <>
+                      <Button
+                        color="success"
+                        size="large"
+                        loading={
+                          loading['notificationAdd/GET_BRANCHES'] ||
+                          loading['notificationAdd/GET_DIVISIONS'] ||
+                          loading['notificationAdd/ADD'] ||
+                          loading['notificationAdd/UPDATE']
+                        }
+                        style={{ marginLeft: 'auto' }}
+                        htmlType="submit"
+                        onClick={() => onFinish()}
+                        disabled={
+                          !employees.find((item) => item.checked) &&
+                          !parents.find((item) => item.checked) &&
+                          !isAllEmployees &&
+                          !isAllParents &&
+                          checkboxInput
+                        }
+                      >
+                        Lưu
+                      </Button>
+                      <Button
+                        color="primary"
+                        size="large"
+                        className='ml10'
+                        htmlType="submit"
+                        loading={
+                          loading['notificationAdd/SEND']
+                        }
+                        style={{ marginLeft: 'auto' }}
+                        onClick={() => changeSend()}
+                        disabled={
+                          !employees.find((item) => item.checked) &&
+                          !parents.find((item) => item.checked) &&
+                          !isAllEmployees &&
+                          checkboxInput &&
+                          !isAllParents || (details?.sentDate && params?.id)
 
-                  }
-                >
-                  Gửi
-                </Button>
+                        }
+                      >
+                        Gửi
+                      </Button>
+                    </>
+                }
               </Pane>
             </Pane>
           </Pane>
