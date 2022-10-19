@@ -8,6 +8,7 @@ export default {
     data: [],
     years: [],
     branches: [],
+    category: [],
     pagination: {
       total: 0,
     },
@@ -35,6 +36,10 @@ export default {
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
       branches: payload.parsePayload.parsePayload,
+    }),
+    SET_CATEGORY: (state, { payload }) => ({
+      ...state,
+      category: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -106,6 +111,20 @@ export default {
           payload: {
             parsePayload: response,
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CATEGORY({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCategory, payload);
+        yield saga.put({
+          type: 'SET_CATEGORY',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({

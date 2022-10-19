@@ -1,5 +1,4 @@
 import request from '@/utils/requestSSO';
-import { Helper } from '@/utils';
 import { omit } from 'lodash';
 
 export function add(data = {}) {
@@ -25,10 +24,6 @@ export function getData(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes([
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'childEvaluateDetailChildrent',
-      ]),
     },
   });
 }
