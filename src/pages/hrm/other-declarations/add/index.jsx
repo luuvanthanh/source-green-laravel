@@ -186,6 +186,15 @@ class Index extends PureComponent {
           isSocialInsurance: true,
           employeeId: item?.employee?.id,
         })),
+        startDate: moment(values.time)
+        .startOf('months')
+        .subtract(1, 'months')
+        .add(25, 'days')
+        .format(variables.DATE_FORMAT.DATE_AFTER),
+      endDate: moment(values.time)
+        .startOf('months')
+        .add(24, 'days')
+        .format(variables.DATE_FORMAT.DATE_AFTER),
       },
       callback: (response, error) => {
         if (response) {
