@@ -301,6 +301,53 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 ->where('ClassTypeId', $attributes['classTypeId'])
                                 ->where('PaymentFormId', $detail->paymentFormId)->first();
 
+                            $listMonthAgeTuition = resolve(ChargeOldStudentRepositoryEloquent::class)->getMonthAgeDetailStudent($attributes);
+
+                            $getFirstFeeDetail = $feePolicie->feeDetail()
+                                ->whereIn('ClassTypeId', $listMonthAgeTuition['countClassType'])
+                                ->where('PaymentFormId', $detail->paymentFormId)->get();
+
+                            foreach ($listMonthAgeTuition['detailStudent'] as $key => $valueMonthAge) {
+                                
+                                $getFirstFeeDetail = $feePolicie->feeDetail()
+                                    ->where('ClassTypeId', $valueMonthAge['classTypeId'])
+                                    ->where('PaymentFormId', $detail->paymentFormId)->first();
+
+                                dd($getFirstFeeDetail, $detail->paymentFormId, $paymentForm->Code);
+
+                                switch ($attributes['student']) {
+                                    case 'new':
+                                        $money = $getFirstFeeDetail->NewStudent;
+                                        break;
+                                    case 'old':
+                                        $money = $getFirstFeeDetail->OldStudent;
+                                        break;
+                                }
+
+                                switch ($paymentForm->Code) {
+                                    case self::SEMESTER1:
+                                        dd(111);
+                                        break;
+                                    case self::SEMESTER2:
+                                        dd(2222);
+                                        break;
+                                    case self::YEAR:
+                                        dd($dayAdmissionCarbon->weekOfMonth - 1, $dayAdmissionCarbon->dayName);
+
+                                        $moneyOfWeek = $money / array_sum(array_column($schooleYear->changeParameter->changeParameterDetail->ToArray(), 'ActualWeek'));
+                                        $getActualWeek = $schooleYear->changeParameter->changeParameterDetail->where('Date', $key)->first()->ActualWeek;
+                                        $moneyOfMonth = $moneyOfWeek * $getActualWeek;
+
+                                        $listMonthAgeTuition['detailStudent'][$key]['money'] = $moneyOfMonth;
+                                        break;
+                                    case self::MONTH:
+                                        # code...
+                                        break;
+                                }
+                            }
+
+                            dd($listMonthAgeTuition);
+
                             if (!is_null($feeDetail)) {
                                 switch ($attributes['student']) {
                                     case 'new':
@@ -397,8 +444,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             foreach ($listMonthAge['detailStudent'] as $key => $valueMonthAge) {
                                 $feeDetail = $feePolicie->moneyMeal()
                                     ->where('ClassTypeId', $valueMonthAge['classTypeId'])
-                                    ->where('PaymentFormId', $detail->paymentFormId)
-                                    ->first();
+                                    ->whereHas('paymentForm', function ($q) {
+                                        $q->where('Code', PaymentForm::CODE['THANG']);
+                                    })->first();
 
                                 $listMonthAge['detailStudent'][$key]['money'] = $feeDetail->Money;
                             }
@@ -486,7 +534,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         foreach ($monthLeft as $key => $valueAllYear) {
                                             $sumAllYear += $listMonthAge['detailStudent'][$valueAllYear->Date]['money'] * $valueAllYear->SchoolDay;
                                         }
-                                        dd($listMonthAge['detailStudent']);
+
                                         $result = $listMonthAge['detailStudent'][$month->Date]['money'] * $totalDaySemester1 + $sumAllYear;
 
                                         break;

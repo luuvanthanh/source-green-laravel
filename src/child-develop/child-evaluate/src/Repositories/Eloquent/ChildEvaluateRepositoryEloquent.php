@@ -164,8 +164,7 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             $childEvaluate->update($attributes);
 
             if (!empty($attributes['detail'])) {
-                ChildEvaluateDetail::where('ChildEvaluateId', $childEvaluate->Id)->delete();
-                $childEvaluate['detail'] = $this->storeDetail($childEvaluate->Id, $attributes['detail']);
+                $childEvaluate['detail'] = $this->updateDetail($childEvaluate, $attributes['detail'][0]);
             }
 
             if ($attributes['detail'][0]['inputAssessment']) {
@@ -223,5 +222,67 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         }
 
         return parent::find($childEvaluate->Id);
+    }
+
+    public function updateDetail($childEvaluate, $attributes)
+    {
+        $childEvaluateDetail = $childEvaluate->childEvaluateDetail()->find($attributes['id']);
+        $attributes['totalScore'] = ChildEvaluateDetail::TOTAL_SCORE;
+        $childEvaluateDetail->update($attributes);
+
+        if (!empty($attributes['detailChildren'])) {
+            $childEvaluateDetailChildren = $this->updateDetailChildren($childEvaluateDetail, $attributes['detailChildren']);
+        }
+
+        $score = ChildEvaluateDetail::TOTAL_SCORE / count($childEvaluateDetailChildren['dataForCount']);
+        foreach ($childEvaluateDetailChildren['dataForCount'] as $key => $value) {
+            $value->update(['Score' => $score]);
+        }
+
+        $childEvaluateDetail['detailChildren'] = $childEvaluateDetailChildren['detailChildren'];
+        $arrDetail[] = $childEvaluateDetail->toArray();
+
+        return $arrDetail;
+    }
+
+    public function updateDetailChildren($childEvaluateDetail, $attributes)
+    {
+        if (!empty($attributes['createRows'])) {
+            foreach ($attributes['createRows'] as $key => $valueCreate) {
+                $valueCreate['ChildEvaluateDetailId'] = $childEvaluateDetail->Id;
+                $detailChildren = ChildEvaluateDetailChildren::create($valueCreate);
+
+                $arrChildren[] = [
+                    'child_evaluate_detail_children_clover_id' => $detailChildren->Id,
+                    'content' => $detailChildren->Content,
+                    'use' =>  $detailChildren->Use
+                ];
+            }
+        }
+
+        if (!empty($attributes['updateRows'])) {
+            foreach ($attributes['updateRows'] as $key => $valueUpdate) {
+                $childEvaluateDetailChildren = $childEvaluateDetail->childEvaluateDetailChildren()->find($valueUpdate['id']);
+
+                if (!is_null($childEvaluateDetailChildren)) {
+                    $childEvaluateDetailChildren->update($valueUpdate);
+                }
+
+                $arrChildren[] = [
+                    'child_evaluate_detail_children_clover_id' => $childEvaluateDetailChildren->Id,
+                    'content' => $childEvaluateDetailChildren->Content,
+                    'use' =>  $childEvaluateDetailChildren->Use
+                ];
+            }
+        }
+
+        if (!empty($attributes['deleteRows'])) {
+            $childEvaluateDetail->childEvaluateDetailChildren()->whereIn('Id', $attributes['deleteRows'])->delete();
+        }
+
+        $result['dataForCount'] = $childEvaluateDetail->childEvaluateDetailChildren;
+        $result['detailChildren'] = $arrChildren;
+
+        return $result;
     }
 }

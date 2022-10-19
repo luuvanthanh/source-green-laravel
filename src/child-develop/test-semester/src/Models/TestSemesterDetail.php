@@ -4,9 +4,12 @@ namespace GGPHP\ChildDevelop\TestSemester\Models;
 
 use GGPHP\ChildDevelop\Category\Models\CategorySkill;
 use GGPHP\Core\Models\UuidModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemesterDetail extends UuidModel
 {
+    use SoftDeletes;
+    
     protected $table = 'TestSemesterDetails';
 
     protected $fillable = [
