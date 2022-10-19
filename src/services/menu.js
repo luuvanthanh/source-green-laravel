@@ -1447,6 +1447,15 @@ export async function getLeftMenuHRM() {
           url: ['/quan-ly-nhan-su/luu-tru'],
           permission: [permissions.HRM],
         },
+        {
+          title: 'Lịch sử nhân sự',
+          key: 'history-employee',
+          url: [
+            '/quan-ly-nhan-su/lich-su-nhan-su',
+            '/quan-ly-nhan-su/lich-su-nhan-su/:id/chi-tiet',
+          ],
+          permission: [permissions.HRM],
+        },
       ],
     },
     {
