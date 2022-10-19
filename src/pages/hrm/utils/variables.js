@@ -11,7 +11,7 @@ export const variables = {
     HANDLING_IMAGE: 'HANDLING_IMAGE',
     HANDLING_IMAGE_SUCCESSFUL: 'HANDLING_IMAGE_SUCCESSFUL',
     DELETED: 'DELETED',
-    SYSTEM_ERROR: 'SYSTEM_ERROR'
+    SYSTEM_ERROR: 'SYSTEM_ERROR',
   },
   STATUS_NAME: {
     REGIST: 'Đăng ký',
@@ -23,7 +23,7 @@ export const variables = {
     HANDLING_IMAGE: 'Đang xử lý',
     HANDLING_IMAGE_SUCCESSFUL: 'Đã đăng ký',
     DELETED: 'Đã hủy đăng ký',
-    SYSTEM_ERROR: 'Lỗi hệ thống'
+    SYSTEM_ERROR: 'Lỗi hệ thống',
   },
   STATUS_SHIFT: {
     ON: 'ON',
@@ -81,6 +81,7 @@ export const variables = {
     ADD_TIME: 'Làm thêm',
     GO_OUT: 'Đi ra ngoài',
     MATERNITY_LEAVE: 'Nghỉ thai sản',
+    WORK_HOME: 'Làm tại nhà',
   },
   TYPE_ABSENTS: {
     ABSENT: 'ABSENT',
@@ -88,6 +89,7 @@ export const variables = {
     ADD_TIME: 'ADD_TIME',
     GO_OUT: 'GO_OUT',
     MATERNITY_LEAVE: 'MATERNITY_LEAVE',
+    WORK_HOME: 'WORK_HOME',
   },
   TYPES_ABSENTS: [
     {
@@ -111,6 +113,10 @@ export const variables = {
     {
       id: 'MATERNITY_LEAVE',
       name: 'Nghỉ thai sản',
+    },
+    {
+      id: 'WORK_HOME',
+      name: 'Làm tại nhà',
     },
   ],
   TYPES_DIFFIRENT_OUT: [

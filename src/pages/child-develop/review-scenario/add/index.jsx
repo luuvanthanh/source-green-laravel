@@ -146,7 +146,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftChildDevelop} />
-      <Helmet title="Cấu hình khai báo y tế" />
+      <Helmet title="Cấu hình kịch bản đánh giá" />
       <Pane className="pl20 pr20">
         <Pane >
           <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{

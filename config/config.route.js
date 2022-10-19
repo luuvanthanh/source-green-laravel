@@ -1839,6 +1839,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
+          {
+            path: '/quan-ly-nhan-su/lich-su-nhan-su',
+            component: './hrm/report/history-employee',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/lich-su-nhan-su/:id/chi-tiet',
+            component: './hrm/report/history-employee/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
         ],
       },
       // HRM
