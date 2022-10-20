@@ -5,6 +5,7 @@ namespace GGPHP\BusinessCard\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\BusinessCard\Http\Requests\CreatBusinessCardRequest;
 use GGPHP\BusinessCard\Http\Requests\UpdateBusinessCardRequest;
+use GGPHP\BusinessCard\Models\BusinessCard;
 use GGPHP\BusinessCard\Repositories\Contracts\BusinessCardRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -33,7 +34,13 @@ class BusinessCardController extends Controller
      */
     public function index(Request $request)
     {
-        $employees = $this->businessCardRepository->filterBusinessCard($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = BusinessCard::STATUS[$attributes['status']];
+        }
+
+        $employees = $this->businessCardRepository->filterBusinessCard($attributes);
 
         return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
@@ -88,5 +95,24 @@ class BusinessCardController extends Controller
     {
         $this->businessCardRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    public function updateStatusBusinessCard(Request $request, $id)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = BusinessCard::STATUS[$attributes['status']];
+        }
+
+        $businessCard = $this->businessCardRepository->updateStatusBusinessCard($attributes, $id);
+        return $this->success($businessCard, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function sendAgain($id)
+    {
+        $businessCard = $this->businessCardRepository->sendAgain($id);
+
+        return $this->success($businessCard, trans('lang::messages.common.modifySuccess'));
     }
 }

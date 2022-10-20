@@ -13,13 +13,19 @@ class BusinessCard extends UuidModel
      */
     protected $table = 'BusinessCards';
 
+    const STATUS = [
+        'WAITING_APPROVAL' => 1,
+        'APPROVED' => 2,
+        'NOT_APPROVED' => 3
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'EmployeeId', 'AbsentTypeId', 'StartDate', 'EndDate', 'Reason',
+        'EmployeeId', 'AbsentTypeId', 'StartDate', 'EndDate', 'Reason', 'Status', 'ReasonNotApproved'
     ];
 
     protected $dateTimeFields = [
@@ -59,5 +65,10 @@ class BusinessCard extends UuidModel
     public function absentType()
     {
         return $this->belongsTo(\GGPHP\Absent\Models\AbsentType::class, 'AbsentTypeId');
+    }
+
+    public function approvalEmployee()
+    {
+        return $this->hasMany(ApprovalEmployee::class, 'BusinessCardId');
     }
 }
