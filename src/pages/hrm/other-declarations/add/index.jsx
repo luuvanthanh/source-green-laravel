@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, InputNumber, Tabs } from 'antd';
+import { Form, InputNumber, Spin, Tabs } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty, last, omit, differenceWith, size, head } from 'lodash';
@@ -49,6 +49,7 @@ class Index extends PureComponent {
       detailContract: [],
       paramaterValuesContract: [],
       isContactSocialInsurance: false,
+      numberOfWorkdays: 0,
     };
     setIsMounted(true);
   }
@@ -81,21 +82,21 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && params?.id) {
       const paramaterValues = !isEmpty(head(details.otherDeclarationDetail)?.detail)
         ? [
-          ...new Map(
-            head(details.otherDeclarationDetail)
-              ?.detail?.map((item) => item.id)
-              .map((item) => [item, item]),
-          ).values(),
-        ]
+            ...new Map(
+              head(details.otherDeclarationDetail)
+                ?.detail?.map((item) => item.id)
+                .map((item) => [item, item]),
+            ).values(),
+          ]
         : [];
       const paramaterValuesContract = !isEmpty(head(details.changeContractParameter)?.detail)
         ? [
-          ...new Map(
-            head(details.changeContractParameter)
-              ?.detail?.map((item) => item.id)
-              .map((item) => [item, item]),
-          ).values(),
-        ]
+            ...new Map(
+              head(details.changeContractParameter)
+                ?.detail?.map((item) => item.id)
+                .map((item) => [item, item]),
+            ).values(),
+          ]
         : [];
       this.formRef.current.setFieldsValue({
         ...details,
@@ -113,6 +114,7 @@ class Index extends PureComponent {
       if (head(details.changeContractParameter)) {
         this.onSetParamaterValuesContract(head(details.changeContractParameter));
       }
+      this.onChangeMonth(moment(details.time));
     }
   }
 
@@ -167,12 +169,13 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    const { detail, detailContract } = this.state;
+    const { detail, detailContract, numberOfWorkdays } = this.state;
     dispatch({
       type: params.id ? 'otherDeclarationsAdd/UPDATE' : 'otherDeclarationsAdd/ADD',
       payload: {
         id: params.id,
         ...values,
+        numberOfWorkdays,
         time: moment(values.time).startOf('months'),
         detail: detail.map((item) => ({
           ...omit(item, 'employee'),
@@ -183,6 +186,15 @@ class Index extends PureComponent {
           isSocialInsurance: true,
           employeeId: item?.employee?.id,
         })),
+        startDate: moment(values.time)
+        .startOf('months')
+        .subtract(1, 'months')
+        .add(25, 'days')
+        .format(variables.DATE_FORMAT.DATE_AFTER),
+      endDate: moment(values.time)
+        .startOf('months')
+        .add(24, 'days')
+        .format(variables.DATE_FORMAT.DATE_AFTER),
       },
       callback: (response, error) => {
         if (response) {
@@ -262,37 +274,37 @@ class Index extends PureComponent {
       paramaterValues: [
         ...(value
           ? value.map((item) => {
-            const itemParamaterValues = categories.paramaterValues.find(({ id }) => id === item);
-            const currentParamaterValues = prevState.paramaterValues.find(
-              (item) => item.id === itemParamaterValues.id,
-            );
-
-            if (currentParamaterValues) {
-              return currentParamaterValues;
-            }
-            return { ...itemParamaterValues, value: itemParamaterValues?.valueDefault };
-          })
-          : []),
-      ],
-      detail: prevState.detail.map((item) => ({
-        ...item,
-        detail: value
-          ? [
-            ...value.map((itemValue) => {
-              const itemParamaterValues = categories.paramaterValues.find(
-                ({ id }) => id === itemValue,
-              );
-              const currentParamaterValues = item.detail.find(
+              const itemParamaterValues = categories.paramaterValues.find(({ id }) => id === item);
+              const currentParamaterValues = prevState.paramaterValues.find(
                 (item) => item.id === itemParamaterValues.id,
               );
 
               if (currentParamaterValues) {
                 return currentParamaterValues;
               }
-
               return { ...itemParamaterValues, value: itemParamaterValues?.valueDefault };
-            }),
-          ]
+            })
+          : []),
+      ],
+      detail: prevState.detail.map((item) => ({
+        ...item,
+        detail: value
+          ? [
+              ...value.map((itemValue) => {
+                const itemParamaterValues = categories.paramaterValues.find(
+                  ({ id }) => id === itemValue,
+                );
+                const currentParamaterValues = item.detail.find(
+                  (item) => item.id === itemParamaterValues.id,
+                );
+
+                if (currentParamaterValues) {
+                  return currentParamaterValues;
+                }
+
+                return { ...itemParamaterValues, value: itemParamaterValues?.valueDefault };
+              }),
+            ]
           : [],
       })),
     }));
@@ -304,30 +316,10 @@ class Index extends PureComponent {
       paramaterValuesContract: [
         ...(value
           ? value.map((item) => {
-            const itemParamaterContract = categories.paramaterContract.find(
-              ({ id }) => id === item,
-            );
-            const currentParamaterContract = prevState.paramaterValuesContract.find(
-              (item) => item.id === itemParamaterContract.id,
-            );
-
-            if (currentParamaterContract) {
-              return currentParamaterContract;
-            }
-
-            return { ...itemParamaterContract, value: itemParamaterContract?.valueDefault };
-          })
-          : []),
-      ],
-      detailContract: prevState.detailContract.map((item) => ({
-        ...item,
-        detail: value
-          ? [
-            ...value.map((itemValue) => {
               const itemParamaterContract = categories.paramaterContract.find(
-                ({ id }) => id === itemValue,
+                ({ id }) => id === item,
               );
-              const currentParamaterContract = item.detail.find(
+              const currentParamaterContract = prevState.paramaterValuesContract.find(
                 (item) => item.id === itemParamaterContract.id,
               );
 
@@ -336,8 +328,28 @@ class Index extends PureComponent {
               }
 
               return { ...itemParamaterContract, value: itemParamaterContract?.valueDefault };
-            }),
-          ]
+            })
+          : []),
+      ],
+      detailContract: prevState.detailContract.map((item) => ({
+        ...item,
+        detail: value
+          ? [
+              ...value.map((itemValue) => {
+                const itemParamaterContract = categories.paramaterContract.find(
+                  ({ id }) => id === itemValue,
+                );
+                const currentParamaterContract = item.detail.find(
+                  (item) => item.id === itemParamaterContract.id,
+                );
+
+                if (currentParamaterContract) {
+                  return currentParamaterContract;
+                }
+
+                return { ...itemParamaterContract, value: itemParamaterContract?.valueDefault };
+              }),
+            ]
           : [],
       })),
     }));
@@ -419,6 +431,31 @@ class Index extends PureComponent {
     this.setStateData(() => ({
       isContactSocialInsurance: value.target.checked,
     }));
+  };
+
+  onChangeMonth = (value) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'otherDeclarationsAdd/GET_WORK',
+      payload: {
+        startDate: moment(value)
+          .startOf('months')
+          .subtract(1, 'months')
+          .add(25, 'days')
+          .format(variables.DATE_FORMAT.DATE_AFTER),
+        endDate: moment(value)
+          .startOf('months')
+          .add(24, 'days')
+          .format(variables.DATE_FORMAT.DATE_AFTER),
+      },
+      callback: (response) => {
+        if (response) {
+          this.setState({
+            numberOfWorkdays: response.payload.totalWork,
+          });
+        }
+      },
+    });
   };
 
   /**
@@ -540,10 +577,12 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { detail, detailContract } = this.state;
+    const { detail, detailContract, numberOfWorkdays } = this.state;
 
     const loadingSubmit =
       effects['otherDeclarationsAdd/ADD'] || effects['otherDeclarationsAdd/UPDATE'];
+
+    const loadingDate = effects['otherDeclarationsAdd/GET_WORK'];
     return (
       <>
         <Breadcrumbs
@@ -569,16 +608,28 @@ class Index extends PureComponent {
                     label="Thời gian"
                     name="time"
                     rules={[variables.RULES.EMPTY]}
-                    type={variables.DATE_PICKER}
+                    type={variables.MONTH_PICKER}
+                    onChange={(e) => this.onChangeMonth(e)}
+                    disabled={loadingDate}
                   />
                 </div>
                 <div className="col-lg-4">
-                  <FormItem
-                    label="Số công"
-                    name="numberOfWorkdays"
-                    rules={[variables.RULES.EMPTY, variables.RULES.NUMBER]}
-                    type={variables.INPUT_COUNT}
-                  />
+                  <div className="ant-col ant-form-item">
+                    <div className="ant-col ant-form-item-label">
+                      <label htmlFor="numberOfWorkdays" className="ant-form-item-required" title="">
+                        <span>Số công</span>
+                      </label>
+                    </div>
+                    <div className="ant-col ant-form-item-control" style={{ marginTop: '5px' }}>
+                      {loadingDate ? (
+                        <Spin size="small" style={{ position: 'absolute' }} />
+                      ) : (
+                        <Text color="dark" size="large-normal">
+                          {numberOfWorkdays}
+                        </Text>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div className="col-lg-4">
                   <FormItem
@@ -683,7 +734,7 @@ class Index extends PureComponent {
                 onClick={() => history.goBack()}
                 size="large"
                 className="mr-3"
-                loading={loadingSubmit}
+                loading={loadingSubmit || loadingDate}
               >
                 HỦY
               </Button>
@@ -692,7 +743,7 @@ class Index extends PureComponent {
                 icon="save"
                 htmlType="submit"
                 size="large"
-                loading={loadingSubmit}
+                loading={loadingSubmit || loadingDate}
               >
                 LƯU
               </Button>
@@ -716,7 +767,7 @@ Index.propTypes = {
 Index.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => { },
+  dispatch: () => {},
   categories: {},
   menuData: [],
   loading: {},

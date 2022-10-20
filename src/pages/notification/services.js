@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import requestLavarel from '@/utils/requestLavarel';
+import requestSSO from '@/utils/requestSSO';
 import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
@@ -52,5 +53,16 @@ export function remove(params = {}) {
     parse: true,
     editNotification: true,
     cancelNotification: true,
+  });
+}
+
+export function getCategory(params = {}) {
+  return requestSSO(`/api/module`, {
+    method: 'GET',
+    params: {
+      ...params,
+      Code: 'QUY_TRINH_THONG_BAO',
+      MaxResultCount: 1000,
+    },
   });
 }

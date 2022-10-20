@@ -1,5 +1,5 @@
 // Import mixins
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN INPUT */
@@ -11,6 +11,12 @@
 .input-number {
   &.ant-input-number {
     width: 100%;
+  }
+}
+
+.input-number-form {
+  &.ant-input-number {
+    width: 45px !important;
   }
 }
 

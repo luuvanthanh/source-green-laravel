@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -13,9 +13,11 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import ability from '@/utils/ability';
+import variablesModules from './utils/variables';
 import HelperModules from './utils/Helper';
 // import stylesModule from './styles.module.scss';
 
+const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -31,14 +33,15 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ notifications, loading, user }) => ({
-  data: notifications.data,
-  pagination: notifications.pagination,
-  error: notifications.error,
-  branches: notifications.branches,
-  years: notifications.years,
+const mapStateToProps = ({ notificationsTest, loading, user }) => ({
+  data: notificationsTest.data,
+  pagination: notificationsTest.pagination,
+  error: notificationsTest.error,
+  branches: notificationsTest.branches,
+  years: notificationsTest.years,
   user: user.user,
   defaultBranch: user.defaultBranch,
+  category: notificationsTest.category,
   loading,
 });
 @connect(mapStateToProps)
@@ -67,6 +70,7 @@ class Index extends PureComponent {
         toDate: query?.toDate
           ? query?.toDate
           : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        status: query?.status || variablesModules.STATUS_TABS.ALL,
       },
     };
     setIsMounted(true);
@@ -104,7 +108,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'notifications/GET_DATA',
+      type: 'notificationsTest/GET_DATA',
       payload: {
         ...search,
       },
@@ -117,11 +121,15 @@ class Index extends PureComponent {
 
   loadCategories = () => {
     this.props.dispatch({
-      type: 'notifications/GET_YEARS',
+      type: 'notificationsTest/GET_YEARS',
       payload: {},
     });
     this.props.dispatch({
-      type: 'notifications/GET_BRANCHES',
+      type: 'notificationsTest/GET_BRANCHES',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'notificationsTest/GET_CATEGORY',
       payload: {},
     });
   };
@@ -302,7 +310,7 @@ class Index extends PureComponent {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'notifications/REMOVE',
+          type: 'notificationsTest/REMOVE',
           payload: {
             id,
           },
@@ -358,7 +366,7 @@ class Index extends PureComponent {
         key: 'status',
         className: 'min-width-150',
         width: 150,
-        render: (record) => HelperModules.tagStatusSend(record.sentDate),
+        render: (record) => HelperModules.tagStatusSend(record.status),
       },
       // {
       //   title: 'Nội dung',
@@ -434,12 +442,13 @@ class Index extends PureComponent {
       pagination,
       branches,
       years,
+      category,
       defaultBranch,
       match: { params },
       loading: { effects },
     } = this.props;
     const { search, defaultBranchs, dataYear } = this.state;
-    const loading = effects['notifications/GET_DATA'];
+    const loading = effects['notificationsTest/GET_DATA'];
     return (
       <>
         <Helmet title="Danh sách thông báo" />
@@ -498,6 +507,16 @@ class Index extends PureComponent {
                     }
                   />
                 </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả module' }, ...category]}
+                    name="moduleId"
+                    onChange={(event) => this.onChangeStatus(event, 'moduleId')}
+                    type={variables.SELECT}
+                    placeholder="Chọn module"
+                    allowClear={false}
+                  />
+                </div>
                 {!defaultBranch?.id && (
                   <div className="col-lg-3">
                     <FormItem
@@ -524,6 +543,14 @@ class Index extends PureComponent {
                 )}
               </div>
             </Form>
+            <Tabs
+              activeKey={search?.status || variablesModules.STATUS.NEW}
+              onChange={(event) => this.onChangeSelectStatus(event, 'status')}
+            >
+              {variablesModules.STATUS_TABS.map((item) => (
+                <TabPane tab={`${item.name}`} key={item.id} />
+              ))}
+            </Tabs>
             <Table
               columns={this.header(params)}
               dataSource={data}
@@ -564,6 +591,7 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   years: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  category: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -578,6 +606,7 @@ Index.defaultProps = {
   branches: [],
   years: [],
   defaultBranch: {},
+  category: [],
 };
 
 export default Index;

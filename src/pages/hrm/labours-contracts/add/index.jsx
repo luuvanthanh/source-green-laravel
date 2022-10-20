@@ -244,13 +244,30 @@ class Index extends PureComponent {
       },
       callback: (response) => {
         if (!isEmpty(response)) {
-          this.loadFormContarct(head(response)?.contractDate);
           const details = head(response);
           this.formRef.current.setFieldsValue({
             ...omit(details, 'typeOfContractId'),
-            contractDate: details.contractDate && moment(details.contractDate),
-            contractFrom: details.contractFrom && moment(details.contractFrom),
-            contractTo: details.contractTo && moment(details.contractTo),
+            contractDate: moment(),
+            contractFrom: details.contractTo && moment(details.contractTo).add(1, 'days'),
+            contractTo: null,
+            month: null,
+          });
+          this.loadFormContarct(moment());
+        } else {
+          this.loadFormContarct(moment());
+          this.formRef.current.setFieldsValue({
+            contractDate: moment(),
+            representId: null,
+            isSocialInsurance: null,
+            branchId: null,
+            workTime: null,
+            work: null,
+            positionId: null,
+            contractTo: null,
+            contractFrom: null,
+            divisionId: null,
+            month: null,
+            typeOfContractId: null
           });
         }
       },

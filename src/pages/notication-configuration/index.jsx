@@ -1,0 +1,342 @@
+import React, { PureComponent } from 'react';
+import { connect, history } from 'umi';
+import { Switch, Modal } from 'antd';
+import classnames from 'classnames';
+import { debounce, isEmpty } from 'lodash';
+import { Helmet } from 'react-helmet';
+import styles from '@/assets/styles/Common/common.scss';
+import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
+import Table from '@/components/CommonComponent/Table';
+import { variables, Helper } from '@/utils';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import stylesModule from './styles.module.scss';
+
+const { confirm } = Modal;
+let isMounted = true;
+/**
+ * Set isMounted
+ * @param {boolean} value
+ * @returns {boolean} value of isMounted
+ */
+const setIsMounted = (value = true) => {
+  isMounted = value;
+  return isMounted;
+};
+/**
+ * Get isMounted
+ * @returns {boolean} value of isMounted
+ */
+const getIsMounted = () => isMounted;
+const mapStateToProps = ({ noticationConfiguration, loading }) => ({
+  data: noticationConfiguration.data,
+  error: noticationConfiguration.error,
+  pagination: noticationConfiguration.pagination,
+  loading,
+});
+@connect(mapStateToProps)
+class Index extends PureComponent {
+  formRef = React.createRef();
+
+  constructor(props) {
+    super(props);
+    const {
+      location: { query },
+    } = props;
+    this.state = {
+      search: {
+        from: query?.from || null,
+        to: query?.to || null,
+        page: query?.page || variables.PAGINATION.PAGE,
+        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+      },
+    };
+    setIsMounted(true);
+  }
+
+  componentDidMount() {
+    this.onLoad();
+  }
+
+  componentWillUnmount() {
+    setIsMounted(false);
+  }
+
+  /**
+   * Set state properties
+   * @param {object} data the data input
+   * @param {function} callback the function which will be called after setState
+   * @returns {void} call this.setState to update state
+   * @memberof setStateData
+   */
+  setStateData = (state, callback) => {
+    if (!getIsMounted()) {
+      return;
+    }
+    this.setState(state, callback);
+  };
+
+  /**
+   * Function load data
+   */
+  onLoad = () => {
+    const { search } = this.state;
+    const {
+      location: { pathname },
+    } = this.props;
+    this.props.dispatch({
+      type: 'noticationConfiguration/GET_DATA',
+      payload: {
+        ...search,
+        orderBy: 'CreationTime',
+        sortedBy: 'desc',
+      },
+    });
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch(search),
+    });
+  };
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearch = debounce((value) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          from: !isEmpty(value) ? moment(value[0]).format('YYYY') : null,
+          to: !isEmpty(value) ? moment(value[1]).format('YYYY') : null,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 300);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChange = (value, type) => {
+    this.debouncedSearch(value, type);
+  };
+
+  /**
+   * Function set pagination
+   * @param {integer} page page of pagination
+   * @param {integer} size size of pagination
+   */
+  changePagination = ({ page, limit }) => {
+    this.setState(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          page,
+          limit,
+        },
+      }),
+      () => {
+        this.onLoad();
+      },
+    );
+  };
+
+  /**
+   * Function pagination of table
+   * @param {object} pagination value of pagination items
+   */
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
+
+  /**
+* Function remove items
+* @param {uid} id id of items
+*/
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    confirm({
+      centered: true,
+      okText: 'Xóa',
+      cancelText: 'Không',
+      wrapClassName: 'wrapper-modal',
+      content: (
+        <>
+          <div className={stylesModule['wrapper-coincide-title']}>Bạn có chắc chắn muốn xóa quy trình này?</div>
+        </>
+      ),
+      onOk() {
+        dispatch({
+          type: 'noticationConfiguration/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+      onCancel() { },
+    });
+  };
+
+  /**
+   * Function header table
+   */
+  header = () => {
+    const { search } = this.state;
+    const columns = [
+      {
+        title: 'STT',
+        key: 'index',
+        className: 'min-width-60',
+        width: 60,
+        align: 'center',
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
+      },
+      {
+        title: 'Danh mục (Loại)',
+        key: 'school-year',
+        className: 'min-width-200',
+        render: (record) => record?.name,
+      },
+      {
+        title: 'Trạng thái',
+        dataIndex: 'use',
+        width: 160,
+        className: 'min-width-160',
+        render: (isCheck, record) => (
+          <div
+            role="presentation"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Switch
+              checked={record?.isActive}
+              onChange={() => {
+                const payload = {
+                  id: record?.id,
+                  isActive: !record?.isActive,
+                };
+                this.props.dispatch({
+                  type: 'noticationConfiguration/UPDATE',
+                  payload,
+                  callback: (response) => {
+                    if (response) {
+                      this.props.dispatch({
+                        type: 'noticationConfiguration/GET_DATA',
+                        payload: {
+                          ...search,
+                          orderBy: 'CreationTime',
+                          sortedBy: 'desc',
+                        },
+                      });
+                    }
+                  },
+                });
+              }}
+            />
+          </div>
+        ),
+      },
+      {
+        title: 'Thao tác',
+        key: 'action',
+        width: 125,
+        fixed: 'right',
+        render: (record) => (
+          <div className="d-flex justify-content-end">
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button
+              color="primary"
+              icon="edit"
+              className='ml10'
+              onClick={() => history.push(`/thong-bao/cau-hinh/${record.id}/chi-tiet`)}
+            />
+          </div>
+        ),
+      },
+    ];
+    return columns;
+  };
+
+  render() {
+    const {
+      match: { params },
+      pagination,
+      loading: { effects },
+      location: { pathname },
+      data,
+    } = this.props;
+    const loading = effects['noticationConfiguration/GET_DATA'];
+    return (
+      <>
+        <Helmet title="Cấu hình" />
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <Text color="dark">Cấu hình</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Thêm mới
+            </Button>
+          </div>
+          <div className={styles['block-table']}>
+            <Table
+              columns={this.header(params)}
+              dataSource={data}
+              loading={loading}
+              pagination={this.pagination(pagination)}
+              params={{
+                header: this.header(),
+                type: 'table',
+              }}
+              bordered={false}
+              rowKey={(record) => record.id}
+              scroll={{ x: '100%', y: '60vh' }}
+            />
+          </div>
+        </div>
+      </>
+    );
+  }
+}
+
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  pagination: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  pagination: {},
+  loading: {},
+  dispatch: {},
+  location: {},
+  data: [],
+};
+
+export default Index;

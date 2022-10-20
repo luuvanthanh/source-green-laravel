@@ -19,6 +19,7 @@ import { head, size, isEmpty, debounce } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
+import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
 
 const { Item: FormItemAntd } = Form;
@@ -28,12 +29,12 @@ const { Item: ListItem } = List;
 const Index = memo(() => {
   const [
     menuData,
-    { branches, divisions },
+    { branches, divisions, category },
     loading,
     { defaultBranch },
-  ] = useSelector(({ menu, notificationAdd, loading: { effects }, user }) => [
+  ] = useSelector(({ menu, notificationV1Add, loading: { effects }, user }) => [
     menu.menuLeftNotification,
-    notificationAdd,
+    notificationV1Add,
     effects,
     user,
   ]);
@@ -55,6 +56,9 @@ const Index = memo(() => {
 
   const [checkboxAll, setCheckboxAll] = useState(false);
   const [checkboxAllEmployees, setCheckboxAllEmployees] = useState(false);
+
+  const [variableData, setVariableData] = useState([]);
+
 
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -96,7 +100,7 @@ const Index = memo(() => {
   const debouncedSearchKeyWork = debounce((value) => {
     mountedSet(setSearchParent, { ...searchParent, loading: true });
     dispatch({
-      type: 'notificationAdd/GET_PARENTS',
+      type: 'notificationV1Add/GET_PARENTS',
       payload: {
         ...searchParent,
         KeyWord: value?.trim(),
@@ -128,11 +132,15 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'notificationAdd/GET_BRANCHES',
+      type: 'notificationV1Add/GET_BRANCHES',
       payload: {},
     });
     dispatch({
-      type: 'notificationAdd/GET_DIVISIONS',
+      type: 'notificationV1Add/GET_DIVISIONS',
+      payload: {},
+    });
+    dispatch({
+      type: 'notificationV1Add/GET_CATEGORY',
       payload: {},
     });
   }, []);
@@ -141,7 +149,7 @@ const Index = memo(() => {
   //   if (!params?.id) {
   //     mountedSet(setSearchEmployee, { ...searchEmployee, loading: true });
   //     dispatch({
-  //       type: 'notificationAdd/GET_EMPLOYEES',
+  //       type: 'notificationV1Add/GET_EMPLOYEES',
   //       payload: {
   //         ...searchEmployee,
   //       },
@@ -163,7 +171,7 @@ const Index = memo(() => {
     if (details?.id) {
       mountedSet(setSearchEmployee, { ...searchEmployee, branchId: details?.branchId });
       dispatch({
-        type: 'notificationAdd/GET_EMPLOYEES',
+        type: 'notificationV1Add/GET_EMPLOYEES',
         payload: {
           page: searchEmployee?.page,
           limit: searchEmployee?.limit,
@@ -200,7 +208,7 @@ const Index = memo(() => {
     if (defaultBranch?.id && !params?.id) {
       mountedSet(setSearchParent, { ...searchParent, loading: true });
       dispatch({
-        type: 'notificationAdd/GET_PARENTS',
+        type: 'notificationV1Add/GET_PARENTS',
         payload: {
           ...searchParent,
         },
@@ -215,7 +223,7 @@ const Index = memo(() => {
         },
       });
       dispatch({
-        type: 'notificationAdd/GET_CLASS',
+        type: 'notificationV1Add/GET_CLASS',
         payload: {
           branch: defaultBranch?.id,
         },
@@ -227,7 +235,7 @@ const Index = memo(() => {
       });
 
       dispatch({
-        type: 'notificationAdd/GET_EMPLOYEES',
+        type: 'notificationV1Add/GET_EMPLOYEES',
         payload: {
           ...searchParent,
         },
@@ -247,7 +255,7 @@ const Index = memo(() => {
   useEffect(() => {
     if (params?.id && details?.id) {
       dispatch({
-        type: 'notificationAdd/GET_PARENTS',
+        type: 'notificationV1Add/GET_PARENTS',
         payload: {
           ...searchParent,
           branchId: details?.branch?.id,
@@ -296,7 +304,7 @@ const Index = memo(() => {
   const onChangeBranch = (value) => {
     mountedSet(setSearchEmployee, { ...searchEmployee, loading: true, branchId: value });
     dispatch({
-      type: 'notificationAdd/GET_EMPLOYEES',
+      type: 'notificationV1Add/GET_EMPLOYEES',
       payload: {
         ...searchEmployee,
         page: variables.PAGINATION.PAGE,
@@ -318,7 +326,7 @@ const Index = memo(() => {
       },
     });
     dispatch({
-      type: 'notificationAdd/GET_CLASS',
+      type: 'notificationV1Add/GET_CLASS',
       payload: {
         branch: value,
       },
@@ -329,7 +337,7 @@ const Index = memo(() => {
       },
     });
     dispatch({
-      type: 'notificationAdd/GET_PARENTS',
+      type: 'notificationV1Add/GET_PARENTS',
       payload: {
         ...searchParent,
       },
@@ -350,7 +358,7 @@ const Index = memo(() => {
     //   class: "Chọn",
     // });
     dispatch({
-      type: 'notificationAdd/GET_CLASS',
+      type: 'notificationV1Add/GET_CLASS',
       payload: {
         branch: value,
       },
@@ -362,7 +370,7 @@ const Index = memo(() => {
     });
     mountedSet(setSearchParent, { ...searchParent, loading: true });
     dispatch({
-      type: 'notificationAdd/GET_PARENTS',
+      type: 'notificationV1Add/GET_PARENTS',
       payload: {
         ...searchParent,
         total: undefined,
@@ -387,7 +395,7 @@ const Index = memo(() => {
     setCheckboxAllEmployees(true);
     mountedSet(setSearchEmployee, { ...searchEmployee, loading: true });
     dispatch({
-      type: 'notificationAdd/GET_EMPLOYEES',
+      type: 'notificationV1Add/GET_EMPLOYEES',
       payload: {
         ...searchEmployee,
         page: variables.PAGINATION.PAGE,
@@ -420,7 +428,7 @@ const Index = memo(() => {
       classStatus: 'HAS_CLASS',
     });
     dispatch({
-      type: 'notificationAdd/GET_PARENTS',
+      type: 'notificationV1Add/GET_PARENTS',
       payload: {
         branchId: searchParent.branchId,
         class: value,
@@ -450,7 +458,7 @@ const Index = memo(() => {
 
   const debouncedSearchUser = debounce((value) => {
     dispatch({
-      type: 'notificationAdd/GET_EMPLOYEES',
+      type: 'notificationV1Add/GET_EMPLOYEES',
       payload: {
         fullName: value,
         branchId: searchEmployee?.branchId,
@@ -513,7 +521,7 @@ const Index = memo(() => {
       return;
     }
     dispatch({
-      type: 'notificationAdd/GET_EMPLOYEES',
+      type: 'notificationV1Add/GET_EMPLOYEES',
       payload: {
         ...searchEmployee,
         total: undefined,
@@ -576,7 +584,7 @@ const Index = memo(() => {
       return;
     }
     dispatch({
-      type: 'notificationAdd/GET_PARENTS',
+      type: 'notificationV1Add/GET_PARENTS',
       payload: {
         ...searchParent,
         total: undefined,
@@ -690,13 +698,13 @@ const Index = memo(() => {
           ? employees.filter((item) => item.checked).map((item) => (item.id))
           : [],
       studentIds:
-        !isAllParents && type === variablesModules.TYPE.PARENT
+        !isAllParents && type === variablesModules.TYPE.STUDENT
           ? parents.filter((item) => item.checked).map((item) => (item?.student?.id))
           : [],
       excludedEmployeeIds: isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
         ? employees.filter((item) => !item.checked).map((item) => (item.id))
         : [],
-      excludedStudentIds: isAllParents && type === variablesModules.TYPE.PARENT
+      excludedStudentIds: isAllParents && type === variablesModules.TYPE.STUDENT
         ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
         : [],
     };
@@ -704,7 +712,7 @@ const Index = memo(() => {
       if (values?.isReminded) {
         if (values?.remindDate && values?.remindTime) {
           dispatch({
-            type: params.id ? 'notificationAdd/UPDATE' : 'notificationAdd/ADD',
+            type: params.id ? 'notificationV1Add/UPDATE' : 'notificationV1Add/ADD',
             payload,
             callback: (response, error) => {
               if (response) {
@@ -727,7 +735,7 @@ const Index = memo(() => {
         }
       } else {
         dispatch({
-          type: params.id ? 'notificationAdd/UPDATE' : 'notificationAdd/ADD',
+          type: params.id ? 'notificationV1Add/UPDATE' : 'notificationV1Add/ADD',
           payload,
           callback: (response, error) => {
             if (response) {
@@ -754,7 +762,7 @@ const Index = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'notificationAdd/GET_DETAILS',
+        type: 'notificationV1Add/GET_DETAILS',
         payload: params,
         callback: (response) => {
           if (response) {
@@ -764,12 +772,24 @@ const Index = memo(() => {
               setType,
               !isEmpty(response.employeeNews)
                 ? variablesModules.TYPE.EMPLOYEE
-                : variablesModules.TYPE.PARENT,
+                : variablesModules.TYPE.STUDENT,
             );
-
+            dispatch({
+              type: 'notificationV1Add/GET_MODULE',
+              payload: { id: response?.moduleId },
+              callback: (response) => {
+                if (response) {
+                  setVariableData(response?.map(i => ({
+                    value: i?.code,
+                    label: i?.name,
+                  })));
+                }
+              },
+            });
             formRef.current.setFieldsValue({
               title: response.title,
               branchId: response?.branch?.id,
+              moduleId: response?.moduleId,
               divisionId: response?.division?.id,
               class: response?.class?.id,
               isReminded: response?.isReminded,
@@ -802,7 +822,7 @@ const Index = memo(() => {
           }
           if (response?.branch?.id) {
             dispatch({
-              type: 'notificationAdd/GET_CLASS',
+              type: 'notificationV1Add/GET_CLASS',
               payload: {
                 branch: response?.branch?.id,
               },
@@ -856,13 +876,13 @@ const Index = memo(() => {
           ? employees.filter((item) => item.checked).map((item) => (item.id))
           : [],
       studentIds:
-        !isAllParents && type === variablesModules.TYPE.PARENT
+        !isAllParents && type === variablesModules.TYPE.STUDENT
           ? parents.filter((item) => item.checked).map((item) => (item?.student?.id))
           : [],
       excludedEmployeeIds: isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
         ? employees.filter((item) => !item.checked).map((item) => (item.id))
         : [],
-      excludedStudentIds: isAllParents && type === variablesModules.TYPE.PARENT
+      excludedStudentIds: isAllParents && type === variablesModules.TYPE.STUDENT
         ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
         : [],
     };
@@ -870,7 +890,7 @@ const Index = memo(() => {
       if (values?.isReminded) {
         if (values?.remindDate && values?.remindTime) {
           dispatch({
-            type: 'notificationAdd/SEND',
+            type: 'notificationV1Add/SEND',
             payload,
             callback: (response, error) => {
               if (response) {
@@ -893,7 +913,7 @@ const Index = memo(() => {
         }
       } else {
         dispatch({
-          type: 'notificationAdd/SEND',
+          type: 'notificationV1Add/SEND',
           payload,
           callback: (response, error) => {
             if (response) {
@@ -917,6 +937,117 @@ const Index = memo(() => {
     }
   };
 
+  const onApprove = () => {
+    const values = formRef.current.getFieldsValue();
+    const payload = {
+      ...values,
+      classId: values.class,
+      class: undefined,
+      isReminded: !!values?.isReminded,
+      remindDate: values?.isReminded
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.remindDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }) : undefined,
+      remindTime: values?.isReminded
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.remindTime,
+          }),
+          format: variables.DATE_FORMAT.HOUR,
+          isUTC: false,
+        }) : undefined,
+      id: params.id,
+      content,
+      // sentDate: moment(),
+      isAllEmployees,
+      isAllStudents: isAllParents,
+      employeeIds:
+        !isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
+          ? employees.filter((item) => item.checked).map((item) => (item.id))
+          : [],
+      studentIds:
+        !isAllParents && type === variablesModules.TYPE.STUDENT
+          ? parents.filter((item) => item.checked).map((item) => (item?.student?.id))
+          : [],
+      excludedEmployeeIds: isAllEmployees && type === variablesModules.TYPE.EMPLOYEE
+        ? employees.filter((item) => !item.checked).map((item) => (item.id))
+        : [],
+      excludedStudentIds: isAllParents && type === variablesModules.TYPE.STUDENT
+        ? parents.filter((item) => !item.checked).map((item) => (item?.student?.id))
+        : [],
+    };
+    if (values?.title) {
+      if (values?.isReminded) {
+        if (values?.remindDate && values?.remindTime) {
+          dispatch({
+            type: 'notificationV1Add/ADD_APPROVE',
+            payload,
+            callback: (response, error) => {
+              if (response) {
+                history.goBack();
+              }
+              if (error) {
+                if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                  error?.validationErrors.forEach((item) => {
+                    formRef.current.setFields([
+                      {
+                        name: head(item.members),
+                        errors: [item.message],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
+        }
+      } else {
+        dispatch({
+          type: 'notificationV1Add/ADD_APPROVE',
+          payload,
+          callback: (response, error) => {
+            if (response) {
+              history.goBack();
+            }
+            if (error) {
+              if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                error?.validationErrors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: head(item.members),
+                      errors: [item.message],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+      }
+    }
+  };
+
+  const onChangeModule = (e) => {
+    dispatch({
+      type: 'notificationV1Add/GET_MODULE',
+      payload: { id: e },
+      callback: (response) => {
+        if (response) {
+          setVariableData(response?.map(i => ({
+            value: i?.code,
+            label: i?.name,
+          })));
+        }
+      },
+    });
+  };
+
   return (
     <Form
       layout="vertical"
@@ -926,7 +1057,10 @@ const Index = memo(() => {
       }}
     >
       <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
-      <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
+      <div className='d-flex justify-content-between align-items-center'>
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
+        {params?.id && <div className='pr10'>{HelperModules.tagStatusSend(details?.status)}</div>}
+      </div>
       <Pane className="pr20 pl20">
         <Pane className="row">
           <Pane className="col-lg-6">
@@ -935,10 +1069,19 @@ const Index = memo(() => {
                 <Pane className="mb20">
                   <Heading type="form-title">Thông tin chung</Heading>
                 </Pane>
-
+                <Pane className="col-lg-6 p0">
+                  <FormItemAntd label="Danh mục (Loại thông báo / nhắc nhở)" className='m0'>
+                    <FormItem
+                      name="moduleId"
+                      data={category}
+                      type={variables.SELECT}
+                      onChange={onChangeModule}
+                    />
+                  </FormItemAntd>
+                </Pane>
                 <FormItemAntd label="Đối tượng nhận">
                   <RadioGroup
-                    options={variablesModules.TYPES}
+                    options={variableData}
                     value={type}
                     onChange={onChangeType}
                   />
@@ -1061,7 +1204,7 @@ const Index = memo(() => {
                   </Pane>
                 </>
               )}
-              {type === variablesModules.TYPE.PARENT && (
+              {type === variablesModules.TYPE.STUDENT && (
                 <>
                   <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
                     <Pane className="row">
@@ -1115,7 +1258,7 @@ const Index = memo(() => {
                       <FormItemAntd label="Người nhận thông báo">
                         <Checkbox
                           checked={isAllParents}
-                          onChange={(event) => changeAll(variablesModules.TYPE.PARENT, event)}
+                          onChange={(event) => changeAll(variablesModules.TYPE.STUDENT, event)}
                         >
                           Tất cả học sinh
                         </Checkbox>
@@ -1270,49 +1413,67 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-                <Button
-                  color="success"
-                  size="large"
-                  loading={
-                    loading['notificationAdd/GET_BRANCHES'] ||
-                    loading['notificationAdd/GET_DIVISIONS'] ||
-                    loading['notificationAdd/ADD'] ||
-                    loading['notificationAdd/UPDATE']
-                  }
-                  style={{ marginLeft: 'auto' }}
-                  htmlType="submit"
-                  onClick={() => onFinish()}
-                  disabled={
-                    !employees.find((item) => item.checked) &&
-                    !parents.find((item) => item.checked) &&
-                    !isAllEmployees &&
-                    !isAllParents &&
-                    checkboxInput
-                  }
-                >
-                  Lưu
-                </Button>
-                <Button
-                  color="primary"
-                  size="large"
-                  className='ml10'
-                  htmlType="submit"
-                  loading={
-                    loading['notificationAdd/SEND']
-                  }
-                  style={{ marginLeft: 'auto' }}
-                  onClick={() => changeSend()}
-                  disabled={
-                    !employees.find((item) => item.checked) &&
-                    !parents.find((item) => item.checked) &&
-                    !isAllEmployees &&
-                    checkboxInput &&
-                    !isAllParents || (details?.sentDate && params?.id)
+                {
+                  details?.status === variablesModules.STATUS_NAME_STATUS.Approving ?
+                    <Button
+                      color="primary"
+                      size="large"
+                      loading={
+                        loading['notificationV1Add/ADD_APPROVE']
+                      }
+                      style={{ marginLeft: 'auto' }}
+                      htmlType="submit"
+                      onClick={() => onApprove()}
+                    >
+                      Duyệt
+                    </Button>
+                    :
+                    <>
+                      <Button
+                        color="success"
+                        size="large"
+                        loading={
+                          loading['notificationV1Add/GET_BRANCHES'] ||
+                          loading['notificationV1Add/GET_DIVISIONS'] ||
+                          loading['notificationV1Add/ADD'] ||
+                          loading['notificationV1Add/UPDATE']
+                        }
+                        style={{ marginLeft: 'auto' }}
+                        htmlType="submit"
+                        onClick={() => onFinish()}
+                        disabled={
+                          !employees.find((item) => item.checked) &&
+                          !parents.find((item) => item.checked) &&
+                          !isAllEmployees &&
+                          !isAllParents &&
+                          checkboxInput
+                        }
+                      >
+                        Lưu
+                      </Button>
+                      <Button
+                        color="primary"
+                        size="large"
+                        className='ml10'
+                        htmlType="submit"
+                        loading={
+                          loading['notificationV1Add/SEND']
+                        }
+                        style={{ marginLeft: 'auto' }}
+                        onClick={() => changeSend()}
+                        disabled={
+                          !employees.find((item) => item.checked) &&
+                          !parents.find((item) => item.checked) &&
+                          !isAllEmployees &&
+                          checkboxInput &&
+                          !isAllParents || (details?.sentDate && params?.id)
 
-                  }
-                >
-                  Gửi
-                </Button>
+                        }
+                      >
+                        Gửi
+                      </Button>
+                    </>
+                }
               </Pane>
             </Pane>
           </Pane>

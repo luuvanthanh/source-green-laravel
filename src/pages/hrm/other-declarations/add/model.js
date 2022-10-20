@@ -96,6 +96,17 @@ export default {
         });
       }
     },
+    *GET_WORK({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getWork, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

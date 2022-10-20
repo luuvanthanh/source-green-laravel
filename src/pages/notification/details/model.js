@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'notificationsDetails',
+  namespace: 'notificationsV1Details',
   state: {
     details: [],
     error: {

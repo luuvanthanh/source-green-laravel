@@ -1,0 +1,11 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    font-style: normal;
+  }
+}

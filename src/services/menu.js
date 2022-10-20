@@ -1090,6 +1090,18 @@ export async function getLeftMenuNotification() {
       permission: [permissions.THONGBAO],
       pro: true,
     },
+    // {
+    //   title: 'Cấu hình',
+    //   key: 'configuration',
+    //   url: [
+    //     '/thong-bao/cau-hinh',
+    //     '/thong-bao/cau-hinh/tao-moi',
+    //     '/thong-bao/cau-hinh/:id/chi-tiet',
+    //   ],
+    //   icon: 'icon icon-list',
+    //   permission: [permissions.THONGBAO],
+    //   pro: true,
+    // },
   ];
 }
 export async function getLeftMenuMedia() {
@@ -1162,6 +1174,13 @@ export async function getLeftMenuHealth() {
 }
 export async function getLeftMenuHRM() {
   return [
+    {
+      title: 'Trang chủ',
+      key: 'home',
+      icon: 'icon icon-home',
+      permission: [permissions.HRM],
+      url: ['/quan-ly-nhan-su/trang-chu'],
+    },
     {
       title: 'Nhân sự',
       key: 'users',
@@ -1433,6 +1452,15 @@ export async function getLeftMenuHRM() {
           title: 'Hồ sơ đã lưu trữ',
           key: 'storages',
           url: ['/quan-ly-nhan-su/luu-tru'],
+          permission: [permissions.HRM],
+        },
+        {
+          title: 'Lịch sử nhân sự',
+          key: 'history-employee',
+          url: [
+            '/quan-ly-nhan-su/lich-su-nhan-su',
+            '/quan-ly-nhan-su/lich-su-nhan-su/:id/chi-tiet',
+          ],
           permission: [permissions.HRM],
         },
       ],
@@ -1707,6 +1735,13 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
           pro: true,
         },
+        {
+          title: 'Ngày thông báo',
+          key: 'day-notication',
+          url: ['/quan-ly-nhan-su/cau-hinh/-thong-bao'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
       ],
     },
     {
@@ -1733,6 +1768,13 @@ export async function getLeftMenuHRM() {
           title: 'Báo cáo danh sách nhân viên thôi việc',
           key: 'employee-leave',
           url: ['/quan-ly-nhan-su/bao-cao/nhan-vien-thoi-viec'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Báo cáo thông tin nhân viên',
+          key: 'staff-information',
+          url: ['/quan-ly-nhan-su/bao-cao/thong-tin-nhan-vien'],
           permission: [permissions.HRM],
           pro: true,
         },
@@ -2430,7 +2472,7 @@ export async function getLeftMenuChildDevelop() {
       title: 'Theo dõi sự phát triển của trẻ',
       key: 'monitor-childrens',
       icon: 'icon icon-home',
-      permission: [],
+      permission: [permissions?.SUPHATTRIENCUATRE],
       url: [
         '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
         '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre/:id/chi-tiet',
@@ -2440,7 +2482,7 @@ export async function getLeftMenuChildDevelop() {
       title: 'Danh mục',
       key: 'childsDevelop',
       icon: 'icon icon-list',
-      permission: [],
+      permission: [permissions?.SUPHATTRIENCUATRE],
       children: [
         {
           title: 'Kỹ năng',
@@ -2450,14 +2492,14 @@ export async function getLeftMenuChildDevelop() {
             '/su-phat-trien-cua-tre/danh-muc/ky-nang/tao-moi',
             '/su-phat-trien-cua-tre/danh-muc/ky-nang/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions?.SUPHATTRIENCUATRE],
           pro: true,
         },
         {
           title: 'Câu hỏi đánh giá của trẻ',
           key: 'review-question',
           url: ['/su-phat-trien-cua-tre/danh-muc/cau-hoi-danh-gia-cua-tre'],
-          permission: [],
+          permission: [permissions?.SUPHATTRIENCUATRE],
           pro: true,
         },
         {
@@ -2468,7 +2510,7 @@ export async function getLeftMenuChildDevelop() {
             '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/tao-moi',
             '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions?.SUPHATTRIENCUATRE],
           pro: true,
         },
         {
@@ -2479,7 +2521,7 @@ export async function getLeftMenuChildDevelop() {
             '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/tao-moi',
             '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions?.SUPHATTRIENCUATRE],
           pro: true,
         },
         {
@@ -2490,16 +2532,23 @@ export async function getLeftMenuChildDevelop() {
             '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/tao-moi',
             '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions?.SUPHATTRIENCUATRE],
           pro: true,
         },
       ],
     },
+    // {
+    //   title: 'Đánh giá đã duyệt',
+    //   key: 'list-of-reviews',
+    //   icon: 'icon icon-list',
+    //   permission: [],
+    //   url: ['/su-phat-trien-cua-tre/danh-gia-da-duyet'],
+    // },
     {
       title: 'Cấu hình kịch bản đánh giá',
       key: '/childrens-problems',
       icon: 'icon icon-setting',
-      permission: [],
+      permission: [permissions?.SUPHATTRIENCUATRE],
       url: [
         '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia',
         '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/tao-moi',

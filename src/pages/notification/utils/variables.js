@@ -17,21 +17,46 @@ export const variables = {
   },
   TYPES: [
     { value: 'EMPLOYEE', label: 'Nhân viên' },
-    { value: 'PARENT', label: 'Phụ huynh' },
+    { value: 'STUDENT', label: 'Học sinh' },
   ],
   TYPE: {
     EMPLOYEE: 'EMPLOYEE',
     PARENT: 'PARENT',
     BRANCH: 'BRANCH',
+    STUDENT: 'STUDENT',
   },
   ACTION_TYPE: {
     POST: 'gửi thông báo',
     PUT: 'sửa thông báo',
   },
   STATUS_NAME_SEND: {
-    SEND: 'Đã gửi',
-    NOT_SEND: 'Chưa gửi',
+    Draft: 'Lưu nháp',
+    Approving: 'Chờ duyệt',
+    Approved: 'Đã duyệt',
   },
+  STATUS_NAME_STATUS: {
+    Draft: 'Draft',
+    Approving: 'Approving',
+    Approved: 'Approved',
+  },
+  STATUS_TABS: [
+    {
+      id: undefined,
+      name: 'Tất cả',
+    },
+    {
+      id: 'Draft',
+      name: 'Lưu nháp',
+    },
+    {
+      id: 'Approving',
+      name: 'Chờ duyệt',
+    },
+    {
+      id: 'Approved',
+      name: 'Đã duyệt',
+    },
+  ],
 };
 
 export default variables;

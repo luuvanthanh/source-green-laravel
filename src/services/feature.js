@@ -157,10 +157,10 @@ export const feature = {
     },
     {
       title: 'Sự phát triển của trẻ',
-      src: '/images/home/spreadsheet.svg',
-      animation: animationImage.programStudy,
+      src: '/images/home/childDevelop.svg',
+      animation: animationImage.childDevelop,
       url: '/su-phat-trien-cua-tre',
-      permission: [permissions.CTH],
+      permission: [permissions.SUPHATTRIENCUATRE],
     },
     {
       title: 'Chiến dịch Email',
