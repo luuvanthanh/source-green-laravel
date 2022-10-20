@@ -623,7 +623,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     public function getTypeOfContract($user)
     {
         $dateNow = Carbon::now()->setTimezone('GMT+7')->format('Y-m-d');
-        
+
         $labourContract = $user->labourContract()->whereDate('ContractFrom', '<=', $dateNow)->whereDate('ContractTo', '>=', $dateNow)->orderBy('ContractTo', 'desc')->first();
         if (is_null($labourContract)) {
             $labourContract = $user->labourContract()->whereDate('ContractFrom', '<=', $dateNow)->where('ContractTo', null)->orderBy('ContractTo', 'desc')->first();
@@ -724,7 +724,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         $params['{branch}'] = !is_null($branch) ? $branch->Name : 'Tất cả cơ sở';
-        $params['{division}'] = !is_null($branch) ? $division->Name : 'Tất cả bộ phận';
+        $params['{division}'] = !is_null($division) ? $division->Name : 'Tất cả bộ phận';
         $params['{position}'] = !is_null($position) ? $position->Name : 'Tất cả chức vụ';
         $params['{date}'] = $date;
         $params['{employee}'] = !is_null($employee) ? $employee->FullName : 'Tất cả nhân viên';
@@ -770,7 +770,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     public function reportEmployeeHistory($attributes)
     {
         $users = $this->getUser($attributes, true);
-        $users = $users->get();
+        $users = $users->orderBy('LastName', 'asc')->get();
 
         $result = [];
         foreach ($users as $key => $user) {
