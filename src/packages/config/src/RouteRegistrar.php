@@ -67,6 +67,7 @@ class RouteRegistrar extends CoreRegistrar
                 ]);
             });
 
+            \Route::resource('config-notifications', 'ConfigNotificationController');
         });
     }
 }

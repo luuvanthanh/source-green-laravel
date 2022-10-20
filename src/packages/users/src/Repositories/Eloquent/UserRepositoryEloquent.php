@@ -7,6 +7,7 @@ use GGPHP\Appoint\Models\Appoint;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\Position;
+use GGPHP\Config\Models\ConfigNotification;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Core\Services\AccountantService;
 use GGPHP\Core\Services\CrmService;
@@ -199,7 +200,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         try {
             $this->creating($attributes);
             $user = User::create($attributes);
-            $this->created($attributes, $user);
+            //$this->created($attributes, $user);
 
             $data = [
                 'full_name' => $user->FullName,
@@ -522,7 +523,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $startDateWorking = !is_null($probationaryContract->ContractFrom) ? Carbon::parse($probationaryContract->ContractFrom)->format($format) : '';
         } elseif (!is_null($labourContract) && !is_null($probationaryContract)) {
             if (!is_null($labourContract->ContractFrom) && !is_null($probationaryContract->ContractFrom)) {
-                if (Carbon::parse($labourContract->ContractFrom)->format('dmY') < Carbon::parse($probationaryContract->ContractFrom)->format('dmY')) {
+                if (Carbon::parse($labourContract->ContractFrom)->format('Ymd') < Carbon::parse($probationaryContract->ContractFrom)->format('Ymd')) {
                     $startDateWorking = Carbon::parse($labourContract->ContractFrom)->format($format);
                 } else {
                     $startDateWorking = Carbon::parse($probationaryContract->ContractFrom)->format($format);
@@ -569,7 +570,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $endDateWorking = !is_null($probationaryContract->ContractTo) ? Carbon::parse($probationaryContract->ContractTo)->format('d/m/Y') : '';
         } elseif (!is_null($labourContract) && !is_null($probationaryContract)) {
             if (!is_null($labourContract->ContractTo) && !is_null($probationaryContract->ContractTo)) {
-                if (Carbon::parse($labourContract->ContractTo)->format('dmY') < Carbon::parse($probationaryContract->ContractTo)->format('dmY')) {
+                if (Carbon::parse($labourContract->ContractTo)->format('Ymd') > Carbon::parse($probationaryContract->ContractTo)->format('Ymd')) {
                     $endDateWorking = Carbon::parse($labourContract->ContractTo)->format('d/m/Y');
                 } else {
                     $endDateWorking = Carbon::parse($probationaryContract->ContractTo)->format('d/m/Y');
@@ -586,7 +587,6 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         $date = Carbon::parse($date);
         $numberYearWork = 0;
         $numberMonthWork = 0;
-
         if (!is_null($labourContract)) {
             $quantityWorking = $labourContract->ContractFrom->diff($date);
             $numberMonthWork = $quantityWorking->m;
@@ -623,20 +623,28 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     public function getTypeOfContract($user)
     {
         $dateNow = Carbon::now()->setTimezone('GMT+7')->format('Y-m-d');
+
         $labourContract = $user->labourContract()->whereDate('ContractFrom', '<=', $dateNow)->whereDate('ContractTo', '>=', $dateNow)->orderBy('ContractTo', 'desc')->first();
+        if (is_null($labourContract)) {
+            $labourContract = $user->labourContract()->whereDate('ContractFrom', '<=', $dateNow)->where('ContractTo', null)->orderBy('ContractTo', 'desc')->first();
+        }
+
         $probationaryContract = $user->probationaryContract()->whereDate('ContractFrom', '<=', $dateNow)->whereDate('ContractTo', '>=', $dateNow)->orderBy('ContractTo', 'desc')->first();
         $typeOfContract = '';
+
         if (!is_null($labourContract) && is_null($probationaryContract)) {
             $typeOfContract = !is_null($labourContract->typeOfContract) ? $labourContract->typeOfContract->Name : '';
         } elseif (is_null($labourContract) && !is_null($probationaryContract)) {
             $typeOfContract = !is_null($probationaryContract->typeOfContract) ? $probationaryContract->typeOfContract->Name : '';
         } elseif (!is_null($labourContract) && !is_null($probationaryContract)) {
             if (!is_null($labourContract->ContractTo) && !is_null($probationaryContract->ContractTo)) {
-                if (Carbon::parse($labourContract->ContractTo)->format('dmY') < Carbon::parse($probationaryContract->ContractTo)->format('dmY')) {
+                if (Carbon::parse($labourContract->ContractTo)->format('Ymd') > Carbon::parse($probationaryContract->ContractTo)->format('Ymd')) {
                     $typeOfContract = !is_null($labourContract->typeOfContract) ? $labourContract->typeOfContract->Name : '';
                 } else {
                     $typeOfContract = !is_null($probationaryContract->typeOfContract) ? $probationaryContract->typeOfContract->Name : '';
                 }
+            } else {
+                $typeOfContract = !is_null($labourContract->typeOfContract) ? $labourContract->typeOfContract->Name : '';
             }
         }
 
@@ -655,7 +663,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $startDateContract = !is_null($probationaryContract->ContractDate) ? $probationaryContract->ContractDate->format('d/m/Y') : '';
         } elseif (!is_null($labourContract) && !is_null($probationaryContract)) {
             if (!is_null($labourContract->ContractTo) && !is_null($probationaryContract->ContractTo)) {
-                if (Carbon::parse($labourContract->ContractTo)->format('dmY') < Carbon::parse($probationaryContract->ContractTo)->format('dmY')) {
+                if (Carbon::parse($labourContract->ContractTo)->format('Ymd') < Carbon::parse($probationaryContract->ContractTo)->format('Ymd')) {
                     $startDateContract = !is_null($labourContract->ContractDate) ? $labourContract->ContractDate->format('d/m/Y') : '';
                 } else {
                     $startDateContract = !is_null($probationaryContract->ContractDate) ? $probationaryContract->ContractDate->format('d/m/Y') : '';
@@ -716,7 +724,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         $params['{branch}'] = !is_null($branch) ? $branch->Name : 'Tất cả cơ sở';
-        $params['{division}'] = !is_null($branch) ? $division->Name : 'Tất cả bộ phận';
+        $params['{division}'] = !is_null($division) ? $division->Name : 'Tất cả bộ phận';
         $params['{position}'] = !is_null($position) ? $position->Name : 'Tất cả chức vụ';
         $params['{date}'] = $date;
         $params['{employee}'] = !is_null($employee) ? $employee->FullName : 'Tất cả nhân viên';
@@ -762,7 +770,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     public function reportEmployeeHistory($attributes)
     {
         $users = $this->getUser($attributes, true);
-        $users = $users->get();
+        $users = $users->orderBy('LastName', 'asc')->get();
 
         $result = [];
         foreach ($users as $key => $user) {
@@ -790,6 +798,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         $data = [
             'id' => $user->Id,
             'fullName' => $user->FullName,
+            'fileImage' => $user->FileImage,
             'dateOfBirth' => Carbon::parse($user->DateOfBirth)->format('d/m/Y'),
             'phoneNumber' => $user->PhoneNumber,
             'address' => $user->Address,
@@ -976,5 +985,44 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         return $dataResignationDecision;
+    }
+
+    public function getEmployeeBirthday()
+    {
+        $dateNow = Carbon::now();
+
+        $employeeBirthday =  User::whereMonth('DateOfBirth', $dateNow->format('m'))->whereDay('DateOfBirth', $dateNow->format('d'))->get();
+
+        $dataEmployeeBirthday = $employeeBirthday->map(function ($item) use ($dateNow) {
+            return [
+                'fileImage' => $item->FileImage,
+                'fullName' => $item->FullName,
+                'division' => $item->positionLevelNow ? $this->getDivision($item) : '',
+                'age' => $item->DateOfBirth->diffInYears($dateNow)
+            ];
+        })->toArray();
+
+        $configNotification = ConfigNotification::where('Type', ConfigNotification::TYPE['BIRTHDAY'])->first();
+        $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
+
+
+        $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))->whereDay('DateOfBirth', '>', $dateNow->format('d'))
+            ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
+
+        $dataEmployeeBirthdayUpcoming = $employeeBirthdayUpcoming->map(function ($item) use ($dateConfigNotification) {
+            return [
+                'fileImage' => $item->FileImage,
+                'fullName' => $item->FullName,
+                'division' => $item->positionLevelNow ? $this->getDivision($item) : '',
+                'dateOfBirth' => $item->DateOfBirth ? $item->DateOfBirth->format('d/m/Y') : '',
+                'age' => $item->DateOfBirth->diffInYears($dateConfigNotification)
+            ];
+        })->toArray();
+
+
+        return [
+            'dataEmployeeBirthday' => $dataEmployeeBirthday,
+            'dataEmployeeBirthdayUpcoming' => $dataEmployeeBirthdayUpcoming
+        ];
     }
 }

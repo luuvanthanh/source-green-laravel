@@ -148,6 +148,7 @@ class TimekeepingController extends Controller
 
             return $this->success(['data' => $employeesByStore], trans('lang::messages.common.getInfoSuccess'));
         } catch (\Throwable $th) {
+
             return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getCode());
         }
     }
