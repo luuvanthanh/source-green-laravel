@@ -247,8 +247,8 @@ class Index extends PureComponent {
           const details = head(response);
           this.formRef.current.setFieldsValue({
             ...omit(details, 'typeOfContractId'),
-            contractDate:  moment(),
-            contractFrom: details.contractFrom && moment(details.contractFrom).add(1, 'days'),
+            contractDate: moment(),
+            contractFrom: details.contractTo && moment(details.contractTo).add(1, 'days'),
             contractTo: null,
             month: null,
           });
@@ -256,7 +256,7 @@ class Index extends PureComponent {
         } else {
           this.loadFormContarct(moment());
           this.formRef.current.setFieldsValue({
-            contractDate:  moment(),
+            contractDate: moment(),
             representId: null,
             isSocialInsurance: null,
             branchId: null,
