@@ -7,6 +7,23 @@
     background-color: #eef8ea !important;
     border-right: none !important;
   }
+  :global(.ant-table-thead > tr > th) {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    font-style: normal;
+  }
+}
+
+.wrapper-table-items {
+  :global(.ant-table-thead > tr > th) {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    font-style: normal;
+  }
 }
 
 .general-detail {

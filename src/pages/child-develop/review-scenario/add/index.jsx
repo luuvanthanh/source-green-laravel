@@ -289,7 +289,7 @@ const Index = memo(() => {
                                               </div>
                                             </div>
                                             <Form.List label="Hình thức tiếp cận" name={[field.name, 'childEvaluateDetailChildren']} fieldKey={[field.fieldKey, 'childEvaluateDetailChildren']}>
-                                              {(fieldss, { remove }) => (
+                                              {(fieldss, { remove, add }) => (
                                                 <>
                                                   {fieldss.map((fieldItem, indexItem) => {
                                                     const data = form?.getFieldsValue();
@@ -343,6 +343,16 @@ const Index = memo(() => {
 
                                                     );
                                                   })}
+                                                  <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer " >
+                                                    <span
+                                                      onClick={() => add()}
+                                                      role="presentation"
+                                                      className={stylesModule.add}
+                                                    >
+                                                      <span className="icon-plus-circle mr5" />
+                                                      Thêm
+                                                    </span>
+                                                  </Pane>
                                                 </>
                                               )}
                                             </Form.List>

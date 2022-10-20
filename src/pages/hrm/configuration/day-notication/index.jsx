@@ -90,7 +90,7 @@ const Index = memo(() => {
             <Form layout="vertical" form={formRef} onFinish={onFinish}>
                 <Helmet title="Cấu hình ngày thông báo" />
                 <div className="row">
-                    <div className="col-lg-6 offset-lg-3">
+                    <div className="col-lg-8 offset-lg-2">
                         <Heading type="form-title" className="pb20">
                             Cấu hình ngày thông báo
                         </Heading>
