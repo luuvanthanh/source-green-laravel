@@ -12,6 +12,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Button from '@/components/CommonComponent/Button';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import stylesModule from './styles.module.scss';
 
 let isMounted = true;
 /**
@@ -28,13 +29,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ HRMstaffInformation, loading }) => ({
+const mapStateToProps = ({ HRMstaffInformation, loading, user }) => ({
   data: HRMstaffInformation.data,
   pagination: HRMstaffInformation.pagination,
   branches: HRMstaffInformation.branches,
   employees: HRMstaffInformation.employees,
   divisions: HRMstaffInformation.divisions,
   positions: HRMstaffInformation.positions,
+  defaultBranch: user.defaultBranch,
   loading,
 });
 @connect(mapStateToProps)
@@ -45,10 +47,13 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      defaultBranch,
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         ...query,
+        branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         fullName: query?.fullName,
@@ -344,7 +349,9 @@ class Index extends PureComponent {
         key: 'numberDependentPerson',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.numberDependentPerson}</Text>,
+        render: (record) => <div className='d-flex w-100 justify-content-center'>
+          <Text size="normal">{record?.numberDependentPerson}</Text>
+        </div>,
       },
       {
         title: 'Mã số thuế',
@@ -462,19 +469,20 @@ class Index extends PureComponent {
       positions,
       divisions,
       pagination,
+      defaultBranch,
       match: { params },
       loading: { effects },
     } = this.props;
 
-    const { search } = this.state;
+    const { search, defaultBranchs } = this.state;
     const loading = effects['HRMstaffInformation/GET_DATA'];
     return (
       <>
-        <Helmet title="Báo cáo hồ sơ nhân viên" />
+        <Helmet title="Báo cáo thông tin nhân viên" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Báo cáo hồ sơ nhân viên</Text>
+            <Text color="dark">Báo cáo thông tin nhân viên</Text>
             <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
               Xuất Excel
             </Button>
@@ -492,15 +500,28 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
+                {!defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Chọn tất cả bộ phận' }, ...divisions]}
@@ -525,6 +546,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'date')}
                     type={variables.DATE_PICKER}
                     allowClear={false}
+
                   />
                 </div>
                 <div className="col-lg-12">
@@ -538,20 +560,22 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              pagination={this.pagination(pagination)}
-              childrenColumnName="test"
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              bordered={false}
-              rowKey={(record) => record.fullName}
-              scroll={{ x: '100%', y: '55vh' }}
-            />
+            <div className={stylesModule['wrapper-table']}>
+              <Table
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                pagination={this.pagination(pagination)}
+                childrenColumnName="test"
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                bordered={false}
+                rowKey={(record) => record.fullName}
+                scroll={{ x: '100%', y: '55vh' }}
+              />
+            </div>
           </div>
         </div>
       </>
@@ -570,6 +594,7 @@ Index.propTypes = {
   positions: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -583,6 +608,7 @@ Index.defaultProps = {
   positions: [],
   divisions: [],
   employees: [],
+  defaultBranch: {},
 };
 
 export default Index;

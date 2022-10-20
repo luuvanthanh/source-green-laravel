@@ -1772,7 +1772,7 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Báo cáo hồ sơ nhân viên',
+          title: 'Báo cáo thông tin nhân viên',
           key: 'staff-information',
           url: ['/quan-ly-nhan-su/bao-cao/thong-tin-nhan-vien'],
           permission: [permissions.HRM],

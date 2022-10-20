@@ -1,14 +1,11 @@
 @import "@/assets/styles/mixins.scss";
 
-.wrapper-radio {
-  :global(.ant-radio-group) {
-    display: flex;
-  }
-  :global(.ant-radio-wrapper) {
-    width: 100px;
-    margin: 0px !important;
-  }
-  :global(.ant-form-item) {
-    margin-bottom: 10px !important;
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    font-style: normal;
   }
 }

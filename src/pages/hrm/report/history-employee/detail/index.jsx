@@ -72,6 +72,32 @@ const General = memo(
             return columns;
         };
 
+        const headerAppoint = () => {
+            const columns = [
+                {
+                    title: 'Số quyết định',
+                    key: 'created_at',
+                    className: 'min-width-150',
+                    width: 150,
+                    render: (record) => record.decisionNumber,
+                },
+                {
+                    title: 'Ngày',
+                    key: 'created_at',
+                    className: 'min-width-150',
+                    width: 150,
+                    render: (record) => record.timeApply,
+                },
+                {
+                    title: 'Chức vụ',
+                    key: 'created_at',
+                    className: 'min-width-200',
+                    render: (record) => record.reason,
+                },
+            ];
+            return columns;
+        };
+
         return (
             <>
                 <Helmet title="Tạo hồ sơ nhân viên" />
@@ -267,9 +293,9 @@ const General = memo(
                                         Quyết định bổ nhiệm
                                     </Heading>
                                 </div>
-                                <div>
+                                <div className={stylesModule['wrapper-table-items']}>
                                     <Table
-                                        columns={header()}
+                                        columns={headerAppoint()}
                                         dataSource={details.appoint}
                                         bordered={false}
                                         pagination={false}
@@ -286,7 +312,7 @@ const General = memo(
                                         Quyết định điều chuyển
                                     </Heading>
                                 </div>
-                                <div>
+                                <div className={stylesModule['wrapper-table-items']}>
                                     <Table
                                         columns={header()}
                                         dataSource={details.transfer}
@@ -305,7 +331,7 @@ const General = memo(
                                         Quyết định khen thưởng/kỷ luật
                                     </Heading>
                                 </div>
-                                <div>
+                                <div className={stylesModule['wrapper-table-items']}>
                                     <Table
                                         columns={header()}
                                         dataSource={details.decisionReward}
@@ -324,7 +350,7 @@ const General = memo(
                                         Quyết định tăng lương
                                     </Heading>
                                 </div>
-                                <div>
+                                <div className={stylesModule['wrapper-table-items']}>
                                     <Table
                                         columns={header()}
                                         dataSource={details.salaryIncrease}
@@ -344,7 +370,7 @@ const General = memo(
                                         Quyết định thôi việc
                                     </Heading>
                                 </div>
-                                <div>
+                                <div className={stylesModule['wrapper-table-items']}>
                                     <Table
                                         columns={header()}
                                         dataSource={details.resignationDecision}

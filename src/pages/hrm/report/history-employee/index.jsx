@@ -264,10 +264,12 @@ class Index extends PureComponent {
             {
                 title: 'Tên nhân sự',
                 key: 'fullName',
-                className: 'min-width-200',
-                width: 200,
+                className: 'min-width-250',
+                width: 250,
                 align: 'center',
-                render: (record) => <Text size="normal">{record?.fullName}</Text>,
+                render: (record) => <div className='d-flex w-100 justify-content-start'>
+                    <Text size="normal">{record?.fullName}</Text>
+                </div>,
             },
             {
                 title: 'Ngày sinh',
@@ -480,7 +482,7 @@ class Index extends PureComponent {
                                 isError={error.isError}
                                 onRow={(record) => ({
                                     onClick: () => {
-                                        if (ability.can('HRM', 'HRM')) {
+                                        if (!record?.children && ability.can('HRM', 'HRM')) {
                                             history.push(`/quan-ly-nhan-su/lich-su-nhan-su/${record.id}/chi-tiet`);
                                         }
                                     },
