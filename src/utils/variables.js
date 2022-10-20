@@ -33,6 +33,7 @@ export const variables = {
   INPUT_NUMBER: 'inputNumber',
   INPUT_NOTE: 'inputNote',
   INPUT_COUNT: 'inputCount',
+  INPUT_COUNT_FORM: 'inputCountForm',
   INPUT_DATE: 'inputDate',
   SWITCH: 'switch',
   AUTO_COMPLETE: 'AutoComplete',

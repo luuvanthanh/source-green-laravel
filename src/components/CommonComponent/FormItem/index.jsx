@@ -94,6 +94,19 @@ const renderChildren = (
       value={value}
     />
   ),
+  inputCountForm: (
+    <InputNumber
+      className={classnames(
+        'input-number-form',
+        styles['input-number-container'],
+        styles['input-number-count'],
+      )}
+      disabled={disabled}
+      onChange={onChange}
+      placeholder="Nhập"
+      value={value}
+    />
+  ),
   numberInput: (
     <InputNumber
       className={classnames(

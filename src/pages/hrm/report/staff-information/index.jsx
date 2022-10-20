@@ -9,6 +9,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
+import Button from '@/components/CommonComponent/Button';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 
@@ -442,6 +443,17 @@ class Index extends PureComponent {
     return columns;
   };
 
+  onChangeExcel = () => {
+    const { search } = this.state;
+    Helper.exportExcel(
+      `/v1/export-excel-report-employee-info`,
+      {
+        ...search,
+      },
+      `Baocaohosocanbonhanvien.xlsx`,
+    );
+  };
+
   render() {
     const {
       data,
@@ -458,11 +470,14 @@ class Index extends PureComponent {
     const loading = effects['HRMstaffInformation/GET_DATA'];
     return (
       <>
-        <Helmet title="Báo cáo thông tin nhân viên" />
+        <Helmet title="Báo cáo hồ sơ nhân viên" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Báo cáo thông tin nhân viên</Text>
+            <Text color="dark">Báo cáo hồ sơ nhân viên</Text>
+            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
+              Xuất Excel
+            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -518,7 +533,7 @@ class Index extends PureComponent {
                     name="employeeId"
                     onChange={(event) => this.onChangeSelect(event, 'employeeId')}
                     type={variables.SELECT_MUTILPLE}
-                    placeholder="Chọn tất cả"
+                    placeholder="Chọn tất cả nhân viên"
                   />
                 </div>
               </div>

@@ -9,6 +9,7 @@ export function get(params = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
+      employeeId: params?.employeeId && params?.employeeId.join(','),
     },
   });
 }

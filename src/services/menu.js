@@ -1175,6 +1175,13 @@ export async function getLeftMenuHealth() {
 export async function getLeftMenuHRM() {
   return [
     {
+      title: 'Trang chủ',
+      key: 'home',
+      icon: 'icon icon-home',
+      permission: [permissions.HRM],
+      url: ['/quan-ly-nhan-su/trang-chu'],
+    },
+    {
       title: 'Nhân sự',
       key: 'users',
       icon: 'icon icon-man',
@@ -1728,6 +1735,13 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
           pro: true,
         },
+        {
+          title: 'Ngày thông báo',
+          key: 'day-notication',
+          url: ['/quan-ly-nhan-su/cau-hinh/-thong-bao'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
       ],
     },
     {
@@ -1758,7 +1772,7 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Báo cáo thông tin nhân viên',
+          title: 'Báo cáo hồ sơ nhân viên',
           key: 'staff-information',
           url: ['/quan-ly-nhan-su/bao-cao/thong-tin-nhan-vien'],
           permission: [permissions.HRM],

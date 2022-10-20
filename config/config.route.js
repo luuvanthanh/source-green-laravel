@@ -1027,7 +1027,7 @@ export default [
         routes: [
           {
             path: '/quan-ly-nhan-su',
-            redirect: '/quan-ly-nhan-su/nhan-vien',
+            redirect: '/quan-ly-nhan-su/trang-chu',
           },
           {
             path: '/quan-ly-nhan-su/lich-lam-viec',
@@ -1848,6 +1848,18 @@ export default [
           {
             path: '/quan-ly-nhan-su/lich-su-nhan-su/:id/chi-tiet',
             component: './hrm/report/history-employee/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/-thong-bao',
+            component: './hrm/configuration/day-notication',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/trang-chu',
+            component: './hrm/home',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },

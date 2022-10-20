@@ -1,0 +1,14 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-title {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #36383a;
+}
+
+.wrapper-btn {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
