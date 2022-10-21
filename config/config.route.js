@@ -3324,6 +3324,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.SUPHATTRIENCUATRE],
           },
+          {
+            path: '/su-phat-trien-cua-tre/cau-hinh-chen-logo',
+            component: './child-develop/configuration-logo',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.SUPHATTRIENCUATRE],
+          },
         ],
       },
       // CURRENCY

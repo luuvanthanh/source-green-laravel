@@ -106,7 +106,7 @@ Index.propTypes = {
 
 Index.defaultProps = {
   data: [],
-  remove: () => {},
+  remove: () => { },
 };
 
 Index.displayName = 'Button';
