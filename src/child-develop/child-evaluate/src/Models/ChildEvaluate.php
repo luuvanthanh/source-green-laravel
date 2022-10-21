@@ -4,9 +4,12 @@ namespace GGPHP\ChildDevelop\ChildEvaluate\Models;
 
 use GGPHP\ChildDevelop\Category\Models\CategorySkill;
 use GGPHP\Core\Models\UuidModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ChildEvaluate extends UuidModel
 {
+    use SoftDeletes;
+    
     protected $table = 'ChildEvaluates';
 
     protected $fillable = [

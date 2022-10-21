@@ -8,9 +8,11 @@ use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ClassType;
 use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\Users\Models\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemester extends UuidModel
 {
+    use SoftDeletes;
     protected $table = 'TestSemesters';
 
     protected $fillable = [

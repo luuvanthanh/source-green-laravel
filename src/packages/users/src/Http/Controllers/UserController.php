@@ -187,4 +187,11 @@ class UserController extends Controller
 
         return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
     }
+
+    public function employeeBirthday()
+    {
+        $employees = $this->employeeRepository->getEmployeeBirthday();
+
+        return $this->success(['data' => $employees], trans('lang::messages.common.getListSuccess'));
+    }
 }
