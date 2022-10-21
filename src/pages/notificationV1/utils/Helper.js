@@ -1,6 +1,8 @@
+import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size } from 'lodash';
 import Tag from '@/components/CommonComponent/Tag';
 import moment from 'moment';
 import { variables } from './variables';
+import Text from '@/components/CommonComponent/Text';
 
 export default class Helpers {
   static tagStatus = (type) => {
@@ -45,12 +47,9 @@ export default class Helpers {
   };
 
   static tagStatusSend = (type) => {
-    if (type === variables.STATUS_NAME_STATUS.Draft) {
-      return <Tag color="primary">{variables.STATUS_NAME_SEND.Draft}</Tag>;
+    if (type) {
+      return <Tag color="success">{variables.STATUS_NAME_SEND.SEND}</Tag>;
     }
-    if (type === variables.STATUS_NAME_STATUS.Approving) {
-      return <Tag color="yellow">{variables.STATUS_NAME_SEND.Approving}</Tag>;
-    }
-    return <Tag color="success">{variables.STATUS_NAME_SEND.Approved}</Tag>;
+    return <Tag color="yellow">{variables.STATUS_NAME_SEND.NOT_SEND}</Tag>;
   };
 }

@@ -25,9 +25,9 @@ const Index = memo(() => {
     menuData,
     { details, error },
     loading,
-  ] = useSelector(({ menu, notificationsV1Details, loading: { effects } }) => [
+  ] = useSelector(({ menu, notificationsDetails, loading: { effects } }) => [
     menu.menuLeftNotification,
-    notificationsV1Details,
+    notificationsDetails,
     effects,
   ]);
   const dispatch = useDispatch();
@@ -48,7 +48,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'notificationsV1Details/GET_DATA',
+      type: 'notificationsDetails/GET_DATA',
       payload: { ...params },
     });
   }, []);
@@ -59,7 +59,7 @@ const Index = memo(() => {
       <Breadcrumbs last="Chi tiết thông báo" menu={menuData} />
       <Pane className="pr20 pl20">
         <Loading
-          loading={loading['notificationsV1Details/GET_DATA']}
+          loading={loading['notificationsDetails/GET_DATA']}
           isError={error.isError}
           params={{ error, type: 'container', goBack: '/thong-bao/danh-sach' }}
         >
@@ -68,7 +68,7 @@ const Index = memo(() => {
               <Pane className="card">
                 <Pane className="border-bottom d-flex justify-content-between" style={{ padding: 20 }}>
                   <Heading type="form-title">Thông tin chung</Heading>
-                  <div>{HelperModules.tagStatusSend(details?.status)}</div>
+                  <div>{HelperModules.tagStatusSend(details.sentDate)}</div>
                 </Pane>
 
                 <Pane className="border-bottom" style={{ padding: 20 }}>
@@ -202,7 +202,7 @@ const Index = memo(() => {
                     <div className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
                   </Pane>
                 </Pane>
-                {details?.status !== "Approved" &&
+                {!details?.sentDate &&
                   <Pane className="p20">
                     <Button
                       color="success"

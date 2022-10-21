@@ -3,12 +3,10 @@ import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
-  namespace: 'notificationV1Add',
+  namespace: 'notificationAdd',
   state: {
     branches: [],
     divisions: [],
-    category: [],
-    module: [],
     details: {},
   },
   reducers: {
@@ -33,14 +31,6 @@ export default {
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
-    }),
-    SET_CATEGORY: (state, { payload }) => ({
-      ...state,
-      category: payload.items,
-    }),
-    SET_MODULE: (state, { payload }) => ({
-      ...state,
-      module: payload,
     }),
   },
   effects: {
@@ -142,48 +132,6 @@ export default {
         callback(response);
       } catch (error) {
         callback(null, error);
-      }
-    },
-    *GET_CATEGORY({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getCategory, payload);
-        yield saga.put({
-          type: 'SET_CATEGORY',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *GET_MODULE({ payload, callback }, saga) {
-      try {
-        const response = yield saga.call(services.getModule, payload);
-        callback(response);
-        yield saga.put({
-          type: 'SET_MODULE',
-          payload: response,
-        });
-      } catch (error) {
-        callback(null, error?.data?.error);
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *ADD_APPROVE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.addApprove, payload);
-        callback(payload);
-        notification.success({
-          message: 'Thông báo',
-          description: 'Bạn đã duyệt thông báo thành công',
-        });
-      } catch (error) {
-        callback(null, error?.data?.error);
       }
     },
   },
