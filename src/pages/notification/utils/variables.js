@@ -57,6 +57,12 @@ export const variables = {
       name: 'Đã duyệt',
     },
   ],
+  STATUS_ACTIONS_BTN: {
+    VIEW: 'VIEW',
+    SAVE: 'SAVE',
+    SEND: 'SEND',
+    APPROVE: 'APPROVE',
+  },
 };
 
 export default variables;

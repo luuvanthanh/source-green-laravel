@@ -374,8 +374,8 @@ class Index extends PureComponent {
                 <div className="col-lg-2">
                   <FormItem
                     data={[{ name: 'Chọn tất cả kỹ năng' }, ...skill,]}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'CategorySkillId')}
+                    name="categorySkillId"
+                    onChange={(event) => this.onChangeSelect(event, 'categorySkillId')}
                     type={variables.SELECT}
                     allowClear={false}
                     placeholder="Chọn kỹ năng"

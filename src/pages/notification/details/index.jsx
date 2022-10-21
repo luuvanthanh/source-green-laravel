@@ -202,7 +202,7 @@ const Index = memo(() => {
                     <div className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
                   </Pane>
                 </Pane>
-                {!details?.sentDate &&
+                {details?.status !== "Approved" &&
                   <Pane className="p20">
                     <Button
                       color="success"

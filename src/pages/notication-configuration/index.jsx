@@ -300,7 +300,7 @@ class Index extends PureComponent {
               Thêm mới
             </Button>
           </div>
-          <div className={styles['block-table']}>
+          <div className={stylesModule['block-table']}>
             <Table
               columns={this.header(params)}
               dataSource={data}

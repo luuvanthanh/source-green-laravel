@@ -46,7 +46,7 @@ export default class Helpers {
 
   static tagStatusSend = (type) => {
     if (type === variables.STATUS_NAME_STATUS.Draft) {
-      return <Tag color="danger">{variables.STATUS_NAME_SEND.Draft}</Tag>;
+      return <Tag color="primary">{variables.STATUS_NAME_SEND.Draft}</Tag>;
     }
     if (type === variables.STATUS_NAME_STATUS.Approving) {
       return <Tag color="yellow">{variables.STATUS_NAME_SEND.Approving}</Tag>;
