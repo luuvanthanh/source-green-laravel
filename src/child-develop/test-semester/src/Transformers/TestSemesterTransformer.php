@@ -34,7 +34,7 @@ class TestSemesterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType', 'assessmentPeriod', 'employee'];
+    protected $availableIncludes = ['testSemesterDetail', 'student', 'classType', 'assessmentPeriod', 'employee', 'testSemesterHeadmaster'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -165,5 +165,10 @@ class TestSemesterTransformer extends BaseTransformer
         }
 
         return $this->item($testSemester->user, new UserTransformer, 'Employee');
+    }
+
+    public function includeTestSemesterHeadmaster(TestSemester $testSemester)
+    {
+        return $this->collection($testSemester->testSemesterHeadmaster, new UserTransformer, 'Headmaster');
     }
 }
