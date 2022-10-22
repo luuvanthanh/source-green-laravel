@@ -47,6 +47,12 @@ class ExcelExporterServices
         'tourist' => [
             'template' => 'tourist.xlsx',
         ],
+        'hdvbhp' => [
+            'template' => 'hdvbhp.xlsx',
+        ],
+        'dtctd' => [
+            'template' => 'dtctd.xlsx',
+        ],
     ];
 
     protected $disk;

@@ -30,6 +30,7 @@ class TouristDestinationsTableSeeder extends Seeder
                 'created_at' => '2021-11-26 14:57:28',
                 'updated_at' => '2021-11-26 14:57:28',
                 'deleted_at' => NULL,
+                'address_limit' => NULL,
             ),
             1 => 
             array (
@@ -42,6 +43,20 @@ class TouristDestinationsTableSeeder extends Seeder
                 'created_at' => '2021-11-26 14:58:18',
                 'updated_at' => '2021-11-26 14:58:18',
                 'deleted_at' => NULL,
+                'address_limit' => NULL,
+            ),
+            2 => 
+            array (
+                'id' => 'f5ace8a7-707a-459e-a91c-1a9d1495f090',
+                'name' => 'Chùa Linh Ứng',
+                'address' => NULL,
+                'phone' => NULL,
+                'email' => NULL,
+                'website' => NULL,
+                'created_at' => '2022-09-16 19:48:34',
+                'updated_at' => '2022-09-16 19:48:34',
+                'deleted_at' => NULL,
+                'address_limit' => '"[{\\"lat\\":16.10282725411185,\\"long\\":108.27510237693788},{\\"lat\\":16.099042847814363,\\"long\\":108.27494144439697},{\\"lat\\":16.099661556774837,\\"long\\":108.2819151878357},{\\"lat\\":16.10306442158613,\\"long\\":108.28060626983644}]"',
             ),
         ));
         

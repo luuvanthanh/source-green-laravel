@@ -84,7 +84,7 @@ EOD;
                 break;
             case 'SURVEYFORM':
                 $model = $this->model;
-                $text = 'Khảo sát' . $model->survey->name . 'tại' . $model->survey->touristDestination->name . 'vừa nhận được một lượt trả lời mới.';
+                $text = 'Khảo sát ' . $model->survey->name . ' tại ' . $model->survey->touristDestination->name . ' vừa nhận được một lượt trả lời mới.';
                 break;
         }
 

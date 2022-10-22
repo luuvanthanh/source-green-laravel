@@ -14,13 +14,13 @@ class PermissionsTableSeeder extends Seeder
      */
     public function run()
     {
-
+        
 
         \DB::table('permissions')->delete();
-
-        \DB::table('permissions')->insert(array(
-            0 =>
-            array(
+        
+        \DB::table('permissions')->insert(array (
+            0 => 
+            array (
                 'id' => '9f921779-46b0-4e46-898d-feffe8958e7c',
                 'name' => 'VIEW_NOTIFICATION',
                 'guard_name' => 'api',
@@ -30,10 +30,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách thông báo',
                 'group' => 'Thông báo',
                 'group_slug' => 'thong_bao',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            1 =>
-            array(
+            1 => 
+            array (
                 'id' => 'cce21205-ec97-412f-b4b2-c701aecc38af',
                 'name' => 'EDIT_TRAVELAGENCY',
                 'guard_name' => 'api',
@@ -43,10 +43,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm, xóa  HDV vào doanh nghiệp lữ hành',
                 'group' => 'Doanh nghiệp lữ hành',
                 'group_slug' => 'doanh_nghiep_lu_hanh',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            2 =>
-            array(
+            2 => 
+            array (
                 'id' => 'a218543e-6f87-4ca7-8691-e88ef9eb9129',
                 'name' => 'VIEW_CAMERA',
                 'guard_name' => 'api',
@@ -56,10 +56,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách camera',
                 'group' => 'Quản lý camera',
                 'group_slug' => 'quan_ly_camera',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            3 =>
-            array(
+            3 => 
+            array (
                 'id' => '2918be34-59d5-481e-a8ed-dc648e263a38',
                 'name' => 'ADD_CAMERA',
                 'guard_name' => 'api',
@@ -69,10 +69,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới camera',
                 'group' => 'Quản lý camera',
                 'group_slug' => 'quan_ly_camera',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            4 =>
-            array(
+            4 => 
+            array (
                 'id' => 'b4b808a4-4d5b-4f67-885a-10eb5b97383f',
                 'name' => 'EDIT_CAMERA',
                 'guard_name' => 'api',
@@ -82,10 +82,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Sửa thông tin camera',
                 'group' => 'Quản lý camera',
                 'group_slug' => 'quan_ly_camera',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            5 =>
-            array(
+            5 => 
+            array (
                 'id' => 'fa7a61c7-734d-40b0-b098-50aad97b67bf',
                 'name' => 'DELETE_CAMERA',
                 'guard_name' => 'api',
@@ -95,10 +95,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa camera',
                 'group' => 'Quản lý camera',
                 'group_slug' => 'quan_ly_camera',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            6 =>
-            array(
+            6 => 
+            array (
                 'id' => '26047e45-901f-424f-8100-a1306a1a2452',
                 'name' => 'VIEW_CAMERAGROUP',
                 'guard_name' => 'api',
@@ -108,10 +108,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách nhóm camera',
                 'group' => 'Quản lý nhóm camera',
                 'group_slug' => 'quan_ly_nhom_camera',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            7 =>
-            array(
+            7 => 
+            array (
                 'id' => '71638e5e-9c43-4c14-a40d-b10a29902fee',
                 'name' => 'ADD_CAMERAGROUP',
                 'guard_name' => 'api',
@@ -121,10 +121,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới nhóm camera',
                 'group' => 'Quản lý nhóm camera',
                 'group_slug' => 'quan_ly_nhom_camera',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            8 =>
-            array(
+            8 => 
+            array (
                 'id' => '1442d74d-d676-40a5-a091-b05af8d0e9d1',
                 'name' => 'EDIT_CAMERAGROUP',
                 'guard_name' => 'api',
@@ -134,10 +134,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh nhóm camera',
                 'group' => 'Quản lý nhóm camera',
                 'group_slug' => 'quan_ly_nhom_camera',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            9 =>
-            array(
+            9 => 
+            array (
                 'id' => '9004f90c-c041-46d9-a768-d25b1f6df0da',
                 'name' => 'DELETE_CAMERAGROUP',
                 'guard_name' => 'api',
@@ -147,10 +147,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa nhóm camera',
                 'group' => 'Quản lý nhóm camera',
                 'group_slug' => 'quan_ly_nhom_camera',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            10 =>
-            array(
+            10 => 
+            array (
                 'id' => '746733a3-3445-49f5-ad29-c22042d0c2d9',
                 'name' => 'VIEW_CAMERASERVER',
                 'guard_name' => 'api',
@@ -160,10 +160,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách camera server',
                 'group' => 'Quản lý camera server',
                 'group_slug' => 'quan_ly_camera_server',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            11 =>
-            array(
+            11 => 
+            array (
                 'id' => 'ad74b8de-a78f-4c97-8246-5fcaac6ffecd',
                 'name' => 'ADD_CAMERASERVER',
                 'guard_name' => 'api',
@@ -173,10 +173,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới camera server',
                 'group' => 'Quản lý camera server',
                 'group_slug' => 'quan_ly_camera_server',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            12 =>
-            array(
+            12 => 
+            array (
                 'id' => 'fc6c1fb6-c302-47ec-a239-d67581dba5dd',
                 'name' => 'EDIT_CAMERASERVER',
                 'guard_name' => 'api',
@@ -186,10 +186,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh camera server',
                 'group' => 'Quản lý camera server',
                 'group_slug' => 'quan_ly_camera_server',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            13 =>
-            array(
+            13 => 
+            array (
                 'id' => 'be889db1-02ec-43b2-9798-45c53cbb7b23',
                 'name' => 'DELETE_CAMERASERVER',
                 'guard_name' => 'api',
@@ -199,10 +199,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa camera server',
                 'group' => 'Quản lý camera server',
                 'group_slug' => 'quan_ly_camera_server',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            14 =>
-            array(
+            14 => 
+            array (
                 'id' => '19ea1926-f8e6-4826-96f9-a553d4e2f2f4',
                 'name' => 'VIEW_LEGALTOURGUIDE',
                 'guard_name' => 'api',
@@ -212,10 +212,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách hướng dẫn viên hợp pháp',
                 'group' => 'Hướng dẫn viên hợp pháp',
                 'group_slug' => 'huong_dan_vien_hop_phap',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            15 =>
-            array(
+            15 => 
+            array (
                 'id' => 'da79e8b1-7c35-49ca-a0bd-bc06066daba8',
                 'name' => 'EDIT_LEGALTOURGUIDE',
                 'guard_name' => 'api',
@@ -225,10 +225,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Sửa thông tin hướng dẫn viên hợp pháp',
                 'group' => 'Hướng dẫn viên hợp pháp',
                 'group_slug' => 'huong_dan_vien_hop_phap',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            16 =>
-            array(
+            16 => 
+            array (
                 'id' => '43621634-b057-4666-b7ea-9e0a185114aa',
                 'name' => 'VIEW_TRAVELAGENCY',
                 'guard_name' => 'api',
@@ -238,10 +238,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách doanh nghiệp lữ hành',
                 'group' => 'Doanh nghiệp lữ hành',
                 'group_slug' => 'doanh_nghiep_lu_hanh',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            17 =>
-            array(
+            17 => 
+            array (
                 'id' => 'ec74056e-04eb-42fd-b72f-ab86d8ad291c',
                 'name' => 'VIEW_ILLEGALTOURGUIDE',
                 'guard_name' => 'api',
@@ -251,10 +251,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách hướng dẫn viên bất hợp pháp',
                 'group' => 'Hướng dẫn viên bất hợp pháp',
                 'group_slug' => 'huong_dan_vien_bat_hop_phap',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            18 =>
-            array(
+            18 => 
+            array (
                 'id' => 'cfeb5700-93d6-4c23-b1d7-3763637f926f',
                 'name' => 'ADD_ILLEGALTOURGUIDE',
                 'guard_name' => 'api',
@@ -264,10 +264,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới hướng dẫn viên bất hợp pháp',
                 'group' => 'Hướng dẫn viên bất hợp pháp',
                 'group_slug' => 'huong_dan_vien_bat_hop_phap',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            19 =>
-            array(
+            19 => 
+            array (
                 'id' => 'a84eeb2b-3b16-4805-a40b-2944a29ca9c5',
                 'name' => 'EDIT_ILLEGALTOURGUIDE',
                 'guard_name' => 'api',
@@ -277,10 +277,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh hướng dẫn viên bất hợp pháp',
                 'group' => 'Hướng dẫn viên bất hợp pháp',
                 'group_slug' => 'huong_dan_vien_bat_hop_phap',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            20 =>
-            array(
+            20 => 
+            array (
                 'id' => '1e1bcec8-d856-41cd-8227-b30049d149d1',
                 'name' => 'DELETE_ILLEGALTOURGUIDE',
                 'guard_name' => 'api',
@@ -290,10 +290,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa hướng dẫn viên bất hợp pháp',
                 'group' => 'Hướng dẫn viên bất hợp pháp',
                 'group_slug' => 'huong_dan_vien_bat_hop_phap',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            21 =>
-            array(
+            21 => 
+            array (
                 'id' => '13bb9958-67de-4253-8c6b-04979bd159c1',
                 'name' => 'VIEW_BLACKLIST',
                 'guard_name' => 'api',
@@ -303,10 +303,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách đối tượng cần theo dõi',
                 'group' => 'Đối tượng cần theo dõi',
                 'group_slug' => 'doi_tuong_can_theo_doi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            22 =>
-            array(
+            22 => 
+            array (
                 'id' => '3f62b059-6828-4318-8d05-ab3f7c242f43',
                 'name' => 'ADD_BLACKLIST',
                 'guard_name' => 'api',
@@ -316,10 +316,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới đối tượng cần theo dõi',
                 'group' => 'Đối tượng cần theo dõi',
                 'group_slug' => 'doi_tuong_can_theo_doi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            23 =>
-            array(
+            23 => 
+            array (
                 'id' => 'e0bb7bc2-e038-4ce1-b3c8-c67a32d4cd56',
                 'name' => 'EDIT_BLACKLIST',
                 'guard_name' => 'api',
@@ -329,10 +329,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh đối tượng cần theo dõi',
                 'group' => 'Đối tượng cần theo dõi',
                 'group_slug' => 'doi_tuong_can_theo_doi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            24 =>
-            array(
+            24 => 
+            array (
                 'id' => 'd077c737-48b4-4c33-bd56-9b10b800bebd',
                 'name' => 'DELETE_BLACKLIST',
                 'guard_name' => 'api',
@@ -342,10 +342,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa đối tượng cần theo dõi',
                 'group' => 'Đối tượng cần theo dõi',
                 'group_slug' => 'doi_tuong_can_theo_doi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            25 =>
-            array(
+            25 => 
+            array (
                 'id' => 'e94d874b-8d59-49ff-bddb-c48e303f470e',
                 'name' => 'VIEW_BLACKLISTTYPE',
                 'guard_name' => 'api',
@@ -355,10 +355,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách loại đối tượng cần theo dõi',
                 'group' => 'Danh mục đối tượng cần theo dõi',
                 'group_slug' => 'danh_muc_doi_tuong_can_theo_doi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            26 =>
-            array(
+            26 => 
+            array (
                 'id' => '32f68cd9-0de8-4fb9-9d5f-30b92d1edf7d',
                 'name' => 'ADD_BLACKLISTTYPE',
                 'guard_name' => 'api',
@@ -368,10 +368,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới loại đối tượng cần theo dõi',
                 'group' => 'Danh mục đối tượng cần theo dõi',
                 'group_slug' => 'danh_muc_doi_tuong_can_theo_doi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            27 =>
-            array(
+            27 => 
+            array (
                 'id' => 'e903f3a8-a1f9-4287-bdb4-ac84812b210a',
                 'name' => 'EDIT_BLACKLISTTYPE',
                 'guard_name' => 'api',
@@ -381,10 +381,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh loại đối tượng cần theo dõi',
                 'group' => 'Danh mục đối tượng cần theo dõi',
                 'group_slug' => 'danh_muc_doi_tuong_can_theo_doi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            28 =>
-            array(
+            28 => 
+            array (
                 'id' => 'cf22381d-2a7f-45a0-bcc3-99de77296fe3',
                 'name' => 'DELETE_BLACKLISTTYPE',
                 'guard_name' => 'api',
@@ -394,10 +394,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa loại đối tượng cần theo dõi',
                 'group' => 'Danh mục đối tượng cần theo dõi',
                 'group_slug' => 'danh_muc_doi_tuong_can_theo_doi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            29 =>
-            array(
+            29 => 
+            array (
                 'id' => 'b563ce08-a8f9-4c6a-9bfd-c0bf93ce7616',
                 'name' => 'VIEW_SYNC',
                 'guard_name' => 'api',
@@ -407,10 +407,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Chi tiết đồng bộ dữ liệu',
                 'group' => 'Đồng bộ dữ liệu',
                 'group_slug' => 'dong_bo_du_lieu',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            30 =>
-            array(
+            30 => 
+            array (
                 'id' => '7880bf10-324e-4a22-a60e-d625f520d1b3',
                 'name' => 'VIEW_DASHBOARD',
                 'guard_name' => 'api',
@@ -420,10 +420,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách sự kiện thời gian thực & Bản đồ camera',
                 'group' => 'Dashboard giám sát',
                 'group_slug' => 'dashboard_giam_sat',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            31 =>
-            array(
+            31 => 
+            array (
                 'id' => '08bb5c3d-5296-4db1-94ad-5e9bb81cf37b',
                 'name' => 'VIEW_EVENT',
                 'guard_name' => 'api',
@@ -433,23 +433,23 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách sự kiện ',
                 'group' => 'Tất cả sự kiện',
                 'group_slug' => 'tat_ca_su_kien',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            32 =>
-            array(
+            32 => 
+            array (
                 'id' => 'c671a56a-1012-40c9-bfc0-4f20d27f0f55',
                 'name' => 'EDIT_EVENT',
                 'guard_name' => 'api',
                 'created_at' => '2022-06-21 10:11:13',
                 'updated_at' => '2022-06-21 10:11:13',
                 'show_name' => NULL,
-                'description' => 'Xử lý sự kiện (hàng loạt), Báo cáo nhận nhầm, Bỏ qua (hàng loạt))',
+            'description' => 'Xử lý sự kiện (hàng loạt), Báo cáo nhận nhầm, Bỏ qua (hàng loạt))',
                 'group' => 'Tất cả sự kiện',
                 'group_slug' => 'tat_ca_su_kien',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            33 =>
-            array(
+            33 => 
+            array (
                 'id' => '9af4e3cc-2079-40ba-a73e-ede3850e2766',
                 'name' => 'VIEW_TRACKEDEVENT',
                 'guard_name' => 'api',
@@ -459,10 +459,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách sự kiện ',
                 'group' => 'Sự kiện cần theo dõi xử lý',
                 'group_slug' => 'su_kien_can_theo_doi_xu_ly',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            34 =>
-            array(
+            34 => 
+            array (
                 'id' => '53704a40-155e-4fbf-acef-4ba3fe75f73c',
                 'name' => 'EDIT_TRACKEDEVENT',
                 'guard_name' => 'api',
@@ -472,10 +472,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Cập nhật kết quả xử lý',
                 'group' => 'Sự kiện cần theo dõi xử lý',
                 'group_slug' => 'su_kien_can_theo_doi_xu_ly',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            35 =>
-            array(
+            35 => 
+            array (
                 'id' => 'bd3d1f3a-f7f0-4902-8c60-19fca358e6ea',
                 'name' => 'SEARCH_FACE',
                 'guard_name' => 'api',
@@ -485,10 +485,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Tìm kiếm đối tượng theo khuôn mặt',
                 'group' => 'Tìm kiếm theo khuôn mặt',
                 'group_slug' => 'tim_kiem_theo_khuon_mat',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            36 =>
-            array(
+            36 => 
+            array (
                 'id' => '9fb8242f-7604-4399-a155-7475dc69a834',
                 'name' => 'SEARCH_FACECARD',
                 'guard_name' => 'api',
@@ -498,10 +498,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Tìm kiếm đối tượng theo thẻ',
                 'group' => 'Tìm kiếm đối tượng liên quan theo thẻ',
                 'group_slug' => 'tim_kiem_doi_tuong_lien_quan_theo_the',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            37 =>
-            array(
+            37 => 
+            array (
                 'id' => 'b529b9ca-4826-48c2-b737-34f1f6cfacca',
                 'name' => 'SEARCH_TOURIST',
                 'guard_name' => 'api',
@@ -511,10 +511,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Tra cứu du khách tại khu điểm theo khuôn mặt',
                 'group' => 'Tra cứu du khách tại khu điểm',
                 'group_slug' => 'tra_cuu_du_khach_tai_khu_diem',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            38 =>
-            array(
+            38 => 
+            array (
                 'id' => '44bee464-1dd5-4f9d-833d-c52000243138',
                 'name' => 'VIEW_SURVEYRESULT',
                 'guard_name' => 'api',
@@ -524,10 +524,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách và chi tiết khảo sát',
                 'group' => 'Kết quả khảo sát',
                 'group_slug' => 'ket_qua_khao_sat',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            39 =>
-            array(
+            39 => 
+            array (
                 'id' => '2a222e5d-b66b-4ed4-8ae5-db5605fd4d1c',
                 'name' => 'VIEW_SITE',
                 'guard_name' => 'api',
@@ -537,10 +537,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách khu điểm',
                 'group' => 'Quản lý khu điểm du lịch',
                 'group_slug' => 'quan_ly_khu_diem_du_lich',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            40 =>
-            array(
+            40 => 
+            array (
                 'id' => '3a82b2d7-90dd-4879-9ebf-86149d0aff1b',
                 'name' => 'ADD_SITE',
                 'guard_name' => 'api',
@@ -550,10 +550,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới khu điểm',
                 'group' => 'Quản lý khu điểm du lịch',
                 'group_slug' => 'quan_ly_khu_diem_du_lich',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            41 =>
-            array(
+            41 => 
+            array (
                 'id' => 'b12e2918-7178-45a0-b60e-ab2e9f78ba04',
                 'name' => 'EDIT_SITE',
                 'guard_name' => 'api',
@@ -563,10 +563,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Sửa thông tin khu điểm',
                 'group' => 'Quản lý khu điểm du lịch',
                 'group_slug' => 'quan_ly_khu_diem_du_lich',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            42 =>
-            array(
+            42 => 
+            array (
                 'id' => 'b35825e2-55e6-4b3e-b0f9-e121c51e3c35',
                 'name' => 'DELETE_SITE',
                 'guard_name' => 'api',
@@ -576,10 +576,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa khu điểm',
                 'group' => 'Quản lý khu điểm du lịch',
                 'group_slug' => 'quan_ly_khu_diem_du_lich',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            43 =>
-            array(
+            43 => 
+            array (
                 'id' => 'b83dc944-6f61-44f7-9b0f-321ec5854418',
                 'name' => 'VIEW_EVENTTYPE',
                 'guard_name' => 'api',
@@ -589,10 +589,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách loại sự kiện',
                 'group' => 'Quản lý loại sự kiện',
                 'group_slug' => 'quan_ly_loai_su_kien',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            44 =>
-            array(
+            44 => 
+            array (
                 'id' => 'ce82ca95-3288-49d9-b57b-5f62b50d6444',
                 'name' => 'VIEW_PROVINCE',
                 'guard_name' => 'api',
@@ -602,10 +602,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách tỉnh cấp thẻ',
                 'group' => 'Quản lý tỉnh cấp thẻ',
                 'group_slug' => 'quan_ly_tinh_cap_the',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            45 =>
-            array(
+            45 => 
+            array (
                 'id' => '93f66686-dd79-47a1-b884-9af778cd108d',
                 'name' => 'VIEW_CARDTYPE',
                 'guard_name' => 'api',
@@ -615,10 +615,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách loại thẻ',
                 'group' => 'Quản lý loại thẻ',
                 'group_slug' => 'quan_ly_loai_the',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            46 =>
-            array(
+            46 => 
+            array (
                 'id' => '0d86210f-8f0a-4370-92f3-8ad88a0bfb38',
                 'name' => 'VIEW_LANGUAGE',
                 'guard_name' => 'api',
@@ -628,10 +628,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách ngoại ngữ sử dụng',
                 'group' => 'Quản lý ngoại ngữ sử dụng',
                 'group_slug' => 'quan_ly_ngoai_ngu_su_dung',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            47 =>
-            array(
+            47 => 
+            array (
                 'id' => 'c710f47a-fcf8-42f9-9557-d86034c5e044',
                 'name' => 'VIEW_STATUS',
                 'guard_name' => 'api',
@@ -641,10 +641,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách trạng thái hướng dẫn viên du lịch',
                 'group' => 'Quản lý trạng thái hướng dẫn viên du lịch',
                 'group_slug' => 'quan_ly_trang_thai_huong_dan_vien_du_lich',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            48 =>
-            array(
+            48 => 
+            array (
                 'id' => '6ad72af7-3f1f-442a-be8f-360f30485fc2',
                 'name' => 'VIEW_SURVEY',
                 'guard_name' => 'api',
@@ -654,10 +654,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách phiếu khảo sát',
                 'group' => 'Quản lý phiếu khảo sát',
                 'group_slug' => 'quan_ly_phieu_khao_sat',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            49 =>
-            array(
+            49 => 
+            array (
                 'id' => '53c140cd-0d84-4f0f-af33-cc8bbaad514b',
                 'name' => 'ADD_SURVEY',
                 'guard_name' => 'api',
@@ -667,10 +667,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới, nhân bản phiếu khảo sát',
                 'group' => 'Quản lý phiếu khảo sát',
                 'group_slug' => 'quan_ly_phieu_khao_sat',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            50 =>
-            array(
+            50 => 
+            array (
                 'id' => '3946804f-48fc-432e-8fc6-76c474d4d4d1',
                 'name' => 'EDIT_SURVEY',
                 'guard_name' => 'api',
@@ -680,10 +680,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh phiếu khảo sát',
                 'group' => 'Quản lý phiếu khảo sát',
                 'group_slug' => 'quan_ly_phieu_khao_sat',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            51 =>
-            array(
+            51 => 
+            array (
                 'id' => '53a79b5c-a3ba-42da-be02-f1c03c36ea3b',
                 'name' => 'DELETE_SURVEY',
                 'guard_name' => 'api',
@@ -693,10 +693,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa phiếu khảo sát',
                 'group' => 'Quản lý phiếu khảo sát',
                 'group_slug' => 'quan_ly_phieu_khao_sat',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            52 =>
-            array(
+            52 => 
+            array (
                 'id' => '09956385-0239-4a96-97ff-d05edd70dbf8',
                 'name' => 'VIEW_STATISTICSDASHBOARD',
                 'guard_name' => 'api',
@@ -706,10 +706,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Báo cáo thống kê chung',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            53 =>
-            array(
+            53 => 
+            array (
                 'id' => '3e037837-af15-4881-a74d-6c8943294565',
                 'name' => 'VIEW_STATISTICSLEGALTOURGUIDE',
                 'guard_name' => 'api',
@@ -719,10 +719,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Số lượng HDV hợp pháp',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            54 =>
-            array(
+            54 => 
+            array (
                 'id' => 'bfd1e50d-9400-42b3-aeb8-15df12db20df',
                 'name' => 'VIEW_STATISTICSLEGALRATE',
                 'guard_name' => 'api',
@@ -732,10 +732,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Tần suất xuất hiện của HDV hợp pháp',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            55 =>
-            array(
+            55 => 
+            array (
                 'id' => '1b04a69d-64e4-4225-a706-90a3a2ee0995',
                 'name' => 'VIEW_STATISTICSAGENCYRATE',
                 'guard_name' => 'api',
@@ -745,10 +745,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Tần suất hoạt động của các Doanh nghiệp lữ hành',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            56 =>
-            array(
+            56 => 
+            array (
                 'id' => '64bca16a-9e2f-47df-8e2e-7d5b34ea9506',
                 'name' => 'VIEW_STATISTICSILLEGALTOURGUIDE',
                 'guard_name' => 'api',
@@ -758,10 +758,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Số lượng HDV bất hợp pháp',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            57 =>
-            array(
+            57 => 
+            array (
                 'id' => 'ed7ef474-754d-4b88-b651-c33da3d24999',
                 'name' => 'VIEW_STATISTICSILLEGALRATE',
                 'guard_name' => 'api',
@@ -771,23 +771,23 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Tần suất xuất hiện của HDV bất hợp pháp',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            58 =>
-            array(
+            58 => 
+            array (
                 'id' => 'd7d67428-7384-45d6-8d02-8148efde0c7f',
                 'name' => 'VIEW_STATISTICSBLACKLISTRATE',
                 'guard_name' => 'api',
                 'created_at' => '2022-06-21 10:11:13',
                 'updated_at' => '2022-06-21 10:11:13',
                 'show_name' => NULL,
-                'description' => 'Tần suất xuất hiện của đối tượng cần theo dõi (Blacklist)',
+            'description' => 'Tần suất xuất hiện của đối tượng cần theo dõi (Blacklist)',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            59 =>
-            array(
+            59 => 
+            array (
                 'id' => '56b16e38-6bd9-4286-8993-13e4b8ad3f14',
                 'name' => 'VIEW_STATISTICSTOURIST',
                 'guard_name' => 'api',
@@ -797,10 +797,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Số lượng khách du lịch',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            60 =>
-            array(
+            60 => 
+            array (
                 'id' => '7fe27cc1-dabb-4074-8ff6-2830c693036c',
                 'name' => 'VIEW_STATISTICSHAWKER',
                 'guard_name' => 'api',
@@ -810,10 +810,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Phát hiện bán hàng rong',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            61 =>
-            array(
+            61 => 
+            array (
                 'id' => '5498e202-fbc7-468c-851a-18c9a07e1677',
                 'name' => 'VIEW_STATISTICSTRASH',
                 'guard_name' => 'api',
@@ -823,10 +823,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Phát hiện rác',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            62 =>
-            array(
+            62 => 
+            array (
                 'id' => '6df80dc3-950b-4f2b-8218-03bd6b3c8cbe',
                 'name' => 'VIEW_STATISTICSSURVEY',
                 'guard_name' => 'api',
@@ -836,10 +836,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Khảo sát',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            63 =>
-            array(
+            63 => 
+            array (
                 'id' => 'aa43b59b-387d-46cf-a9c2-8d00d09ca1e6',
                 'name' => 'VIEW_STATISTICSALERT',
                 'guard_name' => 'api',
@@ -849,10 +849,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Cảnh báo',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            64 =>
-            array(
+            64 => 
+            array (
                 'id' => 'ff0a98f3-13bc-49ee-95b7-192841e9d83b',
                 'name' => 'VIEW_STATISTICSTRACKEDEVENT',
                 'guard_name' => 'api',
@@ -862,10 +862,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Sự kiện cần theo dõi xử lý',
                 'group' => 'BÁO CÁO THỐNG KÊ',
                 'group_slug' => 'bao_cao_thong_ke',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            65 =>
-            array(
+            65 => 
+            array (
                 'id' => '21b3a115-0344-478b-b4fe-e4a84637ab50',
                 'name' => 'VIEW_ROLE',
                 'guard_name' => 'api',
@@ -875,10 +875,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách vai trò',
                 'group' => 'Quản lý vai trò',
                 'group_slug' => 'quan_ly_vai_tro',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            66 =>
-            array(
+            66 => 
+            array (
                 'id' => 'd8756b17-b0b2-43df-a01d-6c02f7441929',
                 'name' => 'ADD_ROLE',
                 'guard_name' => 'api',
@@ -888,10 +888,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới vai trò',
                 'group' => 'Quản lý vai trò',
                 'group_slug' => 'quan_ly_vai_tro',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            67 =>
-            array(
+            67 => 
+            array (
                 'id' => 'd4869b96-cc92-41b5-acae-806d37186040',
                 'name' => 'EDIT_ROLE',
                 'guard_name' => 'api',
@@ -901,10 +901,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh vai trò',
                 'group' => 'Quản lý vai trò',
                 'group_slug' => 'quan_ly_vai_tro',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            68 =>
-            array(
+            68 => 
+            array (
                 'id' => '0b7b40ff-0371-4e6e-bd9c-426bbedb413c',
                 'name' => 'DELETE_ROLE',
                 'guard_name' => 'api',
@@ -914,10 +914,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa vai trò',
                 'group' => 'Quản lý vai trò',
                 'group_slug' => 'quan_ly_vai_tro',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            69 =>
-            array(
+            69 => 
+            array (
                 'id' => 'f60f7178-9b48-48ba-ba8f-58de3893c442',
                 'name' => 'VIEW_UNIT',
                 'guard_name' => 'api',
@@ -927,10 +927,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách đơn vị',
                 'group' => 'Quản lý đơn vị',
                 'group_slug' => 'quan_ly_don_vi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            70 =>
-            array(
+            70 => 
+            array (
                 'id' => 'bcdaadd3-25fb-46e7-bb71-b1a7bbdaf2a3',
                 'name' => 'ADD_UNIT',
                 'guard_name' => 'api',
@@ -940,10 +940,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới đơn vị',
                 'group' => 'Quản lý đơn vị',
                 'group_slug' => 'quan_ly_don_vi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            71 =>
-            array(
+            71 => 
+            array (
                 'id' => '99e72460-e3f2-43ef-a1a2-57627a7c4245',
                 'name' => 'EDIT_UNIT',
                 'guard_name' => 'api',
@@ -953,10 +953,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh đơn vị',
                 'group' => 'Quản lý đơn vị',
                 'group_slug' => 'quan_ly_don_vi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            72 =>
-            array(
+            72 => 
+            array (
                 'id' => 'f2db2616-1bd1-4117-a512-653e8b14db58',
                 'name' => 'DELETE_UNIT',
                 'guard_name' => 'api',
@@ -966,10 +966,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa đơn vị',
                 'group' => 'Quản lý đơn vị',
                 'group_slug' => 'quan_ly_don_vi',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            73 =>
-            array(
+            73 => 
+            array (
                 'id' => '935d791e-cb11-4ea7-aba2-1758df77050d',
                 'name' => 'VIEW_USER',
                 'guard_name' => 'api',
@@ -979,10 +979,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách người dùng',
                 'group' => 'Quản lý người dùng',
                 'group_slug' => 'quan_ly_nguoi_dung',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            74 =>
-            array(
+            74 => 
+            array (
                 'id' => 'b1ef24f8-320e-4802-9168-0f04110ec6b4',
                 'name' => 'ADD_USER',
                 'guard_name' => 'api',
@@ -992,10 +992,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Thêm mới người dùng',
                 'group' => 'Quản lý người dùng',
                 'group_slug' => 'quan_ly_nguoi_dung',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            75 =>
-            array(
+            75 => 
+            array (
                 'id' => '58c6e4fc-3f64-4acc-926d-79a868989dd3',
                 'name' => 'EDIT_USER',
                 'guard_name' => 'api',
@@ -1005,10 +1005,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh người dùng',
                 'group' => 'Quản lý người dùng',
                 'group_slug' => 'quan_ly_nguoi_dung',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            76 =>
-            array(
+            76 => 
+            array (
                 'id' => 'ac5f8512-7377-4821-9ca2-a18a4d6d467f',
                 'name' => 'DELETE_USER',
                 'guard_name' => 'api',
@@ -1018,10 +1018,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Xóa người dùng',
                 'group' => 'Quản lý người dùng',
                 'group_slug' => 'quan_ly_nguoi_dung',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            77 =>
-            array(
+            77 => 
+            array (
                 'id' => 'd85895c4-4d8e-4144-9576-978d2b6e1943',
                 'name' => 'BLOCK_USER ',
                 'guard_name' => 'api',
@@ -1031,10 +1031,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Khóa/Mở khóa người dùng',
                 'group' => 'Quản lý người dùng',
                 'group_slug' => 'quan_ly_nguoi_dung',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            78 =>
-            array(
+            78 => 
+            array (
                 'id' => 'aa80b737-0b7c-43b0-bb63-c9dbe37bc58a',
                 'name' => 'VIEW_EVENTSETTING',
                 'guard_name' => 'api',
@@ -1044,10 +1044,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Chi tiết, hiệu chỉnh cấu hình',
                 'group' => 'Cấu hình sự kiện',
                 'group_slug' => 'cau_hinh_su_kien',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            79 =>
-            array(
+            79 => 
+            array (
                 'id' => 'b1d686c7-f697-4d0a-8774-46d46483d13f',
                 'name' => 'VIEW_SYSTEMSETTING',
                 'guard_name' => 'api',
@@ -1057,10 +1057,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Chi tiết cấu hình',
                 'group' => 'Cấu hình hệ thống',
                 'group_slug' => 'cau_hinh_he_thong',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            80 =>
-            array(
+            80 => 
+            array (
                 'id' => '4e569566-acab-4923-9868-a3363140efd3',
                 'name' => 'EDIT_SYSTEMSETTING',
                 'guard_name' => 'api',
@@ -1070,10 +1070,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh cấu hình',
                 'group' => 'Cấu hình hệ thống',
                 'group_slug' => 'cau_hinh_he_thong',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            81 =>
-            array(
+            81 => 
+            array (
                 'id' => '7e4df066-a1bc-47d0-b028-caaf16243a5c',
                 'name' => 'VIEW_SERVICESETTING',
                 'guard_name' => 'api',
@@ -1083,10 +1083,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Chi tiết cấu hình',
                 'group' => 'Cấu hình dịch vụ',
                 'group_slug' => 'cau_hinh_dich_vu',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            82 =>
-            array(
+            82 => 
+            array (
                 'id' => '07d5876b-881f-469c-9b17-6427f2e7a9db',
                 'name' => 'EDIT_SERVICESETTING',
                 'guard_name' => 'api',
@@ -1096,10 +1096,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh cấu hình',
                 'group' => 'Cấu hình dịch vụ',
                 'group_slug' => 'cau_hinh_dich_vu',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            83 =>
-            array(
+            83 => 
+            array (
                 'id' => 'cacfb042-0a9a-4ed6-bf0c-458e6c1c6917',
                 'name' => 'VIEW_NASSETTING',
                 'guard_name' => 'api',
@@ -1109,10 +1109,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Chi tiết cấu hình',
                 'group' => 'Cấu hình NAS',
                 'group_slug' => 'cau_hinh_nas',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            84 =>
-            array(
+            84 => 
+            array (
                 'id' => '2c1e61cb-7c9d-47a7-be78-6b949ea85cf7',
                 'name' => 'EDIT_NASSETTING',
                 'guard_name' => 'api',
@@ -1122,10 +1122,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh cấu hình',
                 'group' => 'Cấu hình NAS',
                 'group_slug' => 'cau_hinh_nas',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            85 =>
-            array(
+            85 => 
+            array (
                 'id' => '47d686eb-c750-47bb-8444-77faef5848e0',
                 'name' => 'VIEW_3RDSETTING',
                 'guard_name' => 'api',
@@ -1135,10 +1135,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Chi tiết cấu hình',
                 'group' => 'Cấu hình Third party services',
                 'group_slug' => 'cau_hinh_third_party_services',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            86 =>
-            array(
+            86 => 
+            array (
                 'id' => 'e5cfd3b8-a596-4c0c-9c6f-cac624caa008',
                 'name' => 'EDIT_3RDSETTING',
                 'guard_name' => 'api',
@@ -1148,10 +1148,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh cấu hình',
                 'group' => 'Cấu hình Third party services',
                 'group_slug' => 'cau_hinh_third_party_services',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            87 =>
-            array(
+            87 => 
+            array (
                 'id' => '81fc496b-1858-47dd-bfc5-549bf360cd9d',
                 'name' => 'VIEW_APISETTING',
                 'guard_name' => 'api',
@@ -1161,10 +1161,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Danh sách API',
                 'group' => 'Quản lý API chia sẻ cho LGSP',
                 'group_slug' => 'quan_ly_api_chia_se_cho_lgsp',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            88 =>
-            array(
+            88 => 
+            array (
                 'id' => '9ecd0284-b94c-40a5-96e7-b255ec440d80',
                 'name' => 'EDIT__APISETTING',
                 'guard_name' => 'api',
@@ -1174,10 +1174,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Hiệu chỉnh cấu hình',
                 'group' => 'Quản lý API chia sẻ cho LGSP',
                 'group_slug' => 'quan_ly_api_chia_se_cho_lgsp',
-                'is_system' => "0",
+                'is_system' => false,
             ),
-            89 =>
-            array(
+            89 => 
+            array (
                 'id' => '370b35e0-6cb0-4119-b27e-100843003ac6',
                 'name' => 'VIEW_HISTORY',
                 'guard_name' => 'api',
@@ -1187,8 +1187,10 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Lịch sử hoạt động',
                 'group' => 'Lịch sử hoạt động',
                 'group_slug' => 'lich_su_hoat_dong',
-                'is_system' => "0",
+                'is_system' => false,
             ),
         ));
+        
+        
     }
 }
