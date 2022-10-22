@@ -8,6 +8,7 @@ use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetail;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetailChildren;
 use GGPHP\ChildDevelop\ChildEvaluate\Services\ChildEvaluateCrmServices;
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetailChildren;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -284,5 +285,38 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         $result['detailChildren'] = $arrChildren;
 
         return $result;
+    }
+
+    public function mergeData(array $attributes)
+    {
+        $childEvaluate = $this->model->get();
+
+        foreach ($childEvaluate as $key => $value) {
+
+            if (count($value->childEvaluateDetail) >= 2) {
+
+                $getId = array_column($value->childEvaluateDetail->ToArray(), 'Id');
+                $testSemesterDetailChildren = TestSemesterDetailChildren::whereIn('ChildEvaluateDetailId', $getId)->get();
+                $x = array_unique(array_column($testSemesterDetailChildren->ToArray(), 'ChildEvaluateDetailId'));
+                if (in_array($x[0], $getId)) {
+                    ChildEvaluateDetailChildren::whereIn('ChildEvaluateDetailId', array_diff($getId, $x))->update([
+                        'ChildEvaluateDetailId' => $x[0]
+                    ]);
+
+                    ChildEvaluateDetail::whereIn('Id', array_diff($getId, $x))->delete();
+                }
+            }
+
+            //logic moi se la HasOne
+            $value->childEvaluateDetailHasOne->childEvaluateDetailChildren()->update([
+                'Score' => ChildEvaluateDetail::TOTAL_SCORE / count($value->childEvaluateDetailHasOne->childEvaluateDetailChildren)
+            ]);
+
+            $value->childEvaluateDetailHasOne()->update([
+                'TotalScore' => ChildEvaluateDetail::TOTAL_SCORE
+            ]);
+        }
+
+        return parent::all();
     }
 }

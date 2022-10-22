@@ -206,4 +206,18 @@ class TestSemesterController extends Controller
 
         return $this->success($testSemester, trans('lang::messages.common.createSuccess'));
     }
+
+    public function updateDataTestSemester(Request $request)
+    {
+        $testSemester = $this->testSemesterRepository->updateDataTestSemester($request->all());
+
+        return $this->success($testSemester, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function updateDataOldLastTestSemester(Request $request)
+    {
+        $testSemester = $this->testSemesterRepository->updateDataOldLastTestSemester($request->all());
+
+        return $this->success($testSemester, trans('lang::messages.common.createSuccess'));
+    }
 }
