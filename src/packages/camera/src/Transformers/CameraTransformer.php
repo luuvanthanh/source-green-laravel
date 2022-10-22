@@ -22,7 +22,7 @@ class CameraTransformer extends BaseTransformer
      */
     protected $defaultIncludes = [];
 
-    protected $availableIncludes = ['collection', 'touristDestination'];
+    protected $availableIncludes = ['collection', 'touristDestination', 'cameraServer'];
 
     // protected $availableIncludes = ['collection', 'generalProperties'];
     /**
@@ -78,5 +78,17 @@ class CameraTransformer extends BaseTransformer
         }
 
         return $this->item($camera->touristDestination, new TouristDestinationTransformer, 'TouristDestination');
+    }
+
+    /* @param Ptz Properties $camera
+     * @return mixed
+     */
+    public function includeCameraServer(Camera $camera)
+    {
+        if (empty($camera->cameraServer)) {
+            return;
+        }
+
+        return $this->item($camera->cameraServer, new CameraServerTransformer, 'CameraServer');
     }
 }
