@@ -231,10 +231,20 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $params['[number]'][] = ++$key;
             $params['[full_name]'][] = $tourGuide->full_name;
             $params['[id_card]'][] = $tourGuide->id_card;
+            $params['[nationality]'][] = $tourGuide->nationality;
+            $params['[home_town]'][] = $tourGuide->home_town;
             $params['[card_type]'][] = !is_null($tourGuide->cardType) ? $tourGuide->cardType->name : null;
             $params['[card_number]'][] = $tourGuide->card_number;
+            $params['[object_type]'][] = $tourGuide->objectType ? $tourGuide->objectType->name : null;
             $params['[language]'][] = !is_null($tourGuide->language) ?  $tourGuide->language->vietnamese_name : null;
             $params['[expiration_date]'][] = !is_null($tourGuide->expiration_date) ?  Carbon::parse($tourGuide->expiration_date)->format('d-m-Y') : null;
+        }
+
+        if ($attributes['type'][0] == TourGuide::TYPE['ILLEGAL']) {
+            return  resolve(ExcelExporterServices::class)->export('hdvbhp', $params);
+        }
+        if ($attributes['type'][0] == TourGuide::TYPE['OBJECT_TRACKED']) {
+            return  resolve(ExcelExporterServices::class)->export('dtctd', $params);
         }
 
         return  resolve(ExcelExporterServices::class)->export('hdvhp', $params);

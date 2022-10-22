@@ -25,6 +25,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\Event\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
+
     Route::group(['prefix' => 'ai'], function () {
         \GGPHP\TourGuide\RouteRegistrar::routes(function ($router) {
             $router->forAi();

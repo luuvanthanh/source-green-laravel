@@ -108,12 +108,10 @@ class NotificationRepositoryEloquent extends BaseRepository implements Notificat
      */
     public function readAll($id)
     {
-        $notification = $this->model()::where('notifiable_id', $id)->get();
-
-        $notification->update([
+        $notification = $this->model()::where('notifiable_id', $id)->whereNull('read_at')->update([
             'read_at' => Carbon::now()
         ]);
 
-        return parent::parserResult($notification);
+        return [];
     }
 }

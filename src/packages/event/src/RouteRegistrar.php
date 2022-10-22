@@ -20,6 +20,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->forBread();
         $this->forAi();
+        $this->forGuest();
     }
 
     /**
@@ -58,8 +59,6 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::post('event-handle-muti/{id}', 'EventController@handleEventMuti')->middleware('permission_for_role:EDIT_EVENT');
 
-            \Route::get('export-excel-events', 'EventController@exportExcel');
-
             \Route::get('event-export-word/{id}', 'EventController@exportWord');
 
             \Route::post('event-add-object/{id}', 'EventController@addObject');
@@ -78,6 +77,18 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::post('events', 'EventController@storeAi');
+        });
+    }
+
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::get('export-excel-events', 'EventController@exportExcel');
         });
     }
 }
