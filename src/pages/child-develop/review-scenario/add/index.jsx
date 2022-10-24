@@ -52,17 +52,17 @@ const Index = memo(() => {
             nameCriteria: i?.nameCriteria,
             inputAssessment: i?.inputAssessment ? i?.inputAssessment : false,
             periodicAssessment: i?.periodicAssessment ? i?.periodicAssessment : false,
-            use: i?.use ? i?.use : false,
+            use: true,
             id: i?.id,
             // detailChildren: i?.childEvaluateDetailChildren ? i?.childEvaluateDetailChildren?.map((item) => ({
             //   content: item.content, use: item.use ? item.use : false
             // })) : [],
             detailChildren: {
               createRows: i?.childEvaluateDetailChildren.filter((i) => !i?.id).map(item => ({
-                content: item.content, use: item.use ? item.use : false
+                content: item.content, use: true,
               })),
               updateRows: i?.childEvaluateDetailChildren.filter((item) => item.id).map(item => ({
-                content: item.content, use: item.use ? item.use : false, id: item?.id
+                content: item.content, use: true, id: item?.id
               })),
               deleteRows: removeId,
             }
@@ -77,9 +77,9 @@ const Index = memo(() => {
               nameCriteria: item?.nameCriteria,
               inputAssessment: item?.inputAssessment ? item?.inputAssessment : false,
               periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment : false,
-              use: item?.use ? item?.use : false,
+              use: true,
               detailChildren: item?.childEvaluateDetailChildren ? item?.childEvaluateDetailChildren?.map((item) => ({
-                content: item.content, use: item.use ? item.use : false,
+                content: item.content, use: true,
               })) : [],
             }))
           },
@@ -209,7 +209,7 @@ const Index = memo(() => {
                             <Heading type="form-title" className="mb15">
                               Thông tin tiêu chí {index + 1}
                             </Heading>
-                            {fields.length > 0 && (
+                            {fields.length > 1 && (
                               <div className={styles['list-button']}>
                                 <button
                                   className={styles['button-circle']}
@@ -265,7 +265,7 @@ const Index = memo(() => {
                                             </Pane>
                                           </Pane>
                                         </Pane>
-                                        <Pane className="col-lg-3">
+                                        {/* <Pane className="col-lg-3">
                                           <FormItem
                                             valuePropName="checked"
                                             label="Sử dụng"
@@ -273,7 +273,7 @@ const Index = memo(() => {
                                             fieldKey={[field.fieldKey, 'use']}
                                             type={variables.SWITCH}
                                           />
-                                        </Pane>
+                                        </Pane> */}
                                         <Pane className="col-lg-12">
                                           <h4 className={stylesModule['wrapper-title']}>Hình thức tiếp cận</h4>
                                           <div className={stylesModule['wrapper-table']}>
@@ -281,9 +281,9 @@ const Index = memo(() => {
                                               <div className={stylesModule.col}>
                                                 <p className={stylesModule.norm}>Nội dung</p>
                                               </div>
-                                              <div className={stylesModule.col}>
+                                              {/* <div className={stylesModule.col}>
                                                 <p className={stylesModule.norm}>Sử dụng</p>
-                                              </div>
+                                              </div> */}
                                               <div className={stylesModule.cols}>
                                                 <p className={stylesModule.norm} />
                                               </div>
@@ -310,16 +310,16 @@ const Index = memo(() => {
                                                                 rules={[variables.RULES.EMPTY_INPUT]}
                                                               />
                                                             </div>
-                                                            <div className={classnames(stylesModule.col)}>
+                                                            {/* <div className={classnames(stylesModule.col)}>
                                                               <FormItem
                                                                 valuePropName='checked'
                                                                 name={[fieldItem.name, 'use']}
                                                                 fieldKey={[fieldItem.fieldKey, 'use']}
                                                                 type={variables.SWITCH}
                                                               />
-                                                            </div>
-                                                            <div className={classnames(stylesModule.col)}>
-                                                              {fields.length > 0 && (
+                                                            </div> */}
+                                                            <div className={classnames(stylesModule.cols)}>
+                                                              {fieldss.length > 1 && (
                                                                 <div className={styles['list-button']}>
                                                                   <button
                                                                     className={styles['button-circle']}

@@ -61,4 +61,8 @@ export const menu = [
     key: 'account',
     label: 'Tài khoản',
   },
+  {
+    key: 'signature',
+    label: 'Chữ ký',
+  },
 ];
