@@ -36,12 +36,10 @@ export default function Index(props) {
   };
 
   const renderComponentUpload = () => (isComponentUpload ? componentUpload() : null);
-  console.log("data", data);
   return (
     <>
       {(data || []).length
         ? filterFiles().map((file, index) => {
-          console.log("file", file);
           if (file.images) {
             return (
               <div
@@ -74,7 +72,7 @@ export default function Index(props) {
                                 remove(item);
                               }}
                             >
-                              <span className="icon-close-circle" />
+                              <span className="icon-cancel" />
                             </span>
                           </>
                         ),
