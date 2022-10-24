@@ -2555,6 +2555,13 @@ export async function getLeftMenuChildDevelop() {
         '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/:id/chi-tiet',
       ],
     },
+    {
+      title: 'Cấu hình chèn logo',
+      key: 'logo',
+      icon: 'icon icon-setting',
+      permission: [permissions?.SUPHATTRIENCUATRE],
+      url: ['/su-phat-trien-cua-tre/cau-hinh-chen-logo'],
+    },
   ];
 }
 

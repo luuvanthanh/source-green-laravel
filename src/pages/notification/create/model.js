@@ -167,6 +167,7 @@ export default {
           payload: response,
         });
       } catch (error) {
+        callback(null, error?.data?.error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import ability from '@/utils/ability';
 import variablesModules from './utils/variables';
 import HelperModules from './utils/Helper';
-// import stylesModule from './styles.module.scss';
+import stylesModule from './styles.module.scss';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -404,7 +404,7 @@ class Index extends PureComponent {
         render: (record) => (
           <>
             {
-              !record?.sentDate &&
+              record?.status !== "Approved" &&
               <div className={styles['list-button']}>
                 <Button
                   color="primary"
@@ -447,6 +447,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
+
     const { search, defaultBranchs, dataYear } = this.state;
     const loading = effects['notificationsTest/GET_DATA'];
     return (
@@ -551,27 +552,29 @@ class Index extends PureComponent {
                 <TabPane tab={`${item.name}`} key={item.id} />
               ))}
             </Tabs>
-            <Table
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              error={error}
-              // isError={error.isError}
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              onRow={(record) => ({
-                onClick: () => {
-                  if (ability.can('THONGBAO', 'THONGBAO')) {
-                    history.push(`/thong-bao/${record.id}/chi-tiet`);
-                  }
-                },
-              })}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
+            <div className={stylesModule['block-table']}>
+              <Table
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                error={error}
+                // isError={error.isError}
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                onRow={(record) => ({
+                  onClick: () => {
+                    if (ability.can('THONGBAO', 'THONGBAO')) {
+                      history.push(`/thong-bao/${record.id}/chi-tiet`);
+                    }
+                  },
+                })}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
+            </div>
           </div>
         </div>
       </>

@@ -1,17 +1,5 @@
 @import "@/assets/styles/mixins.scss";
 
-.wrapper-radio {
-  :global(.ant-radio-group) {
-    display: flex;
-  }
-  :global(.ant-radio-wrapper) {
-    width: 100px;
-    margin: 0px !important;
-  }
-  :global(.ant-form-item) {
-    margin-bottom: 10px !important;
-  }
-}
 .text-uploadImg {
   font-weight: 400;
   font-size: 13px;
@@ -25,4 +13,11 @@
   width: 100%;
   display: flex;
   justify-content: flex-end;
+}
+
+.wrapper-modal {
+  display: flex;
+  .img {
+    width: 100px;
+  }
 }

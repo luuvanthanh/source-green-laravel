@@ -2203,7 +2203,7 @@ export default [
       // NOTIFICATION
       {
         path: '/thong-bao',
-        component: './notification/layout',
+        component: './notificationV1/layout',
         routes: [
           {
             path: '/thong-bao',
@@ -3321,6 +3321,12 @@ export default [
           {
             path: '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/:id/chi-tiet',
             component: './child-develop/name-childrens-problems/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.SUPHATTRIENCUATRE],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/cau-hinh-chen-logo',
+            component: './child-develop/configuration-logo',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.SUPHATTRIENCUATRE],
           },

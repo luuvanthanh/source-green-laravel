@@ -28,6 +28,7 @@ import DecisionRewardsForm from './forms/decision-rewards';
 import PositionLevels from './forms/position-levels';
 import MaternityLeaves from './forms/maternity-leaves';
 import SalaryIncreases from './forms/salary-increases';
+import Signature from './forms/signature';
 
 import { menu, defaultKey } from './menu';
 
@@ -55,6 +56,7 @@ const forms = {
   'position-levels': <PositionLevels />,
   'decision-rewards': <DecisionRewardsForm />,
   'maternity-leaves': <MaternityLeaves />,
+  'signature': <Signature />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
