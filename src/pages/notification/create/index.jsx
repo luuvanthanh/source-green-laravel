@@ -31,7 +31,7 @@ const Index = memo(() => {
     menuData,
     { branches, divisions, category },
     loading,
-    { defaultBranch },
+    { defaultBranch, user },
   ] = useSelector(({ menu, notificationV1Add, loading: { effects }, user }) => [
     menu.menuLeftNotification,
     notificationV1Add,
@@ -52,7 +52,7 @@ const Index = memo(() => {
   const [isAllEmployees, setIsAllEmployees] = useState(false);
   const [checkTime, setCheckTime] = useState(undefined);
   const [isAllParents, setIsAllParents] = useState(false);
-  const [type, setType] = useState(variablesModules.TYPE.EMPLOYEE);
+  const [type, setType] = useState(null);
 
   const [checkboxAll, setCheckboxAll] = useState(false);
   const [checkboxAllEmployees, setCheckboxAllEmployees] = useState(false);
@@ -77,6 +77,7 @@ const Index = memo(() => {
     branchId: defaultBranch?.id || null,
     loading: false,
     classStatus: 'ALL',
+    class: user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
   });
   const [employees, setEmployees] = useState([]);
   const [parents, setParents] = useState([]);
@@ -669,6 +670,7 @@ const Index = memo(() => {
       ...values,
       classId: values.class,
       class: undefined,
+      moduleName: variableData?.find(i => i?.value === type)?.label,
       isReminded: !!values?.isReminded,
       remindDate: values?.isReminded
         ? Helper.getDateTime({
@@ -768,28 +770,35 @@ const Index = memo(() => {
           if (response) {
             setDetails(response);
             mountedSet(setContent, response.content);
-            mountedSet(
-              setType,
-              !isEmpty(response.employeeNews)
-                ? variablesModules.TYPE.EMPLOYEE
-                : variablesModules.TYPE.STUDENT,
-            );
             dispatch({
               type: 'notificationV1Add/GET_MODULE',
               payload: { id: response?.moduleId },
-              callback: (response) => {
-                if (response) {
-                  setVariableData(response?.map(i => ({
+              callback: (responseModule, error) => {
+                if (responseModule) {
+                  setVariableData(responseModule?.map(i => ({
                     value: i?.code,
                     label: i?.name,
                   })));
+                  if (!isEmpty(response.employeeNews) && !isEmpty(responseModule?.find(i => i?.code === variablesModules.TYPE.EMPLOYEE))) {
+                    setType(variablesModules.TYPE.EMPLOYEE);
+                  }
+                  if (!isEmpty(response.parentNews) && !isEmpty(responseModule?.find(i => i?.code === variablesModules.TYPE.STUDENT))) {
+                    setType(variablesModules.TYPE.STUDENT);
+                  }
+                  formRef.current.setFieldsValue({
+                    moduleId: response?.moduleId,
+                  });
+                }
+                if (error) {
+                  formRef.current.setFieldsValue({
+                    moduleId: null,
+                  });
                 }
               },
             });
             formRef.current.setFieldsValue({
               title: response.title,
               branchId: response?.branch?.id,
-              moduleId: response?.moduleId,
               divisionId: response?.division?.id,
               class: response?.class?.id,
               isReminded: response?.isReminded,
@@ -1034,6 +1043,7 @@ const Index = memo(() => {
   };
 
   const onChangeModule = (e) => {
+    setType(null);
     dispatch({
       type: 'notificationV1Add/GET_MODULE',
       payload: { id: e },
@@ -1048,12 +1058,86 @@ const Index = memo(() => {
     });
   };
 
+  const onFormBtnSAVE = () => {
+    if (!isEmpty(details?.actions?.find(i => i === variablesModules.STATUS_ACTIONS_BTN?.SAVE)) || !params?.id) {
+      return <Button
+        color="success"
+        size="large"
+        loading={
+          loading['notificationV1Add/GET_BRANCHES'] ||
+          loading['notificationV1Add/GET_DIVISIONS'] ||
+          loading['notificationV1Add/ADD'] ||
+          loading['notificationV1Add/UPDATE']
+        }
+        style={{ marginLeft: 'auto' }}
+        htmlType="submit"
+        onClick={() => onFinish()}
+        disabled={
+          !employees.find((item) => item.checked) &&
+          !parents.find((item) => item.checked) &&
+          !isAllEmployees &&
+          !isAllParents &&
+          checkboxInput
+        }
+      >
+        Lưu
+      </Button>;
+    }
+    return "";
+  };
+
+  const onFormBtnSEND = () => {
+    if (!isEmpty(details?.actions?.find(i => i === variablesModules.STATUS_ACTIONS_BTN?.SEND)) || !params?.id) {
+      return <Button
+        color="primary"
+        size="large"
+        className='ml10'
+        htmlType="submit"
+        loading={
+          loading['notificationV1Add/SEND']
+        }
+        style={{ marginLeft: 'auto' }}
+        onClick={() => changeSend()}
+        disabled={
+          !employees.find((item) => item.checked) &&
+          !parents.find((item) => item.checked) &&
+          !isAllEmployees &&
+          checkboxInput &&
+          !isAllParents || (details?.sentDate && params?.id)
+
+        }
+      >
+        Gửi
+      </Button>;
+    }
+    return "";
+  };
+
+  const onFormBtnAPPROVE = () => {
+    if (!isEmpty(details?.actions?.find(i => i === variablesModules.STATUS_ACTIONS_BTN?.APPROVE))) {
+      return <Button
+        color="primary"
+        size="large"
+        loading={
+          loading['notificationV1Add/ADD_APPROVE']
+        }
+        style={{ marginLeft: 'auto' }}
+        htmlType="submit"
+        onClick={() => onApprove()}
+      >
+        Duyệt
+      </Button>;
+    }
+    return "";
+  };
+
   return (
     <Form
       layout="vertical"
       ref={formRef}
       initialValues={{
         branchId: defaultBranch?.id || null,
+        class: user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId || null,
       }}
     >
       <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
@@ -1238,7 +1322,7 @@ const Index = memo(() => {
                         <FormItem
                           label="Lớp"
                           name="class"
-                          data={[{ id: null, name: 'Chọn tất cả lớp' }, ...dataClass]}
+                          data={user?.role === "Teacher" ? [...dataClass?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...dataClass]}
                           type={variables.SELECT}
                           onChange={onChangeClass}
                         />
@@ -1413,6 +1497,11 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+                {onFormBtnSAVE()}
+                {onFormBtnSEND()}
+                {onFormBtnAPPROVE()}
+              </Pane>
+              {/* <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
                 {
                   details?.status === variablesModules.STATUS_NAME_STATUS.Approving ?
                     <Button
@@ -1474,7 +1563,7 @@ const Index = memo(() => {
                       </Button>
                     </>
                 }
-              </Pane>
+              </Pane> */}
             </Pane>
           </Pane>
         </Pane>

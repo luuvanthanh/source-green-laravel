@@ -2211,25 +2211,25 @@ export default [
           },
           {
             path: '/thong-bao/danh-sach',
-            component: './notificationV1',
+            component: './notification',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
           {
             path: '/thong-bao/tao-moi',
-            component: './notificationV1/create',
+            component: './notification/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
           {
             path: '/thong-bao/:id/chinh-sua',
-            component: './notificationV1/create',
+            component: './notification/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
           {
             path: '/thong-bao/:id/chi-tiet',
-            component: './notificationV1/details',
+            component: './notification/details',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
@@ -3321,6 +3321,12 @@ export default [
           {
             path: '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/:id/chi-tiet',
             component: './child-develop/name-childrens-problems/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.SUPHATTRIENCUATRE],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/cau-hinh-chen-logo',
+            component: './child-develop/configuration-logo',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.SUPHATTRIENCUATRE],
           },

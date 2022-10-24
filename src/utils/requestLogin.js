@@ -7,7 +7,7 @@ import { variables } from './variables';
 const cookies = new Cookies();
 
 const request = extend({
-  prefix: API_SSO_NEW,
+  prefix: API_SSO_URL,
   maxCache: 10,
 });
 

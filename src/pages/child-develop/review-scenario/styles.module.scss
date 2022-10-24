@@ -11,11 +11,11 @@
 }
 
 .wrapper-table {
-  border: 1px solid #E6E6E6;
+  border: 1px solid #e6e6e6;
   .card-heading {
-    background-color: #3B5CAD;;
+    background-color: #3b5cad;
     display: flex;
-    color: #FFFFFF;
+    color: #ffffff;
     align-items: center;
     justify-content: center;
     border-radius: 2px 2px 0 0;
@@ -25,8 +25,8 @@
       &:not(:first-child) {
         width: 10%;
         height: auto;
-        border-left: 1px solid  #575757;
-        border-right: 1px solid  #575757;
+        border-left: 1px solid #575757;
+        border-right: 1px solid #575757;
       }
     }
     .cols {
@@ -37,7 +37,7 @@
       }
     }
     .norm {
-      font-family: 'ProximaNovaSemibold';
+      font-family: "ProximaNovaSemibold";
       font-weight: bold;
       font-size: 14px;
       line-height: 20px;
@@ -55,18 +55,26 @@
       color: #36383a;
     }
     .col {
-      width: 80%;
+      width: 92%;
       padding: 20px 20px;
       &:not(:first-child) {
         border-left: 1px solid #eaeaea;
-        width: 10%;
+        width: 8%;
       }
     }
-  
+    .cols {
+      width: 8%;
+      padding: 20px 20px;
+      &:not(:first-child) {
+        border-left: 1px solid #eaeaea;
+        width: 8%;
+      }
+    }
+
     .col-first {
       padding-top: 24px;
     }
-  
+
     .item-form {
       display: flex;
       align-items: center;
@@ -110,24 +118,23 @@
 }
 
 .checkBox-item {
-  :global(.checkbox-small){
+  :global(.checkbox-small) {
     margin-bottom: 0px !important;
     height: 32px !important;
   }
 }
 
 .wrapper-tag {
-  :global(.ant-tag ){
+  :global(.ant-tag) {
     margin: 5px !important;
   }
 }
 
-
 .wraper-container {
-  :global(.ant-collapse-arrow){
-     top:  -35px !important;
+  :global(.ant-collapse-arrow) {
+    top: -35px !important;
   }
-  :global(.ant-collapse-header){
+  :global(.ant-collapse-header) {
     padding: 0px !important;
- }
+  }
 }
