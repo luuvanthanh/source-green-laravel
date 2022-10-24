@@ -40,6 +40,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('update-multiple', 'TestSemesterController@updateMultiple');
 
             \Route::get('update-score/{id}', 'TestSemesterController@updateScore');
+
+            \Route::post('update-data-test-semesters', 'TestSemesterController@updateDataTestSemester');
+
+            \Route::post('update-data-old-last-test-semesters', 'TestSemesterController@updateDataOldLastTestSemester');
         });
     }
 

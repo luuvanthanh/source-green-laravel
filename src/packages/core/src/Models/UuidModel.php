@@ -1,4 +1,5 @@
 <?php
+
 namespace GGPHP\Core\Models;
 
 use GGPHP\Core\Models\CoreModel;

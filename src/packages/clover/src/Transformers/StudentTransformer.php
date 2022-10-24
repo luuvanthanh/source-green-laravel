@@ -48,11 +48,11 @@ class StudentTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            'age_month' => Carbon::parse($model->DayOfBirth)->diffInMonths(now()),
+            'age_month' => Carbon::parse($model->DayOfBirth)->floatDiffInRealMonths(now()),
             'refund' => $model->refund,
             'dateOff' => $model->dateOff,
             'numberDayOff' => $model->numberDayOff,
-            'age' => Carbon::parse($model->DayOfBirth)->diffInMonths(now()),
+            'age' => Carbon::parse($model->DayOfBirth)->floatDiffInRealMonths(now()),
         ];
     }
 
