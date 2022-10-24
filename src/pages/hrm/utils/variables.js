@@ -128,6 +128,10 @@ export const variables = {
       id: 'GO_OUT',
       name: 'Đi ra ngoài',
     },
+    {
+      id: 'WORK_HOME',
+      name: 'Làm tại nhà',
+    },
   ],
   SHIFT_CODES: [
     {

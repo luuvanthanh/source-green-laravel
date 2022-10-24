@@ -1090,18 +1090,18 @@ export async function getLeftMenuNotification() {
       permission: [permissions.THONGBAO],
       pro: true,
     },
-    // {
-    //   title: 'Cấu hình',
-    //   key: 'configuration',
-    //   url: [
-    //     '/thong-bao/cau-hinh',
-    //     '/thong-bao/cau-hinh/tao-moi',
-    //     '/thong-bao/cau-hinh/:id/chi-tiet',
-    //   ],
-    //   icon: 'icon icon-list',
-    //   permission: [permissions.THONGBAO],
-    //   pro: true,
-    // },
+    {
+      title: 'Cấu hình',
+      key: 'configuration',
+      url: [
+        '/thong-bao/cau-hinh',
+        '/thong-bao/cau-hinh/tao-moi',
+        '/thong-bao/cau-hinh/:id/chi-tiet',
+      ],
+      icon: 'icon icon-list',
+      permission: [permissions.THONGBAO],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuMedia() {
@@ -2537,13 +2537,13 @@ export async function getLeftMenuChildDevelop() {
         },
       ],
     },
-    // {
-    //   title: 'Đánh giá đã duyệt',
-    //   key: 'list-of-reviews',
-    //   icon: 'icon icon-list',
-    //   permission: [],
-    //   url: ['/su-phat-trien-cua-tre/danh-gia-da-duyet'],
-    // },
+    {
+      title: 'Đánh giá đã duyệt',
+      key: 'list-of-reviews',
+      icon: 'icon icon-list',
+      permission: [],
+      url: ['/su-phat-trien-cua-tre/danh-gia-da-duyet'],
+    },
     {
       title: 'Cấu hình kịch bản đánh giá',
       key: '/childrens-problems',
