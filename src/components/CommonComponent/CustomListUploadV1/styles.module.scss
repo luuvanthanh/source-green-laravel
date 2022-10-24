@@ -46,8 +46,12 @@
       top: -5px;
       cursor: pointer;
       span {
-        color: $text-danger;
-        font-size: 16px;
+        color: #666666;
+        font-size: 12px;
+        border: 1px solid #d9d9d9;
+        border-radius: 50%;
+        background-color: #ffff;
+        padding: 2px;
       }
     }
   }
