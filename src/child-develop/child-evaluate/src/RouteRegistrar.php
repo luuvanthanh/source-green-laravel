@@ -34,6 +34,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::put('update-is-use/{id}', 'ChildEvaluateController@updateIsUse');
 
             \Route::get('get-const', 'ChildEvaluateController@getConst');
+
+            \Route::get('merge-data', 'ChildEvaluateController@mergeData');
         });
     }
 }
