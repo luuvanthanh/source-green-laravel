@@ -31,7 +31,7 @@ class LogoController extends Controller
      */
     public function index(Request $request)
     {
-        $logo = $this->logoRepository->get($request->all());
+        $logo = $this->logoRepository->getAll($request->all());
 
         return $this->success($logo, trans('lang::messages.common.getListSuccess'));
     }
