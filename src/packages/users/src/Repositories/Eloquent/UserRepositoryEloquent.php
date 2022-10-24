@@ -1003,11 +1003,6 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         })->toArray();
 
         $configNotification = ConfigNotification::where('Type', ConfigNotification::TYPE['BIRTHDAY'])->first();
-
-        if (is_null($configNotification)) {
-            return [];
-        }
-        
         $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
 
 
