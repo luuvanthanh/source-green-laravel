@@ -1,7 +1,7 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { isEmpty, get, head } from 'lodash';
-import { history, useParams } from 'umi';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -53,9 +53,6 @@ const General = memo(() => {
             type: 'childDevelopConfigurationLogo/ADD',
             payload: { logo: JSON.stringify(files), id: head(details)?.id ? head(details)?.id : null },
             callback: (response, error) => {
-                if (response && !params?.id) {
-                    history.goBack();
-                }
                 if (error) {
                     if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
                         error.data.errors.forEach((item) => {
