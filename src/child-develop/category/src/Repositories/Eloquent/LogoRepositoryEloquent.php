@@ -52,6 +52,14 @@ class LogoRepositoryEloquent extends BaseRepository implements LogoRepository
 
     public function createAll(array $attributes)
     {
+        if (!empty($attributes['id'])) {
+            $logoDelete = $this->model->find($attributes['id']);
+
+            if (!is_null($logoDelete)) {
+                $logoDelete->delete();
+            }
+        }
+
         $logo =  $this->model::create($attributes);
 
         return parent::parserResult($logo);
