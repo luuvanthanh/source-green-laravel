@@ -325,7 +325,9 @@ class Index extends PureComponent {
                 key: 'numberMonthWorking',
                 className: 'min-width-150',
                 width: 150,
-                render: (record) => <Text size="normal">{record?.numberMonthWorking}</Text>,
+                render: (record) => <div className='d-flex w-100 justify-content-center'>
+                    <Text size="normal">{record?.numberMonthWorking}</Text>
+                </div>,
             },
             {
                 title: 'Số phép',

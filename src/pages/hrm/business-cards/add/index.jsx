@@ -143,6 +143,7 @@ class Index extends PureComponent {
       type: params.id ? 'businessCardsAdd/UPDATE' : 'businessCardsAdd/ADD',
       payload: {
         ...values,
+        status: !params.id ? 'APPROVED' : undefined,
         detail: detail.map((item) => ({
           ...item,
           isFullDate: item.isFullDate === 1,
@@ -736,7 +737,7 @@ Index.propTypes = {
 Index.defaultProps = {
   match: {},
   categories: {},
-  dispatch: () => {},
+  dispatch: () => { },
   shiftUsers: {},
   error: {},
   menuLeftSchedules: [],
