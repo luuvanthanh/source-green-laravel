@@ -24,7 +24,7 @@ class LogoCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'logo' => 'required|string|unique:Logos,Logo',
+            'logo' => 'string',
         ];
     }
 }
