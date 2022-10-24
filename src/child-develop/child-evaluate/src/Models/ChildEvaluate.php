@@ -38,4 +38,9 @@ class ChildEvaluate extends UuidModel
     {
         return $this->belongsTo(CategorySkill::class, 'CategorySkillId');
     }
+
+    public function childEvaluateDetailHasOne()
+    {
+        return $this->hasOne(ChildEvaluateDetail::class, 'ChildEvaluateId');
+    }
 }

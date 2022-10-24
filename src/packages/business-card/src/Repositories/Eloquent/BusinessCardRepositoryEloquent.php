@@ -108,8 +108,11 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
             \DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
+        $account = [];
 
-        $account = $this->getAccountEmployee($attributes);
+        if (!empty($attributes['approvalEmployee'])) {
+            $account = $this->getAccountEmployee($attributes);
+        }
 
         if (!empty($account)) {
             $attributes['title'] = 'Phiếu đăng ký';

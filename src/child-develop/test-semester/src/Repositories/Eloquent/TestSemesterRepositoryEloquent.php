@@ -249,17 +249,17 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
             $arrId = array_merge(array_column($employee->pluck('account')->toArray(), 'AppUserId'), array_column($parentAccount->pluck('account')->toArray(), 'AppUserId'));
 
-            if (!empty($arrId)) {
-                $dataNotiCation = [
-                    'users' => $arrId,
-                    'title' => $student->FullName,
-                    'imageURL' => $urlImage,
-                    'message' => $message,
-                    'moduleType' => 22,
-                    'refId' => $testSemester->Id,
-                ];
-                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
-            }
+            // if (!empty($arrId)) {
+            //     $dataNotiCation = [
+            //         'users' => $arrId,
+            //         'title' => $student->FullName,
+            //         'imageURL' => $urlImage,
+            //         'message' => $message,
+            //         'moduleType' => 22,
+            //         'refId' => $testSemester->Id,
+            //     ];
+            //     dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+            // }
         }
 
         $testSemester->update($attributes);
@@ -494,21 +494,124 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         $a = [];
         foreach ($testSemester->testSemesterDetail as $key => $valueDetail) {
 
-            $getScore = 0;
             foreach ($valueDetail->testSemesterDetailChildren as $key2 => $value) {
                 $childEvaluateDetailChildren = ChildEvaluateDetailChildren::find($value->ChildEvaluateDetailChildrenId);
-
                 $childEvaluate = ChildEvaluate::find($value->ChildEvaluateId);
-                $getScore += !empty($childEvaluateDetailChildren) ? $childEvaluateDetailChildren->Score : 0;
+
                 $value->update([
                     'Score' => !empty($childEvaluateDetailChildren) ? $childEvaluateDetailChildren->Score : 0,
                     'Age' => $childEvaluate->Age
                 ]);
             }
 
-            $valueDetail->update(['TotalScore' => $getScore]);
+            $valueDetail->update(['TotalScore' => array_sum(array_column($valueDetail->testSemesterDetailChildren->ToArray(), 'Score'))]);
         }
 
         return parent::find($id);
+    }
+
+    public function updateDataTestSemester(array $attributes)
+    {
+        if (!empty($attributes['testSemesterId'])) {
+            $testSemesters = $this->model()::where('Id', $attributes['testSemesterId'])->get();
+        } else {
+            $testSemesters = $this->model()::where('AssessmentPeriodId', $attributes['assessmentPeriodId'])->get();
+        }
+
+        $arrNum = [
+            0 => [0, 1, 2, 3, 4, 5, 6],
+            1 => [7, 8, 9],
+            2 => [10, 11, 12],
+            3 => [13, 14, 15, 16, 17, 18],
+            4 => [19, 20, 21, 22, 24],
+            5 => [25, 26, 27, 28, 29, 30],
+            6 => [31, 32, 33, 34, 35, 36],
+            7 => [37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50],
+            8 => [51, 52, 53, 54, 55, 56, 57, 58, 59, 60],
+            9 => [61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72]
+        ];
+
+        foreach ($testSemesters as $key => $testSemester) {
+
+            foreach ($arrNum as $key => $value) {
+                if (in_array($testSemester->TimeAgeTestSemester, $value)) {
+                    $getKey = $key;
+                }
+            }
+
+            foreach ($testSemester->testSemesterDetail as $key2 => $testSemesterDetail) {
+                $childEvaluateReal = ChildEvaluate::where('CategorySkillId', $testSemesterDetail->CategorySkillId)->where('Age', $getKey)->first();
+                $childEvaluateDataSave = ChildEvaluate::whereIn('Id', array_column($testSemesterDetail->testSemesterDetailChildren->ToArray(), 'ChildEvaluateId'))->orderBy('Age', 'desc')->latest()->first();
+                $arrAge = $childEvaluateDataSave->Age;
+                $childEvaluate = ChildEvaluate::where('CategorySkillId', $testSemesterDetail->CategorySkillId)->where('Age', $arrAge)->first();
+
+                if ($childEvaluateReal->Age != $arrAge) {
+                    $rangeInt = range($childEvaluateReal->Age, $arrAge);
+                    $lastInt = array_key_last(range($childEvaluateReal->Age, $arrAge));
+                    unset($rangeInt[$lastInt]);
+                    $childEvaluate = ChildEvaluate::where('CategorySkillId', $testSemesterDetail->CategorySkillId)->whereIn('Age', $rangeInt)->get();
+
+                    foreach ($childEvaluate as $key => $valueChildEvaluate) {
+                        foreach ($valueChildEvaluate->childEvaluateDetailHasOne->childEvaluateDetailChildren as $key => $valueChildren) {
+                            $testSemesterDetailChildrenDataSaved = $testSemesterDetail->testSemesterDetailChildren()->where('ChildEvaluateDetailChildrenId', $valueChildren->Id)->first();
+
+                            $collect = [
+                                'ChildEvaluateId' => $valueChildEvaluate->Id,
+                                'ChildEvaluateDetailId' => $valueChildEvaluate->childEvaluateDetailHasOne->Id,
+                                'ChildEvaluateDetailChildrenId' => $valueChildren->Id,
+                                'Score' => $valueChildren->Score,
+                                'Status' => 1,
+                                'Age' => $valueChildEvaluate->Age
+                            ];
+                            $testSemesterDetail->testSemesterDetailChildren()->create($collect);
+                        }
+                    }
+                }
+
+                $sumAge = array_sum(array_column($testSemesterDetail->testSemesterDetailChildren->where('Status', 1)->ToArray(), 'Score'));
+                $testSemesterDetail->update(['TotalScore' => $sumAge]);
+            }
+        }
+
+        return parent::all();
+    }
+
+    public function updateDataOldLastTestSemester(array $attributes)
+    {
+        if (!empty($attributes['testSemesterId'])) {
+            $testSemesters = $this->model()::where('Id', $attributes['testSemesterId'])->get();
+        } else {
+            $testSemesters = $this->model()::where('AssessmentPeriodId', $attributes['assessmentPeriodId'])->get();
+        }
+
+        foreach ($testSemesters as $key => $testSemester) {
+
+            $children = TestSemesterDetailChildren::where('TestSemesterDetailId', $testSemester->testSemesterDetailForUpdate->Id)->whereHas('childEvaluate', function ($q) {
+                $q->orderBy('Age', 'desc');
+            })->with('childEvaluate')->first();
+
+            $arrAge = $children->ToArray()['child_evaluate']['Age'];
+
+            foreach ($testSemester->testSemesterDetail as $key => $valueDetail) {
+                $childEvaluate = ChildEvaluate::where('CategorySkillId', $valueDetail->CategorySkillId)->where('Age', $arrAge)->first();
+
+                foreach ($childEvaluate->childEvaluateDetailHasOne->childEvaluateDetailChildren as $key => $valueChildren) {
+                    $testSemesterDetailChildren = $valueDetail->testSemesterDetailChildren()->where('ChildEvaluateDetailChildrenId', $valueChildren->Id)->first();
+
+                    $collect = [
+                        'ChildEvaluateId' => $childEvaluate->Id,
+                        'ChildEvaluateDetailId' => $childEvaluate->childEvaluateDetailHasOne->Id,
+                        'ChildEvaluateDetailChildrenId' => $valueChildren->Id,
+                        'Score' => $valueChildren->Score,
+                        'Status' => 2,
+                        'Age' => $childEvaluate->Age
+                    ];
+
+                    $valueDetail->testSemesterDetailChildren()->create($collect);
+                }
+            }
+        }
+
+        return parent::All();
     }
 }

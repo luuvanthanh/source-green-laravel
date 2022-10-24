@@ -73,4 +73,9 @@ class TestSemester extends UuidModel
     {
         return $this->belongsToMany(User::class, 'TestSemesterHeadmasters', 'TestSemesterId', 'EmployeeId')->withTimestamps('CreationTime', 'LastModificationTime');
     }
+
+    public function testSemesterDetailForUpdate()
+    {
+        return $this->hasOne(TestSemesterDetail::class, 'TestSemesterId');
+    }
 }
