@@ -64,10 +64,6 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'business-cards.destroy',
                 'group' => 'Công bù giờ',
             ]);
-
-            \Route::put('update-status-business-cards/{id}', 'BusinessCardController@updateStatusBusinessCard');
-
-            \Route::get('send-again/{id}', 'BusinessCardController@sendAgain');
         });
     }
 }
