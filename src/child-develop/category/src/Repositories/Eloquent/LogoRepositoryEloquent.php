@@ -56,4 +56,15 @@ class LogoRepositoryEloquent extends BaseRepository implements LogoRepository
 
         return parent::parserResult($logo);
     }
+
+    public function getAll(array $attributes)
+    {
+        if (!empty($attributes['limit'])) {
+            $logo = $this->paginate($attributes['limit']);
+        } else {
+            $logo = $this->get();
+        }
+
+        return $logo;
+    }
 }
