@@ -2,12 +2,12 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Models;
 
-use App\Models\User;
 use GGPHP\ChildDevelop\Category\Models\AssessmentPeriod;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ClassType;
 use GGPHP\Fee\Models\SchoolYear;
+use GGPHP\Users\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemester extends UuidModel
@@ -67,5 +67,15 @@ class TestSemester extends UuidModel
     public function schoolYear()
     {
         return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
+    }
+
+    public function testSemesterHeadmaster()
+    {
+        return $this->belongsToMany(User::class, 'TestSemesterHeadmasters', 'TestSemesterId', 'EmployeeId')->withTimestamps('CreationTime', 'LastModificationTime');
+    }
+
+    public function testSemesterDetailForUpdate()
+    {
+        return $this->hasOne(TestSemesterDetail::class, 'TestSemesterId');
     }
 }

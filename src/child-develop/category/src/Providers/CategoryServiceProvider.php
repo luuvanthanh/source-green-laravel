@@ -6,11 +6,13 @@ use GGPHP\ChildDevelop\Category\Repositories\Contracts\AssessmentPeriodRepositor
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategoryChildIssueRepository;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategoryQuestionParentRepository;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategorySkillRepository;
+use GGPHP\ChildDevelop\Category\Repositories\Contracts\LogoRepository;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\NameAssessmentPeriodRepository;
 use GGPHP\ChildDevelop\Category\Repositories\Eloquent\CategoryChildIssueRepositoryEloquent;
 use GGPHP\ChildDevelop\Category\Repositories\Eloquent\CategoryQuestionParentRepositoryEloquent;
 use GGPHP\ChildDevelop\Category\Repositories\Eloquent\CategorySkillRepositoryEloquent;
 use GGPHP\ChildDevelop\Category\Repositories\Eloquent\AssessmentPeriodRepositoryEloquent;
+use GGPHP\ChildDevelop\Category\Repositories\Eloquent\LogoRepositoryEloquent;
 use GGPHP\ChildDevelop\Category\Repositories\Eloquent\NameAssessmentPeriodRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
@@ -40,5 +42,6 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(CategoryQuestionParentRepository::class, CategoryQuestionParentRepositoryEloquent::class);
         $this->app->bind(AssessmentPeriodRepository::class, AssessmentPeriodRepositoryEloquent::class);
         $this->app->bind(NameAssessmentPeriodRepository::class, NameAssessmentPeriodRepositoryEloquent::class);
+        $this->app->bind(LogoRepository::class, LogoRepositoryEloquent::class);
     }
 }
