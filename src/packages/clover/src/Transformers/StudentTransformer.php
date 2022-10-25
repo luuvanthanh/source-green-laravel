@@ -52,7 +52,7 @@ class StudentTransformer extends BaseTransformer
             'refund' => $model->refund,
             'dateOff' => $model->dateOff,
             'numberDayOff' => $model->numberDayOff,
-            'age' => Carbon::parse($model->DayOfBirth)->floatDiffInRealMonths(now()),
+            'age' => (int) Carbon::parse($model->DayOfBirth)->floatDiffInRealMonths(now()),
         ];
     }
 
