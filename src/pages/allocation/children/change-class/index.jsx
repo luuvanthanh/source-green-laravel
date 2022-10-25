@@ -119,6 +119,7 @@ class Index extends PureComponent {
       },
     });
     if (defaultBranch?.id) {
+      this.fetchClasses(defaultBranch?.id, undefined);
       dispatch({
         type: 'categories/GET_CLASSES',
         payload: {
@@ -229,8 +230,8 @@ class Index extends PureComponent {
   };
 
   finishForm = ({ classId, joinDate }) => {
-    const { selectedStudents } = this.state;
-    const { dispatch } = this.props;
+    const { selectedStudents, categories: { classes }, } = this.state;
+    const { dispatch, defaultBranch } = this.props;
     dispatch({
       type: 'allocationChangeClass/UPDATE',
       payload: {
@@ -252,7 +253,7 @@ class Index extends PureComponent {
           categories: {
             ...prev?.categories,
             students: [],
-            classes: [],
+            classes: defaultBranch?.id ? classes : [],
           },
           selectedStudents: [],
         }));
@@ -274,12 +275,11 @@ class Index extends PureComponent {
       categories: { students, branches, classes, filterClasses },
       defaultBranchs,
     } = this.state;
-
     return (
       <Form
         layout="vertical"
         colon={false}
-        initialValues={{ branch: defaultBranch?.id }}
+        initialValues={{ branch: defaultBranch?.id, branches: defaultBranch?.id }}
         ref={this.formRef}
         onFinish={this.finishForm}
       >
@@ -420,17 +420,36 @@ class Index extends PureComponent {
                 </div>
                 <div className={stylesAllocation['content-form']}>
                   <div className="row mt-3">
-                    <div className="col-lg-6">
-                      <FormItem
-                        label="Cơ sở"
-                        name="branches"
-                        rules={[variables.RULES.EMPTY]}
-                        type={variables.SELECT}
-                        data={branches}
-                        allowClear={false}
-                        onChange={this.selectBranch()}
-                      />
-                    </div>
+                    {
+                      !defaultBranch?.id && (
+                        <div className="col-lg-6">
+                          <FormItem
+                            label="Cơ sở"
+                            name="branches"
+                            rules={[variables.RULES.EMPTY]}
+                            type={variables.SELECT}
+                            data={branches}
+                            allowClear={false}
+                            onChange={this.selectBranch()}
+                          />
+                        </div>
+                      )
+                    }
+                    {
+                      defaultBranch?.id && (
+                        <div className="col-lg-6">
+                          <FormItem
+                            label="Cơ sở"
+                            name="branches"
+                            rules={[variables.RULES.EMPTY]}
+                            type={variables.SELECT}
+                            data={defaultBranchs}
+                            allowClear={false}
+                            onChange={this.selectBranch()}
+                          />
+                        </div>
+                      )
+                    }
                   </div>
                   <hr />
 

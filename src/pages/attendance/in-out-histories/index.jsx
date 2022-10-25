@@ -37,6 +37,7 @@ const mapStateToProps = ({ inOutHistories, loading, user }) => ({
   branches: inOutHistories.branches,
   defaultBranch: user.defaultBranch,
   pagination: inOutHistories.pagination,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -47,12 +48,13 @@ class Index extends PureComponent {
     const {
       defaultBranch,
       location: { query },
+      user,
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         nameStudent: query?.nameStudent,
-        classId: query?.classId,
+        classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -347,6 +349,7 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      user,
       pagination,
       match: { params },
       loading: { effects },
@@ -409,7 +412,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -455,6 +458,7 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -467,6 +471,7 @@ Index.defaultProps = {
   branches: [],
   classes: [],
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;

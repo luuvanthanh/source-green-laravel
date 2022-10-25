@@ -24,12 +24,13 @@ function Index() {
   const [
     { data, pagination, employees, categories },
     loading,
-  ] = useSelector(({ loading: { effects }, seasonalContracts }) => [seasonalContracts, effects]);
+    { defaultBranch }
+  ] = useSelector(({ loading: { effects }, seasonalContracts, user }) => [seasonalContracts, effects, user]);
 
   const [search, setSearch] = useState({
     type: query?.type,
     fullName: query?.fullName,
-    branchId: query?.branchId,
+    branchId: query?.branchId || defaultBranch?.id,
     positionId: query?.positionId,
     typeOfContractId: query?.typeOfContractId,
     employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
@@ -40,7 +41,9 @@ function Index() {
   const loadCategories = () => {
     dispatch({
       type: 'seasonalContracts/GET_EMPLOYEES',
-      payload: {},
+      payload: {
+        branchId: defaultBranch?.id ? defaultBranch?.id : undefined,
+      },
     });
     dispatch({
       type: 'seasonalContracts/GET_CATEGORIES',
@@ -278,15 +281,28 @@ function Index() {
                   allowClear={false}
                 />
               </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[{ id: null, name: 'Tất cả nơi làm việc' }, ...categories.branches]}
-                  name="branchId"
-                  onChange={(event) => onChangeSelect(event, 'branchId')}
-                  type={variables.SELECT}
-                  allowClear={false}
-                />
-              </div>
+              {!defaultBranch?.id && (
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả nơi làm việc' }, ...categories.branches]}
+                    name="branchId"
+                    onChange={(event) => onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+              )}
+              {defaultBranch?.id && (
+                <div className="col-lg-3">
+                  <FormItem
+                    data={defaultBranch?.id ? [defaultBranch] : []}
+                    name="branchId"
+                    onChange={(event) => onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+              )}
               <div className="col-lg-3">
                 <FormItem
                   data={[{ id: null, name: 'Tất cả chức vụ' }, ...categories.positions]}

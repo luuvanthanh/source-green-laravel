@@ -29,13 +29,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ HRMusers, loading }) => ({
+const mapStateToProps = ({ HRMusers, loading, user }) => ({
   data: HRMusers.data,
   pagination: HRMusers.pagination,
   branches: HRMusers.branches,
   employees: HRMusers.employees,
   divisions: HRMusers.divisions,
   positions: HRMusers.positions,
+  defaultBranch: user.defaultBranch,
   loading,
 });
 @connect(mapStateToProps)
@@ -45,15 +46,18 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         ...query,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         fullName: query?.fullName,
         employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
+        branchId: query?.branchId || defaultBranch?.id,
       },
     };
     setIsMounted(true);
@@ -294,9 +298,10 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      defaultBranch,
       location: { pathname },
     } = this.props;
-    const { search } = this.state;
+    const { search, defaultBranchs } = this.state;
     const loading = effects['HRMusers/GET_DATA'];
     return (
       <>
@@ -334,13 +339,24 @@ class Index extends PureComponent {
                   />
                 </div>
                 <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
+                  {!defaultBranch?.id && (
+                    <FormItem
+                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  )}
+                  {defaultBranch?.id && (
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  )}
                 </div>
                 <div className="col-lg-3">
                   <FormItem
@@ -402,6 +418,7 @@ Index.propTypes = {
   positions: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -415,6 +432,7 @@ Index.defaultProps = {
   positions: [],
   divisions: [],
   employees: [],
+  defaultBranch: {},
 };
 
 export default Index;
