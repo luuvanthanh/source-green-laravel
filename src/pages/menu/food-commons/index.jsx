@@ -21,7 +21,8 @@ const Index = memo(() => {
   const [
     { pagination, error, data },
     loading,
-  ] = useSelector(({ loading: { effects }, foodCommons }) => [foodCommons, effects]);
+    { user },
+  ] = useSelector(({ loading: { effects }, foodCommons, user }) => [foodCommons, effects, user]);
 
   const history = useHistory();
   const { query, pathname } = useLocation();
@@ -155,14 +156,16 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Danh sách món ăn</Heading>
-          <Button
-            className="ml-auto"
-            color="success"
-            icon="plus"
-            onClick={() => history.push(`${pathname}/tao-moi`)}
-          >
-            Tạo danh mục
-          </Button>
+          {user?.roleCode === "sale" || user?.roleCode === "teacher" ? "" : (
+            <Button
+              className="ml-auto"
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
+              Tạo danh mục
+            </Button>
+          )}
         </Pane>
 
         <Pane className="card">
@@ -186,15 +189,15 @@ const Index = memo(() => {
               </Pane>
             </Form>
             <div className={style['wrapper-table']}>
-            <Table
-              columns={columns}
-              dataSource={data}
-              loading={loading['foodCommons/GET_DATA']}
-              isError={error.isError}
-              pagination={paginationProps}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
+              <Table
+                columns={columns}
+                dataSource={data}
+                loading={loading['foodCommons/GET_DATA']}
+                isError={error.isError}
+                pagination={paginationProps}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
             </div>
           </Pane>
         </Pane>

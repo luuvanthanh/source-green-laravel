@@ -527,19 +527,23 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách đánh giá đã duyệt</Text>
-            <div className='d-flex'>
-              <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview()}>
-                Gửi đánh giá đã chọn
-              </Button>
-              <Button
-                color="success"
-                icon="redo2"
-                className="ml-2"
-                onClick={() => this.onClickAddReview('all')}
-              >
-                Gửi tất cả
-              </Button>
-            </div>
+            {
+              search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
+                <div className='d-flex'>
+                  <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview()}>
+                    Gửi đánh giá đã chọn
+                  </Button>
+                  <Button
+                    color="success"
+                    icon="redo2"
+                    className="ml-2"
+                    onClick={() => this.onClickAddReview('all')}
+                  >
+                    Gửi tất cả
+                  </Button>
+                </div>
+              )
+            }
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs

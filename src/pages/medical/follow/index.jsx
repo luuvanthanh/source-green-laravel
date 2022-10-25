@@ -468,7 +468,7 @@ class Index extends PureComponent {
           </div>
           <div className={styles['modal-content']}>
             <h3 className={styles.title}>Thông tin chung</h3>
-            <div className="d-flex justify-content-between align-items-center row">
+            <div className="d-flex justify-content-between row">
               <div className='col-lg-6'>
                 <p className={styles.label}>Triệu chứng</p>
                 <p className={styles.norm}>{objects?.diseaseName}</p>
