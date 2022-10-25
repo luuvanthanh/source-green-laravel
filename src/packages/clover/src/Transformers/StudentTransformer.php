@@ -36,7 +36,7 @@ class StudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent', 'studentTransporter', 'testSemester'];
+    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent', 'studentTransporter', 'testSemester', 'classes'];
 
     /**
      * Transform the Student entity.
@@ -147,5 +147,14 @@ class StudentTransformer extends BaseTransformer
     public function includeTestSemester(Student $student)
     {
         return $this->collection($student->testSemester, new TestSemesterTransformer, 'TestSemester');
+    }
+
+    public function includeClasses(Student $student)
+    {
+        if (empty($student->classes)) {
+            return;
+        }
+
+        return $this->item($student->classes, new ClassesTransformer, 'Classes');
     }
 }
