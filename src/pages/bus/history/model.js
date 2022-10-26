@@ -26,10 +26,11 @@ export default {
     }),
     SET_YEARS: (state, { payload }) => ({
       ...state,
-      years: payload.parsePayload?.map((item) => ({
-        id: item.id,
-        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
-      })) || [],
+      years:
+        payload.parsePayload?.map((item) => ({
+          id: item.id,
+          name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+        })) || [],
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -47,7 +48,7 @@ export default {
         yield saga.put({
           type: 'INIT_STATE',
         });
-        if (payload.id && payload.date) {
+        if (payload.date) {
           const response = yield saga.call(services.get, payload);
           yield saga.put({
             type: 'SET_DATA',

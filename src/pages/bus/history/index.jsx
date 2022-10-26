@@ -110,9 +110,9 @@ const Index = memo(() => {
         const { absentStudents } = record?.student;
         const absent = !isEmpty(absentStudents)
           ? absentStudents.find(
-              (item) =>
-                Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date,
-            )
+            (item) =>
+              Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date,
+          )
           : {};
         if (absent?.id) {
           return <Text size="normal">Đã xin nghỉ phép</Text>;
@@ -140,9 +140,9 @@ const Index = memo(() => {
         const { absentStudents } = record?.student;
         const absent = !isEmpty(absentStudents)
           ? absentStudents.find(
-              (item) =>
-                Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date,
-            )
+            (item) =>
+              Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date,
+          )
           : {};
         if (absent?.id) {
           return <Text size="normal">Đã xin nghỉ phép</Text>;
@@ -229,9 +229,7 @@ const Index = memo(() => {
   }, [search]);
 
   const formUpdate = (value, values) => {
-    if (values.id && values.date) {
-      mountedSet(setSearch, { ...search, ...values });
-    }
+    mountedSet(setSearch, { ...search, ...values });
   };
 
   useEffect(() => {

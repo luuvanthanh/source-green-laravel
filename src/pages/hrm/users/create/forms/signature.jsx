@@ -110,13 +110,13 @@ const General = memo(() => {
                         <Heading type="form-title" style={{ marginBottom: 20 }}>
                             Chữ ký
                         </Heading>
-                        <div className="row">
-                            <div className="col-lg-2">
-                                <div className="ant-col ant-form-item-label">
-                                    <label className="ant-form-item-required">
-                                        <span>Hình ảnh chữ ký</span>
-                                    </label>
-                                </div>
+                        <div className="ant-col ant-form-item-label">
+                            <label className="ant-form-item-required">
+                                <span>Hình ảnh chữ ký</span>
+                            </label>
+                        </div>
+                        <div className={stylesModule['wrapper-modal']}>
+                            <div className={stylesModule.img}>
                                 {files?.length <= 0 && (
                                     <MultipleImageUpload
                                         files={files}
@@ -127,8 +127,8 @@ const General = memo(() => {
                                     callback={(files) => uploadFiles(files)}
                                     remove={(item) => onRemoFile(item)} />}
                             </div>
-                            <div className="col-lg-4  d-flex align-items-center">
-                                <p className={stylesModule['text-uploadImg']}>Áp dụng đối với định dạng jpg, png, jpeg
+                            <div className="pl15 d-flex align-items-center pb20">
+                                <p className={stylesModule['text-uploadImg']}>Áp dụng đối với định dạng jpg, png, jpeg, webp.
                                     Dung lượng tối đa không quá 20mb</p>
                             </div>
                         </div>

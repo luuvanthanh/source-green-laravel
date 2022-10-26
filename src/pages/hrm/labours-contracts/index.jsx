@@ -34,11 +34,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ laboursContracts, loading }) => ({
+const mapStateToProps = ({ laboursContracts, loading, user }) => ({
   data: laboursContracts.data,
   pagination: laboursContracts.pagination,
   employees: laboursContracts.employees,
   categories: laboursContracts.categories,
+  defaultBranch: user.defaultBranch,
   loading,
 });
 const statuses = variables.STATUS_CONTRACT;
@@ -49,13 +50,15 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         type: query?.type,
         fullName: query?.fullName,
-        branchId: query?.branchId,
+        branchId: query?.branchId || defaultBranch?.id,
         positionId: query?.positionId,
         status: query?.status,
         employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
@@ -94,10 +97,12 @@ class Index extends PureComponent {
   };
 
   loadCategories = () => {
-    const { dispatch } = this.props;
+    const { dispatch, defaultBranch } = this.props;
     dispatch({
       type: 'laboursContracts/GET_EMPLOYEES',
-      payload: {},
+      payload: {
+        branchId: defaultBranch?.id ? defaultBranch?.id : undefined,
+      },
     });
     dispatch({
       type: 'laboursContracts/GET_CATEGORIES',
@@ -437,8 +442,9 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
       categories,
+      defaultBranch,
     } = this.props;
-    const { search, isModalVisible, type } = this.state;
+    const { search, isModalVisible, type, defaultBranchs } = this.state;
     const loading = effects['laboursContracts/GET_DATA'];
     return (
       <>
@@ -475,15 +481,28 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Tất cả nơi làm việc' }, ...categories.branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
+                {!defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={[{ id: null, name: 'Tất cả nơi làm việc' }, ...categories.branches]}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả chức vụ' }, ...categories.positions]}
@@ -582,6 +601,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
   categories: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -593,6 +613,7 @@ Index.defaultProps = {
   location: {},
   employees: [],
   categories: {},
+  defaultBranch: {},
 };
 
 export default Index;

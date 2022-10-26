@@ -10,6 +10,7 @@ export function get(data = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
+      status: 'APPROVED',
       startDate: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
