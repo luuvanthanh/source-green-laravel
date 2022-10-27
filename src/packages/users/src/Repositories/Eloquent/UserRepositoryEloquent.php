@@ -720,14 +720,21 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         if (!empty($attributes['employeeId'])) {
-            $employee = User::find($attributes['employeeId']);
+            $employeeId = explode(',', $attributes['employeeId']);
+            $employee = User::whereIn('Id', $employeeId)->get();
+        }
+
+        if (!empty($employee)) {
+            $employee = $employee->map(function ($item) {
+                return $item->FullName;
+            })->toArray();
         }
 
         $params['{branch}'] = !is_null($branch) ? $branch->Name : 'Tất cả cơ sở';
         $params['{division}'] = !is_null($division) ? $division->Name : 'Tất cả bộ phận';
         $params['{position}'] = !is_null($position) ? $position->Name : 'Tất cả chức vụ';
         $params['{date}'] = $date;
-        $params['{employee}'] = !is_null($employee) ? $employee->FullName : 'Tất cả nhân viên';
+        $params['{employee}'] = !is_null($employee) ? implode(', ', $employee) : 'Tất cả nhân viên';
 
         foreach ($users['results'] as $key => $user) {
             $params['[number]'][] = ++$key;
@@ -857,7 +864,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $ordinalNumber = $labourContract->OrdinalNumber;
             $numberForm = $labourContract->NumberForm;
 
-            $numberLabourContract = $ordinalNumber . '/' . $numberForm;
+            if (!is_null($ordinalNumber) && !is_null($numberForm)) {
+                $numberLabourContract = $ordinalNumber . '/' . $numberForm;
+            } else {
+                $numberLabourContract = $labourContract->ContractNumber;
+            }
         }
 
         return $numberLabourContract;
@@ -1003,11 +1014,34 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         })->toArray();
 
         $configNotification = ConfigNotification::where('Type', ConfigNotification::TYPE['BIRTHDAY'])->first();
+
+        if (is_null($configNotification)) {
+            return [];
+        }
+
         $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
 
+        $employeeBirthdayUpcomingOtherMonth = [];
 
-        $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))->whereDay('DateOfBirth', '>', $dateNow->format('d'))
-            ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
+        if ($dateNow->format('m') < $dateConfigNotification->format('m')) {
+            //lấy nhân viên có sinh nhật khác tháng hiện tại
+            $employeeBirthdayUpcomingOtherMonth = User::whereMonth('DateOfBirth', '>=', $dateConfigNotification->format('m'))
+                ->whereDay('DateOfBirth', '>', $dateNow->firstOfMonth()->format('d'))
+                ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))
+                ->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
+
+            //lấy nhân viên có sinh nhật là tháng hiện tại
+            $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))
+                ->whereDay('DateOfBirth', '>', $dateNow->format('d'))
+                ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m') - 1)
+                ->whereDay('DateOfBirth', '<=', $dateNow->lastOfMonth()->format('d'))->get();
+        } else {
+            //lấy nhân viên có sinh nhật là tháng hiện tại
+            $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))
+                ->whereDay('DateOfBirth', '>', $dateNow->format('d'))
+                ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))
+                ->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
+        }
 
         $dataEmployeeBirthdayUpcoming = $employeeBirthdayUpcoming->map(function ($item) use ($dateConfigNotification) {
             return [
@@ -1019,10 +1053,23 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             ];
         })->toArray();
 
+        if (!empty($employeeBirthdayUpcomingOtherMonth)) {
+            $dataEmployeeBirthdayUpcomingOtherMonth = $employeeBirthdayUpcomingOtherMonth->map(function ($item) use ($dateConfigNotification) {
+                return [
+                    'fileImage' => $item->FileImage,
+                    'fullName' => $item->FullName,
+                    'division' => $item->positionLevelNow ? $this->getDivision($item) : '',
+                    'dateOfBirth' => $item->DateOfBirth ? $item->DateOfBirth->format('d/m/Y') : '',
+                    'age' => $item->DateOfBirth->diffInYears($dateConfigNotification)
+                ];
+            })->toArray();
+
+            $dataEmployeeBirthdayUpcoming = array_merge($dataEmployeeBirthdayUpcoming, $dataEmployeeBirthdayUpcomingOtherMonth);
+        }
 
         return [
             'dataEmployeeBirthday' => $dataEmployeeBirthday,
-            'dataEmployeeBirthdayUpcoming' => $dataEmployeeBirthdayUpcoming
+            'dataEmployeeBirthdayUpcoming' => $dataEmployeeBirthdayUpcoming,
         ];
     }
 }

@@ -339,7 +339,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                             'endDate' => $schoolYear->EndDate,
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
                             'schoolYear' => $schoolYear->YearFrom . '-' . $schoolYear->YearTo,
-                            'IsActive' => $schoolYear->IsCheck
+                            'isActive' => $schoolYear->IsCheck
                         ];
                         break;
                     case PaymentForm::CODE['HOCKY1']:
@@ -351,7 +351,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                             'endDate' => end($changeParameterDetail)['EndDate'],
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
                             'schoolYear' => $schoolYear->YearFrom . '-' . $schoolYear->YearTo,
-                            'IsActive' => $schoolYear->IsCheck
+                            'isActive' => $schoolYear->IsCheck
                         ];
                         break;
                     case PaymentForm::CODE['HOCKY2']:
@@ -363,7 +363,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                             'endDate' => end($changeParameterDetail)['EndDate'],
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
                             'schoolYear' => $schoolYear->YearFrom . '-' . $schoolYear->YearTo,
-                            'IsActive' => $schoolYear->IsCheck
+                            'isActive' => $schoolYear->IsCheck
                         ];
                         break;
                     case PaymentForm::CODE['HOCKY1_HOCKY2']:
@@ -375,7 +375,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                             'endDate' => end($changeParameterDetail)['EndDate'],
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
                             'schoolYear' => $schoolYear->YearFrom . '-' . $schoolYear->YearTo,
-                            'IsActive' => $schoolYear->IsCheck
+                            'isActive' => $schoolYear->IsCheck
                         ];
                         break;
                     case PaymentForm::CODE['THANG']:
@@ -387,7 +387,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                             'endDate' => end($changeParameterDetail)['EndDate'],
                             'totalOfMonth' => array_sum(array_column($changeParameterDetail, 'FullMonth')),
                             'schoolYear' => $schoolYear->YearFrom . '-' . $schoolYear->YearTo,
-                            'IsActive' => $schoolYear->IsCheck
+                            'isActive' => $schoolYear->IsCheck
                         ];
                         break;
                 }
@@ -405,7 +405,7 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                     'endDate' => $valueChangeParameterDetail->EndDate,
                     'totalOfMonth' => $valueChangeParameterDetail->FullMonth,
                     'schoolYear' => $schoolYear->YearFrom . '-' . $schoolYear->YearTo,
-                    'IsActive' => $schoolYear->IsCheck
+                    'isActive' => $schoolYear->IsCheck
                 ];
             }
         }
