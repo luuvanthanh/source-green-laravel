@@ -158,7 +158,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             if ($attributes['status'] == TestSemester::STATUS['UNTESTING'] || $attributes['status'] == TestSemester::STATUS['TESTING'] || $attributes['status'] == TestSemester::STATUS['FINISH']) {
                 if (is_null($testSemester)) {
                     $student = Student::find($attributes['studentId']);
-                    $attributes['TimeAgeTestSemester'] = Carbon::parse($student->DayOfBirth)->diffInMonths(now());
+                    $attributes['TimeAgeTestSemester'] = (int) Carbon::parse($student->DayOfBirth)->floatDiffInRealMonths(now());
                     $testSemester = $this->model::create($attributes);
                 } else {
                     $testSemester->update($attributes);
@@ -228,7 +228,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         $student = $testSemester->student;
         $branchId = $student->classes->BranchId;
 
-        $employee = User::whereHas('positionLevelNow', function ($q) use ($branchId) {
+        $employee = User::where('Status', User::STATUS['WORKING'])->whereHas('positionLevelNow', function ($q) use ($branchId) {
             $q->where('BranchId', $branchId)->whereHas('position', function ($query) {
                 $query->where('Code', Position::HIEUTRUONG);
             });
@@ -249,17 +249,17 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
             $arrId = array_merge(array_column($employee->pluck('account')->toArray(), 'AppUserId'), array_column($parentAccount->pluck('account')->toArray(), 'AppUserId'));
 
-            // if (!empty($arrId)) {
-            //     $dataNotiCation = [
-            //         'users' => $arrId,
-            //         'title' => $student->FullName,
-            //         'imageURL' => $urlImage,
-            //         'message' => $message,
-            //         'moduleType' => 22,
-            //         'refId' => $testSemester->Id,
-            //     ];
-            //     dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
-            // }
+            if (!empty($arrId)) {
+                $dataNotiCation = [
+                    'users' => $arrId,
+                    'title' => $student->FullName,
+                    'imageURL' => $urlImage,
+                    'message' => $message,
+                    'moduleType' => 22,
+                    'refId' => $testSemester->Id,
+                ];
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+            }
         }
 
         $testSemester->update($attributes);

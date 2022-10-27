@@ -1021,9 +1021,27 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
 
+        $employeeBirthdayUpcomingOtherMonth = [];
 
-        $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))->whereDay('DateOfBirth', '>', $dateNow->format('d'))
-            ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
+        if ($dateNow->format('m') < $dateConfigNotification->format('m')) {
+            //lấy nhân viên có sinh nhật khác tháng hiện tại
+            $employeeBirthdayUpcomingOtherMonth = User::whereMonth('DateOfBirth', '>=', $dateConfigNotification->format('m'))
+                ->whereDay('DateOfBirth', '>', $dateNow->firstOfMonth()->format('d'))
+                ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))
+                ->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
+
+            //lấy nhân viên có sinh nhật là tháng hiện tại
+            $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))
+                ->whereDay('DateOfBirth', '>', $dateNow->format('d'))
+                ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m') - 1)
+                ->whereDay('DateOfBirth', '<=', $dateNow->lastOfMonth()->format('d'))->get();
+        } else {
+            //lấy nhân viên có sinh nhật là tháng hiện tại
+            $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))
+                ->whereDay('DateOfBirth', '>', $dateNow->format('d'))
+                ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))
+                ->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
+        }
 
         $dataEmployeeBirthdayUpcoming = $employeeBirthdayUpcoming->map(function ($item) use ($dateConfigNotification) {
             return [
@@ -1035,10 +1053,23 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             ];
         })->toArray();
 
+        if (!empty($employeeBirthdayUpcomingOtherMonth)) {
+            $dataEmployeeBirthdayUpcomingOtherMonth = $employeeBirthdayUpcomingOtherMonth->map(function ($item) use ($dateConfigNotification) {
+                return [
+                    'fileImage' => $item->FileImage,
+                    'fullName' => $item->FullName,
+                    'division' => $item->positionLevelNow ? $this->getDivision($item) : '',
+                    'dateOfBirth' => $item->DateOfBirth ? $item->DateOfBirth->format('d/m/Y') : '',
+                    'age' => $item->DateOfBirth->diffInYears($dateConfigNotification)
+                ];
+            })->toArray();
+
+            $dataEmployeeBirthdayUpcoming = array_merge($dataEmployeeBirthdayUpcoming, $dataEmployeeBirthdayUpcomingOtherMonth);
+        }
 
         return [
             'dataEmployeeBirthday' => $dataEmployeeBirthday,
-            'dataEmployeeBirthdayUpcoming' => $dataEmployeeBirthdayUpcoming
+            'dataEmployeeBirthdayUpcoming' => $dataEmployeeBirthdayUpcoming,
         ];
     }
 }
