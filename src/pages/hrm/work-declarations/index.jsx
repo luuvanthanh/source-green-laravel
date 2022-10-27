@@ -230,6 +230,7 @@ class Index extends PureComponent {
     {
       title: 'Họ và Tên',
       key: 'name',
+      width: 200,
       className: 'min-width-200',
       render: (record) => (
         <AvatarTable
@@ -251,6 +252,13 @@ class Index extends PureComponent {
       width: 150,
       className: 'min-width-150',
       render: (record) => record.time,
+    },
+    {
+      title: 'Lý do',
+      key: 'reason',
+      width: 300,
+      className: 'min-width-300',
+      render: (record) => record.reason,
     },
   ];
 
@@ -289,7 +297,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="fullName"
                     onChange={(event) => this.onChange(event, 'fullName')}
@@ -297,7 +305,7 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
@@ -306,7 +314,7 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
@@ -315,30 +323,31 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
-                <div className="col-lg-12">
+                <div className="col-lg-3">
                   <FormItem
                     data={Helper.convertSelectUsers(employees)}
                     name="employeeId"
                     onChange={(event) => this.onChangeSelect(event, 'employeeId')}
                     type={variables.SELECT_MUTILPLE}
-                    placeholder="Chọn tất cả"
+                    placeholder="Chọn tất cả nhân viên"
                   />
                 </div>
               </div>
             </Form>
-            <Table
-              bordered
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
+            <div className={classnames(styles['container-table'])}>
+              <Table
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
+            </div>
           </div>
         </div>
       </>
