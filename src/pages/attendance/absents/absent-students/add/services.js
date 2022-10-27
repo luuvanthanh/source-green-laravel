@@ -92,3 +92,12 @@ export function get(params = {}) {
     },
   });
 }
+
+export function getHoliday() {
+  return requestLavarel('/v1/holidays', {
+    method: 'GET',
+    params: {
+      include: Helper.convertIncludes(['holidayDetails']),
+    },
+  });
+}

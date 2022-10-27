@@ -920,6 +920,16 @@ export default class Helpers {
     return null;
   };
 
+  static disabledDateArray = (current, holiday) => {
+    const dataCheck = holiday.map((item) => ({
+      check: !!(
+        item?.startDate <= moment(current).format('YYYY-MM-DD') &&
+        item?.endDate >= moment(current).format('YYYY-MM-DD')
+      ),
+    }));
+    return dataCheck?.findIndex((i) => i?.check) !== -1 && true;
+  };
+
   static disabledDateFromHooks = (current, formRef, key = 'endDate') => {
     if (formRef) {
       const data = formRef.getFieldsValue();
