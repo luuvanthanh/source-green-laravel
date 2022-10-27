@@ -136,7 +136,11 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
 
     public function creating($attributes)
     {
-        $attributes['status'] = BusinessCard::STATUS['WAITING_APPROVAL'];
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = BusinessCard::STATUS[$attributes['status']];
+        } else {
+            $attributes['status'] = BusinessCard::STATUS['WAITING_APPROVAL'];
+        }
 
         return $attributes;
     }
