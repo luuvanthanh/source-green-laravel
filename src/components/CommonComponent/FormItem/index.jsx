@@ -337,7 +337,7 @@ const renderChildren = (
       disabledMinutes={disabledMinutes}
       placeholder="Chọn"
       disabled={disabled}
-      minuteStep={15}
+      // minuteStep={15}
       value={value}
     />
   ),

@@ -5,6 +5,7 @@ export default {
   namespace: 'absentStudentsAdd',
   state: {
     data: [],
+    holiday: [],
     pagination: {
       total: 0,
     },
@@ -61,6 +62,10 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload.items,
+    }),
+    SET_HOLIDAY: (state, { payload }) => ({
+      ...state,
+      holiday: payload.map((i) => i.holidayDetails).flat(Infinity),
     }),
   },
   effects: {
@@ -145,6 +150,22 @@ export default {
         if (response) {
           yield saga.put({
             type: 'SET_DETAILS',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_HOLIDAY({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getHoliday, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_HOLIDAY',
             payload: response.parsePayload,
           });
         }
