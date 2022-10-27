@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect } from 'react';
-import { Avatar } from 'antd';
+import { Avatar, Image } from 'antd';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
@@ -9,8 +9,8 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Text from '@/components/CommonComponent/Text';
+import { Helper } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 import { UserOutlined } from '@ant-design/icons';
 import stylesModule from '../styles.module.scss';
@@ -50,21 +50,21 @@ const General = memo(
             const columns = [
                 {
                     title: 'Số quyết định',
-                    key: 'created_at',
+                    key: 'decisionNumber',
                     className: 'min-width-150',
                     width: 150,
                     render: (record) => record.decisionNumber,
                 },
                 {
                     title: 'Ngày',
-                    key: 'created_at',
+                    key: 'timeApply',
                     className: 'min-width-150',
                     width: 150,
                     render: (record) => record.timeApply,
                 },
                 {
                     title: 'Nội dung',
-                    key: 'created_at',
+                    key: 'reason',
                     className: 'min-width-200',
                     render: (record) => record.reason,
                 },
@@ -76,23 +76,23 @@ const General = memo(
             const columns = [
                 {
                     title: 'Số quyết định',
-                    key: 'created_at',
+                    key: 'decisionNumber',
                     className: 'min-width-150',
                     width: 150,
                     render: (record) => record.decisionNumber,
                 },
                 {
                     title: 'Ngày',
-                    key: 'created_at',
+                    key: 'timeApply',
                     className: 'min-width-150',
                     width: 150,
                     render: (record) => record.timeApply,
                 },
                 {
                     title: 'Chức vụ',
-                    key: 'created_at',
+                    key: 'position',
                     className: 'min-width-200',
-                    render: (record) => record.reason,
+                    render: (record) => record.position,
                 },
             ];
             return columns;
@@ -116,13 +116,18 @@ const General = memo(
 
                                 <div className="row" {...marginProps} style={{ padding: 20 }} >
 
-                                    {
-                                        details?.fileImage ?
-                                            <ImageUpload
-                                                fileImage={details?.fileImage}
+                                    {Helper.isJSON(details?.fileImage) &&
+                                        JSON.parse(details?.fileImage)?.length > 0 ?
+                                        JSON.parse(details?.fileImage).map((item) => (
+                                            <Image
+                                                style={{ borderRadius: 2, marginRight: 20, objectFit: "contain", margin: 0 }}
+                                                width={102}
+                                                height={102}
+                                                src={`${API_UPLOAD}${item}`}
                                             />
-                                            :
-                                            < Avatar shape="square" size={100} icon={<UserOutlined />} />
+                                        ))
+                                        :
+                                        < Avatar shape="square" size={100} icon={<UserOutlined />} />
                                     }
                                     <Text size="normal" className={stylesModule['general-fullName']}>
                                         {details?.fullName}

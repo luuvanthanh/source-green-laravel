@@ -53,7 +53,7 @@ const Index = memo(() => {
                             Sinh nhật hôm nay - Ngày {Helper.getDate(moment(), variables.DATE_FORMAT.DATE)}
                         </Heading>
                         <Pane className="col-lg-12 mb20">
-                            <Scrollbars autoHide autoHeight autoHeightMax="30vh">
+                            <Scrollbars autoHeight autoHeightMax="30vh">
                                 <InfiniteScroll
                                     pageStart={0}
                                     useWindow={false}
@@ -94,7 +94,7 @@ const Index = memo(() => {
                             Sinh nhật sắp đến
                         </Heading>
                         <Pane className="col-lg-12">
-                            <Scrollbars autoHide autoHeight autoHeightMax="30vh">
+                            <Scrollbars autoHeight autoHeightMax="30vh">
                                 <InfiniteScroll
                                     pageStart={0}
                                     useWindow={false}

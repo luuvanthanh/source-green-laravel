@@ -29,6 +29,8 @@ export function add(data = {}) {
 export function details() {
   return requestLavarel(`/v1/logos`, {
     method: 'GET',
-    params: {},
+    params: {
+      orderBy: 'CreationTime',
+    },
   });
 }

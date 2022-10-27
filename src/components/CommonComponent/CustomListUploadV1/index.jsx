@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import styles from './styles.module.scss';
 
 const allowTypesFile = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
-const allowTypesImage = ['jpeg', 'jpg', 'png'];
+const allowTypesImage = ['jpeg', 'jpg', 'png', 'webp'];
 export default function Index(props) {
   const { data, remove, isComponentUpload, componentUpload } = props;
   const filterFiles = () => {
@@ -55,9 +55,9 @@ export default function Index(props) {
                 <Image.PreviewGroup>
                   {file.images.map((item, index) => (
                     <Image
-                      style={{ borderRadius: 2, marginRight: 20 }}
-                      width={80}
-                      height={80}
+                      style={{ borderRadius: 2, marginRight: 20, objectFit: "contain", margin: 0 }}
+                      width={102}
+                      height={102}
                       src={item ? `${API_UPLOAD}${item}` : '/default-upload.png'}
                       key={index}
                       preview={{

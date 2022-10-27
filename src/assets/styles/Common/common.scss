@@ -1372,7 +1372,6 @@
   .list {
     .item {
       display: flex;
-      align-items: center;
       justify-content: space-between;
       margin: 10px 0;
     }
@@ -1383,7 +1382,6 @@
     }
     .image-container {
       display: flex;
-      align-items: center;
 
       .thumb {
         width: 92px;
@@ -1662,5 +1660,15 @@
     font-size: 15px;
     font-weight: 400px;
     color: #b71313;
+  }
+}
+
+.container-table {
+  :global(.ant-table-thead > tr > th) {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    font-style: normal;
   }
 }

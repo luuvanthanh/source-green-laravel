@@ -112,6 +112,7 @@ class Index extends PureComponent {
           format: variables.DATE_FORMAT.TIME_FULL,
           isUTC: false,
         }),
+        reason: values?.reason,
         id: params.id,
       },
       callback: (response, error) => {
@@ -197,6 +198,15 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                       type={variables.TIME_PICKER}
                       onSelect={this.onChangeTimePicker}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <FormItem
+                      label="Lý do"
+                      name="reason"
+                      type={variables.INPUT}
                     />
                   </div>
                 </div>

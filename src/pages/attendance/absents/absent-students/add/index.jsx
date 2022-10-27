@@ -4,7 +4,7 @@ import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import moment from 'moment';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, head } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -34,10 +34,12 @@ const mapStateToProps = ({ menu, absentStudentsAdd, loading, user }) => ({
   error: absentStudentsAdd.error,
   details: absentStudentsAdd.details,
   students: absentStudentsAdd.students,
+  holiday: absentStudentsAdd.holiday,
   branches: absentStudentsAdd.branches,
   classes: absentStudentsAdd.classes,
   categories: absentStudentsAdd.categories,
   menuLeftSchedules: menu.menuLeftSchedules,
+  defaultBranch: user.defaultBranch,
 });
 
 @connect(mapStateToProps)
@@ -46,7 +48,15 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    const {
+      defaultBranch,
+    } = props;
+    this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
+      number: null,
+      totalInput: null,
+      day: null,
+    };
     setIsMounted(true);
   }
 
@@ -69,6 +79,12 @@ class Index extends PureComponent {
         classId: details?.student?.classStudent?.classId,
         branchId: details?.student?.classStudent?.class?.branchId,
       });
+      if (isEmpty(details?.expectedDate)) {
+        this.setStateData(
+          () => ({
+            number: details?.expectedDate,
+          }));
+      }
       if (user.role?.toUpperCase() !== variables.ROLES.PARENT && !user?.objectInfo?.id) {
         if (details?.student?.classStudent?.class?.branchId) {
           dispatch({
@@ -113,6 +129,7 @@ class Index extends PureComponent {
     const {
       dispatch,
       user,
+      defaultBranch,
       match: { params },
     } = this.props;
     if (params.id) {
@@ -123,8 +140,28 @@ class Index extends PureComponent {
         },
       });
     }
+    if (defaultBranch?.id) {
+      this.props.dispatch({
+        type: 'absentStudentsAdd/GET_CLASSES',
+        payload: {
+          branch: defaultBranch?.id,
+        },
+      });
+      dispatch({
+        type: 'absentStudentsAdd/GET_STUDENTS',
+        payload: {
+          class: user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+          classStatus: 'HAS_CLASS',
+          branchId: defaultBranch?.id,
+        },
+      });
+    }
     dispatch({
       type: 'absentStudentsAdd/GET_BRANCHES',
+      payload: {},
+    });
+    dispatch({
+      type: 'absentStudentsAdd/GET_HOLIDAY',
       payload: {},
     });
     dispatch({
@@ -176,12 +213,14 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
+    const { totalInput } = this.state;
     dispatch({
       type: params.id ? 'absentStudentsAdd/UPDATE' : 'absentStudentsAdd/ADD',
       payload: {
         ...values,
         id: params.id,
         status: 'PENDING',
+        expectedDate: totalInput || undefined,
         employeeId: user?.objectInfo?.id,
       },
       callback: (response, error) => {
@@ -204,22 +243,101 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeNumber = (e) => {
+    const { day } = this.state;
+    this.setStateData(
+      () => ({
+        number: e.target.value,
+      }));
+    if (day) {
+      this.formRef.current.setFieldsValue({
+        startDate: null,
+        endDate: null,
+      });
+    }
+  };
+
+  getDatesInRange = (startDate, endDate) => {
+    const date = new Date(startDate);
+    const end = new Date(endDate);
+    const monthRange = [];
+    monthRange.push(moment(startDate).format('M'));
+    if (moment(startDate).format('M') !== moment(endDate).format('M')) {
+      monthRange.push(moment(endDate).format('M'));
+    }
+    const dates = [];
+    end.setDate(end.getDate() + 1);
+
+    while (date < end) {
+      dates.push(moment(date).format('YYYY-MM-DD'));
+      date.setDate(date.getDate() + 1);
+    }
+    return {
+      dateRange: dates,
+      monthRange,
+    };
+  }
+
+  onChangeStartDay = (e) => {
+    const {
+      holiday
+    } = this.props;
+    const data = holiday?.map(i => (Helper.getDates(i?.startDate, i?.endDate)).map(k => moment(k).format("DD-MM-YYYY"))).flat(Infinity);
+    const { number } = this.state;
+    this.setStateData(
+      () => ({
+        day: e,
+      }));
+    let daysRemaining = number - 1;
+    let totalAddDate = 1;
+
+    const newDate = e.clone();
+
+    while (daysRemaining > 0) {
+      newDate.add(1, 'days');
+      if (newDate.day() !== 6 && newDate.day() !== 0) {
+        daysRemaining--;
+        data.map((d) => {
+          if (newDate.format('DD-MM-YYYY') === d) {
+            daysRemaining++;
+          }
+        });
+      }
+      totalAddDate++;
+    }
+
+    this.formRef.current.setFieldsValue({
+      endDate: moment(e).add(totalAddDate - 1, 'day'),
+    });
+
+    this.setStateData(
+      () => ({
+        totalInput: totalAddDate,
+      }));
+
+    return { nextDate: newDate, totalAddDate };
+  };
+
   render() {
     const {
       students,
       error,
+      defaultBranch,
       menuLeftSchedules,
       categories,
       loading: { effects },
       match: { params },
       branches,
       classes,
+      holiday,
+      user,
     } = this.props;
     const loading =
       effects['absentStudentsAdd/GET_DETAILS'] ||
       effects['absentStudentsAdd/GET_CATEGORIES'] ||
       effects['absentStudentsAdd/GET_DETAILS'];
     const loadingSubmit = effects['absentStudentsAdd/ADD'];
+    const { number, defaultBranchs } = this.state;
     return (
       <>
         <Breadcrumbs
@@ -230,6 +348,7 @@ class Index extends PureComponent {
           className={styles['layout-form']}
           layout="vertical"
           ref={this.formRef}
+          initialValues={{ branchId: defaultBranch?.id || null, classId: user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId || null, }}
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
@@ -244,19 +363,33 @@ class Index extends PureComponent {
                 </Text>
 
                 <div className="row mt-3">
+                  {!defaultBranch?.id && (
+                    <div className="col-lg-4">
+                      <FormItem
+                        data={branches}
+                        label="Cơ sở"
+                        name="branchId"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
+                        onChange={this.onChangeBranch}
+                      />
+                    </div>
+                  )}
+                  {defaultBranch?.id && (
+                    <div className="col-lg-4">
+                      <FormItem
+                        data={defaultBranchs}
+                        label="Cơ sở"
+                        name="branchId"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
+                        onChange={this.onChangeBranch}
+                      />
+                    </div>
+                  )}
                   <div className="col-lg-4">
                     <FormItem
-                      data={branches}
-                      label="Cơ sở"
-                      name="branchId"
-                      rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT}
-                      onChange={this.onChangeBranch}
-                    />
-                  </div>
-                  <div className="col-lg-4">
-                    <FormItem
-                      data={classes}
+                      data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                       label="Lớp"
                       name="classId"
                       rules={[variables.RULES.EMPTY]}
@@ -275,7 +408,7 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <FormItem
                       data={categories?.absentTypes || []}
                       label="Loại nghỉ phép"
@@ -284,29 +417,42 @@ class Index extends PureComponent {
                       type={variables.SELECT}
                     />
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <FormItem
-                      label="THỜI GIAN BẮT ĐẦU"
+                      data={categories?.absentTypes || []}
+                      label="Số ngày dự kiến"
+                      name="expectedDate"
+                      rules={[variables.RULES.EMPTY]}
+                      onChange={this.onChangeNumber}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                  <div className="col-lg-4">
+                    <FormItem
+                      label="Nghỉ từ ngày"
                       name="startDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                      onChange={(event) => this.onChangeStartDay(event)}
+                      disabledDate={(current) =>
+                        Helper.disabledDateArray(current, holiday) ||
+                        Helper.disabledDateWeekeend(current) ||
+                        moment() > current
+                      }
+                      disabled={!number}
                     />
                   </div>
-                  <div className="col-lg-6">
+                </div>
+                <div className="row">
+                  <div className="col-lg-4">
                     <FormItem
                       label="THỜI GIAN KẾT THÚC"
                       name="endDate"
                       type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                      disabled
                     />
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-12">
+                  <div className="col-lg-8">
                     <FormItem
                       data={categories?.absentReasons || []}
                       label="LÝ DO NGHỈ PHÉP"
@@ -358,6 +504,8 @@ Index.propTypes = {
   details: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  holiday: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -372,6 +520,8 @@ Index.defaultProps = {
   details: {},
   branches: [],
   classes: [],
+  holiday: [],
+  defaultBranch: {},
 };
 
 export default Index;

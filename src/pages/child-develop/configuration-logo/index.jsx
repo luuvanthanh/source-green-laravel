@@ -102,13 +102,13 @@ const General = memo(() => {
                     <div className="card">
                         <Loading loading={loading} isError={error.isError}>
                             <div style={{ padding: 20 }} className="pb-0 border-bottom">
+                                <div className="ant-col ant-form-item-label">
+                                    <label className="ant-form-item-required">
+                                        <span>Hình ảnh logo</span>
+                                    </label>
+                                </div>
                                 <div className={stylesModule['wrapper-modal']}>
                                     <div className={stylesModule.img}>
-                                        <div className="ant-col ant-form-item-label">
-                                            <label className="ant-form-item-required">
-                                                <span>Hình ảnh logo</span>
-                                            </label>
-                                        </div>
                                         {files?.length <= 0 && (
                                             <MultipleImageUpload
                                                 files={files}
@@ -119,8 +119,8 @@ const General = memo(() => {
                                             callback={(files) => uploadFiles(files)}
                                             remove={(item) => onRemoFile(item)} />}
                                     </div>
-                                    <div className="pl10 d-flex align-items-center">
-                                        <p className={stylesModule['text-uploadImg']}>Áp dụng đối với định dạng jpg, png, jpeg
+                                    <div className="pl15 d-flex align-items-center pb20">
+                                        <p className={stylesModule['text-uploadImg']}>Áp dụng đối với định dạng jpg, png, jpeg, webp.
                                             Dung lượng tối đa không quá 20mb</p>
                                     </div>
                                 </div>

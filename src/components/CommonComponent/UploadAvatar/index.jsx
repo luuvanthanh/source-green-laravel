@@ -46,14 +46,14 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
         if (!allowImageTypes.includes(type)) {
           return notification.error({
             message: 'Thông báo',
-            description: 'Chỉ hỗ trợ định dạng jpeg, png, jpg, webp',
+            description: 'Chỉ hỗ trợ định dạng jpeg, png, jpg, webp. Dung lượng tối đa không quá 20mb',
           });
         }
 
         if (size > maxSize) {
           return notification.error({
             message: 'Thông báo',
-            description: 'Chỉ hỗ trợ định dạng jpeg, png, jpg, webp',
+            description: 'Chỉ hỗ trợ định dạng jpeg, png, jpg, webp. Dung lượng tối đa không quá 20mb',
           });
         }
 

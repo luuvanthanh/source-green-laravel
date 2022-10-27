@@ -29,7 +29,7 @@ const Index = memo(() => {
   const [formRef] = Form.useForm();
   const [
     { branches, classes, objectData, years },
-    { defaultBranch },
+    { defaultBranch, user },
     { effects },
   ] = useSelector(({ timeTablesChildren, user, loading }) => [timeTablesChildren, user, loading]);
   const dispatch = useDispatch();
@@ -45,7 +45,7 @@ const Index = memo(() => {
     toDate: null,
     type: 'timeGridWeek',
     branchId: query?.branchId || defaultBranch?.id,
-    classId: query?.classId,
+    classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
     timetableSettingId: query?.timetableSettingId,
   });
 
@@ -959,7 +959,7 @@ const Index = memo(() => {
               <div className="col-lg-4">
                 <FormItem
                   className="ant-form-item-row"
-                  data={classes}
+                  data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                   label="LỚP"
                   name="classId"
                   onChange={(event) => {

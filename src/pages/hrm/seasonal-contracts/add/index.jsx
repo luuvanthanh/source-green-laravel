@@ -458,11 +458,12 @@ function Index() {
                           name="ordinalNumber"
                           type={variables.INPUT}
                           rules={[variables.RULES.EMPTY]}
+                          disabled={isEmpty(dataFormContarct)}
                         />
                       </div>
                       <div className="col-lg-2">
                         <p className="mb0 font-size-13 mt35 font-weight-bold">
-                          {dataFormContarct?.length > 0 ? `/${head(dataFormContarct)?.numberForm}` : ''}
+                          {!isEmpty(dataFormContarct) ? `/${head(dataFormContarct)?.numberForm}` : ''}
                         </p>
                       </div>
                     </>

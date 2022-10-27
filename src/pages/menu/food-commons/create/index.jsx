@@ -19,10 +19,12 @@ const Index = memo(() => {
     menuData,
     loading,
     { error, foodCommonsGroups },
-  ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, foodCommonsCreate }) => [
+    { user },
+  ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, foodCommonsCreate, user }) => [
     menuLeftChildren,
     effects,
     foodCommonsCreate,
+    user
   ]);
   const dispatch = useDispatch();
   const params = useParams();
@@ -284,19 +286,21 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="py20 d-flex justify-content-between align-items-center">
-                <Button
-                  className="ml-auto px25"
-                  color="success"
-                  htmlType="submit"
-                  size="large"
-                  loading={
-                    loading['foodCommonsCreate/ADD'] ||
-                    loading['foodCommonsCreate/UPDATE'] ||
-                    loading['foodCommonsCreate/GET_DATA']
-                  }
-                >
-                  Lưu
-                </Button>
+                {user?.roleCode === "sale" || user?.roleCode === "teacher" ? "" : (
+                  <Button
+                    className="ml-auto px25"
+                    color="success"
+                    htmlType="submit"
+                    size="large"
+                    loading={
+                      loading['foodCommonsCreate/ADD'] ||
+                      loading['foodCommonsCreate/UPDATE'] ||
+                      loading['foodCommonsCreate/GET_DATA']
+                    }
+                  >
+                    Lưu
+                  </Button>
+                )}
               </Pane>
             </Form>
           </Pane>
