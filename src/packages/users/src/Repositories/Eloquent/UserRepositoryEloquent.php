@@ -720,14 +720,21 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         if (!empty($attributes['employeeId'])) {
-            $employee = User::find($attributes['employeeId']);
+            $employeeId = explode(',', $attributes['employeeId']);
+            $employee = User::whereIn('Id', $employeeId)->get();
+        }
+
+        if (!empty($employee)) {
+            $employee = $employee->map(function ($item) {
+                return $item->FullName;
+            })->toArray();
         }
 
         $params['{branch}'] = !is_null($branch) ? $branch->Name : 'Tất cả cơ sở';
         $params['{division}'] = !is_null($division) ? $division->Name : 'Tất cả bộ phận';
         $params['{position}'] = !is_null($position) ? $position->Name : 'Tất cả chức vụ';
         $params['{date}'] = $date;
-        $params['{employee}'] = !is_null($employee) ? $employee->FullName : 'Tất cả nhân viên';
+        $params['{employee}'] = !is_null($employee) ? implode(', ', $employee) : 'Tất cả nhân viên';
 
         foreach ($users['results'] as $key => $user) {
             $params['[number]'][] = ++$key;
@@ -857,7 +864,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $ordinalNumber = $labourContract->OrdinalNumber;
             $numberForm = $labourContract->NumberForm;
 
-            $numberLabourContract = $ordinalNumber . '/' . $numberForm;
+            if (!is_null($ordinalNumber) && !is_null($numberForm)) {
+                $numberLabourContract = $ordinalNumber . '/' . $numberForm;
+            } else {
+                $numberLabourContract = $labourContract->ContractNumber;
+            }
         }
 
         return $numberLabourContract;
@@ -1003,6 +1014,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         })->toArray();
 
         $configNotification = ConfigNotification::where('Type', ConfigNotification::TYPE['BIRTHDAY'])->first();
+
+        if (is_null($configNotification)) {
+            return [];
+        }
+
         $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
 
 

@@ -26,6 +26,7 @@ class AbsentType extends UuidModel
     const GO_OUT = 'GO_OUT';
     const MATERNITY_LEAVE = 'MATERNITY_LEAVE';
     const WORK_ONLINE = 'WORK_ONLINE';
+    const WORK_HOME = 'WORK_HOME';
 
     protected $fillable = [
         'Name', 'Status', 'Type', 'Code', 'IsTimeKeeping',
