@@ -112,6 +112,7 @@ class Index extends PureComponent {
           format: variables.DATE_FORMAT.TIME_FULL,
           isUTC: false,
         }),
+        reason: values?.reason,
         id: params.id,
       },
       callback: (response, error) => {

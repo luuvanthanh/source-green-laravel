@@ -50,21 +50,21 @@ const General = memo(
             const columns = [
                 {
                     title: 'Số quyết định',
-                    key: 'created_at',
+                    key: 'decisionNumber',
                     className: 'min-width-150',
                     width: 150,
                     render: (record) => record.decisionNumber,
                 },
                 {
                     title: 'Ngày',
-                    key: 'created_at',
+                    key: 'timeApply',
                     className: 'min-width-150',
                     width: 150,
                     render: (record) => record.timeApply,
                 },
                 {
                     title: 'Nội dung',
-                    key: 'created_at',
+                    key: 'reason',
                     className: 'min-width-200',
                     render: (record) => record.reason,
                 },
@@ -76,23 +76,23 @@ const General = memo(
             const columns = [
                 {
                     title: 'Số quyết định',
-                    key: 'created_at',
+                    key: 'decisionNumber',
                     className: 'min-width-150',
                     width: 150,
                     render: (record) => record.decisionNumber,
                 },
                 {
                     title: 'Ngày',
-                    key: 'created_at',
+                    key: 'timeApply',
                     className: 'min-width-150',
                     width: 150,
                     render: (record) => record.timeApply,
                 },
                 {
                     title: 'Chức vụ',
-                    key: 'created_at',
+                    key: 'position',
                     className: 'min-width-200',
-                    render: (record) => record.reason,
+                    render: (record) => record.position,
                 },
             ];
             return columns;

@@ -456,6 +456,8 @@ class Index extends PureComponent {
       `/v1/export-excel-report-employee-info`,
       {
         ...search,
+        page: undefined,
+        limit: undefined,
       },
       `Baocaohosocanbonhanvien.xlsx`,
     );

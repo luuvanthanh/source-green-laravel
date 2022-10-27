@@ -208,14 +208,16 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20 align-items-center">
           <Heading type="page-title">Danh sách hình ảnh đã tải lên</Heading>
-          <Button
-            className="ml-auto"
-            color="primary"
-            size="large"
-            onClick={() => setVisibleUpload(true)}
-          >
-            Tải ảnh lên
-          </Button>
+          {!visibleProgress && (
+            <Button
+              className="ml-auto"
+              color="primary"
+              size="large"
+              onClick={() => setVisibleUpload(true)}
+            >
+              Tải ảnh lên
+            </Button>
+          )}
         </Pane>
         {visibleProgress && (
           <div className={styles['progress-container']}>
