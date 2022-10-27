@@ -50,6 +50,10 @@ class Index extends PureComponent {
         key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        categorySkillId: query?.categorySkillId,
+        age: query?.age,
+        aplly: query?.aplly,
+
       },
     };
     setIsMounted(true);

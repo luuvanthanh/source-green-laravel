@@ -317,8 +317,8 @@ class Index extends PureComponent {
         title: 'Loại hợp đồng',
         key: 'contract_category',
         dataIndex: 'typeOfContract',
-        className: 'min-width-120',
-        width: 120,
+        className: 'min-width-150',
+        width: 150,
         render: (value) => value?.name,
       },
       {
@@ -356,8 +356,8 @@ class Index extends PureComponent {
       {
         title: 'Số năm/tháng hợp đồng',
         key: 'contract_category',
-        className: 'min-width-150',
-        width: 150,
+        className: 'min-width-200',
+        width: 200,
         render: (record) => <>{record?.month ? `${record?.month} tháng` : ""}</>,
       },
       {
