@@ -13,13 +13,25 @@ class WorkHour extends UuidModel
      */
     protected $table = 'WorkHours';
 
+    const REGISTRATION_DATE_TYPE = [
+        'WEEKLY_DAY' => 1,
+        'LAST_DAY_OF_THE_WEEK' => 2,
+        'HOLIDAY' => 3,
+        'EVENT_DATE' => 4
+    ];
+
+    const STATUS = [
+        'WAITING_APPROVAL' => 1,
+        'APPROVED' => 2,
+        'NOT_APPROVED' => 3
+    ];
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'EmployeeId', 'Date', 'Hours', 'Reason', 'AbsentTypeId',
+        'EmployeeId', 'Date', 'Hours', 'Reason', 'AbsentTypeId', 'RegistrationDateType', 'EventName', 'Status', 'ReasonNotApproved'
     ];
 
     protected $dateTimeFields = [
@@ -50,5 +62,10 @@ class WorkHour extends UuidModel
     public function absentType()
     {
         return $this->belongsTo(\GGPHP\Absent\Models\AbsentType::class, 'AbsentTypeId');
+    }
+
+    public function approvalEmployeeWorkHour()
+    {
+        return $this->hasMany(ApprovalEmployeeWorkHour::class, 'WorkHourId');
     }
 }

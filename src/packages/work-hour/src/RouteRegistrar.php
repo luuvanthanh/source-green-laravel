@@ -78,6 +78,8 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'timekeeping.invalid.summary',
                 'group' => 'Công',
             ]);
+
+            \Route::put('update-status-work-hours/{id}', 'WorkHourController@updateStatusWorkHour');
         });
     }
 }
