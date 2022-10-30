@@ -17,7 +17,7 @@ class CameraService extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'ai_service_id', 'camera_id', 'is_on', 'coordinates'
+        'ai_service_id', 'camera_id', 'is_on', 'coordinates', 'is_stream'
     ];
 
     protected $guard_name = 'api';

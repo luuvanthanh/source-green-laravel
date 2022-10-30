@@ -30,5 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         // AiService
         \Route::resource('ai-services', 'AiServiceController');
+
+        \Route::get('check-ai-services', 'AiServiceController@checkAiService');
     }
 }
