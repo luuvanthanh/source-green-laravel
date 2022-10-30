@@ -64,9 +64,9 @@
             margin-bottom: 30px;
         }
     </style>
-    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <script src="https://gsdltm.danang.gov.vn/socket/socket.io/socket.io.js"></script>
     <script>
-        const socket = io("http://localhost:6001", {
+        const socket = io("https://gsdltm.danang.gov.vn/socket", {
             transports: ['websocket'],
         });
         socket.on('connect', () => {
