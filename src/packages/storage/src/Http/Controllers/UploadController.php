@@ -47,4 +47,23 @@ class UploadController extends Controller
 
         return response()->json([], 204);
     }
+
+    /**
+     * Destroy a file.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteMedia(Request $request)
+    {
+        $medias = Media::get();
+
+        foreach ($medias as $key => $media) {
+            if (is_null($media->model)) {
+
+                $media->delete();
+            }
+        }
+
+        return response()->json([], 204);
+    }
 }
