@@ -150,7 +150,7 @@ class Index extends PureComponent {
       dispatch({
         type: 'absentStudentsAdd/GET_STUDENTS',
         payload: {
-          class: user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+          class: user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
           classStatus: 'HAS_CLASS',
           branchId: defaultBranch?.id,
         },
@@ -348,7 +348,7 @@ class Index extends PureComponent {
           className={styles['layout-form']}
           layout="vertical"
           ref={this.formRef}
-          initialValues={{ branchId: defaultBranch?.id || null, classId: user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId || null, }}
+          initialValues={{ branchId: defaultBranch?.id || null, classId: user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId || null, }}
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
@@ -389,7 +389,7 @@ class Index extends PureComponent {
                   )}
                   <div className="col-lg-4">
                     <FormItem
-                      data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                      data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                       label="Lớp"
                       name="classId"
                       rules={[variables.RULES.EMPTY]}

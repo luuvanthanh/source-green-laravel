@@ -60,7 +60,7 @@ const Index = memo(() => {
     totalCount: 0,
     classStatus: 'HAS_CLASS',
     position: query?.position || defaultBranch?.id,
-    class: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+    class: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
   });
@@ -270,7 +270,7 @@ const Index = memo(() => {
                       }
                       <Pane className="col-lg-6">
                         <FormItem
-                          data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                          data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                           label="Lớp"
                           name="class"
                           type={variables.SELECT}

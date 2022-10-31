@@ -36,3 +36,13 @@ export function get(data = {}) {
     },
   });
 }
+
+export function getPositions(_params = {}) {
+  return request('/v1/positions', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}

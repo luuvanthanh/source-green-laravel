@@ -53,7 +53,7 @@ const General = memo(() => {
     id: query?.id,
     SearchDate: query.SearchDate ? moment(query.SearchDate) : '',
     branchId: query?.branchId || defaultBranch?.id,
-    classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+    classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
   });
 
   const BAR = {
@@ -368,7 +368,7 @@ const General = memo(() => {
                 <div className="col-lg-3">
                   <FormItem
                     label="Lớp"
-                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                     name="classId"
                     onChange={(event) => onChangeSelect(event, 'classId')}
                     type={variables.SELECT}

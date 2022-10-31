@@ -19,8 +19,8 @@ const Index = memo(() => {
     { details, error },
     loading,
     menuLeftMedia,
-    {user}
-  ] = useSelector(({ mediaDetails, loading, menu,user }) => [
+    { user }
+  ] = useSelector(({ mediaDetails, loading, menu, user }) => [
     mediaDetails,
     loading?.effects,
     menu?.menuLeftMedia,
@@ -76,7 +76,7 @@ const Index = memo(() => {
                   {Helper.getDate(details?.sentDate, variables.DATE_FORMAT.DATE_TIME)}
                 </Heading>
                 {
-                  user?.roleCode !== "teacher" && (
+                  user?.roleCode !== variables?.LIST_ROLE_CODE?.TEACHER && (
                     <p className={styles['text-delete']} role="presentation" onClick={remove}>
                       Xóa hình ảnh
                     </p>

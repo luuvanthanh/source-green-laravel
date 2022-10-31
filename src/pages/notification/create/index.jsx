@@ -77,7 +77,7 @@ const Index = memo(() => {
     branchId: defaultBranch?.id || null,
     loading: false,
     classStatus: 'ALL',
-    class: user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+    class: user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
   });
   const [employees, setEmployees] = useState([]);
   const [parents, setParents] = useState([]);
@@ -1137,7 +1137,7 @@ const Index = memo(() => {
       ref={formRef}
       initialValues={{
         branchId: defaultBranch?.id || null,
-        class: user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId || null,
+        class: user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId || null,
       }}
     >
       <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
@@ -1322,7 +1322,7 @@ const Index = memo(() => {
                         <FormItem
                           label="Lớp"
                           name="class"
-                          data={user?.role === "Teacher" ? [...dataClass?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...dataClass]}
+                          data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...dataClass?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...dataClass]}
                           type={variables.SELECT}
                           onChange={onChangeClass}
                         />

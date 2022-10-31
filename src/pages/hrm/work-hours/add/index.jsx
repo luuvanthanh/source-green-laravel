@@ -125,6 +125,7 @@ class Index extends PureComponent {
       payload: {
         ...values,
         employeeCreate: values.employeeId,
+        status: !params.id ? 'APPROVED' : undefined,
         date: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,

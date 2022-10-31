@@ -10,6 +10,7 @@ export default {
     employees: [],
     branches: [],
     classes: [],
+    positions: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -137,6 +138,17 @@ export default {
             parsePayload: response,
           },
         });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_POSITIONS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getPositions, payload);
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

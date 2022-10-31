@@ -286,7 +286,7 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="py20 d-flex justify-content-between align-items-center">
-                {user?.roleCode === "sale" || user?.roleCode === "teacher" ? "" : (
+                {user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? "" : (
                   <Button
                     className="ml-auto px25"
                     color="success"
