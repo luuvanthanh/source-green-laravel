@@ -16,3 +16,5 @@ services:
     environment:
       - PHP_MEM_LIMIT=${PHP_MEM_LIMIT}
     restart: always
+    networks:
+      - clover-dev-networks
