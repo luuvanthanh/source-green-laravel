@@ -104,6 +104,32 @@ class ReportController extends Controller
         return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function eventFlowReport(Request $request)
+    {
+        $report = ReportService::eventFlowReport($request->all());
+
+        return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function eventFlowReportUser(Request $request)
+    {
+        $report = ReportService::eventFlowReportUser($request->all());
+
+        return $this->success(['data' => $report], trans('lang::messages.common.getListSuccess'));
+    }
+
     public function numberEventReportBehaviorExport(Request $request)
     {
         $result = ReportService::numberEventReportBehaviorExport($request->all());
@@ -129,6 +155,28 @@ class ReportController extends Controller
     public function warningReportExport(Request $request)
     {
         $result = ReportService::warningReportExport($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
+
+    public function eventFlowReportExport(Request $request)
+    {
+        $result = ReportService::eventFlowReportExport($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
+
+    public function eventFlowReportUserExport(Request $request)
+    {
+        $result = ReportService::eventFlowReportUserExport($request->all());
 
         if (is_string($result)) {
             return $this->error('Export failed', trans('Template not found'), 400);

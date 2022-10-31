@@ -53,6 +53,12 @@ class ExcelExporterServices
         'dtctd' => [
             'template' => 'dtctd.xlsx',
         ],
+        'rp_event_flow' => [
+            'template' => 'rp_event_flow.xlsx',
+        ],
+        'rp_event_flow_user' => [
+            'template' => 'rp_event_flow_user.xlsx',
+        ],
     ];
 
     protected $disk;

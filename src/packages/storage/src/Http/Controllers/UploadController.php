@@ -55,7 +55,7 @@ class UploadController extends Controller
      */
     public function deleteMedia(Request $request)
     {
-        $medias = Media::get();
+        $medias = Media::doesnthave('model')->get();
 
         foreach ($medias as $key => $media) {
             if (is_null($media->model)) {
