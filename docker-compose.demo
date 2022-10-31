@@ -1,4 +1,9 @@
 version: '3'
+
+networks:
+    clover-dev-network:
+        external: true
+
 services:
   api:
     image: kun391/phpup:1.1
@@ -17,4 +22,4 @@ services:
       - PHP_MEM_LIMIT=${PHP_MEM_LIMIT}
     restart: always
     networks:
-      - clover-dev-networks
+      - clover-dev-network
