@@ -53,7 +53,7 @@ class Index extends PureComponent {
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
-        classId: query.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+        classId: query.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
         studentId: query.studentId,
         propertyId: query.propertyId,
         branchId: query.branchId || defaultBranch?.id,
@@ -410,7 +410,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                     name="classId"
                     placeholder="Chọn lớp"
                     onChange={(event) => this.onChangeSelectClass(event, 'classId')}

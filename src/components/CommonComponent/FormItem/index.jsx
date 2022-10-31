@@ -69,7 +69,11 @@ const renderChildren = (
     />
   ),
   inputSearch: (
-    <Input onChange={onChange} placeholder={placeholder || 'Nhập'} prefix={<SearchOutlined />} />
+    <Input
+      onChange={onChange}
+      placeholder={placeholder || 'Nhập'}
+      prefix={<SearchOutlined />}
+      disabled={disabled} />
   ),
   inputNumber: (
     <InputNumber

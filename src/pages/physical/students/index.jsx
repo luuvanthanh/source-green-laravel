@@ -51,7 +51,7 @@ const Index = memo(() => {
     keyWord: query?.keyWord,
     schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
     branchId: query?.branchId || defaultBranch?.id,
-    classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+    classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
   });
 
   const onchangOpen = (e, key, keyName, record) => {
@@ -401,7 +401,7 @@ const Index = memo(() => {
                       data={[defaultBranch]}
                       onChange={(value) => changeFilterBranch('branchId', value)}
                       allowClear={false}
-                      loading
+                      loading={loading['categories/GET_BRANCHES']}
                     />
                   </Pane>
                 )}
@@ -409,7 +409,7 @@ const Index = memo(() => {
                   <FormItem
                     name="classId"
                     type={variables.SELECT}
-                    data={user?.role === "Teacher" ? [...category?.classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...category?.classes]}
+                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...category?.classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...category?.classes]}
                     onChange={(value) => changeFilter('classId')(value)}
                     allowClear={false}
                   />

@@ -118,39 +118,39 @@ const Index = memo(() => {
                         <Timeline key={index}>
                           {item?.menuMealInfors?.map(
                             ({ fromTime, toTime, menuMealDetails }, index) => (
-                             <>
-                              <TimelineItem color="red" key={index} style={{ paddingBottom: 10 }}>
-                                <Pane>
-                                  <b>
-                                    {Helper.getDate(fromTime, variables.DATE_FORMAT.HOUR)} -{' '}
-                                    {Helper.getDate(toTime, variables.DATE_FORMAT.HOUR)}
-                                  </b>
-                                </Pane>
-                                {menuMealDetails?.map((item, index) => (
-                                  <Pane key={index} className="mb5">
-                                    <Text size="normal">{item?.food?.name}</Text>
-                                    {Helper.isJSON(item?.food?.pathImage) && (
-                                      <Image.PreviewGroup>
-                                        {Helper.isJSON(item?.food?.pathImage) &&
-                                          JSON.parse(item?.food?.pathImage).map((item, index) => (
-                                            <Image
-                                              width={80}
-                                              height={80}
-                                              className={styles['item-img']}
-                                              src={`${API_UPLOAD}${item?.url}`}
-                                              key={index}
-                                              preview={{
-                                                maskClassName: 'customize-mask',
-                                                mask: <EyeOutlined className="mr5" />,
-                                              }}
-                                            />
-                                          ))}
-                                      </Image.PreviewGroup>
-                                    )}
+                              <>
+                                <TimelineItem color="red" key={index} style={{ paddingBottom: 10 }}>
+                                  <Pane>
+                                    <b>
+                                      {Helper.getDate(fromTime, variables.DATE_FORMAT.HOUR)} -{' '}
+                                      {Helper.getDate(toTime, variables.DATE_FORMAT.HOUR)}
+                                    </b>
                                   </Pane>
-                                ))}
-                              </TimelineItem>
-                             </>
+                                  {menuMealDetails?.map((item, index) => (
+                                    <Pane key={index} className="mb5">
+                                      <Text size="normal">{item?.food?.name}</Text>
+                                      {Helper.isJSON(item?.food?.pathImage) && (
+                                        <Image.PreviewGroup>
+                                          {Helper.isJSON(item?.food?.pathImage) &&
+                                            JSON.parse(item?.food?.pathImage).map((item, index) => (
+                                              <Image
+                                                width={80}
+                                                height={80}
+                                                className={styles['item-img']}
+                                                src={`${API_UPLOAD}${item?.url}`}
+                                                key={index}
+                                                preview={{
+                                                  maskClassName: 'customize-mask',
+                                                  mask: <EyeOutlined className="mr5" />,
+                                                }}
+                                              />
+                                            ))}
+                                        </Image.PreviewGroup>
+                                      )}
+                                    </Pane>
+                                  ))}
+                                </TimelineItem>
+                              </>
                             ),
                           )}
                         </Timeline>
@@ -162,7 +162,7 @@ const Index = memo(() => {
             </Scrollbars>
           </Pane>
         </Pane>
-        {user?.roleCode === "sale" || user?.roleCode === "teacher" ? ""  :  (
+        {user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? "" : (
           <Pane className="row justify-content-center">
             <Pane className="col-lg-6 ">
               <Pane className="d-flex justify-content-end align-items-center">

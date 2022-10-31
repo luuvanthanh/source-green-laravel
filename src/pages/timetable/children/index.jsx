@@ -45,7 +45,7 @@ const Index = memo(() => {
     toDate: null,
     type: 'timeGridWeek',
     branchId: query?.branchId || defaultBranch?.id,
-    classId: query?.classId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+    classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
     timetableSettingId: query?.timetableSettingId,
   });
 
@@ -959,7 +959,7 @@ const Index = memo(() => {
               <div className="col-lg-4">
                 <FormItem
                   className="ant-form-item-row"
-                  data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                  data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                   label="LỚP"
                   name="classId"
                   onChange={(event) => {

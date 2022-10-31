@@ -156,7 +156,7 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Danh sách món ăn</Heading>
-          {user?.roleCode === "sale" || user?.roleCode === "teacher" ? "" : (
+          {user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? "" : (
             <Button
               className="ml-auto"
               color="success"

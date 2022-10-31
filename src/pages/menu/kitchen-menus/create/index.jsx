@@ -1172,7 +1172,7 @@ const Index = memo(() => {
                       </div>
                     ))}
                   {/* {!params.id && user?.roleCode !== "sale" && ( */}
-                  {!params.id && (user?.roleCode !== "sale" || user?.roleCode !== "teacher") && (
+                  {!params.id && (user?.roleCode !== "sale" || user?.roleCode !== variables?.LIST_ROLE_CODE?.TEACHER) && (
                     <Pane className="py20 d-flex justify-content-between align-items-center">
                       <p
                         className="btn-delete"
@@ -1196,7 +1196,7 @@ const Index = memo(() => {
                       </Button>
                     </Pane>
                   )}
-                  {params.id && (user?.roleCode !== "sale" || user?.roleCode !== "teacher") && (
+                  {params.id && (user?.roleCode !== "sale" || user?.roleCode !== variables?.LIST_ROLE_CODE?.TEACHER) && (
                     <Pane className="py20 d-flex justify-content-between align-items-center">
                       <p
                         className="btn-delete"
