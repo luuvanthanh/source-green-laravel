@@ -454,12 +454,15 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 if (!empty($images)) {
                     $urlImage = env('IMAGE_URL') . $images[0];
                 }
-                $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
+
+                $nameOfTestSemester = $testSemester->assessmentPeriod->nameAssessmentPeriod->Name;
+                $title = 'Đánh giá định kỳ' . ' ' . $nameOfTestSemester;
+                $message = $student->FullName . ' ' . 'nhận đánh giá định kỳ' . ' ' . $nameOfTestSemester . ' ' . 'năm học' . ' ' . $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
 
                 if (!empty($studentAccount)) {
                     $dataNoti = [
                         'users' => array_column($studentAccount->pluck('account')->toArray(), 'AppUserId'),
-                        'title' => $student->FullName,
+                        'title' => $title,
                         'imageURL' => $urlImage,
                         'message' => $message,
                         'moduleType' => 22,
