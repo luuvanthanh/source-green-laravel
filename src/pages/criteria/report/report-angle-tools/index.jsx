@@ -67,7 +67,7 @@ class Index extends PureComponent {
             moment(query?.FromDate),
             moment(query?.ToDate),
           ],
-        ClassId: query?.ClassId || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+        ClassId: query?.ClassId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
       },
       dataIDSearch: [],
     };
@@ -852,7 +852,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-2">
                   <FormItem
-                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                     name="ClassId"
                     onChange={(event) => this.onChangeSelect(event, 'ClassId')}
                     type={variables.SELECT}

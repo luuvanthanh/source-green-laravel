@@ -2203,7 +2203,7 @@ export default [
       // NOTIFICATION
       {
         path: '/thong-bao',
-        component: './notificationV1/layout',
+        component: './notification/layout',
         routes: [
           {
             path: '/thong-bao',
@@ -2211,25 +2211,25 @@ export default [
           },
           {
             path: '/thong-bao/danh-sach',
-            component: './notificationV1',
+            component: './notification',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
           {
             path: '/thong-bao/tao-moi',
-            component: './notificationV1/create',
+            component: './notification/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
           {
             path: '/thong-bao/:id/chinh-sua',
-            component: './notificationV1/create',
+            component: './notification/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
           {
             path: '/thong-bao/:id/chi-tiet',
-            component: './notificationV1/details',
+            component: './notification/details',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THONGBAO],
           },
