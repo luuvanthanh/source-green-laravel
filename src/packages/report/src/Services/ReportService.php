@@ -1102,6 +1102,7 @@ class ReportService
             $totalDone += $eventDone;
             $totalNotDone += $events - $eventDone;
             $data[] = [
+                'id' => $value->id,
                 'name' => $value->name,
                 'total' => $events,
                 'done' => $eventDone,
