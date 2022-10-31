@@ -99,6 +99,9 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
 
 
         if (!$parse) {
+            if (!empty($attributes['orderBy']) && !empty($attributes['sortedBy'])) {
+                $this->model->orderBy($attributes['orderBy'], $attributes['sortedBy']);
+            }
             return $this->model->get();
         }
 
@@ -157,10 +160,10 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
 
         switch ($value) {
             case TravelAgency::SERVICE_TYPE['AUTHORIZED_DEALER']:
-                $result = 'Đại lý ủy quyền';
+                $result = 'Đại lý';
                 break;
             case TravelAgency::SERVICE_TYPE['REPRESENTATIVE_OFFICE']:
-                $result = 'Văn phòng đại diện';
+                $result = 'Văn phòng đại diện công ty du lịch trong nước';
                 break;
             case TravelAgency::SERVICE_TYPE['INTERNATIONAL_TO_BRANCH']:
                 $result = 'Chi nhánh lữ hành quốc tế';
