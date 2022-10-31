@@ -420,8 +420,8 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
                 }
             },
         ];
-        $events = [];
-        return  resolve(ExcelExporterServices::class)->export('object_image', $params, $callbacks, $event, $fileRemove);
+        $eventCallback = [];
+        return  resolve(ExcelExporterServices::class)->export('object_image', $params, $callbacks, $eventCallback, $fileRemove);
     }
 
     public function syncTourGuide()

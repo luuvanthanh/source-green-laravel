@@ -424,9 +424,9 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             },
         ];
 
-        $events = [];
+        $eventCallback = [];
 
-        return  resolve(ExcelExporterServices::class)->export('event', $params, $callbacks, $event);
+        return  resolve(ExcelExporterServices::class)->export('event', $params, $callbacks, $eventCallback);
     }
 
 
