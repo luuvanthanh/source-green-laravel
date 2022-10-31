@@ -507,7 +507,7 @@ const General = memo(
                     htmlType="button"
                     className="mr-3"
                     onClick={updateStatusRestore}
-                    loading={loadingSubmit}
+                    loading={effects[`OPchildrenAdd/UPDATE_STATUS_RESTORE`]}
                   >
                     Khôi phục
                   </Button>
