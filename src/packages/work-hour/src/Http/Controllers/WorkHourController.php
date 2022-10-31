@@ -5,6 +5,7 @@ namespace GGPHP\WorkHour\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\WorkHour\Http\Requests\CreatWorkHourRequest;
 use GGPHP\WorkHour\Http\Requests\UpdateWorkHourRequest;
+use GGPHP\WorkHour\Models\WorkHour;
 use GGPHP\WorkHour\Repositories\Contracts\WorkHourRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -120,5 +121,17 @@ class WorkHourController extends Controller
         }
 
         return $result;
+    }
+
+    public function updateStatusWorkHour(Request $request, $id)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = WorkHour::STATUS[$attributes['status']];
+        }
+
+        $workHour = $this->workHourRepository->updateStatusWorkHour($attributes, $id);
+        return $this->success($workHour, trans('lang::messages.common.modifySuccess'));
     }
 }
