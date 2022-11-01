@@ -36,7 +36,7 @@ class StudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent', 'studentTransporter', 'testSemester'];
+    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent', 'studentTransporter', 'testSemester', 'classes'];
 
     /**
      * Transform the Student entity.
@@ -48,11 +48,11 @@ class StudentTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            'age_month' => Carbon::parse($model->DayOfBirth)->diffInMonths(now()),
+            'age_month' => Carbon::parse($model->DayOfBirth)->floatDiffInRealMonths(now()),
             'refund' => $model->refund,
             'dateOff' => $model->dateOff,
             'numberDayOff' => $model->numberDayOff,
-            'age' => Carbon::parse($model->DayOfBirth)->diffInMonths(now()),
+            'age' => (int) Carbon::parse($model->DayOfBirth)->floatDiffInRealMonths(now()),
         ];
     }
 
@@ -147,5 +147,14 @@ class StudentTransformer extends BaseTransformer
     public function includeTestSemester(Student $student)
     {
         return $this->collection($student->testSemester, new TestSemesterTransformer, 'TestSemester');
+    }
+
+    public function includeClasses(Student $student)
+    {
+        if (empty($student->classes)) {
+            return;
+        }
+
+        return $this->item($student->classes, new ClassesTransformer, 'Classes');
     }
 }

@@ -36,6 +36,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('assessment-periods', 'AssessmentPeriodController');
             \Route::put('update-status-category-skill/{id}', 'CategorySkillController@updateStatus');
             \Route::resource('name-assessment-periods', 'NameAssessmentPeriodController');
+            \Route::resource('logos', 'LogoController');
         });
     }
 }

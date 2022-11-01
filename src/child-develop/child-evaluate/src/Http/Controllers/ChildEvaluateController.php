@@ -112,4 +112,13 @@ class ChildEvaluateController extends Controller
     {
         return $this->success(array_keys(ChildEvaluate::MONTH), trans('lang::messages.common.getListSuccess'));
     }
+
+    public function mergeData(Request $request)
+    {
+        $attributes = $request->all();
+
+        $ChildEvaluate = $this->ChildEvaluateRepository->mergeData($attributes);
+
+        return $this->success($ChildEvaluate, trans('lang::messages.common.getListSuccess'));
+    }
 }

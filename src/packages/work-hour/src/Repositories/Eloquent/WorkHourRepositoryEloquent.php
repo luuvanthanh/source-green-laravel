@@ -8,16 +8,20 @@ use Carbon\Carbon;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\HolidayDetail;
+use GGPHP\Clover\Models\EmployeeAccount;
+use GGPHP\Core\Jobs\SendNotiWithoutCode;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
+use GGPHP\WorkHour\Models\ApprovalEmployeeWorkHour;
 use GGPHP\WorkHour\Models\WorkHour;
 use GGPHP\WorkHour\Presenters\WorkHourPresenter;
 use GGPHP\WorkHour\Repositories\Contracts\WorkHourRepository;
 use Illuminate\Container\Container as Application;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class WorkHourRepositoryEloquent.
@@ -98,21 +102,114 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
 
     public function create(array $attributes)
     {
-        $attributes['hours'] = json_encode($attributes['hours']);
+        try {
+            $attributes = $this->creating($attributes);
+            $attributes['hours'] = json_encode($attributes['hours']);
+            $workHour = WorkHour::create($attributes);
+            $this->created($workHour, $attributes);
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
 
-        $workHour = WorkHour::create($attributes);
+        $account = [];
+
+        if (!empty($attributes['approvalEmployee'])) {
+            $account = $this->getAccountEmployee($attributes);
+        }
+
+        if (!empty($account)) {
+            $attributes['title'] = 'Phiếu đăng ký';
+            $attributes['message'] = 'Bạn có phiếu đăng ký làm thêm cần duyệt';
+            $this->sendNoti($account, $workHour, $attributes);
+        }
 
         return parent::find($workHour->Id);
+    }
+
+    public function creating($attributes)
+    {
+        if (!empty($attributes['status'])) {
+
+            $attributes['status'] = WorkHour::STATUS[$attributes['status']];
+        } else {
+            $attributes['status'] = WorkHour::STATUS['WAITING_APPROVAL'];
+        }
+
+        if (!empty($attributes['registrationDateType'])) {
+            $attributes['registrationDateType'] = WorkHour::REGISTRATION_DATE_TYPE[$attributes['registrationDateType']];
+        }
+
+        return $attributes;
+    }
+
+    public function created($workHour, $attributes)
+    {
+        if (!empty($attributes['approvalEmployee'])) {
+            foreach ($attributes['approvalEmployee'] as $key => $value) {
+
+                $data = [
+                    'WorkHourId' => $workHour->Id,
+                    'employeeId' => $value
+                ];
+
+                ApprovalEmployeeWorkHour::create($data);
+            }
+        }
+
+        return null;
+    }
+
+    public function getAccountEmployee($attributes)
+    {
+        $accountEmployee = EmployeeAccount::whereIn('EmployeeId', $attributes['approvalEmployee'])->get();
+
+        $appUserId = $accountEmployee->map(function ($item) {
+            return $item->AppUserId;
+        })->toArray();
+
+        return $appUserId;
+    }
+
+    public function sendNoti($account, $workHour, $attributes)
+    {
+        $dataNoti = [
+            'users' => $account,
+            'title' => $attributes['title'],
+            'imageURL' => 'image',
+            'message' => $attributes['message'],
+            'moduleType' => 24,
+            'refId' => $workHour->Id,
+        ];
+
+        dispatch(new SendNotiWithoutCode($dataNoti));
     }
 
     public function update(array $attributes, $id)
     {
         $workHour = WorkHour::findOrFail($id);
-
+        $this->updated($workHour, $attributes);
         $attributes['hours'] = json_encode($attributes['hours']);
         $workHour->update($attributes);
 
         return parent::find($workHour->Id);
+    }
+
+    public function updated($workHour, $attributes)
+    {
+        if (!empty($attributes['approvalEmployee'])) {
+            $workHour->approvalEmployeeWorkHour()->delete();
+            foreach ($attributes['approvalEmployee'] as $key => $value) {
+                $data = [
+                    'workHourId' => $workHour->Id,
+                    'employeeId' => $value
+                ];
+
+                ApprovalEmployeeWorkHour::create($data);
+            }
+        }
+
+        return null;
     }
 
     public function workHourSummary(array $attributes, $parser = false)
@@ -419,5 +516,34 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         ];
 
         return $this->excelExporterServices->export('work_hour_report', $params, $callbacks, $events);
+    }
+
+    public function updateStatusWorkHour($attributes, $id)
+    {
+        $workHour = WorkHour::findOrFail($id);
+        $attributes['approvalEmployee'] = [$workHour->EmployeeId];
+        $account = $this->getAccountEmployee($attributes);
+        $workHour->Status = $attributes['status'];
+        $attributes['title'] = 'Phiếu đăng ký';
+
+        if ($attributes['status'] == WorkHour::STATUS['APPROVED']) {
+            if (!empty($account)) {
+                $attributes['message'] = 'Bạn có phiếu đăng ký làm thêm giờ đã được duyệt';
+                $this->sendNoti($account, $workHour, $attributes);
+            }
+        }
+
+        if ($attributes['status'] == WorkHour::STATUS['NOT_APPROVED']) {
+            if (!empty($account)) {
+                $attributes['message'] = 'Bạn có phiếu đăng ký làm thêm giờ không được duyệt';
+                $this->sendNoti($account, $workHour, $attributes);
+            }
+
+            $workHour->ReasonNotApproved = $attributes['reasonNotApproved'];
+        }
+
+        $workHour->update();
+
+        return $this->parserResult($workHour);
     }
 }
