@@ -593,12 +593,12 @@ const Index = memo(() => {
                     <Pane className="row">
                       {(post?.files || []).map((image) => (
                         <Pane
-                          className={csx('col-lg-2 my10 col-4', styles.imageWrapper)}
+                          className={csx('my10 col-xl-1 col-lg-3 col-md-3  col-6', styles.imageWrapper)}
                           key={image?.id}
                         >
                           <img
                             className="d-block w-100"
-                            src={`${API_UPLOAD}${image?.url}`}
+                            src={image?.thumbnailUrl ? `${API_UPLOAD}${image?.thumbnailUrl}` : `${API_UPLOAD}${image?.url}`}
                             alt="imageUpload"
                           />
                           <Button
@@ -635,7 +635,7 @@ const Index = memo(() => {
                   <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>
                     <img
                       className="d-block w-100"
-                      src={`${API_UPLOAD}${image?.url}`}
+                      src={image?.thumbnailUrl ? `${API_UPLOAD}${image?.thumbnailUrl}` : `${API_UPLOAD}${image?.url}`}
                       alt="imageUpload"
                     />
                     <Button
