@@ -9,6 +9,7 @@ use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
+use PhpOffice\PhpSpreadsheet\Reader\Xls\RC4;
 
 class TestSemesterController extends Controller
 {
@@ -219,5 +220,16 @@ class TestSemesterController extends Controller
         $testSemester = $this->testSemesterRepository->updateDataOldLastTestSemester($request->all());
 
         return $this->success($testSemester, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function excelTestSemester(Request $request)
+    {
+        $result = $this->testSemesterRepository->excelTestSemester($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
     }
 }
