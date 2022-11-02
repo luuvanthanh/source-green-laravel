@@ -134,4 +134,18 @@ class WorkHourController extends Controller
         $workHour = $this->workHourRepository->updateStatusWorkHour($attributes, $id);
         return $this->success($workHour, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function sendAgain($id)
+    {
+        $workHour = $this->workHourRepository->sendAgain($id);
+
+        return $this->success($workHour, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function registrationDateType()
+    {
+        $workHour = $this->workHourRepository->registrationDateType();
+
+        return $this->success(['data' => $workHour], trans('lang::messages.common.modifySuccess'));
+    }
 }

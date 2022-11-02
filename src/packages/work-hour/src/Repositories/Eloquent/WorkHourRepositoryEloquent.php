@@ -546,4 +546,27 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
 
         return $this->parserResult($workHour);
     }
+
+    public function sendAgain($id)
+    {
+        $workHour = WorkHour::findOrFail($id);
+        $attributes['approvalEmployee'] = [$workHour->EmployeeId];
+        $account = $this->getAccountEmployee($attributes);
+
+        if (!empty($account)) {
+            $attributes['title'] = 'Phiếu đăng ký';
+            $attributes['message'] = 'Bạn có phiếu đăng ký làm thêm cần duyệt';
+
+            $this->sendNoti($account, $workHour, $attributes);
+        }
+
+        return [];
+    }
+
+    public function registrationDateType()
+    {
+        $data = array_keys(WorkHour::REGISTRATION_DATE_TYPE);
+        
+        return $data;
+    }
 }

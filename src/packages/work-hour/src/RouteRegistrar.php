@@ -80,6 +80,10 @@ class RouteRegistrar extends CoreRegistrar
             ]);
 
             \Route::put('update-status-work-hours/{id}', 'WorkHourController@updateStatusWorkHour');
+
+            \Route::get('send-work-hour-again/{id}', 'WorkHourController@sendAgain');
+
+            \Route::get('registration-date-type', 'WorkHourController@registrationDateType');
         });
     }
 }
