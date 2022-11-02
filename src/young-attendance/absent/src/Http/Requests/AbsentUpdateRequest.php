@@ -3,6 +3,8 @@
 namespace GGPHP\YoungAttendance\Absent\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\HolidayDetail;
+use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
 use GGPHP\YoungAttendance\Absent\Models\AbsentType;
 use Illuminate\Foundation\Http\FormRequest;
@@ -118,5 +120,43 @@ class AbsentUpdateRequest extends FormRequest
         }
 
         return $advanceNotice->AdvanceNotice;
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+        $weekend = resolve(StudentRepository::class)->holidays($data['startDate'], $data['endDate']);
+        $holidayDetail = HolidayDetail::where('StartDate', '>=', $data['startDate'])->where('EndDate', '<=', $data['endDate'])->get();
+        $dateArr = [];
+
+        foreach ($holidayDetail as $value) {
+            $dateArr[] = $this->getAllDates($value->StartDate, $value->EndDate);
+        }
+        $sumDate = count(call_user_func_array('array_merge', $dateArr)) + $weekend;
+
+        if (!empty($data['expectedDate'])) {
+            $data['expectedDate'] = $data['expectedDate'] - $sumDate;
+        }
+
+        return $data;
+    }
+
+    function getAllDates($startingDate, $endingDate): array
+    {
+        $datesArray = [];
+        $startingDate = strtotime($startingDate);
+        $endingDate = strtotime($endingDate);
+
+        for ($currentDate = $startingDate; $currentDate <= $endingDate; $currentDate += (86400)) {
+            $date = date('Y-m-d', $currentDate);
+            $dateCarbon = Carbon::parse($date);
+
+            if ($dateCarbon->isSaturday() || $dateCarbon->isSunday()) {
+                continue;
+            }
+            $datesArray[] = $date;
+        }
+
+        return $datesArray;
     }
 }
