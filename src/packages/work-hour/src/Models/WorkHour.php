@@ -14,8 +14,8 @@ class WorkHour extends UuidModel
     protected $table = 'WorkHours';
 
     const REGISTRATION_DATE_TYPE = [
-        'WEEKLY_DAY' => 1,
-        'LAST_DAY_OF_THE_WEEK' => 2,
+        'WEEKDAY' => 1,
+        'WEEKEND' => 2,
         'HOLIDAY' => 3,
         'EVENT_DATE' => 4
     ];
