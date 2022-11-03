@@ -661,25 +661,25 @@ const Index = memo(() => {
       ...values,
       classId: values.class,
       class: undefined,
-      isReminded: !!values?.isReminded,
-      remindDate: values?.isReminded
-        ? Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: values.remindDate,
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }) : undefined,
-      remindTime: values?.isReminded
-        ? Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: values.remindTime,
-          }),
-          format: variables.DATE_FORMAT.HOUR,
-          isUTC: false,
-        }) : undefined,
+      // isReminded: !!values?.isReminded,
+      // remindDate: values?.isReminded
+      //   ? Helper.getDateTime({
+      //     value: Helper.setDate({
+      //       ...variables.setDateData,
+      //       originValue: values.remindDate,
+      //     }),
+      //     format: variables.DATE_FORMAT.DATE_AFTER,
+      //     isUTC: false,
+      //   }) : undefined,
+      // remindTime: values?.isReminded
+      //   ? Helper.getDateTime({
+      //     value: Helper.setDate({
+      //       ...variables.setDateData,
+      //       originValue: values.remindTime,
+      //     }),
+      //     format: variables.DATE_FORMAT.HOUR,
+      //     isUTC: false,
+      //   }) : undefined,
       id: params.id,
       content,
       // sentDate: moment(),
@@ -827,25 +827,25 @@ const Index = memo(() => {
       ...values,
       classId: values.class,
       class: undefined,
-      isReminded: !!values?.isReminded,
-      remindDate: values?.isReminded
-        ? Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: values.remindDate,
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }) : undefined,
-      remindTime: values?.isReminded
-        ? Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: values.remindTime,
-          }),
-          format: variables.DATE_FORMAT.HOUR,
-          isUTC: false,
-        }) : undefined,
+      // isReminded: !!values?.isReminded,
+      // remindDate: values?.isReminded
+      //   ? Helper.getDateTime({
+      //     value: Helper.setDate({
+      //       ...variables.setDateData,
+      //       originValue: values.remindDate,
+      //     }),
+      //     format: variables.DATE_FORMAT.DATE_AFTER,
+      //     isUTC: false,
+      //   }) : undefined,
+      // remindTime: values?.isReminded
+      //   ? Helper.getDateTime({
+      //     value: Helper.setDate({
+      //       ...variables.setDateData,
+      //       originValue: values.remindTime,
+      //     }),
+      //     format: variables.DATE_FORMAT.HOUR,
+      //     isUTC: false,
+      //   }) : undefined,
       id: params.id,
       content,
       // sentDate: moment(),
@@ -1236,7 +1236,7 @@ const Index = memo(() => {
                   modules={modules}
                   formats={formats}
                 />
-                <Pane className="col-lg-12 mt20 d-flex p0">
+                {/* <Pane className="col-lg-12 mt20 d-flex p0">
                   <Pane className="mr15">
                     <FormItem
                       className="checkbox-row checkbox-small p0"
@@ -1267,7 +1267,7 @@ const Index = memo(() => {
                       </>
                     )
                   }
-                </Pane>
+                </Pane> */}
               </Pane>
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
                 <Button
