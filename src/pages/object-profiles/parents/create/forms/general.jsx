@@ -33,8 +33,11 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit =
     effects[`OPParentsAdd/ADD`] ||
-    effects[`OPParentsAdd/UPDATE`] ||
+    effects[`OPParentsAdd/UPDATE`];
+
+  const loadingUpdateStatus =
     effects[`OPParentsAdd/UPDATE_STATUS`];
+
   const loading = effects[`OPParentsAdd/GET_DETAILS`];
 
   /**
@@ -232,7 +235,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               <Pane className="col-lg-4">
                 <FormItem name="ownerBank" label="Người hưởng thụ" type={variables.INPUT} />
               </Pane>
-              
+
             </Pane>
           </Pane>
 
@@ -244,7 +247,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 htmlType="button"
                 className="mr-3"
                 onClick={updateStatus}
-                loading={loadingSubmit}
+                loading={loadingUpdateStatus}
               >
                 {details?.status === variablesModules.STATUS.STORE ? 'Khôi phục' : 'Lưu trữ hồ sơ'}
               </Button>
@@ -270,7 +273,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
 };

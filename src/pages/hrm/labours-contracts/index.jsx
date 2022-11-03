@@ -528,7 +528,7 @@ class Index extends PureComponent {
                     name="employeeId"
                     onChange={(event) => this.onChangeSelect(event, 'employeeId')}
                     type={variables.SELECT_MUTILPLE}
-                    placeholder="Chọn tất cả"
+                    placeholder="Chọn nhân viên"
                   />
                 </div>
               </div>
