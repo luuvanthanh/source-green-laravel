@@ -524,9 +524,10 @@ class Index extends PureComponent {
               </div>
             ))}
           </div>
-          {head(objects?.status)?.status === 'NOT_DRINK' &&
-            Helper.getDate(head(objects?.status)?.date, variables.DATE_FORMAT.DATE_AFTER) ===
-            Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) && (
+          {
+            objects?.status?.find(i => Helper.getDate(i?.date, variables.DATE_FORMAT.DATE_AFTER) ===
+              Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER))?.status === 'NOT_DRINK' &&
+            (
               <div
                 className={classnames(
                   styles['modal-footer'],

@@ -286,7 +286,7 @@ class Index extends PureComponent {
       {
         title: 'Ngày bắt đầu thôi học',
         key: 'status',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (record) =>
           <Text size="normal">
             {Helper.getDate(record?.stopStudyingDate, variables.DATE_FORMAT.DATE)}
@@ -295,7 +295,7 @@ class Index extends PureComponent {
       {
         title: 'Ngày kết thúc thôi học',
         key: 'status',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (record) =>
           <Text size="normal">
             {Helper.getDate(record?.restoredDate, variables.DATE_FORMAT.DATE)}
@@ -367,7 +367,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm"
+                    placeholder="Nhập Tên để tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
