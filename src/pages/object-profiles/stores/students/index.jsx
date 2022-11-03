@@ -58,7 +58,7 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
-        class: query?.class || user?.role === "Teacher" && head(user?.objectInfo?.classTeachers)?.classId,
+        class: query?.class || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
         branchId: query?.branchId || defaultBranch?.id,
       },
     };
@@ -286,7 +286,7 @@ class Index extends PureComponent {
       {
         title: 'Ngày bắt đầu thôi học',
         key: 'status',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (record) =>
           <Text size="normal">
             {Helper.getDate(record?.stopStudyingDate, variables.DATE_FORMAT.DATE)}
@@ -295,7 +295,7 @@ class Index extends PureComponent {
       {
         title: 'Ngày kết thúc thôi học',
         key: 'status',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (record) =>
           <Text size="normal">
             {Helper.getDate(record?.restoredDate, variables.DATE_FORMAT.DATE)}
@@ -367,7 +367,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm"
+                    placeholder="Nhập Tên để tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
@@ -397,7 +397,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.role === "Teacher" ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
                     name="class"
                     onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}

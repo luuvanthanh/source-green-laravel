@@ -126,7 +126,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
     if (
       ((feeId && paymentFormId || deleteId) || (checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission))
       && !details?.chargeStudentIdCrm) {
-      const { schoolYearId, classTypeId, dayAdmission, branchId } = details;
+      const { schoolYearId, classTypeId, dayAdmission, branchId, studentId } = details;
       const dataPayload = data?.map(i =>
       ({
         paymentFormId: i?.paymentFormId,
@@ -149,6 +149,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
           }),
           details: JSON.stringify(dataPayload),
           student: 'old',
+          studentId,
         },
         callback: (res) => {
           setPaymentFormId(undefined);
@@ -259,7 +260,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
   ];
 
   changeText(dataItem, check, data, deleteId);
-
+  console.log("details", details);
   return (
     <>
       {

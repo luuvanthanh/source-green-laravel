@@ -15,7 +15,7 @@ import Table from '@/components/CommonComponent/Table';
 import { UserOutlined } from '@ant-design/icons';
 import stylesModule from '../styles.module.scss';
 
-const marginProps = { style: { paddingTop: 12 } };
+const marginProps = { style: { paddingTop: 12, paddingBottom: 20 } };
 
 const mapStateToProps = ({ loading, HRMReportHistoryEmployee, menu }) => ({
     loading,

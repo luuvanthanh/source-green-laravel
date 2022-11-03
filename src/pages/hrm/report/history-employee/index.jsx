@@ -462,6 +462,7 @@ class Index extends PureComponent {
                                         onChange={(event) => this.onChange(event, 'fullName')}
                                         placeholder="Nhập từ khóa tìm kiếm"
                                         type={variables.INPUT_SEARCH}
+                                        disabled={(effects['HRMReportHistoryEmployee/GET_DATA'])}
                                     />
                                 </div>
                                 <div className="col-lg-3">
@@ -471,6 +472,8 @@ class Index extends PureComponent {
                                         onChange={(event) => this.onChangeSelect(event, 'branchId')}
                                         type={variables.SELECT}
                                         allowClear={false}
+                                        loading={effects['HRMReportHistoryEmployee/GET_DATA']}
+
                                     />
                                 </div>
                             </div>

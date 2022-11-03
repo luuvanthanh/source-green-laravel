@@ -318,7 +318,7 @@ function Index() {
                   name="employeeId"
                   onChange={(event) => onChangeSelect(event, 'employeeId')}
                   type={variables.SELECT_MUTILPLE}
-                  placeholder="Chọn tất cả"
+                  placeholder="Chọn nhân viên"
                 />
               </div>
             </div>

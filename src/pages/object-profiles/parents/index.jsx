@@ -209,8 +209,8 @@ class Index extends PureComponent {
       {
         title: 'Số điện thoại',
         key: 'phone',
-        className: 'min-width-150',
-        width: 150,
+        className: 'min-width-130',
+        width: 130,
         render: (record) => <Text size="normal">{record.phone}</Text>,
       },
       {
@@ -289,7 +289,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm"
+                    placeholder="Nhập Tên để tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
@@ -304,13 +304,13 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              onRow={(record) => ({
-                onClick: () => {
-                  if (ability.can('HSDT', 'HSDT')) {
-                    history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`);
-                  }
-                },
-              })}
+              // onRow={(record) => ({
+              //   onClick: () => {
+              //     if (ability.can('HSDT', 'HSDT')) {
+              //       history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`);
+              //     }
+              //   },
+              // })}
               bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%', y: '60vh' }}

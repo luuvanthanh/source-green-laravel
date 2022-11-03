@@ -334,7 +334,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="fullName"
                     onChange={(event) => this.onChange(event, 'fullName')}
-                    placeholder="Nhập từ khóa tìm kiếm"
+                    placeholder="Nhập Tên để tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
@@ -382,7 +382,7 @@ class Index extends PureComponent {
                     name="employeeId"
                     onChange={(event) => this.onChangeSelect(event, 'employeeId')}
                     type={variables.SELECT_MUTILPLE}
-                    placeholder="Chọn tất cả"
+                    placeholder="Chọn nhân viên"
                   />
                 </div>
               </div>

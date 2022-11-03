@@ -112,6 +112,7 @@ const Index = memo(() => {
               classTypeId: res?.student?.classStudent?.class?.classType?.id || '',
               expectedToCollectMoney: res?.expectedToCollectMoney || [],
               branchId: res?.student?.classStudent?.class?.branchId || '',
+              studentId: res?.studentId || '',
             }));
             formRef.current.setFieldsValue({
               ...res,
