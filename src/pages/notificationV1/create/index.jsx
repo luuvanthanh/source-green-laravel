@@ -662,6 +662,7 @@ const Index = memo(() => {
       classId: values.class,
       class: undefined,
       isReminded: !!values?.isReminded,
+      // isReminded: false,
       remindDate: values?.isReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
@@ -828,6 +829,7 @@ const Index = memo(() => {
       classId: values.class,
       class: undefined,
       isReminded: !!values?.isReminded,
+      // isReminded: false,
       remindDate: values?.isReminded
         ? Helper.getDateTime({
           value: Helper.setDate({
