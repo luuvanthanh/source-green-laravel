@@ -164,10 +164,9 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
 
             if ($absent->Status == 'CONFIRM') {
-
                 foreach ($periodDate as $date) {
 
-                    if (Carbon::parse($date)->dayOfWeek == Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek == Carbon::SUNDAY) {
+                    if (Carbon::parse($date)->isSaturday() || Carbon::parse($date)->isSaturday()) {
                         continue;
                     }
 
@@ -188,24 +187,15 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     }
                 }
 
-                $teachers = $absent->student->classStudent->classes->teacher;
+                $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
                 $userId = [];
 
-                if (!empty($teachers)) {
-                    foreach ($teachers as $teacher) {
-                        if (!is_null($teacher->account)) {
-                            $userId[] = $teacher->account->AppUserId;
-                        }
-                    }
+                if (!is_null($getTeacher)) {
+                    $userId[] = $getTeacher->teacher->account->AppUserId;
                 }
-
                 $nameStudent = $absent->student->FullName;
                 $images =  json_decode($absent->student->FileImage);
-                $urlImage = '';
-
-                if (!empty($images)) {
-                    $urlImage = env('IMAGE_URL') . $images[0];
-                }
+                $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
 
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
@@ -238,11 +228,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
                 $nameStudent = $absent->student->FullName;
                 $images =  json_decode($absent->student->FileImage);
-                $urlImage = '';
+                $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
 
-                if (!empty($images)) {
-                    $urlImage = env('IMAGE_URL') . $images[0];
-                }
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
                 $message = 'Đơn xin phép nghỉ từ ngày' . ' ' . $startDate . ' ' . 'đến ngày' . ' ' . $endDate . ' ' . 'cần Phụ huynh duyệt đơn.';
@@ -257,7 +244,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                         'moduleCode' => 'ABSENT_STUDENT',
                         'refId' => $absent->Id,
                     ];
-
                     dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                 }
             }
@@ -273,7 +259,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
     public function update(array $attributes, $id)
     {
         $absent = Absent::findOrFail($id);
-
         $absent->update($attributes);
 
         $absent->absentStudentDetail()->delete();
@@ -326,24 +311,16 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
             }
 
-            $teachers = $absent->student->classStudent->classes->teacher;
+            $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
             $userId = [];
 
-            if (!empty($teachers)) {
-                foreach ($teachers as $teacher) {
-                    if (!is_null($teacher->account)) {
-                        $userId[] = $teacher->account->AppUserId;
-                    }
-                }
+            if (!is_null($getTeacher)) {
+                $userId[] = $getTeacher->teacher->account->AppUserId;
             }
 
             $nameStudent = $absent->student->FullName;
             $images =  json_decode($absent->student->FileImage);
-            $urlImage = '';
-
-            if (!empty($images)) {
-                $urlImage = env('IMAGE_URL') . $images[0];
-            }
+            $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
 
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
@@ -376,11 +353,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
             $nameStudent = $absent->student->FullName;
             $images =  json_decode($absent->student->FileImage);
-            $urlImage = '';
-
-            if (!empty($images)) {
-                $urlImage = env('IMAGE_URL') . $images[0];
-            }
+            $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
 
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
@@ -452,26 +425,16 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 ]);
             }
         }
-
-        $teachers = $absent->student->classStudent->classes->teacher;
+        $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
         $userId = [];
 
-        if (!empty($teachers)) {
-            foreach ($teachers as $teacher) {
-                if (!is_null($teacher->account)) {
-                    $userId[] = $teacher->account->AppUserId;
-                }
-            }
+        if (!is_null($getTeacher)) {
+            $userId[] = $getTeacher->teacher->account->AppUserId;
         }
 
         $nameStudent = $absent->student->FullName;
         $images =  json_decode($absent->student->FileImage);
-        $urlImage = '';
-
-        if (!empty($images)) {
-            $urlImage = env('IMAGE_URL') . $images[0];
-        }
-
+        $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
         $startDate = $absent->StartDate->format('d-m');
         $endDate = $absent->EndDate->format('d-m');
 
