@@ -1,4 +1,8 @@
 version: '3'
+networks:
+    clover-project_postgres_network:
+        external: true
+
 services:
   api:
     image: kun391/phpup:1.1
@@ -17,3 +21,5 @@ services:
     environment:
       - PHP_MEM_LIMIT=${PHP_MEM_LIMIT}
     restart: always
+    networks:
+      - clover-project_postgres_network
