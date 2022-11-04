@@ -230,7 +230,9 @@ return [
         GGPHP\Tariff\PaymentPlan\Providers\PaymentPlanServiceProvider::class,
         GGPHP\Bio\Providers\BioServiceProvider::class,
         GGPHP\ManualCalculation\Providers\ManualCalculationServiceProvider::class,
-        GGPHP\Refund\Providers\RefundServiceProvider::class
+        GGPHP\Refund\Providers\RefundServiceProvider::class,
+        GGPHP\ActivityLog\Providers\ActivityLogServiceProvider::class,
+        GGPHP\StudyProgram\Setting\Providers\SubjectServiceProvider::class
     ],
 
     /*

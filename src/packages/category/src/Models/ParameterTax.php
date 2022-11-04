@@ -2,10 +2,12 @@
 
 namespace GGPHP\Category\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class ParameterTax extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

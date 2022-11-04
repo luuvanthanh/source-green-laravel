@@ -2,6 +2,11 @@
 
 namespace GGPHP\Clover\Models;
 
+<<<<<<< HEAD
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
+=======
+use GGPHP\Category\Models\Branch;
+>>>>>>> 00803b4cd065bba9ef2cebc7c8aebf82826dbe44
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
@@ -9,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends UuidModel
 {
+    use ActivityLogTrait;
     use SoftDeletes;
 
     const DELETED_AT = 'DeletionTime';
@@ -112,5 +118,10 @@ class Student extends UuidModel
     public function classes()
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Classes::class, 'ClassId', 'Id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'BranchId');
     }
 }

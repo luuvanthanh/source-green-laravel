@@ -3,11 +3,13 @@
 namespace GGPHP\Children\Models;
 
 use Carbon\Carbon;
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Children\Presenters\ChildrenPresenter;
 use GGPHP\Core\Models\UuidModel;
 
 class Children extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     protected $appends = ['months'];

@@ -2,12 +2,14 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Models\UuidModel;
 
 class ChargeOldStudent extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

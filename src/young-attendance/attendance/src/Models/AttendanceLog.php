@@ -2,12 +2,13 @@
 
 namespace GGPHP\Attendance\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\SchoolYear;
 
 class AttendanceLog extends UuidModel
 {
-
+    use ActivityLogTrait;
     /**
      * Declare the table name
      */

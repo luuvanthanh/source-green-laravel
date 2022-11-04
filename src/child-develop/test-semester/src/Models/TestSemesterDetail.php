@@ -2,12 +2,14 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\ChildDevelop\Category\Models\CategorySkill;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemesterDetail extends UuidModel
 {
+    use ActivityLogTrait;
     use SoftDeletes;
     
     protected $table = 'TestSemesterDetails';

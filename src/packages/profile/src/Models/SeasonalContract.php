@@ -2,10 +2,12 @@
 
 namespace GGPHP\Profile\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class SeasonalContract extends UuidModel
 {
+    use ActivityLogTrait;
     protected $table = 'SeasonalContracts';
 
     protected $fillable = [

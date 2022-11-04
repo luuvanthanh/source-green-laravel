@@ -2,11 +2,13 @@
 
 namespace GGPHP\BusinessCard\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Users\Models\User;
 
 class ApprovalEmployee extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

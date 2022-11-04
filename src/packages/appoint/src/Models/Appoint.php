@@ -2,11 +2,13 @@
 
 namespace GGPHP\Appoint\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Appoint\Models\AppointDetail;
 use GGPHP\Core\Models\UuidModel;
 
 class Appoint extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

@@ -2,6 +2,8 @@
 
 namespace GGPHP\Category\Transformers;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTransformerTrait;
+use GGPHP\ActivityLog\Transformers\ActivityLogTransformer;
 use GGPHP\Category\Models\Position;
 use GGPHP\Category\Transformers\PositionSeasonTransformer;
 use GGPHP\Category\Transformers\QuotaWorkTransformer;
@@ -15,13 +17,13 @@ use GGPHP\RolePermission\Transformers\PermissionTransformer;
  */
 class PositionTransformer extends BaseTransformer
 {
-
+    use ActivityLogTransformerTrait;
     /**
      * List of resources possible to include
      *
      * @var array
      */
-    protected $availableIncludes = ['positionSeason', 'quotaWork', 'permissions'];
+    protected $availableIncludes = ['positionSeason', 'quotaWork', 'permissions', 'logActivity'];
 
     /**
      * Include position

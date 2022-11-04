@@ -5,6 +5,7 @@ namespace GGPHP\Users\Models;
 use Carbon\Carbon;
 use CloudCreativity\LaravelJsonApi\Eloquent\HasMany;
 use GGPHP\Absent\Models\Absent;
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Category\Models\Degree;
 use GGPHP\Category\Models\TrainingMajor;
 use GGPHP\Category\Models\TrainingSchool;
@@ -36,7 +37,7 @@ use ZK\Traits\SyncToDevice;
 class User extends UuidModel implements HasMedia, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
     public $incrementing = false;
-
+    use ActivityLogTrait;
     use Notifiable, CanResetPassword;
     use Authenticatable;
     use Authorizable, CanResetPassword, MustVerifyEmail;

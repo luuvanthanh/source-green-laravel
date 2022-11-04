@@ -2,6 +2,7 @@
 
 namespace GGPHP\DocumentManagement\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Clover\Models\Student;
@@ -13,6 +14,7 @@ class DocumentManagement extends UuidModel
     /**
      * Declare the table name
      */
+    use ActivityLogTrait;
     protected $table = 'DocumentManagements';
 
     const TYPE_DOCUMENT = [

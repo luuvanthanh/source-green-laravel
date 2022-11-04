@@ -2,12 +2,14 @@
 
 namespace GGPHP\Bio\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ZK\Traits\SyncToDevice;
 
 class Bio extends UuidModel
 {
+    use ActivityLogTrait;
     use SyncToDevice, SoftDeletes;
 
     /**

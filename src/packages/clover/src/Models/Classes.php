@@ -2,11 +2,13 @@
 
 namespace GGPHP\Clover\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
 
 class Classes extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**
@@ -47,5 +49,10 @@ class Classes extends UuidModel
     public function chargeOldStudent()
     {
         return $this->hasMany(ChargeOldStudent::class, 'ClassId');
+    }
+
+    public function classTeacher()
+    {
+        return $this->hasMany(ClassTeacher::class, 'ClassId');
     }
 }

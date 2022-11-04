@@ -2,11 +2,13 @@
 
 namespace GGPHP\Transfer\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Transfer\Models\TransferDetail;
 
 class Transfer extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

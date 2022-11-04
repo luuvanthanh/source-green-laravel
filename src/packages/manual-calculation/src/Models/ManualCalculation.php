@@ -2,11 +2,13 @@
 
 namespace GGPHP\ManualCalculation\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ManualCalculation extends UuidModel
 {
+    use ActivityLogTrait;
     use SoftDeletes;
 
     /**
