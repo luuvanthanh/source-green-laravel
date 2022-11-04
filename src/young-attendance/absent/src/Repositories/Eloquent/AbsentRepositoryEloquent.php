@@ -146,7 +146,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
             foreach ($periodDate as $date) {
 
-                if (Carbon::parse($date)->dayOfWeek == Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek == Carbon::SUNDAY) {
+                if (Carbon::parse($date)->isSaturday() || Carbon::parse($date)->isSaturday()) {
                     continue;
                 }
 

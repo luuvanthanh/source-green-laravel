@@ -4,6 +4,7 @@ namespace GGPHP\YoungAttendance\Absent\Http\Requests;
 
 use Carbon\Carbon;
 use GGPHP\Category\Models\HolidayDetail;
+use GGPHP\Clover\Repositories\Contracts\StudentRepository;
 use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
 use GGPHP\YoungAttendance\Absent\Models\AbsentType;
