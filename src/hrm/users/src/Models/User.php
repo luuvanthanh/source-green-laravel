@@ -70,7 +70,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
         'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'Description', 'Category',
-        'FileAttached', 'IsForeigner', 'LastName'
+        'FileAttached', 'IsForeigner', 'LastName', 'TypeTeacherId'
     ];
 
     protected $dateTimeFields = [
@@ -381,5 +381,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function updateLastName()
     {
         $this->employeeRepository->updateLastName();
+    }
+
+    public function typeTeacherRelation()
+    {
+        return $this->belongsTo(TypeTeacher::class, 'TypeTeacherId');
     }
 }

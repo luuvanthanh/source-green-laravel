@@ -4,6 +4,7 @@ namespace GGPHP\TeacherTimekeeping\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\TeacherTimekeeping\Http\Requests\CreatTeacherTimekeepingRequest;
+use GGPHP\TeacherTimekeeping\Http\Requests\StoreTeacherTimekeepingRequest;
 use GGPHP\TeacherTimekeeping\Http\Requests\UpdateTeacherTimekeepingRequest;
 use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
 use GGPHP\TeacherTimekeeping\Repositories\Contracts\TeacherTimekeepingRepository;
@@ -110,5 +111,27 @@ class TeacherTimekeepingController extends Controller
         $this->teacherTimekeepingRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeTeacherTimekeeping(Request $request)
+    {
+        $attribute = $request->all();
+
+        $teacherTimekeeping = $this->teacherTimekeepingRepository->storeTeacherTimekeeping($attribute);
+
+        return $this->success($teacherTimekeeping, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function updateTeacherTimekeeping(StoreTeacherTimekeepingRequest $request, $id)
+    {
+        $teacherTimekeeping = $this->teacherTimekeepingRepository->storeTeacherTimekeeping($request->all());
+
+        return $this->success($teacherTimekeeping, trans('lang::messages.common.createSuccess'));
     }
 }

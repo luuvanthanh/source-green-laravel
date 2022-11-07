@@ -11,6 +11,7 @@ use GGPHP\TeacherTimekeeping\Repositories\Contracts\TeacherTimekeepingRepository
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
+use phpDocumentor\Reflection\Types\Parent_;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -107,5 +108,33 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
         }
 
         return $teacherTimekeeping;
+    }
+
+    public function storeTeacherTimekeeping(array $attribute)
+    {
+        if (!empty($attribute['createRows'])) {
+            foreach ($attribute['createRows'] as $value) {
+                $value['status'] = TeacherTimekeeping::STATUS[$value['status']];
+                $value['type'] = TeacherTimekeeping::TYPE[$value['type']];
+
+                $this->model()::create($value);
+            }
+        }
+
+        if (!empty($attribute['updateRows'])) {
+            foreach ($attribute['updateRows'] as $value) {
+                $value['status'] = TeacherTimekeeping::STATUS[$value['status']];
+                $value['type'] = TeacherTimekeeping::TYPE[$value['type']];
+
+                $teacherTimekeeping = $this->model()::find($value['id']);
+                $teacherTimekeeping->update($value);
+            }
+        }
+
+        if (!empty($attribute['deleteRows'])) {
+            $this->model()::whereIn('Id', $attribute['deleteRows'])->delete();
+        }
+
+        return Parent::find(TeacherTimekeeping::first()->Id);
     }
 }
