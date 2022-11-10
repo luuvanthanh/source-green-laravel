@@ -22,6 +22,7 @@ export default {
     classAttendanceSummary: [],
     classDetails: {},
     configs: [],
+    medicalsSummary: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -44,6 +45,10 @@ export default {
     SET_DATA_MEDICAL_TIME: (state, { payload }) => ({
       ...state,
       medicals: payload.parsePayload,
+    }),
+    SET_DATA_MEDICAL_TIME_SUMMARY: (state, { payload }) => ({
+      ...state,
+      medicalsSummary: payload.parsePayload,
     }),
     SET_DATA_DETAILS_MEDICAL: (state, { payload }) => ({
       ...state,
@@ -150,6 +155,12 @@ export default {
           type: 'SET_DATA_MEDICAL_TIME',
           payload: {
             parsePayload: response.items,
+          },
+        });
+        yield saga.put({
+          type: 'SET_DATA_MEDICAL_TIME_SUMMARY',
+          payload: {
+            parsePayload: response,
           },
         });
       } catch (error) {

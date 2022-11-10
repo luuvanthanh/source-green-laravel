@@ -1279,7 +1279,8 @@ const Index = memo(() => {
                     loading['notificationAdd/GET_BRANCHES'] ||
                     loading['notificationAdd/GET_DIVISIONS'] ||
                     loading['notificationAdd/ADD'] ||
-                    loading['notificationAdd/UPDATE']
+                    loading['notificationAdd/UPDATE'] ||
+                    loading['notificationAdd/SEND']
                   }
                   style={{ marginLeft: 'auto' }}
                   htmlType="submit"
@@ -1300,6 +1301,10 @@ const Index = memo(() => {
                   className='ml10'
                   htmlType="submit"
                   loading={
+                    loading['notificationAdd/GET_BRANCHES'] ||
+                    loading['notificationAdd/GET_DIVISIONS'] ||
+                    loading['notificationAdd/ADD'] ||
+                    loading['notificationAdd/UPDATE'] ||
                     loading['notificationAdd/SEND']
                   }
                   style={{ marginLeft: 'auto' }}
