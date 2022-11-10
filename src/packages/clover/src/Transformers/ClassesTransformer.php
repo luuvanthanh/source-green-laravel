@@ -34,7 +34,7 @@ class ClassesTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'teacher', 'student', 'chargeOldStudent'
+        'teacher', 'student', 'chargeOldStudent', 'classTeacher'
     ];
 
     /**
@@ -100,5 +100,10 @@ class ClassesTransformer extends BaseTransformer
     public function includeChargeOldStudent(Classes $classes)
     {
         return $this->collection($classes->chargeOldStudent, new ChargeOldStudentTransformer, 'ChargeOldStudent');
+    }
+
+    public function includeClassTeacher(Classes $classes)
+    {
+        return $this->collection($classes->classTeacher->where('IsLead', true), new ClassTeacherTransformer, 'ClassTeacher');
     }
 }
