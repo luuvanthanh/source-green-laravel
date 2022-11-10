@@ -189,10 +189,10 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
                 $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
                 $userId = [];
-
                 if (!is_null($getTeacher)) {
                     $userId[] = $getTeacher->teacher->account->AppUserId;
                 }
+
                 $nameStudent = $absent->student->FullName;
                 $images =  json_decode($absent->student->FileImage);
                 $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
