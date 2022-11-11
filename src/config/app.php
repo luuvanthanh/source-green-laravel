@@ -219,6 +219,7 @@ return [
         GGPHP\ManualCalculation\Providers\ManualCalculationServiceProvider::class,
         GGPHP\TeacherTimekeeping\Providers\TeacherTimekeepingServiceProvider::class,
         GGPHP\BusRegistration\Providers\BusRegistrationServiceProvider::class,
+        GGPHP\ActivityLog\Providers\ActivityLogServiceProvider::class
     ],
 
     /*

@@ -4,6 +4,7 @@ namespace GGPHP\Users\Transformers;
 
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Transformers\AbsentTransformer;
+use GGPHP\ActivityLog\Traits\ActivityLogTransformerTrait;
 use GGPHP\BusinessCard\Transformers\BusinessCardTransformer;
 use GGPHP\Category\Transformers\DegreeTransformer;
 use GGPHP\Category\Transformers\TrainingMajorTransformer;
@@ -29,6 +30,8 @@ use GGPHP\Users\Models\User;
  */
 class UserTransformer extends BaseTransformer
 {
+    use ActivityLogTransformerTrait;
+
     /**
      * List of resources possible to include
      *
@@ -49,7 +52,8 @@ class UserTransformer extends BaseTransformer
     protected $availableIncludes = [
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
         'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool',
-        'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail', 'typeTeacher', 'TeacherTimekeeping'
+        'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail',
+        'typeTeacher', 'TeacherTimekeeping', 'logActivity'
     ];
 
     /**
