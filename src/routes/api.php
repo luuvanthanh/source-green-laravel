@@ -167,5 +167,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\BusRegistration\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\ActivityLog\RouteRegistrar::routes(function($router){
+            $router->forBread();
+        });
     });
 });
