@@ -29,12 +29,11 @@ class AiApiServices
         $url = $url . '/ai_core/add_ai_service';
 
         $response = Http::asForm()->post($url, $attributes);
+        $responseStatus = json_decode($response, true);
 
-        if ($response->failed()) {
-            $message = 'Có lỗi từ api vms-core';
-            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
-                $message = 'Vms-core: ' . json_decode($response->body())->error->message;
-            }
+        if ($responseStatus['succ'] == false) {
+            $message = 'Vms-core: ' . $responseStatus['mess'];
+
             throw new HttpException(500, $message);
         }
 
@@ -46,12 +45,11 @@ class AiApiServices
         $url = $url . '/ai_core/remove_ai_service';
 
         $response = Http::asForm()->post($url, $attributes);
+        $responseStatus = json_decode($response, true);
 
-        if ($response->failed()) {
-            $message = 'Có lỗi từ api vms-core';
-            if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
-                $message = 'Vms-core: ' . json_decode($response->body())->error->message;
-            }
+        if ($responseStatus['succ'] == false) {
+            $message = 'Vms-core: ' . $responseStatus['mess'];
+
             throw new HttpException(500, $message);
         }
 
