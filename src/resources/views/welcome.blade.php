@@ -64,9 +64,9 @@
             margin-bottom: 30px;
         }
     </style>
-    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <!-- <script src="http://localhost:6002/socket.io/socket.io.js"></script>
     <script>
-        const socket = io("http://localhost:6001", {
+        const socket = io("http://localhost:6002", {
             transports: ['websocket'],
         });
         socket.on('connect', () => {
@@ -81,7 +81,7 @@
         socket.on('number_of_tourist.create', (event, data) => {
             console.log(data);
         });
-    </script>
+    </script> -->
 </head>
 
 <body>

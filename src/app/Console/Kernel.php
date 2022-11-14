@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:sync-tour-guide')->dailyAt('00:00');
         $schedule->command('command:command:sync-travel-agency')->dailyAt('00:15');
         $schedule->command('command:sync-tour-guide-image')->dailyAt('00:30');
+        $schedule->command('command:update-status-ai-service')->everyFiveMinutes();
     }
 
     /**

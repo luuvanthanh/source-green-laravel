@@ -33,11 +33,18 @@ class CameraServiceTransformer extends BaseTransformer
      */
     protected $availableIncludes = ['camera', 'aiService'];
 
-    // public function customAttributes($model): array
-    // {
-    //     dd(1);
-    //     return $attributes;
-    // }
+    public function customAttributes($model): array
+    {
+        $urlStream = null;
+
+        if ($model->is_stream) {
+            $urlStream = env('MEDIA_URL') . '/live' . '/' . $model->camera_id . '_' . $model->aiService->const_stream . '.flv';
+        }
+
+        return [
+            'url_stream' => $urlStream
+        ];
+    }
 
     /**
      * Load collection

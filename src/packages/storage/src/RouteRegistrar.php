@@ -56,6 +56,10 @@ class RouteRegistrar
                 'uses' => 'UploadController@delete',
                 'as' => 'storage.manage.destroy',
             ]);
+
+            $router->delete('/media-delete', [
+                'uses' => 'UploadController@deleteMedia',
+            ]);
         });
     }
 

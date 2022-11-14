@@ -83,6 +83,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('report-number-event-object-export', 'ReportController@numberEventReportObjectExport');
             \Route::get('report-number-event-behavior-export', 'ReportController@numberEventReportBehaviorExport');
             \Route::get('report-warning-export', 'ReportController@warningReportExport');
+            \Route::get('report-event-flow-export', 'ReportController@eventFlowReportExport');
+            \Route::get('report-event-flow', 'ReportController@eventFlowReport');
+            \Route::get('report-event-flow-user', 'ReportController@eventFlowReportUser');
+            \Route::get('report-event-flow-user-export', 'ReportController@eventFlowReportUserExport');
         });
     }
 }

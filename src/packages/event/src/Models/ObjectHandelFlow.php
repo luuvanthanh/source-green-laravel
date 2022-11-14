@@ -16,4 +16,12 @@ class ObjectHandelFlow extends UuidModel
     public $fillable = [
         'event_id', 'object_id', 'object_type'
     ];
+
+    /**
+     * Define relations object
+     */
+    public function object()
+    {
+        return $this->morphTo('object', 'object_type', 'object_id');
+    }
 }

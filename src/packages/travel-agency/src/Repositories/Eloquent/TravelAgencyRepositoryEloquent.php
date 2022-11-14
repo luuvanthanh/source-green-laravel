@@ -99,6 +99,9 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
 
 
         if (!$parse) {
+            if (!empty($attributes['orderBy']) && !empty($attributes['sortedBy'])) {
+                $this->model->orderBy($attributes['orderBy'], $attributes['sortedBy']);
+            }
             return $this->model->get();
         }
 
@@ -143,7 +146,7 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
             $params['[name]'][] = $travelAgency->name;
             $params['[service_type]'][] = $this->getConstServiceType($travelAgency->service_type);
             $params['[number_tour_guide]'][] = $travelAgency->travelAgencyAdditionalInformation()->count();
-            $params['[address]'][] = $travelAgency->address;
+            $params['[address]'][] =  $this->getConstLocality($travelAgency->locality);
             $params['[license_number]'][] = $travelAgency->license_number;
             $params['[license_date]'][] = !is_null($travelAgency->license_date) ?  Carbon::parse($travelAgency->license_date)->format('d-m-Y') : null;
         }
@@ -153,30 +156,66 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
 
     public function getConstServiceType($value)
     {
-        $value = null;
+        $result = null;
+
         switch ($value) {
             case TravelAgency::SERVICE_TYPE['AUTHORIZED_DEALER']:
-                $value = 'Đại lý ủy quyền';
+                $result = 'Đại lý';
                 break;
             case TravelAgency::SERVICE_TYPE['REPRESENTATIVE_OFFICE']:
-                $value = 'Văn phòng đại diện';
+                $result = 'Văn phòng đại diện công ty du lịch trong nước';
                 break;
             case TravelAgency::SERVICE_TYPE['INTERNATIONAL_TO_BRANCH']:
-                $value = 'Chi nhánh lữ hành quốc tế';
+                $result = 'Chi nhánh lữ hành quốc tế';
                 break;
             case TravelAgency::SERVICE_TYPE['INLAND_TO_BRANCH']:
-                $value = 'Chi nhánh lữ hành nội địa';
+                $result = 'Chi nhánh lữ hành nội địa';
                 break;
             case TravelAgency::SERVICE_TYPE['INLAND_TO']:
-                $value = 'Công ty lữ hành nội địa';
+                $result = 'Công ty lữ hành nội địa';
                 break;
             case TravelAgency::SERVICE_TYPE['INTERNATIONAL_TO']:
-                $value = 'Công ty lữ hành quốc tế';
+                $result = 'Công ty lữ hành quốc tế';
                 break;
         }
 
-        return $value;
+        return $result;
     }
+
+    public function getConstLocality($value)
+    {
+        $result = null;
+
+        switch ($value) {
+            case TravelAgency::LOCALITY['HOANG_SA']:
+                $result = 'Hoàng sa';
+                break;
+            case TravelAgency::LOCALITY['THANH_KHE']:
+                $result = 'Thanh Khê';
+                break;
+            case TravelAgency::LOCALITY['HOA_VANG']:
+                $result = 'Hòa Vang';
+                break;
+            case TravelAgency::LOCALITY['SON_TRA']:
+                $result = 'Sơn Trà';
+                break;
+            case TravelAgency::LOCALITY['NGU_HANH_SON']:
+                $result = 'Ngũ Hành Sơn';
+                break;
+            case TravelAgency::LOCALITY['LIEN_CHIEU']:
+                $result = 'Liên Chiểu';
+                break;
+            case TravelAgency::LOCALITY['HAI_CHAU']:
+                $result = 'Hải Châu';
+                break;
+            case TravelAgency::LOCALITY['CAM_LE']:
+                $result = 'Cẩm Lệ';
+                break;
+        }
+
+        return $result;
+    }
+
 
     public function syncTravelAgency()
     {

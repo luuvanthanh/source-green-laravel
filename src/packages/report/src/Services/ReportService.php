@@ -8,10 +8,12 @@ use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Category\Models\EventType;
 use GGPHP\Category\Models\TouristDestination;
+use GGPHP\Category\Models\Unit;
 use GGPHP\Event\Models\Event;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\NumberOfTourist\Models\NumberOfTourist;
 use GGPHP\TourGuide\Models\TourGuide;
+use GGPHP\Users\Models\User;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ReportService
@@ -1010,5 +1012,165 @@ class ReportService
         }
 
         return resolve(ExcelExporterServices::class)->export('rp_warning', $params);
+    }
+
+    public static function eventFlowReportExport($attributes)
+    {
+        $reports = self::eventFlowReport($attributes);
+
+        $params = [];
+        foreach ($reports['detail'] as $key => $value) {
+            $params['[unit_name]'][] = $value['name'];
+            $params['[total_event]'][] = $value['total'];
+            $params['[total_event_done]'][] = $value['done'];
+            $params['[total_event_not_done]'][] = $value['not_done'];
+        }
+
+        $params['[unit_name]'][] = 'Tổng cộng';
+        $params['[total_event]'][] = $reports['total'];
+        $params['[total_event_done]'][] = $reports['total_done'];
+        $params['[total_event_not_done]'][] = $reports['total_not_done'];
+
+        return resolve(ExcelExporterServices::class)->export('rp_event_flow', $params);
+    }
+
+    public static function eventFlowReportUserExport($attributes)
+    {
+        $reports = self::eventFlowReportUser($attributes);
+
+        $params = [];
+        foreach ($reports['detail'] as $key => $value) {
+            $params['[user_name]'][] = $value['name'];
+            $params['[total_event]'][] = $value['total'];
+            $params['[total_event_done]'][] = $value['done'];
+            $params['[total_event_not_done]'][] = $value['not_done'];
+        }
+
+        $params['[user_name]'][] = 'Tổng cộng';
+        $params['[total_event]'][] = $reports['total'];
+        $params['[total_event_done]'][] = $reports['total_done'];
+        $params['[total_event_not_done]'][] = $reports['total_not_done'];
+
+        return resolve(ExcelExporterServices::class)->export('rp_event_flow_user', $params);
+    }
+
+    public static function eventFlowReport($attributes)
+    {
+        $data = [];
+        $unit = Unit::query();
+
+        if (!empty($attributes['unit_id'])) {
+            $unit->whereIn('id', explode(',', $attributes['unit_id']));
+        }
+
+        $units = $unit->get();
+        $total = 0;
+        $totalDone = 0;
+        $totalNotDone = 0;
+        $data = [];
+
+        foreach ($units as $key => $value) {
+            $events = 0;
+            $eventDone = 0;
+
+            $events = Event::whereHas('objectHandelFlow', function ($query) use ($value) {
+                $query->whereHasMorph('object', [Unit::class], function ($q2) use ($value) {
+                    $q2->where('id', $value->id);
+                });
+                $query->orWhereHasMorph('object', [User::class], function ($q2) use ($value) {
+                    $q2->where('unit_id', $value->id);
+                });
+            })
+                ->where('is_follow', true)
+                ->where('time', '>=', $attributes['start_time'])
+                ->where('time', '<=', $attributes['end_time'])->count();
+
+            $eventDone = Event::whereHas('objectHandelFlow', function ($query) use ($value) {
+                $query->whereHasMorph('object', [Unit::class], function ($q2) use ($value) {
+                    $q2->where('id', $value->id);
+                });
+                $query->orWhereHasMorph('object', [User::class], function ($q2) use ($value) {
+                    $q2->where('unit_id', $value->id);
+                });
+            })
+                ->where('is_follow', true)
+                ->where('status', Event::STATUS['DONE'])
+                ->where('time', '>=', $attributes['start_time'])
+                ->where('time', '<=', $attributes['end_time'])->count();
+
+            $total += $events;
+            $totalDone += $eventDone;
+            $totalNotDone += $events - $eventDone;
+            $data[] = [
+                'id' => $value->id,
+                'name' => $value->name,
+                'total' => $events,
+                'done' => $eventDone,
+                'not_done' => $events - $eventDone
+            ];
+        }
+
+        return [
+            'total' => $total,
+            'total_done' => $totalDone,
+            'total_not_done' => $totalNotDone,
+            'detail' => $data
+        ];
+    }
+
+    public static function eventFlowReportUser($attributes)
+    {
+        $data = [];
+        $user = User::query();
+
+        $user->where('unit_id', explode(',', $attributes['unit_id']));
+
+
+        $users = $user->get();
+        $total = 0;
+        $totalDone = 0;
+        $totalNotDone = 0;
+        $data = [];
+
+        foreach ($users as $key => $value) {
+            $events = 0;
+            $eventDone = 0;
+
+            $events = Event::whereHas('objectHandelFlow', function ($query) use ($value) {
+                $query->whereHasMorph('object', [User::class], function ($q2) use ($value) {
+                    $q2->where('id', $value->id);
+                });
+            })
+                ->where('is_follow', true)
+                ->where('time', '>=', $attributes['start_time'])
+                ->where('time', '<=', $attributes['end_time'])->count();
+
+            $eventDone = Event::whereHas('objectHandelFlow', function ($query) use ($value) {
+                $query->whereHasMorph('object', [User::class], function ($q2) use ($value) {
+                    $q2->where('id', $value->id);
+                });
+            })
+                ->where('is_follow', true)
+                ->where('status', Event::STATUS['DONE'])
+                ->where('time', '>=', $attributes['start_time'])
+                ->where('time', '<=', $attributes['end_time'])->count();
+
+            $total += $events;
+            $totalDone += $eventDone;
+            $totalNotDone += $events - $eventDone;
+            $data[] = [
+                'name' => $value->full_name,
+                'total' => $events,
+                'done' => $eventDone,
+                'not_done' => $events - $eventDone
+            ];
+        }
+
+        return [
+            'total' => $total,
+            'total_done' => $totalDone,
+            'total_not_done' => $totalNotDone,
+            'detail' => $data
+        ];
     }
 }

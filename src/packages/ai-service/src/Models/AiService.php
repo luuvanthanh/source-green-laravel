@@ -13,5 +13,5 @@ class AiService extends UuidModel
      *
      * @var array
      */
-    protected $fillable = ['name', 'number'];
+    protected $fillable = ['name', 'number', 'const_stream'];
 }
