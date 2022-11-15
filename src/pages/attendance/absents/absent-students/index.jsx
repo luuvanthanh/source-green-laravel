@@ -429,6 +429,19 @@ class Index extends PureComponent {
     ];
   };
 
+  onChangeExcel = () => {
+    const { search } = this.state;
+    Helper.exportExcel(
+      `/v1/absent-student-excel`,
+      {
+        ...search,
+        page: undefined,
+        limit: undefined,
+      },
+      `Donxinphepchobe.xlsx`,
+    );
+  };
+
   render() {
     const {
       data,
@@ -451,9 +464,14 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Đơn xin phép cho bé</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo đơn xin phép
-            </Button>
+            <div className='d-flex'>
+              <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
+                Xuất Excel
+              </Button>
+              <Button className="ml-4" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+                Tạo đơn xin phép
+              </Button>
+            </div>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
