@@ -176,6 +176,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('start-date-by-expected-date', [
                 'uses' => 'AbsentConfigTimeController@getStartDateByExpectedDate',
             ]);
+
+            \Route::get('absent-student-excel', [
+                'uses' => 'AbsentController@absentStudentExcel',
+            ]);
         });
     }
 }

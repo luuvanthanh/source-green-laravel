@@ -136,4 +136,15 @@ class AbsentController extends Controller
 
         return $this->success($absents, trans('lang::messages.common.getListSuccess'));
     }
+
+    public function absentStudentExcel(Request $request)
+    {
+        $result = $this->absentRepository->absentStudentExcel($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }

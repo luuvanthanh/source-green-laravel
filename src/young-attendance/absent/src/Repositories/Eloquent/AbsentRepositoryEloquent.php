@@ -14,6 +14,9 @@ use GGPHP\YoungAttendance\Absent\Presenters\AbsentPresenter;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use Illuminate\Container\Container as Application;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
@@ -22,6 +25,21 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentRepository
 {
+
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app,
+        ExcelExporterServices $excelExporterServices
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+        $this->excelExporterServices = $excelExporterServices;
+    }
+
     protected $fieldSearchable = [
         'AbsentTypeId',
         'AbsentReasonId',
@@ -118,9 +136,13 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         if (!empty($attributes['branchId'])) {
-            $this->model = $this->model->whereHas('student.classStudent.classes', function ($query) use ($attributes) {
+            $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
                 $query->where('BranchId', $attributes['branchId']);
             });
+        }
+
+        if ($parse === false) {
+            return $this->model;
         }
 
         if (!empty($attributes['limit'])) {
@@ -536,5 +558,29 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         return $absent;
+    }
+
+    public function absentStudentExcel(array $attributes)
+    {
+        $absentStudent = $this->filterAbsent($attributes, false);
+
+        if ($absentStudent->get()->isNotEmpty()) {
+            $code = 1;
+            foreach ($absentStudent->get() as $key => $value) {
+                $params['[code]'][] = 'XP' . $code++;
+                $params['[time]'][] = $value->CreationTime->format('Y-m-d h:i');
+                $params['[schoolYear]'][] = $value->schoolYear->YearFrom . '-' . $value->schoolYear->YearTo;
+                $params['[branch]'][] = $value->student->branch->Name;
+                $params['[class]'][] = $value->student->classes->Name;
+                $params['[name]'][] = $value->student->FullName;
+                $params['[absentTime]'][] = $value->StartDate->format('Y-m-d') . '-' . $value->EndDate->format('Y-m-d');
+                $params['[reason]'][] = $value->absentReason->Name;
+                $params['[status]'][] = $value->Status;
+            }
+        } else {
+            throw new HttpException(400, 'Xuất excel không thành công.');
+        }
+
+        return $this->excelExporterServices->export('absent_student', $params);
     }
 }
