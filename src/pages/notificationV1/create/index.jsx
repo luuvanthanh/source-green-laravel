@@ -919,6 +919,67 @@ const Index = memo(() => {
     }
   };
 
+  const onFormBtnSAVE = () => {
+    if (details?.status === 'DRAFT' || !params?.id) {
+      return <Button
+        color="success"
+        size="large"
+        loading={
+          loading['notificationAdd/GET_BRANCHES'] ||
+          loading['notificationAdd/GET_DIVISIONS'] ||
+          loading['notificationAdd/ADD'] ||
+          loading['notificationAdd/UPDATE'] ||
+          loading['notificationAdd/SEND']
+        }
+        style={{ marginLeft: 'auto' }}
+        htmlType="submit"
+        onClick={() => onFinish()}
+        disabled={
+          !employees.find((item) => item.checked) &&
+          !parents.find((item) => item.checked) &&
+          !isAllEmployees &&
+          !isAllParents &&
+          checkboxInput
+        }
+      >
+        Lưu
+      </Button>;
+    }
+    return "";
+  };
+
+  const onFormBtnSEND = () => {
+    if (details?.status === 'DRAFT' || details?.status === 'SENDING' || !params?.id) {
+      return <Button
+        color="primary"
+        size="large"
+        className='ml10'
+        htmlType="submit"
+        loading={
+          loading['notificationAdd/GET_BRANCHES'] ||
+          loading['notificationAdd/GET_DIVISIONS'] ||
+          loading['notificationAdd/ADD'] ||
+          loading['notificationAdd/UPDATE'] ||
+          loading['notificationAdd/SEND']
+        }
+        style={{ marginLeft: 'auto' }}
+        onClick={() => changeSend()}
+        disabled={
+          !employees.find((item) => item.checked) &&
+          !parents.find((item) => item.checked) &&
+          !isAllEmployees &&
+          checkboxInput &&
+          !isAllParents || (details?.sentDate && params?.id)
+
+        }
+      >
+        Gửi
+      </Button>;
+    }
+    return "";
+  };
+
+
   return (
     <Form
       layout="vertical"
@@ -1272,54 +1333,8 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-                <Button
-                  color="success"
-                  size="large"
-                  loading={
-                    loading['notificationAdd/GET_BRANCHES'] ||
-                    loading['notificationAdd/GET_DIVISIONS'] ||
-                    loading['notificationAdd/ADD'] ||
-                    loading['notificationAdd/UPDATE'] ||
-                    loading['notificationAdd/SEND']
-                  }
-                  style={{ marginLeft: 'auto' }}
-                  htmlType="submit"
-                  onClick={() => onFinish()}
-                  disabled={
-                    !employees.find((item) => item.checked) &&
-                    !parents.find((item) => item.checked) &&
-                    !isAllEmployees &&
-                    !isAllParents &&
-                    checkboxInput
-                  }
-                >
-                  Lưu
-                </Button>
-                <Button
-                  color="primary"
-                  size="large"
-                  className='ml10'
-                  htmlType="submit"
-                  loading={
-                    loading['notificationAdd/GET_BRANCHES'] ||
-                    loading['notificationAdd/GET_DIVISIONS'] ||
-                    loading['notificationAdd/ADD'] ||
-                    loading['notificationAdd/UPDATE'] ||
-                    loading['notificationAdd/SEND']
-                  }
-                  style={{ marginLeft: 'auto' }}
-                  onClick={() => changeSend()}
-                  disabled={
-                    !employees.find((item) => item.checked) &&
-                    !parents.find((item) => item.checked) &&
-                    !isAllEmployees &&
-                    checkboxInput &&
-                    !isAllParents || (details?.sentDate && params?.id)
-
-                  }
-                >
-                  Gửi
-                </Button>
+                {onFormBtnSAVE()}
+                {onFormBtnSEND()}
               </Pane>
             </Pane>
           </Pane>
