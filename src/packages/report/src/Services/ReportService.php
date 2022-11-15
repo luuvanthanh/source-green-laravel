@@ -12,6 +12,7 @@ use GGPHP\Category\Models\Unit;
 use GGPHP\Event\Models\Event;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\NumberOfTourist\Models\NumberOfTourist;
+use GGPHP\SurveyForm\Models\SurveyForm;
 use GGPHP\TourGuide\Models\TourGuide;
 use GGPHP\Users\Models\User;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -39,11 +40,15 @@ class ReportService
                 $eventWarning = self::reportWarningEvent($attributes, $periodDate, 'Y-m-d');
 
                 //event object
-                $attributes['event_code'] = 'HDVHP,HDVBHP';
+                $attributes['event_code'] = 'HDVHP,HDVBHP,BL';
                 $eventObject = self::reportNumberEventObject($attributes, $periodDate, 'Y-m-d');
 
                 //number_of_guest
                 $numberOfGuest = self::reportNumberOfGuest($attributes, $periodDate, 'Y-m-d');
+
+                //number survey responses
+                $numberSurveyResponses = self::reportNumberSurveyResponses($attributes, $periodDate, 'Y-m-d');
+
                 break;
             case 'MONTH':
                 $begin = new \DateTime($attributes['start_time']);
@@ -61,11 +66,14 @@ class ReportService
                 $eventWarning = self::reportWarningEvent($attributes, $periodDate, 'Y-m-d');
 
                 //event object
-                $attributes['event_code'] = 'HDVHP,HDVBHP';
+                $attributes['event_code'] = 'HDVHP,HDVBHP,BL';
                 $eventObject = self::reportNumberEventObject($attributes, $periodDate, 'Y-m-d');
 
                 //number_of_guest
                 $numberOfGuest = self::reportNumberOfGuest($attributes, $periodDate, 'Y-m-d');
+
+                //number survey responses
+                $numberSurveyResponses = self::reportNumberSurveyResponses($attributes, $periodDate, 'Y-m-d');
 
                 break;
         }
@@ -75,7 +83,8 @@ class ReportService
             'number_of_guest_max' => $numberOfGuest['number_of_guest_max'],
             'data_event_behavior' =>  $eventBehavior,
             'data_event_object' =>  $eventObject,
-            'data_event_warning' =>  $eventWarning
+            'data_event_warning' =>  $eventWarning,
+            'data_number_survey_response' => $numberSurveyResponses
         ];
     }
 
@@ -556,6 +565,20 @@ class ReportService
             'number_of_guest' => $dataByTime,
             'number_of_guest_max' => $numberOfGuestMax->sortByDesc('number_of_guest')->take(5)->toArray()
         ];
+    }
+
+    public static function reportNumberSurveyResponses($attributes, $periodDate, $formatTime = 'Y-m-d')
+    {
+        $surveyForms = SurveyForm::where('start_date', '>=', $attributes['start_time'])->where('end_date', '<=', $attributes['end_time'])->get();
+
+        $surveyForm = $surveyForms->map(function ($item) {
+            return [
+                'name' => $item->name,
+                'number_response' => $item->results->count()
+            ];
+        })->toArray();
+
+        return $surveyForm;
     }
 
     //func
