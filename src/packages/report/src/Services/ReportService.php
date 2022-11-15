@@ -569,7 +569,11 @@ class ReportService
 
     public static function reportNumberSurveyResponses($attributes, $periodDate, $formatTime = 'Y-m-d')
     {
-        $surveyForms = SurveyForm::where('start_date', '>=', $attributes['start_time'])->where('end_date', '<=', $attributes['end_time'])->get();
+        $surveyForms = SurveyForm::whereHas('results', function ($query) use ($attributes) {
+            $query->where('created_at', '>=', $attributes['start_time'])->where('created_at', '<=', $attributes['end_time']);
+        })->with(['results' => function ($q) use ($attributes) {
+            $q->where('created_at', '>=', $attributes['start_time'])->where('created_at', '<=', $attributes['end_time']);
+        }])->get();
 
         $surveyForm = $surveyForms->map(function ($item) {
             return [
