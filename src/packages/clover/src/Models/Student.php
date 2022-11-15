@@ -2,6 +2,7 @@
 
 namespace GGPHP\Clover\Models;
 
+use GGPHP\Category\Models\Branch;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
@@ -112,5 +113,10 @@ class Student extends UuidModel
     public function classes()
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Classes::class, 'ClassId', 'Id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'BranchId');
     }
 }

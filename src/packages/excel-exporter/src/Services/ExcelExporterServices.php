@@ -57,6 +57,9 @@ class ExcelExporterServices
         ],
         'test_semester' => [
             'template' => 'test_semester.xlsx'
+        ],
+        'absent_student' => [
+            'template' => 'absent_student.xlsx'
         ]
     ];
 
