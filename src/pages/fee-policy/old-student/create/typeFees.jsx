@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 
 import Button from '@/components/CommonComponent/Button';
@@ -15,6 +16,8 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
     fees: fees.data,
     paymentForm: paymentMethod.data,
   }));
+
+  const params = useParams();
 
   const [check, setCheck] = useState(true);
   const [feeId, setFeeId] = useState(undefined);
@@ -124,7 +127,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
   };
   useEffect(() => {
     if (
-      ((feeId && paymentFormId || deleteId) || (checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission))
+      ((feeId && paymentFormId || deleteId) || (params?.id && checkSearch && details?.schoolYearId && details?.classTypeId && details?.dayAdmission))
       && !details?.chargeStudentIdCrm) {
       const { schoolYearId, classTypeId, dayAdmission, branchId, studentId } = details;
       const dataPayload = data?.map(i =>
@@ -170,7 +173,6 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
       });
     }
   }, [feeId, paymentFormId, deleteId, checkSearch, check]);
-
 
   const columns = [
     {
@@ -260,7 +262,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
   ];
 
   changeText(dataItem, check, data, deleteId);
-  console.log("details", details);
+
   return (
     <>
       {
