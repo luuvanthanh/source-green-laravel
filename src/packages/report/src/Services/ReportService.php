@@ -569,18 +569,38 @@ class ReportService
 
     public static function reportNumberSurveyResponses($attributes, $periodDate, $formatTime = 'Y-m-d')
     {
-        $surveyForms = SurveyForm::whereHas('results', function ($query) use ($attributes) {
-            $query->where('created_at', '>=', $attributes['start_time'])->where('created_at', '<=', $attributes['end_time']);
-        })->with(['results' => function ($q) use ($attributes) {
-            $q->where('created_at', '>=', $attributes['start_time'])->where('created_at', '<=', $attributes['end_time']);
-        }])->get();
+        switch ($attributes['report_type']) {
+            case 'DATE':
+                $surveyForms = SurveyForm::whereHas('results', function ($query) use ($attributes) {
+                    $query->where('created_at', '>=', $attributes['start_time'])->where('created_at', '<=', $attributes['end_time']);
+                })->with(['results' => function ($q) use ($attributes) {
+                    $q->where('created_at', '>=', $attributes['start_time'])->where('created_at', '<=', $attributes['end_time']);
+                }])->get();
 
-        $surveyForm = $surveyForms->map(function ($item) {
-            return [
-                'name' => $item->name,
-                'number_response' => $item->results->count()
-            ];
-        })->toArray();
+                $surveyForm = $surveyForms->map(function ($item) {
+                    return [
+                        'name' => $item->name,
+                        'number_response' => $item->results->count()
+                    ];
+                })->toArray();
+                break;
+
+            case 'MONTH':
+                $surveyForms = SurveyForm::whereHas('results', function ($query) use ($attributes) {
+                    $query->whereMonth('created_at', '>=', Carbon::parse($attributes['start_time'])->format('m'))->whereMonth('created_at', '<=', Carbon::parse($attributes['end_time'])->format('m'));
+                })->with(['results' => function ($q) use ($attributes) {
+                    $q->whereYear('created_at', '>=', Carbon::parse($attributes['start_time'])->format('Y'))->whereYear('created_at', '<=', Carbon::parse($attributes['end_time'])->format('Y'));
+                }])->get();
+
+                $surveyForm = $surveyForms->map(function ($item) {
+                    return [
+                        'name' => $item->name,
+                        'number_response' => $item->results->count()
+                    ];
+                })->toArray();
+
+                break;
+        }
 
         return $surveyForm;
     }
