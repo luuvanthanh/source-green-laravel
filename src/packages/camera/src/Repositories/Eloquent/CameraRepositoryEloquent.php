@@ -558,7 +558,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
     public function onOffAiService($attributes, $id)
     {
         $cameraService = CameraService::where('camera_id', $id)->where('ai_service_id', $attributes['ai_service_id'])->first();
-
+        
         DB::beginTransaction();
         try {
             if (is_null($cameraService)) {
@@ -596,6 +596,20 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             }
 
             $service = AiService::find($attributes['ai_service_id']);
+            
+            if ($service->const_stream == 'KHUON_MAT') {
+                $serviceId = AiService::where('const_stream', 'KHUON_MAT')->where('id', '!=', $attributes['ai_service_id'])->get()->pluck('id')->toArray();
+                
+                $cameraServices  = CameraService::where('camera_id', $id)->whereIn('ai_service_id', $serviceId)->get();
+                
+                if (!empty($cameraServices)) {
+                    foreach ($cameraServices as $cameraService) {
+                        $cameraService->update([
+                            'is_on' => $attributes['is_on']
+                        ]);
+                    }
+                }
+            }
 
             $camera = Camera::find($id);
             $url =  $camera->cameraServer->ai_service_url;
@@ -605,7 +619,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
                 'cam_id' => $id,
                 'service_id' => $service->number,
             ];
-
+            
             if ($attributes['is_on']) {
                 AiApiServices::onCameraAiService($url, $dataCameraService);
             } else {
