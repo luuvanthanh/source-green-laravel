@@ -195,6 +195,15 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         return parent::find($workHour->Id);
     }
 
+    public function updating($attributes)
+    {
+        if (!empty($attributes['registrationDateType'])) {
+            $attributes['registrationDateType'] = WorkHour::REGISTRATION_DATE_TYPE[$attributes['registrationDateType']];
+        }
+
+        return $attributes;
+    }
+
     public function updated($workHour, $attributes)
     {
         if (!empty($attributes['approvalEmployee'])) {
@@ -566,7 +575,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
     public function registrationDateType()
     {
         $data = array_keys(WorkHour::REGISTRATION_DATE_TYPE);
-        
+
         return $data;
     }
 }

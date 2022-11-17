@@ -55,6 +55,12 @@ class ExcelExporterServices
         'export_excel_employee_info' => [
             'template' => 'export_excel_employee_info.xlsx',
         ],
+        'test_semester' => [
+            'template' => 'test_semester.xlsx'
+        ],
+        'absent_student' => [
+            'template' => 'absent_student.xlsx'
+        ]
     ];
 
     protected $disk;

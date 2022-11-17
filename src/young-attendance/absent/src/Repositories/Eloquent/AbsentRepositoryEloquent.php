@@ -14,6 +14,9 @@ use GGPHP\YoungAttendance\Absent\Presenters\AbsentPresenter;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use Illuminate\Container\Container as Application;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
@@ -22,6 +25,21 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentRepository
 {
+
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app,
+        ExcelExporterServices $excelExporterServices
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+        $this->excelExporterServices = $excelExporterServices;
+    }
+
     protected $fieldSearchable = [
         'AbsentTypeId',
         'AbsentReasonId',
@@ -118,9 +136,13 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         if (!empty($attributes['branchId'])) {
-            $this->model = $this->model->whereHas('student.classStudent.classes', function ($query) use ($attributes) {
+            $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
                 $query->where('BranchId', $attributes['branchId']);
             });
+        }
+
+        if ($parse === false) {
+            return $this->model;
         }
 
         if (!empty($attributes['limit'])) {
@@ -146,7 +168,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
             foreach ($periodDate as $date) {
 
-                if (Carbon::parse($date)->dayOfWeek == Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek == Carbon::SUNDAY) {
+                if (Carbon::parse($date)->isSaturday() || Carbon::parse($date)->isSaturday()) {
                     continue;
                 }
 
@@ -164,10 +186,9 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
 
             if ($absent->Status == 'CONFIRM') {
-
                 foreach ($periodDate as $date) {
 
-                    if (Carbon::parse($date)->dayOfWeek == Carbon::SATURDAY && Carbon::parse($date)->dayOfWeek == Carbon::SUNDAY) {
+                    if (Carbon::parse($date)->isSaturday() || Carbon::parse($date)->isSaturday()) {
                         continue;
                     }
 
@@ -188,24 +209,15 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     }
                 }
 
-                $teachers = $absent->student->classStudent->classes->teacher;
+                $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
                 $userId = [];
-
-                if (!empty($teachers)) {
-                    foreach ($teachers as $teacher) {
-                        if (!is_null($teacher->account)) {
-                            $userId[] = $teacher->account->AppUserId;
-                        }
-                    }
+                if (!is_null($getTeacher)) {
+                    $userId[] = $getTeacher->teacher->account->AppUserId;
                 }
 
                 $nameStudent = $absent->student->FullName;
                 $images =  json_decode($absent->student->FileImage);
-                $urlImage = '';
-
-                if (!empty($images)) {
-                    $urlImage = env('IMAGE_URL') . $images[0];
-                }
+                $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
 
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
@@ -238,11 +250,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
                 $nameStudent = $absent->student->FullName;
                 $images =  json_decode($absent->student->FileImage);
-                $urlImage = '';
+                $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
 
-                if (!empty($images)) {
-                    $urlImage = env('IMAGE_URL') . $images[0];
-                }
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
                 $message = 'Đơn xin phép nghỉ từ ngày' . ' ' . $startDate . ' ' . 'đến ngày' . ' ' . $endDate . ' ' . 'cần Phụ huynh duyệt đơn.';
@@ -257,7 +266,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                         'moduleCode' => 'ABSENT_STUDENT',
                         'refId' => $absent->Id,
                     ];
-
                     dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                 }
             }
@@ -273,7 +281,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
     public function update(array $attributes, $id)
     {
         $absent = Absent::findOrFail($id);
-
         $absent->update($attributes);
 
         $absent->absentStudentDetail()->delete();
@@ -326,24 +333,16 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
             }
 
-            $teachers = $absent->student->classStudent->classes->teacher;
+            $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
             $userId = [];
 
-            if (!empty($teachers)) {
-                foreach ($teachers as $teacher) {
-                    if (!is_null($teacher->account)) {
-                        $userId[] = $teacher->account->AppUserId;
-                    }
-                }
+            if (!is_null($getTeacher)) {
+                $userId[] = $getTeacher->teacher->account->AppUserId;
             }
 
             $nameStudent = $absent->student->FullName;
             $images =  json_decode($absent->student->FileImage);
-            $urlImage = '';
-
-            if (!empty($images)) {
-                $urlImage = env('IMAGE_URL') . $images[0];
-            }
+            $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
 
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
@@ -376,11 +375,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
             $nameStudent = $absent->student->FullName;
             $images =  json_decode($absent->student->FileImage);
-            $urlImage = '';
-
-            if (!empty($images)) {
-                $urlImage = env('IMAGE_URL') . $images[0];
-            }
+            $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
 
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
@@ -452,26 +447,16 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 ]);
             }
         }
-
-        $teachers = $absent->student->classStudent->classes->teacher;
+        $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
         $userId = [];
 
-        if (!empty($teachers)) {
-            foreach ($teachers as $teacher) {
-                if (!is_null($teacher->account)) {
-                    $userId[] = $teacher->account->AppUserId;
-                }
-            }
+        if (!is_null($getTeacher)) {
+            $userId[] = $getTeacher->teacher->account->AppUserId;
         }
 
         $nameStudent = $absent->student->FullName;
         $images =  json_decode($absent->student->FileImage);
-        $urlImage = '';
-
-        if (!empty($images)) {
-            $urlImage = env('IMAGE_URL') . $images[0];
-        }
-
+        $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
         $startDate = $absent->StartDate->format('d-m');
         $endDate = $absent->EndDate->format('d-m');
 
@@ -573,5 +558,29 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         return $absent;
+    }
+
+    public function absentStudentExcel(array $attributes)
+    {
+        $absentStudent = $this->filterAbsent($attributes, false);
+
+        if ($absentStudent->get()->isNotEmpty()) {
+            $code = 1;
+            foreach ($absentStudent->get() as $key => $value) {
+                $params['[code]'][] = 'XP' . $code++;
+                $params['[time]'][] = $value->CreationTime->format('Y-m-d h:i');
+                $params['[schoolYear]'][] = $value->schoolYear->YearFrom . '-' . $value->schoolYear->YearTo;
+                $params['[branch]'][] = $value->student->branch->Name;
+                $params['[class]'][] = $value->student->classes->Name;
+                $params['[name]'][] = $value->student->FullName;
+                $params['[absentTime]'][] = $value->StartDate->format('Y-m-d') . '-' . $value->EndDate->format('Y-m-d');
+                $params['[reason]'][] = $value->absentReason->Name;
+                $params['[status]'][] = $value->Status;
+            }
+        } else {
+            throw new HttpException(400, 'Xuất excel không thành công.');
+        }
+
+        return $this->excelExporterServices->export('absent_student', $params);
     }
 }
