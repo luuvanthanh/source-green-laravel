@@ -6,6 +6,8 @@ use alhimik1986\PhpExcelTemplator\params\CallbackParam;
 use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
+use GGPHP\Category\Models\TouristDestination;
+use GGPHP\Event\Models\Event;
 use GGPHP\EventConfig\Models\EventConfig;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Notification\Models\Notification;
@@ -122,6 +124,14 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 $data = [];
                 $dataTouristDestination = [];
                 $numberOfTourists = $numberOfTourist->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time'])->get();
+                
+                $dataEventTrash = $this->reportEventTrash($attributes);
+                $dataEventHawker = $this->reportEventHawker($attributes);
+                $dataEventObjectToBeTracked  = $this->reportEventObjectToBeTracked($attributes);
+                $dataEventGuidingBehavior  = $this->reportEventGuidingBehavior($attributes);
+                $dataEventDoubtfulTourGuide  = $this->reportEventDoubtfulTourGuide($attributes);
+                $dataEventIllegalTourGuide  = $this->reportEventIllegalTourGuide($attributes);
+                $dataEventLawfulTourGuide  = $this->reportEventLawfulTourGuide($attributes);
 
                 foreach ($numberOfTourists as $numberOfTourist) {
                     $date = Carbon::parse($numberOfTourist->time)->format('Y-m-d');
@@ -157,6 +167,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                         }
                     }
                 }
+
                 break;
             case 'MONTH':
                 $startTime = Carbon::parse($attributes['start_time'])->startOfMonth();
@@ -247,8 +258,155 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
         return [
             'data' => array_values($data),
-            'dataTouristDestination' => $dataTouristDestination
+            'dataTouristDestination' => $dataTouristDestination,
+            'dataEventTrash' => $dataEventTrash,
+            'dataEventHawker' => $dataEventHawker,
+            'dataEventObjectToBeTracked' => $dataEventObjectToBeTracked,
+            'dataEventGuidingBehavior' => $dataEventGuidingBehavior,
+            'dataEventDoubtfulTourGuide' => $dataEventDoubtfulTourGuide,
+            'dataEventIllegalTourGuide' => $dataEventIllegalTourGuide,
+            'dataEventLawfulTourGuide' => $dataEventLawfulTourGuide
         ];
+    }
+
+    public function reportEventTrash($attributes)
+    {
+        $data = [];
+        $event = Event::where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+        $eventTrashes = $event->whereHas('eventType', function ($query) use ($attributes) {
+            $query->where('code', 'RAC');
+        })->get();
+
+        foreach ($eventTrashes as $key => $eventTrash) {
+            if (!array_key_exists($eventTrash->touristDestination->name, $data)) {
+                $data[$eventTrash->touristDestination->name] =  1;
+            } else {
+                $data[$eventTrash->touristDestination->name] += 1;
+            }
+        }
+
+        return $data;
+    }
+
+    public function reportEventHawker($attributes)
+    {
+        $data = [];
+        $event = Event::where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+        $eventHawkers = $event->whereHas('eventType', function ($query) use ($attributes) {
+            $query->where('code', 'BHR');
+        })->get();
+
+        foreach ($eventHawkers as $key => $eventHawker) {
+            if (!array_key_exists($eventHawker->touristDestination->name, $data)) {
+                $data[$eventHawker->touristDestination->name] =  1;
+            } else {
+                $data[$eventHawker->touristDestination->name] += 1;
+            }
+        }
+
+        return $data;
+    }
+
+    public function reportEventObjectToBeTracked($attributes)
+    {
+        $data = [];
+        $event = Event::where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+        $eventObjectToBeTracked = $event->whereHas('eventType', function ($query) use ($attributes) {
+            $query->where('code', 'BL');
+        })->get();
+
+        foreach ($eventObjectToBeTracked as $key => $eventObjectToBeTrack) {
+            if (!array_key_exists($eventObjectToBeTrack->touristDestination->name, $data)) {
+                $data[$eventObjectToBeTrack->touristDestination->name] =  1;
+            } else {
+                $data[$eventObjectToBeTrack->touristDestination->name] += 1;
+            }
+        }
+
+        return $data;
+    }
+
+    public function reportEventGuidingBehavior($attributes)
+    {
+        $data = [];
+        $event = Event::where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+        $eventGuidingBehaviors = $event->whereHas('eventType', function ($query) use ($attributes) {
+            $query->where('code', 'HVHD');
+        })->get();
+
+        foreach ($eventGuidingBehaviors as $key => $eventGuidingBehavior) {
+            if (!array_key_exists($eventGuidingBehavior->touristDestination->name, $data)) {
+                $data[$eventGuidingBehavior->touristDestination->name] =  1;
+            } else {
+                $data[$eventGuidingBehavior->touristDestination->name] += 1;
+            }
+        }
+
+        return $data;
+    }
+
+    public function reportEventDoubtfulTourGuide($attributes)
+    {
+        $data = [];
+        $event = Event::where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+        $eventDoubtfulTourGuides = $event->whereHas('eventType', function ($query) use ($attributes) {
+            $query->where('code', 'NNHDV');
+        })->get();
+
+        foreach ($eventDoubtfulTourGuides as $key => $eventDoubtfulTourGuide) {
+            if (!array_key_exists($eventDoubtfulTourGuide->touristDestination->name, $data)) {
+                $data[$eventDoubtfulTourGuide->touristDestination->name] =  1;
+            } else {
+                $data[$eventDoubtfulTourGuide->touristDestination->name] += 1;
+            }
+        }
+
+        return $data;
+    }
+
+    public function reportEventIllegalTourGuide($attributes)
+    {
+        $data = [];
+        $event = Event::where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+        $eventIllegalTourGuides = $event->whereHas('eventType', function ($query) use ($attributes) {
+            $query->where('code', 'HDVBHP');
+        })->get();
+
+        foreach ($eventIllegalTourGuides as $key => $eventIllegalTourGuide) {
+            if (!array_key_exists($eventIllegalTourGuide->touristDestination->name, $data)) {
+                $data[$eventIllegalTourGuide->touristDestination->name] =  1;
+            } else {
+                $data[$eventIllegalTourGuide->touristDestination->name] += 1;
+            }
+        }
+
+        return $data;
+    }
+
+    public function reportEventLawfulTourGuide($attributes)
+    {
+        $data = [];
+        $event = Event::where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+
+        $eventLawfulTourGuides = $event->whereHas('eventType', function ($query) use ($attributes) {
+            $query->where('code', 'HDVHP');
+        })->get();
+
+        foreach ($eventLawfulTourGuides as $key => $eventLawfulTourGuide) {
+            if (!array_key_exists($eventLawfulTourGuide->touristDestination->name, $data)) {
+                $data[$eventLawfulTourGuide->touristDestination->name] =  1;
+            } else {
+                $data[$eventLawfulTourGuide->touristDestination->name] += 1;
+            }
+        }
+
+        return $data;
     }
 
     public function create($attributes)
