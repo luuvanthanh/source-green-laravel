@@ -239,13 +239,13 @@ class Index extends PureComponent {
             },
             {
                 title: 'Tuổi (tháng)',
-                key: 'birth_day',
+                key: 'age',
                 width: 150,
-                render: (record) => <Text size="normal">{record?.age_month} Tháng</Text>,
+                render: (record) => <Text size="normal">{record?.age} Tháng</Text>,
             },
             {
                 title: 'Cơ sở',
-                key: 'age',
+                key: 'branch',
                 width: 150,
                 render: (value, record) => (
                     <div className='d-flex' >
@@ -255,7 +255,7 @@ class Index extends PureComponent {
             },
             {
                 title: 'Lớp',
-                key: 'age',
+                key: 'class',
                 width: 150,
                 render: (value, record) => (
                     <div className='d-flex' >

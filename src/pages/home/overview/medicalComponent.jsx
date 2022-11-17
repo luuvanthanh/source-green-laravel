@@ -20,7 +20,7 @@ import HelperModules from './utils/Helper';
 const { TabPane } = Tabs;
 const Index = memo(({ classId, branchId }) => {
   const dispatch = useDispatch();
-  const [{ medicals, configs }, loading] = useSelector(({ loading: { effects }, overView }) => [
+  const [{ medicals, configs, medicalsSummary }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
     effects,
   ]);
@@ -239,6 +239,15 @@ const Index = memo(({ classId, branchId }) => {
       };
     });
 
+  const formNumber = () => {
+    if (search?.status === variablesModules.STATUS.RECEIVED) {
+      return medicals?.reduce((total, item) => total + item.total, 0) || 0;
+    }
+    const data = medicalsSummary?.summary?.map((i) => i.items).flat(Infinity);
+    const check = data?.find(i => i?.name === type);
+    return check?.total || 0;
+  };
+
   return (
     <>
       <Modal
@@ -422,7 +431,7 @@ const Index = memo(({ classId, branchId }) => {
                 Y tế
               </span>
             </div>
-            <p className={classnames('mb0', 'font-size-14')}>{medicals?.reduce((total, item) => total + item.total, 0) || 0}</p>
+            <p className={classnames('mb0', 'font-size-14')}>{formNumber()}</p>
           </div>
           <Tabs onChange={changeTab} activeKey={search?.status}>
             {variablesModules.MEDICAL.map(({ id, name }) => (

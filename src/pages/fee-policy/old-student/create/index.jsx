@@ -207,6 +207,7 @@ const Index = memo(() => {
         classType: student?.class?.classType?.name || '',
         className: student?.class?.name || '',
         classTypeId: student?.class?.classType?.id || '',
+        studentId: student?.id || '',
       };
       setDetails(newDetails);
     }
@@ -584,6 +585,7 @@ const Index = memo(() => {
                         type={variables.SELECT}
                         placeholder="Chọn học sinh"
                         allowClear={false}
+                        loading={loading['oldStudentAdd/GET_STUDENTS']}
                         data={loading['oldStudentAdd/GET_STUDENTS'] ? [] : students.map(item => ({ ...item, name: item?.fullName || '-' }))}
                         rules={[variables.RULES.EMPTY]}
                         onChange={changeStudent}

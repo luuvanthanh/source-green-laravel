@@ -661,26 +661,26 @@ const Index = memo(() => {
       ...values,
       classId: values.class,
       class: undefined,
-      // isReminded: !!values?.isReminded,
-      isReminded: false,
-      // remindDate: values?.isReminded
-      //   ? Helper.getDateTime({
-      //     value: Helper.setDate({
-      //       ...variables.setDateData,
-      //       originValue: values.remindDate,
-      //     }),
-      //     format: variables.DATE_FORMAT.DATE_AFTER,
-      //     isUTC: false,
-      //   }) : undefined,
-      // remindTime: values?.isReminded
-      //   ? Helper.getDateTime({
-      //     value: Helper.setDate({
-      //       ...variables.setDateData,
-      //       originValue: values.remindTime,
-      //     }),
-      //     format: variables.DATE_FORMAT.HOUR,
-      //     isUTC: false,
-      //   }) : undefined,
+      isReminded: !!values?.isReminded,
+      // isReminded: false,
+      remindDate: values?.isReminded
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.remindDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }) : undefined,
+      remindTime: values?.isReminded
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.remindTime,
+          }),
+          format: variables.DATE_FORMAT.HOUR,
+          isUTC: false,
+        }) : undefined,
       id: params.id,
       content,
       // sentDate: moment(),
@@ -828,26 +828,26 @@ const Index = memo(() => {
       ...values,
       classId: values.class,
       class: undefined,
-      // isReminded: !!values?.isReminded,
-      isReminded: false,
-      // remindDate: values?.isReminded
-      //   ? Helper.getDateTime({
-      //     value: Helper.setDate({
-      //       ...variables.setDateData,
-      //       originValue: values.remindDate,
-      //     }),
-      //     format: variables.DATE_FORMAT.DATE_AFTER,
-      //     isUTC: false,
-      //   }) : undefined,
-      // remindTime: values?.isReminded
-      //   ? Helper.getDateTime({
-      //     value: Helper.setDate({
-      //       ...variables.setDateData,
-      //       originValue: values.remindTime,
-      //     }),
-      //     format: variables.DATE_FORMAT.HOUR,
-      //     isUTC: false,
-      //   }) : undefined,
+      isReminded: !!values?.isReminded,
+      // isReminded: false,
+      remindDate: values?.isReminded
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.remindDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }) : undefined,
+      remindTime: values?.isReminded
+        ? Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.remindTime,
+          }),
+          format: variables.DATE_FORMAT.HOUR,
+          isUTC: false,
+        }) : undefined,
       id: params.id,
       content,
       // sentDate: moment(),
@@ -918,6 +918,67 @@ const Index = memo(() => {
       }
     }
   };
+
+  const onFormBtnSAVE = () => {
+    if (details?.status === 'DRAFT' || !params?.id) {
+      return <Button
+        color="success"
+        size="large"
+        loading={
+          loading['notificationAdd/GET_BRANCHES'] ||
+          loading['notificationAdd/GET_DIVISIONS'] ||
+          loading['notificationAdd/ADD'] ||
+          loading['notificationAdd/UPDATE'] ||
+          loading['notificationAdd/SEND']
+        }
+        style={{ marginLeft: 'auto' }}
+        htmlType="submit"
+        onClick={() => onFinish()}
+        disabled={
+          !employees.find((item) => item.checked) &&
+          !parents.find((item) => item.checked) &&
+          !isAllEmployees &&
+          !isAllParents &&
+          checkboxInput
+        }
+      >
+        Lưu
+      </Button>;
+    }
+    return "";
+  };
+
+  const onFormBtnSEND = () => {
+    if (details?.status === 'DRAFT' || details?.status === 'SENDING' || !params?.id) {
+      return <Button
+        color="primary"
+        size="large"
+        className='ml10'
+        htmlType="submit"
+        loading={
+          loading['notificationAdd/GET_BRANCHES'] ||
+          loading['notificationAdd/GET_DIVISIONS'] ||
+          loading['notificationAdd/ADD'] ||
+          loading['notificationAdd/UPDATE'] ||
+          loading['notificationAdd/SEND']
+        }
+        style={{ marginLeft: 'auto' }}
+        onClick={() => changeSend()}
+        disabled={
+          !employees.find((item) => item.checked) &&
+          !parents.find((item) => item.checked) &&
+          !isAllEmployees &&
+          checkboxInput &&
+          !isAllParents || (details?.sentDate && params?.id)
+
+        }
+      >
+        Gửi
+      </Button>;
+    }
+    return "";
+  };
+
 
   return (
     <Form
@@ -1238,7 +1299,7 @@ const Index = memo(() => {
                   modules={modules}
                   formats={formats}
                 />
-                {/* <Pane className="col-lg-12 mt20 d-flex p0">
+                <Pane className="col-lg-12 mt20 d-flex p0">
                   <Pane className="mr15">
                     <FormItem
                       className="checkbox-row checkbox-small p0"
@@ -1269,52 +1330,11 @@ const Index = memo(() => {
                       </>
                     )
                   }
-                </Pane> */}
+                </Pane>
               </Pane>
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-                <Button
-                  color="success"
-                  size="large"
-                  loading={
-                    loading['notificationAdd/GET_BRANCHES'] ||
-                    loading['notificationAdd/GET_DIVISIONS'] ||
-                    loading['notificationAdd/ADD'] ||
-                    loading['notificationAdd/UPDATE']
-                  }
-                  style={{ marginLeft: 'auto' }}
-                  htmlType="submit"
-                  onClick={() => onFinish()}
-                  disabled={
-                    !employees.find((item) => item.checked) &&
-                    !parents.find((item) => item.checked) &&
-                    !isAllEmployees &&
-                    !isAllParents &&
-                    checkboxInput
-                  }
-                >
-                  Lưu
-                </Button>
-                <Button
-                  color="primary"
-                  size="large"
-                  className='ml10'
-                  htmlType="submit"
-                  loading={
-                    loading['notificationAdd/SEND']
-                  }
-                  style={{ marginLeft: 'auto' }}
-                  onClick={() => changeSend()}
-                  disabled={
-                    !employees.find((item) => item.checked) &&
-                    !parents.find((item) => item.checked) &&
-                    !isAllEmployees &&
-                    checkboxInput &&
-                    !isAllParents || (details?.sentDate && params?.id)
-
-                  }
-                >
-                  Gửi
-                </Button>
+                {onFormBtnSAVE()}
+                {onFormBtnSEND()}
               </Pane>
             </Pane>
           </Pane>
