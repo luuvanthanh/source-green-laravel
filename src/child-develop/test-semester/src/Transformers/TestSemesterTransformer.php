@@ -110,16 +110,18 @@ class TestSemesterTransformer extends BaseTransformer
 
         if (request()->is_summary_approval_status && request()->is_summary_approval_status == 'true') {
             $items = $this->getCurrentScope()->getResource()->getData();
-            $approvelStatus = $items->groupBy('ApprovalStatus')->map->count()->toArray();
-            ksort($approvelStatus);
-            $unsent = isset($approvelStatus[0]) ? $approvelStatus[0] : 0;
-            $unqulified = isset($approvelStatus[1]) ? $approvelStatus[1] : 0;
-            $approved = isset($approvelStatus[2]) ? $approvelStatus[2] : 0;
+            $approvedStatus = $items->groupBy('ApprovalStatus')->map->count()->toArray();
+            ksort($approvedStatus);
+            $unsent = isset($approvedStatus[0]) ? $approvedStatus[0] : 0;
+            $unQualified = isset($approvedStatus[1]) ? $approvedStatus[1] : 0;
+            $approved = isset($approvedStatus[2]) ? $approvedStatus[2] : 0;
+            $pendingApproved = isset($approvedStatus[3]) ? $approvedStatus[3] : 0;
 
             $data['ApprovalStatus'] = [
                 'total_unsent' => $unsent,
-                'total_unqualified' => $unqulified,
+                'total_unqualified' => $unQualified,
                 'total_approved' => $approved,
+                'total_pending_approved' => $pendingApproved
             ];
         }
 

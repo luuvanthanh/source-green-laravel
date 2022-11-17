@@ -17,7 +17,7 @@ use GGPHP\Users\Transformers\UserTransformer;
 class BusinessCardTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['employee'];
+    protected $availableIncludes = ['employee', 'approvalEmployee'];
     protected $defaultIncludes = ['businessCardDetail', 'absentType'];
 
     public function customAttributes($model): array
@@ -34,7 +34,7 @@ class BusinessCardTransformer extends BaseTransformer
     {
         $buttonSendAgainEdit = false;
         $configNotification  = ConfigNotification::where('Type', ConfigNotification::TYPE['BUSINESS_CARD'])->first();
-        
+
         if (!is_null($configNotification)) {
             $dateNow = Carbon::now();
             $dateNow = $dateNow->format('YmdH');
@@ -82,5 +82,10 @@ class BusinessCardTransformer extends BaseTransformer
         }
 
         return $this->item($businessCard->absentType, new AbsentTypeTransformer, 'AbsentType');
+    }
+
+    public function includeApprovalEmployee(BusinessCard $businessCard)
+    {
+        return $this->collection($businessCard->approvalEmployee, new ApprovalEmployeeTransformer, 'ApprovalEmployee');
     }
 }

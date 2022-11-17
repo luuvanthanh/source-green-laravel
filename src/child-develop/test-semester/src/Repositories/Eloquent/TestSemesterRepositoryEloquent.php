@@ -22,7 +22,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Container\Container as Application;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use function Symfony\Component\Translation\t;
 
 /**
@@ -39,13 +39,16 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         'Id', 'CreationTime'
     ];
 
+    protected $excelExporterServices;
 
     public function __construct(
         StudentRepositoryEloquent $studentRepositoryEloquent,
-        Application $app
+        Application $app,
+        ExcelExporterServices $excelExporterServices
     ) {
         parent::__construct($app);
         $this->studentRepositoryEloquent = $studentRepositoryEloquent;
+        $this->excelExporterServices = $excelExporterServices;
     }
 
     /**
@@ -454,12 +457,15 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 if (!empty($images)) {
                     $urlImage = env('IMAGE_URL') . $images[0];
                 }
-                $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
+
+                $nameOfTestSemester = $testSemester->assessmentPeriod->nameAssessmentPeriod->Name;
+                $title = 'Đánh giá định kỳ' . ' ' . $nameOfTestSemester;
+                $message = $student->FullName . ' ' . 'nhận đánh giá định kỳ' . ' ' . $nameOfTestSemester . ' ' . 'năm học' . ' ' . $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
 
                 if (!empty($studentAccount)) {
                     $dataNoti = [
                         'users' => array_column($studentAccount->pluck('account')->toArray(), 'AppUserId'),
-                        'title' => $student->FullName,
+                        'title' => $title,
                         'imageURL' => $urlImage,
                         'message' => $message,
                         'moduleType' => 22,
@@ -613,5 +619,30 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         return parent::All();
+    }
+
+    public function excelTestSemester(array $attributes)
+    {
+        $params = [];
+        $arrStudentId = explode(',', $attributes['studentId']);
+
+        $testSemesters = $this->model()::whereIn('StudentId', $arrStudentId)->where('AssessmentPeriodId', $attributes['assessmentPeriodId'])->get();
+
+        foreach ($testSemesters as $key => $testSemester) {
+            foreach ($testSemester->testSemesterDetail as $key => $detail) {
+                foreach ($detail->testSemesterDetailChildren as $key => $children) {
+
+                    $params['[branch]'][] = $testSemester->student->classes->branch->Name;
+                    $params['[class]'][] = $testSemester->student->classes->Name;
+                    $params['[student]'][] = $testSemester->student->FullName;
+                    $params['[time_age]'][] = $testSemester->TimeAgeTestSemester;
+                    $params['[age_test]'][] = !empty($children->childEvaluate) ? $children->childEvaluate->Age : '';
+                    $params['[skill]'][] = $detail->categorySkill->Name;
+                    $params['[content]'][] = !empty($children->childEvaluateDetailChildren) ? $children->childEvaluateDetailChildren->Content : '';
+                }
+            }
+        }
+
+        return $this->excelExporterServices->export('test_semester', $params);
     }
 }

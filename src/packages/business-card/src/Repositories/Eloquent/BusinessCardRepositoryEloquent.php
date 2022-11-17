@@ -141,6 +141,7 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         } else {
             $attributes['status'] = BusinessCard::STATUS['WAITING_APPROVAL'];
         }
+        
 
         return $attributes;
     }

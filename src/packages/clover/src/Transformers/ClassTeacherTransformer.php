@@ -4,6 +4,7 @@ namespace GGPHP\Clover\Transformers;
 
 use GGPHP\Clover\Models\ClassTeacher;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Users\Transformers\UserTransformer;
 
 /**
  * Class ClassTeacherTransformer.
@@ -29,7 +30,7 @@ class ClassTeacherTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['class'];
+    protected $availableIncludes = ['class', 'teacher'];
 
     /**
      * Transform the Student entity.
@@ -56,5 +57,14 @@ class ClassTeacherTransformer extends BaseTransformer
         }
 
         return $this->item($classTeacher->classes, new ClassesTransformer, 'Class');
+    }
+
+    public function includeTeacher(ClassTeacher $classTeacher)
+    {
+        if (empty($classTeacher->teacher)) {
+            return;
+        }
+
+        return $this->item($classTeacher->teacher, new UserTransformer, 'Teacher');
     }
 }

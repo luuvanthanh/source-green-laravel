@@ -1,18 +1,18 @@
 <?php
 
-namespace GGPHP\BusinessCard\Models;
+namespace GGPHP\WorkHour\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Users\Models\User;
 
-class ApprovalEmployee extends UuidModel
+class ApprovalEmployeeWorkHour extends UuidModel
 {
     public $incrementing = false;
 
     /**
      * Declare the table name
      */
-    protected $table = 'ApprovalEmployees';
+    protected $table = 'ApprovalEmployeeWorkHours';
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +20,7 @@ class ApprovalEmployee extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'EmployeeId', 'BusinessCardId'
+        'EmployeeId', 'WorkHourId'
     ];
 
     public function employee()

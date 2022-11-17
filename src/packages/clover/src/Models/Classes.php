@@ -48,4 +48,9 @@ class Classes extends UuidModel
     {
         return $this->hasMany(ChargeOldStudent::class, 'ClassId');
     }
+
+    public function classTeacher()
+    {
+        return $this->hasMany(ClassTeacher::class, 'ClassId');
+    }
 }

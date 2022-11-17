@@ -26,6 +26,8 @@ class CreatWorkHourRequest extends FormRequest
      */
     public function rules()
     {
+        $registrationDateType = implode(',', array_keys(WorkHour::REGISTRATION_DATE_TYPE));
+
         return [
             'employeeId' => 'required|exists:Employees,Id',
             'date' => 'required',
@@ -72,6 +74,7 @@ class CreatWorkHourRequest extends FormRequest
                     }
                 },
             ],
+            'registrationDateType' => 'nullable|in:' . $registrationDateType
         ];
     }
 
