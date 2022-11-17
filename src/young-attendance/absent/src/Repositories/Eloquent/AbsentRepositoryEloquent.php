@@ -567,7 +567,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         if ($absentStudent->get()->isNotEmpty()) {
             $code = 1;
             foreach ($absentStudent->get() as $key => $value) {
-                $params['[code]'][] = 'XP' . $code++;
                 $params['[time]'][] = $value->CreationTime->format('Y-m-d h:i');
                 $params['[schoolYear]'][] = $value->schoolYear->YearFrom . '-' . $value->schoolYear->YearTo;
                 $params['[branch]'][] = !empty($value->student->branch) ? $value->student->branch->Name : '...';
@@ -575,7 +574,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 $params['[name]'][] = !empty($value->student) ? $value->student->FullName : '...';
                 $params['[absentTime]'][] = $value->StartDate->format('Y-m-d') . '-' . $value->EndDate->format('Y-m-d');
                 $params['[reason]'][] = !empty($value->absentReason) ? $value->absentReason->Name : '...';
-                $params['[status]'][] = $value->Status;
             }
         } else {
             throw new HttpException(400, 'Xuất excel không thành công.');
