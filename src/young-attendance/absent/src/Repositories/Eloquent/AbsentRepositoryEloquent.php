@@ -570,11 +570,11 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 $params['[code]'][] = 'XP' . $code++;
                 $params['[time]'][] = $value->CreationTime->format('Y-m-d h:i');
                 $params['[schoolYear]'][] = $value->schoolYear->YearFrom . '-' . $value->schoolYear->YearTo;
-                $params['[branch]'][] = $value->student->branch->Name;
-                $params['[class]'][] = $value->student->classes->Name;
-                $params['[name]'][] = $value->student->FullName;
+                $params['[branch]'][] = !empty($value->student->branch) ? $value->student->branch->Name : '...';
+                $params['[class]'][] = !empty($value->student->classes) ? $value->student->classes->Name : '...';
+                $params['[name]'][] = !empty($value->student) ? $value->student->FullName : '...';
                 $params['[absentTime]'][] = $value->StartDate->format('Y-m-d') . '-' . $value->EndDate->format('Y-m-d');
-                $params['[reason]'][] = $value->absentReason->Name;
+                $params['[reason]'][] = !empty($value->absentReason) ? $value->absentReason->Name : '...';
                 $params['[status]'][] = $value->Status;
             }
         } else {
