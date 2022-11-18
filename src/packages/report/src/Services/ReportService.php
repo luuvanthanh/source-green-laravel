@@ -506,7 +506,7 @@ class ReportService
 
         $dataByTime = [];
         $touristDestinations = $touristDestination->get();
-        $numberOfGuestMax = collect();
+        $numberOfGuestMax = [];
 
         foreach ($periodDate as $key => $date) {
             $dataBytouristDestination = [];
@@ -537,11 +537,11 @@ class ReportService
                     continue;
                 }
 
-                $numberOfGuestMax->push([
+                $numberOfGuestMax[] = [
                     'time' =>  $date->format($formatTime),
                     'name' => $value->name,
                     'number_of_guest' => $numberOfTourists
-                ]);
+                ];
 
                 $totalTime += $numberOfTourists;
                 $dataBytouristDestination[] = [
@@ -560,10 +560,14 @@ class ReportService
                 'tourist_destination' => $dataBytouristDestination
             ];
         }
+        
+        $numberOfGuestMaxColumn = array_column($numberOfGuestMax, 'number_of_guest');
+        array_multisort($numberOfGuestMaxColumn, SORT_DESC, $numberOfGuestMax);
+        $numberOfGuestMax = array_slice($numberOfGuestMax, 0, 5);
 
         return [
             'number_of_guest' => $dataByTime,
-            'number_of_guest_max' => $numberOfGuestMax->sortByDesc('number_of_guest')->take(5)->toArray()
+            'number_of_guest_max' => $numberOfGuestMax
         ];
     }
 
