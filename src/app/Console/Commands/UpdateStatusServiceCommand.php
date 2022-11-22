@@ -6,6 +6,7 @@ use GGPHP\Camera\Models\CameraService;
 use GGPHP\CameraServer\Models\CameraServer;
 use GGPHP\TravelAgency\Repositories\Eloquent\TravelAgencyRepositoryEloquent;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -32,8 +33,9 @@ class UpdateStatusServiceCommand extends Command
      */
     public function handle()
     {
-        $cameraServer = CameraServer::where('status', CameraServer::STATUS['CONNECTION'])->get();
+        $cameraServer = CameraServer::where('status', (string) CameraServer::STATUS['CONNECTION'])->get();
 
+        $cameraServiceId = [];
         foreach ($cameraServer as $key => $value) {
             $aiServiceUrl =  $value->ai_service_url;
 
@@ -59,16 +61,39 @@ class UpdateStatusServiceCommand extends Command
                 foreach ($data['list-status'] as $key => $serviceStatus) {
 
                     $cameraService = CameraService::where('camera_id', $serviceStatus['cam_id'])->whereHas('aiService', function ($query) use ($serviceStatus) {
-                        $query->where('number', $serviceStatus['service_id']);
+                        $query->where('number', (string) $serviceStatus['service_id']);
                     })->first();
 
                     if (!is_null($cameraService)) {
+                        $cameraServiceId[] = $cameraService->id;
                         $cameraService->update([
-                            'is_on' => $serviceStatus['running'],
-                            'is_stream' => $serviceStatus['streaming_on'],
+                            'is_on' => $serviceStatus['running'] ? DB::raw('true') : DB::raw('false'),
+                            'is_stream' => $serviceStatus['streaming_on'] ? DB::raw('true') : DB::raw('false'),
                         ]);
                     }
                 }
+            } elseif ($data['succ'] == true && empty($data['list-status'])) {
+                $cameraServices = CameraService::whereHas('camera', function ($query) use ($value) {
+                    $query->where('camera_server_id', $value->id);
+                })->get();
+
+                foreach ($cameraServices as $key => $cameraService) {
+                    $cameraService->update([
+                        'is_on' => DB::raw('false'),
+                        'is_stream' => DB::raw('false'),
+                    ]);
+                }
+            }
+        }
+
+        if (!empty($cameraServiceId)) {
+            $cameraServices = CameraService::whereNotIn('id', $cameraServiceId)->get();
+
+            foreach ($cameraServices as $key => $cameraService) {
+                $cameraService->update([
+                    'is_on' => DB::raw('false'),
+                    'is_stream' => DB::raw('false'),
+                ]);
             }
         }
     }
