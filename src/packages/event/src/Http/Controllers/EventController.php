@@ -5,6 +5,7 @@ namespace GGPHP\Event\Http\Controllers;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Event\Http\Requests\EventCreateRequest;
 use GGPHP\Event\Http\Requests\EventUpdateRequest;
+use GGPHP\Event\Models\ConfigHourStatusShowEvent;
 use GGPHP\Event\Models\Event;
 use GGPHP\Event\Repositories\Contracts\EventRepository;
 use Illuminate\Http\Request;
@@ -325,5 +326,21 @@ class EventController extends Controller
         $event = $this->eventRepository->handleEventFlow($request->all(), $id);
 
         return $this->success($event, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function configHourStatusShowEvent(Request $request)
+    {
+        ConfigHourStatusShowEvent::query()->delete();
+
+        $configHourStatusShowEvent  = ConfigHourStatusShowEvent::create($request->all());
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function updateStatusShow(Request $request)
+    {
+        $event = $this->eventRepository->updateStatusShow($request->all());
+
+        return $this->success([], trans('lang::messages.common.modifySuccess'));
     }
 }
