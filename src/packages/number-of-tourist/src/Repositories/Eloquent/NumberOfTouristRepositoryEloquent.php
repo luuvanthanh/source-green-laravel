@@ -70,6 +70,13 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
         switch ($attributes['report_type']) {
             case 'HOUR':
+                $dataEventTrash = [];
+                $dataEventHawker = [];
+                $dataEventObjectToBeTracked  = [];
+                $dataEventGuidingBehavior  = [];
+                $dataEventDoubtfulTourGuide  = [];
+                $dataEventIllegalTourGuide  = [];
+                $dataEventLawfulTourGuide  = [];
                 $startTime = Carbon::now()->setHour($attributes['start_time'])->setMinute('00')->setSecond('00');
                 $endTime = Carbon::now()->setHour($attributes['end_time'])->setMinute('00')->setSecond('00');
                 $numberOfTourist = NumberOfTourist::query();
@@ -170,6 +177,13 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
 
                 break;
             case 'MONTH':
+                $dataEventTrash = [];
+                $dataEventHawker = [];
+                $dataEventObjectToBeTracked  = [];
+                $dataEventGuidingBehavior  = [];
+                $dataEventDoubtfulTourGuide  = [];
+                $dataEventIllegalTourGuide  = [];
+                $dataEventLawfulTourGuide  = [];
                 $startTime = Carbon::parse($attributes['start_time'])->startOfMonth();
                 $endTime = Carbon::parse($attributes['end_time'])->endOfMonth();
                 $numberOfTourist = NumberOfTourist::query();
@@ -216,6 +230,13 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 }
                 break;
             case 'YEAR':
+                $dataEventTrash = [];
+                $dataEventHawker = [];
+                $dataEventObjectToBeTracked  = [];
+                $dataEventGuidingBehavior  = [];
+                $dataEventDoubtfulTourGuide  = [];
+                $dataEventIllegalTourGuide  = [];
+                $dataEventLawfulTourGuide  = [];
                 $startTime = Carbon::parse($attributes['start_time'])->startOfYear();
                 $endTime = Carbon::parse($attributes['end_time'])->endOfYear();
                 $numberOfTourist = NumberOfTourist::query();
