@@ -73,7 +73,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 $dataEventTrash = [];
                 $dataEventHawker = [];
                 $dataEventObjectToBeTracked  = [];
-                $dataEventGuidingBehavior  = [];
+                $dataEventGuidingBehavior  = []; 
                 $dataEventDoubtfulTourGuide  = [];
                 $dataEventIllegalTourGuide  = [];
                 $dataEventLawfulTourGuide  = [];
@@ -91,33 +91,33 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                     $hours = (int)Carbon::parse($numberOfTourist->time)->format('H');
 
                     if (array_key_exists($numberOfTourist->touristDestination->name, $dataTouristDestination)) {
-                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in;
                     } else {
-                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in;
                     }
 
                     if (!array_key_exists($hours, $data)) {
                         $data[$hours] = [
                             'time' => $hours,
-                            'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
+                            'number_of_guest' => $numberOfTourist->number_of_guest_in,
                             'tourist_destination' => [
                                 $numberOfTourist->touristDestination->name => [
                                     'name' => $numberOfTourist->touristDestination->name,
-                                    'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                    'number_of_guest' => $numberOfTourist->number_of_guest_in
                                 ]
                             ]
                         ];
                     } else {
-                        $data[$hours]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $data[$hours]['number_of_guest'] += $numberOfTourist->number_of_guest_in;
 
                         if (!array_key_exists($numberOfTourist->touristDestination->name, $data[$hours]['tourist_destination'])) {
                             $data[$hours]['tourist_destination'][$numberOfTourist->touristDestination->name] = [
                                 'name' => $numberOfTourist->touristDestination->name,
-                                'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                'number_of_guest' => $numberOfTourist->number_of_guest_in
 
                             ];
                         } else {
-                            $data[$hours]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                            $data[$hours]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in;
                         }
                     }
                 }
@@ -144,33 +144,33 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                     $date = Carbon::parse($numberOfTourist->time)->format('Y-m-d');
 
                     if (array_key_exists($numberOfTourist->touristDestination->name, $dataTouristDestination)) {
-                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in;
                     } else {
-                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in;
                     }
 
                     if (!array_key_exists($date, $data)) {
                         $data[$date] = [
                             'time' => $date,
-                            'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
+                            'number_of_guest' => $numberOfTourist->number_of_guest_in,
                             'tourist_destination' => [
                                 $numberOfTourist->touristDestination->name => [
                                     'name' => $numberOfTourist->touristDestination->name,
-                                    'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                    'number_of_guest' => $numberOfTourist->number_of_guest_in
                                 ]
                             ]
                         ];
                     } else {
-                        $data[$date]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $data[$date]['number_of_guest'] += $numberOfTourist->number_of_guest_in;
 
                         if (!array_key_exists($numberOfTourist->touristDestination->name, $data[$date]['tourist_destination'])) {
                             $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name] = [
                                 'name' => $numberOfTourist->touristDestination->name,
-                                'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                'number_of_guest' => $numberOfTourist->number_of_guest_in
 
                             ];
                         } else {
-                            $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                            $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in;
                         }
                     }
                 }
@@ -198,33 +198,33 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                 foreach ($numberOfTourists as $numberOfTourist) {
                     $date = Carbon::parse($numberOfTourist->time)->format('Y-m');
                     if (array_key_exists($numberOfTourist->touristDestination->name, $dataTouristDestination)) {
-                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] +=  $numberOfTourist->number_of_guest_in;
                     } else {
-                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $dataTouristDestination[$numberOfTourist->touristDestination->name] =  $numberOfTourist->number_of_guest_in;
                     }
 
                     if (!array_key_exists($date, $data)) {
                         $data[$date] = [
                             'time' => $date,
-                            'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
+                            'number_of_guest' => $numberOfTourist->number_of_guest_in,
                             'tourist_destination' => [
                                 $numberOfTourist->touristDestination->name => [
                                     'name' => $numberOfTourist->touristDestination->name,
-                                    'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                    'number_of_guest' => $numberOfTourist->number_of_guest_in
                                 ]
                             ]
                         ];
                     } else {
-                        $data[$date]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $data[$date]['number_of_guest'] += $numberOfTourist->number_of_guest_in;
 
                         if (!array_key_exists($numberOfTourist->touristDestination->name, $data[$date]['tourist_destination'])) {
                             $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name] = [
                                 'name' => $numberOfTourist->touristDestination->name,
-                                'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out
+                                'number_of_guest' => $numberOfTourist->number_of_guest_in
 
                             ];
                         } else {
-                            $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                            $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in;
                         }
                     }
                 }
@@ -253,24 +253,24 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
                     if (!array_key_exists($date, $data)) {
                         $data[$date] = [
                             'time' => $date,
-                            'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
+                            'number_of_guest' => $numberOfTourist->number_of_guest_in,
                             'tourist_destination' => [
                                 $numberOfTourist->touristDestination->name => [
                                     'name' => $numberOfTourist->touristDestination->name,
-                                    'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
+                                    'number_of_guest' => $numberOfTourist->number_of_guest_in,
                                 ]
                             ]
                         ];
                     } else {
-                        $data[$date]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                        $data[$date]['number_of_guest'] += $numberOfTourist->number_of_guest_in;
 
                         if (!array_key_exists($numberOfTourist->touristDestination->name, $data[$date]['tourist_destination'])) {
                             $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name] = [
                                 'name' => $numberOfTourist->touristDestination->name,
-                                'number_of_guest' => $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out,
+                                'number_of_guest' => $numberOfTourist->number_of_guest_in,
                             ];
                         } else {
-                            $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in + $numberOfTourist->number_of_guest_out;
+                            $data[$date]['tourist_destination'][$numberOfTourist->touristDestination->name]['number_of_guest'] += $numberOfTourist->number_of_guest_in;
                         }
                     }
                 }
