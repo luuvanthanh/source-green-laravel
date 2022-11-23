@@ -518,18 +518,18 @@ class ReportService
                     case 'DATE':
                         $numberOfTourists = NumberOfTourist::whereDate('time', $date->format('Y-m-d'))
                             ->where('tourist_destination_id', $value->id)
-                            ->sum(\DB::raw('number_of_guest_out + number_of_guest_in'));
+                            ->sum(\DB::raw('number_of_guest_in'));
                         break;
                     case 'MONTH':
                         $numberOfTourists = NumberOfTourist::whereMonth('time', $date->format('m'))
                             ->whereYear('time', $date->format('Y'))
                             ->where('tourist_destination_id', $value->id)
-                            ->sum(\DB::raw('number_of_guest_out + number_of_guest_in'));
+                            ->sum(\DB::raw('number_of_guest_in'));
                         break;
                     case 'YEAR':
                         $numberOfTourists = NumberOfTourist::whereYear('time', $date->format('Y'))
                             ->where('tourist_destination_id', $value->id)
-                            ->sum(\DB::raw('number_of_guest_out + number_of_guest_in'));
+                            ->sum(\DB::raw('number_of_guest_in'));
                         break;
                 }
 
