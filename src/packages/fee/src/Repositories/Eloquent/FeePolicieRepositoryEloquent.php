@@ -437,7 +437,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     $totalMonthSemester2 = array_sum(array_column($schoolYear->changeParameter->changeParameterDetail->ToArray(), 'FullMonth'));
 
                                     foreach ($schoolYear->changeParameter->changeParameterDetail as $key => $year) {
-                                        $classTypeId = $listMonthAge['detailStudent'][$year->Date]['classTypeId'];
+                                        $classTypeId = $listMonthAge['detailStudent'][$year->StartDate]['classTypeId'];
                                         $sumFullMonth[$classTypeId][] = $year->FullMonth;
                                     }
 
@@ -446,7 +446,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     }
 
                                     foreach ($years as $key => $year) {
-                                        $classTypeIdByAge = $listMonthAge['detailStudent'][$year->Date]['classTypeId'];
+                                        $classTypeIdByAge = $listMonthAge['detailStudent'][$year->StartDate]['classTypeId'];
                                         $feeDetail = $feePolicie->feeDetail()->where('ClassTypeId', $classTypeIdByAge)
                                             ->where('PaymentFormId', $detail->paymentFormId)->first();
 
