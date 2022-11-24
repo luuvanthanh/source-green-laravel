@@ -407,74 +407,77 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             'status' => $attributes['status'],
         ]);
 
-        $begin = new \DateTime($absent->StartDate);
-        $end = new \DateTime($absent->EndDate);
-        $intervalDate = new \DateInterval('P1D');
-        $periodDate = new \DatePeriod($begin, $intervalDate, $end);
+        if ($absent->Status == Absent::CONFIRM) {
+            $begin = new \DateTime($absent->StartDate);
+            $end = new \DateTime($absent->EndDate);
+            $intervalDate = new \DateInterval('P1D');
+            $periodDate = new \DatePeriod($begin, $intervalDate, $end);
 
-        if ($periodDate->start == $periodDate->end) {
-            $date = $periodDate->start;
-            $attendance = Attendance::where('StudentId', $absent->StudentId)->where('Date', $date->format('Y-m-d'))->first();
+            if ($periodDate->start == $periodDate->end) {
+                $date = $periodDate->start;
+                $attendance = Attendance::where('StudentId', $absent->StudentId)->where('Date', $date->format('Y-m-d'))->first();
 
-            if (is_null($attendance)) {
-                $attendance = Attendance::create([
-                    'StudentId' => $absent->StudentId,
-                    'Date' => $date->format('Y-m-d'),
-                    'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
-                ]);
-            } else {
-                $attendance->update([
-                    'StudentId' => $absent->StudentId,
-                    'Date' => $date->format('Y-m-d'),
-                    'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
-                ]);
+                if (is_null($attendance)) {
+                    $attendance = Attendance::create([
+                        'StudentId' => $absent->StudentId,
+                        'Date' => $date->format('Y-m-d'),
+                        'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                    ]);
+                } else {
+                    $attendance->update([
+                        'StudentId' => $absent->StudentId,
+                        'Date' => $date->format('Y-m-d'),
+                        'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                    ]);
+                }
+            }
+
+            foreach ($periodDate as $date) {
+                $attendance = Attendance::where('StudentId', $absent->StudentId)->where('Date', $date->format('Y-m-d'))->first();
+                if (is_null($attendance)) {
+                    $attendance = Attendance::create([
+                        'StudentId' => $absent->StudentId,
+                        'Date' => $date->format('Y-m-d'),
+                        'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                    ]);
+                } else {
+                    $attendance->update([
+                        'StudentId' => $absent->StudentId,
+                        'Date' => $date->format('Y-m-d'),
+                        'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                    ]);
+                }
+            }
+            $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
+            $userId = [];
+
+            if (!is_null($getTeacher)) {
+                $userId[] = $getTeacher->teacher->account->AppUserId;
+            }
+
+            $nameStudent = $absent->student->FullName;
+            $images =  json_decode($absent->student->FileImage);
+            $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
+            $startDate = $absent->StartDate->format('d-m');
+            $endDate = $absent->EndDate->format('d-m');
+
+            $message = 'Bé' . ' ' . $nameStudent . ' ' . 'xin nghỉ phép ngày' . ' ' . $startDate . '-' . $endDate;
+
+            if (!empty($userId)) {
+                $dataNoti = [
+                    'users' => $userId,
+                    'title' => $nameStudent,
+                    'imageURL' => $urlImage,
+                    'message' => $message,
+                    'moduleType' => 9,
+                    'moduleCode' => 'ABSENT_STUDENT',
+                    'refId' => $absent->Id,
+                ];
+
+                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         }
 
-        foreach ($periodDate as $date) {
-            $attendance = Attendance::where('StudentId', $absent->StudentId)->where('Date', $date->format('Y-m-d'))->first();
-            if (is_null($attendance)) {
-                $attendance = Attendance::create([
-                    'StudentId' => $absent->StudentId,
-                    'Date' => $date->format('Y-m-d'),
-                    'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
-                ]);
-            } else {
-                $attendance->update([
-                    'StudentId' => $absent->StudentId,
-                    'Date' => $date->format('Y-m-d'),
-                    'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
-                ]);
-            }
-        }
-        $getTeacher = $absent->student->classes->classTeacher()->where('IsLead', true)->with('teacher.account')->first();
-        $userId = [];
-
-        if (!is_null($getTeacher)) {
-            $userId[] = $getTeacher->teacher->account->AppUserId;
-        }
-
-        $nameStudent = $absent->student->FullName;
-        $images =  json_decode($absent->student->FileImage);
-        $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
-        $startDate = $absent->StartDate->format('d-m');
-        $endDate = $absent->EndDate->format('d-m');
-
-        $message = 'Bé' . ' ' . $nameStudent . ' ' . 'xin nghỉ phép ngày' . ' ' . $startDate . '-' . $endDate;
-
-        if (!empty($userId)) {
-            $dataNoti = [
-                'users' => $userId,
-                'title' => $nameStudent,
-                'imageURL' => $urlImage,
-                'message' => $message,
-                'moduleType' => 9,
-                'moduleCode' => 'ABSENT_STUDENT',
-                'refId' => $absent->Id,
-            ];
-
-            dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
-        }
 
         return parent::find($id);
     }

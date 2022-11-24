@@ -15,6 +15,10 @@ class Absent extends UuidModel
         'AbsentTypeId', 'AbsentReasonId', 'ParentId', 'StudentId', 'StartDate', 'EndDate', 'Status', 'EmployeeId', 'ExpectedDate', 'SchoolYearId'
     ];
 
+    const PENDING = 'PENDING';
+    const CONFIRM = 'CONFIRM';
+    const REJECT = 'REJECT';
+
     protected $dateTimeFields = [
         'StartDate',
         'EndDate',
