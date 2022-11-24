@@ -473,7 +473,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     }
 
                                     if ($dayAdmissionCarbon->format('Y-m-d') <= $schoolYear->StartDate) {
-                                        $result = array_sum(array_unique($sumTuition));
+                                        $result = array_sum($sumTuition);
                                     } else {
                                         $result = array_sum(($sumTuition));
                                     }
