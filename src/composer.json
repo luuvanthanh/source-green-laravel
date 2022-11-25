@@ -116,7 +116,8 @@
             "GGPHP\\Tariff\\PaymentPlan\\": "tariff/payment-plan/src",
             "GGPHP\\Bio\\": "packages/bio/src/",
             "GGPHP\\ManualCalculation\\": "packages/manual-calculation/src/",
-            "GGPHP\\Refund\\": "packages/refund/src/"
+            "GGPHP\\Refund\\": "packages/refund/src/",
+            "GGPHP\\ActivityLog\\":"packages/activity-log/src"
         },
         "classmap": [
             "database/seeds",
