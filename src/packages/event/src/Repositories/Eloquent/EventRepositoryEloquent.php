@@ -583,10 +583,18 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
     public function updateStatusShow($attributes)
     {
-        $events = Event::orderBy('time', 'asc')
+        $events = Event::orderBy('tourist_destination_id','asc')
+    	->orderBy('event_type_id','asc')
+        ->orderBy('camera_id','asc')
+        ->orderBy('tour_guide_id','asc')
+        ->orderBy('time', 'asc')
             ->get();
 
-        $eventRemoveFirstItems = Event::orderBy('time', 'asc')
+        $eventRemoveFirstItems = Event::orderBy('tourist_destination_id','asc')
+    	->orderBy('event_type_id','asc')
+        ->orderBy('camera_id','asc')
+        ->orderBy('tour_guide_id','asc')
+        ->orderBy('time', 'asc')
             ->get();
         $eventRemoveFirstItems->shift();
 
