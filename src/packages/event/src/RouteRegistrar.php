@@ -64,6 +64,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('event-add-object/{id}', 'EventController@addObject');
 
             \Route::post('event-handle-flow/{id}', 'EventController@handleEventFlow');
+
+            \Route::post('config_hour_status_show_events', 'EventController@configHourStatusShowEvent');
+
+            \Route::post('event-status-show', 'EventController@updateStatusShow');
         });
     }
 

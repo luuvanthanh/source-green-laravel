@@ -10,6 +10,7 @@ use GGPHP\Category\Models\EventType;
 use GGPHP\Category\Models\Unit;
 use GGPHP\Event\Events\EventCreateEvent;
 use GGPHP\Event\Jobs\SendEmailEventCreate;
+use GGPHP\Event\Models\ConfigHourStatusShowEvent;
 use GGPHP\Event\Models\Event;
 use GGPHP\Event\Models\EventHandle;
 use GGPHP\Event\Models\EventHandleResult;
@@ -29,7 +30,10 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Webpatser\Uuid\Uuid;
+
+use function PHPUnit\Framework\throwException;
 
 /**
  * Class EventRepositoryEloquent.
@@ -144,6 +148,12 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $this->model = $this->model->where('event_handle_muti_id', $attributes['event_handle_muti_id']);
         }
 
+        if (empty($attributes['status_show'])) {
+            $this->model = $this->model->where('status_show', true);
+        } else {
+            $this->model = $this->model->where('status_show', $attributes['status_show']);
+        }
+
         if (!$parse) {
             return $this->model->get();
         }
@@ -186,6 +196,43 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $event = $this->model()::where('track_id', $attributes['track_id'])->first();
         }
 
+        if (
+            !empty($attributes['camera_id'])
+            && !empty($attributes['tourist_destination_id'])
+            && !empty($attributes['event_type_id'])
+            && !empty($attributes['time'])
+        ) {
+            if (!empty($attributes['tour_guide_id'])) {
+                $attributes['tour_guide_id'] = $attributes['tour_guide_id'];
+            } else {
+                $attributes['tour_guide_id'] = null;
+            }
+
+            $events = Event::where('camera_id', $attributes['camera_id'])
+                ->where('tourist_destination_id', $attributes['tourist_destination_id'])
+                ->where('event_type_id', $attributes['event_type_id'])
+                ->whereDate('time',$attributes['time'])
+                ->where('tour_guide_id',$attributes['tour_guide_id'])
+                ->where('status_show',true)
+                ->orderBy('time','desc')->first();
+            
+            $configHour = ConfigHourStatusShowEvent::first();
+
+            if (!is_null($events)) {
+                $time = Carbon::parse($events->time);
+                $numberHourConfig = !is_null($configHour) ? $configHour->hour : 1;
+                $numberHour = $time->diffInHours(Carbon::parse($attributes['time']));
+                
+                if ($numberHour < $numberHourConfig) {
+                    $attributes['status_show'] = false;
+                }else{
+                   $attributes['status_show'] = true; 
+                }
+            }else{
+                $attributes['status_show'] = true;
+            }
+        }
+        
         if (is_null($event)) {
             $event = $this->model()::create($attributes);
 
@@ -532,5 +579,74 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
 
         return parent::find($id);
+    }
+
+    public function updateStatusShow($attributes)
+    {
+        $events = Event::orderBy('time', 'asc')
+            ->get();
+
+        $eventRemoveFirstItems = Event::orderBy('time', 'asc')
+            ->get();
+        $eventRemoveFirstItems->shift();
+
+        $configHour = ConfigHourStatusShowEvent::first();
+
+        if (is_null($configHour)) {
+            throw new HttpException(500, 'Chạy api cấu hình thời  gian lưu trạng thái hiển thị sự kiện cách nhau bao nhiêu giờ');
+        }
+
+        foreach ($events as $key  => $event) {
+            $touristDestinationId = $event->tourist_destination_id;
+            $eventTypeId = $event->event_type_id;
+            $cameraId = $event->camera_id;
+            $tourGuideId = $event->tour_guide_id;
+            $time = Carbon::parse($event->time);
+
+            if (isset($eventRemoveFirstItemId)) {
+                $eventRemoveFirstItemIdOther = $eventRemoveFirstItemId;
+                if (array_search($event->id, $eventRemoveFirstItemId) !== false) {
+                    continue;
+                }
+            }
+            foreach ($eventRemoveFirstItems as $key1 => $eventRemoveFirstItem) {
+
+                if (isset($eventRemoveFirstItemIdOther)) {
+                    if (array_search($eventRemoveFirstItem->id, $eventRemoveFirstItemIdOther) !== false) {
+                        continue;
+                    } elseif ($event->id == $eventRemoveFirstItem->id) {
+                        continue;
+                    }
+                }
+
+                if (
+                    $touristDestinationId == $eventRemoveFirstItem->tourist_destination_id
+                    && $eventTypeId == $eventRemoveFirstItem->event_type_id
+                    && $cameraId == $eventRemoveFirstItem->camera_id
+                    && $tourGuideId == $eventRemoveFirstItem->tour_guide_id
+                    && $time->format('Ymd') == Carbon::parse($eventRemoveFirstItem->time)->format('Ymd')
+                ) {
+
+                    if (!isset($hourStatusShow)) {
+                        $hour = $time->diffInHours(Carbon::parse($eventRemoveFirstItem->time));
+                    } elseif (empty($hourStatusShow)) {
+                        $hour = $time->diffInHours(Carbon::parse($eventRemoveFirstItem->time));
+                    } else {
+                        $hour = $hourStatusShow->diffInHours(Carbon::parse($eventRemoveFirstItem->time));
+                    }
+
+                    if ($hour < $configHour->hour) {
+                        $eventRemoveFirstItem->update(['status_show' => false]);
+                    } else {
+                        $hourStatusShow = Carbon::parse($eventRemoveFirstItem->time);
+                    }
+                    $eventRemoveFirstItemId[] = $eventRemoveFirstItem->id;
+                } else {
+                    $hourStatusShow = [];
+                    continue;
+                }
+            }
+        }
+        return null;
     }
 }
