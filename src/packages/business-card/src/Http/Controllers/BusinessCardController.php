@@ -109,9 +109,9 @@ class BusinessCardController extends Controller
         return $this->success($businessCard, trans('lang::messages.common.modifySuccess'));
     }
 
-    public function sendAgain($id)
+    public function sendAgain(Request $request)
     {
-        $businessCard = $this->businessCardRepository->sendAgain($id);
+        $businessCard = $this->businessCardRepository->sendAgain($request->all());
 
         return $this->success($businessCard, trans('lang::messages.common.modifySuccess'));
     }
