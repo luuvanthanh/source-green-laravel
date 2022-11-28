@@ -67,7 +67,7 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::put('update-status-business-cards/{id}', 'BusinessCardController@updateStatusBusinessCard');
 
-            \Route::get('send-again/{id}', 'BusinessCardController@sendAgain');
+            \Route::post('send-again', 'BusinessCardController@sendAgain');
         });
     }
 }

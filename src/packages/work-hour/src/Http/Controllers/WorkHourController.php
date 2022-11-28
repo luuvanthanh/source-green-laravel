@@ -135,9 +135,9 @@ class WorkHourController extends Controller
         return $this->success($workHour, trans('lang::messages.common.modifySuccess'));
     }
 
-    public function sendAgain($id)
+    public function sendAgain(Request $request)
     {
-        $workHour = $this->workHourRepository->sendAgain($id);
+        $workHour = $this->workHourRepository->sendAgain($request->all());
 
         return $this->success($workHour, trans('lang::messages.common.modifySuccess'));
     }

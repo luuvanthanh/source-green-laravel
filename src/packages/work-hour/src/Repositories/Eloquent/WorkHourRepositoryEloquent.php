@@ -91,6 +91,10 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             });
         }
 
+        if (!empty($attributes['listWaitingApproval'])) {
+            $this->model = $this->model->where('status',WorkHour::STATUS['WAITING_APPROVAL'])->where('EmployeeId','!=',$attributes['listWaitingApproval']);
+        }
+
         if (!empty($attributes['limit'])) {
             $workHour = $this->paginate($attributes['limit']);
         } else {
@@ -187,6 +191,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
 
     public function update(array $attributes, $id)
     {
+        $attributes = $this->updating($attributes);
         $workHour = WorkHour::findOrFail($id);
         $this->updated($workHour, $attributes);
         $attributes['hours'] = json_encode($attributes['hours']);
@@ -200,7 +205,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         if (!empty($attributes['registrationDateType'])) {
             $attributes['registrationDateType'] = WorkHour::REGISTRATION_DATE_TYPE[$attributes['registrationDateType']];
         }
-
+        
         return $attributes;
     }
 
@@ -556,9 +561,9 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         return $this->parserResult($workHour);
     }
 
-    public function sendAgain($id)
+    public function sendAgain($attributes)
     {
-        $workHour = WorkHour::findOrFail($id);
+        $workHour = WorkHour::findOrFail($attributes['id']);
         $attributes['approvalEmployee'] = [$workHour->EmployeeId];
         $account = $this->getAccountEmployee($attributes);
 
