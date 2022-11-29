@@ -66,7 +66,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
           {!params.id && <Heading type="page-title">Tạo hồ sơ học sinh</Heading>}
           {params.id && (
             <Heading type="page-title">
-              Chỉnh sửa hồ sơ học sinh ({details?.student?.fullName})
+              Chi tiết hồ sơ học sinh ({details?.student?.fullName})
             </Heading>
           )}
         </Pane>

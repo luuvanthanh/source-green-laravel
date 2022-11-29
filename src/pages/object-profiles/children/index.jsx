@@ -342,17 +342,23 @@ class Index extends PureComponent {
         width: 125,
         fixed: 'right',
         render: (record) => (
-          <div className="d-flex justify-content-end">
+          <div className="d-flex justify-content-end z-index:2">
             {
               record?.status !== 'OFFICAL' && (
-                <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+                <Button color="danger" icon="remove" onClick={(e) => {
+                  e.stopPropagation();
+                  this.onRemove(record.id);
+                }} />
               )
             }
             <Button
               color="primary"
               icon="edit"
               className='ml10'
-              onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`)}
+              onClick={(e) => {
+                e.stopPropagation();
+                history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chinh-sua`);
+              }}
             />
           </div>
         ),
@@ -472,6 +478,13 @@ class Index extends PureComponent {
               bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%', y: '60vh' }}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (ability.can('HSDT', 'HSDT')) {
+                    history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`);
+                  }
+                },
+              })}
             />
           </div>
         </div>

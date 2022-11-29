@@ -140,6 +140,7 @@ export async function getLeftMenuProfile() {
         '/ho-so-doi-tuong/hoc-sinh',
         '/ho-so-doi-tuong/hoc-sinh/tao-moi',
         '/ho-so-doi-tuong/hoc-sinh/:id/chi-tiet',
+        '/ho-so-doi-tuong/hoc-sinh/:id/chinh-sua',
       ],
       icon: 'icon icon-baby',
       permission: [permissions.HSDT],

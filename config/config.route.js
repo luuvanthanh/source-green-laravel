@@ -453,6 +453,12 @@ export default [
           },
           {
             path: '/ho-so-doi-tuong/hoc-sinh/:id/chi-tiet',
+            component: './object-profiles/children/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/hoc-sinh/:id/chinh-sua',
             component: './object-profiles/children/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
