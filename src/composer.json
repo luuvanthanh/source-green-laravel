@@ -117,7 +117,8 @@
             "GGPHP\\Bio\\": "packages/bio/src/",
             "GGPHP\\ManualCalculation\\": "packages/manual-calculation/src/",
             "GGPHP\\Refund\\": "packages/refund/src/",
-            "GGPHP\\ActivityLog\\":"packages/activity-log/src"
+            "GGPHP\\ActivityLog\\": "packages/activity-log/src",
+            "GGPHP\\StudyProgram\\Setting\\": "study-program/setting/src"
         },
         "classmap": [
             "database/seeds",
