@@ -140,7 +140,7 @@ const Index = memo(() => {
                 size="large"
                 loading={loadingSubmit}
               >
-                Lưu
+                Save
               </Button>
             </Pane>
           </Form>

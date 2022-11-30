@@ -784,6 +784,18 @@ export async function getLeftMenuCriteria() {
               permission: [permissions.CTH],
               pro: true,
             },
+            {
+              title: 'Sample comments',
+              key: 'sampleComments',
+              url: [
+                '/chuong-trinh-hoc/settings/sampleComments',
+                '/chuong-trinh-hoc/settings/sampleComments/add',
+                '/chuong-trinh-hoc/settings/sampleComments/:id/detail',
+                '/chuong-trinh-hoc/settings/sampleComments/:id/edit',
+              ],
+              permission: [permissions.CTH],
+              pro: true,
+            },
           ],
           pro: true,
         },

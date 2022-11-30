@@ -265,6 +265,30 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
+          {
+            path: '/chuong-trinh-hoc/settings/sampleComments',
+            component: './criteria/english/settings/sample-comments',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/sampleComments/add',
+            component: './criteria/english/settings/sample-comments/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/sampleComments/:id/detail',
+            component: './criteria/english/settings/sample-comments/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/sampleComments/:id/edit',
+            component: './criteria/english/settings/sample-comments/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
         ],
       },
       // CRITERIA
