@@ -92,7 +92,10 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         }
 
         if (!empty($attributes['listWaitingApproval'])) {
-            $this->model = $this->model->where('status',WorkHour::STATUS['WAITING_APPROVAL'])->where('EmployeeId','!=',$attributes['listWaitingApproval']);
+            $this->model = $this->model->where('Status', WorkHour::STATUS['WAITING_APPROVAL'])->where('EmployeeId', '!=', $attributes['listWaitingApproval'])
+            ->whereHas('approvalEmployeeWorkHour', function ($query) use ($attributes) {
+                $query->where('EmployeeId', $attributes['listWaitingApproval']);
+            });
         }
 
         if (!empty($attributes['limit'])) {
@@ -205,7 +208,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         if (!empty($attributes['registrationDateType'])) {
             $attributes['registrationDateType'] = WorkHour::REGISTRATION_DATE_TYPE[$attributes['registrationDateType']];
         }
-        
+
         return $attributes;
     }
 

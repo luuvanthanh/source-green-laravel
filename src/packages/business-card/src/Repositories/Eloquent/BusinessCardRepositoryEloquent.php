@@ -87,7 +87,10 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         }
 
         if (!empty($attributes['listWaitingApproval'])) {
-            $this->model = $this->model->where('status',BusinessCard::STATUS['WAITING_APPROVAL'])->where('EmployeeId','!=',$attributes['listWaitingApproval']);
+            $this->model = $this->model->where('Status', BusinessCard::STATUS['WAITING_APPROVAL'])->where('EmployeeId', '!=', $attributes['listWaitingApproval'])
+                ->whereHas('approvalEmployee', function ($query) use ($attributes) {
+                    $query->where('EmployeeId', $attributes['listWaitingApproval']);
+                });
         }
 
         if (!empty($attributes['limit'])) {
@@ -145,7 +148,7 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         } else {
             $attributes['status'] = BusinessCard::STATUS['WAITING_APPROVAL'];
         }
-        
+
 
         return $attributes;
     }
