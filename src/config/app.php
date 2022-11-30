@@ -231,7 +231,8 @@ return [
         GGPHP\Bio\Providers\BioServiceProvider::class,
         GGPHP\ManualCalculation\Providers\ManualCalculationServiceProvider::class,
         GGPHP\Refund\Providers\RefundServiceProvider::class,
-        GGPHP\ActivityLog\Providers\ActivityLogServiceProvider::class
+        GGPHP\ActivityLog\Providers\ActivityLogServiceProvider::class,
+        GGPHP\StudyProgram\Setting\Providers\SubjectServiceProvider::class
     ],
 
     /*
