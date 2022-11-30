@@ -772,6 +772,18 @@ export async function getLeftMenuCriteria() {
               permission: [permissions.CTH],
               pro: true,
             },
+            {
+              title: 'Evaluation criteria',
+              key: 'EvaluationCriteria',
+              url: [
+                '/chuong-trinh-hoc/settings/evaluationCriteria',
+                '/chuong-trinh-hoc/settings/evaluationCriteria/add',
+                '/chuong-trinh-hoc/settings/evaluationCriteria/:id/detail',
+                '/chuong-trinh-hoc/settings/evaluationCriteria/:id/edit',
+              ],
+              permission: [permissions.CTH],
+              pro: true,
+            },
           ],
           pro: true,
         },

@@ -241,6 +241,30 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
+          {
+            path: '/chuong-trinh-hoc/settings/evaluationCriteria',
+            component: './criteria/english/settings/evaluation-criteria',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/evaluationCriteria/add',
+            component: './criteria/english/settings/evaluation-criteria/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/evaluationCriteria/:id/detail',
+            component: './criteria/english/settings/evaluation-criteria/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/evaluationCriteria/:id/edit',
+            component: './criteria/english/settings/evaluation-criteria/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
         ],
       },
       // CRITERIA
