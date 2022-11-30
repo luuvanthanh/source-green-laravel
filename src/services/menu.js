@@ -750,6 +750,35 @@ export async function getLeftMenuCriteria() {
       pro: true,
     },
     {
+      title: 'English',
+      key: 'English',
+      icon: 'icon icon-dictionary',
+      permission: [permissions.CTH],
+      children: [
+        {
+          title: 'Settings',
+          key: 'Settings',
+          permission: [permissions.CTH],
+          children: [
+            {
+              title: 'Subject',
+              key: 'Subject',
+              url: [
+                '/chuong-trinh-hoc/settings/subject',
+                '/chuong-trinh-hoc/settings/subject/add',
+                '/chuong-trinh-hoc/settings/subject/:id/detail',
+                '/chuong-trinh-hoc/settings/subject/:id/edit',
+              ],
+              permission: [permissions.CTH],
+              pro: true,
+            },
+          ],
+          pro: true,
+        },
+      ],
+      pro: true,
+    },
+    {
       title: 'Lịch sử',
       key: 'history',
       url: ['/chuong-trinh-hoc/lich-su'],
