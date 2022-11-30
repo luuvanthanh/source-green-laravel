@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Tag } from 'antd';
 import { variables, Helper } from '@/utils';
 import styles from './styles.module.scss';
 
@@ -35,6 +36,20 @@ class FormDetail extends Component {
         <div>
           <div className={styles['wrapper-title']}>
             <label className={styles.text}>{label}</label>
+          </div>
+        </div>
+      );
+    }
+    if (type === 'selectTags' && name) {
+      return (
+        <div className="mb20">
+          <div className={styles['wrapper-title']}>
+            <label className={styles.text}>{label}</label>
+          </div>
+          <div size="normal" className={styles['general-detail']}>
+            {name?.map((i) => (
+              <Tag className={styles.tag}>{i?.name}</Tag>
+            ))}
           </div>
         </div>
       );

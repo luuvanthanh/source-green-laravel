@@ -237,7 +237,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`)}
+              onClick={(e) => { e.stopPropagation(); history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chinh-sua`); }}
               permission="HSDT"
             >
               Chi tiết
@@ -304,13 +304,13 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              // onRow={(record) => ({
-              //   onClick: () => {
-              //     if (ability.can('HSDT', 'HSDT')) {
-              //       history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`);
-              //     }
-              //   },
-              // })}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (ability.can('HSDT', 'HSDT')) {
+                    history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`);
+                  }
+                },
+              })}
               bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%', y: '60vh' }}
