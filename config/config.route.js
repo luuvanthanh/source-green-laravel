@@ -471,12 +471,18 @@ export default [
           },
           {
             path: '/ho-so-doi-tuong/phu-huynh/:id/chi-tiet',
-            component: './object-profiles/parents/create',
+            component: './object-profiles/parents/detail',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],
           },
           {
             path: '/ho-so-doi-tuong/phu-huynh/tao-moi',
+            component: './object-profiles/parents/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HSDT],
+          },
+          {
+            path: '/ho-so-doi-tuong/phu-huynh/:id/chinh-sua',
             component: './object-profiles/parents/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT],

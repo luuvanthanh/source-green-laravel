@@ -153,6 +153,7 @@ export async function getLeftMenuProfile() {
         '/ho-so-doi-tuong/phu-huynh',
         '/ho-so-doi-tuong/phu-huynh/tao-moi',
         '/ho-so-doi-tuong/phu-huynh/:id/chi-tiet',
+        '/ho-so-doi-tuong/phu-huynh/:id/chinh-sua',
       ],
       icon: 'icon icon-woman',
       permission: [permissions.HSDT],
