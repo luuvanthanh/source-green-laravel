@@ -756,6 +756,18 @@ export async function getLeftMenuCriteria() {
       permission: [permissions.CTH],
       children: [
         {
+          title: 'Quarter report',
+          key: 'Quarter-report',
+          url: [
+            '/chuong-trinh-hoc/quarter-report',
+            '/chuong-trinh-hoc/quarter-report/add',
+            '/chuong-trinh-hoc/quarter-report/:id/detail',
+            '/chuong-trinh-hoc/quarter-report/:id/edit',
+          ],
+          permission: [permissions.CTH],
+          pro: true,
+        },
+        {
           title: 'Settings',
           key: 'Settings',
           permission: [permissions.CTH],
