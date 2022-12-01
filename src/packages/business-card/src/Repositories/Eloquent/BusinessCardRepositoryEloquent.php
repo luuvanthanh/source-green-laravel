@@ -58,10 +58,6 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
 
     public function filterBusinessCard(array $attributes)
     {
-        if (!empty($attributes['status'])) {
-            $this->model = $this->model->where('Status', $attributes['status']);
-        }
-
         if (!empty($attributes['absentTypeId'])) {
             $this->model = $this->model->where('AbsentTypeId', $attributes['absentTypeId']);
         }
@@ -86,11 +82,15 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
             });
         }
 
-        if (!empty($attributes['listWaitingApproval'])) {
-            $this->model = $this->model->where('Status', BusinessCard::STATUS['WAITING_APPROVAL'])->where('EmployeeId', '!=', $attributes['listWaitingApproval'])
-                ->whereHas('approvalEmployee', function ($query) use ($attributes) {
-                    $query->where('EmployeeId', $attributes['listWaitingApproval']);
-                });
+        if (!empty($attributes['employeeIdLogin'])) {
+            $this->model = $this->model->where('EmployeeId', '!=', $attributes['employeeIdLogin'])
+            ->whereHas('approvalEmployee', function ($query) use ($attributes) {
+                $query->where('EmployeeId', $attributes['employeeIdLogin']);
+            });
+        }
+
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->where('Status',$attributes['status']);
         }
 
         if (!empty($attributes['limit'])) {
