@@ -34,7 +34,12 @@ class WorkHourController extends Controller
      */
     public function index(Request $request)
     {
-        $employees = $this->workHourRepository->filterWorkHour($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = WorkHour::STATUS[$attributes['status']];
+        }
+        $employees = $this->workHourRepository->filterWorkHour($attributes);
 
         return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
