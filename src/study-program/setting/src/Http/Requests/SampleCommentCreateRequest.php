@@ -2,11 +2,11 @@
 
 namespace GGPHP\StudyProgram\Setting\Http\Requests;
 
+use GGPHP\StudyProgram\Setting\Models\SampleComment;
 use GGPHP\StudyProgram\Setting\Models\Subject;
 use Illuminate\Foundation\Http\FormRequest;
-use PhpParser\Node\Expr\FuncCall;
 
-class SubjectCreateRequest extends FormRequest
+class SampleCommentCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,26 +25,22 @@ class SubjectCreateRequest extends FormRequest
      */
     public function rules()
     {
-<<<<<<< HEAD
-        return [];
-=======
         return [
-            'name' => 'required|check_unique:study-program.Subjects,Name',
+            'name' => 'required|check_unique:study-program.SampleComments,Name',
         ];
->>>>>>> f26c4c9ce7dd9a40420dc2f9b4ac187684f9ea2b
     }
 
     public function all($keys = null)
     {
         $data = parent::all();
 
-        $subject = Subject::orderBy('CreationTime', 'desc')->first();
+        $result = SampleComment::orderBy('CreationTime', 'desc')->first();
 
-        if (!is_null($subject)) {
-            $getInt = substr($subject->Code, 2) + 1;
-            $data['code'] = Subject::CODE . $getInt;
+        if (!is_null($result)) {
+            $getInt = substr($result->Code, 2) + 1;
+            $data['code'] = SampleComment::CODE . $getInt;
         } else {
-            $data['code'] = Subject::CODE . '1';
+            $data['code'] = SampleComment::CODE . '1';
         }
 
         return $data;

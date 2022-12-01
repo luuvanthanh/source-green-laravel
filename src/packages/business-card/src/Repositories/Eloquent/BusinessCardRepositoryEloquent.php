@@ -285,7 +285,7 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
     {
         $businessCard = BusinessCard::findOrFail($attributes['id']);
         $type = $businessCard->absentType;
-        $attributes['approvalEmployee'] = [$businessCard->EmployeeId];
+        $attributes['approvalEmployee'] = $businessCard->approvalEmployee->pluck('EmployeeId')->toArray();
         $account = $this->getAccountEmployee($attributes);
 
         if (!empty($account) && !is_null($type)) {

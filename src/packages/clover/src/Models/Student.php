@@ -2,11 +2,9 @@
 
 namespace GGPHP\Clover\Models;
 
-<<<<<<< HEAD
+
 use GGPHP\ActivityLog\Traits\ActivityLogTrait;
-=======
 use GGPHP\Category\Models\Branch;
->>>>>>> 00803b4cd065bba9ef2cebc7c8aebf82826dbe44
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;

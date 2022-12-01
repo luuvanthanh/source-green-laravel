@@ -128,7 +128,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         if (!empty($attributes['approvalEmployee'])) {
             $account = $this->getAccountEmployee($attributes);
         }
-
+        
         if (!empty($account)) {
             $attributes['title'] = 'Phiếu đăng ký';
             $attributes['message'] = 'Bạn có phiếu đăng ký làm thêm cần duyệt';
@@ -174,7 +174,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
     public function getAccountEmployee($attributes)
     {
         $accountEmployee = EmployeeAccount::whereIn('EmployeeId', $attributes['approvalEmployee'])->get();
-
+        
         $appUserId = $accountEmployee->map(function ($item) {
             return $item->AppUserId;
         })->toArray();
@@ -192,7 +192,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             'moduleType' => 24,
             'refId' => $workHour->Id,
         ];
-
+        
         dispatch(new SendNotiWithoutCode($dataNoti));
     }
 
@@ -571,9 +571,9 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
     public function sendAgain($attributes)
     {
         $workHour = WorkHour::findOrFail($attributes['id']);
-        $attributes['approvalEmployee'] = [$workHour->EmployeeId];
+        $attributes['approvalEmployee'] = $workHour->approvalEmployeeWorkHour->pluck('EmployeeId')->toArray();
         $account = $this->getAccountEmployee($attributes);
-
+        
         if (!empty($account)) {
             $attributes['title'] = 'Phiếu đăng ký';
             $attributes['message'] = 'Bạn có phiếu đăng ký làm thêm cần duyệt';
