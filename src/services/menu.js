@@ -796,6 +796,18 @@ export async function getLeftMenuCriteria() {
               permission: [permissions.CTH],
               pro: true,
             },
+            {
+              title: 'Script review',
+              key: 'script-review',
+              url: [
+                '/chuong-trinh-hoc/settings/scriptReview',
+                '/chuong-trinh-hoc/settings/scriptReview/add',
+                '/chuong-trinh-hoc/settings/scriptReview/:id/detail',
+                '/chuong-trinh-hoc/settings/scriptReview/:id/edit',
+              ],
+              permission: [permissions.CTH],
+              pro: true,
+            },
           ],
           pro: true,
         },
