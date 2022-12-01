@@ -2,11 +2,11 @@
 
 namespace GGPHP\StudyProgram\Setting\Http\Requests;
 
+use GGPHP\StudyProgram\Setting\Models\SampleComment;
 use GGPHP\StudyProgram\Setting\Models\Subject;
 use Illuminate\Foundation\Http\FormRequest;
-use PhpParser\Node\Expr\FuncCall;
 
-class SubjectCreateRequest extends FormRequest
+class SampleCommentCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class SubjectCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|check_unique:study-program.Subjects,Name',
+            'name' => 'required|check_unique:study-program.SampleComments,Name',
         ];
     }
 
@@ -34,13 +34,13 @@ class SubjectCreateRequest extends FormRequest
     {
         $data = parent::all();
 
-        $subject = Subject::orderBy('CreationTime', 'desc')->first();
+        $result = SampleComment::orderBy('CreationTime', 'desc')->first();
 
-        if (!is_null($subject)) {
-            $getInt = substr($subject->Code, 2) + 1;
-            $data['code'] = Subject::CODE . $getInt;
+        if (!is_null($result)) {
+            $getInt = substr($result->Code, 2) + 1;
+            $data['code'] = SampleComment::CODE . $getInt;
         } else {
-            $data['code'] = Subject::CODE . '1';
+            $data['code'] = SampleComment::CODE . '1';
         }
 
         return $data;
