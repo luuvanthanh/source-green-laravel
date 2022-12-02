@@ -2,14 +2,14 @@ import request from '@/utils/requestLavarel';
 import { Helper } from '@/utils';
 
 export function add(data = {}) {
-  return request('/v1/test', {
+  return request('/v1/subjects', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/v1/test/${data.id}`, {
+  return request(`/v1/subjects/${data.id}`, {
     method: 'PUT',
     data: {
       ...data,
@@ -19,20 +19,17 @@ export function update(data = {}) {
 }
 
 export function getData(params = {}) {
-  return request(`/v1/test/${params.id}`, {
+  return request(`/v1/subjects/${params.id}`, {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes([
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'childEvaluateDetailChildrent',
-      ]),
+      include: Helper.convertIncludes(['subjectSection.subjectSectionDetail']),
     },
   });
 }
 
 export function remove(id = {}) {
-  return request(`/v1/test/${id}`, {
+  return request(`/v1/subjects/${id}`, {
     method: 'DELETE',
     parse: true,
   });

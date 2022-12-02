@@ -226,7 +226,7 @@ class Index extends PureComponent {
         key: 'skill',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.id}</Text>,
+        render: (record) => <Text size="normal">{record?.code}</Text>,
       },
       {
         title: 'Subject name',
