@@ -2,10 +2,12 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class Timetable extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

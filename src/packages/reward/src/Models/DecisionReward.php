@@ -2,10 +2,12 @@
 
 namespace GGPHP\Reward\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class DecisionReward extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

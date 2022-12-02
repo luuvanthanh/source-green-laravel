@@ -2,11 +2,13 @@
 
 namespace GGPHP\Refund\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\SchoolYear;
 
 class Refund extends UuidModel
 {
+    use ActivityLogTrait;
     /**
      * Declare the table name
      */

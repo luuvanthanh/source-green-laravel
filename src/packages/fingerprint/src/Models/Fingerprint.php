@@ -2,12 +2,14 @@
 
 namespace GGPHP\Fingerprint\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ZK\Traits\SyncToDevice;
 
 class Fingerprint extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     use SoftDeletes, SyncToDevice;

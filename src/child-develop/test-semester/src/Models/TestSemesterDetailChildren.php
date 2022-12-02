@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetail;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetailChildren;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemesterDetailChildren extends UuidModel
 {
+    use ActivityLogTrait;
     use SoftDeletes;
 
     protected $table = 'TestSemesterDetailChildrens';

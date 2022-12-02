@@ -2,11 +2,13 @@
 
 namespace GGPHP\Absent\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\WorkOnline\Models\WorkOnline;
 
 class AbsentType extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'AbsentTypes';

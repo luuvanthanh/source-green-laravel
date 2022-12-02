@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\TestSemester\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\ChildDevelop\Category\Models\AssessmentPeriod;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemester extends UuidModel
 {
+    use ActivityLogTrait;
     use SoftDeletes;
     protected $table = 'TestSemesters';
 

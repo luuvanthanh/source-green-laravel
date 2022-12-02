@@ -2,11 +2,13 @@
 
 namespace GGPHP\ChildDevelop\ChildEvaluate\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ChildEvaluateDetail extends UuidModel
 {
+    use ActivityLogTrait;
     use SoftDeletes;
     const TOTAL_SCORE = 10;
 

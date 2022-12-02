@@ -2,10 +2,12 @@
 
 namespace GGPHP\WorkOnline\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class WorkOnline extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**
