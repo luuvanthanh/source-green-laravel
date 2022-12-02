@@ -1,43 +1,35 @@
-import request from '@/utils/request';
+import request from '@/utils/requestLavarel';
 import { Helper } from '@/utils';
 
 export function add(data = {}) {
-  return request('/medical-problems', {
+  return request('/v1/sample-comments', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/medical-problems`, {
+  return request(`/v1/sample-comments/${data.id}`, {
     method: 'PUT',
-    params: {
-   
-      id: data.id,
+    data: {
+      ...data,
     },
-    data,
     parse: true,
   });
 }
 
-export function details(data = {}) {
-  return request(`/medical-problems/${data.id}`, {
+export function getData(params = {}) {
+  return request(`/v1/sample-comments/${params.id}`, {
     method: 'GET',
     params: {
-      ...data,
-      orderBy: 'created_at',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes([
-        'Symptoms',
-        'symptoms'
-      ]),
+      ...params,
+      include: Helper.convertIncludes(['sampleCommentDetail']),
     },
   });
 }
 
 export function remove(id = {}) {
-  return request(`/medical-problems/${id}`, {
+  return request(`/v1/sample-comments/${id}`, {
     method: 'DELETE',
     parse: true,
   });

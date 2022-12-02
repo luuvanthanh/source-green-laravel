@@ -4,15 +4,18 @@ export default {
   namespace: 'englishSettingSampleCommentsAdd',
   state: {
     details: {},
+    skill: [],
     error: {
       isError: false,
       data: {},
     },
-    paramaterValues: [],
-    paramaterFormulas: [],
   },
   reducers: {
-    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, data: [] }),
+    SET_DATA: (state, { payload }) => ({
+      ...state,
+      details: payload.parsePayload,
+    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -22,22 +25,20 @@ export default {
         },
       },
     }),
-    SET_DETAILS: (state, { payload }) => ({
+    SET_SKILL: (state, { payload }) => ({
       ...state,
-      details: payload,
+      skill: payload.parsePayload.filter((i) => i.use === true),
     }),
   },
   effects: {
-    *GET_DETAILS({ payload, callback }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.details, payload);
+        const response = yield saga.call(services.getData, payload);
         callback(response);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response,
-          });
-        }
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: response,
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -50,7 +51,21 @@ export default {
         yield saga.call(services.add, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error);
+        callback(null, error?.data);
+      }
+    },
+    *GET_SKILL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSkill, payload);
+        yield saga.put({
+          type: 'SET_SKILL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
     *UPDATE({ payload, callback }, saga) {
@@ -58,7 +73,7 @@ export default {
         yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error);
+        callback(null, error?.data?.error);
       }
     },
     *REMOVE({ payload, callback }, saga) {
@@ -70,5 +85,4 @@ export default {
       }
     },
   },
-  subscriptions: {},
 };
