@@ -41,7 +41,7 @@ const Index = memo(() => {
       callback: (response, error) => {
         if (response) {
           if (response) {
-            history.goBack();
+            history.push(`/chuong-trinh-hoc/settings/evaluationCriteria`);
           }
         }
         if (error) {
@@ -143,7 +143,7 @@ const Index = memo(() => {
                   className="btn-delete"
                   role="presentation"
 
-                  onClick={() => history.goBack()}
+                  onClick={() => history.push(`/chuong-trinh-hoc/settings/evaluationCriteria`)}
                 >
                   Cancel
                 </p>

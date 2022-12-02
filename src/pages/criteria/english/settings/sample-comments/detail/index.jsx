@@ -2,14 +2,12 @@ import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
 import { useParams, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { head } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import Loading from '@/components/CommonComponent/Loading';
 import classnames from 'classnames';
 import Button from '@/components/CommonComponent/Button';
-import { variables } from '@/utils/variables';
-import FormItem from '@/components/CommonComponent/FormItem';
-import styles from '@/assets/styles/Common/common.scss';
+import FormDetail from '@/components/CommonComponent/FormDetail';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import stylesModule from '../styles.module.scss';
 
@@ -20,10 +18,9 @@ const General = memo(() => {
     details,
   }, effects] = useSelector(({ menu, englishSettingSampleCommentsAdd, loading: { effects } }) => [menu, englishSettingSampleCommentsAdd, effects]);
   const mounted = useRef(false);
-  const loadingSubmit = effects['englishSettingSampleCommentsAdd/ADD'] || effects['englishSettingSampleCommentsAdd/UPDATE'];
-
 
   const params = useParams();
+
 
   const history = useHistory();
 
@@ -41,17 +38,8 @@ const General = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'englishSettingSampleCommentsAdd/GET_DETAILS',
+        type: 'englishSettingSampleCommentsAdd/GET_DATA',
         payload: params,
-        callback: (response) => {
-          if (response) {
-            form.setFieldsValue({
-              data: response.symptoms.map((item) => ({
-                ...item,
-              })),
-            });
-          }
-        },
       });
     }
   }, [params.id]);
@@ -59,43 +47,14 @@ const General = memo(() => {
   useEffect(() => {
     if (params.id) {
       form.setFieldsValue({
-        ...details,
-        ...head(details.positionLevel) || {},
+        name: details?.name,
+        code: details?.code,
+        data: details?.sampleCommentDetail?.map(i => ({
+          ...i,
+        }))
       });
     }
   }, [details]);
-
-  const onFinish = () => {
-    // const items = values.data.map((item) => ({
-    //   ...item,
-    // }));
-    // dispatch({
-    //   type: params.id ? 'englishSettingSampleCommentsAdd/UPDATE' : 'englishSettingSampleCommentsAdd/ADD',
-    //   payload: {
-    //     ...details,
-    //     ...params,
-    //     name: values?.name,
-    //     symptoms: items,
-    //   },
-    //   callback: (response, error) => {
-    //     if (response) {
-    //       history.goBack();
-    //     }
-    //     if (error) {
-    //       if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-    //         error.data.errors.forEach((item) => {
-    //           form.setFields([
-    //             {
-    //               name: get(item, 'source.pointer'),
-    //               errors: [get(item, 'detail')],
-    //             },
-    //           ]);
-    //         });
-    //       }
-    //     }
-    //   },
-    // });
-  };
 
   return (
     <>
@@ -105,111 +64,86 @@ const General = memo(() => {
           layout="vertical"
           form={form}
           initialValues={{}}
-          onFinish={onFinish}
+        >          <Loading
+          loading={effects['englishSettingSampleCommentsAdd/GET_DATA']}
         >
-          <Pane>
-            <Pane className="card">
-              <Pane className="p20">
-                <Heading type="form-title" className="mb20">
-                  General info
-                </Heading>
-                <Pane className="row mt20">
-                  <Pane className="col-lg-6">
-                    <FormItem label="ID" name="code" type={variables.INPUT} disabled placeholder={" "} />
-                  </Pane>
-                  <Pane className="col-lg-6">
-                    <FormItem label="Type" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
-                  </Pane>
-                  <Pane className="col-lg-12">
-                    <Heading type="form-title" className="mb20">
-                      Sample comments
-                    </Heading>
+            <Pane>
+              <Pane className="card">
+                <Pane className="p20">
+                  <Heading type="form-title" className="mb20">
+                    General info
+                  </Heading>
+                  <Pane className="row mt20">
+                    <Pane className="col-lg-6">
+                      <FormDetail name={details?.code} label="ID" />
+                    </Pane>
+                    <Pane className="col-lg-6">
+                      <FormDetail name={details?.name} label="Type" />
+                    </Pane>
+                    <Pane className="col-lg-12">
+                      <Heading type="form-title" className="mb20">
+                        Sample comments
+                      </Heading>
 
-                    <Pane >
-                      <div className={stylesModule['wrapper-table']}>
-                        <div className={stylesModule['card-heading']}>
-                          <div className={stylesModule.col}>
-                            <p className={stylesModule.norm}>Content</p>
+                      <Pane >
+                        <div className={stylesModule['wrapper-table']}>
+                          <div className={stylesModule['card-heading']}>
+                            <div className={stylesModule.col}>
+                              <p className={stylesModule.norm}>Content</p>
+                            </div>
+                            <div className={stylesModule.cols}>
+                              <p className={stylesModule.norm} />
+                            </div>
                           </div>
-                          <div className={stylesModule.cols}>
-                            <p className={stylesModule.norm} />
-                          </div>
-                        </div>
-                        <Form.List name="data">
-                          {(fields, { add, remove }) => (
-                            <>
-                              {fields.map((fieldItem, index) => (
-                                <Pane
-                                  key={index}
-                                  className="d-flex"
-                                >
-                                  <div className={stylesModule['card-item']}>
-                                    <div className={classnames(stylesModule.col)}>
-                                      <FormItem
-                                        className={stylesModule.item}
-                                        fieldKey={[fieldItem.fieldKey, 'position']}
-                                        name={[fieldItem.name, 'position']}
-                                        type={variables.INPUT}
-                                        rules={[variables.RULES.EMPTY_INPUT]}
-                                      />
-                                    </div>
-                                    <div className={classnames(stylesModule.cols)}>
-                                      {fields.length > 1 && (
-                                        <div className={styles['list-button']}>
-                                          <button
-                                            className={styles['button-circle']}
-                                            onClick={() => {
-                                              remove(index);
-                                            }}
-                                            type="button"
-                                          >
-                                            <span className="icon-remove" />
-                                          </button>
+                          <Form.List name="data">
+                            {(fields) => (
+                              <>
+                                {fields.map((fieldItem, index) => {
+                                  const itemData = details?.sampleCommentDetail?.find((item, indexWater) => indexWater === index);
+                                  return (
+                                    <Pane
+                                      key={index}
+                                      className="d-flex"
+                                    >
+                                      <div className={stylesModule['card-item']}>
+                                        <div className={classnames(stylesModule.colDetail)}>
+                                          <FormDetail name={itemData?.name} type="table" />
                                         </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </Pane>
-                              ))}
-                              <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer " >
-                                <span
-                                  onClick={() => add()}
-                                  role="presentation"
-                                  className={stylesModule.add}
-                                >
-                                  <span className="icon-plus-circle mr5" />
-                                  Add
-                                </span>
-                              </Pane>
-                            </>
-                          )}
-                        </Form.List>
-                      </div>
+                                      </div>
+                                    </Pane>
+                                  );
+                                })}
+                              </>
+                            )}
+                          </Form.List>
+                        </div>
+                      </Pane>
                     </Pane>
                   </Pane>
-                </Pane>
-                <Pane className="d-flex justify-content-between align-items-center mb20 mt20">
-                  <p
-                    className="btn-delete"
-                    role="presentation"
+                  <Pane className="d-flex justify-content-between align-items-center mb20 mt20">
+                    <p
+                      className="btn-delete"
+                      role="presentation"
 
-                    onClick={() => history.goBack()}
-                  >
-                    Cancel
-                  </p>
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={loadingSubmit}
-                  >
-                    Save
-                  </Button>
+                      onClick={() => history.goBack()}
+                    >
+                      Cancel
+                    </p>
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      size="large"
+                      onClick={() => {
+                        history.push(`/chuong-trinh-hoc/settings/sampleComments/${details?.id}/edit`);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Pane>
                 </Pane>
               </Pane>
             </Pane>
-          </Pane>
+          </Loading>
         </Form>
       </Pane>
     </>

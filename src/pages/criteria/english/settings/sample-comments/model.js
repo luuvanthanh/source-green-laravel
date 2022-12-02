@@ -3,18 +3,7 @@ import * as services from './services';
 export default {
   namespace: 'englishSettingSampleComments',
   state: {
-    data: [
-      {
-        id: '01',
-        name: 'English communication and language',
-        total: '1',
-      },
-      {
-        id: '02',
-        name: 'Mathematics',
-        total: '4',
-      },
-    ],
+    data: [],
     skill: [],
     pagination: {
       total: 0,
@@ -46,15 +35,15 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA(saga) {
+    *GET_DATA({ payload }, saga) {
       try {
-        // const response = yield saga.call(services.get, payload);
-        // if (response) {
-        //   yield saga.put({
-        //     type: 'SET_DATA',
-        //     payload: response,
-        //   });
-        // }
+        const response = yield saga.call(services.get, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -68,28 +57,6 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
-      }
-    },
-    *GET_SKILL({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getSkill, payload);
-        yield saga.put({
-          type: 'SET_SKILL',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *UPDATE_USE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.updateUse, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
       }
     },
   },
