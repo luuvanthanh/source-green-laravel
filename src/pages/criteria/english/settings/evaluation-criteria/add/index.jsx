@@ -1,11 +1,12 @@
 import { memo, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
-import { head } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { variables } from '@/utils';
 import { useParams, history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
+import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -33,8 +34,30 @@ const Index = memo(() => {
 
   const loadingSubmit = effects[`englishSettingevaluationCriteriaAdd/UPDATE`] || effects[`englishSettingevaluationCriteriaAdd/ADD`];
 
-  const onFinish = () => {
-
+  const onFinish = (values) => {
+    dispatch({
+      type: params.id ? 'englishSettingevaluationCriteriaAdd/UPDATE' : 'englishSettingevaluationCriteriaAdd/ADD',
+      payload: { name: values?.name, content: values?.content, id: params.id },
+      callback: (response, error) => {
+        if (response) {
+          if (response) {
+            history.goBack();
+          }
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              form.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
   };
 
   useEffect(() => {
@@ -44,21 +67,15 @@ const Index = memo(() => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   if (params.id) {
-  //     dispatch({
-  //       type: 'englishSettingevaluationCriteriaAdd/GET_DATA',
-  //       payload: params,
-  //       callback: (response) => {
-  //         if (response) {
-  //           form.setFieldsValue({
-  //             data: response.parsePayload.childEvaluateDetail,
-  //           });
-  //         }
-  //       },
-  //     });
-  //   }
-  // }, [params.id]);
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'englishSettingevaluationCriteriaAdd/GET_DATA',
+        payload: params,
+        callback: () => { },
+      });
+    }
+  }, [params.id]);
 
   useEffect(() => {
     mounted.current = true;
@@ -69,7 +86,6 @@ const Index = memo(() => {
     if (params.id) {
       form.setFieldsValue({
         ...details,
-        ...head(details.positionLevel),
       });
     }
   }, [details]);
@@ -85,64 +101,63 @@ const Index = memo(() => {
               {},
             ],
           }}>
-            {/* <Loading
-              loading={loading}
-              isError={error.isError}
-              params={{ error, goBack: '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia' }}
-            > */}
-            <Pane className="card p20">
-              <Heading type="form-title" className="mb15">
-                General info
-              </Heading>
-              <Pane className="row">
-                <Pane className="col-lg-12">
-                  <FormItem
-                    name="id"
-                    placeholder="Chọn"
-                    type={variables.INPUT}
-                    label="ID"
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                  />
-                </Pane>
-                <Pane className="col-lg-12">
-                  <FormItem
-                    name="age"
-                    placeholder="Chọn"
-                    type={variables.INPUT}
-                    label="Subject name"
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                  />
-                </Pane>
-                <Pane className="col-lg-12">
-                  <FormItem
-                    name="Explain"
-                    placeholder="Chọn"
-                    type={variables.TEXTAREA}
-                    label="Explain"
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                  />
+            <Loading
+              loading={effects['englishSettingevaluationCriteriaAdd/GET_DATA']}
+            >
+              <Pane className="card p20">
+                <Heading type="form-title" className="mb15">
+                  General info
+                </Heading>
+                <Pane className="row">
+                  <Pane className="col-lg-12">
+                    <FormItem
+                      name="code"
+                      placeholder=" "
+                      type={variables.INPUT}
+                      label="ID"
+                      disabled
+                    />
+                  </Pane>
+                  <Pane className="col-lg-12">
+                    <FormItem
+                      name="name"
+                      placeholder="Chọn"
+                      type={variables.INPUT}
+                      label="Subject name"
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
+                  </Pane>
+                  <Pane className="col-lg-12">
+                    <FormItem
+                      name="content"
+                      placeholder="Nhập"
+                      type={variables.TEXTAREA}
+                      label="Explain"
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
+                  </Pane>
                 </Pane>
               </Pane>
-            </Pane>
-            <Pane className="d-flex justify-content-between align-items-center mb20">
-              <p
-                className="btn-delete"
-                role="presentation"
+              <Pane className="d-flex justify-content-between align-items-center mb20">
+                <p
+                  className="btn-delete"
+                  role="presentation"
 
-                onClick={() => history.goBack()}
-              >
-                Cancel
-              </p>
-              <Button
-                className="ml-auto px25"
-                color="success"
-                htmlType="submit"
-                size="large"
-                loading={loadingSubmit}
-              >
-                Save
-              </Button>
-            </Pane>
+                  onClick={() => history.goBack()}
+                >
+                  Cancel
+                </p>
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={loadingSubmit}
+                >
+                  Save
+                </Button>
+              </Pane>
+            </Loading>
           </Form>
         </Pane>
       </Pane>
