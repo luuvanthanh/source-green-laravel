@@ -80,7 +80,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
+      <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
       <Helmet title="Subject" />
       <Pane className="pl20 pr20 pb20">
         <Pane >

@@ -223,10 +223,10 @@ class Index extends PureComponent {
     const columns = [
       {
         title: 'ID',
-        key: 'skill',
+        key: 'code',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.id}</Text>,
+        render: (record) => <Text size="normal">{record?.code}</Text>,
       },
       {
         title: 'Subject name',
