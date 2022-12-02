@@ -7,6 +7,15 @@ import styles from './styles.module.scss';
 class FormDetail extends Component {
   render() {
     const { name, label, data, type } = this.props;
+    if (type === 'table') {
+      return (
+        <div>
+          <div size="normal" className={styles['general-detail']}>
+            <p className={styles.text}>{name}</p>
+          </div>
+        </div>
+      );
+    }
     if (type === 'day' && name) {
       return (
         <div className="mb20">
