@@ -232,7 +232,8 @@ return [
         GGPHP\ManualCalculation\Providers\ManualCalculationServiceProvider::class,
         GGPHP\Refund\Providers\RefundServiceProvider::class,
         GGPHP\ActivityLog\Providers\ActivityLogServiceProvider::class,
-        GGPHP\StudyProgram\Setting\Providers\SubjectServiceProvider::class
+        GGPHP\StudyProgram\Setting\Providers\SubjectServiceProvider::class,
+        GGPHP\StudyProgram\ScriptReview\Providers\ScriptReviewServiceProvider::class
     ],
 
     /*

@@ -25,13 +25,9 @@ class SubjectCreateRequest extends FormRequest
      */
     public function rules()
     {
-<<<<<<< HEAD
-        return [];
-=======
         return [
             'name' => 'required|check_unique:study-program.Subjects,Name',
         ];
->>>>>>> f26c4c9ce7dd9a40420dc2f9b4ac187684f9ea2b
     }
 
     public function all($keys = null)

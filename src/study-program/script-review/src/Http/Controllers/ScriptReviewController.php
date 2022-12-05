@@ -1,28 +1,28 @@
 <?php
 
-namespace GGPHP\StudyProgram\Setting\Http\Controllers;
+namespace GGPHP\StudyProgram\ScriptReview\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
-use GGPHP\StudyProgram\Setting\Http\Requests\SampleCommentCreateRequest;
-use GGPHP\StudyProgram\Setting\Http\Requests\SampleCommentUpdateRequest;
-use GGPHP\StudyProgram\Setting\Repositories\Contracts\SampleCommentRepository;
+use GGPHP\StudyProgram\ScriptReview\Http\Requests\ScriptReviewCreateRequest;
+use GGPHP\StudyProgram\ScriptReview\Http\Requests\ScriptReviewUpdateRequest;
+use GGPHP\StudyProgram\ScriptReview\Repositories\Contracts\ScriptReviewRepository;
 use Illuminate\Http\Response;
 
-class SampleCommentController extends Controller
+class ScriptReviewController extends Controller
 {
     /**
      * @var $employeeRepository
      */
-    protected $sampleCommentRepository;
+    protected $scriptReviewRepository;
 
     /**
      * UserController constructor.
-     * @param sampleCommentRepository $sampleCommentRepository
+     * @param scriptReviewRepository $scriptReviewRepository
      */
-    public function __construct(SampleCommentRepository $sampleCommentRepository)
+    public function __construct(ScriptReviewRepository $scriptReviewRepository)
     {
-        $this->sampleCommentRepository = $sampleCommentRepository;
+        $this->scriptReviewRepository = $scriptReviewRepository;
     }
 
     /**
@@ -34,7 +34,7 @@ class SampleCommentController extends Controller
     public function index(Request $request)
     {
         $attributes = $request->all();
-        $result = $this->sampleCommentRepository->getAll($attributes);
+        $result = $this->scriptReviewRepository->getAll($attributes);
 
         return $this->success($result, trans('lang::messages.common.getListSuccess'));
     }
@@ -45,10 +45,10 @@ class SampleCommentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(SampleCommentCreateRequest $request)
+    public function store(ScriptReviewCreateRequest $request)
     {
         $attributes = $request->all();
-        $result = $this->sampleCommentRepository->createAll($attributes);
+        $result = $this->scriptReviewRepository->createAll($attributes);
 
         return $this->success($result, trans('lang::messages.common.createSuccess'));
     }
@@ -61,7 +61,7 @@ class SampleCommentController extends Controller
      */
     public function show($id)
     {
-        $result = $this->sampleCommentRepository->find($id);
+        $result = $this->scriptReviewRepository->find($id);
 
         return $this->success($result, trans('lang::messages.common.getInfoSuccess'));
     }
@@ -73,10 +73,10 @@ class SampleCommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(SampleCommentUpdateRequest $request, $id)
+    public function update(ScriptReviewUpdateRequest $request, $id)
     {
         $attributes = $request->all();
-        $result = $this->sampleCommentRepository->updateAll($attributes, $id);
+        $result = $this->scriptReviewRepository->updateAll($attributes, $id);
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
@@ -89,7 +89,7 @@ class SampleCommentController extends Controller
      */
     public function destroy($id)
     {
-        $this->sampleCommentRepository->deleteAll($id);
+        $this->scriptReviewRepository->deleteAll($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }

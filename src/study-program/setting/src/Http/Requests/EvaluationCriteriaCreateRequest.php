@@ -26,7 +26,6 @@ class EvaluationCriteriaCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|check_unique:study-program.EvaluationCriterias,Name',
-            'code' => 'required|check_unique:study-program.EvaluationCriterias,Code',
         ];
     }
 
