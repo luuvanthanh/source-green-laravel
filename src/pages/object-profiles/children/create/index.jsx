@@ -15,7 +15,7 @@ import ShuttlersForm from './forms/shuttlers';
 import History from './forms/history';
 import OtherForm from './forms/other';
 
-import { menu, defaultKey } from './menu';
+import { menu, defaultKey } from '../menu';
 
 const { Item: MenuItem } = Menu;
 
@@ -66,7 +66,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
           {!params.id && <Heading type="page-title">Tạo hồ sơ học sinh</Heading>}
           {params.id && (
             <Heading type="page-title">
-              Chi tiết hồ sơ học sinh ({details?.student?.fullName})
+              Chỉnh sửa hồ sơ học sinh ({details?.student?.fullName})
             </Heading>
           )}
         </Pane>

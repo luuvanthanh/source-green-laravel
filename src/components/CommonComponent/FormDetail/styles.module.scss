@@ -1,0 +1,31 @@
+@import "@/assets/styles/mixins.scss";
+.wrapper-title {
+  .text {
+    font-family: $proxima-nova__font-family;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    margin-bottom: 6px;
+  }
+}
+.general-detail {
+  width: 100%;
+  background: #f3f5f9;
+  border-radius: 3px;
+  min-height: 32px;
+  padding: 5px 12px;
+  .text {
+    font-family: $proxima-nova__font-family;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 22px;
+    color: #3e4247;
+  }
+  .tag {
+    background-color: #27a600 !important;
+    color: $text-white;
+  }
+}

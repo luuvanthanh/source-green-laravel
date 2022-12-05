@@ -1,10 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
-import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
-import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -12,8 +10,6 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import ability from '@/utils/ability';
 
 let isMounted = true;
 /**
@@ -30,9 +26,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ OPparents, loading }) => ({
-  data: OPparents.data,
-  pagination: OPparents.pagination,
+const mapStateToProps = ({ englishSettingSubject, loading }) => ({
+  data: englishSettingSubject.data,
+  error: englishSettingSubject.error,
+  pagination: englishSettingSubject.pagination,
+  skill: englishSettingSubject.skill,
   loading,
 });
 @connect(mapStateToProps)
@@ -46,10 +44,13 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        keyWord: query?.keyWord,
-        isStoreStaus: false,
+        categorySkillId: query?.categorySkillId,
+        age: query?.age,
+        aplly: query?.aplly,
+
       },
     };
     setIsMounted(true);
@@ -57,6 +58,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -86,14 +88,26 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'OPparents/GET_DATA',
+      type: 'englishSettingSubject/GET_DATA',
       payload: {
         ...search,
       },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
+  };
+
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'englishSettingSubject/GET_SKILL',
+      payload: {},
     });
   };
 
@@ -126,24 +140,6 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelect = (e, type) => {
-    this.debouncedSearch(e, type);
-  };
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
-  };
-
-  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -167,116 +163,136 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => {
-    const {
-      location: { query },
-    } = this.props;
-    return Helper.paginationNet({
+  pagination = (pagination) =>
+    Helper.paginationLavarel({
       pagination,
-      query,
       callback: (response) => {
         this.changePagination(response);
       },
     });
+
+  /**
+ * Function remove items
+ * @param {uid} id id of items
+ */
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'englishSettingSubject/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+    });
   };
+
+  covertChildEvaluateDetail = items => {
+    let array = [];
+    items.forEach(({ id }) => {
+      const existAssessment = items.find(item => item.inputAssessment && item.id === id);
+      const existPeriodicAssessment = items.find(item => item.periodicAssessment && item.id === id);
+      if (existAssessment && existPeriodicAssessment) {
+        array = [...array, 'Test đầu vào', 'Đánh giá định kỳ'];
+      }
+      if (existAssessment && !existPeriodicAssessment) {
+        array = [...array, 'Test đầu vào'];
+      }
+      if (!existAssessment && existPeriodicAssessment) {
+        array = [...array, 'Đánh giá định kỳ'];
+      }
+    });
+    return [...new Set(array)];
+  }
 
   /**
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     const columns = [
       {
-        title: 'Mã ID',
-        key: 'index',
-        className: 'min-width-70',
-        width: 70,
-        align: 'center',
-        render: (text, record, index) =>
-          `PH${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
+        title: 'ID',
+        key: 'skill',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => <Text size="normal">{record?.code}</Text>,
       },
       {
-        title: 'Họ và Tên',
+        title: 'Subject name',
         key: 'name',
-        className: 'min-width-200',
-        width: 200,
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record.fileImage)}
-            fullName={record.fullName}
-          />
-        ),
-      },
-      {
-        title: 'Số điện thoại',
-        key: 'phone',
-        className: 'min-width-130',
-        width: 130,
-        render: (record) => <Text size="normal">{record.phone}</Text>,
-      },
-      {
-        title: 'Email',
-        key: 'email',
         className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record.email}</Text>,
+        render: (record) => <Text size="normal">{record?.name}</Text>,
       },
       {
-        title: 'Địa chỉ',
-        key: 'address',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record.address}</Text>,
-      },
-      {
-        key: 'actions',
-        className: 'min-width-100',
+        key: 'action',
         width: 100,
-        fixed: 'right',
+        className: 'max-width-100',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="success"
-              ghost
-              onClick={(e) => { e.stopPropagation(); history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chinh-sua`); }}
-              permission="HSDT"
-            >
-              Chi tiết
-            </Button>
+              color="primary"
+              icon="edit"
+              onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
+            />
+            <Button color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
           </div>
         ),
       },
     ];
-    return !ability.can('HSDT', 'HSDT')
-      ? columns.filter((item) => item.key !== 'actions')
-      : columns;
+    return columns;
   };
+
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
+  debouncedSearch = debounce((value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 300);
 
   render() {
     const {
+      error,
       data,
-      pagination,
       match: { params },
+      pagination,
       loading: { effects },
+      location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['OPparents/GET_DATA'];
+    const loading = effects['englishSettingSubject/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách phụ huynh" />
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Phụ huynh</Text>
-            <Button
-              color="success"
-              icon="plus"
-              permission="HSDT"
-              onClick={() => history.push(`/ho-so-doi-tuong/phu-huynh/tao-moi`)}
-            >
-              Tạo hồ sơ
+        <Helmet title="Subject" />
+        <div className='pl20 pr20 pb20'>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <Text color="dark">Subject</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
+              Create new
             </Button>
           </div>
-          <div className={classnames(styles['block-table'])}>
+          <div className={styles['block-table']}>
             <Form
               initialValues={{
                 ...search,
@@ -285,35 +301,35 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-6">
+                <div className="col-lg-3">
                   <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Nhập Tên để tìm kiếm"
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
+                    placeholder="Enter keyword"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
               </div>
             </Form>
             <Table
+              bordered={false}
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
+              error={error}
+              isError={error.isError}
               params={{
                 header: this.header(),
                 type: 'table',
               }}
+              rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  if (ability.can('HSDT', 'HSDT')) {
-                    history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`);
-                  }
+                  history.push(`${pathname}/${record.id}/detail`);
                 },
               })}
-              bordered={false}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '60vh' }}
+              scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
             />
           </div>
         </div>
@@ -329,6 +345,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -338,6 +355,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  error: {},
 };
 
 export default Index;
