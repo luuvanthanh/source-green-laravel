@@ -219,6 +219,7 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::all();
