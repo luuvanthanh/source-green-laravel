@@ -104,8 +104,10 @@ class SampleCommentRepositoryEloquent extends BaseRepository implements SampleCo
 
     public function deleteAll($id)
     {
-        $subject = $this->model->find($id);
-
+        $sampleComment = $this->model->find($id);
+        $sampleComment->sampleCommentDetail()->delete();
+        $sampleComment->delete();
+        
         return parent::all();
     }
 
