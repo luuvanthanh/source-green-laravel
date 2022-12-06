@@ -222,7 +222,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $data->delete();
             DB::commit();
         } catch (\Throwable $th) {
-            DB::commit();
+            DB::rollBack();
             throw new HttpException(500, $th->getMessage());
         }
 

@@ -31,7 +31,7 @@ class QuarterReportCreateRequest extends FormRequest
     {
         $data = parent::all();
 
-        if ($data['status']) {
+        if (!empty($data['status'])) {
             $data['status'] = QuarterReport::STATUS[$data['status']];
         }
 
