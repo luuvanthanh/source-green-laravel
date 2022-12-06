@@ -2,11 +2,13 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Refund\Models\Refund;
 
 class SchoolYear extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

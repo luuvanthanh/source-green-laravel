@@ -2,6 +2,7 @@
 
 namespace GGPHP\FingerprintTimekeeper\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class FingerprintTimekeeper extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

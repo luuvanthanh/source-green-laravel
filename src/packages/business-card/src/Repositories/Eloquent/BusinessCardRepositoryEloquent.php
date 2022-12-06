@@ -58,10 +58,6 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
 
     public function filterBusinessCard(array $attributes)
     {
-        if (!empty($attributes['status'])) {
-            $this->model = $this->model->where('Status', $attributes['status']);
-        }
-
         if (!empty($attributes['absentTypeId'])) {
             $this->model = $this->model->where('AbsentTypeId', $attributes['absentTypeId']);
         }
@@ -84,6 +80,17 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
                     ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
             });
+        }
+
+        if (!empty($attributes['employeeIdLogin'])) {
+            $this->model = $this->model->where('EmployeeId', '!=', $attributes['employeeIdLogin'])
+            ->whereHas('approvalEmployee', function ($query) use ($attributes) {
+                $query->where('EmployeeId', $attributes['employeeIdLogin']);
+            });
+        }
+
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->where('Status',$attributes['status']);
         }
 
         if (!empty($attributes['limit'])) {
@@ -141,7 +148,7 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         } else {
             $attributes['status'] = BusinessCard::STATUS['WAITING_APPROVAL'];
         }
-        
+
 
         return $attributes;
     }
@@ -274,11 +281,11 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         return $this->parserResult($businessCard);
     }
 
-    public function sendAgain($id)
+    public function sendAgain($attributes)
     {
-        $businessCard = BusinessCard::findOrFail($id);
+        $businessCard = BusinessCard::findOrFail($attributes['id']);
         $type = $businessCard->absentType;
-        $attributes['approvalEmployee'] = [$businessCard->EmployeeId];
+        $attributes['approvalEmployee'] = $businessCard->approvalEmployee->pluck('EmployeeId')->toArray();
         $account = $this->getAccountEmployee($attributes);
 
         if (!empty($account) && !is_null($type)) {

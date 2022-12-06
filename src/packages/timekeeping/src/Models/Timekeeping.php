@@ -2,12 +2,14 @@
 
 namespace GGPHP\Timekeeping\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper;
 use GGPHP\Users\Models\User;
 
 class Timekeeping extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'Timekeepings';

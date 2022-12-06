@@ -2,10 +2,12 @@
 
 namespace GGPHP\PositionLevel\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class PositionLevel extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

@@ -2,10 +2,12 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class MoneyBus extends UuidModel
 {
+    use ActivityLogTrait;
     protected $table = 'fee.MoneyBuses';
 
     /**

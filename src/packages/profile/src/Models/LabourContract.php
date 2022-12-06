@@ -2,10 +2,12 @@
 
 namespace GGPHP\Profile\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class LabourContract extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     const SIGNER_DEFAULT = 'NGUYỄN HUỲNH THU TRÚC';

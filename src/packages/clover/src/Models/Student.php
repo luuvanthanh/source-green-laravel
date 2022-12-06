@@ -2,6 +2,8 @@
 
 namespace GGPHP\Clover\Models;
 
+
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Category\Models\Branch;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
@@ -10,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends UuidModel
 {
+    use ActivityLogTrait;
     use SoftDeletes;
 
     const DELETED_AT = 'DeletionTime';

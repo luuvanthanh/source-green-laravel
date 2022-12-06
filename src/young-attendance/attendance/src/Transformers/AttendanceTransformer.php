@@ -2,6 +2,7 @@
 
 namespace GGPHP\Attendance\Transformers;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTransformerTrait;
 use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Clover\Transformers\StudentTransporterTransformer;
@@ -15,12 +16,14 @@ use GGPHP\Fee\Transformers\SchoolYearTransformer;
  */
 class AttendanceTransformer extends BaseTransformer
 {
+    use ActivityLogTransformerTrait;
+
     /**
      * List of resources possible to include
      *
      * @var array
      */
-    protected $defaultIncludes = ['attendanceReason', 'attendanceLog', 'studentTransporter', 'student'];
+    protected $defaultIncludes = ['attendanceReason', 'attendanceLog', 'studentTransporter', 'student', 'activityLog'];
     protected $availableIncludes = ['schoolYear'];
 
     /**

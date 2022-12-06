@@ -2,12 +2,14 @@
 
 namespace GGPHP\LateEarly\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Presenters\LateEarlyPresenter;
 use GGPHP\Users\Models\User;
 
 class LateEarly extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     const LATE = 'LATE';

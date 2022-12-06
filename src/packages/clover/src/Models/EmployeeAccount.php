@@ -6,6 +6,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class EmployeeAccount extends UuidModel
 {
+    
     public $incrementing = false;
 
     /**

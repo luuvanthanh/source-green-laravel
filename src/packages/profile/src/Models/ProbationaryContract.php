@@ -2,10 +2,12 @@
 
 namespace GGPHP\Profile\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class ProbationaryContract extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'ProbationaryContracts';

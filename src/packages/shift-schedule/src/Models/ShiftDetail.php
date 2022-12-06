@@ -2,10 +2,12 @@
 
 namespace GGPHP\ShiftSchedule\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class ShiftDetail extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

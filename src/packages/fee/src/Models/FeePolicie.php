@@ -2,11 +2,13 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Core\Models\UuidModel;
 
 class FeePolicie extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**
