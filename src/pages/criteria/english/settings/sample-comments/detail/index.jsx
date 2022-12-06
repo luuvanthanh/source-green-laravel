@@ -58,7 +58,7 @@ const General = memo(() => {
 
   return (
     <>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={details?.type} menu={menuLeftCriteria} />
       <Pane className="p20">
         <Form
           layout="vertical"
@@ -127,7 +127,7 @@ const General = memo(() => {
 
                       onClick={() => history.goBack()}
                     >
-                      Cancel
+                      Close
                     </p>
                     <Button
                       className="ml-auto px25"

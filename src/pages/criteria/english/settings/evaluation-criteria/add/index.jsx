@@ -27,7 +27,6 @@ const Index = memo(() => {
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
     details: englishSettingevaluationCriteriaAdd.details,
-    skill: englishSettingevaluationCriteriaAdd.skill,
     error: englishSettingevaluationCriteriaAdd.error,
   }));
 
@@ -59,13 +58,6 @@ const Index = memo(() => {
       },
     });
   };
-
-  useEffect(() => {
-    dispatch({
-      type: 'englishSettingevaluationCriteriaAdd/GET_SKILL',
-      payload: {},
-    });
-  }, []);
 
   useEffect(() => {
     if (params.id) {

@@ -2,7 +2,7 @@ import request from '@/utils/requestLavarel';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/v1/child-evaluates', {
+  return request('/v1/script-reviews', {
     method: 'GET',
     params: {
       ...params,
@@ -10,15 +10,16 @@ export function get(params = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'categorySkill'
+        'scriptReviewSubject,scriptReviewComment,branch,classes',
+        'scriptReviewSubject.scriptReviewSubjectDetail.scriptReviewSubjectDetailChildren',
+        'scriptReviewComment.scriptReviewCommentDetail',
       ]),
     },
   });
 }
 
 export function remove(id = {}) {
-  return request(`/v1/child-evaluates/${id}`, {
+  return request(`/v1/script-reviews/${id}`, {
     method: 'DELETE',
     parse: true,
   });
@@ -32,7 +33,6 @@ export function getSkill() {
     },
   });
 }
-
 
 export function updateUse(data = {}) {
   return request(`/v1/update-is-use/${data.id}`, {

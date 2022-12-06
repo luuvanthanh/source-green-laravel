@@ -1672,3 +1672,54 @@
     font-style: normal;
   }
 }
+
+.wrapper-modal-delete {
+  border-radius: 6px;
+  :global(.ant-modal-body) {
+    padding: 0px !important;
+  }
+  :global(.ant-modal-content) {
+    border-radius: 6px !important;
+    text-align: center;
+  }
+  :global(.ant-modal-confirm-content) {
+    width: 100%;
+    display: flex;
+    margin: 0px !important;
+    padding-top: 20px !important;
+    justify-content: center;
+  }
+  :global(.ant-modal-confirm-btns) {
+    width: 100%;
+    display: flex;
+    border-top: 1px solid #eaeaea;
+    :global(.ant-btn) {
+      margin: 0px !important;
+      padding: 15px 0;
+      height: auto;
+      width: 50%;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 14px;
+      border: none !important;
+      border-radius: 0 0 0px 6px;
+      line-height: 20px;
+      background-color: $background-white;
+      font-family: $proxima-nova__font-family;
+      &:last-child {
+        border-radius: 0 0 6px 0;
+        border-left: 1px solid #eaeaea !important;
+        color: #a61e00;
+      }
+    }
+  }
+  .modal-text {
+    font-family: $proxima-nova__font-family;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: #36383a;
+    width: 268px;
+  }
+}
