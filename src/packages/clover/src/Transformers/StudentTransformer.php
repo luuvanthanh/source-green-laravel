@@ -9,6 +9,7 @@ use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Transformers\ParentsTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\InOutHistories\Transformers\InOutHistoriesTransformer;
+use GGPHP\StudyProgram\QuarterReport\Transformers\QuarterReportTransformer;
 use GGPHP\YoungAttendance\Absent\Transformers\AbsentTransformer;
 use GGPHP\YoungAttendance\ShiftSchedule\Transformers\ScheduleTransformer;
 
@@ -36,7 +37,10 @@ class StudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent', 'studentTransporter', 'testSemester', 'classes'];
+    protected $availableIncludes = [
+        'schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent',
+        'studentTransporter', 'testSemester', 'classes', 'quarterReport'
+    ];
 
     /**
      * Transform the Student entity.
@@ -159,5 +163,10 @@ class StudentTransformer extends BaseTransformer
         }
 
         return $this->item($student->classes, new ClassesTransformer, 'Classes');
+    }
+
+    public function includeQuarterReport(Student $student)
+    {
+        return $this->collection($student->quarterReport, new QuarterReportTransformer, 'QuarterReport');
     }
 }

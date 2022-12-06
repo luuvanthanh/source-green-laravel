@@ -43,7 +43,7 @@ class ScriptReviewTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return ['Type' => array_search($model->Type, ScriptReview::TYPE)];
     }
 
     public function includeScriptReviewSubject(ScriptReview $scriptReview)

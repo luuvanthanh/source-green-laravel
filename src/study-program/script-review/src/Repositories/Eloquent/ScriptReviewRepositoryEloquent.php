@@ -60,7 +60,7 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function getAll(array $attributes)
     {
         if (!empty($attributes['nameAssessmentPeriodId'])) {
-            $this->model = $this->model()::where('NameAssessmentPeriodId', $attributes['NameAssessmentPeriodId']);
+            $this->model = $this->model()::where('NameAssessmentPeriodId', $attributes['nameAssessmentPeriodId']);
         }
 
         if (!empty($attributes['limit'])) {
