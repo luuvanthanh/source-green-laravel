@@ -3,6 +3,7 @@
 namespace GGPHP\StudyProgram\ScriptReview\Models;
 
 use GGPHP\Category\Models\Branch;
+use GGPHP\ChildDevelop\Category\Models\NameAssessmentPeriod;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,5 +41,10 @@ class ScriptReview extends UuidModel
     public function scriptReviewComment()
     {
         return $this->hasMany(ScriptReviewComment::class, 'ScriptReviewId');
+    }
+
+    public function nameAssessmentPeriod()
+    {
+        return $this->belongsTo(NameAssessmentPeriod::class, 'NameAssessmentPeriodId');
     }
 }

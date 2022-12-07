@@ -3,6 +3,7 @@
 namespace GGPHP\StudyProgram\ScriptReview\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\StudyProgram\Setting\Models\SampleComment;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ScriptReviewComment extends UuidModel
@@ -18,5 +19,10 @@ class ScriptReviewComment extends UuidModel
     public function scriptReviewCommentDetail()
     {
         return $this->hasMany(ScriptReviewCommentDetail::class, 'ScriptReviewCommentId');
+    }
+
+    public function sampleComment()
+    {
+        return $this->belongsTo(SampleComment::class, 'SampleCommentId');
     }
 }

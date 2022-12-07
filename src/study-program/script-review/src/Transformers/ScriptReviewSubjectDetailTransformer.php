@@ -4,6 +4,7 @@ namespace GGPHP\StudyProgram\ScriptReview\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\StudyProgram\ScriptReview\Models\ScriptReviewSubjectDetail;
+use GGPHP\StudyProgram\Setting\Transformers\SubjectSectionTransformer;
 
 /**
  * Class ReviewDetailTransformer.
@@ -29,7 +30,7 @@ class ScriptReviewSubjectDetailTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['scriptReviewSubjectDetailChildren'];
+    protected $availableIncludes = ['scriptReviewSubjectDetailChildren', 'subjectSection'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -47,5 +48,10 @@ class ScriptReviewSubjectDetailTransformer extends BaseTransformer
     public function includeScriptReviewSubjectDetailChildren(ScriptReviewSubjectDetail $scriptReviewSubjectDetail)
     {
         return $this->collection($scriptReviewSubjectDetail->scriptReviewSubjectDetailChildren, new ScriptReviewSubjectDetailChildrenTransformer, 'ScriptReviewSubjectDetailChildren');
+    }
+
+    public function includeSubjectSection(ScriptReviewSubjectDetail $scriptReviewSubjectDetail)
+    {
+        return $this->item($scriptReviewSubjectDetail->subjectSection, new SubjectSectionTransformer, 'SubjectSection');
     }
 }
