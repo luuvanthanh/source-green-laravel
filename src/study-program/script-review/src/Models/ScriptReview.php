@@ -20,7 +20,7 @@ class ScriptReview extends UuidModel
     protected $table = 'study-program.ScriptReviews';
 
     protected $fillable = [
-        'Type', 'NameAssessmentPeriodId', 'IsCheckSampleComment', 'IsCheckSubject'
+        'Type', 'NameAssessmentPeriodId', 'IsCheckSampleComment', 'IsCheckSubject', 'SchoolYearId'
     ];
 
     public function branch()

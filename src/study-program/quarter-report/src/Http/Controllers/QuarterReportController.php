@@ -93,4 +93,12 @@ class QuarterReportController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    public function updateStatus(Request $request)
+    {
+        $attributes = $request->all();
+        $result = $this->quarterReportRepository->updateStatus($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
 }

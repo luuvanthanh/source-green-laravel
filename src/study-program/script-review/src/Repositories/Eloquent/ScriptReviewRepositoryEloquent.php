@@ -63,6 +63,10 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
             $this->model = $this->model()::where('NameAssessmentPeriodId', $attributes['nameAssessmentPeriodId']);
         }
 
+        if (!empty($attributes['schoolYearId'])) {
+            $this->model = $this->model()::where('SchoolYearId', $attributes['schoolYearId']);
+        }
+
         if (!empty($attributes['limit'])) {
             $result = $this->paginate($attributes['limit']);
         } else {
