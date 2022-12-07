@@ -3,6 +3,7 @@
 namespace GGPHP\StudyProgram\ScriptReview\Transformers;
 
 use GGPHP\Category\Transformers\BranchTransformer;
+use GGPHP\ChildDevelop\Category\Transformers\NameAssessmentPeriodTransformer;
 use GGPHP\Clover\Transformers\ClassesTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\StudyProgram\ScriptReview\Models\ScriptReview;
@@ -31,7 +32,9 @@ class ScriptReviewTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['scriptReviewSubject', 'scriptReviewComment', 'branch', 'classes'];
+    protected $availableIncludes = [
+        'scriptReviewSubject', 'scriptReviewComment', 'branch', 'classes', 'nameAssessmentPeriod'
+    ];
 
     /**
      * Transform the ReviewDetail entity.
@@ -43,7 +46,9 @@ class ScriptReviewTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return ['Type' => array_search($model->Type, ScriptReview::TYPE)];
+        return [
+            'Type' => array_search($model->Type, ScriptReview::TYPE)
+        ];
     }
 
     public function includeScriptReviewSubject(ScriptReview $scriptReview)
@@ -64,5 +69,10 @@ class ScriptReviewTransformer extends BaseTransformer
     public function includeClasses(ScriptReview $scriptReview)
     {
         return $this->collection($scriptReview->classes, new ClassesTransformer, 'Classes');
+    }
+
+    public function includeNameAssessmentPeriod(ScriptReview $scriptReview)
+    {
+        return $this->item($scriptReview->nameAssessmentPeriod, new NameAssessmentPeriodTransformer, 'NameAssessmentPeriod');
     }
 }

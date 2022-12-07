@@ -3,6 +3,7 @@
 namespace GGPHP\StudyProgram\ScriptReview\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\StudyProgram\Setting\Models\SampleCommentDetail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ScriptReviewCommentDetail extends UuidModel
@@ -14,4 +15,9 @@ class ScriptReviewCommentDetail extends UuidModel
     protected $fillable = [
         'SampleCommentDetailId', 'ScriptReviewCommentId', 'IsCheck'
     ];
+
+    public function sampleCommentDetail()
+    {
+        return $this->belongsTo(SampleCommentDetail::class, 'SampleCommentDetailId');
+    }
 }

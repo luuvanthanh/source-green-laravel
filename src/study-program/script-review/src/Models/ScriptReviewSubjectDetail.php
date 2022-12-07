@@ -3,6 +3,7 @@
 namespace GGPHP\StudyProgram\ScriptReview\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\StudyProgram\Setting\Models\SubjectSection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ScriptReviewSubjectDetail extends UuidModel
@@ -18,5 +19,10 @@ class ScriptReviewSubjectDetail extends UuidModel
     public function scriptReviewSubjectDetailChildren()
     {
         return $this->hasMany(ScriptReviewSubjectDetailChildren::class, 'ScriptReviewSubjectDetailId');
+    }
+
+    public function subjectSection()
+    {
+        return $this->belongsTo(SubjectSection::class, 'SubjectSectionId');
     }
 }

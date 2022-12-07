@@ -3,7 +3,9 @@
 namespace GGPHP\StudyProgram\ScriptReview\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\StudyProgram\ScriptReview\Models\ScriptReview;
 use GGPHP\StudyProgram\ScriptReview\Models\ScriptReviewComment;
+use GGPHP\StudyProgram\Setting\Transformers\SampleCommentTransformer;
 
 /**
  * Class ReviewDetailTransformer.
@@ -29,7 +31,7 @@ class ScriptReviewCommentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['scriptReviewCommentDetail'];
+    protected $availableIncludes = ['scriptReviewCommentDetail', 'sampleComment'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -47,5 +49,10 @@ class ScriptReviewCommentTransformer extends BaseTransformer
     public function includeScriptReviewCommentDetail(ScriptReviewComment $scriptReviewComment)
     {
         return $this->collection($scriptReviewComment->scriptReviewCommentDetail, new ScriptReviewCommentDetailTransformer, 'ScriptReviewCommentDetail');
+    }
+
+    public function includeSampleComment(ScriptReviewComment $scriptReviewComment)
+    {
+        return $this->item($scriptReviewComment->sampleComment, new SampleCommentTransformer, 'SampleComment');
     }
 }
