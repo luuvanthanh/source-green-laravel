@@ -1,21 +1,19 @@
 import * as categories from '@/services/categories';
+import { head } from 'lodash';
 import * as services from './services';
 
 export default {
   namespace: 'EnglishQuarterReport',
   state: {
-    data: [
-      {
-        id: 1,
-        categoryId: 1,
-      },
-    ],
+    data: [],
     years: [],
     assessmentPeriod: [],
+    dataType: [],
     pagination: {
       total: 0,
     },
     branches: [],
+    dataAssess: {},
     classes: [],
   },
   reducers: {
@@ -48,6 +46,18 @@ export default {
         ...i,
         name: i?.nameAssessmentPeriod.name,
       })),
+    }),
+    SET_DATA_TYPE: (state, { payload }) => ({
+      ...state,
+      dataType: payload.parsePayload,
+    }),
+    SET_ASSESS: (state, { payload }) => ({
+      ...state,
+      dataAssess: head(payload.parsePayload),
+    }),
+    SET_DATA_STUDENTS: (state, { payload }) => ({
+      ...state,
+      pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -88,20 +98,50 @@ export default {
         });
       }
     },
-    *GET_DATA() {
-      // try {
-      //   const response = yield saga.call(services.get, payload);
-      //   callback(response);
-      //   yield saga.put({
-      //     type: 'SET_DATA',
-      //     payload: response,
-      //   });
-      // } catch (error) {
-      //   yield saga.put({
-      //     type: 'SET_ERROR',
-      //     payload: error.data,
-      //   });
-      // }
+    *GET_ASSESS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getAssess, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_ASSESS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA_STUDENTS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getStudent, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_DATA_STUDENTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *ADD_ONE_ITEM_REVIEW({ payload, callback }, saga) {
       try {
@@ -169,6 +209,28 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_DATA_TYPE({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDataType, payload);
+        yield saga.put({
+          type: 'SET_DATA_TYPE',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_SENT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addSent, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },

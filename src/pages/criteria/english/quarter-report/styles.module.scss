@@ -1,8 +1,30 @@
 @import "@/assets/styles/mixins.scss";
 
 .wraper-container-quarterReport {
+  .wrapper-checkbox {
+    display: flex;
+    align-items: center;
+    .textParent {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      color: #36383a;
+    }
+    .textChild {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 22px;
+      color: #3e4247;
+    }
+  }
+
   .list-button {
     display: flex;
+    justify-content: center;
     .check {
       width: 32px;
       height: 32px;
@@ -78,6 +100,7 @@
     padding: 20px;
     border: 1px solid #e1e7ec;
     border-radius: 3px;
+    margin-bottom: 20px;
     .text-item-table {
       font-family: $proxima-nova__font-family;
       font-style: normal;

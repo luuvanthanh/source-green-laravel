@@ -33,7 +33,6 @@ class AppMenu extends React.Component {
 
   render() {
     const { isMobileMenuOpen, isMobileView, isLightTheme, menu, info } = this.props;
-    console.log(this.props);
     const BootstrappedMenu = () => {
       if (isMobileView) {
         return (

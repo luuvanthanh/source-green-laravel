@@ -320,7 +320,7 @@ export default [
             authority: [permissions.CTH],
           },
           {
-            path: '/chuong-trinh-hoc/quarter-report/add',
+            path: '/chuong-trinh-hoc/quarter-report/:id/add',
             component: './criteria/english/quarter-report/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
@@ -334,6 +334,12 @@ export default [
           {
             path: '/chuong-trinh-hoc/quarter-report/:id/edit',
             component: './criteria/english/quarter-report/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/quarter-report/:id/confirmed',
+            component: './criteria/english/quarter-report/confirmed',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },

@@ -14,9 +14,12 @@ import stylesModule from '../styles.module.scss';
 const General = memo(() => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [{ menuLeftCriteria }, {
-    details,
-  }, effects] = useSelector(({ menu, englishSettingSampleCommentsAdd, loading: { effects } }) => [menu, englishSettingSampleCommentsAdd, effects]);
+  const { menuLeftCriteria, details, loading: { effects } } = useSelector(({ menu, englishSettingSampleCommentsAdd, loading }) =>
+  ({
+    loading,
+    menuLeftCriteria: menu.menuLeftCriteria,
+    details: englishSettingSampleCommentsAdd.details
+  }));
   const mounted = useRef(false);
 
   const params = useParams();
@@ -40,21 +43,10 @@ const General = memo(() => {
       dispatch({
         type: 'englishSettingSampleCommentsAdd/GET_DATA',
         payload: params,
+        callback: () => { },
       });
     }
   }, [params.id]);
-
-  useEffect(() => {
-    if (params.id) {
-      form.setFieldsValue({
-        name: details?.name,
-        code: details?.code,
-        data: details?.sampleCommentDetail?.map(i => ({
-          ...i,
-        }))
-      });
-    }
-  }, [details]);
 
   return (
     <>
@@ -95,27 +87,23 @@ const General = memo(() => {
                               <p className={stylesModule.norm} />
                             </div>
                           </div>
-                          <Form.List name="data">
-                            {(fields) => (
-                              <>
-                                {fields.map((fieldItem, index) => {
-                                  const itemData = details?.sampleCommentDetail?.find((item, indexWater) => indexWater === index);
-                                  return (
-                                    <Pane
-                                      key={index}
-                                      className="d-flex"
-                                    >
-                                      <div className={stylesModule['card-item']}>
-                                        <div className={classnames(stylesModule.colDetail)}>
-                                          <FormDetail name={itemData?.name} type="table" />
-                                        </div>
-                                      </div>
-                                    </Pane>
-                                  );
-                                })}
-                              </>
-                            )}
-                          </Form.List>
+                          <>
+                            {details?.sampleCommentDetail?.map((fieldItem, index) => {
+                              const itemData = details?.sampleCommentDetail?.find((item, indexWater) => indexWater === index);
+                              return (
+                                <Pane
+                                  key={index}
+                                  className="d-flex"
+                                >
+                                  <div className={stylesModule['card-item']}>
+                                    <div className={classnames(stylesModule.colDetail)}>
+                                      <FormDetail name={itemData?.name} type="table" />
+                                    </div>
+                                  </div>
+                                </Pane>
+                              );
+                            })}
+                          </>
                         </div>
                       </Pane>
                     </Pane>
