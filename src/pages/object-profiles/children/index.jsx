@@ -256,7 +256,8 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
-    Helper.confirmAction({
+    const text = "Bạn có chắc chắn muốn xóa hồ sơ nhập học này không?";
+    Helper.confirmDelete({
       callback: () => {
         dispatch({
           type: 'OPchildren/REMOVE_STUDENT',
@@ -270,7 +271,7 @@ class Index extends PureComponent {
           },
         });
       },
-    });
+    }, text);
   };
 
   /**

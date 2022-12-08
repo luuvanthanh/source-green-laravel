@@ -106,13 +106,6 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    dispatch({
-      type: 'englishSettingSubjectAdd/GET_SKILL',
-      payload: {},
-    });
-  }, []);
-
-  useEffect(() => {
     if (params.id) {
       dispatch({
         type: 'englishSettingSubjectAdd/GET_DATA',

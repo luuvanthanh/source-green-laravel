@@ -58,7 +58,6 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
-    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -101,14 +100,6 @@ class Index extends PureComponent {
         variables.QUERY_STRING,
       )}`,
     );
-  };
-
-  loadCategories = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'englishSettingevaluationCriteria/GET_SKILL',
-      payload: {},
-    });
   };
 
   /**

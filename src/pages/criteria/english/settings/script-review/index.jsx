@@ -234,7 +234,7 @@ class Index extends PureComponent {
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.type === 'QUARTER_REPORT' ? 'Quarter report' : 'Monthly comment'}</Text>,
       },
       {
         title: 'Name',
@@ -255,16 +255,22 @@ class Index extends PureComponent {
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.name}</Text>,
+        render: (record) => <Text size="normal">  {record?.branch?.map((item, index) =>
+          <div size="normal" key={index} className='d-flex'>
+            {item?.name}{index + 1 === record.branch.length ? "" : ",  "}
+          </div>
+        )}</Text>,
       },
       {
         title: 'Apply class',
         key: 'total',
         className: 'min-width-140 center',
         width: 140,
-        render: (record) => <div className='d-flex w-100 justify-content-center'>
-          <Text size="normal">{record?.total}</Text>
-        </div>,
+        render: (record) => <Text size="normal">  {record?.classes?.map((item, index) =>
+          <div size="normal" key={index} className='d-flex'>
+            {item?.name}{index + 1 === record.classes.length ? "" : ",  "}
+          </div>
+        )}</Text>,
       },
       {
         key: 'action',
@@ -313,6 +319,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
+
     const loading = effects['englishSettingScriptReview/GET_DATA'];
     return (
       <>
