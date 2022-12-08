@@ -8,6 +8,7 @@ use GGPHP\Appoint\Presenters\AppointPresenter;
 use GGPHP\Appoint\Repositories\Contracts\AppointRepository;
 use GGPHP\Appoint\Services\AppointDetailServices;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\DecisionNumberSample\Repositories\Eloquent\DecisionNumberSampleRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
@@ -79,6 +80,7 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
         \DB::beginTransaction();
         try {
             $appoint = Appoint::create($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfCreated($appoint, $attributes);
             AppointDetailServices::add($appoint->Id, $attributes['data'], $appoint->TimeApply);
 
             \DB::commit();
@@ -96,7 +98,7 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
         \DB::beginTransaction();
         try {
             $appoint->update($attributes);
-
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($appoint->refresh(), $attributes);
             AppointDetailServices::update($appoint->Id, $attributes['data'], $appoint->TimeApply);
 
             \DB::commit();

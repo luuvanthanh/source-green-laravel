@@ -4,6 +4,7 @@ namespace GGPHP\Dismissed\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\DecisionNumberSample\Repositories\Eloquent\DecisionNumberSampleRepositoryEloquent;
 use GGPHP\Dismissed\Models\Dismissed;
 use GGPHP\Dismissed\Presenters\DismissedPresenter;
 use GGPHP\Dismissed\Repositories\Contracts\DismissedRepository;
@@ -79,6 +80,7 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
         \DB::beginTransaction();
         try {
             $dismissed = Dismissed::create($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfCreated($dismissed, $attributes);
             DismissedDetailServices::add($dismissed->Id, $attributes['data'], $dismissed->TimeApply);
             \DB::commit();
         } catch (\Exception $e) {
@@ -95,7 +97,7 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
         \DB::beginTransaction();
         try {
             $dismissed->update($attributes);
-
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($dismissed->refresh(), $attributes);
             DismissedDetailServices::update($dismissed->Id, $attributes['data'], $dismissed->TimeApply);
 
             \DB::commit();

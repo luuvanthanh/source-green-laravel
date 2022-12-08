@@ -2,6 +2,7 @@
 
 namespace GGPHP\Appoint\Http\Requests;
 
+use GGPHP\Appoint\Models\Appoint;
 use GGPHP\Appoint\Models\AppointDetail;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -36,6 +37,24 @@ class AppointUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'numberForm' => 'nullable|exists:DecisionNumberSamples,NumberForm',
+            'ordinalNumber' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $appoint = Appoint::where('NumberForm', $this->numberForm)->where('Id', '!=', $this->id)->first();
+
+                    if (is_null($appoint)) {
+                        return true;
+                    }
+
+                    if ($value == $appoint->OrdinalNumber) {
+                        return $fail('Số thứ tự phải khác số đã có.');
+                    }
+
+                    return true;
+                }
+            ]
         ];
     }
 }

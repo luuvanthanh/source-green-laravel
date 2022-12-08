@@ -23,7 +23,7 @@ class SalaryIncrease extends UuidModel
      */
     protected $fillable = [
         'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'TimeApply', 'Note',
-        'TotalAllowance', 'BasicSalary', 'OldBasicSalary'
+        'TotalAllowance', 'BasicSalary', 'OldBasicSalary', 'OrdinalNumber', 'NumberForm'
     ];
 
     protected $dateTimeFields = [

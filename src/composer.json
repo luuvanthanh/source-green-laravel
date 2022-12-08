@@ -118,7 +118,8 @@
             "GGPHP\\ManualCalculation\\": "packages/manual-calculation/src/",
             "GGPHP\\Refund\\": "packages/refund/src/",
             "GGPHP\\ActivityLog\\": "packages/activity-log/src",
-            "GGPHP\\StudyProgram\\Setting\\": "study-program/setting/src"
+            "GGPHP\\StudyProgram\\Setting\\": "study-program/setting/src",
+            "GGPHP\\DecisionNumberSample\\": "packages/decision-number-sample/src"
         },
         "classmap": [
             "database/seeds",
