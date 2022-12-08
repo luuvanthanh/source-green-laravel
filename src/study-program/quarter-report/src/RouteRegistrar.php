@@ -31,6 +31,7 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('quarter-reports', 'QuarterReportController');
             \Route::post('update-status', 'QuarterReportController@updateStatus');
+            \Route::post('notification-quarter-reports', 'QuarterReportController@notificationQuarterReport');
         });
     }
 }
