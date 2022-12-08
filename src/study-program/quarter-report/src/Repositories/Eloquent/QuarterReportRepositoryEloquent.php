@@ -88,6 +88,24 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
         }
 
+        if (!empty($attributes['scriptReviewId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+            });
+        }
+
+        if (!empty($attributes['schoolYearId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('SchoolYearId', $attributes['schoolYearId']);
+            });
+        }
+
+        if (!empty($attributes['studentId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('StudentId', $attributes['studentId']);
+            });
+        }
+
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', Student::OFFICAL);
 
         if (!empty($attributes['limit'])) {
@@ -227,5 +245,17 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         }
 
         return parent::all();
+    }
+
+    public function updateStatus(array $attributes)
+    {
+        $this->model->whereIn('StudentId', $attributes['studentId'])
+            ->where('SchoolYearId', $attributes['schoolYearId'])
+            ->where('ScriptReviewId', $attributes['scriptReview'])
+            ->update([
+                'Status' => $this->model()::STATUS[$attributes['status']]
+            ]);
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 }

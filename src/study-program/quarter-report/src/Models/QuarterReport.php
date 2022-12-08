@@ -2,7 +2,11 @@
 
 namespace GGPHP\StudyProgram\QuarterReport\Models;
 
+use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\SchoolYear;
+use GGPHP\StudyProgram\ScriptReview\Models\ScriptReview;
+use GGPHP\Users\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class QuarterReport extends UuidModel
@@ -19,11 +23,36 @@ class QuarterReport extends UuidModel
     ];
 
     protected $fillable = [
-        'StudentId', 'ScriptReviewId', 'Status'
+        'StudentId', 'ScriptReviewId', 'Status', 'TeacherId', 'TeacherManagementId', 'SchoolYearId'
     ];
 
     public function quarterReportDetail()
     {
         return $this->hasMany(QuarterReportDetail::class, 'QuarterReportId');
+    }
+
+    public function scriptReview()
+    {
+        return $this->belongsTo(ScriptReview::class, 'ScriptReviewId');
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'TeacherId');
+    }
+
+    public function teacherManagement()
+    {
+        return $this->belongsTo(User::class, 'TeacherId');
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'StudentId');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
 }
