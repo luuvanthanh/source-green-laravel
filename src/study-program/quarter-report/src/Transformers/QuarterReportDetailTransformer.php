@@ -1,17 +1,16 @@
 <?php
 
-namespace GGPHP\StudyProgram\ScriptReview\Transformers;
+namespace GGPHP\StudyProgram\QuarterReport\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\StudyProgram\ScriptReview\Models\ScriptReviewCommentDetail;
-use GGPHP\StudyProgram\Setting\Transformers\SampleCommentDetailTransformer;
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetail;
 
 /**
  * Class ReviewDetailTransformer.
  *
  * @package namespace App\Transformers;
  */
-class ScriptReviewCommentDetailTransformer extends BaseTransformer
+class QuarterReportDetailTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -30,7 +29,7 @@ class ScriptReviewCommentDetailTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['sampleCommentDetail'];
+    protected $availableIncludes = ['quarterReportDetailSubject'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -45,8 +44,8 @@ class ScriptReviewCommentDetailTransformer extends BaseTransformer
         return [];
     }
 
-    public function includeSampleCommentDetail(ScriptReviewCommentDetail $scriptReviewCommentDetail)
+    public function includeQuarterReportDetailSubject(QuarterReportDetail $quarterReportDetail)
     {
-        return $this->item($scriptReviewCommentDetail->sampleCommentDetail, new SampleCommentDetailTransformer, 'SampleCommentDetail');
+        return $this->collection($quarterReportDetail->quarterReportDetailSubject, new QuarterReportDetailSubjectTransformer, 'QuarterReportDetailSubject');
     }
 }

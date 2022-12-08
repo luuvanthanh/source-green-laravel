@@ -239,5 +239,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\StudyProgram\ScriptReview\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\StudyProgram\QuarterReport\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });
