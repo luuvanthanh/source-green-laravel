@@ -33,13 +33,6 @@ const Index = memo(() => {
   }));
 
   useEffect(() => {
-    dispatch({
-      type: 'englishSettingSubjectAdd/GET_SKILL',
-      payload: {},
-    });
-  }, []);
-
-  useEffect(() => {
     if (params.id) {
       dispatch({
         type: 'englishSettingSubjectAdd/GET_DATA',
@@ -73,14 +66,13 @@ const Index = memo(() => {
             ...k,
           }))
         }))
-        // ...head(details.positionLevel),
       });
     }
   }, [details]);
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
+      <Breadcrumbs last={details?.name} menu={menuLeftCriteria} />
       <Helmet title="Subject" />
       <Pane className="pl20 pr20 pb20">
         <Pane >
@@ -185,7 +177,7 @@ const Index = memo(() => {
 
                           onClick={() => history.goBack()}
                         >
-                          Cancel
+                          Close
                         </p>
                       </div>
                       <Button

@@ -31,13 +31,6 @@ const Index = memo(() => {
   }));
 
   useEffect(() => {
-    dispatch({
-      type: 'englishSettingevaluationCriteriaAdd/GET_SKILL',
-      payload: {},
-    });
-  }, []);
-
-  useEffect(() => {
     if (params.id) {
       dispatch({
         type: 'englishSettingevaluationCriteriaAdd/GET_DATA',
@@ -62,7 +55,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last='Detail' menu={menuLeftCriteria} />
+      <Breadcrumbs last={details?.name} menu={menuLeftCriteria} />
       <Helmet title="Subject" />
       <Pane className="pl20 pr20">
         <Pane className="col-lg-6 offset-lg-3">
@@ -97,7 +90,7 @@ const Index = memo(() => {
 
                   onClick={() => history.goBack()}
                 >
-                  Cancel
+                  Close
                 </p>
                 <Button
                   className="ml-auto px25"

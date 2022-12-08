@@ -25,10 +25,6 @@ export default {
         },
       },
     }),
-    SET_SKILL: (state, { payload }) => ({
-      ...state,
-      skill: payload.parsePayload.filter((i) => i.use === true),
-    }),
   },
   effects: {
     *GET_DATA({ payload, callback }, saga) {
@@ -52,20 +48,6 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data);
-      }
-    },
-    *GET_SKILL({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getSkill, payload);
-        yield saga.put({
-          type: 'SET_SKILL',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
       }
     },
     *UPDATE({ payload, callback }, saga) {

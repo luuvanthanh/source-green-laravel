@@ -3,16 +3,7 @@ import * as services from './services';
 export default {
   namespace: 'englishSettingScriptReview',
   state: {
-    data: [
-      {
-        id: '01',
-        name: 'Quarter report',
-      },
-      {
-        id: '02',
-        name: 'Mathematics',
-      },
-    ],
+    data: [],
     skill: [],
     pagination: {
       total: 0,
@@ -38,21 +29,17 @@ export default {
         },
       },
     }),
-    SET_SKILL: (state, { payload }) => ({
-      ...state,
-      skill: payload.parsePayload.filter((i) => i.use === true),
-    }),
   },
   effects: {
-    *GET_DATA(saga) {
+    *GET_DATA({ payload }, saga) {
       try {
-        // const response = yield saga.call(services.get, payload);
-        // if (response) {
-        //   yield saga.put({
-        //     type: 'SET_DATA',
-        //     payload: response,
-        //   });
-        // }
+        const response = yield saga.call(services.get, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -66,20 +53,6 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
-      }
-    },
-    *GET_SKILL({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getSkill, payload);
-        yield saga.put({
-          type: 'SET_SKILL',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
       }
     },
     *UPDATE_USE({ payload, callback }, saga) {
