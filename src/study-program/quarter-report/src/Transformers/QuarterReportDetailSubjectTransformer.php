@@ -5,6 +5,7 @@ namespace GGPHP\StudyProgram\QuarterReport\Transformers;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubject;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubjectChildrens;
+use GGPHP\StudyProgram\ScriptReview\Transformers\ScriptReviewSubjectDetailTransformer;
 
 /**
  * Class ReviewDetailTransformer.
@@ -30,7 +31,7 @@ class QuarterReportDetailSubjectTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['quarterReportDetailSubjectChildren'];
+    protected $availableIncludes = ['quarterReportDetailSubjectChildren', 'scriptReviewSubjectDetail'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -48,5 +49,14 @@ class QuarterReportDetailSubjectTransformer extends BaseTransformer
     public function includeQuarterReportDetailSubjectChildren(QuarterReportDetailSubject $quarterReportDetailSubject)
     {
         return $this->collection($quarterReportDetailSubject->quarterReportDetailSubjectChildren, new QuarterReportDetailSubjectChildrenTransformer, 'QuarterReportDetailSubjectChildren');
+    }
+
+    public function includeScriptReviewSubjectDetail(QuarterReportDetailSubject $quarterReportDetailSubject)
+    {
+        if (!is_null($quarterReportDetailSubject->ScriptReviewSubjectDetailId)) {
+            return $this->item($quarterReportDetailSubject->scriptReviewSubjectDetail, new ScriptReviewSubjectDetailTransformer, 'ScriptReviewSubjectDetail');
+        } else {
+            return null;
+        }
     }
 }
