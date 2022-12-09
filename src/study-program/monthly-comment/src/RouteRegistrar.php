@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\StudyProgram\QuarterReport;
+namespace GGPHP\StudyProgram\MonthlyComment;
 
 use GGPHP\Core\RouteRegistrar as CoreRegistrar;
 
@@ -9,7 +9,7 @@ class RouteRegistrar extends CoreRegistrar
     /**
      * The namespace implementation.
      */
-    protected static $namespace = '\GGPHP\StudyProgram\QuarterReport\Http\Controllers';
+    protected static $namespace = '\GGPHP\StudyProgram\MonthlyComment\Http\Controllers';
 
     /**
      * Register routes for bread.
@@ -29,9 +29,9 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('quarter-reports', 'QuarterReportController');
-            \Route::post('update-status-quarter-reports', 'QuarterReportController@updateStatusQuarterReport');
-            \Route::post('notification-quarter-reports', 'QuarterReportController@notificationQuarterReport');
+            \Route::resource('monthly-comments', 'MonthlyCommentController');
+            \Route::post('update-status-monthly-comments', 'MonthlyCommentController@updateStatusMonthlyComment');
+            \Route::post('notification-monthly-comments', 'MonthlyCommentController@notificationMonthlyComment');
         });
     }
 }

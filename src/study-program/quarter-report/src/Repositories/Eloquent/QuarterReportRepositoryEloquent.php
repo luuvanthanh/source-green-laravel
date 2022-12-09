@@ -254,11 +254,11 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         return parent::all();
     }
 
-    public function updateStatus(array $attributes)
+    public function updateStatusQuarterReport(array $attributes)
     {
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('ScriptReviewId', $attributes['scriptReview'])
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
             ->update([
                 'Status' => $attributes['status']
             ]);
