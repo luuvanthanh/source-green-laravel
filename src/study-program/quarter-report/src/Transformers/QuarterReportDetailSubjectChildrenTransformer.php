@@ -3,6 +3,10 @@
 namespace GGPHP\StudyProgram\QuarterReport\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubjectChildren;
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubjectChildrens;
+use GGPHP\StudyProgram\ScriptReview\Transformers\ScriptReviewSubjectDetailChildrenTransformer;
+use GGPHP\StudyProgram\Setting\Transformers\EvaluationCriteriaTransformer;
 
 /**
  * Class ReviewDetailTransformer.
@@ -28,7 +32,7 @@ class QuarterReportDetailSubjectChildrenTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['scriptReviewSubjectDetailChildren', 'evaluationCriteria'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -41,5 +45,15 @@ class QuarterReportDetailSubjectChildrenTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [];
+    }
+
+    public function includeScriptReviewSubjectDetailChildren(QuarterReportDetailSubjectChildren $quarterReportDetailSubjectChildren)
+    {
+        return $this->item($quarterReportDetailSubjectChildren->scriptReviewSubjectDetailChildren, new ScriptReviewSubjectDetailChildrenTransformer, 'ScriptReviewSubjectDetailChildren');
+    }
+
+    public function includeEvaluationCriteria(QuarterReportDetailSubjectChildren $quarterReportDetailSubjectChildren)
+    {
+        return $this->item($quarterReportDetailSubjectChildren->evaluationCriteria, new EvaluationCriteriaTransformer, 'EvaluationCriteria');
     }
 }

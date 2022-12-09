@@ -8,6 +8,7 @@ use GGPHP\StudyProgram\QuarterReport\Criteria\QuarterReportCriteriaCriteria;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetail;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubject;
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubjectChildren;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubjectChildrens;
 use GGPHP\StudyProgram\QuarterReport\Presenters\QuarterReportPresenter;
 use GGPHP\StudyProgram\QuarterReport\Repositories\Contracts\QuarterReportRepository;
@@ -101,6 +102,12 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             });
         }
 
+        if (!empty($attributes['status'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport', function ($query) use ($attributes) {
+                $query->where('Status', $this->model()::STATUS[$attributes['status']]);
+            }]);
+        }
+
         if (!empty($attributes['studentId'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('StudentId', $attributes['studentId']);
@@ -162,7 +169,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
     {
         foreach ($attributes as $value) {
             $value['quarterReportDetailSubjectId'] = $model->Id;
-            QuarterReportDetailSubjectChildrens::create($value);
+            QuarterReportDetailSubjectChildren::create($value);
         }
     }
 
@@ -216,7 +223,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
     public function updateDetailSubjectChildren($attributes)
     {
         foreach ($attributes as $value) {
-            $subjectChildren = QuarterReportDetailSubjectChildrens::find($value['id']);
+            $subjectChildren = QuarterReportDetailSubjectChildren::find($value['id']);
 
             if (!is_null($subjectChildren)) {
                 $subjectChildren->update($value);

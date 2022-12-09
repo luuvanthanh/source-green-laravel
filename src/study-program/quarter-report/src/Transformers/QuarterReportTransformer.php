@@ -2,7 +2,9 @@
 
 namespace GGPHP\StudyProgram\QuarterReport\Transformers;
 
+use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\SchoolYearTransformer;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use GGPHP\StudyProgram\ScriptReview\Transformers\ScriptReviewTransformer;
 use GGPHP\Users\Transformers\UserTransformer;
@@ -31,7 +33,7 @@ class QuarterReportTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['quarterReportDetail', 'scriptReview', 'teacher', 'teacherManagement'];
+    protected $availableIncludes = ['quarterReportDetail', 'scriptReview', 'teacher', 'teacherManagement', 'student', 'schoolYear'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -64,5 +66,19 @@ class QuarterReportTransformer extends BaseTransformer
     public function includeTeacherManagement(QuarterReport $quarterReport)
     {
         return $this->item($quarterReport->teacherManagement, new UserTransformer, 'TeacherManagement');
+    }
+
+    public function includeStudent(QuarterReport $quarterReport)
+    {
+        return $this->item($quarterReport->student, new StudentTransformer, 'Student');
+    }
+
+    public function includeSchoolYear(QuarterReport $quarterReport)
+    {
+        if (!is_null($quarterReport->SchoolYearId)) {
+            return $this->item($quarterReport->schoolYear, new SchoolYearTransformer, 'SchoolYear');
+        } else {
+            return null;
+        }
     }
 }
