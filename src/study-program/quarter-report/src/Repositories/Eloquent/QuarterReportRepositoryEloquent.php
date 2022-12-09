@@ -103,8 +103,9 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         }
 
         if (!empty($attributes['status'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport', function ($query) use ($attributes) {
-                $query->where('Status', $this->model()::STATUS[$attributes['status']]);
+            $status = $this->model()::STATUS[$attributes['status']];
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($status) {
+                $query->where('Status', $status);
             }]);
         }
 
