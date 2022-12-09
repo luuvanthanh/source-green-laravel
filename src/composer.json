@@ -120,7 +120,8 @@
             "GGPHP\\ActivityLog\\": "packages/activity-log/src",
             "GGPHP\\StudyProgram\\Setting\\": "study-program/setting/src",
             "GGPHP\\StudyProgram\\ScriptReview\\": "study-program/script-review/src",
-            "GGPHP\\StudyProgram\\QuarterReport\\": "study-program/quarter-report/src"
+            "GGPHP\\StudyProgram\\QuarterReport\\": "study-program/quarter-report/src",
+            "GGPHP\\StudyProgram\\MonthlyComment\\": "study-program/monthly-comment/src"
         },
         "classmap": [
             "database/seeds",

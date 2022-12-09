@@ -1,30 +1,29 @@
 <?php
 
-namespace GGPHP\StudyProgram\QuarterReport\Http\Controllers;
+namespace GGPHP\StudyProgram\MonthlyComment\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
-use GGPHP\StudyProgram\QuarterReport\Criteria\QuarterReportCriteriaCriteria;
-use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportCreateRequest;
-use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportUpdateRequest;
-use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportUpdateStatusRequest;
-use GGPHP\StudyProgram\QuarterReport\Repositories\Contracts\QuarterReportRepository;
+use GGPHP\StudyProgram\MonthlyComment\Http\Requests\MonthlyCommentCreateRequest;
+use GGPHP\StudyProgram\MonthlyComment\Http\Requests\MonthlyCommentUpdateRequest;
+use GGPHP\StudyProgram\MonthlyComment\Http\Requests\MonthlyCommentUpdateStatusRequest;
+use GGPHP\StudyProgram\MonthlyComment\Repositories\Contracts\MonthlyCommentRepository;
 use Illuminate\Http\Response;
 
-class QuarterReportController extends Controller
+class MonthlyCommentController extends Controller
 {
     /**
      * @var $employeeRepository
      */
-    protected $quarterReportRepository;
+    protected $monthlyCommentRepository;
 
     /**
      * UserController constructor.
-     * @param QuarterReportRepository $quarterReportRepository;
+     * @param MonthlyCommentRepository $MonthlyCommentRepository
      */
-    public function __construct(QuarterReportRepository $quarterReportRepository)
+    public function __construct(MonthlyCommentRepository $monthlyCommentRepository)
     {
-        $this->quarterReportRepository = $quarterReportRepository;
+        $this->monthlyCommentRepository = $monthlyCommentRepository;
     }
 
     /**
@@ -36,7 +35,7 @@ class QuarterReportController extends Controller
     public function index(Request $request)
     {
         $attributes = $request->all();
-        $result = $this->quarterReportRepository->getAll($attributes);
+        $result = $this->monthlyCommentRepository->getAll($attributes);
 
         return $this->success($result, trans('lang::messages.common.getListSuccess'));
     }
@@ -47,10 +46,10 @@ class QuarterReportController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(QuarterReportCreateRequest $request)
+    public function store(MonthlyCommentCreateRequest $request)
     {
         $attributes = $request->all();
-        $result = $this->quarterReportRepository->createAll($attributes);
+        $result = $this->monthlyCommentRepository->createAll($attributes);
 
         return $this->success($result, trans('lang::messages.common.createSuccess'));
     }
@@ -63,7 +62,7 @@ class QuarterReportController extends Controller
      */
     public function show($id)
     {
-        $result = $this->quarterReportRepository->find($id);
+        $result = $this->monthlyCommentRepository->find($id);
 
         return $this->success($result, trans('lang::messages.common.getInfoSuccess'));
     }
@@ -75,10 +74,10 @@ class QuarterReportController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(QuarterReportUpdateRequest $request, $id)
+    public function update(MonthlyCommentUpdateRequest $request, $id)
     {
         $attributes = $request->all();
-        $result = $this->quarterReportRepository->updateAll($attributes, $id);
+        $result = $this->monthlyCommentRepository->updateAll($attributes, $id);
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
@@ -91,23 +90,23 @@ class QuarterReportController extends Controller
      */
     public function destroy($id)
     {
-        $this->quarterReportRepository->deleteAll($id);
+        $this->monthlyCommentRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
 
-    public function updateStatusQuarterReport(QuarterReportUpdateStatusRequest $request)
+    public function updateStatusMonthlyComment(MonthlyCommentUpdateStatusRequest $request)
     {
         $attributes = $request->all();
-        $result = $this->quarterReportRepository->updateStatusQuarterReport($attributes);
+        $result = $this->monthlyCommentRepository->updateStatusMonthlyComment($attributes);
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
 
-    public function notificationQuarterReport(QuarterReportUpdateStatusRequest $request)
+    public function notificationMonthlyComment(MonthlyCommentUpdateStatusRequest $request)
     {
         $attributes = $request->all();
-        $result = $this->quarterReportRepository->notificationQuarterReport($attributes);
+        $result = $this->monthlyCommentRepository->notificationMonthlyComment($attributes);
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
