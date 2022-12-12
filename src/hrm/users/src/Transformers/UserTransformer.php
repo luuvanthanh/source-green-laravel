@@ -12,7 +12,6 @@ use GGPHP\Category\Transformers\TrainingSchoolTransformer;
 use GGPHP\Clover\Transformers\ClassTeacherTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\EvaluateTeacher\Category\Transformers\TypeTeacherTransformer;
-use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
 use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
 use GGPHP\Profile\Transformers\LabourContractTransformer;
@@ -53,7 +52,7 @@ class UserTransformer extends BaseTransformer
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
         'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool',
         'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail',
-        'typeTeacher', 'TeacherTimekeeping', 'logActivity'
+        'typeTeacher', 'TeacherTimekeeping', 'logActivity', 'typeTeacherRelation'
     ];
 
     /**
@@ -65,7 +64,36 @@ class UserTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        $employeeTeacherPivot = [];
+        $employeeTeacher = $model->typeTeacher;
+
+        foreach ($employeeTeacher as $key => $value) {
+            foreach ($value as $keyItem => $item) {
+                $newKeyItem = dashesToCamelCase($keyItem, false);
+
+                if ($keyItem != $newKeyItem) {
+                    $value[$newKeyItem] = $value[$keyItem];
+                    unset($value[$keyItem]);
+                }
+
+                if ($keyItem === 'pivot') {
+                    foreach ($item as $keyPivot => $itemPivot) {
+                        $newKeyPivot = dashesToCamelCase($keyPivot, false);
+
+                        if ($keyPivot != $newKeyPivot) {
+                            $item[$newKeyPivot] = $item[$keyPivot];
+                            unset($item[$keyPivot]);
+                        }
+                    }
+                    $value[$keyItem] = $item;
+                }
+            }
+
+            $employeeTeacherPivot[$key] = $value;
+        }
+
         $attributes = [
+            'employeeTeacherPivot' => $employeeTeacherPivot,
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'totalWorks' => $model->totalWorks,
             'responseInvalid' => $model->responseInvalid,
@@ -151,14 +179,14 @@ class UserTransformer extends BaseTransformer
         return $this->collection(empty($employee->schedules) ? [] : $employee->schedules, new ScheduleTransformer, 'Schedules');
     }
 
-    /** Include SubtractionTime
-     * @param User $employee
-     * @return \League\Fractal\Resource\Collection
-     */
-    public function includeLateEarly(User $employee)
-    {
-        return $this->collection(empty($employee->lateEarly) ? [] : $employee->lateEarly, new LateEarlyTransformer(), 'LateEarly');
-    }
+    // /** Include SubtractionTime
+    //  * @param User $employee
+    //  * @return \League\Fractal\Resource\Collection
+    //  */
+    // public function includeLateEarly(User $employee)
+    // {
+    //     return $this->collection($employee->lateEarly, new LateEarlyTransformer(), 'LateEarly');
+    // }
 
     /** Include SubtractionTime
      * @param User $employee
@@ -229,5 +257,14 @@ class UserTransformer extends BaseTransformer
     public function includeTeacherTimekeeping(User $employee)
     {
         return $this->collection(empty($employee->teacherTimekeeping) ? [] : $employee->teacherTimekeeping, new TeacherTimekeepingTransformer, 'TeacherTimekeeping');
+    }
+
+    public function includeTypeTeacherRelation(User $user)
+    {
+        if (!is_null($user->TypeTeacherId)) {
+            return $this->item($user->typeTeacherRelation, new TypeTeacherTransformer, 'TypeTeacherRelation');
+        } else {
+            return null;
+        }
     }
 }

@@ -155,7 +155,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
             $employees->whereIn('Id', $employeeId);
         }
 
-        $employees->tranferHistory($attributes);
+        $employees->transferHistory($attributes);
         $employees->status(User::STATUS['WORKING']);
 
         $employees->where(function ($query) use ($attributes) {

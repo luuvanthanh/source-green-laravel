@@ -128,7 +128,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             $employees->whereIn('Id', $employeeId);
         }
 
-        $employees->tranferHistory($attributes);
+        $employees->transferHistory($attributes);
         $employees->status(User::STATUS['WORKING']);
 
         if (!empty($attributes['fullName'])) {

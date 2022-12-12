@@ -14,9 +14,9 @@ trait ActivityLogTrait
     public static function boot()
     {
         parent::boot();
-        $user = self::getUserInfo(request()->bearerToken());
-        
-        static::created(function ($model) use ($user) {
+
+        static::created(function ($model) {
+            $user = self::getUserInfo(request()->bearerToken());
             $subjectId = $model->Id;
             $subjectType = get_class($model);
             $causerId = $user->Id;
@@ -36,7 +36,8 @@ trait ActivityLogTrait
             resolve(ActivityLogRepository::class)->create($array);
         });
 
-        static::updated(function ($model) use ($user) {
+        static::updated(function ($model) {
+            $user = self::getUserInfo(request()->bearerToken());
             $getChanges = $model->getChanges();
             $properties = json_encode($getChanges);
             $subjectId = $model->Id;
@@ -57,7 +58,8 @@ trait ActivityLogTrait
             resolve(ActivityLogRepository::class)->create($array);
         });
 
-        static::deleted(function ($model) use ($user) {
+        static::deleted(function ($model) {
+            $user = self::getUserInfo(request()->bearerToken());
             $subjectId = $model->Id;
             $subjectType = get_class($model);
             $causerId = $user->Id;
@@ -81,7 +83,6 @@ trait ActivityLogTrait
     public static function getUserInfo($bearerToken): Model
     {
         $ssoUrl = env('SSO_URL') . '/api/user/me';
-        
         $response =  Http::withToken($bearerToken)->get($ssoUrl);
         $response = json_decode($response->body(), true);
         $user = new User();

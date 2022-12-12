@@ -63,15 +63,6 @@ class UserController extends Controller
     public function store(UserCreateRequest $request)
     {
         $attributes = $request->all();
-
-        if (!empty($attributes['status'])) {
-            $attributes['status'] = User::STATUS[$attributes['status']];
-        }
-
-        if (!empty($attributes['category'])) {
-            $attributes['category'] = User::CATEGORY[$attributes['category']];
-        }
-
         $employee = $this->employeeRepository->create($attributes);
 
         return $this->success($employee, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);

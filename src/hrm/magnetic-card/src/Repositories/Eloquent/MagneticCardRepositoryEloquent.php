@@ -71,7 +71,7 @@ class MagneticCardRepositoryEloquent extends CoreRepositoryEloquent implements M
         }
 
         $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
-            $query->tranferHistory($attributes);
+            $query->transferHistory($attributes);
         });
 
         $this->model = $this->model->withTrashed();

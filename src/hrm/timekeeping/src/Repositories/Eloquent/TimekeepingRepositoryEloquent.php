@@ -162,7 +162,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $employeesByStore->whereIn('Id', $employeeId);
         }
 
-        $employeesByStore->tranferHistory($attributes);
+        $employeesByStore->transferHistory($attributes);
         $employeesByStore->status(User::STATUS['WORKING']);
 
         $employeesByStore->where(function ($query) use ($attributes) {
@@ -726,7 +726,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $employeesByStore->whereLike('FullName', $attributes['fullName']);
         }
 
-        $employeesByStore->tranferHistory($attributes);
+        $employeesByStore->transferHistory($attributes);
         $employeesByStore->status(User::STATUS['WORKING']);
 
         $employeesByStore->where(function ($query) use ($attributes) {
