@@ -9,9 +9,11 @@ use GGPHP\Core\Services\CrmService;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Throwable;
 
 /**
  * Class UserRepositoryEloquent.
@@ -65,7 +67,6 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         if (!empty($attributes['classId'])) {
-
             $this->model = $this->model->whereHas('classTeacher', function ($query) use ($attributes) {
                 $query->where('ClassId', $attributes['classId']);
             });
@@ -101,7 +102,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             }]);
         }
 
-        $this->model = $this->model->tranferHistory($attributes);
+        $this->model = $this->model->transferHistory($attributes);
 
         if (!empty($attributes['startDate']) && !empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == true) {
             $this->model = $this->model->whereHas('labourContract', function ($query01) use ($attributes) {
@@ -113,24 +114,6 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             })->orWhereHas('probationaryContract', function ($query03) use ($attributes) {
                 $query03->where(function ($q2) use ($attributes) {
                     $q2->where([['ContractFrom', '<=', $attributes['startDate']], ['ContractTo', '>=', $attributes['startDate']]])->where('IsEffect', true);
-                });
-            });
-        }
-
-        if (!empty('timekeeping')) {
-            $this->model = $this->model->when(!empty($attributes['endDate']), function ($query) use ($attributes) {
-                $arr = explode('-', $attributes['endDate']);
-                $year = $arr[0];
-                $month = $arr[1];
-
-                return $query->where(function ($query) use ($year, $month) {
-                    $query->whereDoesntHave('labourContract', function ($query) use ($year, $month) {
-                        $query->whereYear('ContractTo', '<', $year)->whereMonth('ContractTo', '<', $month);
-                    })->whereDoesntHave('probationaryContract', function ($query) use ($year, $month) {
-                        $query->whereYear('ContractTo', '<', $year)->whereMonth('ContractTo', '<', $month);
-                    })->whereDoesntHave('resignationDecision', function ($query) use ($year, $month) {
-                        $query->whereYear('TimeApply', '<', $year)->whereMonth('TimeApply', '<', $month);
-                    });
                 });
             });
         }
@@ -149,6 +132,10 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $this->model = $this->model->whereIn('Code', $arrCode);
         }
 
+        if (!empty($attributes['category'])) {
+            $this->model = $this->model->where('Category', $attributes['category']);
+        }
+
         if (empty($attributes['limit'])) {
             $users = $this->get();
         } else {
@@ -160,19 +147,19 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
     public function create(array $attributes)
     {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $this->creating($attributes);
             $user = User::create($attributes);
             $this->created($attributes, $user);
 
             if (!empty($attributes['typeTeacher'])) {
-                $user->typeTeacher()->attach($attributes['typeTeacher']);
+                $user->typeTeacher()->attach($attributes['typeTeacher'], ['CreationTime' => Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d H:i:s')]);
             }
 
-            \DB::commit();
-        } catch (\Throwable $th) {
-            \DB::rollback();
+            DB::commit();
+        } catch (Throwable $th) {
+            DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
 
@@ -194,7 +181,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
     public function update(array $attributes, $id)
     {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $this->updating($attributes);
             $user = User::findOrFail($id);
@@ -202,12 +189,12 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $this->updated($attributes, $user);
 
             if (!empty($attributes['typeTeacher'])) {
-                $user->typeTeacher()->attach($attributes['typeTeacher']);
+                $user->typeTeacher()->attach($attributes['typeTeacher'], ['CreationTime' => Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d H:i:s')]);
             }
 
-            \DB::commit();
-        } catch (\Throwable $th) {
-            \DB::rollback();
+            DB::commit();
+        } catch (Throwable $th) {
+            DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
 
@@ -231,7 +218,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
     public function sendEmployeeAccountant()
     {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $users = User::get();
             foreach ($users as $user) {
@@ -265,9 +252,9 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                     $user->update(['AccountantId' => $employeeAccountant->id]);
                 }
             }
-            \DB::commit();
-        } catch (\Throwable $th) {
-            \DB::rollback();
+            DB::commit();
+        } catch (Throwable $th) {
+            DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
 

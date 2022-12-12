@@ -68,7 +68,6 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 
@@ -89,7 +88,7 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
                 $query->whereIn('Id', $employeeId);
             }
 
-            $query->tranferHistory($request->all());
+            $query->transferHistory($request->all());
 
             if ($request->has('fullName')) {
                 $query->whereLike('FullName', $request->fullName);
