@@ -11,7 +11,7 @@ class SampleComment extends UuidModel
 
     protected $table = 'study-program.SampleComments';
 
-    const CODE = 'PM';
+    const CODE = 'CTL';
 
     protected $fillable = [
         'Name', 'Code'
