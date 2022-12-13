@@ -14,7 +14,6 @@ trait ActivityLogTrait
     public static function boot()
     {
         parent::boot();
-       
         static::created(function ($model) {
             $user = self::getUserInfo(request()->bearerToken());
             $subjectId = $model->Id;
