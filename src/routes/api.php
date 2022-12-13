@@ -168,7 +168,15 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
             $router->forBread();
         });
 
-        \GGPHP\ActivityLog\RouteRegistrar::routes(function($router){
+        \GGPHP\ActivityLog\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Arkki\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\ExpectedTime\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
     });
