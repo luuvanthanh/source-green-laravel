@@ -38,7 +38,7 @@ const Index = memo(() => {
       payload: {
         ...values,
         ...params,
-        criterias: values.criterias.map((item) => item.name),
+        // criterias: values.criterias.map((item) => item.name),
       },
       callback: (response, error) => {
         if (response) {
@@ -109,8 +109,8 @@ const Index = memo(() => {
       <Helmet title={params.id ? 'Chỉnh sửa thời kỳ nhạy cảm' : 'Tạo thời kỳ nhạy cảm'} />
       <Breadcrumbs className="pb30 pt0" last={params.id ? 'Chỉnh sửa thời kỳ nhạy cảm' : 'Tạo thời kỳ nhạy cảm'} menu={menuLeftCriteria} />
       <Pane style={{ padding: 20, paddingBottom: 0, paddingTop: 0 }}>
-        <Pane className="row justify-content-center">
-          <Pane className="col-lg-6">
+        <Pane className="justify-content-center">
+          <Pane className="col-lg-6 offset-lg-3">
             <Form
               layout="vertical"
               ref={formRef}
@@ -129,69 +129,33 @@ const Index = memo(() => {
                     goBack: '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam',
                   }}
                 >
-                  <Pane className="border-bottom p20">
-                    <Heading type="form-title" className="mb20">
-                      Thông tin chung
-                    </Heading>
-                    {params.id && (
-                      <FormItem label="Mã" name="code" disabled type={variables.INPUT} />
-                    )}
-
-                    <FormItem
-                      label="Tên thời kỳ nhạy cảm"
-                      name="name"
-                      rules={[variables.RULES.EMPTY]}
-                      type={variables.INPUT}
-                    />
-                    <FormItem
-                      label="Ghi chú"
-                      name="note"
-                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                      type={variables.TEXTAREA}
-                    />
-                  </Pane>
-                  <Pane className="border-bottom p20">
-                    <Heading type="form-title" className="mb10">
-                      Tiêu chí đánh giá của giáo viên
-                    </Heading>
-                    <Form.List name="criterias">
-                      {(fields, { add, remove }) => (
-                        <Pane>
-                          {fields.map((field, index) => (
-                            <Pane
-                              key={index}
-                              className="mt10 d-flex justify-content-between align-items-end groups-input"
-                            >
-                              <FormItem
-                                label={`Tiêu chí ${index + 1}`}
-                                className="mb0"
-                                fieldKey={[field.fieldKey, 'name']}
-                                name={[field.name, 'name']}
-                                type={variables.INPUT}
-                                rules={[variables.RULES.EMPTY]}
-                              />
-                              {fields.length > 1 && (
-                                <span
-                                  className="icon icon-remove"
-                                  role="presentation"
-                                  onClick={() => remove(field.name)}
-                                />
-                              )}
-                            </Pane>
-                          ))}
-                          <Pane className="mt10 d-flex align-items-center color-success pointer">
-                            <span className="icon-plus-circle mr5" />
-                            <span
-                              onClick={() => add()}
-                              role="presentation"
-                              className="text-uppercase font-size-13"
-                            >
-                              Thêm tiêu chí
-                            </span>
-                          </Pane>
-                        </Pane>
-                      )}
-                    </Form.List>
+                  <Pane className="mt20">
+                    <Pane className="p20 row ">
+                      <Pane className="col-lg-12">
+                        <Heading type="form-title" className="mb20">
+                          Thông tin chung
+                        </Heading>
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem label="Mã" name="code" disabled type={variables.INPUT} />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          label="Tên thời kỳ nhạy cảm"
+                          name="name"
+                          rules={[variables.RULES.EMPTY]}
+                          type={variables.INPUT}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-12">
+                        <FormItem
+                          label="Ghi chú"
+                          name="note"
+                          rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                          type={variables.TEXTAREA}
+                        />
+                      </Pane>
+                    </Pane>
                   </Pane>
                 </Loading>
               </Pane>

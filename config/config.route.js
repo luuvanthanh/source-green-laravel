@@ -194,6 +194,24 @@ export default [
             authority: [permissions.CTH],
           },
           {
+            path: '/chuong-trinh-hoc/TKNC',
+            component: './criteria/teaching-tools/configuration',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam',
+            component: './criteria/teaching-tools/student-sensitive-period',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam/:id/chi-tiet',
+            component: './criteria/teaching-tools/student-sensitive-period/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
             path: '/chuong-trinh-hoc/bao-cao-tong-quat-tre',
             component: './criteria/report',
             wrappers: ['@/wrappers/auth'],
