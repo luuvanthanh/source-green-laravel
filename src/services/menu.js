@@ -731,6 +731,23 @@ export async function getLeftMenuCriteria() {
           permission: [permissions.CTH],
           pro: true,
         },
+        {
+          title: 'Học sinh có TKNC',
+          key: 'student-sensitive-period',
+          url: [
+            '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam',
+            '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam/:id/chi-tiet',
+          ],
+          permission: [permissions.CTH],
+          pro: true,
+        },
+        {
+          title: 'Cấu hình TKNC',
+          key: 'configuration',
+          url: ['/chuong-trinh-hoc/TKNC'],
+          permission: [permissions.CTH],
+          pro: true,
+        },
       ],
     },
     {
