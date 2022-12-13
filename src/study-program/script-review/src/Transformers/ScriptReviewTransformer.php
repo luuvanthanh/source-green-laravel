@@ -6,6 +6,7 @@ use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\ChildDevelop\Category\Transformers\NameAssessmentPeriodTransformer;
 use GGPHP\Clover\Transformers\ClassesTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\SchoolYearTransformer;
 use GGPHP\StudyProgram\ScriptReview\Models\ScriptReview;
 
 /**
@@ -33,7 +34,7 @@ class ScriptReviewTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'scriptReviewSubject', 'scriptReviewComment', 'branch', 'classes', 'nameAssessmentPeriod'
+        'scriptReviewSubject', 'scriptReviewComment', 'branch', 'classes', 'nameAssessmentPeriod', 'schoolYear'
     ];
 
     /**
@@ -78,5 +79,10 @@ class ScriptReviewTransformer extends BaseTransformer
         } else {
             return null;
         }
+    }
+
+    public function includeSchoolYear(ScriptReview $scriptReview)
+    {
+        return $this->item($scriptReview->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }

@@ -6,6 +6,7 @@ use GGPHP\Category\Models\Branch;
 use GGPHP\ChildDevelop\Category\Models\NameAssessmentPeriod;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Fee\Models\SchoolYear;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ScriptReview extends UuidModel
@@ -46,5 +47,10 @@ class ScriptReview extends UuidModel
     public function nameAssessmentPeriod()
     {
         return $this->belongsTo(NameAssessmentPeriod::class, 'NameAssessmentPeriodId');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
     }
 }

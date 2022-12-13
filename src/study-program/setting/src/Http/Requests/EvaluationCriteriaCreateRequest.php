@@ -33,11 +33,19 @@ class EvaluationCriteriaCreateRequest extends FormRequest
     {
         $data = parent::all();
 
-        $evaluationCriteria = EvaluationCriteria::orderBy('CreationTime', 'desc')->first();
+        $result = EvaluationCriteria::orderBy('CreationTime', 'desc')->first();
 
-        if (!is_null($evaluationCriteria)) {
-            $getInt = substr($evaluationCriteria->Code, 2) + 1;
-            $data['code'] = EvaluationCriteria::CODE . $getInt;
+        if (!is_null($result)) {
+            $getInt = (int)ltrim($result->Code, 'A..z: ');
+            $num = $getInt + 1;
+
+            if ($getInt < 9) {
+                $data['code'] = EvaluationCriteria::CODE . '00' . $num;
+            } elseif ($getInt >= 9 && $getInt < 99) {
+                $data['code'] = EvaluationCriteria::CODE . '0' . $num;
+            } else {
+                $data['code'] = EvaluationCriteria::CODE . $num;
+            }
         } else {
             $data['code'] = EvaluationCriteria::CODE . '1';
         }

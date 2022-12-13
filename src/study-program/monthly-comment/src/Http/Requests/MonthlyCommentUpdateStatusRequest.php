@@ -1,11 +1,11 @@
 <?php
 
-namespace GGPHP\StudyProgram\QuarterReport\Http\Requests;
+namespace GGPHP\StudyProgram\MonthlyComment\Http\Requests;
 
-use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
+use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
 use Illuminate\Foundation\Http\FormRequest;
 
-class QuarterReportCreateRequest extends FormRequest
+class MonthlyCommentUpdateStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,11 @@ class QuarterReportCreateRequest extends FormRequest
      */
     public function rules()
     {
-        $status = implode(',', QuarterReport::STATUS);
+        $status = implode(',', MonthlyComment::STATUS);
         return [
-            'studentId' => 'required|check_exists:object.Students,Id',
+            'studentId' => 'array|required|check_exists:object.Students,Id',
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
-            'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
+            'sampleCommentId' => 'required|check_exists:study-program.SampleComments,Id',
             'status' => 'required|in:' . $status,
         ];
     }
@@ -38,7 +38,7 @@ class QuarterReportCreateRequest extends FormRequest
         $data = parent::all();
 
         if (!empty($data['status'])) {
-            $data['status'] = QuarterReport::STATUS[$data['status']];
+            $data['status'] = MonthlyComment::STATUS[$data['status']];
         }
 
         return $data;

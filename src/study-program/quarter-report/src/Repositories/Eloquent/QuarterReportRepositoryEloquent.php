@@ -4,9 +4,11 @@ namespace GGPHP\StudyProgram\QuarterReport\Repositories\Eloquent;
 
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
+use GGPHP\StudyProgram\QuarterReport\Criteria\QuarterReportCriteriaCriteria;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetail;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubject;
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubjectChildren;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReportDetailSubjectChildrens;
 use GGPHP\StudyProgram\QuarterReport\Presenters\QuarterReportPresenter;
 use GGPHP\StudyProgram\QuarterReport\Repositories\Contracts\QuarterReportRepository;
@@ -70,7 +72,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function getAll(array $attributes)
     {
-        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport');
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', Student::OFFICAL);
 
         if (!empty($attributes['classId'])) {
             $arrayClass = explode(',', $attributes['classId']);
@@ -100,13 +102,18 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             });
         }
 
+        if (!empty($attributes['status'])) {
+            $status = $this->model()::STATUS[$attributes['status']];
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($status) {
+                $query->where('Status', $status);
+            }]);
+        }
+
         if (!empty($attributes['studentId'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('StudentId', $attributes['studentId']);
             });
         }
-
-        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', Student::OFFICAL);
 
         if (!empty($attributes['limit'])) {
             $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
@@ -163,7 +170,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
     {
         foreach ($attributes as $value) {
             $value['quarterReportDetailSubjectId'] = $model->Id;
-            QuarterReportDetailSubjectChildrens::create($value);
+            QuarterReportDetailSubjectChildren::create($value);
         }
     }
 
@@ -217,7 +224,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
     public function updateDetailSubjectChildren($attributes)
     {
         foreach ($attributes as $value) {
-            $subjectChildren = QuarterReportDetailSubjectChildrens::find($value['id']);
+            $subjectChildren = QuarterReportDetailSubjectChildren::find($value['id']);
 
             if (!is_null($subjectChildren)) {
                 $subjectChildren->update($value);
@@ -247,14 +254,62 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         return parent::all();
     }
 
-    public function updateStatus(array $attributes)
+    public function updateStatusQuarterReport(array $attributes)
     {
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('ScriptReviewId', $attributes['scriptReview'])
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
             ->update([
-                'Status' => $this->model()::STATUS[$attributes['status']]
+                'Status' => $attributes['status']
             ]);
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function notificationQuarterReport(array $attributes)
+    {
+        $this->model->whereIn('StudentId', $attributes['studentId'])
+            ->where('SchoolYearId', $attributes['schoolYearId'])
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->update([
+                'Status' => $attributes['status']
+            ]);
+
+        $data = $this->model->whereIn('StudentId', $attributes['studentId'])
+            ->where('SchoolYearId', $attributes['schoolYearId'])
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])->get();
+
+        foreach ($data as $value) {
+
+            $student = $value->student;
+            $parent = $student->parent()->with('account')->get();
+
+            if (!empty($parent)) {
+                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
+                $images =  json_decode($student->FileImage);
+                $urlImage = '';
+
+                if (!empty($images)) {
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
+                $schoolYear = $value->scriptReview->schoolYear->YearFrom . '-' . $value->scriptReview->schoolYear->YearTo;
+                $name = $value->scriptReview->NameAssessmentPeriod->Name;
+
+                $message = $student->FullName . ' ' . 'nhận Quarter report ' . $name . ' school year ' . $schoolYear;
+
+                if (!empty($arrId)) {
+                    $dataNotiCation = [
+                        'users' => $arrId,
+                        'title' => 'English',
+                        'imageURL' => $urlImage,
+                        'message' => $message,
+                        'moduleType' => 25,
+                        'refId' => $value->Id,
+                    ];
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+                }
+            }
+        }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }

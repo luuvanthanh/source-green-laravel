@@ -3,6 +3,9 @@
 namespace GGPHP\StudyProgram\QuarterReport\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\StudyProgram\ScriptReview\Models\ScriptReview;
+use GGPHP\StudyProgram\ScriptReview\Models\ScriptReviewComment;
+use GGPHP\StudyProgram\ScriptReview\Models\ScriptReviewSubject;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class QuarterReportDetail extends UuidModel
@@ -18,5 +21,15 @@ class QuarterReportDetail extends UuidModel
     public function quarterReportDetailSubject()
     {
         return $this->hasMany(QuarterReportDetailSubject::class, 'QuarterReportDetailId');
+    }
+
+    public function scriptReviewSubject()
+    {
+        return $this->belongsTo(ScriptReviewSubject::class, 'ScriptReviewSubjectId');
+    }
+
+    public function scriptReviewComment()
+    {
+        return $this->belongsTo(ScriptReviewComment::class, 'ScriptReviewCommentId');
     }
 }
