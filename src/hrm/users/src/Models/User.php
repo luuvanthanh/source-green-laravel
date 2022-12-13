@@ -11,6 +11,7 @@ use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\EvaluateTeacher\Category\Models\TypeTeacher;
+use GGPHP\ExpectedTime\Models\ExpectedTime;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
@@ -388,5 +389,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function typeTeacherRelation()
     {
         return $this->belongsTo(TypeTeacher::class, 'TypeTeacherId');
+    }
+
+    public function expectedTime()
+    {
+        return $this->hasMany(ExpectedTime::class, 'EmployeeId');
     }
 }

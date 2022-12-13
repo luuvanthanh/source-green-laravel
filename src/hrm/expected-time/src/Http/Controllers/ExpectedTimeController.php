@@ -1,30 +1,28 @@
 <?php
 
-namespace GGPHP\TeacherTimekeeping\Http\Controllers;
+namespace GGPHP\ExpectedTime\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use GGPHP\TeacherTimekeeping\Http\Requests\CreateTeacherTimekeepingRequest;
-use GGPHP\TeacherTimekeeping\Http\Requests\StoreTeacherTimekeepingRequest;
-use GGPHP\TeacherTimekeeping\Http\Requests\UpdateTeacherTimekeepingRequest;
+use GGPHP\ExpectedTime\Repositories\Contracts\ExpectedTimeRepository;
 use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
 use GGPHP\TeacherTimekeeping\Repositories\Contracts\TeacherTimekeepingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class TeacherTimekeepingController extends Controller
+class ExpectedTimeController extends Controller
 {
     /**
      * @var $teacherTimekeepingRepository
      */
-    protected $teacherTimekeepingRepository;
+    protected $expectedTimeRepository;
 
     /**
      * UserController constructor.
-     * @param teacherTimekeepingRepository $teacherTimekeepingRepository
+     * @param expectedTimeRepository $expectedTimeRepository
      */
-    public function __construct(TeacherTimekeepingRepository $teacherTimekeepingRepository)
+    public function __construct(ExpectedTimeRepository $expectedTimeRepository)
     {
-        $this->teacherTimekeepingRepository = $teacherTimekeepingRepository;
+        $this->expectedTimeRepository = $expectedTimeRepository;
     }
 
     /**
@@ -35,7 +33,7 @@ class TeacherTimekeepingController extends Controller
      */
     public function index(Request $request)
     {
-        $teacherTimekeeping = $this->teacherTimekeepingRepository->getAll($request->all());
+        $teacherTimekeeping = $this->expectedTimeRepository->getAll($request->all());
 
         return $this->success($teacherTimekeeping, trans('lang::messages.common.getInfoSuccess'));
     }
@@ -46,7 +44,7 @@ class TeacherTimekeepingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateTeacherTimekeepingRequest $request)
+    public function store(Request $request)
     {
         $attribute = $request->all();
 
@@ -58,7 +56,7 @@ class TeacherTimekeepingController extends Controller
             $attribute['status'] = TeacherTimekeeping::STATUS[$attribute['status']];
         }
 
-        $teacherTimekeeping = $this->teacherTimekeepingRepository->create($attribute);
+        $teacherTimekeeping = $this->expectedTimeRepository->createAll($attribute);
 
         return $this->success($teacherTimekeeping, trans('lang::messages.common.createSuccess'));
     }
@@ -71,7 +69,7 @@ class TeacherTimekeepingController extends Controller
      */
     public function show($id)
     {
-        $teacherTimekeeping = $this->teacherTimekeepingRepository->find($id);
+        $teacherTimekeeping = $this->expectedTimeRepository->find($id);
 
         return $this->success($teacherTimekeeping, trans('lang::messages.common.getInfoSuccess'));
     }
@@ -83,7 +81,7 @@ class TeacherTimekeepingController extends Controller
      * @param  \App\Timekeeping  $timekeeping
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTeacherTimekeepingRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $attribute = $request->all();
 
@@ -95,7 +93,7 @@ class TeacherTimekeepingController extends Controller
             $attribute['status'] = TeacherTimekeeping::STATUS[$attribute['status']];
         }
 
-        $teacherTimekeeping = $this->teacherTimekeepingRepository->update($attribute, $id);
+        $teacherTimekeeping = $this->expectedTimeRepository->updateAll($attribute, $id);
 
         return $this->success($teacherTimekeeping, trans('lang::messages.common.modifySuccess'));
     }
@@ -108,30 +106,8 @@ class TeacherTimekeepingController extends Controller
      */
     public function destroy($id)
     {
-        $this->teacherTimekeepingRepository->delete($id);
+        $this->expectedTimeRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function storeTeacherTimekeeping(Request $request)
-    {
-        $attribute = $request->all();
-
-        $teacherTimekeeping = $this->teacherTimekeepingRepository->storeTeacherTimekeeping($attribute);
-
-        return $this->success($teacherTimekeeping, trans('lang::messages.common.createSuccess'));
-    }
-
-    public function updateTeacherTimekeeping(StoreTeacherTimekeepingRequest $request, $id)
-    {
-        $teacherTimekeeping = $this->teacherTimekeepingRepository->storeTeacherTimekeeping($request->all());
-
-        return $this->success($teacherTimekeeping, trans('lang::messages.common.createSuccess'));
     }
 }

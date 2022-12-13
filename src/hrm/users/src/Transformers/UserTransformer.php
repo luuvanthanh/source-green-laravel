@@ -12,6 +12,7 @@ use GGPHP\Category\Transformers\TrainingSchoolTransformer;
 use GGPHP\Clover\Transformers\ClassTeacherTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\EvaluateTeacher\Category\Transformers\TypeTeacherTransformer;
+use GGPHP\ExpectedTime\Transformers\ExpectedTimeTransformer;
 use GGPHP\ManualCalculation\Transformers\ManualCalculationTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
 use GGPHP\Profile\Transformers\LabourContractTransformer;
@@ -52,7 +53,7 @@ class UserTransformer extends BaseTransformer
         'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
         'positionLevelNow', 'businessCard', 'degree', 'trainingMajor', 'trainingSchool',
         'labourContract', 'manualCalculation', 'trainingSchedule', 'trainingScheduleDetail',
-        'typeTeacher', 'TeacherTimekeeping', 'logActivity', 'typeTeacherRelation'
+        'typeTeacher', 'TeacherTimekeeping', 'logActivity', 'typeTeacherRelation', 'expectedTime'
     ];
 
     /**
@@ -266,5 +267,10 @@ class UserTransformer extends BaseTransformer
         } else {
             return null;
         }
+    }
+
+    public function includeExpectedTime(User $user)
+    {
+        return $this->collection($user->expectedTime, new ExpectedTimeTransformer, 'ExpectedTime');
     }
 }
