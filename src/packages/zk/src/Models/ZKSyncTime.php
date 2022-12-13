@@ -8,7 +8,6 @@ use Illuminate\Support\Arr;
 
 class ZKSyncTime extends UuidModel
 {
-    use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'ZkDeviceSyncTimes';
