@@ -30,6 +30,14 @@ class QuarterReportCreateRequest extends FormRequest
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
             'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
             'status' => 'required|in:' . $status,
+            'detail' => 'array',
+            'detail.*.scriptReviewSubjectId' => 'nullable|check_exists:study-program.ScriptReviewSubjects,Id',
+            'detail.*.scriptReviewCommentId' => 'nullable|check_exists:study-program.ScriptReviewComments,Id',
+            'detail.*.detailSubject' => 'array',
+            'detail.*.detailSubject.*.scriptReviewSubjectDetailId' => 'nullable|check_exists:study-program.ScriptReviewSubjectDetails,Id',
+            'detail.*.detailSubject.*.detailSubjectChildren' => 'array',
+            'detail.*.detailSubject.*.detailSubjectChildren.*.scriptReviewSubjectDetailChildrenId' => 'nullable|check_exists:study-program.ScriptReviewSubjectDetailChildrens,Id',
+            'detail.*.detailSubject.*.detailSubjectChildren.*.evaluationCriteriaId' => 'nullable|check_exists:study-program.EvaluationCriterias,Id',
         ];
     }
 

@@ -21,7 +21,9 @@ class ScriptReviewTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = [];
+    protected $defaultIncludes = [
+        'scriptReviewSubject', 'scriptReviewComment', 'branch', 'classes', 'nameAssessmentPeriod', 'schoolYear'
+    ];
 
     /**
      * Array attribute doesn't parse.
@@ -33,9 +35,7 @@ class ScriptReviewTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [
-        'scriptReviewSubject', 'scriptReviewComment', 'branch', 'classes', 'nameAssessmentPeriod', 'schoolYear'
-    ];
+    protected $availableIncludes = [];
 
     /**
      * Transform the ReviewDetail entity.
@@ -83,6 +83,9 @@ class ScriptReviewTransformer extends BaseTransformer
 
     public function includeSchoolYear(ScriptReview $scriptReview)
     {
+        if (is_null($scriptReview->schoolYear)) {
+            return null;
+        }
         return $this->item($scriptReview->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }

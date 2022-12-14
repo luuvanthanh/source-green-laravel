@@ -24,8 +24,6 @@ class ScriptReviewCreateRequest extends FormRequest
      */
     public function rules()
     {
-        $type = implode(',', ScriptReview::TYPE);
-
         return [
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
             'type' => [

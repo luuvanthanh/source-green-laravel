@@ -123,11 +123,11 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
                 $result->classes()->attach($attributes['classId']);
             }
 
-            if ($attributes['isCheckSubject'] && !empty($attributes['subject'])) {
+            if (!empty($attributes['subject'])) {
                 $this->createScriptReviewSubject($result, $attributes['subject']);
             }
 
-            if ($attributes['isCheckSampleComment'] && !empty($attributes['comment'])) {
+            if (!empty($attributes['comment'])) {
                 $this->createScriptReviewComment($result, $attributes['comment']);
             }
             DB::commit();
@@ -142,8 +142,14 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createScriptReviewSubject($model, $attributes)
     {
         foreach ($attributes as $key => $valueSubject) {
-            $valueSubject['scriptReviewId'] = $model->Id;
-            $scriptReviewSubject = ScriptReviewSubject::create($valueSubject);
+            $scriptReviewSubject = ScriptReviewSubject::find($valueSubject['id']);
+
+            if (!is_null($scriptReviewSubject)) {
+                $scriptReviewSubject->update($valueSubject);
+            } else {
+                $valueSubject['scriptReviewId'] = $model->Id;
+                $scriptReviewSubject = ScriptReviewSubject::create($valueSubject);
+            }
 
             if (!empty($valueSubject['subjectSection'])) {
                 $this->createScriptReviewSubjectDetail($scriptReviewSubject, $valueSubject['subjectSection']);
@@ -154,8 +160,14 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createScriptReviewSubjectDetail($model, $attributes)
     {
         foreach ($attributes as $valueSubjectSection) {
-            $valueSubjectSection['scriptReviewSubjectId'] = $model->Id;
-            $scriptReviewSubjectDetail = ScriptReviewSubjectDetail::create($valueSubjectSection);
+            $scriptReviewSubjectDetail = ScriptReviewSubjectDetail::find($valueSubjectSection['id']);
+
+            if (!is_null($scriptReviewSubjectDetail)) {
+                $scriptReviewSubjectDetail->update($valueSubjectSection);
+            } else {
+                $valueSubjectSection['scriptReviewSubjectId'] = $model->Id;
+                $scriptReviewSubjectDetail = ScriptReviewSubjectDetail::create($valueSubjectSection);
+            }
 
             if (!empty($valueSubjectSection['detail'])) {
                 $this->createScriptReviewSubjectDetailChildren($scriptReviewSubjectDetail, $valueSubjectSection['detail']);
@@ -166,16 +178,28 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createScriptReviewSubjectDetailChildren($model, $attributes)
     {
         foreach ($attributes as $valueDetail) {
-            $valueDetail['scriptReviewSubjectDetailId'] = $model->Id;
-            ScriptReviewSubjectDetailChildren::create($valueDetail);
+            $detailChildren = ScriptReviewSubjectDetailChildren::find($valueDetail['id']);
+
+            if (!is_null($detailChildren)) {
+                $detailChildren->update($valueDetail);
+            } else {
+                $valueDetail['scriptReviewSubjectDetailId'] = $model->Id;
+                ScriptReviewSubjectDetailChildren::create($valueDetail);
+            }
         }
     }
 
     public function createScriptReviewComment($model, $attributes)
     {
-        foreach ($attributes as $key => $valueComment) {
-            $valueComment['scriptReviewId'] = $model->Id;
-            $comment = ScriptReviewComment::create($valueComment);
+        foreach ($attributes as $valueComment) {
+            $comment = ScriptReviewComment::find($valueComment['id']);
+
+            if (!is_null($comment)) {
+                $comment->update($valueComment);
+            } else {
+                $valueComment['scriptReviewId'] = $model->Id;
+                $comment = ScriptReviewComment::create($valueComment);
+            }
 
             if (!empty($valueComment['commentDetail'])) {
                 $this->createCommentDetail($comment, $valueComment['commentDetail']);
@@ -186,8 +210,14 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createCommentDetail($model, $attributes)
     {
         foreach ($attributes as $valueDetail) {
-            $valueDetail['ScriptReviewCommentId'] = $model->Id;
-            ScriptReviewCommentDetail::create($valueDetail);
+            $commentDetail = ScriptReviewCommentDetail::find($valueDetail['id']);
+
+            if (!is_null($commentDetail)) {
+                $commentDetail->update($valueDetail);
+            } else {
+                $valueDetail['ScriptReviewCommentId'] = $model->Id;
+                ScriptReviewCommentDetail::create($valueDetail);
+            }
         }
     }
 
