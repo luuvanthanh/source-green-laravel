@@ -96,17 +96,16 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             });
         }
 
-        if (!empty($attributes['schoolYearId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
-                $query->where('SchoolYearId', $attributes['schoolYearId']);
-            });
+        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['NOT_REVIEW']) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->doesnthave('quarterReport');
         }
 
-        if (!empty($attributes['status'])) {
-            $status = $this->model()::STATUS[$attributes['status']];
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($status) {
-                $query->where('Status', $status);
-            }]);
+        if (!empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status']);
+            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status']);
+            });
         }
 
         if (!empty($attributes['studentId'])) {
