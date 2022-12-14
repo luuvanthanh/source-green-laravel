@@ -4,6 +4,7 @@ namespace GGPHP\Clover\Transformers;
 
 use Carbon\Carbon;
 use GGPHP\Attendance\Transformers\AttendanceTransformer;
+use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\ChildDevelop\TestSemester\Transformers\TestSemesterTransformer;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Transformers\ParentsTransformer;
@@ -40,7 +41,7 @@ class StudentTransformer extends BaseTransformer
      */
     protected $availableIncludes = [
         'schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent',
-        'studentTransporter', 'testSemester', 'classes', 'quarterReport', 'monthlyComment'
+        'studentTransporter', 'testSemester', 'classes', 'quarterReport', 'monthlyComment', 'branch'
     ];
 
     /**
@@ -174,5 +175,13 @@ class StudentTransformer extends BaseTransformer
     public function includeMonthLyComment(Student $student)
     {
         return $this->collection($student->monthlyComment, new MonthlyCommentTransformer, 'MonthlyComment');
+    }
+
+    public function includeBranch(Student $student)
+    {
+        if (empty($student->branch)) {
+            return;
+        }
+        return $this->item($student->branch, new BranchTransformer, 'Branch');
     }
 }
