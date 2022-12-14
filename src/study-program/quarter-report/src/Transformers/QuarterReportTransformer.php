@@ -21,7 +21,7 @@ class QuarterReportTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = [];
+    protected $defaultIncludes = ['quarterReportDetail', 'teacher', 'teacherManagement', 'student', 'schoolYear', 'scriptReview'];
 
     /**
      * Array attribute doesn't parse.
@@ -33,7 +33,7 @@ class QuarterReportTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['quarterReportDetail', 'scriptReview', 'teacher', 'teacherManagement', 'student', 'schoolYear'];
+    protected $availableIncludes = [];
 
     /**
      * Transform the ReviewDetail entity.
@@ -55,30 +55,43 @@ class QuarterReportTransformer extends BaseTransformer
 
     public function includeScriptReview(QuarterReport $quarterReport)
     {
+        if (is_null($quarterReport->scriptReview)) {
+            return null;
+        }
         return $this->item($quarterReport->scriptReview, new ScriptReviewTransformer, 'ScriptReview');
     }
 
     public function includeTeacher(QuarterReport $quarterReport)
     {
+        if (is_null($quarterReport->teacher)) {
+            return null;
+        }
         return $this->item($quarterReport->teacher, new UserTransformer, 'Teacher');
     }
 
     public function includeTeacherManagement(QuarterReport $quarterReport)
     {
+        if (is_null($quarterReport->teacherManagement)) {
+            return null;
+        }
+
         return $this->item($quarterReport->teacherManagement, new UserTransformer, 'TeacherManagement');
     }
 
     public function includeStudent(QuarterReport $quarterReport)
     {
+        if (is_null($quarterReport->student)) {
+            return null;
+        }
+
         return $this->item($quarterReport->student, new StudentTransformer, 'Student');
     }
 
     public function includeSchoolYear(QuarterReport $quarterReport)
     {
-        if (!is_null($quarterReport->SchoolYearId)) {
-            return $this->item($quarterReport->schoolYear, new SchoolYearTransformer, 'SchoolYear');
-        } else {
+        if (is_null($quarterReport->SchoolYearId)) {
             return null;
         }
+        return $this->item($quarterReport->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 }
