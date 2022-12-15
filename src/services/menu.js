@@ -731,6 +731,23 @@ export async function getLeftMenuCriteria() {
           permission: [permissions.CTH],
           pro: true,
         },
+        {
+          title: 'Học sinh có TKNC',
+          key: 'student-sensitive-period',
+          url: [
+            '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam',
+            '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam/:id/chi-tiet',
+          ],
+          permission: [permissions.CTH],
+          pro: true,
+        },
+        {
+          title: 'Cấu hình TKNC',
+          key: 'configuration',
+          url: ['/chuong-trinh-hoc/TKNC'],
+          permission: [permissions.CTH],
+          pro: true,
+        },
       ],
     },
     {
@@ -760,9 +777,10 @@ export async function getLeftMenuCriteria() {
           key: 'Quarter-report',
           url: [
             '/chuong-trinh-hoc/quarter-report',
-            '/chuong-trinh-hoc/quarter-report/add',
+            '/chuong-trinh-hoc/quarter-report/:id/add',
             '/chuong-trinh-hoc/quarter-report/:id/detail',
             '/chuong-trinh-hoc/quarter-report/:id/edit',
+            '/chuong-trinh-hoc/quarter-report/:id/confirmed',
           ],
           permission: [permissions.CTH],
           pro: true,

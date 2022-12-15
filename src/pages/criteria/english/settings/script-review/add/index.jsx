@@ -216,7 +216,7 @@ const Index = memo(() => {
 
   const header = (type) => [
     {
-      title: 'Trẻ',
+      title: `${type === 'OBJECT' ? "Use skill" : "Use sample comments"}`,
       key: 'student',
       width: 200,
       className: 'min-width-200',

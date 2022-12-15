@@ -8,12 +8,11 @@ export const variables = {
     SENT: 'SENT',
     CONFIRMING: 'CONFIRMING',
     CONFIRMED: 'CONFIRMED',
-    NOT_YET_REVIEW: 'NOT_YET_REVIEW',
-    DONE_REVIEW: 'DONE_REVIEW',
+    NOT_REVIEW: 'NOT_REVIEW',
+    REVIEWED: 'REVIEWED',
     NOT_YET_CONFIRM: 'NOT_YET_CONFIRM',
-    DONE_CONFIRM: 'DONE_CONFIRM',
     NOT_YET_SEND: 'NOT_YET_SEND',
-    DONE_SEND: 'DONE_SEND',
+    SENT: 'SENT',
   },
   STATUS_NAME: {
     IN_PROGRESS: 'Đang trao đổi',
@@ -22,21 +21,20 @@ export const variables = {
     NEW: 'Mới',
     EXPIRE: 'Hết hạn',
     CONFIRMING: 'Chờ xác nhận',
-    CONFIRMED: 'Đã nhận',
-    NOT_YET_REVIEW: 'NOT YET REVIEW',
-    DONE_REVIEW: 'DONE REVIEW',
+    NOT_REVIEW: 'NOT YET REVIEW',
+    REVIEWED: 'DONE REVIEW',
     NOT_YET_CONFIRM: 'NOT YET CONFIRM',
-    DONE_CONFIRM: 'DONE CONFIRM',
+    CONFIRMED: 'DONE CONFIRM',
     NOT_YET_SEND: 'NOT YET SEND',
-    DONE_SEND: 'DONE SEND',
+    SENT: 'DONE SEND',
   },
   STATUS_TABS: [
     {
-      id: 'NOT_YET_REVIEW',
+      id: 'NOT_REVIEW',
       name: 'NOT YET REVIEW',
     },
     {
-      id: 'DONE_REVIEW',
+      id: 'REVIEWED',
       name: 'DONE REVIEW',
     },
     {
@@ -44,7 +42,7 @@ export const variables = {
       name: 'NOT YET CONFIRM',
     },
     {
-      id: 'DONE_CONFIRM',
+      id: 'CONFIRMED',
       name: 'DONE CONFIRM',
     },
     {
@@ -52,7 +50,7 @@ export const variables = {
       name: 'NOT YET SEND',
     },
     {
-      id: 'DONE_SEND',
+      id: 'SENT',
       name: 'DONE SEND',
     },
   ],

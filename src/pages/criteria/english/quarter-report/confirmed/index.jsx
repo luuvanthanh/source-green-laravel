@@ -1,9 +1,9 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd';
-import { useSelector, useDispatch } from 'dva';
+import { Form, Radio, Input } from 'antd';
 import { useParams, history } from 'umi';
-import { head } from 'lodash';
+import { useSelector, useDispatch } from 'dva';
+import { isEmpty, get, head } from 'lodash';
 import classnames from 'classnames';
 import Loading from '@/components/CommonComponent/Loading';
 
@@ -14,10 +14,13 @@ import FormDetail from '@/components/CommonComponent/FormDetail';
 import Table from '@/components/CommonComponent/Table';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
+import Button from '@/components/CommonComponent/Button';
 import stylesModule from '../styles.module.scss';
 
 
 const marginProps = { style: { paddingTop: 12, paddingBottom: 20 } };
+const { Item: FormItem } = Form;
+const { TextArea } = Input;
 
 const Index = memo(() => {
   const [form] = Form.useForm();
@@ -30,6 +33,7 @@ const Index = memo(() => {
     details,
     menuLeftCriteria,
     dataEvaluetionCriteria,
+    user,
   } = useSelector(({ EnglishQuarterReport, menu, loading, EnglishQuarterReportAdd, user }) => ({
     dataAssess: EnglishQuarterReport.dataAssess,
     loading,
@@ -40,7 +44,41 @@ const Index = memo(() => {
     user: user.user,
     error: EnglishQuarterReportAdd.error,
   }));
+
   const [dataDetails, setDataDetails] = useState(undefined);
+
+  const loadingSubmit = effects[`EnglishQuarterReport/ADD_SENT`] || effects[`EnglishQuarterReportAdd/ADD`];
+
+  const onFinish = () => {
+    dispatch({
+      type: 'EnglishQuarterReportAdd/ADD',
+      payload: {
+        id: params.id,
+        studentId: dataDetails?.student?.id,
+        scriptReviewId: dataDetails?.scriptReview?.id,
+        schoolYearId: user.schoolYear?.id,
+        status: "CONFIRMED",
+        detail: dataDetails?.quarterReportDetail,
+        teacherId: user?.id,
+      },
+      callback: (response, error) => {
+
+        history.goBack();
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              form.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     if (params.id) {
@@ -83,6 +121,48 @@ const Index = memo(() => {
     }
   }, [details]);
 
+  const addSent = () => {
+    dispatch({
+      type: 'EnglishQuarterReport/ADD_SENT',
+      payload: {
+        studentId: [dataDetails?.studentId],
+        schoolYearId: dataDetails?.schoolYearId,
+        scriptReviewId: dataDetails?.scriptReviewId,
+        status: 'SENT',
+      },
+    });
+  };
+
+  const onCheckBox = (e, record) => {
+    setDataDetails(
+      {
+        ...dataDetails,
+        quarterReportDetail: dataDetails?.quarterReportDetail?.map(i => ({
+          ...i,
+          quarterReportDetailSubject: i?.isSubject ? i?.quarterReportDetailSubject?.map(item => ({
+            ...item,
+            quarterReportDetailSubjectChildren: item?.quarterReportDetailSubjectChildren?.map(itemChildDetail => ({
+              ...itemChildDetail,
+              evaluationCriteriaId: record?.id === itemChildDetail?.id ? e.target.value : itemChildDetail?.evaluationCriteriaId,
+            }))
+          })) : undefined,
+        }))
+      }
+    );
+  };
+
+  const onChangeInput = (value, record) => {
+    setDataDetails(
+      {
+        ...dataDetails,
+        quarterReportDetail: dataDetails?.quarterReportDetail?.map(i => ({
+          ...i,
+          content: i?.isComment && record?.id === i?.id ? value.target.value : i?.content,
+        }))
+      }
+    );
+  };
+
   const header = () => [
     {
       title: 'Content',
@@ -100,11 +180,13 @@ const Index = memo(() => {
           className: classnames('min-width-200', 'max-width-200'),
           render: (record) => (
             <>
-              {
-                record?.evaluationCriteriaId === i?.id && (
-                  <img alt="" src="/images/vector.png" />
-                )
-              }
+              <Radio.Group
+                onChange={(e) => onCheckBox(e, record, 'avtActive')}
+                value={record?.evaluationCriteriaId}
+                style={{ display: 'flex', justifyContent: 'center' }}
+              >
+                <Radio value={i?.id} />
+              </Radio.Group>
             </>
           ),
         }
@@ -118,7 +200,7 @@ const Index = memo(() => {
       <Helmet title="Subject" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
-          <Form layout="vertical" form={form} initialValues={{
+          <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
             data: [
               {},
             ],
@@ -209,9 +291,16 @@ const Index = memo(() => {
                   dataDetails?.quarterReportDetail.filter(i => i?.isComment)?.map(i => (
                     (
                       <Pane className="card mb20">
-                        <Pane className="row p20">
+                        <Pane className="p20">
+                          <Heading type="form-title">
+                            {i?.scriptReviewComment?.sampleComment?.name}
+                          </Heading>
+                        </Pane>
+                        <Pane className="row pl20 pb20 pr20">
                           <Pane className="col-lg-12">
-                            <FormDetail name={i?.content} label={i?.scriptReviewComment?.sampleComment?.name} type="text" />
+                            <FormItem label="Content">
+                              <TextArea rows={2} placeholder="Nhập" value={i?.content} onChange={(e) => onChangeInput(e, i)} />
+                            </FormItem>
                           </Pane>
                         </Pane>
                       </Pane>
@@ -229,6 +318,26 @@ const Index = memo(() => {
                 >
                   Cancel
                 </p>
+                <div className='d-flex'>
+                  <Button
+                    className="ml-auto px25"
+                    color="success"
+                    htmlType="submit"
+                    size="large"
+                    loading={loadingSubmit}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    className="ml10 px25"
+                    color="primary"
+                    onClick={() => addSent()}
+                    size="large"
+                    loading={loadingSubmit}
+                  >
+                    Acpect
+                  </Button>
+                </div>
               </Pane>
             </Loading>
           </Form>
