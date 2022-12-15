@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\StudyProgram\QuarterReport\Criteria\QuarterReportCriteriaCriteria;
 use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportCreateRequest;
+use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportUpdateAllStatusRequest;
 use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportUpdateRequest;
 use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportUpdateStatusRequest;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
@@ -114,6 +115,22 @@ class QuarterReportController extends Controller
     {
         $attributes = $request->all();
         $result = $this->quarterReportRepository->notificationQuarterReport($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function updateAllStatusQuarterReport(QuarterReportUpdateAllStatusRequest $request)
+    {
+        $attributes = $request->all();
+        $result = $this->quarterReportRepository->updateAllStatusQuarterReport($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function notificationAllStatusQuarterReport(QuarterReportUpdateAllStatusRequest $request)
+    {
+        $attributes = $request->all();
+        $result = $this->quarterReportRepository->notificationAllStatusQuarterReport($attributes);
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
