@@ -5,6 +5,8 @@ export default {
   state: {
     details: [],
     skill: [],
+    dataScriptReview: [],
+    dataEvaluetionCriteria: [],
     error: {
       isError: false,
       data: {},
@@ -15,6 +17,10 @@ export default {
     SET_DATA: (state, { payload }) => ({
       ...state,
       details: payload.parsePayload,
+    }),
+    SET_DATA_SCRIPT_REVIEW: (state, { payload }) => ({
+      ...state,
+      dataScriptReview: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -28,6 +34,10 @@ export default {
     SET_SKILL: (state, { payload }) => ({
       ...state,
       skill: payload.parsePayload.filter((i) => i.use === true),
+    }),
+    SET_DATA_EVALUATION_CRITERRIA: (state, { payload }) => ({
+      ...state,
+      dataEvaluetionCriteria: payload.parsePayload,
     }),
   },
   effects: {
@@ -46,19 +56,12 @@ export default {
         });
       }
     },
-    *ADD({ payload, callback }, saga) {
+    *GET_DATA_STUDENTS({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data);
-      }
-    },
-    *GET_SKILL({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getSkill, payload);
+        const response = yield saga.call(services.getDataStudent, payload);
+        callback(response);
         yield saga.put({
-          type: 'SET_SKILL',
+          type: 'SET_DATA',
           payload: response,
         });
       } catch (error) {
@@ -68,20 +71,56 @@ export default {
         });
       }
     },
-    *UPDATE({ payload, callback }, saga) {
+    *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.update, payload);
-        callback(payload);
+        const response = yield saga.call(services.add, payload);
+        callback(response);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error?.data);
       }
     },
-    *REMOVE({ payload, callback }, saga) {
+    *GET_DATA_SCRIPT_REVIEW({ payload, callback }, saga) {
       try {
-        yield saga.call(services.remove, payload.id);
-        callback(payload);
+        const response = yield saga.call(services.getDataScriptReview, payload);
+        callback(response);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA_SCRIPT_REVIEW',
+            payload: response,
+          });
+        }
       } catch (error) {
-        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA_EVALUATION_CRITERRIA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDataEvaluetionCriteria, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA_EVALUATION_CRITERRIA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA_DETAIL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDatDetail, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

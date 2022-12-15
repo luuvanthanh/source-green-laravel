@@ -1,37 +1,18 @@
 import request from '@/utils/requestLavarel';
+import requestNet from '@/utils/request';
+import { omit } from 'lodash';
+
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/v1/test', {
+  return request('/v1/quarter-reports', {
     method: 'GET',
     params: {
       ...params,
-      // from: Helper.getDateTime({
-      //   value: Helper.setDate({
-      //     ...variables.setDateData,
-      //     originValue: params.from,
-      //     targetValue: '00:00:00',
-      //   }),
-      //   isUTC: true,
-      // }),
-      // to: Helper.getDateTime({
-      //   value: Helper.setDate({
-      //     ...variables.setDateData,
-      //     originValue: params.to,
-      //     targetValue: '23:59:59',
-      //   }),
-      //   isUTC: true,
-      // }),
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      include: Helper.convertIncludes([
-        'student.classStudent.class.branch',
-        'assessmentPeriod.schoolYear',
-        'student,testSemesterDetail,testSemesterDetail.testSemesterDetailChildren',
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'assessmentPeriod.nameAssessmentPeriod',
-      ]),
+      include: Helper.convertIncludes(['quarterReport']),
     },
   });
 }
@@ -87,5 +68,47 @@ export function addReview(params = {}) {
       ...params,
       approvalStatus: 'APPROVED',
     },
+  });
+}
+
+export function getDataType(params = {}) {
+  return request(`/v1/name-assessment-periods`, {
+    method: 'GET',
+    params: {
+      id: params,
+    },
+  });
+}
+
+export function getAssess(params = {}) {
+  return request(`/v1/script-reviews`, {
+    method: 'GET',
+    params: {
+      params,
+      include: Helper.convertIncludes([
+        'scriptReviewSubject,scriptReviewComment,branch,classes',
+        'scriptReviewSubject.scriptReviewSubjectDetail.scriptReviewSubjectDetailChildren',
+        'scriptReviewComment.scriptReviewCommentDetail',
+        'nameAssessmentPeriod',
+      ]),
+    },
+  });
+}
+
+export function getStudent(params = {}) {
+  return requestNet(`/students`, {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+      classStatus: params.class ? 'HAS_CLASS' : 'ALL',
+    },
+  });
+}
+
+export function addSent(data = {}) {
+  return request('/v1/notification-quarter-reports', {
+    method: 'POST',
+    data,
   });
 }
