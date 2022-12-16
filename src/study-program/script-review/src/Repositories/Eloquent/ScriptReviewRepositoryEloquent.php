@@ -99,6 +99,7 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
             }
             DB::commit();
         } catch (\Throwable $th) {
+            dd($th);
             DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
@@ -142,10 +143,13 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createScriptReviewSubject($model, $attributes)
     {
         foreach ($attributes as $key => $valueSubject) {
-            $scriptReviewSubject = ScriptReviewSubject::find($valueSubject['id']);
 
-            if (!is_null($scriptReviewSubject)) {
-                $scriptReviewSubject->update($valueSubject);
+            if (!empty($valueSubject['id'])) {
+                $scriptReviewSubject = ScriptReviewSubject::find($valueSubject['id']);
+
+                if (!is_null($scriptReviewSubject)) {
+                    $scriptReviewSubject->update($valueSubject);
+                }
             } else {
                 $valueSubject['scriptReviewId'] = $model->Id;
                 $scriptReviewSubject = ScriptReviewSubject::create($valueSubject);
@@ -160,10 +164,12 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createScriptReviewSubjectDetail($model, $attributes)
     {
         foreach ($attributes as $valueSubjectSection) {
-            $scriptReviewSubjectDetail = ScriptReviewSubjectDetail::find($valueSubjectSection['id']);
 
-            if (!is_null($scriptReviewSubjectDetail)) {
-                $scriptReviewSubjectDetail->update($valueSubjectSection);
+            if (!empty($valueSubjectSection['id'])) {
+                $scriptReviewSubjectDetail = ScriptReviewSubjectDetail::find($valueSubjectSection['id']);
+                if (!is_null($scriptReviewSubjectDetail)) {
+                    $scriptReviewSubjectDetail->update($valueSubjectSection);
+                }
             } else {
                 $valueSubjectSection['scriptReviewSubjectId'] = $model->Id;
                 $scriptReviewSubjectDetail = ScriptReviewSubjectDetail::create($valueSubjectSection);
@@ -178,10 +184,12 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createScriptReviewSubjectDetailChildren($model, $attributes)
     {
         foreach ($attributes as $valueDetail) {
-            $detailChildren = ScriptReviewSubjectDetailChildren::find($valueDetail['id']);
 
-            if (!is_null($detailChildren)) {
-                $detailChildren->update($valueDetail);
+            if (!empty($valueDetail['id'])) {
+                $detailChildren = ScriptReviewSubjectDetailChildren::find($valueDetail['id']);
+                if (!is_null($detailChildren)) {
+                    $detailChildren->update($valueDetail);
+                }
             } else {
                 $valueDetail['scriptReviewSubjectDetailId'] = $model->Id;
                 ScriptReviewSubjectDetailChildren::create($valueDetail);
