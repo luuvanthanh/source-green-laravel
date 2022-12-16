@@ -16,5 +16,6 @@ export function remove(id = {}) {
   return request(`/v1/sample-comments/${id}`, {
     method: 'DELETE',
     parse: true,
+    cancelNotification: true,
   });
 }

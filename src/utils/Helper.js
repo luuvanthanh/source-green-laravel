@@ -1143,6 +1143,25 @@ export default class Helpers {
     });
   };
 
+  static confirmDeleteEnglish = ({ callback }, text) => {
+    confirm({
+      icon: '',
+      centered: true,
+      okText: 'Yes',
+      cancelText: 'No',
+      className: `${styles['wrapper-modal-delete']}`,
+      content: (
+        <>
+          <div className={styles['modal-text']}>{text}</div>
+        </>
+      ),
+      onOk() {
+        callback();
+      },
+      onCancel() {},
+    });
+  };
+
   /**
    * Function pagination of table
    * @param {object} pagination value of pagination items

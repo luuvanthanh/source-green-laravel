@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -51,6 +52,10 @@ export default {
       try {
         yield saga.call(services.remove, payload.id);
         callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'You deleted to success data.',
+        });
       } catch (error) {
         callback(null, error);
       }

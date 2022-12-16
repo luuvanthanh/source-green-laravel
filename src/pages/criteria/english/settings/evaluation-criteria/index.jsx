@@ -169,7 +169,8 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
-    Helper.confirmAction({
+    const text = "Do you want to delete?";
+    Helper.confirmDeleteEnglish({
       callback: () => {
         dispatch({
           type: 'englishSettingevaluationCriteria/REMOVE',
@@ -183,7 +184,7 @@ class Index extends PureComponent {
           },
         });
       },
-    });
+    }, text);
   };
 
   covertChildEvaluateDetail = items => {
