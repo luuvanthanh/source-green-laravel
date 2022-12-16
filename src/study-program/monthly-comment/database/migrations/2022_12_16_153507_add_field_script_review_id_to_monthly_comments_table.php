@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeTypeFieldToMonthlyCommentsTable extends Migration
+class AddFieldScriptReviewIdToMonthlyCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class ChangeTypeFieldToMonthlyCommentsTable extends Migration
     public function up()
     {
         Schema::table('study-program.MonthlyComments', function (Blueprint $table) {
-            $table->dropColumn(['SampleCommentId', 'Content']);
+            $table->uuid('ScriptReviewId')->nullable();
         });
     }
 
@@ -26,8 +26,7 @@ class ChangeTypeFieldToMonthlyCommentsTable extends Migration
     public function down()
     {
         Schema::table('study-program.MonthlyComments', function (Blueprint $table) {
-            $table->uuid('SampleCommentId')->nullable();
-            $table->text('Content')->nullable();
+            $table->dropColumn('ScriptReviewId');
         });
     }
 }

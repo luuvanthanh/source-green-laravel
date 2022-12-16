@@ -99,7 +99,6 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
             }
             DB::commit();
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
@@ -200,10 +199,12 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createScriptReviewComment($model, $attributes)
     {
         foreach ($attributes as $valueComment) {
-            $comment = ScriptReviewComment::find($valueComment['id']);
 
-            if (!is_null($comment)) {
-                $comment->update($valueComment);
+            if (!empty($valueComment['id'])) {
+                $comment = ScriptReviewComment::find($valueComment['id']);
+                if (!is_null($comment)) {
+                    $comment->update($valueComment);
+                }
             } else {
                 $valueComment['scriptReviewId'] = $model->Id;
                 $comment = ScriptReviewComment::create($valueComment);
@@ -218,10 +219,12 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
     public function createCommentDetail($model, $attributes)
     {
         foreach ($attributes as $valueDetail) {
-            $commentDetail = ScriptReviewCommentDetail::find($valueDetail['id']);
 
-            if (!is_null($commentDetail)) {
-                $commentDetail->update($valueDetail);
+            if (!empty($valueDetail['id'])) {
+                $commentDetail = ScriptReviewCommentDetail::find($valueDetail['id']);
+                if (!is_null($commentDetail)) {
+                    $commentDetail->update($valueDetail);
+                }
             } else {
                 $valueDetail['ScriptReviewCommentId'] = $model->Id;
                 ScriptReviewCommentDetail::create($valueDetail);
