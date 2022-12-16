@@ -19,7 +19,6 @@ class CreateExpectedTimesTable extends Migration
             $table->date('StartDate');
             $table->date('EndDate');
             $table->uuid('EmployeeId')->index();
-            $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('cascade');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletionTime', 0);
