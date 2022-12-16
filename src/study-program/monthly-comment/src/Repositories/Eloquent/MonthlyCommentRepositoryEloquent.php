@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
+use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyCommentDetail;
 use GGPHP\StudyProgram\MonthlyComment\Presenters\MonthlyCommentPresenter;
 use GGPHP\StudyProgram\MonthlyComment\Repositories\Contracts\MonthlyCommentRepository;
 use Illuminate\Container\Container;
@@ -122,12 +123,52 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
 
     public function createAll(array $attributes)
     {
-        return parent::parserResult($this->model()::create($attributes));
+        DB::beginTransaction();
+        try {
+            $data = $this->model()::create($attributes);
+
+            if (!empty($attributes['detail'])) {
+                $this->createDetail($data, $attributes['detail']);
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw new HttpException(500, $th->getMessage());
+        }
+        return parent::parserResult($data);
+    }
+
+    public function createDetail($model, $attributes)
+    {
+        foreach ($attributes as $key => $value) {
+            if (!empty($value['id'])) {
+                $detail = MonthlyCommentDetail::find($value['id']);
+
+                if (!is_null($detail)) {
+                    $detail->update($value);
+                }
+            } else {
+                $value['MonthlyCommentId'] = $model->Id;
+                MonthlyCommentDetail::create($value);
+            }
+        }
     }
 
     public function updateAll(array $attributes, $id)
     {
         $result = $this->model()::find($id);
+        DB::beginTransaction();
+        try {
+            $result->update($attributes);
+
+            if (!empty($attributes['detail'])) {
+                $this->createDetail($result, $attributes['detail']);
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw new HttpException(500, $th->getMessage());
+        }
         $result->update($attributes);
 
         return parent::parserResult($result);

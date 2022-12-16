@@ -2,6 +2,7 @@
 
 namespace GGPHP\StudyProgram\MonthlyComment\Transformers;
 
+use CreateMonthlyCommentDetailsTable;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Transformers\SchoolYearTransformer;
@@ -21,7 +22,7 @@ class MonthlyCommentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = [];
+    protected $defaultIncludes = ['teacher', 'teacherManagement', 'student', 'schoolYear', 'monthlyCommentDetail'];
 
     /**
      * Array attribute doesn't parse.
@@ -33,7 +34,7 @@ class MonthlyCommentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['sampleComment', 'teacher', 'teacherManagement', 'student', 'schoolYear'];
+    protected $availableIncludes = [];
 
     /**
      * Transform the ReviewDetail entity.
@@ -48,11 +49,6 @@ class MonthlyCommentTransformer extends BaseTransformer
         return [
             'Status' => array_search($model->Status, MonthlyComment::STATUS)
         ];
-    }
-
-    public function includeSampleComment(MonthlyComment $monthlyComment)
-    {
-        return $this->item($monthlyComment->sampleComment, new SampleCommentTransformer, 'SampleComment');
     }
 
     public function includeTeacher(MonthlyComment $monthlyComment)
@@ -77,5 +73,10 @@ class MonthlyCommentTransformer extends BaseTransformer
         } else {
             return null;
         }
+    }
+
+    public function includeMonthlyCommentDetail(MonthlyComment $monthlyComment)
+    {
+        return $this->collection($monthlyComment->monthlyCommentDetail, new MonthlyCommentDetailTransformer, 'MonthlyCommentDetail');
     }
 }
