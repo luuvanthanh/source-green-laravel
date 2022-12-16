@@ -100,9 +100,8 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         }
 
         if (!empty($attributes['status'])) {
-            $status = $this->model()::STATUS[$attributes['status']];
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($status) {
-                $query->where('Status', $status);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status']);
             }]);
         }
 
@@ -110,6 +109,12 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('StudentId', $attributes['studentId']);
             });
+        }
+
+        if (!empty($attributes['month'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
+                $query->where('Month', $attributes['month']);
+            }]);
         }
 
         if (!empty($attributes['limit'])) {
@@ -254,8 +259,8 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         $data = $this->getAll($attributes);
 
         foreach ($data['data'] as $value) {
-            $quarterReport =  $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])->first();
-            $student = $quarterReport->student;
+            $monthlyComment =  $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])->first();
+            $student = $monthlyComment->student;
             $parent = $student->parent()->with('account')->get();
 
             if (!empty($parent)) {
@@ -267,8 +272,8 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
                     $urlImage = env('IMAGE_URL') . $images[0];
                 }
 
-                $schoolYear = $quarterReport->scriptReview->schoolYear->YearFrom . '-' . $quarterReport->scriptReview->schoolYear->YearTo;
-                $name = $quarterReport->scriptReview->NameAssessmentPeriod->Name;
+                $schoolYear = $monthlyComment->scriptReview->schoolYear->YearFrom . '-' . $monthlyComment->scriptReview->schoolYear->YearTo;
+                $name = $monthlyComment->scriptReview->NameAssessmentPeriod->Name;
 
                 $message = $student->FullName . ' ' . 'nhận Monthly Comment ' . $name . ' school year ' . $schoolYear;
 
@@ -279,14 +284,14 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
                         'imageURL' => $urlImage,
                         'message' => $message,
                         'moduleType' => 25,
-                        'refId' => $quarterReport->Id,
+                        'refId' => $monthlyComment->Id,
                     ];
 
                     dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
                 }
             }
 
-            $quarterReport->update([
+            $monthlyComment->update([
                 'Status' => $attributes['newStatus']
             ]);
         }

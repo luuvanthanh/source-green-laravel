@@ -5,6 +5,7 @@ namespace GGPHP\StudyProgram\MonthlyComment\Models;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\SchoolYear;
+use GGPHP\StudyProgram\ScriptReview\Models\ScriptReview;
 use GGPHP\StudyProgram\Setting\Models\SampleComment;
 use GGPHP\Users\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,7 +25,7 @@ class MonthlyComment extends UuidModel
 
     protected $fillable = [
         'StudentId', 'Status', 'TeacherId', 'TeacherManagementId',
-        'SchoolYearId', 'Month'
+        'SchoolYearId', 'Month', 'ScriptReviewId'
     ];
 
     public function sampleComment()
@@ -55,5 +56,10 @@ class MonthlyComment extends UuidModel
     public function monthlyCommentDetail()
     {
         return $this->hasMany(MonthlyCommentDetail::class, 'MonthlyCommentId');
+    }
+
+    public function scriptReview()
+    {
+        return $this->belongsTo(ScriptReview::class, 'ScriptReviewId');
     }
 }
