@@ -234,4 +234,63 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
+
+    public function updateAllStatusMonthlyComment($attributes)
+    {
+        $data = $this->getAll($attributes);
+
+        foreach ($data['data'] as $value) {
+            $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])
+                ->update([
+                    'Status' => $attributes['newStatus']
+                ]);
+        }
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function notificationAllStatusMonthlyComment($attributes)
+    {
+        $data = $this->getAll($attributes);
+
+        foreach ($data['data'] as $value) {
+            $quarterReport =  $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])->first();
+            $student = $quarterReport->student;
+            $parent = $student->parent()->with('account')->get();
+
+            if (!empty($parent)) {
+                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
+                $images =  json_decode($student->FileImage);
+                $urlImage = '';
+
+                if (!empty($images)) {
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
+
+                $schoolYear = $quarterReport->scriptReview->schoolYear->YearFrom . '-' . $quarterReport->scriptReview->schoolYear->YearTo;
+                $name = $quarterReport->scriptReview->NameAssessmentPeriod->Name;
+
+                $message = $student->FullName . ' ' . 'nhận Monthly Comment ' . $name . ' school year ' . $schoolYear;
+
+                if (!empty($arrId)) {
+                    $dataNotiCation = [
+                        'users' => $arrId,
+                        'title' => 'English',
+                        'imageURL' => $urlImage,
+                        'message' => $message,
+                        'moduleType' => 25,
+                        'refId' => $quarterReport->Id,
+                    ];
+
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+                }
+            }
+
+            $quarterReport->update([
+                'Status' => $attributes['newStatus']
+            ]);
+        }
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
 }

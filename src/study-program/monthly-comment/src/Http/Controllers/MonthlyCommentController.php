@@ -110,4 +110,20 @@ class MonthlyCommentController extends Controller
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function updateAllStatusMonthlyComment(Request $request)
+    {
+        $attributes = $request->all();
+        $result = $this->monthlyCommentRepository->updateAllStatusMonthlyComment($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function notificationAllStatusMonthlyComment(Request $request)
+    {
+        $attributes = $request->all();
+        $result = $this->monthlyCommentRepository->notificationAllStatusMonthlyComment($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
 }

@@ -44,7 +44,7 @@ class ScriptReviewCreateRequest extends FormRequest
                             })
                             ->get();
 
-                        if (!empty($scriptReview)) {
+                        if ($scriptReview->isNotEmpty()) {
                             return $fail('Cấu hình đã tồn tại');
                         }
                     } elseif ($quarterReport == $value) {
@@ -59,7 +59,7 @@ class ScriptReviewCreateRequest extends FormRequest
                             })
                             ->get();
 
-                        if (!empty($scriptReview)) {
+                        if ($scriptReview->isNotEmpty()) {
                             return $fail('Cấu hình đã tồn tại');
                         }
                     }
