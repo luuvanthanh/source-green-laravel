@@ -28,11 +28,11 @@ class MonthlyCommentUpdateRequest extends FormRequest
         return [
             'studentId' => 'check_exists:object.Students,Id',
             'schoolYearId' => 'check_exists:fee.SchoolYears,Id',
-            'sampleCommentId' => 'check_exists:study-program.SampleComments,Id',
             'status' => 'in:' . $status,
             'teacherId' => 'exists:Employees,Id',
             'TeacherManagementId' => 'exists:Employees,Id',
-            'month' => 'date_format:Y-m-d'
+            'month' => 'date_format:Y-m-d',
+            'detail.*.scriptReviewCommentId' => 'nullable|check_exists:study-program.ScriptReviewComments,Id',
         ];
     }
 

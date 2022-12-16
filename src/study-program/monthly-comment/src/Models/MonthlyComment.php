@@ -23,8 +23,8 @@ class MonthlyComment extends UuidModel
     ];
 
     protected $fillable = [
-        'StudentId', 'SampleCommentId', 'Status', 'TeacherId', 'TeacherManagementId',
-        'SchoolYearId', 'Month', 'Content'
+        'StudentId', 'Status', 'TeacherId', 'TeacherManagementId',
+        'SchoolYearId', 'Month'
     ];
 
     public function sampleComment()
@@ -50,5 +50,10 @@ class MonthlyComment extends UuidModel
     public function schoolYear()
     {
         return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
+    }
+
+    public function monthlyCommentDetail()
+    {
+        return $this->hasMany(MonthlyCommentDetail::class, 'MonthlyCommentId');
     }
 }
