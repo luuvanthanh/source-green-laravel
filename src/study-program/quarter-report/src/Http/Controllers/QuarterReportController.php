@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\StudyProgram\QuarterReport\Criteria\QuarterReportCriteriaCriteria;
 use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportCreateRequest;
+use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportUpdateAllStatusRequest;
 use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportUpdateRequest;
 use GGPHP\StudyProgram\QuarterReport\Http\Requests\QuarterReportUpdateStatusRequest;
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use GGPHP\StudyProgram\QuarterReport\Repositories\Contracts\QuarterReportRepository;
 use Illuminate\Http\Response;
 
@@ -36,6 +38,11 @@ class QuarterReportController extends Controller
     public function index(Request $request)
     {
         $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = QuarterReport::STATUS[$attributes['status']];
+        }
+
         $result = $this->quarterReportRepository->getAll($attributes);
 
         return $this->success($result, trans('lang::messages.common.getListSuccess'));
@@ -108,6 +115,22 @@ class QuarterReportController extends Controller
     {
         $attributes = $request->all();
         $result = $this->quarterReportRepository->notificationQuarterReport($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function updateAllStatusQuarterReport(QuarterReportUpdateAllStatusRequest $request)
+    {
+        $attributes = $request->all();
+        $result = $this->quarterReportRepository->updateAllStatusQuarterReport($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function notificationAllStatusQuarterReport(QuarterReportUpdateAllStatusRequest $request)
+    {
+        $attributes = $request->all();
+        $result = $this->quarterReportRepository->notificationAllStatusQuarterReport($attributes);
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }

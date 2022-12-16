@@ -2,6 +2,7 @@
 
 namespace GGPHP\StudyProgram\QuarterReport\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\StudyProgram\QuarterReport\Criteria\QuarterReportCriteriaCriteria;
@@ -96,17 +97,16 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             });
         }
 
-        if (!empty($attributes['schoolYearId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
-                $query->where('SchoolYearId', $attributes['schoolYearId']);
-            });
+        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['NOT_REVIEW']) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->doesnthave('quarterReport');
         }
 
-        if (!empty($attributes['status'])) {
-            $status = $this->model()::STATUS[$attributes['status']];
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($status) {
-                $query->where('Status', $status);
-            }]);
+        if (!empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status']);
+            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status']);
+            });
         }
 
         if (!empty($attributes['studentId'])) {
@@ -128,6 +128,9 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
     {
         DB::beginTransaction();
         try {
+            if ($attributes['status'] == QuarterReport::STATUS['REVIEWED']) {
+                $attributes['reportTime'] = date('Y-m-d H:i:s');
+            }
             $result = $this->model()::create($attributes);
 
             if (!empty($attributes['detail'])) {
@@ -179,6 +182,9 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $result = $this->model()::find($id);
         DB::beginTransaction();
         try {
+            if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
+                $attributes['reportTime'] = date('Y-m-d H:i:s');
+            }
             $result->update($attributes);
 
             if (!empty($attributes['detail'])) {
@@ -306,9 +312,69 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                         'moduleType' => 25,
                         'refId' => $value->Id,
                     ];
+
                     dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
                 }
             }
+        }
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function updateAllStatusQuarterReport($attributes)
+    {
+        $data = $this->getAll($attributes);
+
+        foreach ($data['data'] as $value) {
+            $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])
+                ->update([
+                    'Status' => $attributes['newStatus']
+                ]);
+        }
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function notificationAllStatusQuarterReport($attributes)
+    {
+        $data = $this->getAll($attributes);
+
+        foreach ($data['data'] as $value) {
+            $quarterReport =  $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])->first();
+            $student = $quarterReport->student;
+            $parent = $student->parent()->with('account')->get();
+
+            if (!empty($parent)) {
+                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
+                $images =  json_decode($student->FileImage);
+                $urlImage = '';
+
+                if (!empty($images)) {
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
+
+                $schoolYear = $quarterReport->scriptReview->schoolYear->YearFrom . '-' . $quarterReport->scriptReview->schoolYear->YearTo;
+                $name = $quarterReport->scriptReview->NameAssessmentPeriod->Name;
+
+                $message = $student->FullName . ' ' . 'nhận Quarter report ' . $name . ' school year ' . $schoolYear;
+
+                if (!empty($arrId)) {
+                    $dataNotiCation = [
+                        'users' => $arrId,
+                        'title' => 'English',
+                        'imageURL' => $urlImage,
+                        'message' => $message,
+                        'moduleType' => 25,
+                        'refId' => $quarterReport->Id,
+                    ];
+
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+                }
+            }
+
+            $quarterReport->update([
+                'Status' => $attributes['newStatus']
+            ]);
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
