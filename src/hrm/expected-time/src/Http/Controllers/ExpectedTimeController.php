@@ -3,6 +3,8 @@
 namespace GGPHP\ExpectedTime\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\ExpectedTime\Http\Requests\ExpectedTimeCreateRequest;
+use GGPHP\ExpectedTime\Http\Requests\ExpectedTimeUpdateRequest;
 use GGPHP\ExpectedTime\Repositories\Contracts\ExpectedTimeRepository;
 use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
 use GGPHP\TeacherTimekeeping\Repositories\Contracts\TeacherTimekeepingRepository;
@@ -44,7 +46,7 @@ class ExpectedTimeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ExpectedTimeCreateRequest $request)
     {
         $attribute = $request->all();
 
@@ -81,7 +83,7 @@ class ExpectedTimeController extends Controller
      * @param  \App\Timekeeping  $timekeeping
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ExpectedTimeUpdateRequest $request, $id)
     {
         $attribute = $request->all();
 

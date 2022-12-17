@@ -72,6 +72,10 @@ class ExpectedTimeRepositoryEloquent extends CoreRepositoryEloquent implements E
     {
         $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->where('Category', User::CATEGORY['TEACHER']);
 
+        if (!empty($attribute['employeeId'])) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->where('Id', $attribute['employeeId']);
+        }
+
         if (!empty($attribute['limit'])) {
             $result = $this->employeeRepositoryEloquent->paginate($attribute['limit']);
         } else {
@@ -103,7 +107,7 @@ class ExpectedTimeRepositoryEloquent extends CoreRepositoryEloquent implements E
 
     public function createDetail($model, $attribute)
     {
-        foreach ($attribute as $value) {
+        foreach ($attribute as $key => $value) {
             foreach ($value['week'] as $valueChildren) {
 
                 if (!empty($valueChildren['id'])) {
@@ -126,9 +130,9 @@ class ExpectedTimeRepositoryEloquent extends CoreRepositoryEloquent implements E
 
     public function updateAll($attribute, $id)
     {
+        $data = $this->model()::findOrFail($id);
         DB::beginTransaction();
         try {
-            $data = $this->model()::find($id);
             $data->update($attribute);
 
             if (!empty($attribute['detail'])) {
