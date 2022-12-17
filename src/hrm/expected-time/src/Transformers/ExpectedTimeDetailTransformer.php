@@ -34,6 +34,9 @@ class ExpectedTimeDetailTransformer extends BaseTransformer
 
     public function includeTeachingShift(ExpectedTimeDetail $expectedTimeDetail)
     {
+        if (is_null($expectedTimeDetail->teachingShift)) {
+            return null;
+        }
         return $this->item($expectedTimeDetail->teachingShift, new TeachingShiftTransformer, 'TeachingShift');
     }
 }
