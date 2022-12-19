@@ -6,6 +6,7 @@ export function add(data = {}) {
   return request('/v1/quarter-reports', {
     method: 'POST',
     data,
+    cancelNotification: true,
   });
 }
 
@@ -16,6 +17,7 @@ export function update(data = {}) {
       ...data,
     },
     parse: true,
+    cancelNotification: true,
   });
 }
 
