@@ -34,15 +34,15 @@ const Index = memo(() => {
     dataType,
     dataEvaluetionCriteria,
     user,
-  } = useSelector(({ EnglishMonthReportAdd, menu, loading, EnglishMonthReportAddAdd, user }) => ({
+  } = useSelector(({ EnglishMonthReportAdd, menu, loading, EnglishMonthReport, user }) => ({
     dataAssess: EnglishMonthReportAdd.dataAssess,
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: EnglishMonthReportAddAdd.details,
+    details: EnglishMonthReport.details,
     dataType: EnglishMonthReportAdd.dataType,
-    dataEvaluetionCriteria: EnglishMonthReportAddAdd.dataEvaluetionCriteria,
+    dataEvaluetionCriteria: EnglishMonthReport.dataEvaluetionCriteria,
     user: user.user,
-    error: EnglishMonthReportAddAdd.error,
+    error: EnglishMonthReport.error,
   }));
 
   const [dataStudent, setDataStudent] = useState(undefined);
@@ -51,7 +51,7 @@ const Index = memo(() => {
 
   const { query } = useLocation();
 
-  const loadingSubmit = effects[`EnglishMonthReportAddAdd/ADD`];
+  const loadingSubmit = effects[`EnglishMonthReport/ADD`];
 
   const onFinish = () => {
 
@@ -79,7 +79,7 @@ const Index = memo(() => {
     }));
 
     dispatch({
-      type: 'EnglishMonthReportAddAdd/ADD',
+      type: 'EnglishMonthReport/ADD',
       payload: {
         id: params.id,
         studentId: params?.id,
@@ -89,7 +89,7 @@ const Index = memo(() => {
         detail: dataSubjec.concat(dataComment?.map(i => ({
           isComment: dataDetails?.isCheckSampleComment,
           scriptReviewCommentId: i?.id,
-          content: `${i?.scriptReviewCommentDetail?.map(i => i?.value)?.join('.')}.${head(i?.scriptReviewCommentDetail)?.content}`,
+          content: `${i?.scriptReviewCommentDetail?.map(i => i.value).join('.')}.${head(i?.scriptReviewCommentDetail).content}`,
         }))),
       },
       callback: (response, error) => {
@@ -113,7 +113,7 @@ const Index = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'EnglishMonthReportAddAdd/GET_DATA_STUDENTS',
+        type: 'EnglishMonthReport/GET_DATA_STUDENTS',
         payload: params?.id,
         callback: (response) => {
           if (response) {
@@ -133,7 +133,7 @@ const Index = memo(() => {
       payload: {},
     });
     dispatch({
-      type: 'EnglishMonthReportAddAdd/GET_DATA_SCRIPT_REVIEW',
+      type: 'EnglishMonthReport/GET_DATA_SCRIPT_REVIEW',
       payload: {
         nameAssessmentPeriodId: query?.nameAssessmentPeriod,
       },
@@ -144,7 +144,7 @@ const Index = memo(() => {
       },
     });
     dispatch({
-      type: 'EnglishMonthReportAddAdd/GET_DATA_EVALUATION_CRITERRIA',
+      type: 'EnglishMonthReport/GET_DATA_EVALUATION_CRITERRIA',
       payload: {},
     });
   }, []);
@@ -271,7 +271,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['EnglishMonthReportAddAdd/GET_DATA_SCRIPT_REVIEW']}
+              loading={effects['EnglishMonthReport/GET_DATA_SCRIPT_REVIEW']}
               params={{
                 type: 'container',
               }}

@@ -254,6 +254,18 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *UPDATE_SENT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateSent, payload);
+        callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'You updated to success data.',
+        });
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

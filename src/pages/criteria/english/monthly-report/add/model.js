@@ -1,7 +1,8 @@
+import { notification } from 'antd';
 import * as services from './services';
 
 export default {
-  namespace: 'EnglishMonthlyReportAdd',
+  namespace: 'EnglishMonthReportAdd',
   state: {
     details: [],
     skill: [],
@@ -75,6 +76,10 @@ export default {
       try {
         const response = yield saga.call(services.add, payload);
         callback(response);
+        notification.success({
+          message: 'Successful',
+          description: 'You update to success data.',
+        });
       } catch (error) {
         callback(null, error?.data);
       }

@@ -780,7 +780,6 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/monthly-report/:id/add',
             '/chuong-trinh-hoc/monthly-report/:id/detail',
             '/chuong-trinh-hoc/monthly-report/:id/edit',
-            '/chuong-trinh-hoc/monthly-report/:id/confirmed',
           ],
           permission: [permissions.CTH],
           pro: true,

@@ -31,7 +31,6 @@ const Index = memo(() => {
     loading: { effects },
     details,
     menuLeftCriteria,
-    dataType,
     dataEvaluetionCriteria,
     user,
   } = useSelector(({ EnglishQuarterReport, menu, loading, EnglishQuarterReportAdd, user }) => ({
@@ -135,11 +134,11 @@ const Index = memo(() => {
     dispatch({
       type: 'EnglishQuarterReportAdd/GET_DATA_SCRIPT_REVIEW',
       payload: {
-        nameAssessmentPeriodId: query?.nameAssessmentPeriod,
+        id: query?.scriptReviewId,
       },
       callback: (response) => {
         if (response) {
-          setDataDetails(head(response.parsePayload));
+          setDataDetails(response.parsePayload);
         }
       },
     });
@@ -258,11 +257,11 @@ const Index = memo(() => {
       ),
     },
   ];
-
+  const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
-      <Breadcrumbs last={params.id ? 'add' : 'Create new'} menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Breadcrumbs last={dataStudent?.fullName} menu={menuLeftCriteria} />
+      <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
           <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
@@ -295,7 +294,7 @@ const Index = memo(() => {
                 </div>
                 <Pane className="row">
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataStudent?.student?.fullName} label="School year" type="text" />
+                    <FormDetail name={detailSchoolYear} label="School year" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail name={dataStudent?.branch?.name} label="Center" type="text" />
@@ -304,7 +303,7 @@ const Index = memo(() => {
                     <FormDetail name={dataStudent?.class?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataType?.find(i => i?.id === query?.nameAssessmentPeriod)?.name} label="Assessment periodr" type="text" />
+                    <FormDetail name={dataDetails?.nameAssessmentPeriod?.name} label="Assessment periodr" type="text" />
                   </Pane>
                 </Pane>
               </Pane>

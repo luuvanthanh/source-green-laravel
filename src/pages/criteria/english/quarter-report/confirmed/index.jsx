@@ -15,6 +15,8 @@ import Table from '@/components/CommonComponent/Table';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
+import variablesModules from '../utils/variables';
+
 import stylesModule from '../styles.module.scss';
 
 
@@ -34,30 +36,30 @@ const Index = memo(() => {
     menuLeftCriteria,
     dataEvaluetionCriteria,
     user,
-  } = useSelector(({ EnglishMonthlyReportAdd, menu, loading, EnglishMonthlyReportAddAdd, user }) => ({
-    dataAssess: EnglishMonthlyReportAdd.dataAssess,
+  } = useSelector(({ EnglishQuarterReport, menu, loading, EnglishQuarterReportAdd, user }) => ({
+    dataAssess: EnglishQuarterReport.dataAssess,
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: EnglishMonthlyReportAddAdd.details,
-    dataType: EnglishMonthlyReportAdd.dataType,
-    dataEvaluetionCriteria: EnglishMonthlyReportAddAdd.dataEvaluetionCriteria,
+    details: EnglishQuarterReportAdd.details,
+    dataType: EnglishQuarterReport.dataType,
+    dataEvaluetionCriteria: EnglishQuarterReportAdd.dataEvaluetionCriteria,
     user: user.user,
-    error: EnglishMonthlyReportAddAdd.error,
+    error: EnglishQuarterReportAdd.error,
   }));
 
   const [dataDetails, setDataDetails] = useState(undefined);
 
-  const loadingSubmit = effects[`EnglishMonthlyReportAdd/ADD_SENT`] || effects[`EnglishMonthlyReportAddAdd/ADD`];
+  const loadingSubmit = effects[`EnglishQuarterReport/ADD_SENT`] || effects[`EnglishQuarterReportAdd/ADD`];
 
   const onFinish = () => {
     dispatch({
-      type: 'EnglishMonthlyReportAddAdd/ADD',
+      type: 'EnglishQuarterReportAdd/ADD',
       payload: {
         id: params.id,
         studentId: dataDetails?.student?.id,
         scriptReviewId: dataDetails?.scriptReview?.id,
         schoolYearId: user.schoolYear?.id,
-        status: "CONFIRMED",
+        status: "REVIEWED",
         detail: dataDetails?.quarterReportDetail,
         teacherId: user?.id,
       },
@@ -83,7 +85,7 @@ const Index = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'EnglishMonthlyReportAddAdd/GET_DATA_DETAIL',
+        type: 'EnglishQuarterReportAdd/GET_DATA_DETAIL',
         payload: {
           id: params?.id,
         },
@@ -98,11 +100,11 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'EnglishMonthlyReportAdd/GET_DATA_TYPE',
+      type: 'EnglishQuarterReport/GET_DATA_TYPE',
       payload: {},
     });
     dispatch({
-      type: 'EnglishMonthlyReportAddAdd/GET_DATA_EVALUATION_CRITERRIA',
+      type: 'EnglishQuarterReportAdd/GET_DATA_EVALUATION_CRITERRIA',
       payload: {},
     });
   }, []);
@@ -122,14 +124,32 @@ const Index = memo(() => {
   }, [details]);
 
   const addSent = () => {
+    const payload = {
+      studentId: [dataDetails?.studentId],
+      schoolYearId: dataDetails?.schoolYearId,
+      scriptReviewId: dataDetails?.scriptReviewId,
+      status: variablesModules.STATUS.CONFIRMED,
+    };
     dispatch({
-      type: 'EnglishMonthlyReportAdd/ADD_SENT',
-      payload: {
-        studentId: [dataDetails?.studentId],
-        schoolYearId: dataDetails?.schoolYearId,
-        scriptReviewId: dataDetails?.scriptReviewId,
-        status: 'SENT',
-      },
+      type: 'EnglishQuarterReport/ADD_SENT',
+      payload: { ...payload, type: variablesModules.STATUS.DONE_REVIEW },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              form.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      }
     });
   };
 
@@ -197,7 +217,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
           <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
@@ -206,7 +226,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['EnglishMonthlyReportAddAdd/GET_DATA_DETAIL']}
+              loading={effects['EnglishQuarterReportAdd/GET_DATA_DETAIL']}
               params={{
                 type: 'container',
               }}

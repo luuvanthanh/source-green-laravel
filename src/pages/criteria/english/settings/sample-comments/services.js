@@ -1,3 +1,4 @@
+import { Helper } from '@/utils';
 import request from '@/utils/requestLavarel';
 
 export function get(params = {}) {
@@ -8,6 +9,7 @@ export function get(params = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
+      include: Helper.convertIncludes(['sampleCommentDetail']),
     },
   });
 }
