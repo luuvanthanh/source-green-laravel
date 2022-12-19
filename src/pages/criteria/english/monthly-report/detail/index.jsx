@@ -30,22 +30,22 @@ const Index = memo(() => {
     details,
     menuLeftCriteria,
     dataEvaluetionCriteria,
-  } = useSelector(({ EnglishMonthlyReportAdd, menu, loading, EnglishMonthlyReportAddAdd, user }) => ({
-    dataAssess: EnglishMonthlyReportAdd.dataAssess,
+  } = useSelector(({ EnglishMonthReportAdd, menu, loading, EnglishMonthReportAddAdd, user }) => ({
+    dataAssess: EnglishMonthReportAdd.dataAssess,
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: EnglishMonthlyReportAddAdd.details,
-    dataType: EnglishMonthlyReportAdd.dataType,
-    dataEvaluetionCriteria: EnglishMonthlyReportAddAdd.dataEvaluetionCriteria,
+    details: EnglishMonthReportAddAdd.details,
+    dataType: EnglishMonthReportAdd.dataType,
+    dataEvaluetionCriteria: EnglishMonthReportAddAdd.dataEvaluetionCriteria,
     user: user.user,
-    error: EnglishMonthlyReportAddAdd.error,
+    error: EnglishMonthReportAddAdd.error,
   }));
   const [dataDetails, setDataDetails] = useState(undefined);
 
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'EnglishMonthlyReportAddAdd/GET_DATA_DETAIL',
+        type: 'EnglishMonthReportAddAdd/GET_DATA_DETAIL',
         payload: {
           id: params?.id,
         },
@@ -60,11 +60,11 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'EnglishMonthlyReportAdd/GET_DATA_TYPE',
+      type: 'EnglishMonthReportAdd/GET_DATA_TYPE',
       payload: {},
     });
     dispatch({
-      type: 'EnglishMonthlyReportAddAdd/GET_DATA_EVALUATION_CRITERRIA',
+      type: 'EnglishMonthReportAddAdd/GET_DATA_EVALUATION_CRITERRIA',
       payload: {},
     });
   }, []);
@@ -114,7 +114,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
+      <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
       <Helmet title="Subject" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
@@ -124,7 +124,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['EnglishMonthlyReportAddAdd/GET_DATA_DETAIL']}
+              loading={effects['EnglishMonthReportAddAdd/GET_DATA_DETAIL']}
               params={{
                 type: 'container',
               }}
