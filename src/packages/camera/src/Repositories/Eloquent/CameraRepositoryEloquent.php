@@ -416,7 +416,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         ];
 
         $url = $camera->cameraServer->vms_url;
-
+        
         $result = VmsCoreServices::getPlayback($url, $dataBackup);
 
         if ($result->stream_name) {
