@@ -1,0 +1,119 @@
+@import "@/assets/styles/mixins.scss";
+
+.wraper-container-quarterReport {
+  .wrapper-checkbox {
+    display: flex;
+    align-items: center;
+    .textParent {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      color: #36383a;
+    }
+    .textChild {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 22px;
+      color: #3e4247;
+    }
+  }
+
+  .list-button {
+    display: flex;
+    justify-content: center;
+    .check {
+      width: 32px;
+      height: 32px;
+      margin-left: 5px;
+      color: #27a600;
+      border-radius: 50%;
+      border: 1px solid #c4cdd4;
+    }
+    .edit {
+      width: 32px;
+      height: 32px;
+      margin-right: 5px;
+      color: #27a600;
+      border-radius: 50%;
+      border: 1px solid #c4cdd4;
+    }
+  }
+
+  .list-button-detail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .checkDetail {
+      width: 32px;
+      height: 32px;
+      margin-left: 5px;
+      color: #27a600;
+      border-radius: 50%;
+      border: none;
+    }
+  }
+
+  .quarterReport-header-img {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eaeaea;
+    .general-fullName {
+      font-family: $proxima-nova__font-family;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 24px;
+      color: $text-form-label;
+    }
+    .general-age {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 20px;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 20px;
+      color: #7a7e84;
+    }
+  }
+
+  .item-text-header {
+    font-family: $proxima-nova__font-family;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    text-transform: uppercase;
+    padding-bottom: 15px;
+    color: #27a600;
+  }
+
+  .wrapper-table-item {
+    padding: 20px;
+    border: 1px solid #e1e7ec;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    .text-item-table {
+      font-family: $proxima-nova__font-family;
+      font-style: normal;
+      color: #36383a;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 10px;
+      line-height: 20px;
+    }
+    :global(.ant-table-thead > tr > th) {
+      background-color: #3b5cad !important;
+      font-weight: 700;
+      color: white !important;
+    }
+  }
+}

@@ -21,7 +21,6 @@ export function add(data = {}) {
   return request('/notes', {
     method: 'POST',
     data,
-    cancelNotification: true,
   });
 }
 
@@ -29,7 +28,6 @@ export function update(data = {}) {
   return request(`/notes/${data.id}`, {
     method: 'PUT',
     data,
-    cancelNotification: true,
   });
 }
 
@@ -37,7 +35,6 @@ export function remove(id) {
   return request(`/notes/${id}`, {
     method: 'DELETE',
     parse: true,
-    cancelNotification: true,
   });
 }
 
@@ -87,10 +84,7 @@ export function getAssess(params = {}) {
   return request(`/v1/script-reviews`, {
     method: 'GET',
     params: {
-      ...params,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
+      params,
       include: Helper.convertIncludes([
         'scriptReviewSubject,scriptReviewComment,branch,classes',
         'scriptReviewSubject.scriptReviewSubjectDetail.scriptReviewSubjectDetailChildren',
@@ -116,6 +110,5 @@ export function addSent(data = {}) {
   return request('/v1/notification-quarter-reports', {
     method: 'POST',
     data,
-    cancelNotification: true,
   });
 }

@@ -116,9 +116,9 @@ const Index = memo(() => {
     }
   }, [details, isCheckDataSbuject, isCheckDataComment]);
 
-  const header = () => [
+  const header = (type) => [
     {
-      title: 'Trẻ',
+      title: `${type === 'OBJECT' ? "Use skill" : "Use sample comments"}`,
       key: 'student',
       width: 200,
       className: 'min-width-200',
@@ -170,7 +170,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? 'Detail' : 'Create new'} menu={menuLeftCriteria} />
       <Helmet title="General info" />
       <Pane className="pl20 pr20 pb20">
         <Pane >

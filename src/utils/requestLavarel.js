@@ -38,10 +38,12 @@ request.interceptors.request.use(async (url, options) => {
 
 async function covertData(response) {
   if (response.status === 204) {
-    notification.success({
-      message: 'Thông báo',
-      description: 'Bạn đã cập nhật thành công dữ liệu',
-    });
+    if (!optionsRoot?.cancelNotification) {
+      notification.success({
+        message: 'Thông báo',
+        description: 'Bạn đã cập nhật thành công dữ liệu',
+      });
+    }
     return response;
   }
   const dataRoot = await response.clone().json();
@@ -52,7 +54,7 @@ async function covertData(response) {
         description: get(dataRoot, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
       });
     }
-    if (response.status >= 200 && response.status <= 300) {
+    if (response.status >= 200 && response.status <= 300 && !optionsRoot?.cancelNotification) {
       notification.success({
         message: 'Thông báo',
         description: 'Bạn đã cập nhật thành công dữ liệu',
