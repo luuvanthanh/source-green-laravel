@@ -5,6 +5,7 @@ export function add(data = {}) {
   return request('/v1/evaluation-criterias', {
     method: 'POST',
     data,
+    cancelNotification: true,
   });
 }
 
@@ -15,6 +16,7 @@ export function update(data = {}) {
       ...data,
     },
     parse: true,
+    cancelNotification: true,
   });
 }
 
@@ -35,5 +37,6 @@ export function remove(id = {}) {
   return request(`/v1/evaluation-criterias/${id}`, {
     method: 'DELETE',
     parse: true,
+    cancelNotification: true,
   });
 }

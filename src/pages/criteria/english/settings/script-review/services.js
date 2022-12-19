@@ -22,6 +22,7 @@ export function remove(id = {}) {
   return request(`/v1/script-reviews/${id}`, {
     method: 'DELETE',
     parse: true,
+    cancelNotification: true,
   });
 }
 
@@ -41,5 +42,6 @@ export function updateUse(data = {}) {
       use: data.use,
     },
     parse: true,
+    cancelNotification: true,
   });
 }

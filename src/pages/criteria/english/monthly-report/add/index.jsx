@@ -34,15 +34,15 @@ const Index = memo(() => {
     dataType,
     dataEvaluetionCriteria,
     user,
-  } = useSelector(({ EnglishQuarterReport, menu, loading, EnglishQuarterReportAdd, user }) => ({
-    dataAssess: EnglishQuarterReport.dataAssess,
+  } = useSelector(({ EnglishMonthlyReportAdd, menu, loading, EnglishMonthlyReportAddAdd, user }) => ({
+    dataAssess: EnglishMonthlyReportAdd.dataAssess,
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: EnglishQuarterReportAdd.details,
-    dataType: EnglishQuarterReport.dataType,
-    dataEvaluetionCriteria: EnglishQuarterReportAdd.dataEvaluetionCriteria,
+    details: EnglishMonthlyReportAddAdd.details,
+    dataType: EnglishMonthlyReportAdd.dataType,
+    dataEvaluetionCriteria: EnglishMonthlyReportAddAdd.dataEvaluetionCriteria,
     user: user.user,
-    error: EnglishQuarterReportAdd.error,
+    error: EnglishMonthlyReportAddAdd.error,
   }));
 
   const [dataStudent, setDataStudent] = useState(undefined);
@@ -51,14 +51,14 @@ const Index = memo(() => {
 
   const { query } = useLocation();
 
-  const loadingSubmit = effects[`EnglishQuarterReportAdd/ADD`];
+  const loadingSubmit = effects[`EnglishMonthlyReportAddAdd/ADD`];
 
   const onFinish = () => {
 
     // convert mảng object
     const data = dataDetails?.scriptReviewSubject?.filter(i => i?.isCheck)
       ?.map(item => ({ ...item, scriptReviewSubjectDetail: item?.scriptReviewSubjectDetail?.filter(k => k?.isCheck) }))
-      ?.map(items => ({ ...items, scriptReviewSubjectDetail: items?.scriptReviewSubjectDetail?.map(i => ({ ...i, scriptReviewSubjectDetailChildren: i?.scriptReviewSubjectDetailChildren?.filter(k => k?.radioId) })) }));
+      ?.map(items => ({ ...items, scriptReviewSubjectDetail: items?.scriptReviewSubjectDetail?.map(i => ({ ...i, scriptReviewSubjectDetailChildren: i?.scriptReviewSubjectDetailChildren?.filter(k => k?.radioId) })) }))
 
     // convert mảng conment
     const dataComment = dataDetails?.scriptReviewComment?.filter(i => i?.isCheck)
@@ -79,7 +79,7 @@ const Index = memo(() => {
     }));
 
     dispatch({
-      type: 'EnglishQuarterReportAdd/ADD',
+      type: 'EnglishMonthlyReportAddAdd/ADD',
       payload: {
         id: params.id,
         studentId: params?.id,
@@ -89,7 +89,7 @@ const Index = memo(() => {
         detail: dataSubjec.concat(dataComment?.map(i => ({
           isComment: dataDetails?.isCheckSampleComment,
           scriptReviewCommentId: i?.id,
-          content: `${i?.scriptReviewCommentDetail?.map(i => i?.value)?.join('.')}.${head(i?.scriptReviewCommentDetail)?.content}`,
+          content: `${i?.scriptReviewCommentDetail?.map(i => i.value).join('.')}.${head(i?.scriptReviewCommentDetail).content}`,
         }))),
       },
       callback: (response, error) => {
@@ -113,7 +113,7 @@ const Index = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'EnglishQuarterReportAdd/GET_DATA_STUDENTS',
+        type: 'EnglishMonthlyReportAddAdd/GET_DATA_STUDENTS',
         payload: params?.id,
         callback: (response) => {
           if (response) {
@@ -129,11 +129,11 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'EnglishQuarterReport/GET_DATA_TYPE',
+      type: 'EnglishMonthlyReportAdd/GET_DATA_TYPE',
       payload: {},
     });
     dispatch({
-      type: 'EnglishQuarterReportAdd/GET_DATA_SCRIPT_REVIEW',
+      type: 'EnglishMonthlyReportAddAdd/GET_DATA_SCRIPT_REVIEW',
       payload: {
         nameAssessmentPeriodId: query?.nameAssessmentPeriod,
       },
@@ -144,7 +144,7 @@ const Index = memo(() => {
       },
     });
     dispatch({
-      type: 'EnglishQuarterReportAdd/GET_DATA_EVALUATION_CRITERRIA',
+      type: 'EnglishMonthlyReportAddAdd/GET_DATA_EVALUATION_CRITERRIA',
       payload: {},
     });
   }, []);
@@ -271,7 +271,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['EnglishQuarterReportAdd/GET_DATA_SCRIPT_REVIEW']}
+              loading={effects['EnglishMonthlyReportAddAdd/GET_DATA_SCRIPT_REVIEW']}
               params={{
                 type: 'container',
               }}

@@ -159,7 +159,6 @@ const General = memo(() => {
                                             fieldKey={[fieldItem.fieldKey, 'name']}
                                             name={[fieldItem.name, 'name']}
                                             type={variables.INPUT}
-                                            rules={[variables.RULES.EMPTY_INPUT]}
                                           />
                                         </div>
                                         <div className={classnames(stylesModule.cols)}>

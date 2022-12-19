@@ -1,10 +1,9 @@
 import * as categories from '@/services/categories';
 import { head } from 'lodash';
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
-  namespace: 'EnglishQuarterReport',
+  namespace: 'englishMonthlyReport',
   state: {
     data: [],
     years: [],
@@ -148,10 +147,6 @@ export default {
       try {
         yield saga.call(services.addOneItem, payload);
         callback(payload);
-        notification.success({
-          message: 'Successful',
-          description: 'You updated to success data.',
-        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -160,10 +155,6 @@ export default {
       try {
         yield saga.call(services.addReview, payload);
         callback(payload);
-        notification.success({
-          message: 'Successful',
-          description: 'You updated to success data.',
-        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -172,10 +163,6 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
-        notification.success({
-          message: 'Successful',
-          description: 'You updated to success data.',
-        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -186,10 +173,6 @@ export default {
         yield saga.put({
           type: 'GET_DATA',
           payload: payload.pagination,
-        });
-        notification.success({
-          message: 'Successful',
-          description: 'You deleted to success data.',
         });
       } catch (error) {
         yield saga.put({
@@ -246,10 +229,6 @@ export default {
       try {
         yield saga.call(services.addSent, payload);
         callback(payload);
-        notification.success({
-          message: 'Successful',
-          description: 'You updated to success data.',
-        });
       } catch (error) {
         callback(null, error?.data?.error);
       }

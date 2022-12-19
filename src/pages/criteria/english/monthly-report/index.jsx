@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tabs, notification } from 'antd';
+import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { debounce, head, size } from 'lodash';
+import { debounce, isEmpty, head, size } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -33,15 +33,15 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ EnglishQuarterReport, loading, user }) => ({
+const mapStateToProps = ({ englishMonthlyReport, loading, user }) => ({
   loading,
-  pagination: EnglishQuarterReport.pagination,
-  classes: EnglishQuarterReport.classes,
-  branches: EnglishQuarterReport.branches,
-  assessmentPeriod: EnglishQuarterReport.assessmentPeriod,
+  pagination: englishMonthlyReport.pagination,
+  classes: englishMonthlyReport.classes,
+  branches: englishMonthlyReport.branches,
+  assessmentPeriod: englishMonthlyReport.assessmentPeriod,
   defaultBranch: user.defaultBranch,
-  years: EnglishQuarterReport.years,
-  dataType: EnglishQuarterReport.dataType,
+  years: englishMonthlyReport.years,
+  dataType: englishMonthlyReport.dataType,
   user: user.user,
 });
 @connect(mapStateToProps)
@@ -66,7 +66,6 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         status: query?.status || variablesModules.STATUS.NOT_REVIEW,
-        nameAssessmentPeriodId: query?.nameAssessmentPeriodId,
       },
       dataAssess: [],
     };
@@ -76,6 +75,15 @@ class Index extends PureComponent {
   componentDidMount() {
     // this.onLoad();
     this.loadCategories();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      location: { query },
+    } = this.props;
+    if (query !== prevProps?.location?.query && isEmpty(query)) {
+      this.onInitSetSearch();
+    }
   }
 
   componentWillUnmount() {
@@ -114,7 +122,6 @@ class Index extends PureComponent {
             : moment().endOf('months'),
           page: query?.page || variables.PAGINATION.PAGE,
           limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-          nameAssessmentPeriodId: query?.nameAssessmentPeriodId,
           status: query?.status || variablesModules.STATUS.PENDING_APPROVED,
         },
       },
@@ -130,7 +137,7 @@ class Index extends PureComponent {
     const { search } = this.state;
     if (search.branchId) {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/GET_CLASSES',
+        type: 'englishMonthlyReport/GET_CLASSES',
         payload: {
           branch: search.branchId,
         },
@@ -138,28 +145,25 @@ class Index extends PureComponent {
     }
     if (!defaultBranch?.id) {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/GET_BRANCHES',
+        type: 'englishMonthlyReport/GET_BRANCHES',
         payload: {},
       });
     }
     this.props.dispatch({
-      type: 'EnglishQuarterReport/GET_YEARS',
+      type: 'englishMonthlyReport/GET_YEARS',
       payload: {},
     });
     this.props.dispatch({
-      type: 'EnglishQuarterReport/GET_DATA_TYPE',
+      type: 'englishMonthlyReport/GET_DATA_TYPE',
       payload: {},
     });
     if (search.schoolYearId) {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/GET_ASESSMENT_PERIOD',
+        type: 'englishMonthlyReport/GET_ASESSMENT_PERIOD',
         payload: {
           schoolYearId: search.schoolYearId,
         },
       });
-    }
-    if (search.nameAssessmentPeriodId) {
-      this.onChangeSelectAssess(search?.nameAssessmentPeriodId, "auto");
     }
   };
 
@@ -173,7 +177,7 @@ class Index extends PureComponent {
     } = this.props;
     if (search?.status === 'NOT_YET_CONFIRM') {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/GET_DATA',
+        type: 'englishMonthlyReport/GET_DATA',
         payload: {
           ...search,
           status: 'REVIEWED',
@@ -186,7 +190,7 @@ class Index extends PureComponent {
               data: response.parsePayload?.map(i => ({
                 ...i,
                 nameAssessmentPeriod: dataAssess?.nameAssessmentPeriod,
-                nameAssessmentPeriodId: search?.nameAssessmentPeriodId,
+                nameAssessmentPeriodId: undefined,
               })),
             });
           }
@@ -195,7 +199,7 @@ class Index extends PureComponent {
     }
     else if (search?.status === 'NOT_YET_SEND') {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/GET_DATA',
+        type: 'englishMonthlyReport/GET_DATA',
         payload: {
           ...search,
           status: 'CONFIRMED',
@@ -208,7 +212,6 @@ class Index extends PureComponent {
               data: response.parsePayload?.map(i => ({
                 ...i,
                 nameAssessmentPeriod: dataAssess?.nameAssessmentPeriod,
-                nameAssessmentPeriodId: search?.nameAssessmentPeriodId,
               })),
             });
           }
@@ -217,7 +220,7 @@ class Index extends PureComponent {
     }
     else {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/GET_DATA',
+        type: 'englishMonthlyReport/GET_DATA',
         payload: {
           ...search,
           scriptReviewId: undefined,
@@ -228,7 +231,6 @@ class Index extends PureComponent {
               data: response.parsePayload?.map(i => ({
                 ...i,
                 nameAssessmentPeriod: dataAssess?.nameAssessmentPeriod,
-                nameAssessmentPeriodId: search?.nameAssessmentPeriodId,
               })),
             });
           }
@@ -344,14 +346,14 @@ class Index extends PureComponent {
   onChangeSelectBranch = (e, type) => {
     this.debouncedSearch(e, type);
     this.props.dispatch({
-      type: 'EnglishQuarterReport/GET_CLASSES',
+      type: 'englishMonthlyReport/GET_CLASSES',
       payload: {
         branch: e,
       },
     });
   };
 
-  onChangeSelectAssess = (e, type) => {
+  onChangeSelectAssess = (e) => {
     this.setStateData(
       (prevState) => ({
         search: {
@@ -361,11 +363,8 @@ class Index extends PureComponent {
         },
       }),
     );
-    this.setStateData({
-      data: [],
-    });
     this.props.dispatch({
-      type: 'EnglishQuarterReport/GET_ASSESS',
+      type: 'englishMonthlyReport/GET_ASSESS',
       payload: {
         'nameAssessmentPeriodId': e,
       },
@@ -374,16 +373,7 @@ class Index extends PureComponent {
           this.setStateData({
             dataAssess: head(response.parsePayload),
           });
-          if (type === "auto") {
-            this.onLoad();
-          }
           this.debouncedSearch(head(response.parsePayload)?.id, 'scriptReviewId');
-        }
-        else {
-          notification.error({
-            message: 'error',
-            description: 'You need to configure this Script review',
-          });
         }
       },
     });
@@ -464,7 +454,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     const self = this;
     dispatch({
-      type: 'EnglishQuarterReport/ADD_REVIEW',
+      type: 'englishMonthlyReport/ADD_REVIEW',
       payload: {
         id: data?.filter((item) => item?.isActive)?.map((item) => item.id),
         status: type === 'all' ? true : null,
@@ -496,7 +486,7 @@ class Index extends PureComponent {
         />
       );
     }
-    if (search?.status === 'NOT_YET_CONFIRM') {
+    if (search?.status === 'REVIEWED' || search?.status === 'NOT_YET_CONFIRM') {
       return (
         <Button
           icon="edit"
@@ -511,14 +501,15 @@ class Index extends PureComponent {
   onFormSent = (record) => {
     const { search } = this.state;
 
-    if (
+    if (search?.status === variablesModules.STATUS.REVIEWED ||
       search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ||
+      search?.status === variablesModules.STATUS.CONFIRMED ||
       search?.status === variablesModules.STATUS.NOT_YET_SEND
     ) {
       return (
         <Button
           icon="checkmark"
-          onClick={(e) => { e.stopPropagation(); this.addSent('one', record?.id); }}
+          onClick={() => this.addSent('one', record?.id)}
           className={stylesModule.check}
         />
       );
@@ -528,35 +519,26 @@ class Index extends PureComponent {
 
   addSent = (type, id) => {
     const { search, data } = this.state;
+
     if (type === 'one') {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/ADD_SENT',
+        type: 'englishMonthlyReport/ADD_SENT',
         payload: {
           studentId: [id],
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
-          status: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
-        },
-        callback: (response) => {
-          if (response) {
-            this.onLoad();
-          }
+          status: 'SENT',
         },
       });
     }
     else if (type === 'much') {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/ADD_SENT',
+        type: 'englishMonthlyReport/ADD_SENT',
         payload: {
-          studentId: data?.filter(i => i?.isActive)?.map(i => i.id),
+          studentId: data?.filter(i => i?.isActive)?.id,
           schoolYearId: search.schoolYearId,
-          scriptReviewId: search.scriptReviewId,
-          status: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
-        },
-        callback: (response) => {
-          if (response) {
-            this.onLoad();
-          }
+          scriptReviewId: search.scriptReview,
+          status: 'SENT',
         },
       });
     }
@@ -564,9 +546,6 @@ class Index extends PureComponent {
 
 
   header = () => {
-    const {
-      dataType
-    } = this.props;
     const { search } = this.state;
 
     const columns = [
@@ -617,7 +596,7 @@ class Index extends PureComponent {
         key: 'Assessment',
         className: 'min-width-200',
         width: 200,
-        render: (record) => dataType?.find(i => i?.id === record?.nameAssessmentPeriodId)?.name,
+        render: (record) => record?.nameAssessmentPeriod?.name,
       },
       {
         key: 'action',
@@ -649,7 +628,7 @@ class Index extends PureComponent {
   onLoadStudents = () => {
     const { search, dataAssess } = this.state;
     this.props.dispatch({
-      type: 'EnglishQuarterReport/GET_DATA_STUDENTS',
+      type: 'englishMonthlyReport/GET_DATA_STUDENTS',
       payload: {
         ...search,
         branch: search?.branchId,
@@ -698,29 +677,29 @@ class Index extends PureComponent {
       }),
     };
     const { search, defaultBranchs } = this.state;
-    const loading = effects['EnglishQuarterReport/GET_DATA'];
+    const loading = effects['englishMonthlyReport/GET_DATA'];
     return (
       <>
-        <Helmet title="Quarter report" />
+        <Helmet title="Monthly comment" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Quarter report</Text>
+            <Text color="dark">Monthly comment</Text>
             {
-              (search?.status === variablesModules.STATUS.NOT_REVIEW) || (search?.status === variablesModules.STATUS.REVIEWED) || (search?.status === variablesModules.STATUS.SENT) || (search?.status === variablesModules.STATUS.CONFIRMED) ?
-                " " :
+              search?.status !== variablesModules.STATUS.NOT_REVIEW && search?.status !== variablesModules.STATUS.SENT && (
                 <div className='d-flex'>
                   <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')}>
-                    Accept selected reviews
+                    Acpect selected reviews
                   </Button>
                   <Button
                     color="success"
                     icon="redo2"
                     className="ml-2"
                   >
-                    Accept all
+                    Acpect all
                   </Button>
                 </div>
+              )
             }
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'], 'pt20')}>
@@ -802,7 +781,7 @@ class Index extends PureComponent {
                         Load data
                       </Button>
                       :
-                      <Button color="success" icon="report" disabled >
+                      <Button color="success" icon="report" disabled loading={effects['englishMonthlyReport/GET_ASSESS']}>
                         Load data
                       </Button>
                   }
@@ -822,10 +801,7 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
-              rowSelection={
-                search?.status === variablesModules.STATUS.NOT_REVIEW ||
-                  search?.status === variablesModules.STATUS.REVIEWED ||
-                  search?.status === variablesModules.STATUS.CONFIRMED ? null : { ...rowSelection }}
+              rowSelection={search?.status !== variablesModules.STATUS.NOT_REVIEW ? { ...rowSelection } : null}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
@@ -833,14 +809,8 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (search.status === variablesModules.STATUS.REVIEWED) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done-review`);
-                  }
-                  if (search.status === variablesModules.STATUS.CONFIRMED) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done-confirmed`);
-                  }
                   if (search.status === variablesModules.STATUS.NOT_YET_SEND || search.status === variablesModules.STATUS.SENT) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done`);
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail`);
                   }
                 },
               })}

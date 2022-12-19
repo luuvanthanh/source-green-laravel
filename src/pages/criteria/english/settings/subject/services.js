@@ -21,24 +21,6 @@ export function remove(id = {}) {
   return request(`/v1/subjects/${id}`, {
     method: 'DELETE',
     parse: true,
-  });
-}
-
-export function getSkill() {
-  return request(`/v1/category-skills`, {
-    method: 'GET',
-    params: {
-      orderBy: 'Name',
-    },
-  });
-}
-
-export function updateUse(data = {}) {
-  return request(`/v1/update-is-use/${data.id}`, {
-    method: 'PUT',
-    data: {
-      use: data.use,
-    },
-    parse: true,
+    cancelNotification: true,
   });
 }
