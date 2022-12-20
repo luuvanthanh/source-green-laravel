@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
+use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyCommentDetail;
 use GGPHP\StudyProgram\MonthlyComment\Presenters\MonthlyCommentPresenter;
 use GGPHP\StudyProgram\MonthlyComment\Repositories\Contracts\MonthlyCommentRepository;
 use Illuminate\Container\Container;
@@ -99,9 +100,8 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         }
 
         if (!empty($attributes['status'])) {
-            $status = $this->model()::STATUS[$attributes['status']];
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($status) {
-                $query->where('Status', $status);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status']);
             }]);
         }
 
@@ -109,6 +109,12 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('StudentId', $attributes['studentId']);
             });
+        }
+
+        if (!empty($attributes['month'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
+                $query->where('Month', $attributes['month']);
+            }]);
         }
 
         if (!empty($attributes['limit'])) {
@@ -122,12 +128,52 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
 
     public function createAll(array $attributes)
     {
-        return parent::parserResult($this->model()::create($attributes));
+        DB::beginTransaction();
+        try {
+            $data = $this->model()::create($attributes);
+
+            if (!empty($attributes['detail'])) {
+                $this->createDetail($data, $attributes['detail']);
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw new HttpException(500, $th->getMessage());
+        }
+        return parent::parserResult($data);
+    }
+
+    public function createDetail($model, $attributes)
+    {
+        foreach ($attributes as $key => $value) {
+            if (!empty($value['id'])) {
+                $detail = MonthlyCommentDetail::find($value['id']);
+
+                if (!is_null($detail)) {
+                    $detail->update($value);
+                }
+            } else {
+                $value['MonthlyCommentId'] = $model->Id;
+                MonthlyCommentDetail::create($value);
+            }
+        }
     }
 
     public function updateAll(array $attributes, $id)
     {
         $result = $this->model()::find($id);
+        DB::beginTransaction();
+        try {
+            $result->update($attributes);
+
+            if (!empty($attributes['detail'])) {
+                $this->createDetail($result, $attributes['detail']);
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw new HttpException(500, $th->getMessage());
+        }
         $result->update($attributes);
 
         return parent::parserResult($result);
@@ -189,6 +235,65 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
                     dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
                 }
             }
+        }
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function updateAllStatusMonthlyComment($attributes)
+    {
+        $data = $this->getAll($attributes);
+
+        foreach ($data['data'] as $value) {
+            $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])
+                ->update([
+                    'Status' => $attributes['newStatus']
+                ]);
+        }
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function notificationAllStatusMonthlyComment($attributes)
+    {
+        $data = $this->getAll($attributes);
+
+        foreach ($data['data'] as $value) {
+            $monthlyComment =  $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])->first();
+            $student = $monthlyComment->student;
+            $parent = $student->parent()->with('account')->get();
+
+            if (!empty($parent)) {
+                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
+                $images =  json_decode($student->FileImage);
+                $urlImage = '';
+
+                if (!empty($images)) {
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
+
+                $schoolYear = $monthlyComment->scriptReview->schoolYear->YearFrom . '-' . $monthlyComment->scriptReview->schoolYear->YearTo;
+                $name = $monthlyComment->scriptReview->NameAssessmentPeriod->Name;
+
+                $message = $student->FullName . ' ' . 'nhận Monthly Comment ' . $name . ' school year ' . $schoolYear;
+
+                if (!empty($arrId)) {
+                    $dataNotiCation = [
+                        'users' => $arrId,
+                        'title' => 'English',
+                        'imageURL' => $urlImage,
+                        'message' => $message,
+                        'moduleType' => 25,
+                        'refId' => $monthlyComment->Id,
+                    ];
+
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+                }
+            }
+
+            $monthlyComment->update([
+                'Status' => $attributes['newStatus']
+            ]);
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
