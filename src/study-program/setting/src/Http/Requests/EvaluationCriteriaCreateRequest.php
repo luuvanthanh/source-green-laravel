@@ -52,4 +52,11 @@ class EvaluationCriteriaCreateRequest extends FormRequest
 
         return $data;
     }
+
+    public function messages()
+    {
+        return [
+            'check_unique' => 'The :attribute has already been taken.',
+        ];
+    }
 }
