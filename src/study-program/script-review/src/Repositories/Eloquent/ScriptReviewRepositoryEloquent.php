@@ -59,6 +59,10 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model()::where('Type', $attributes['type']);
+        }
+
         if (!empty($attributes['nameAssessmentPeriodId'])) {
             $this->model = $this->model()::where('NameAssessmentPeriodId', $attributes['nameAssessmentPeriodId']);
         }
@@ -90,11 +94,11 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
                 $result->classes()->attach($attributes['classId']);
             }
 
-            if ($attributes['isCheckSubject'] && !empty($attributes['subject'])) {
+            if (!empty($attributes['subject'])) {
                 $this->createScriptReviewSubject($result, $attributes['subject']);
             }
 
-            if ($attributes['isCheckSampleComment'] && !empty($attributes['comment'])) {
+            if (!empty($attributes['comment'])) {
                 $this->createScriptReviewComment($result, $attributes['comment']);
             }
             DB::commit();
