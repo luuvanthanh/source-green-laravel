@@ -45,7 +45,10 @@ class QuarterReportTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return ['Status' => array_search($model->Status, QuarterReport::STATUS)];
+        return [
+            'Type' => array_search($model->Type, QuarterReport::TYPE),
+            'Status' => array_search($model->Status, QuarterReport::STATUS)
+        ];
     }
 
     public function includeQuarterReportDetail(QuarterReport $quarterReport)
