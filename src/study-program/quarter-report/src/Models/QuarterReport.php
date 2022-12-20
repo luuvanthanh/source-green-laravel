@@ -22,9 +22,14 @@ class QuarterReport extends UuidModel
         'SENT' => 4
     ];
 
+    const TYPE = [
+        'DONE_REVIEW' => 1,
+        'NOT_YET_CONFIRM' => 2
+    ];
+
     protected $fillable = [
         'StudentId', 'ScriptReviewId', 'Status', 'TeacherId', 'TeacherManagementId', 'SchoolYearId',
-        'ReportTime', 'ConfirmationTime'
+        'ReportTime', 'ConfirmationTime', 'Type'
     ];
 
     public function quarterReportDetail()

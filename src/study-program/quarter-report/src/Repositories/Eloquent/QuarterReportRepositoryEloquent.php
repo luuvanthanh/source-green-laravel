@@ -101,6 +101,22 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->doesnthave('quarterReport');
         }
 
+        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['CONFIRMED'] && !empty($attributes['type']) && $attributes['type'] == QuarterReport::TYPE['NOT_YET_CONFIRM']) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
+            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
+            });
+        }
+
+        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['REVIEWED'] && !empty($attributes['type']) && $attributes['type'] == QuarterReport::TYPE['DONE_REVIEW']) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
+            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
+            });
+        }
+
         if (!empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
@@ -182,7 +198,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $result = $this->model()::find($id);
         DB::beginTransaction();
         try {
-            if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {                
+            if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
                 $attributes['reportTime'] = date('Y-m-d H:i:s');
             }
             $result->update($attributes);

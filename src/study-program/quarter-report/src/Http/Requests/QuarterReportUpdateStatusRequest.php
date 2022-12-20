@@ -41,6 +41,10 @@ class QuarterReportUpdateStatusRequest extends FormRequest
             $data['status'] = QuarterReport::STATUS[$data['status']];
         }
 
+        if (!empty($data['type'])) {
+            $data['type'] = QuarterReport::STATUS[$data['type']];
+        }
+
         return $data;
     }
 }
