@@ -120,5 +120,6 @@ class RouteRegistrar extends CoreRegistrar
     {
         \Route::get('cameras', 'CameraController@index')->name('cameras-share');
         \Route::get('cameras-stream', 'CameraController@index')->name('cameras-stream-share');
+        \Route::get('cameras/{id}/playback-get', 'CameraController@playback')->name('record-camera-share');
     }
 }
