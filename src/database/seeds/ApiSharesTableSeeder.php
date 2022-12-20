@@ -59,6 +59,16 @@ class ApiSharesTableSeeder extends Seeder
                 'created_at' => '2022-02-17 09:28:06',
                 'updated_at' => '2022-04-20 15:55:28',
             ),
+            4 => 
+            array (
+                'id' => 'ebe290b2-2cbb-4273-9b46-b97a36a85e81',
+                'name' => 'API chia sẻ record camera',
+                'name_route' => 'record-camera-share',
+                'link' => 'https://api.gsdltm.e-gov.com.vn/api/v1/share/cameras/{id}/playback-get?start_time=2022-12-18 12:00:00&end_time=2022-12-18 12:15:00&verification_code=Sz0JqPfh5e',
+                'is_share' => true,
+                'created_at' => '2022-12-19 09:55:47',
+                'updated_at' => '2022-12-19 09:55:47',
+            ),
         ));
         
         
