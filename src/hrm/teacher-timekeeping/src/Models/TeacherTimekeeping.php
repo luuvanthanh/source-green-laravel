@@ -42,7 +42,7 @@ class TeacherTimekeeping extends UuidModel
      */
     protected $fillable = [
         'EmployeeId', 'Status', 'Type', 'AttendedAt', 'StartTime', 'EndTime', 'TotalHourWorked', 'OverTimeHour',
-        'BranchId', 'ClassId', 'ClassProjectSessionId', 'ProductId', 'ModuleId', 'ProjectId'
+        'BranchId', 'ClassId', 'ClassProjectSessionId', 'ProductId', 'ModuleId', 'ProjectId', 'FileImage', 'Address'
     ];
 
     protected $dateTimeFields = [
