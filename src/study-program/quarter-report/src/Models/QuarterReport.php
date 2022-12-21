@@ -18,8 +18,9 @@ class QuarterReport extends UuidModel
     const STATUS = [
         'NOT_REVIEW' => 1,
         'REVIEWED' => 2,
-        'CONFIRMED' => 3,
-        'SENT' => 4
+        'NOT_YET_CONFIRM' => 3,
+        'CONFIRMED' => 4,
+        'SENT' => 5
     ];
 
     const TYPE = [

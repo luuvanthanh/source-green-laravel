@@ -88,7 +88,8 @@ class LabourContractCreateRequest extends FormRequest
                 'required',
                 'string',
                 new ContractCreateRule($this->numberFormContractId)
-            ]
+            ],
+            'month' => 'required|numeric|gt:0',
         ];
     }
 
