@@ -171,7 +171,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={params.id ? 'Detail' : 'Create new'} menu={menuLeftCriteria} />
-      <Helmet title="General info" />
+      <Helmet title="Script review" />
       <Pane className="pl20 pr20 pb20">
         <Pane >
           <Loading
