@@ -63,6 +63,14 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
             $this->model = $this->model()::where('Type', $attributes['type']);
         }
 
+        if (!empty($attributes['nameAssessmentPeriodId'])) {
+            $this->model = $this->model()::where('NameAssessmentPeriodId', $attributes['nameAssessmentPeriodId']);
+        }
+
+        if (!empty($attributes['schoolYearId'])) {
+            $this->model = $this->model()::where('SchoolYearId', $attributes['schoolYearId']);
+        }
+
         if (!empty($attributes['branchId'])) {
             $this->model = $this->model()::whereHas('branch', function ($query) use ($attributes) {
                 $query->where('BranchId', $attributes['branchId']);
@@ -73,14 +81,6 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
             $this->model = $this->model()::whereHas('classes', function ($query) use ($attributes) {
                 $query->where('ClassId', $attributes['classId']);
             });
-        }
-
-        if (!empty($attributes['nameAssessmentPeriodId'])) {
-            $this->model = $this->model()::where('NameAssessmentPeriodId', $attributes['nameAssessmentPeriodId']);
-        }
-
-        if (!empty($attributes['schoolYearId'])) {
-            $this->model = $this->model()::where('SchoolYearId', $attributes['schoolYearId']);
         }
 
         if (!empty($attributes['limit'])) {
