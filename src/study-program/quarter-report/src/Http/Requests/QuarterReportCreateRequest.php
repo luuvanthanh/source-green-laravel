@@ -25,11 +25,13 @@ class QuarterReportCreateRequest extends FormRequest
     public function rules()
     {
         $status = implode(',', QuarterReport::STATUS);
+        $type = implode(',', QuarterReport::TYPE);
         return [
             'studentId' => 'required|check_exists:object.Students,Id',
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
             'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
             'status' => 'required|in:' . $status,
+            'type' => 'nullable|in:' . $type,
             'detail' => 'array',
             'detail.*.scriptReviewSubjectId' => 'nullable|check_exists:study-program.ScriptReviewSubjects,Id',
             'detail.*.scriptReviewCommentId' => 'nullable|check_exists:study-program.ScriptReviewComments,Id',
@@ -49,6 +51,21 @@ class QuarterReportCreateRequest extends FormRequest
             $data['status'] = QuarterReport::STATUS[$data['status']];
         }
 
+        if (!empty($data['type'])) {
+            $data['type'] = QuarterReport::TYPE[$data['type']];
+        }
+
         return $data;
+    }
+
+    public function messages()
+    {
+        return [
+            'check_exists' => 'The selected :attribute is invalid.',
+            'boolean' => 'The :attribute field must be true or false.',
+            'array' => 'The :attribute must be an array.',
+            'exists' => 'The selected :attribute is invalid.',
+            'in' => 'The selected :attribute is invalid.',
+        ];
     }
 }

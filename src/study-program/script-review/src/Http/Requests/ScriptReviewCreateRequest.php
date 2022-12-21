@@ -2,6 +2,7 @@
 
 namespace GGPHP\StudyProgram\ScriptReview\Http\Requests;
 
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use GGPHP\StudyProgram\ScriptReview\Models\ScriptReview;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -33,34 +34,32 @@ class ScriptReviewCreateRequest extends FormRequest
                     $quarterReport = ScriptReview::TYPE['QUARTER_REPORT'];
 
                     if ($monthlyComment == $value) {
-
-                        $scriptReview = ScriptReview::where('SchoolYearId', $this->schoolYearId)
-                            ->where('Type', $value)
+                        $scriptReview = ScriptReview::where('Type', ScriptReview::TYPE['MONTHLY_COMMENT'])
+                            ->where('SchoolYearId', $this->schoolYearId)
+                            ->where('NameAssessmentPeriodId', $this->nameAssessmentPeriodId)
                             ->whereHas('branch', function ($query) {
                                 $query->whereIn('BranchId', $this->branchId);
                             })
                             ->whereHas('classes', function ($query) {
                                 $query->whereIn('ClassId', $this->classId);
-                            })
-                            ->get();
+                            })->get();
 
                         if ($scriptReview->isNotEmpty()) {
-                            return $fail('Cấu hình đã tồn tại');
+                            return $fail('Configuration already exists');
                         }
                     } elseif ($quarterReport == $value) {
-                        $scriptReview = ScriptReview::where('SchoolYearId', $this->schoolYearId)
+                        $scriptReview = ScriptReview::where('Type', ScriptReview::TYPE['QUARTER_REPORT'])
+                            ->where('SchoolYearId', $this->schoolYearId)
                             ->where('NameAssessmentPeriodId', $this->nameAssessmentPeriodId)
-                            ->where('Type', $value)
                             ->whereHas('branch', function ($query) {
                                 $query->whereIn('BranchId', $this->branchId);
                             })
                             ->whereHas('classes', function ($query) {
                                 $query->whereIn('ClassId', $this->classId);
-                            })
-                            ->get();
+                            })->get();
 
                         if ($scriptReview->isNotEmpty()) {
-                            return $fail('Cấu hình đã tồn tại');
+                            return $fail('Configuration already exists');
                         }
                     }
                 },
@@ -85,5 +84,15 @@ class ScriptReviewCreateRequest extends FormRequest
         $data['type'] = ScriptReview::TYPE[$data['type']];
 
         return $data;
+    }
+
+    public function messages()
+    {
+        return [
+            'check_exists' => 'The selected :attribute is invalid.',
+            'boolean' => 'The :attribute field must be true or false.',
+            'array' => 'The :attribute must be an array.',
+            'exists' => 'The selected :attribute is invalid.',
+        ];
     }
 }

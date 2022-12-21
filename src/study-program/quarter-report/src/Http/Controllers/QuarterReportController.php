@@ -43,6 +43,10 @@ class QuarterReportController extends Controller
             $attributes['status'] = QuarterReport::STATUS[$attributes['status']];
         }
 
+        if (!empty($attributes['type'])) {
+            $attributes['type'] = QuarterReport::TYPE[$attributes['type']];
+        }
+
         $result = $this->quarterReportRepository->getAll($attributes);
 
         return $this->success($result, trans('lang::messages.common.getListSuccess'));

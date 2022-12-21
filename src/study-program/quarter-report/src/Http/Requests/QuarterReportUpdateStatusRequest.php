@@ -41,6 +41,21 @@ class QuarterReportUpdateStatusRequest extends FormRequest
             $data['status'] = QuarterReport::STATUS[$data['status']];
         }
 
+        if (!empty($data['type'])) {
+            $data['type'] = QuarterReport::STATUS[$data['type']];
+        }
+
         return $data;
+    }
+
+    public function messages()
+    {
+        return [
+            'check_exists' => 'The selected :attribute is invalid.',
+            'boolean' => 'The :attribute field must be true or false.',
+            'array' => 'The :attribute must be an array.',
+            'exists' => 'The selected :attribute is invalid.',
+            'in' => 'The selected :attribute is invalid.',
+        ];
     }
 }
