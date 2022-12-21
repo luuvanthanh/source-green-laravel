@@ -78,6 +78,18 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
                 $query->whereDate('AttendedAt', '>=', Carbon::parse($attribute['startDate'])->format('Y-m-d'))
                     ->whereDate('AttendedAt', '<=', Carbon::parse($attribute['endDate'])->format('Y-m-d'));
             };
+
+            if (!empty($attribute['employeeId'])) {
+                $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
+            }
+
+            if (!empty($attribute['classProjectSessionId'])) {
+                $query->where('ClassProjectSessionId', $attribute['classProjectSessionId']);
+            }
+
+            if (!empty($attribute['attendedAt'])) {
+                $query->whereDate('AttendedAt', $attribute['attendedAt']);
+            }
         })->with(['teacherTimekeeping' => function ($query) use ($attribute) {
             if (!empty($attribute['type'])) {
                 $query->where('Type', $attribute['type']);
@@ -87,6 +99,18 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
                 $query->whereDate('AttendedAt', '>=', Carbon::parse($attribute['startDate'])->format('Y-m-d'))
                     ->whereDate('AttendedAt', '<=', Carbon::parse($attribute['endDate'])->format('Y-m-d'));
             };
+
+            if (!empty($attribute['employeeId'])) {
+                $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
+            }
+
+            if (!empty($attribute['classProjectSessionId'])) {
+                $query->where('ClassProjectSessionId', $attribute['classProjectSessionId']);
+            }
+
+            if (!empty($attribute['attendedAt'])) {
+                $query->whereDate('AttendedAt', $attribute['attendedAt']);
+            }
         }]);
 
         if (!empty($attribute['fullName'])) {
@@ -94,12 +118,6 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
         }
 
         $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->status(User::STATUS['WORKING']);
-
-        if (!empty($attribute['employeeId'])) {
-            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('teacherTimekeeping', function ($query) use ($attribute) {
-                $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
-            });
-        }
 
         if (!empty($attribute['limit'])) {
             $teacherTimekeeping = $this->employeeRepositoryEloquent->paginate($attribute['limit']);
