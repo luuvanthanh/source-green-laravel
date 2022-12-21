@@ -101,7 +101,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->doesnthave('quarterReport');
         }
 
-        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['CONFIRMED'] && !empty($attributes['type']) && $attributes['type'] == QuarterReport::TYPE['NOT_YET_CONFIRM']) {
+        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['CONFIRMED'] && !empty($attributes['type']) && $attributes['type'] == QuarterReport::TYPE['DONE_CONFIRM']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
             }])->whereHas('quarterReport', function ($query) use ($attributes) {

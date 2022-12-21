@@ -24,7 +24,7 @@ class QuarterReport extends UuidModel
 
     const TYPE = [
         'DONE_REVIEW' => 1,
-        'NOT_YET_CONFIRM' => 2
+        'DONE_CONFIRM' => 2
     ];
 
     protected $fillable = [
