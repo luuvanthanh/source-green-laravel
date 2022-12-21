@@ -25,14 +25,12 @@ class QuarterReportUpdateRequest extends FormRequest
     public function rules()
     {
         $status = implode(',', QuarterReport::STATUS);
-        $type = implode(',', QuarterReport::TYPE);
 
         return [
             'studentId' => 'check_exists:object.Students,Id',
             'schoolYearId' => 'check_exists:fee.SchoolYears,Id',
             'scriptReviewId' => 'check_exists:study-program.ScriptReviews,Id',
             'status' => 'in:' . $status,
-            'type' => 'nullable|in:' . $type,
         ];
     }
 

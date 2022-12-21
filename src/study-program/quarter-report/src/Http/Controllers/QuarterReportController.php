@@ -138,4 +138,11 @@ class QuarterReportController extends Controller
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function deleteQuarterReport($id)
+    {
+        $this->quarterReportRepository->deleteQuarterReport($id);
+
+        return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
 }
