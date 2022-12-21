@@ -101,22 +101,6 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->doesnthave('quarterReport');
         }
 
-        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['CONFIRMED'] && !empty($attributes['type']) && $attributes['type'] == QuarterReport::TYPE['DONE_CONFIRM']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
-            }])->whereHas('quarterReport', function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
-            });
-        }
-
-        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['REVIEWED'] && !empty($attributes['type']) && $attributes['type'] == QuarterReport::TYPE['DONE_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
-            }])->whereHas('quarterReport', function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status'])->where('Type', $attributes['type']);
-            });
-        }
-
         if (!empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
@@ -146,6 +130,8 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         try {
             if ($attributes['status'] == QuarterReport::STATUS['REVIEWED']) {
                 $attributes['reportTime'] = date('Y-m-d H:i:s');
+                $attributes['type'] = QuarterReport::TYPE['DUPLICATE'];
+
                 for ($i = 1; $i <= 2; $i++) {
                     switch ($i) {
                         case 1:
@@ -406,5 +392,15 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function deleteQuarterReport($id)
+    {
+        $quarterReport = $this->model()::withTrashed->find($id);
+        $duplicate = $this->model()::where('Type', QuarterReport::TYPE['DUPLICATE']);
+        $duplicate->forceDelete();
+        $quarterReport->forceDelete();
+
+        return parent::all();
     }
 }

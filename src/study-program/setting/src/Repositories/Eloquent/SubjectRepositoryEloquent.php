@@ -126,11 +126,15 @@ class SubjectRepositoryEloquent extends BaseRepository implements SubjectReposit
 
         if (!empty($attributes['updateDetail'])) {
             foreach ($attributes['updateDetail'] as $valueDetailUpdate) {
-                $subjectSectionDetail = SubjectSectionDetail::find($valueDetailUpdate['id']);
 
-                if (!is_null($subjectSectionDetail)) {
-                    $subjectSectionDetail->update($valueDetailUpdate);
+                if (!empty($valueDetailUpdate['id'])) {
+                    $subjectSectionDetail = SubjectSectionDetail::find($valueDetailUpdate['id']);
+                    
+                    if (!is_null($subjectSectionDetail)) {
+                        $subjectSectionDetail->update($valueDetailUpdate);
+                    }
                 }
+
             }
         }
 
