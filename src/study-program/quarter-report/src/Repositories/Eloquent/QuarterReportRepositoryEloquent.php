@@ -146,8 +146,20 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         try {
             if ($attributes['status'] == QuarterReport::STATUS['REVIEWED']) {
                 $attributes['reportTime'] = date('Y-m-d H:i:s');
+                for ($i = 1; $i <= 2; $i++) {
+                    switch ($i) {
+                        case 1:
+                            $attributes['status'] = QuarterReport::STATUS['REVIEWED'];
+                            break;
+                        case 2:
+                            $attributes['status'] = QuarterReport::STATUS['NOT_YET_CONFIRM'];
+                            break;
+                    }
+                    $result = $this->model()::create($attributes);
+                }
+            } else {
+                $result = $this->model()::create($attributes);
             }
-            $result = $this->model()::create($attributes);
 
             if (!empty($attributes['detail'])) {
                 $this->createDetail($result, $attributes['detail']);
@@ -256,9 +268,9 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function deleteAll($id)
     {
+        $data = $this->model()::find($id);
         DB::beginTransaction();
         try {
-            $data = $this->model()::find($id);
             foreach ($data->quarterReportDetail as $key => $value) {
                 foreach ($value->quarterReportDetailSubject as $key => $valueDetail) {
                     $valueDetail->quarterReportDetailSubjectChildren()->delete();
