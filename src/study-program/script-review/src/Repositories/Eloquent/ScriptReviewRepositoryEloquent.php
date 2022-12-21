@@ -250,39 +250,9 @@ class ScriptReviewRepositoryEloquent extends BaseRepository implements ScriptRev
 
     public function deleteAll($id)
     {
-        DB::beginTransaction();
-        try {
-            $data = $this->model()::find($id);
-            $subject = $data->scriptReviewSubject()->with('scriptReviewSubjectDetail.scriptReviewSubjectDetailChildren')->get();
-            $comment = $data->scriptReviewComment()->with('scriptReviewCommentDetail')->get();
+        $data = $this->model()::findOrFail($id);
+        $data->forceDelete();
 
-            if (!empty($subject)) {
-                foreach ($subject as $key => $valueSubject) {
-                    foreach ($valueSubject->scriptReviewSubjectDetail as $key => $value) {
-                        $value->scriptReviewSubjectDetailChildren()->delete();
-                    }
-                    $valueSubject->scriptReviewSubjectDetail()->delete();
-                }
-
-                $data->scriptReviewSubject()->delete();
-            }
-
-            if (!empty($comment)) {
-                foreach ($comment as $key => $value) {
-                    $value->scriptReviewCommentDetail()->delete();
-                }
-                $data->scriptReviewComment()->delete();
-            }
-
-            $data->branch()->detach();
-            $data->classes()->detach();
-            $data->delete();
-            DB::commit();
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            throw new HttpException(500, $th->getMessage());
-        }
-
-        return parent::all();
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 }

@@ -29,7 +29,7 @@ class QuarterReport extends UuidModel
 
     protected $fillable = [
         'StudentId', 'ScriptReviewId', 'Status', 'TeacherId', 'TeacherManagementId', 'SchoolYearId',
-        'ReportTime', 'ConfirmationTime', 'Type'
+        'ReportTime', 'ConfirmationTime', 'Type', 'QuarterReportId'
     ];
 
     public function quarterReportDetail()

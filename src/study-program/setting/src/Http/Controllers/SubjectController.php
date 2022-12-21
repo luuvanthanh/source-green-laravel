@@ -5,6 +5,7 @@ namespace GGPHP\StudyProgram\Setting\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\StudyProgram\Setting\Http\Requests\SubjectCreateRequest;
+use GGPHP\StudyProgram\Setting\Http\Requests\SubjectDeleteRequest;
 use GGPHP\StudyProgram\Setting\Http\Requests\SubjectUpdateRequest;
 use GGPHP\StudyProgram\Setting\Repositories\Contracts\SubjectRepository;
 use Illuminate\Http\Response;
@@ -86,7 +87,7 @@ class SubjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(SubjectDeleteRequest $request, $id)
     {
         $this->subjectRepository->deleteAll($id);
 
