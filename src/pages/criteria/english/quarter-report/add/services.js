@@ -41,7 +41,7 @@ export function getDataStudent(params = {}) {
 }
 
 export function getDataScriptReview(params = {}) {
-  return request('/v1/script-reviews', {
+  return request(`/v1/script-reviews/${params?.id}`, {
     method: 'GET',
     params: {
       ...params,
@@ -75,7 +75,7 @@ export function getDatDetail(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['quarterReport']),
+      include: Helper.convertIncludes(['quarterReport', 'student.branch', 'student.classes']),
     },
   });
 }

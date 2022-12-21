@@ -174,10 +174,10 @@ const Index = memo(() => {
                   <Pane className="col-lg-6">
                     <FormItem
                       name="name"
-                      placeholder="Chọn"
+                      placeholder="Input text"
                       type={variables.INPUT}
                       label="Subject name"
-                      rules={[variables.RULES.EMPTY_INPUT]}
+                      rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                     />
                   </Pane>
                 </Pane>
@@ -219,9 +219,10 @@ const Index = memo(() => {
                                             <FormItem
                                               label="Section name"
                                               name={[field.name, 'name']}
+                                              placeholder="Input text"
                                               fieldKey={[field.fieldKey, 'name']}
                                               type={variables.INPUT}
-                                              rules={[variables.RULES.EMPTY]}
+                                              rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                                             />
                                           </Pane>
                                           <Pane className="col-lg-12">
@@ -251,8 +252,9 @@ const Index = memo(() => {
                                                                   className={stylesModule.item}
                                                                   fieldKey={[fieldItem.fieldKey, 'nameDetail']}
                                                                   name={[fieldItem.name, 'nameDetail']}
+                                                                  placeholder="Input text"
                                                                   type={variables.TEXTAREA}
-                                                                  rules={[variables.RULES.EMPTY_INPUT]}
+                                                                  rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                                                                 />
                                                               </div>
                                                               <div className={classnames(stylesModule.cols)}>

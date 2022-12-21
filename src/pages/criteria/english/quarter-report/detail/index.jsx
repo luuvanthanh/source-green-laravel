@@ -115,7 +115,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
           <Form layout="vertical" form={form} initialValues={{

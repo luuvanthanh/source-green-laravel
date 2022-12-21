@@ -241,7 +241,7 @@ class Index extends PureComponent {
         className: 'min-width-140 center',
         width: 140,
         render: (record) => <div className='d-flex w-100 justify-content-center'>
-          <Text size="normal">{record?.total}</Text>
+          <Text size="normal">{record?.sampleCommentDetail?.length}</Text>
         </div>,
       },
       {

@@ -1,5 +1,7 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
+import { Helmet } from 'react-helmet';
+
 import { useParams, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
@@ -51,6 +53,7 @@ const General = memo(() => {
   return (
     <>
       <Breadcrumbs last={details?.type} menu={menuLeftCriteria} />
+      <Helmet title="Sample comments" />
       <Pane className="p20">
         <Form
           layout="vertical"

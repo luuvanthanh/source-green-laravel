@@ -792,6 +792,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/quarter-report/:id/add',
             '/chuong-trinh-hoc/quarter-report/:id/detail',
             '/chuong-trinh-hoc/quarter-report/:id/edit',
+            '/chuong-trinh-hoc/quarter-report/:id/confirmed',
           ],
           permission: [permissions.CTH],
           pro: true,

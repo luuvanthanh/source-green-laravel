@@ -12,7 +12,7 @@ export function get(params = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      include: Helper.convertIncludes(['quarterReport']),
+      include: Helper.convertIncludes(['quarterReport', 'branch', 'classes']),
     },
   });
 }
@@ -38,19 +38,6 @@ export function remove(id) {
     method: 'DELETE',
     parse: true,
     cancelNotification: true,
-  });
-}
-
-export function getAssessmentPeriod(params = {}) {
-  return request('/v1/assessment-periods', {
-    method: 'GET',
-    params: {
-      ...params,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes(['classes', 'branch', 'nameAssessmentPeriod', 'schoolYear']),
-    },
   });
 }
 
@@ -88,15 +75,10 @@ export function getAssess(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes([
-        'scriptReviewSubject,scriptReviewComment,branch,classes',
-        'scriptReviewSubject.scriptReviewSubjectDetail.scriptReviewSubjectDetailChildren',
-        'scriptReviewComment.scriptReviewCommentDetail',
-        'nameAssessmentPeriod',
-      ]),
+      // orderBy: 'CreationTime',
+      // sortedBy: 'desc',
+      // searchJoin: 'and',
+      include: Helper.convertIncludes(['nameAssessmentPeriod']),
     },
   });
 }
@@ -115,6 +97,14 @@ export function getStudent(params = {}) {
 export function addSent(data = {}) {
   return request('/v1/notification-quarter-reports', {
     method: 'POST',
+    data,
+    cancelNotification: true,
+  });
+}
+
+export function updateSent(data = {}) {
+  return request('/v1/notification-quarter-reports', {
+    method: 'PUT',
     data,
     cancelNotification: true,
   });

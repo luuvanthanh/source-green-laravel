@@ -21,6 +21,11 @@ const setIsMounted = (value = true) => {
   isMounted = value;
   return isMounted;
 };
+const dataType = [
+  { id: 'MONTHLY_COMMENT', name: 'Monthly comment' },
+  { id: 'QUARTER_REPORT', name: 'Quarter report' }
+];
+
 /**
  * Get isMounted
  * @returns {boolean} value of isMounted
@@ -223,7 +228,7 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'STT',
+        title: 'No',
         key: 'index',
         className: 'min-width-60',
         width: 60,
@@ -242,14 +247,14 @@ class Index extends PureComponent {
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.nameAssessmentPeriod?.name}</Text>,
       },
       {
         title: 'School year',
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text>,
       },
       {
         title: 'Apply basis',
@@ -310,6 +315,10 @@ class Index extends PureComponent {
     );
   }, 300);
 
+  onChangeStatus = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
   render() {
     const {
       error,
@@ -347,6 +356,16 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Enter keyword"
                     type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Select all type' }, ...dataType]}
+                    name="type"
+                    onChange={(event) => this.onChangeStatus(event, 'type')}
+                    type={variables.SELECT}
+                    placeholder="Select status"
+                    allowClear={false}
                   />
                 </div>
               </div>

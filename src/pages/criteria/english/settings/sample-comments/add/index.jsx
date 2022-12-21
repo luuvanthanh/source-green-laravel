@@ -2,6 +2,7 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { useParams, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
+import { Helmet } from 'react-helmet';
 import { isEmpty, get } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -98,6 +99,7 @@ const General = memo(() => {
   return (
     <>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
+      <Helmet title="Sample comments" />
       <Pane className="p20">
         <Form
           layout="vertical"
@@ -124,7 +126,7 @@ const General = memo(() => {
                       <FormItem label="ID" name="code" type={variables.INPUT} disabled placeholder={" "} />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormItem label="Type" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
+                      <FormItem label="Type" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT_ENGLISH]} placeholder="Input text" />
                     </Pane>
                     <Pane className="col-lg-12">
                       <Heading type="form-title" className="mb20">
@@ -159,6 +161,7 @@ const General = memo(() => {
                                             fieldKey={[fieldItem.fieldKey, 'name']}
                                             name={[fieldItem.name, 'name']}
                                             type={variables.INPUT}
+                                            placeholder="Input text"
                                           />
                                         </div>
                                         <div className={classnames(stylesModule.cols)}>

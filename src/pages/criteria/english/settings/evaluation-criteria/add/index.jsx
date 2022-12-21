@@ -85,7 +85,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Evaluation criteria" />
       <Pane className="pl20 pr20">
         <Pane className="col-lg-6 offset-lg-3">
           <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
@@ -113,19 +113,19 @@ const Index = memo(() => {
                   <Pane className="col-lg-12">
                     <FormItem
                       name="name"
-                      placeholder="Chọn"
+                      placeholder="Input text"
                       type={variables.INPUT}
                       label="Subject name"
-                      rules={[variables.RULES.EMPTY_INPUT]}
+                      rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                     />
                   </Pane>
                   <Pane className="col-lg-12">
                     <FormItem
                       name="content"
-                      placeholder="Nhập"
+                      placeholder="Input text"
                       type={variables.TEXTAREA}
                       label="Explain"
-                      rules={[variables.RULES.EMPTY_INPUT]}
+                      rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                     />
                   </Pane>
                 </Pane>

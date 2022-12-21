@@ -56,7 +56,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={details?.name} menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Evaluation criteria" />
       <Pane className="pl20 pr20">
         <Pane className="col-lg-6 offset-lg-3">
           <Form layout="vertical" form={form} initialValues={{

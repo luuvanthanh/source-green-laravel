@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Checkbox } from 'antd';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, head } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import { variables } from '@/utils';
@@ -33,13 +33,17 @@ const Index = memo(() => {
     menuLeftCriteria,
     years,
     loading: { effects },
-  } = useSelector(({ menu, loading, englishSettingScriptReviewAdd }) => ({
+    user,
+    defaultBranch
+  } = useSelector(({ menu, loading, englishSettingScriptReviewAdd, user }) => ({
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
     branches: englishSettingScriptReviewAdd?.branches,
     dataType: englishSettingScriptReviewAdd.dataType,
     years: englishSettingScriptReviewAdd.years,
     error: englishSettingScriptReviewAdd.error,
+    user: user.user,
+    defaultBranch: user.defaultBranch,
   }));
 
   const [type, setType] = useState('');
@@ -56,6 +60,7 @@ const Index = memo(() => {
   const [isCheckDataComment, setIsCheckDataComment] = useState(false);
 
   const onFinish = (values) => {
+
     dispatch({
       type: params.id ? 'englishSettingScriptReviewAdd/UPDATE' : 'englishSettingScriptReviewAdd/ADD',
       payload: {
@@ -67,28 +72,28 @@ const Index = memo(() => {
         branchId: values?.branchId,
         classId: values?.classId,
         subject: dataSubjec?.map(i => ({
+          subjectId: params?.id ? i?.subjectId : i?.id,
           id: params?.id ? i?.id : undefined,
-          subjectId: i?.id,
           isCheck: i?.isCheck || false,
           subjectSection: i?.subjectSection?.map(k => ({
+            subjectSectionId: params?.id ? k?.subjectSectionId : k?.id,
             id: params?.id ? k?.id : undefined,
-            subjectSectionId: k?.id,
             isCheck: k?.isCheck || false,
             detail: k?.subjectSectionDetail?.map(z => ({
+              subjectSectionDetailId: params?.id ? z?.subjectSectionDetailId : z?.id,
               id: params?.id ? z?.id : undefined,
-              subjectSectionDetailId: z?.id,
               isCheck: z?.isCheck || false,
             }))
           }))
         })),
         comment: dataComment?.map(i => ({
-          id: params?.id ? i?.id : undefined,
-          sampleCommentId: i?.id,
+          sampleCommentId: params?.id ? i?.sampleCommentId : i?.id,
           isCheck: i?.isCheck || false,
+          id: params?.id ? i?.id : undefined,
           commentDetail: i?.sampleCommentDetail?.map(k => ({
-            id: params?.id ? k?.id : undefined,
-            sampleCommentDetailId: k?.id,
+            sampleCommentDetailId: params?.id ? k?.sampleCommentDetailId : k?.id,
             isCheck: k?.isCheck || false,
+            id: params?.id ? k?.id : undefined,
           }))
         })),
         id: params.id
@@ -147,12 +152,18 @@ const Index = memo(() => {
             ...item,
             isSubject: details?.isCheckSubject,
             isCheck: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.isCheck,
+            id: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.id,
+            subjectId: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.subjectId,
             subjectSection: item?.subjectSection?.map(itemDetail => ({
               ...itemDetail,
               isCheck: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.isCheck,
+              id: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.id,
+              subjectSectionId: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.subjectSectionId,
               subjectSectionDetail: itemDetail?.subjectSectionDetail?.map(itemDetailItem => ({
                 ...itemDetailItem,
                 isCheck: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.scriptReviewSubjectDetailChildren.find(e => e?.subjectSectionDetailId === itemDetailItem?.id)?.isCheck,
+                id: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.scriptReviewSubjectDetailChildren.find(e => e?.subjectSectionDetailId === itemDetailItem?.id)?.id,
+                subjectSectionDetailId: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.scriptReviewSubjectDetailChildren.find(e => e?.subjectSectionDetailId === itemDetailItem?.id)?.subjectSectionDetailId,
               }))
             })),
           })));
@@ -162,9 +173,13 @@ const Index = memo(() => {
             ...i,
             isComent: details?.isCheckSampleComment,
             isCheck: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.isCheck,
+            sampleCommentId: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.sampleCommentId,
+            id: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.id,
             sampleCommentDetail: i?.sampleCommentDetail?.map(z => ({
               ...z,
               isCheck: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.scriptReviewCommentDetail?.find(b => b?.sampleCommentDetailId === z?.id)?.isCheck,
+              sampleCommentDetailId: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.scriptReviewCommentDetail?.find(b => b?.sampleCommentDetailId === z?.id)?.sampleCommentDetailId,
+              id: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.scriptReviewCommentDetail?.find(b => b?.sampleCommentDetailId === z?.id)?.id,
             })),
           })));
         }
@@ -193,11 +208,15 @@ const Index = memo(() => {
     if (type === 'OBJECT') {
       setDataSubjec(dataSubjec?.map(i => ({
         ...i,
+        isCheck: i?.isCheck,
+        subjectId: i?.subjectId,
         subjectSection: i?.subjectSection?.map(k => ({
           ...k,
+          subjectSectionId: k?.subjectSectionId,
           subjectSectionDetail: k?.subjectSectionDetail?.map(z => ({
             ...z,
             id: z?.id,
+            subjectSectionDetailId: z?.subjectSectionDetailId,
             isCheck: z?.id === id ? e.target.checked : z?.isCheck,
           })),
         })),
@@ -206,8 +225,10 @@ const Index = memo(() => {
     else {
       setDataComment(dataComment?.map(i => ({
         ...i,
+        sampleCommentId: i?.sampleCommentId,
         sampleCommentDetail: i?.sampleCommentDetail?.map(z => ({
           ...z,
+          sampleCommentDetailId: z?.sampleCommentDetailId,
           isCheck: z?.id === id ? e.target.checked : z?.isCheck,
         })),
       })));
@@ -275,6 +296,20 @@ const Index = memo(() => {
       },
     });
   }, []);
+
+  useEffect(() => {
+    if (defaultBranch?.id) {
+      dispatch({
+        type: 'englishSettingScriptReviewAdd/GET_CLASSES',
+        payload: { branchIds: defaultBranch?.id },
+        callback: (response) => {
+          if (response) {
+            setDataClass(response?.items);
+          }
+        },
+      });
+    }
+  }, [defaultBranch]);
 
 
   const onChangeBranch = (e) => {
@@ -346,7 +381,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
-      <Helmet title="General info" />
+      <Helmet title="Script review" />
       <Pane className="pl20 pr20 pb20">
         <Pane >
           <Loading
@@ -356,6 +391,8 @@ const Index = memo(() => {
               data: [
                 {},
               ],
+              branchId: defaultBranch?.id,
+              classId: user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? head(user?.objectInfo?.classTeachers)?.classId : undefined,
             }}>
               <Pane className="card p20">
                 <Heading type="form-title" className="mb15">
@@ -370,7 +407,7 @@ const Index = memo(() => {
                       placeholder="Choose school year"
                       label="School year"
                       allowClear={false}
-                      rules={[variables.RULES.EMPTY_INPUT]}
+                      rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                     />
                   </div>
                   <Pane className="col-lg-3">
@@ -381,7 +418,7 @@ const Index = memo(() => {
                       type={variables.SELECT}
                       label="Type review"
                       onChange={onChangeType}
-                      rules={[variables.RULES.EMPTY_INPUT]}
+                      rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                     />
                   </Pane>
                   {
@@ -393,7 +430,7 @@ const Index = memo(() => {
                           data={dataType}
                           type={variables.SELECT}
                           label="Evaluation stage"
-                          rules={[variables.RULES.EMPTY_INPUT]}
+                          rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                         />
                       </Pane>
                     )
@@ -401,9 +438,10 @@ const Index = memo(() => {
                   <Pane className="col-lg-12">
                     <FormItem
                       name="branchId"
-                      data={branches}
+                      data={defaultBranch?.id ? [defaultBranch] : branches}
+                      placeholder="Input select"
                       type={variables.SELECT_MUTILPLE}
-                      rules={[variables.RULES.EMPTY]}
+                      rules={[variables.RULES.EMPTY_ENGLISH]}
                       label="Apply basis"
                       onChange={onChangeBranch}
                     />
@@ -411,9 +449,10 @@ const Index = memo(() => {
                   <Pane className="col-lg-12">
                     <FormItem
                       name="classId"
-                      data={dataClass}
+                      data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? dataClass?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId) : dataClass}
+                      placeholder="Input select"
                       type={variables.SELECT_MUTILPLE}
-                      rules={[variables.RULES.EMPTY]}
+                      rules={[variables.RULES.EMPTY_ENGLISH]}
                       label="Apply class"
                     />
                   </Pane>
@@ -480,6 +519,7 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
+                  loading={effects[`EnglishQuarterReport/ADD_SENT`]}
                 >
                   Save
                 </Button>
