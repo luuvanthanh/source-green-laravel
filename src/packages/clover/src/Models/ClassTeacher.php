@@ -2,10 +2,12 @@
 
 namespace GGPHP\Clover\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class ClassTeacher extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

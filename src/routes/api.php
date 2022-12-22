@@ -231,5 +231,21 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Config\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\StudyProgram\Setting\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\StudyProgram\ScriptReview\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\StudyProgram\QuarterReport\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\StudyProgram\MonthlyComment\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });

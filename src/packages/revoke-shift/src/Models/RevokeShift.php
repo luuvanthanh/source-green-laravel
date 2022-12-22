@@ -2,10 +2,12 @@
 
 namespace GGPHP\RevokeShift\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class RevokeShift extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

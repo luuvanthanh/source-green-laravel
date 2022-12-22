@@ -2,10 +2,12 @@
 
 namespace GGPHP\Salary\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class PayrollSession extends UuidModel
 {
+    use ActivityLogTrait;   
     protected $table = 'PayrollSessions';
 
     protected $fillable = [

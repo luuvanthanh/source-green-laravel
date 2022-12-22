@@ -2,10 +2,12 @@
 
 namespace GGPHP\ResignationDecision\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class ResignationDecision extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

@@ -2,11 +2,13 @@
 
 namespace GGPHP\InOutHistories\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\SchoolYear;
 
 class InOutHistories extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

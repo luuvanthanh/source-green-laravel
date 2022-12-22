@@ -2,11 +2,13 @@
 
 namespace GGPHP\YoungAttendance\Absent\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\SchoolYear;
 
 class Absent extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'AbsentStudents';
@@ -14,6 +16,10 @@ class Absent extends UuidModel
     protected $fillable = [
         'AbsentTypeId', 'AbsentReasonId', 'ParentId', 'StudentId', 'StartDate', 'EndDate', 'Status', 'EmployeeId', 'ExpectedDate', 'SchoolYearId'
     ];
+
+    const PENDING = 'PENDING';
+    const CONFIRM = 'CONFIRM';
+    const REJECT = 'REJECT';
 
     protected $dateTimeFields = [
         'StartDate',

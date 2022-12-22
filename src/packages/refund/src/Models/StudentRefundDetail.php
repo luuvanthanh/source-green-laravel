@@ -2,11 +2,13 @@
 
 namespace GGPHP\Refund\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
 
 class StudentRefundDetail extends UuidModel
 {
+    use ActivityLogTrait;
     public $timestamps = false;
 
     /**

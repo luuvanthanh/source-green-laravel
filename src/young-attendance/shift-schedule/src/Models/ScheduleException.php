@@ -2,10 +2,12 @@
 
 namespace GGPHP\YoungAttendance\ShiftSchedule\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class ScheduleException extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

@@ -1,0 +1,24 @@
+{
+    "name": "building/package",
+    "description": "building package posts laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tamnn",
+            "email": "tamnn@greenglobal.vn"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GGPHP\\StudyProgram\\Setting\\": "study-program/setting/src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GGPHP\\StudyProgram\\Setting\\Providers\\SubjectServiceProvider::class"
+            ]
+        }
+    }
+}

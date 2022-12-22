@@ -2,10 +2,12 @@
 
 namespace GGPHP\AddSubTime\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class AddSubTimeDetail extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'AddSubTimeDetails';

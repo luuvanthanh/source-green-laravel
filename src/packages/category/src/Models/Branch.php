@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
 use GGPHP\Refund\Models\RefundStudent;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Branch extends UuidModel
 {
+    use ActivityLogTrait;
     use SoftDeletes;
     public $incrementing = false;
 

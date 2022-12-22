@@ -2,10 +2,12 @@
 
 namespace GGPHP\Category\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class Position extends UuidModel
 {
+    use ActivityLogTrait;
     const HIEUTRUONG = 'HT';
 
     public $incrementing = false;

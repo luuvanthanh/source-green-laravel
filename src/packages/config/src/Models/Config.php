@@ -2,10 +2,12 @@
 
 namespace GGPHP\Config\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class Config extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

@@ -2,6 +2,7 @@
 
 namespace ZK\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Support\Arr;
 

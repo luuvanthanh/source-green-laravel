@@ -2,11 +2,14 @@
 
 namespace GGPHP\Attendance\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\SchoolYear;
 
 class Attendance extends UuidModel
 {
+    use ActivityLogTrait;
+
     const STATUS = [
         'ANNUAL_LEAVE' => 1,
         'UNPAID_LEAVE' => 2,

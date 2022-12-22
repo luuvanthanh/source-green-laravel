@@ -2,10 +2,12 @@
 
 namespace GGPHP\Fee\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class PaymentForm extends UuidModel
 {
+    use ActivityLogTrait;
     const CODE = [
         'NAM' => 'NAM',
         'HOCKY1' => 'HOCKY1',

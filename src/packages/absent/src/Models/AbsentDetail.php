@@ -2,10 +2,12 @@
 
 namespace GGPHP\Absent\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 
 class AbsentDetail extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'AbsentDetails';

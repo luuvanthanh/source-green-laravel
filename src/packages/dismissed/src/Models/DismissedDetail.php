@@ -2,11 +2,13 @@
 
 namespace GGPHP\Dismissed\Models;
 
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Users\Models\User;
 
 class DismissedDetail extends UuidModel
 {
+    use ActivityLogTrait;
     public $incrementing = false;
 
     /**

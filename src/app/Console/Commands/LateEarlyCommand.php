@@ -40,9 +40,6 @@ class LateEarlyCommand extends Command
      */
     public function handle()
     {
-
-        $now = Carbon::now();
-
         $date = Carbon::now('GMT+7')->format('Y-m-d');
 
         $attributes = [

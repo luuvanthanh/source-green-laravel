@@ -91,6 +91,17 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             });
         }
 
+        if (!empty($attributes['employeeIdLogin'])) {
+            $this->model = $this->model->where('EmployeeId', '!=', $attributes['employeeIdLogin'])
+            ->whereHas('approvalEmployeeWorkHour', function ($query) use ($attributes) {
+                $query->where('EmployeeId', $attributes['employeeIdLogin']);
+            });
+        }
+
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->where('Status',$attributes['status']);
+        }
+
         if (!empty($attributes['limit'])) {
             $workHour = $this->paginate($attributes['limit']);
         } else {
@@ -117,7 +128,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         if (!empty($attributes['approvalEmployee'])) {
             $account = $this->getAccountEmployee($attributes);
         }
-
+        
         if (!empty($account)) {
             $attributes['title'] = 'Phiếu đăng ký';
             $attributes['message'] = 'Bạn có phiếu đăng ký làm thêm cần duyệt';
@@ -163,7 +174,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
     public function getAccountEmployee($attributes)
     {
         $accountEmployee = EmployeeAccount::whereIn('EmployeeId', $attributes['approvalEmployee'])->get();
-
+        
         $appUserId = $accountEmployee->map(function ($item) {
             return $item->AppUserId;
         })->toArray();
@@ -181,12 +192,13 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             'moduleType' => 24,
             'refId' => $workHour->Id,
         ];
-
+        
         dispatch(new SendNotiWithoutCode($dataNoti));
     }
 
     public function update(array $attributes, $id)
     {
+        $attributes = $this->updating($attributes);
         $workHour = WorkHour::findOrFail($id);
         $this->updated($workHour, $attributes);
         $attributes['hours'] = json_encode($attributes['hours']);
@@ -556,12 +568,12 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         return $this->parserResult($workHour);
     }
 
-    public function sendAgain($id)
+    public function sendAgain($attributes)
     {
-        $workHour = WorkHour::findOrFail($id);
-        $attributes['approvalEmployee'] = [$workHour->EmployeeId];
+        $workHour = WorkHour::findOrFail($attributes['id']);
+        $attributes['approvalEmployee'] = $workHour->approvalEmployeeWorkHour->pluck('EmployeeId')->toArray();
         $account = $this->getAccountEmployee($attributes);
-
+        
         if (!empty($account)) {
             $attributes['title'] = 'Phiếu đăng ký';
             $attributes['message'] = 'Bạn có phiếu đăng ký làm thêm cần duyệt';
