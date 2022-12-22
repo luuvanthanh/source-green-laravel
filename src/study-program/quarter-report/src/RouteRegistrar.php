@@ -34,6 +34,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('notification-quarter-reports', 'QuarterReportController@notificationQuarterReport');
             \Route::post('update-all-status-quarter-reports', 'QuarterReportController@updateAllStatusQuarterReport');
             \Route::post('notification-all-status-quarter-reports', 'QuarterReportController@notificationAllStatusQuarterReport');
+            \Route::delete('delete-quarter-report/{id}', 'QuarterReportController@deleteQuarterReport');
         });
     }
 }

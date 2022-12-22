@@ -18,18 +18,18 @@ class QuarterReport extends UuidModel
     const STATUS = [
         'NOT_REVIEW' => 1,
         'REVIEWED' => 2,
-        'CONFIRMED' => 3,
-        'SENT' => 4
+        'NOT_YET_CONFIRM' => 3,
+        'CONFIRMED' => 4,
+        'SENT' => 5
     ];
 
     const TYPE = [
-        'DONE_REVIEW' => 1,
-        'DONE_CONFIRM' => 2
+        'DUPLICATE' => 1,
     ];
 
     protected $fillable = [
         'StudentId', 'ScriptReviewId', 'Status', 'TeacherId', 'TeacherManagementId', 'SchoolYearId',
-        'ReportTime', 'ConfirmationTime', 'Type'
+        'ReportTime', 'ConfirmationTime', 'Type', 'QuarterReportId'
     ];
 
     public function quarterReportDetail()
