@@ -132,6 +132,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                 $attributes['reportTime'] = date('Y-m-d H:i:s');
                 $attributes['type'] = QuarterReport::TYPE['DUPLICATE'];
 
+                $quarterReportId = '';
                 for ($i = 1; $i <= 2; $i++) {
                     switch ($i) {
                         case 1:
@@ -139,9 +140,11 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                             break;
                         case 2:
                             $attributes['status'] = QuarterReport::STATUS['NOT_YET_CONFIRM'];
+                            $attributes['quarterReportId'] = $quarterReportId;
                             break;
                     }
                     $result = $this->model()::create($attributes);
+                    $quarterReportId = $result->Id;
                 }
             } else {
                 $result = $this->model()::create($attributes);
@@ -396,9 +399,12 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function deleteQuarterReport($id)
     {
-        $quarterReport = $this->model()::withTrashed->find($id);
-        $duplicate = $this->model()::where('Type', QuarterReport::TYPE['DUPLICATE']);
-        $duplicate->forceDelete();
+        $quarterReport = $this->model()::findOrFail($id);
+        $duplicate = $this->model()::where('QuarterReportId', $quarterReport->Id)->first();
+
+        if (!is_null($duplicate)) {
+            $duplicate->forceDelete();
+        }
         $quarterReport->forceDelete();
 
         return parent::all();
