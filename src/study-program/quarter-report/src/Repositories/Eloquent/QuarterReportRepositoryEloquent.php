@@ -118,7 +118,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         if (!empty($attributes['limit'])) {
             $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
         } else {
-            $student = $this->studentRepositoryEloquent->get();
+            $student = $this->studentRepositoryEloquent->paginate(50);
         }
 
         return $student;
@@ -257,24 +257,10 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function deleteAll($id)
     {
-        $data = $this->model()::find($id);
-        DB::beginTransaction();
-        try {
-            foreach ($data->quarterReportDetail as $key => $value) {
-                foreach ($value->quarterReportDetailSubject as $key => $valueDetail) {
-                    $valueDetail->quarterReportDetailSubjectChildren()->delete();
-                }
-                $value->quarterReportDetailSubject()->delete();
-            }
-            $data->quarterReportDetail()->delete();
-            $data->delete();
-            DB::commit();
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            throw new HttpException(500, $th->getMessage());
-        }
+        $data = $this->model()::findOrFail($id);
+        $data->forceDelete();
 
-        return parent::all();
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 
     public function updateStatusQuarterReport(array $attributes)
@@ -400,13 +386,19 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
     public function deleteQuarterReport($id)
     {
         $quarterReport = $this->model()::findOrFail($id);
-        $duplicate = $this->model()::where('QuarterReportId', $quarterReport->Id)->first();
+        DB::beginTransaction();
+        try {
+            $duplicate = $this->model()::where('Id', $quarterReport->QuarterReportId)->first();
 
-        if (!is_null($duplicate)) {
-            $duplicate->forceDelete();
+            if (!is_null($duplicate)) {
+                $duplicate->forceDelete();
+            }
+            $quarterReport->forceDelete();
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
         }
-        $quarterReport->forceDelete();
 
-        return parent::all();
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 }

@@ -5,6 +5,7 @@ namespace GGPHP\StudyProgram\Setting\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\StudyProgram\Setting\Http\Requests\EvaluationCriteriaCreateRequest;
+use GGPHP\StudyProgram\Setting\Http\Requests\EvaluationCriteriaDeleteRequest;
 use GGPHP\StudyProgram\Setting\Http\Requests\EvaluationCriteriaUpdateRequest;
 use GGPHP\StudyProgram\Setting\Repositories\Contracts\EvaluationCriteriaRepository;
 use Illuminate\Http\Response;
@@ -87,7 +88,7 @@ class EvaluationCriteriaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(EvaluationCriteriaDeleteRequest $request, $id)
     {
         $this->evaluationCriteriaRepository->delete($id);
 

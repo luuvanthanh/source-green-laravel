@@ -5,6 +5,7 @@ namespace GGPHP\StudyProgram\Setting\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\StudyProgram\Setting\Http\Requests\SampleCommentCreateRequest;
+use GGPHP\StudyProgram\Setting\Http\Requests\SampleCommentDeleteRequest;
 use GGPHP\StudyProgram\Setting\Http\Requests\SampleCommentUpdateRequest;
 use GGPHP\StudyProgram\Setting\Repositories\Contracts\SampleCommentRepository;
 use Illuminate\Http\Response;
@@ -87,7 +88,7 @@ class SampleCommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(SampleCommentDeleteRequest $request, $id)
     {
         $this->sampleCommentRepository->deleteAll($id);
 
