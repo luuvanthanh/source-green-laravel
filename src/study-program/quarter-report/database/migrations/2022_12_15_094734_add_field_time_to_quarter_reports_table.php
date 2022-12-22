@@ -27,7 +27,7 @@ class AddFieldTimeToQuarterReportsTable extends Migration
     public function down()
     {
         Schema::table('study-program.QuarterReports', function (Blueprint $table) {
-            $table->dropColumn('ReportTime', 'ConfirmationTime');
+            $table->dropColumn(['ReportTime', 'ConfirmationTime']);
         });
     }
 }

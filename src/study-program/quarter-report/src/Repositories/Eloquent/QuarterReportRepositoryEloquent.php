@@ -145,14 +145,18 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                     }
                     $result = $this->model()::create($attributes);
                     $quarterReportId = $result->Id;
+                    
+                    if (!empty($attributes['detail'])) {
+                        $this->createDetail($result, $attributes['detail']);
+                    }
                 }
             } else {
                 $result = $this->model()::create($attributes);
+                if (!empty($attributes['detail'])) {
+                    $this->createDetail($result, $attributes['detail']);
+                }
             }
 
-            if (!empty($attributes['detail'])) {
-                $this->createDetail($result, $attributes['detail']);
-            }
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollback();
@@ -200,7 +204,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         DB::beginTransaction();
         try {
             if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
-                $attributes['reportTime'] = date('Y-m-d H:i:s');
+                $attributes['ConfirmationTime'] = date('Y-m-d H:i:s');
             }
             $result->update($attributes);
 

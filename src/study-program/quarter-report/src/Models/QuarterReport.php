@@ -20,7 +20,8 @@ class QuarterReport extends UuidModel
         'REVIEWED' => 2,
         'NOT_YET_CONFIRM' => 3,
         'CONFIRMED' => 4,
-        'SENT' => 5
+        'NOT_YET_SENT' => 5,
+        'SENT' => 6
     ];
 
     const TYPE = [
