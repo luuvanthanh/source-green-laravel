@@ -211,28 +211,28 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $events = Event::where('camera_id', $attributes['camera_id'])
                 ->where('tourist_destination_id', $attributes['tourist_destination_id'])
                 ->where('event_type_id', $attributes['event_type_id'])
-                ->whereDate('time',$attributes['time'])
-                ->where('tour_guide_id',$attributes['tour_guide_id'])
-                ->where('status_show',true)
-                ->orderBy('time','desc')->first();
-            
+                ->whereDate('time', $attributes['time'])
+                ->where('tour_guide_id', $attributes['tour_guide_id'])
+                ->where('status_show', true)
+                ->orderBy('time', 'desc')->first();
+
             $configHour = ConfigHourStatusShowEvent::first();
 
             if (!is_null($events)) {
                 $time = Carbon::parse($events->time);
                 $numberHourConfig = !is_null($configHour) ? $configHour->hour : 1;
                 $numberHour = $time->diffInHours(Carbon::parse($attributes['time']));
-                
+
                 if ($numberHour < $numberHourConfig) {
                     $attributes['status_show'] = false;
-                }else{
-                   $attributes['status_show'] = true; 
+                } else {
+                    $attributes['status_show'] = true;
                 }
-            }else{
+            } else {
                 $attributes['status_show'] = true;
             }
         }
-        
+
         if (is_null($event)) {
             $event = $this->model()::create($attributes);
 
@@ -241,7 +241,9 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
                 'type' => 'EVENT_CREATE'
             ]));
 
-            NotificationService::eventCreated(NotificationService::EVENT, $event);
+            if ($event->status_show == true) {
+                NotificationService::eventCreated(NotificationService::EVENT, $event);
+            }
 
             $teamplateEmail = TeamplateEmail::where('code', $event->eventType->code)->first();
 
@@ -263,7 +265,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
                 $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
             }
         } else {
-
+            $attributes['status_show'] = $event->status_show;
             $event->update($attributes);
             broadcast(new EventCreateEvent([
                 'event_id' => $event->id,
@@ -583,18 +585,18 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
     public function updateStatusShow($attributes)
     {
-        $events = Event::orderBy('tourist_destination_id','asc')
-    	->orderBy('event_type_id','asc')
-        ->orderBy('camera_id','asc')
-        ->orderBy('tour_guide_id','asc')
-        ->orderBy('time', 'asc')
+        $events = Event::orderBy('tourist_destination_id', 'asc')
+            ->orderBy('event_type_id', 'asc')
+            ->orderBy('camera_id', 'asc')
+            ->orderBy('tour_guide_id', 'asc')
+            ->orderBy('time', 'asc')
             ->get();
 
-        $eventRemoveFirstItems = Event::orderBy('tourist_destination_id','asc')
-    	->orderBy('event_type_id','asc')
-        ->orderBy('camera_id','asc')
-        ->orderBy('tour_guide_id','asc')
-        ->orderBy('time', 'asc')
+        $eventRemoveFirstItems = Event::orderBy('tourist_destination_id', 'asc')
+            ->orderBy('event_type_id', 'asc')
+            ->orderBy('camera_id', 'asc')
+            ->orderBy('tour_guide_id', 'asc')
+            ->orderBy('time', 'asc')
             ->get();
         $eventRemoveFirstItems->shift();
 
