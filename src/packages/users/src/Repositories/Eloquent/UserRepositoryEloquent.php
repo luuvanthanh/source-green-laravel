@@ -239,11 +239,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                     "refId" => $user->Id,
                 ]
             ];
-            // $employeeAccountant = AccountantService::createEmployee($dataAccountant);
+            $employeeAccountant = AccountantService::createEmployee($dataAccountant);
 
-            // if (!is_null($employeeAccountant)) {
-            //     $user->update(['AccountantId' => $employeeAccountant->id]);
-            // }
+            if (!is_null($employeeAccountant)) {
+                $user->update(['AccountantId' => $employeeAccountant->id]);
+            }
 
             \DB::commit();
         } catch (\Throwable $th) {

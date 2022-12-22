@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldTimeToQuarterReportsTable extends Migration
+class UpdateFieldTimeToQuarterReportsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,9 @@ class AddFieldTimeToQuarterReportsTable extends Migration
     public function up()
     {
         Schema::table('study-program.QuarterReports', function (Blueprint $table) {
-            $table->dateTime('ReportTime')->nullable();
-            $table->dateTime('ConfirmationTime')->nullable();
+            $table->dropColumn(['ReportTime', 'ConfirmationTime']);
+            $table->timestamp('ReportTime')->nullable();
+            $table->timestamp('ConfirmationTime')->nullable();
         });
     }
 
@@ -27,7 +28,6 @@ class AddFieldTimeToQuarterReportsTable extends Migration
     public function down()
     {
         Schema::table('study-program.QuarterReports', function (Blueprint $table) {
-            $table->dropColumn(['ReportTime', 'ConfirmationTime']);
         });
     }
 }
