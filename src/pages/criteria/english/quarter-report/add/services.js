@@ -10,6 +10,14 @@ export function add(data = {}) {
   });
 }
 
+export function updateComfirm(data = {}) {
+  return request(`/v1/quarter-reports/${data?.id}`, {
+    method: 'PUT',
+    data,
+    cancelNotification: true,
+  });
+}
+
 export function update(data = {}) {
   return request(`/v1/quarter-reports/${data.id}`, {
     method: 'PUT',
@@ -26,10 +34,7 @@ export function getData(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes([
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'childEvaluateDetailChildrent',
-      ]),
+      include: Helper.convertIncludes(['quarterReport', 'branch', 'classes']),
     },
   });
 }

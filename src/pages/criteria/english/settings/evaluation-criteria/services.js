@@ -16,6 +16,9 @@ export function remove(id = {}) {
   return request(`/v1/evaluation-criterias/${id}`, {
     method: 'DELETE',
     parse: true,
+    data: {
+      id,
+    },
     cancelNotification: true,
   });
 }

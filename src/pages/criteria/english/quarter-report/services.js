@@ -102,10 +102,34 @@ export function addSent(data = {}) {
   });
 }
 
+export function addSentAll(data = {}) {
+  return request('/v1/update-all-status-quarter-reports', {
+    method: 'POST',
+    data,
+    cancelNotification: true,
+  });
+}
+
 export function updateSent(data = {}) {
   return request('/v1/notification-quarter-reports', {
     method: 'PUT',
     data,
+    cancelNotification: true,
+  });
+}
+
+export function addConfirm(data = {}) {
+  return request('/v1/update-status-quarter-reports', {
+    method: 'POST',
+    data,
+    cancelNotification: true,
+  });
+}
+
+export function removeConfirm(id) {
+  return request(`/v1/delete-quarter-report/${id}`, {
+    method: 'DELETE',
+    parse: true,
     cancelNotification: true,
   });
 }

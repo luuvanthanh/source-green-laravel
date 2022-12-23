@@ -58,7 +58,7 @@ const Index = memo(() => {
     // convert mảng object
     const data = dataDetails?.scriptReviewSubject?.filter(i => i?.isCheck)
       ?.map(item => ({ ...item, scriptReviewSubjectDetail: item?.scriptReviewSubjectDetail?.filter(k => k?.isCheck) }))
-      ?.map(items => ({ ...items, scriptReviewSubjectDetail: items?.scriptReviewSubjectDetail?.map(i => ({ ...i, scriptReviewSubjectDetailChildren: i?.scriptReviewSubjectDetailChildren?.filter(k => k?.radioId) })) }))
+      ?.map(items => ({ ...items, scriptReviewSubjectDetail: items?.scriptReviewSubjectDetail?.map(i => ({ ...i, scriptReviewSubjectDetailChildren: i?.scriptReviewSubjectDetailChildren?.filter(k => k?.radioId) })) }));
 
     // convert mảng conment
     const dataComment = dataDetails?.scriptReviewComment?.filter(i => i?.isCheck)

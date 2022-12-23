@@ -42,7 +42,7 @@ export default {
       years:
         payload.parsePayload?.map((item) => ({
           id: item.id,
-          name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+          name: `${item.yearFrom} - ${item.yearTo}`,
           ...item,
         })) || [],
     }),
@@ -129,7 +129,7 @@ export default {
     },
     *GET_CLASSES({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(categories.getClasses, payload);
+        const response = yield saga.call(services.getClasses, payload);
         callback(response);
       } catch (error) {
         yield saga.put({
