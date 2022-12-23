@@ -5,7 +5,10 @@ namespace GGPHP\StudyProgram\ScriptReview\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\StudyProgram\ScriptReview\Http\Requests\ScriptReviewCreateRequest;
+use GGPHP\StudyProgram\ScriptReview\Http\Requests\ScriptReviewDeleteRequest;
+use GGPHP\StudyProgram\ScriptReview\Http\Requests\ScriptReviewFilterRequest;
 use GGPHP\StudyProgram\ScriptReview\Http\Requests\ScriptReviewUpdateRequest;
+use GGPHP\StudyProgram\ScriptReview\Models\ScriptReview;
 use GGPHP\StudyProgram\ScriptReview\Repositories\Contracts\ScriptReviewRepository;
 use Illuminate\Http\Response;
 
@@ -31,9 +34,14 @@ class ScriptReviewController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(ScriptReviewFilterRequest $request)
     {
         $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $attributes['type'] = ScriptReview::TYPE[$attributes['type']];
+        }
+
         $result = $this->scriptReviewRepository->getAll($attributes);
 
         return $this->success($result, trans('lang::messages.common.getListSuccess'));
@@ -87,7 +95,7 @@ class ScriptReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(ScriptReviewDeleteRequest $request, $id)
     {
         $this->scriptReviewRepository->deleteAll($id);
 

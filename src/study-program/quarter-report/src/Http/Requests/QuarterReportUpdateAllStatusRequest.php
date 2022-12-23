@@ -5,7 +5,7 @@ namespace GGPHP\StudyProgram\QuarterReport\Http\Requests;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use Illuminate\Foundation\Http\FormRequest;
 
-class QuarterReportUpdateStatusRequest extends FormRequest
+class QuarterReportUpdateAllStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,11 +26,10 @@ class QuarterReportUpdateStatusRequest extends FormRequest
     {
         $status = implode(',', QuarterReport::STATUS);
         return [
-            'studentId' => 'array|required|check_exists:object.Students,Id',
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
             'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
-            'newStatus' => 'required|in:' . $status,
             "oldStatus" => 'required|in:' . $status,
+            'newStatus' => 'required|in:' . $status,
         ];
     }
 
@@ -44,10 +43,6 @@ class QuarterReportUpdateStatusRequest extends FormRequest
 
         if (!empty($data['newStatus'])) {
             $data['newStatus'] = QuarterReport::STATUS[$data['newStatus']];
-        }
-
-        if (!empty($data['type'])) {
-            $data['type'] = QuarterReport::STATUS[$data['type']];
         }
 
         return $data;

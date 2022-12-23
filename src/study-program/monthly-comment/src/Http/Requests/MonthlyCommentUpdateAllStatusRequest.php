@@ -3,9 +3,10 @@
 namespace GGPHP\StudyProgram\MonthlyComment\Http\Requests;
 
 use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use Illuminate\Foundation\Http\FormRequest;
 
-class MonthlyCommentCreateRequest extends FormRequest
+class MonthlyCommentUpdateAllStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,23 +26,26 @@ class MonthlyCommentCreateRequest extends FormRequest
     public function rules()
     {
         $status = implode(',', MonthlyComment::STATUS);
+
         return [
-            'studentId' => 'required|check_exists:object.Students,Id',
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
+            'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
             'status' => 'required|in:' . $status,
-            'teacherId' => 'exists:Employees,Id',
-            'TeacherManagementId' => 'exists:Employees,Id',
-            'month' => 'date_format:Y-m-d',
-            'detail.*.scriptReviewCommentId' => 'nullable|check_exists:study-program.ScriptReviewComments,Id',
+            'newStatus' => 'required|in:' . $status,
+            'month' => 'required|date_format:Y-m-d',
         ];
     }
 
-    public function all($key = null)
+    public function all($keys = null)
     {
         $data = parent::all();
 
         if (!empty($data['status'])) {
             $data['status'] = MonthlyComment::STATUS[$data['status']];
+        }
+
+        if (!empty($data['newStatus'])) {
+            $data['newStatus'] = MonthlyComment::STATUS[$data['newStatus']];
         }
 
         return $data;

@@ -7,6 +7,7 @@ use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentConfirmRequest;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentCreateRequest;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentUpdateRequest;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentDeleteRequest;
+use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentStudentExcelRequest;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -137,7 +138,7 @@ class AbsentController extends Controller
         return $this->success($absents, trans('lang::messages.common.getListSuccess'));
     }
 
-    public function absentStudentExcel(Request $request)
+    public function absentStudentExcel(AbsentStudentExcelRequest $request)
     {
         $result = $this->absentRepository->absentStudentExcel($request->all());
 

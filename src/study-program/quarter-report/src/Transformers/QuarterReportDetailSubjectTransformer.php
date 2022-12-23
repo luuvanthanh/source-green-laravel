@@ -19,7 +19,7 @@ class QuarterReportDetailSubjectTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = [];
+    protected $defaultIncludes = ['quarterReportDetailSubjectChildren', 'scriptReviewSubjectDetail'];
 
     /**
      * Array attribute doesn't parse.
@@ -31,10 +31,10 @@ class QuarterReportDetailSubjectTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['quarterReportDetailSubjectChildren', 'scriptReviewSubjectDetail'];
+    protected $availableIncludes = [];
 
     /**
-     * Transform the ReviewDetail entity.
+     * Transform the ReviewDetail entity.                                          
      *
      * @param ReviewChildTeacher 
 

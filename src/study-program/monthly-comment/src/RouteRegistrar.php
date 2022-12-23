@@ -32,6 +32,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('monthly-comments', 'MonthlyCommentController');
             \Route::post('update-status-monthly-comments', 'MonthlyCommentController@updateStatusMonthlyComment');
             \Route::post('notification-monthly-comments', 'MonthlyCommentController@notificationMonthlyComment');
+            \Route::post('update-all-status-monthly-comments', 'MonthlyCommentController@updateAllStatusMonthlyComment');
+            \Route::post('notification-all-status-monthly-comments', 'MonthlyCommentController@notificationAllStatusMonthlyComment');
         });
     }
 }

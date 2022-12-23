@@ -1,24 +1,24 @@
 <?php
 
-namespace GGPHP\StudyProgram\ScriptReview\Transformers;
+namespace GGPHP\StudyProgram\MonthlyComment\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\StudyProgram\ScriptReview\Models\ScriptReviewSubjectDetailChildren;
-use GGPHP\StudyProgram\Setting\Transformers\SubjectSectionDetailTransformer;
+use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyCommentDetail;
+use GGPHP\StudyProgram\ScriptReview\Transformers\ScriptReviewCommentTransformer;
 
 /**
  * Class ReviewDetailTransformer.
  *
  * @package namespace App\Transformers;
  */
-class ScriptReviewSubjectDetailChildrenTransformer extends BaseTransformer
+class MonthlyCommentDetailTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
      *
      * @var array
      */
-    protected $defaultIncludes = ['subjectSectionDetail'];
+    protected $defaultIncludes = ['scriptReviewComment'];
 
     /**
      * Array attribute doesn't parse.
@@ -45,8 +45,12 @@ class ScriptReviewSubjectDetailChildrenTransformer extends BaseTransformer
         return [];
     }
 
-    public function includeSubjectSectionDetail(ScriptReviewSubjectDetailChildren $scriptReviewSubjectDetailChildren)
+    public function includeScriptReviewComment(MonthlyCommentDetail $monthlyCommentDetail)
     {
-        return $this->item($scriptReviewSubjectDetailChildren->subjectSectionDetail, new SubjectSectionDetailTransformer, 'SubjectSectionDetail');
+        if (is_null($monthlyCommentDetail->ScriptReviewCommentId)) {
+            return null;
+        }
+
+        return $this->item($monthlyCommentDetail->scriptReviewComment, new ScriptReviewCommentTransformer, 'ScriptReviewComment');
     }
 }

@@ -10,7 +10,6 @@ use Illuminate\Support\Arr;
 
 class ZKSync extends Model
 {
-    use ActivityLogTrait;
     const CREATED_AT = 'CreationTime';
     const UPDATED_AT = 'LastModificationTime';
 

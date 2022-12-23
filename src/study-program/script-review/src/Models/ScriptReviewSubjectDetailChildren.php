@@ -20,4 +20,9 @@ class ScriptReviewSubjectDetailChildren extends UuidModel
     {
         return $this->belongsTo(SubjectSectionDetail::class, 'SubjectSectionDetailId');
     }
+
+    public function scriptReviewSubjectDetail()
+    {
+        return $this->belongsTo(ScriptReviewSubjectDetail::class, 'ScriptReviewSubjectDetailId');
+    }
 }

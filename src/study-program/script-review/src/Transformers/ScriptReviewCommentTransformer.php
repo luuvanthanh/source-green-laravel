@@ -19,7 +19,7 @@ class ScriptReviewCommentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = [];
+    protected $defaultIncludes = ['scriptReviewCommentDetail', 'sampleComment'];
 
     /**
      * Array attribute doesn't parse.
@@ -31,7 +31,7 @@ class ScriptReviewCommentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['scriptReviewCommentDetail', 'sampleComment'];
+    protected $availableIncludes = [];
 
     /**
      * Transform the ReviewDetail entity.

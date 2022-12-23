@@ -5,8 +5,10 @@ namespace GGPHP\StudyProgram\MonthlyComment\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\StudyProgram\MonthlyComment\Http\Requests\MonthlyCommentCreateRequest;
+use GGPHP\StudyProgram\MonthlyComment\Http\Requests\MonthlyCommentUpdateAllStatusRequest;
 use GGPHP\StudyProgram\MonthlyComment\Http\Requests\MonthlyCommentUpdateRequest;
 use GGPHP\StudyProgram\MonthlyComment\Http\Requests\MonthlyCommentUpdateStatusRequest;
+use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
 use GGPHP\StudyProgram\MonthlyComment\Repositories\Contracts\MonthlyCommentRepository;
 use Illuminate\Http\Response;
 
@@ -35,6 +37,10 @@ class MonthlyCommentController extends Controller
     public function index(Request $request)
     {
         $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = MonthlyComment::STATUS[$attributes['status']];
+        }
         $result = $this->monthlyCommentRepository->getAll($attributes);
 
         return $this->success($result, trans('lang::messages.common.getListSuccess'));
@@ -107,6 +113,22 @@ class MonthlyCommentController extends Controller
     {
         $attributes = $request->all();
         $result = $this->monthlyCommentRepository->notificationMonthlyComment($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function updateAllStatusMonthlyComment(MonthlyCommentUpdateAllStatusRequest $request)
+    {
+        $attributes = $request->all();
+        $result = $this->monthlyCommentRepository->updateAllStatusMonthlyComment($attributes);
+
+        return $this->success($result, trans('lang::messages.common.modifySuccess'));
+    }
+
+    public function notificationAllStatusMonthlyComment(MonthlyCommentUpdateAllStatusRequest $request)
+    {
+        $attributes = $request->all();
+        $result = $this->monthlyCommentRepository->notificationAllStatusMonthlyComment($attributes);
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
