@@ -148,8 +148,8 @@ const Index = memo(() => {
       }
     });
   };
-  const detailTearch = `${dataDetails?.teacher?.fullName}  ${dataDetails?.creationTime ? Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE) : ""}`;
-  const detailTearchManagement = `${dataDetails?.teacherManagement?.fullName}  ${dataDetails?.confirmationTime ? Helper.getDate(dataDetails?.confirmationTime, variables.DATE_FORMAT.DATE) : ""}`;
+  const detailTearch = `${dataDetails?.teacher?.fullName ? dataDetails?.teacher?.fullName : ""}  ${dataDetails?.creationTime ? Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE) : ""}`;
+  const detailTearchManagement = `${dataDetails?.teacherManagement?.fullName ? dataDetails?.teacherManagement?.fullName : ""}  ${dataDetails?.confirmationTime ? Helper.getDate(dataDetails?.confirmationTime, variables.DATE_FORMAT.DATE) : ""}`;
   const formStatus = () => {
     if (query?.type === "done-review") {
       return (
