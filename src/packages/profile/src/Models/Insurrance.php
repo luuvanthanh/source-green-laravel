@@ -8,7 +8,7 @@ use GGPHP\Users\Models\User;
 
 class Insurrance extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'Insurrances';

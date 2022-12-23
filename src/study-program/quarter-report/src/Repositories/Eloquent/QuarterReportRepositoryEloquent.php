@@ -91,14 +91,21 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
         }
 
-        if (!empty($attributes['scriptReviewId'])) {
+        if (!empty($attributes['scriptReviewId']) && !empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('ScriptReviewId', $attributes['scriptReviewId']);
             });
         }
 
-        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->doesnthave('quarterReport');
+        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['NOT_REVIEW'] && !empty($attributes['scriptReviewId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('quarterReport', function ($query) use ($attributes) {
+
+                if (!empty($attributes['scriptReviewId'])) {
+                    $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+                }
+
+                $query->orderBy('CreationTime', 'DESC');
+            });
         }
 
         if (!empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
@@ -106,6 +113,14 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                 $query->where('Status', $attributes['status']);
             }])->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
+            });
+        }
+
+        if (!empty($attributes['type']) && !empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
+            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
             });
         }
 
@@ -141,11 +156,12 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                         case 2:
                             $attributes['status'] = QuarterReport::STATUS['NOT_YET_CONFIRM'];
                             $attributes['quarterReportId'] = $quarterReportId;
+                            $attributes['type'] = QuarterReport::TYPE['DUPLICATE'];
                             break;
                     }
                     $result = $this->model()::create($attributes);
                     $quarterReportId = $result->Id;
-                    
+
                     if (!empty($attributes['detail'])) {
                         $this->createDetail($result, $attributes['detail']);
                     }
@@ -272,8 +288,9 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
             ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['oldStatus'])
             ->update([
-                'Status' => $attributes['status']
+                'Status' => $attributes['newStatus']
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -284,13 +301,16 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
             ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['oldStatus'])
             ->update([
-                'Status' => $attributes['status']
+                'Status' => $attributes['newStatus']
             ]);
 
         $data = $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('ScriptReviewId', $attributes['scriptReviewId'])->get();
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['newStatus'])
+            ->get();
 
         foreach ($data as $value) {
 
@@ -334,6 +354,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
         foreach ($data['data'] as $value) {
             $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])
+                ->where('Status', $attributes['oldStatus'])
                 ->update([
                     'Status' => $attributes['newStatus']
                 ]);

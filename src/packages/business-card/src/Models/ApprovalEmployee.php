@@ -8,7 +8,7 @@ use GGPHP\Users\Models\User;
 
 class ApprovalEmployee extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

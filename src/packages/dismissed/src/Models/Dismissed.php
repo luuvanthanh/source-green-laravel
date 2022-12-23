@@ -8,7 +8,7 @@ use GGPHP\Dismissed\Models\DismissedDetail;
 
 class Dismissed extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

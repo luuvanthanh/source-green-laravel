@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Branch extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use SoftDeletes;
     public $incrementing = false;
 

@@ -8,7 +8,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class CategorySkill extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     const CODE = 'KN0';
 
     protected $table = 'CategorySkills';

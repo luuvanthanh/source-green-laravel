@@ -8,7 +8,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class StudentRefundDetail extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $timestamps = false;
 
     /**

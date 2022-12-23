@@ -8,7 +8,7 @@ use GGPHP\Fee\Models\SchoolYear;
 
 class Absent extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'AbsentStudents';

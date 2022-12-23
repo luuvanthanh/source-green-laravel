@@ -9,7 +9,7 @@ use ZK\Traits\SyncToDevice;
 
 class Fingerprint extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     use SoftDeletes, SyncToDevice;

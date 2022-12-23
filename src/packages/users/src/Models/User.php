@@ -37,7 +37,7 @@ use ZK\Traits\SyncToDevice;
 class User extends UuidModel implements HasMedia, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
     public $incrementing = false;
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use Notifiable, CanResetPassword;
     use Authenticatable;
     use Authorizable, CanResetPassword, MustVerifyEmail;

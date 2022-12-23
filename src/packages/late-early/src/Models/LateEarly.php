@@ -9,7 +9,7 @@ use GGPHP\Users\Models\User;
 
 class LateEarly extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     const LATE = 'LATE';

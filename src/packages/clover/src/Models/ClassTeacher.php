@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class ClassTeacher extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

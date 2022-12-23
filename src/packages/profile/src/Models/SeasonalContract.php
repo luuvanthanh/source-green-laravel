@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class SeasonalContract extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     protected $table = 'SeasonalContracts';
 
     protected $fillable = [

@@ -8,7 +8,7 @@ use GGPHP\Fee\Models\Fee;
 
 class RefundDetail extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     /**
      * Declare the table name
      */

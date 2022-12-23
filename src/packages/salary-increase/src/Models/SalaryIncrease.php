@@ -8,7 +8,7 @@ use GGPHP\Users\Models\User;
 
 class SalaryIncrease extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**
