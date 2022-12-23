@@ -31,11 +31,12 @@ const dataType = [
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ englishSettingScriptReview, loading }) => ({
+const mapStateToProps = ({ englishSettingScriptReview, loading, user }) => ({
   data: englishSettingScriptReview.data,
   error: englishSettingScriptReview.error,
   pagination: englishSettingScriptReview.pagination,
   skill: englishSettingScriptReview.skill,
+  defaultBranch: user.defaultBranch,
   loading,
 });
 @connect(mapStateToProps)
@@ -91,11 +92,13 @@ class Index extends PureComponent {
     const { search } = this.state;
     const {
       location: { pathname },
+      defaultBranch,
     } = this.props;
     this.props.dispatch({
       type: 'englishSettingScriptReview/GET_DATA',
       payload: {
         ...search,
+        branchId: defaultBranch?.id,
       },
     });
     history.push(
@@ -350,14 +353,14 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                {/* <div className="col-lg-3">
                   <FormItem
                     name="key"
                     onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Enter keyword"
                     type={variables.INPUT_SEARCH}
                   />
-                </div>
+                </div> */}
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Select all type' }, ...dataType]}
@@ -405,6 +408,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -415,6 +419,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  defaultBranch: {},
 };
 
 export default Index;

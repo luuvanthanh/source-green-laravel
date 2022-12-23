@@ -2,8 +2,8 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
-import { useParams, history } from 'umi';
-import { head } from 'lodash';
+import { useParams, history, useLocation } from 'umi';
+import { head, isEmpty, get } from 'lodash';
 import classnames from 'classnames';
 import Loading from '@/components/CommonComponent/Loading';
 
@@ -11,9 +11,11 @@ import ImgDetail from '@/components/CommonComponent/imageDetail';
 
 import Heading from '@/components/CommonComponent/Heading';
 import FormDetail from '@/components/CommonComponent/FormDetail';
+import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
+import variablesModules from '../utils/variables';
 import stylesModule from '../styles.module.scss';
 
 
@@ -30,6 +32,7 @@ const Index = memo(() => {
     details,
     menuLeftCriteria,
     dataEvaluetionCriteria,
+    user,
   } = useSelector(({ EnglishQuarterReport, menu, loading, EnglishQuarterReportAdd, user }) => ({
     dataAssess: EnglishQuarterReport.dataAssess,
     loading,
@@ -41,6 +44,7 @@ const Index = memo(() => {
     error: EnglishQuarterReportAdd.error,
   }));
   const [dataDetails, setDataDetails] = useState(undefined);
+  const { query } = useLocation();
 
   useEffect(() => {
     if (params.id) {
@@ -112,6 +116,58 @@ const Index = memo(() => {
       : []),
   ];
 
+  const addSent = () => {
+    const payload = {
+      studentId: [dataDetails?.studentId],
+      schoolYearId: dataDetails?.schoolYearId,
+      scriptReviewId: dataDetails?.scriptReviewId,
+      newStatus: variablesModules.STATUS.SENT,
+      oldStatus: "CONFIRMED",
+      teacherManagementId: user?.id,
+    };
+    dispatch({
+      type: 'EnglishQuarterReport/ADD_SENT_ALL',
+      payload: { ...payload },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              form.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      }
+    });
+  };
+
+  const formStatus = () => {
+    if (query?.type === "done-review" || query?.type === "done-confirmed") {
+      return (
+        <Pane className="col-lg-3">
+          <FormDetail name={dataDetails?.teacher?.fullName} label="Teacher report" type="text" />
+        </Pane>
+      );
+    }
+    if (query?.type === "done-confirmed") {
+      return (
+        <Pane className="col-lg-3">
+          <FormDetail name={dataDetails?.teacherManagement?.fullName} label="Approved by" type="text" />
+        </Pane>
+      );
+    }
+    return "";
+  };
+
+  const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
+
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
@@ -148,7 +204,7 @@ const Index = memo(() => {
                 </div>
                 <Pane className="row">
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataDetails?.schoolYear?.yearFrom} label="School year" type="text" />
+                    <FormDetail name={detailSchoolYear} label="School year" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail name={dataDetails?.student?.branch?.name} label="Center" type="text" />
@@ -159,6 +215,7 @@ const Index = memo(() => {
                   <Pane className="col-lg-3">
                     <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment periodr" type="text" />
                   </Pane>
+                  {formStatus()}
                 </Pane>
               </Pane>
               <Pane>
@@ -227,8 +284,20 @@ const Index = memo(() => {
 
                   onClick={() => history.goBack()}
                 >
-                  Cancel
+                  Close
                 </p>
+                {
+                  query?.type === 'done' && (
+                    <Button
+                      className="ml10 px25"
+                      color="primary"
+                      onClick={() => addSent()}
+                      size="large"
+                      loading={effects['EnglishQuarterReport/ADD_SENT_ALL']}
+                    >
+                      Send
+                    </Button>)
+                }
               </Pane>
             </Loading>
           </Form>

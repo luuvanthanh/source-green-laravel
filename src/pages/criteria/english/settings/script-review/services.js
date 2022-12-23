@@ -22,6 +22,9 @@ export function remove(id = {}) {
   return request(`/v1/script-reviews/${id}`, {
     method: 'DELETE',
     parse: true,
+    data: {
+      id,
+    },
     cancelNotification: true,
   });
 }

@@ -69,8 +69,8 @@ const Index = memo(() => {
         nameAssessmentPeriodId: values?.nameAssessmentPeriodId,
         isCheckSampleComment: values?.isCheckSampleComment || false,
         isCheckSubject: values?.isCheckSubject || false,
-        branchId: values?.branchId,
-        classId: values?.classId,
+        branchId: !params?.id && defaultBranch?.id ? [values?.branchId] : values?.branchId,
+        classId: !params?.id && user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [values?.classId] : values?.classId,
         subject: dataSubjec?.map(i => ({
           subjectId: params?.id ? i?.subjectId : i?.id,
           id: params?.id ? i?.id : undefined,
@@ -196,7 +196,7 @@ const Index = memo(() => {
           payload: { branchIds: details?.branch.map((i) => i?.id) },
           callback: (response) => {
             if (response) {
-              setDataClass(response?.items);
+              setDataClass(response);
             }
           },
         });
@@ -304,12 +304,13 @@ const Index = memo(() => {
         payload: { branchIds: defaultBranch?.id },
         callback: (response) => {
           if (response) {
-            setDataClass(response?.items);
+            setDataClass(response);
           }
         },
       });
     }
   }, [defaultBranch]);
+
 
 
   const onChangeBranch = (e) => {
@@ -318,9 +319,12 @@ const Index = memo(() => {
       payload: { branchIds: e },
       callback: (response) => {
         if (response) {
-          setDataClass(response?.items);
+          setDataClass(response);
         }
       },
+    });
+    form.setFieldsValue({
+      classId: undefined,
     });
   };
 
@@ -392,6 +396,7 @@ const Index = memo(() => {
                 {},
               ],
               branchId: defaultBranch?.id,
+              schoolYearId: user?.schoolYear?.id,
               classId: user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? head(user?.objectInfo?.classTeachers)?.classId : undefined,
             }}>
               <Pane className="card p20">
@@ -401,7 +406,7 @@ const Index = memo(() => {
                 <Pane className="row">
                   <div className="col-lg-3">
                     <FormItem
-                      data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                      data={years?.filter(i => i?.id === user?.schoolYear?.id)}
                       name="schoolYearId"
                       type={variables.SELECT}
                       placeholder="Choose school year"

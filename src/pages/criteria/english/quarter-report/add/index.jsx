@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Radio, Checkbox, Input } from 'antd';
+import { Form, Radio, Checkbox, Input, notification } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useParams, history, useLocation } from 'umi';
 import { isEmpty, get, head } from 'lodash';
@@ -46,23 +46,48 @@ const Index = memo(() => {
 
   const [dataStudent, setDataStudent] = useState(undefined);
 
+  const [checkFinish, setCheckFinish] = useState(false);
+
   const [dataDetails, setDataDetails] = useState(undefined);
 
   const { query } = useLocation();
 
+
   const loadingSubmit = effects[`EnglishQuarterReportAdd/ADD`];
 
+  const dataCommentValue = (i) => {
+    if (isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
+      return "";
+    }
+    if (!isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && !isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
+      return `${(i?.scriptReviewCommentDetail?.map(i => i?.sampleCommentDetail?.name)?.join('.'))}.${head(i?.scriptReviewCommentDetail)?.value}`;
+    }
+    if (!isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
+      return i?.scriptReviewCommentDetail?.map(i => i?.sampleCommentDetail?.name)?.join('.');
+    }
+    if (isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && !isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
+      return head(i?.scriptReviewCommentDetail)?.value;
+    }
+    return "";
+  };
   const onFinish = () => {
 
     // convert mảng object
+    setCheckFinish(true);
     const data = dataDetails?.scriptReviewSubject?.filter(i => i?.isCheck)
       ?.map(item => ({ ...item, scriptReviewSubjectDetail: item?.scriptReviewSubjectDetail?.filter(k => k?.isCheck) }))
-      ?.map(items => ({ ...items, scriptReviewSubjectDetail: items?.scriptReviewSubjectDetail?.map(i => ({ ...i, scriptReviewSubjectDetailChildren: i?.scriptReviewSubjectDetailChildren?.filter(k => k?.radioId) })) }));
+      ?.map(items => ({
+        ...items,
+        checkEmpty: items?.scriptReviewSubjectDetail
+          ?.map(i => ({ ...i, checkEmpty: i?.scriptReviewSubjectDetailChildren?.filter(k => k?.radioId)?.length === i?.scriptReviewSubjectDetailChildren?.filter(i => i?.isCheck)?.length, }))?.filter(k => k?.checkEmpty)?.length === items?.scriptReviewSubjectDetail?.length,
+        scriptReviewSubjectDetail: items?.scriptReviewSubjectDetail
+          ?.map(i => ({ ...i, scriptReviewSubjectDetailChildren: i?.scriptReviewSubjectDetailChildren?.filter(i => i?.isCheck) }))
+      }));
 
     // convert mảng conment
     const dataComment = dataDetails?.scriptReviewComment?.filter(i => i?.isCheck)
-      ?.map(item => ({ ...item, scriptReviewCommentDetail: item?.scriptReviewCommentDetail?.filter(i => i?.checkBox) }))
-      ?.map(item => ({ ...item, scriptReviewCommentDetail: item?.scriptReviewCommentDetail?.map(i => ({ content: i?.sampleCommentDetail?.name, value: i?.value })) }));
+      ?.map(item => ({ ...item, scriptReviewCommentDetail: item?.scriptReviewCommentDetail?.filter(i => i?.isCheck) }))
+      ?.map(item => ({ ...item, scriptReviewCommentDetail: item?.scriptReviewCommentDetail?.map(i => i) }));
 
     // convert payload dataSubjec 
     const dataSubjec = data?.map(i => ({
@@ -76,37 +101,48 @@ const Index = memo(() => {
         }))
       }))
     }));
+    const checkEmpty = data?.filter(i => !i?.checkEmpty);
 
-    dispatch({
-      type: 'EnglishQuarterReportAdd/ADD',
-      payload: {
-        id: params.id,
-        studentId: params?.id,
-        scriptReviewId: dataDetails?.id,
-        schoolYearId: user.schoolYear?.id,
-        status: "REVIEWED",
-        detail: dataSubjec.concat(dataComment?.map(i => ({
-          isComment: dataDetails?.isCheckSampleComment,
-          scriptReviewCommentId: i?.id,
-          content: `${i?.scriptReviewCommentDetail?.map(i => i?.value)?.join('.')}.${head(i?.scriptReviewCommentDetail)?.content}`,
-        }))),
-      },
-      callback: (response, error) => {
-        history.goBack();
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              form.current.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
+    if (checkEmpty?.length === 0) {
+      dispatch({
+        type: 'EnglishQuarterReportAdd/ADD',
+        payload: {
+          id: params.id,
+          studentId: params?.id,
+          scriptReviewId: dataDetails?.id,
+          schoolYearId: user.schoolYear?.id,
+          teacherId: user?.id,
+          status: "REVIEWED",
+          detail: dataSubjec.concat(dataComment?.map(i => ({
+            isComment: dataDetails?.isCheckSampleComment,
+            scriptReviewCommentId: i?.id,
+            content: dataCommentValue(i),
+          }))),
+        },
+        callback: (response, error) => {
+          if (response) {
+            history.goBack();
           }
-        }
-      },
-    });
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                form.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    } else {
+      notification.error({
+        message: 'Error',
+        description: 'You need to choose full information.',
+      });
+    }
   };
 
   useEffect(() => {
@@ -185,7 +221,7 @@ const Index = memo(() => {
       title: 'Content',
       key: 'student',
       className: 'min-width-200',
-      render: (record) => record?.subjectSectionDetail?.name,
+      render: (record) => <div className={!record?.radioId && checkFinish ? "text-danger" : "text-dark"}>{record?.subjectSectionDetail?.name}</div>,
     },
     ...(dataEvaluetionCriteria?.length > 0 ?
       (dataEvaluetionCriteria?.map(i => (

@@ -21,6 +21,9 @@ export function remove(id = {}) {
   return request(`/v1/subjects/${id}`, {
     method: 'DELETE',
     parse: true,
+    data: {
+      id,
+    },
     cancelNotification: true,
   });
 }

@@ -84,6 +84,18 @@ export default {
         callback(null, error?.data);
       }
     },
+    *UPDATE_CONFIRMED({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.updateComfirm, payload);
+        callback(response);
+        notification.success({
+          message: 'Successful',
+          description: 'You update to success data.',
+        });
+      } catch (error) {
+        callback(null, error?.data);
+      }
+    },
     *GET_DATA_SCRIPT_REVIEW({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getDataScriptReview, payload);
