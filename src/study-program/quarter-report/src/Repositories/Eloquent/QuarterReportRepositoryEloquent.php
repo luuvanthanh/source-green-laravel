@@ -109,6 +109,14 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             });
         }
 
+        if (!empty($attributes['type']) && !empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
+            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
+            });
+        }
+
         if (!empty($attributes['studentId'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('StudentId', $attributes['studentId']);
@@ -141,11 +149,12 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                         case 2:
                             $attributes['status'] = QuarterReport::STATUS['NOT_YET_CONFIRM'];
                             $attributes['quarterReportId'] = $quarterReportId;
+                            $attributes['type'] = QuarterReport::TYPE['DUPLICATE'];
                             break;
                     }
                     $result = $this->model()::create($attributes);
                     $quarterReportId = $result->Id;
-                    
+
                     if (!empty($attributes['detail'])) {
                         $this->createDetail($result, $attributes['detail']);
                     }
