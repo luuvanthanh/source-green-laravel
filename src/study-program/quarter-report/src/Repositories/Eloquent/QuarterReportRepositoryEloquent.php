@@ -281,8 +281,9 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
             ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['oldStatus'])
             ->update([
-                'Status' => $attributes['status']
+                'Status' => $attributes['newStatus']
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -293,13 +294,16 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
             ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['oldStatus'])
             ->update([
-                'Status' => $attributes['status']
+                'Status' => $attributes['newStatus']
             ]);
 
         $data = $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('ScriptReviewId', $attributes['scriptReviewId'])->get();
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['newStatus'])
+            ->get();
 
         foreach ($data as $value) {
 
@@ -343,6 +347,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
         foreach ($data['data'] as $value) {
             $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])
+                ->where('Status', $attributes['oldStatus'])
                 ->update([
                     'Status' => $attributes['newStatus']
                 ]);
