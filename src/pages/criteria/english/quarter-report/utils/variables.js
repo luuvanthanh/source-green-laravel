@@ -61,7 +61,7 @@ export const variables = {
     NOT_REVIEW: 'NOT_REVIEW',
     CONFIRMED: 'CONFIRMED',
     REVIEWED: 'REVIEWED',
-    SENT: 'SENT',
+    SEND: 'SENT',
   },
   STATUS_SEARCH_TYPE: {
     REVIEWED: 'DONE_REVIEW',

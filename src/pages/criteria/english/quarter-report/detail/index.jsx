@@ -13,6 +13,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import { variables, Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import variablesModules from '../utils/variables';
@@ -147,27 +148,43 @@ const Index = memo(() => {
       }
     });
   };
-
+  const detailTearch = `${dataDetails?.teacher?.fullName}  ${dataDetails?.creationTime ? Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE) : ""}`;
+  const detailTearchManagement = `${dataDetails?.teacherManagement?.fullName}  ${dataDetails?.confirmationTime ? Helper.getDate(dataDetails?.confirmationTime, variables.DATE_FORMAT.DATE) : ""}`;
   const formStatus = () => {
-    if (query?.type === "done-review" || query?.type === "done-confirmed") {
+    if (query?.type === "done-review") {
       return (
         <Pane className="col-lg-3">
-          <FormDetail name={dataDetails?.teacher?.fullName} label="Teacher report" type="text" />
+          <FormDetail name={detailTearch} label="Teacher report" type="text" />
         </Pane>
       );
     }
-    if (query?.type === "done-confirmed") {
+    if (query?.type === "done-confirmed" || query?.type === "done") {
       return (
-        <Pane className="col-lg-3">
-          <FormDetail name={dataDetails?.teacherManagement?.fullName} label="Approved by" type="text" />
-        </Pane>
+        <>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearch} label="Teacher report" type="text" />
+          </Pane>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearchManagement} label="Approved by" type="text" />
+          </Pane>
+        </>
+      );
+    }
+    if (query?.type === "send") {
+      return (
+        <>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearch} label="Teacher report" type="text" />
+          </Pane>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearchManagement} label="Approved by" type="text" />
+          </Pane>
+        </>
       );
     }
     return "";
   };
-
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
-
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
@@ -213,7 +230,7 @@ const Index = memo(() => {
                     <FormDetail name={dataDetails?.student?.classes?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment periodr" type="text" />
+                    <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment period" type="text" />
                   </Pane>
                   {formStatus()}
                 </Pane>
@@ -290,7 +307,7 @@ const Index = memo(() => {
                   query?.type === 'done' && (
                     <Button
                       className="ml10 px25"
-                      color="primary"
+                      color="success"
                       onClick={() => addSent()}
                       size="large"
                       loading={effects['EnglishQuarterReport/ADD_SENT_ALL']}
