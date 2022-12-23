@@ -219,7 +219,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $result = $this->model()::find($id);
         DB::beginTransaction();
         try {
-            if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
+            if ($attributes['status'] == QuarterReport::STATUS['NOT_YET_CONFIRM']) {
                 $attributes['ConfirmationTime'] = date('Y-m-d H:i:s');
             }
             $result->update($attributes);
