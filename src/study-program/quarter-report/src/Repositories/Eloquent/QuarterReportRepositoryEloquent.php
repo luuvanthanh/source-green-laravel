@@ -91,14 +91,21 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
         }
 
-        if (!empty($attributes['scriptReviewId'])) {
+        if (!empty($attributes['scriptReviewId']) && !empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('ScriptReviewId', $attributes['scriptReviewId']);
             });
         }
 
-        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->doesnthave('quarterReport');
+        if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['NOT_REVIEW'] && !empty($attributes['scriptReviewId'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('quarterReport', function ($query) use ($attributes) {
+
+                if (!empty($attributes['scriptReviewId'])) {
+                    $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+                }
+
+                $query->orderBy('CreationTime', 'DESC');
+            });
         }
 
         if (!empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
