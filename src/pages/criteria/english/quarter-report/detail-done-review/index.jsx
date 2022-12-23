@@ -304,7 +304,7 @@ const Index = memo(() => {
                     <FormDetail name={dataStudent?.class?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataType?.find(i => i?.id === query?.nameAssessmentPeriod)?.name} label="Assessment periodr" type="text" />
+                    <FormDetail name={dataType?.find(i => i?.id === query?.nameAssessmentPeriod)?.name} label="Assessment period" type="text" />
                   </Pane>
                 </Pane>
               </Pane>
