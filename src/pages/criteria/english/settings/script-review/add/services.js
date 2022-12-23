@@ -1,4 +1,6 @@
 import request from '@/utils/requestLavarel';
+import requestNet from '@/utils/request';
+
 import { Helper } from '@/utils';
 
 export function add(data = {}) {
@@ -74,5 +76,12 @@ export function getComment(params = {}) {
       searchJoin: 'and',
       include: Helper.convertIncludes(['sampleCommentDetail']),
     },
+  });
+}
+
+export function getClasses(params) {
+  return requestNet('/classes/by-branches', {
+    method: 'GET',
+    params,
   });
 }

@@ -14,6 +14,7 @@ import FormDetail from '@/components/CommonComponent/FormDetail';
 import Table from '@/components/CommonComponent/Table';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
+import { Helper } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
 import variablesModules from '../utils/variables';
 
@@ -49,11 +50,9 @@ const Index = memo(() => {
 
   const [dataDetails, setDataDetails] = useState(undefined);
 
-  const loadingSubmit = effects[`EnglishQuarterReport/ADD_SENT`] || effects[`EnglishQuarterReportAdd/ADD`];
-
   const onFinish = () => {
     dispatch({
-      type: 'EnglishQuarterReportAdd/ADD',
+      type: 'EnglishQuarterReportAdd/UPDATE_CONFIRMED',
       payload: {
         id: params.id,
         studentId: dataDetails?.student?.id,
@@ -64,8 +63,9 @@ const Index = memo(() => {
         teacherId: user?.id,
       },
       callback: (response, error) => {
-
-        history.goBack();
+        if (response) {
+          history.goBack();
+        }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
             error.data.errors.forEach((item) => {
@@ -123,16 +123,51 @@ const Index = memo(() => {
     }
   }, [details]);
 
+  const addDelete = () => {
+    const payload = {
+      id: params.id,
+    };
+    const text = "Do you want to delete?";
+    Helper.confirmDeleteEnglish({
+      callback: () => {
+        dispatch({
+          type: 'EnglishQuarterReport/DELETE_CONFIRM',
+          payload: { ...payload },
+          callback: (response, error) => {
+            if (response) {
+              history.goBack();
+            }
+            if (error) {
+              if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                error.data.errors.forEach((item) => {
+                  form.current.setFields([
+                    {
+                      name: get(item, 'source.pointer'),
+                      errors: [get(item, 'detail')],
+                    },
+                  ]);
+                });
+              }
+            }
+          }
+        });
+      },
+    }, text);
+  };
+
+
   const addSent = () => {
     const payload = {
       studentId: [dataDetails?.studentId],
       schoolYearId: dataDetails?.schoolYearId,
       scriptReviewId: dataDetails?.scriptReviewId,
-      status: variablesModules.STATUS.CONFIRMED,
+      newStatus: variablesModules.STATUS.CONFIRMED,
+      oldStatus: "NOT_YET_CONFIRM",
+      teacherManagementId: user?.id,
     };
     dispatch({
       type: 'EnglishQuarterReport/ADD_SENT',
-      payload: { ...payload, type: variablesModules.STATUS.DONE_REVIEW },
+      payload: { ...payload },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -214,6 +249,7 @@ const Index = memo(() => {
       : []),
   ];
 
+  const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
@@ -250,7 +286,7 @@ const Index = memo(() => {
                 </div>
                 <Pane className="row">
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataDetails?.schoolYear?.yearFrom} label="School year" type="text" />
+                    <FormDetail name={detailSchoolYear} label="School year" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail name={dataDetails?.student?.branch?.name} label="Center" type="text" />
@@ -259,7 +295,7 @@ const Index = memo(() => {
                     <FormDetail name={dataDetails?.student?.classes?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment periodr" type="text" />
+                    <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment period" type="text" />
                   </Pane>
                 </Pane>
               </Pane>
@@ -336,15 +372,24 @@ const Index = memo(() => {
 
                   onClick={() => history.goBack()}
                 >
-                  Cancel
+                  Close
                 </p>
                 <div className='d-flex'>
                   <Button
                     className="ml-auto px25"
+                    color="danger"
+                    onClick={() => addDelete()}
+                    size="large"
+                    loading={effects['EnglishQuarterReport/DELETE_CONFIRM']}
+                  >
+                    Refuse
+                  </Button>
+                  <Button
+                    className="ml-auto px25 ml10"
                     color="success"
                     htmlType="submit"
                     size="large"
-                    loading={loadingSubmit}
+                    loading={effects['EnglishQuarterReportAdd/UPDATE_CONFIRMED']}
                   >
                     Save
                   </Button>
@@ -353,9 +398,9 @@ const Index = memo(() => {
                     color="primary"
                     onClick={() => addSent()}
                     size="large"
-                    loading={loadingSubmit}
+                    loading={effects['EnglishQuarterReport/ADD_SENT']}
                   >
-                    Acpect
+                    Accept
                   </Button>
                 </div>
               </Pane>

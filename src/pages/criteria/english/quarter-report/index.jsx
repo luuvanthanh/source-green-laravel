@@ -69,6 +69,7 @@ class Index extends PureComponent {
         scriptReviewId: query?.scriptReviewId,
       },
       dataAssess: [],
+      idSent: undefined,
     };
     setIsMounted(true);
   }
@@ -149,8 +150,7 @@ class Index extends PureComponent {
       type: 'EnglishQuarterReport/GET_DATA_TYPE',
       payload: {},
     });
-
-    if (query?.scriptReviewId) {
+    if (query?.scriptReviewId || (search?.branchId && search?.classId)) {
       this.props.dispatch({
         type: 'EnglishQuarterReport/GET_ASSESS',
         payload: {
@@ -187,7 +187,6 @@ class Index extends PureComponent {
       payload: {
         ...search,
         status: variablesModules.STATUS_SEARCH?.[status],
-        scriptReviewId: undefined,
         nameAssessmentPeriodId: undefined,
       },
       callback: (response) => {
@@ -299,6 +298,11 @@ class Index extends PureComponent {
               ...i,
               name: i?.nameAssessmentPeriod?.name,
             })),
+          });
+        }
+        else {
+          this.setStateData({
+            dataAssess: [],
           });
         }
       },
@@ -503,8 +507,14 @@ class Index extends PureComponent {
   };
 
   onFormSent = (record) => {
-    const { search } = this.state;
-
+    const { search, idSent, data } = this.state;
+    const {
+      loading: { effects }
+    } = this.props;
+    const dataActive = data?.filter((item) => item.isActive);
+    if (effects['EnglishQuarterReport/ADD_SENT'] && ((record?.id === idSent) || dataActive?.find(i => record?.id === i.id))) {
+      return <div className={stylesModule['lds-ring']}><div /><div /><div /><div /></div>;
+    }
     if (
       search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ||
       search?.status === variablesModules.STATUS.NOT_YET_SEND
@@ -518,10 +528,18 @@ class Index extends PureComponent {
       );
     }
     return "";
+
   };
 
   addSent = (type, id) => {
     const { search, data } = this.state;
+    const {
+      user,
+    } = this.props;
+    this.setStateData(
+      {
+        idSent: id,
+      },);
     if (type === 'one') {
       this.props.dispatch({
         type: 'EnglishQuarterReport/ADD_SENT',
@@ -529,7 +547,9 @@ class Index extends PureComponent {
           studentId: [id],
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
-          status: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
+          teacherManagementId: user?.id,
         },
         callback: (response) => {
           if (response) {
@@ -546,6 +566,7 @@ class Index extends PureComponent {
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
           status: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
         },
         callback: (response) => {
           if (response) {
@@ -554,8 +575,43 @@ class Index extends PureComponent {
         },
       });
     }
+    else if (type === 'all') {
+      this.props.dispatch({
+        type: 'EnglishQuarterReport/ADD_SENT_ALL',
+        payload: {
+          schoolYearId: search.schoolYearId,
+          scriptReviewId: search.scriptReviewId,
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
+        },
+        callback: (response) => {
+          if (response) {
+            this.onLoad();
+          }
+        },
+      });
+    }
+
   };
 
+  reportTime = (value) => {
+    const { search } = this.state;
+    if (search?.status === variablesModules.STATUS_SEARCH.REVIEWED) {
+      return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE_TIME);
+    }
+    if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_CONFIRM) {
+      return Helper.getDate(head(value?.quarterReport)?.reportTime, variables.DATE_FORMAT.DATE_TIME);
+    }
+    if (search?.status === variablesModules.STATUS_SEARCH.CONFIRMED) {
+      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE_TIME);
+    }
+    if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_SEND) {
+      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE_TIME);
+    }
+    return (
+      Helper.getDate(head(value?.quarterReport)?.lastModificationTime, variables.DATE_FORMAT.DATE_TIME)
+    );
+  }
 
   header = () => {
 
@@ -576,7 +632,7 @@ class Index extends PureComponent {
           key: 'text',
           width: 150,
           align: 'center',
-          render: (value) => Helper.getDate(value?.registerDate, variables.DATE_FORMAT.DATE_TIME),
+          render: (record) => this.reportTime(record),
         },] : []),
       {
         title: 'Center',
@@ -701,15 +757,17 @@ class Index extends PureComponent {
               (search?.status === variablesModules.STATUS.NOT_REVIEW) || (search?.status === variablesModules.STATUS.REVIEWED) || (search?.status === variablesModules.STATUS.SENT) || (search?.status === variablesModules.STATUS.CONFIRMED) ?
                 " " :
                 <div className='d-flex'>
-                  <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')}>
-                    Accept selected reviews
+                  <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')} loading={size(data?.filter((item) => item.isActive)) && effects['EnglishQuarterReport/ADD_SENT']}>
+                    {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
                   </Button>
                   <Button
                     color="success"
                     icon="redo2"
                     className="ml-2"
+                    loading={effects['EnglishQuarterReport/ADD_SENT_ALL']}
+                    onClick={() => this.addSent('all')}
                   >
-                    Accept all
+                    {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
                   </Button>
                 </div>
             }
@@ -729,7 +787,7 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Select all school year' }, ...years]}
+                    data={[...years]}
                     name="schoolYearId"
                     onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
                     type={variables.SELECT}
@@ -767,7 +825,7 @@ class Index extends PureComponent {
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
-                    placeholder="Select classId"
+                    placeholder="Select class"
                     allowClear={false}
                   />
                 </div>
@@ -776,7 +834,7 @@ class Index extends PureComponent {
                     data={dataAssess}
                     name="scriptReviewId"
                     options={['id', 'name']}
-                    placeholder="Select script review id"
+                    placeholder="Select script review"
                     onChange={(event) => this.onChangeSelectAssess(event, 'scriptReviewId')}
                     type={variables.SELECT}
                     loading={effects['EnglishQuarterReport/GET_ASSESS']}
@@ -788,7 +846,7 @@ class Index extends PureComponent {
                     name="key"
                     onChange={(event) => this.onChange(event, 'key')}
                     type={variables.INPUT_SEARCH}
-                    placeholder="Input text"
+                    placeholder="Enter keyword"
                   />
                 </div>
                 <div className='col-lg-3'>
@@ -830,13 +888,13 @@ class Index extends PureComponent {
               onRow={(record) => ({
                 onClick: () => {
                   if (search.status === variablesModules.STATUS.REVIEWED) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done-review`);
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-review`);
                   }
                   if (search.status === variablesModules.STATUS.CONFIRMED) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done-confirmed`);
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-confirmed`);
                   }
                   if (search.status === variablesModules.STATUS.NOT_YET_SEND || search.status === variablesModules.STATUS.SENT) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done`);
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done`);
                   }
                 },
               })}
