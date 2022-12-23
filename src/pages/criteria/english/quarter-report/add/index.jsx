@@ -111,7 +111,7 @@ const Index = memo(() => {
           studentId: params?.id,
           scriptReviewId: dataDetails?.id,
           schoolYearId: user.schoolYear?.id,
-          teacherId: user?.id,
+          teacherId: user?.objectInfo?.id,
           status: "REVIEWED",
           detail: dataSubjec.concat(dataComment?.map(i => ({
             isComment: dataDetails?.isCheckSampleComment,

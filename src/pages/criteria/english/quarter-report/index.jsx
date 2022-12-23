@@ -558,14 +558,14 @@ class Index extends PureComponent {
         },
       });
     }
-    else if (type === 'much') {
+    if (type === 'much') {
       this.props.dispatch({
         type: 'EnglishQuarterReport/ADD_SENT',
         payload: {
           studentId: data?.filter(i => i?.isActive)?.map(i => i.id),
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
-          status: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
           oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
         },
         callback: (response) => {
@@ -575,7 +575,7 @@ class Index extends PureComponent {
         },
       });
     }
-    else if (type === 'all') {
+    if (type === 'all') {
       this.props.dispatch({
         type: 'EnglishQuarterReport/ADD_SENT_ALL',
         payload: {
@@ -597,21 +597,32 @@ class Index extends PureComponent {
   reportTime = (value) => {
     const { search } = this.state;
     if (search?.status === variablesModules.STATUS_SEARCH.REVIEWED) {
-      return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE_TIME);
+      return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_CONFIRM) {
-      return Helper.getDate(head(value?.quarterReport)?.reportTime, variables.DATE_FORMAT.DATE_TIME);
+      return Helper.getDate(head(value?.quarterReport)?.reportTime, variables.DATE_FORMAT.DATE);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.CONFIRMED) {
-      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE_TIME);
+      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_SEND) {
-      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE_TIME);
+      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE);
     }
     return (
-      Helper.getDate(head(value?.quarterReport)?.lastModificationTime, variables.DATE_FORMAT.DATE_TIME)
+      Helper.getDate(head(value?.quarterReport)?.lastModificationTime, variables.DATE_FORMAT.DATE)
     );
   }
+
+  titleTime = () => {
+    const { search } = this.state;
+    if (search?.status === variablesModules.STATUS.NOT_YET_SEND || search?.status === variablesModules.STATUS.CONFIRMED) {
+      return "Confirmation time";
+    }
+    if (search?.status === variablesModules.STATUS.SENT) {
+      return "Send time";
+    }
+    return "Report time";
+  };
 
   header = () => {
 
@@ -628,10 +639,9 @@ class Index extends PureComponent {
         },] : []),
       ...(search?.status !== "NOT_REVIEW" ?
         [{
-          title: 'Report time',
+          title: this.titleTime(),
           key: 'text',
           width: 150,
-          align: 'center',
           render: (record) => this.reportTime(record),
         },] : []),
       {
@@ -879,6 +889,8 @@ class Index extends PureComponent {
               rowSelection={
                 search?.status === variablesModules.STATUS.NOT_REVIEW ||
                   search?.status === variablesModules.STATUS.REVIEWED ||
+                  search?.status === variablesModules.STATUS.SENT ||
+                  search?.status === variablesModules.STATUS.NOT_REVIEW ||
                   search?.status === variablesModules.STATUS.CONFIRMED ? null : { ...rowSelection }}
               pagination={this.pagination(pagination)}
               params={{
@@ -893,8 +905,11 @@ class Index extends PureComponent {
                   if (search.status === variablesModules.STATUS.CONFIRMED) {
                     history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-confirmed`);
                   }
-                  if (search.status === variablesModules.STATUS.NOT_YET_SEND || search.status === variablesModules.STATUS.SENT) {
+                  if (search.status === variablesModules.STATUS.NOT_YET_SEND) {
                     history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done`);
+                  }
+                  if (search.status === variablesModules.STATUS.SENT) {
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=send`);
                   }
                 },
               })}
