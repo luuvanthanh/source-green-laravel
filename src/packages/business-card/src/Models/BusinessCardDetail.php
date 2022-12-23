@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class BusinessCardDetail extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

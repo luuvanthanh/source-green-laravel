@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class HealthInsurance extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     protected $table = 'HealthInsurances';
 
     protected $fillable = [

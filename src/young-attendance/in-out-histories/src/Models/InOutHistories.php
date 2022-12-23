@@ -8,7 +8,7 @@ use GGPHP\Fee\Models\SchoolYear;
 
 class InOutHistories extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

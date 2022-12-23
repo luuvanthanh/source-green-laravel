@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class NameAssessmentPeriod extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     protected $table = 'NameAssessmentPeriods';
 
     protected $fillable = [

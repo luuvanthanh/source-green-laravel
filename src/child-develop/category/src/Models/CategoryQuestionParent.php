@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class CategoryQuestionParent extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     protected $table = 'CategoryQuestionParents';
 
     protected $fillable = [

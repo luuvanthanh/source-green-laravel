@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class CategoryChildIssue extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     const CODE = 'VD';
 
     protected $table = 'CategoryChildIssues';

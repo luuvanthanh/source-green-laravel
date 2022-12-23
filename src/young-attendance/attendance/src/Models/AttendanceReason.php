@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class AttendanceReason extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     /**
      * Declare the table name
      */

@@ -8,7 +8,7 @@ use GGPHP\Fee\Models\ChargeOldStudent;
 
 class Classes extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

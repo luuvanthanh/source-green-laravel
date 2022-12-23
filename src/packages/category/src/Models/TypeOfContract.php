@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class TypeOfContract extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     const HOP_DONG = 'HOP_DONG';

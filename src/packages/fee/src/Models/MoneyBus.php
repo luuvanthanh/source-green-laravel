@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class MoneyBus extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     protected $table = 'fee.MoneyBuses';
 
     /**
