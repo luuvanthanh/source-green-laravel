@@ -110,6 +110,14 @@ export function addSentAll(data = {}) {
   });
 }
 
+export function addConfirmedAll(data = {}) {
+  return request('/v1/update-all-status-quarter-reports', {
+    method: 'POST',
+    data,
+    cancelNotification: true,
+  });
+}
+
 export function updateSent(data = {}) {
   return request('/v1/notification-quarter-reports', {
     method: 'PUT',

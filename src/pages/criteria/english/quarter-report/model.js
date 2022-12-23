@@ -266,6 +266,18 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *ADD_CONFIRMED_ALL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addConfirmedAll, payload);
+        callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'You updated to success data.',
+        });
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *ADD_CONFIRM({ payload, callback }, saga) {
       try {
         yield saga.call(services.addConfirm, payload);

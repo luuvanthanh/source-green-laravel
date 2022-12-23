@@ -575,14 +575,31 @@ class Index extends PureComponent {
         },
       });
     }
-    if (type === 'all') {
+    if (type === 'allConfirmed') {
+      this.props.dispatch({
+        type: 'EnglishQuarterReport/ADD_CONFIRMED_ALL',
+        payload: {
+          schoolYearId: search.schoolYearId,
+          scriptReviewId: search.scriptReviewId,
+          newStatus: 'CONFIRMED',
+          oldStatus: "NOT_YET_CONFIRM",
+        },
+        callback: (response) => {
+          if (response) {
+            this.onLoad();
+          }
+        },
+      });
+    }
+
+    if (type === 'send') {
       this.props.dispatch({
         type: 'EnglishQuarterReport/ADD_SENT_ALL',
         payload: {
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
-          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
-          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
+          newStatus: 'SENT',
+          oldStatus: "CONFIRMED",
         },
         callback: (response) => {
           if (response) {
@@ -770,15 +787,15 @@ class Index extends PureComponent {
                   <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')} loading={size(data?.filter((item) => item.isActive)) && effects['EnglishQuarterReport/ADD_SENT']}>
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
                   </Button>
-                  <Button
+                  {/* <Button
                     color="success"
                     icon="redo2"
                     className="ml-2"
-                    loading={effects['EnglishQuarterReport/ADD_SENT_ALL']}
-                    onClick={() => this.addSent('all')}
+                    loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL']}
+                    onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "send")}
                   >
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
-                  </Button>
+                  </Button> */}
                 </div>
             }
           </div>
