@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class AbsentConfigTime extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'AbsentConfigTimes';

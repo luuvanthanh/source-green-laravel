@@ -10,7 +10,7 @@ use GGPHP\Fee\Models\SchoolYear;
 
 class AssessmentPeriod extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     protected $table = 'AssessmentPeriods';
 
     protected $fillable = [

@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class Shift extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     const ON = 'ON';

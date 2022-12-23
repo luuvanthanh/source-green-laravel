@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class NumberFormContract extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     protected $table = 'NumberFormContracts';
 
     protected $fillable = [

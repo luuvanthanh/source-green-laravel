@@ -8,7 +8,7 @@ use GGPHP\Fee\Models\SchoolYear;
 
 class ConfigRefund extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     /**
      * Declare the table name
      */

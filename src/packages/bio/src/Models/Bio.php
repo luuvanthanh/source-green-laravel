@@ -9,7 +9,7 @@ use ZK\Traits\SyncToDevice;
 
 class Bio extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use SyncToDevice, SoftDeletes;
 
     /**

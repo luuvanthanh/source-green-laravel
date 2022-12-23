@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class ParamaterValue extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     const CONTRACT = 'CONTRACT';

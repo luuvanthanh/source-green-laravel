@@ -9,7 +9,7 @@ use GGPHP\Users\Models\User;
 
 class Timekeeping extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'Timekeepings';
