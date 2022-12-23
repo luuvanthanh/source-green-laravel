@@ -219,8 +219,8 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $result = $this->model()::find($id);
         DB::beginTransaction();
         try {
-            if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
-                $attributes['ConfirmationTime'] = date('Y-m-d H:i:s');
+            if ($attributes['status'] == QuarterReport::STATUS['NOT_YET_CONFIRM']) {
+                $attributes['confirmationTime'] = date('Y-m-d H:i:s');
             }
             $result->update($attributes);
 
@@ -290,7 +290,8 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             ->where('ScriptReviewId', $attributes['scriptReviewId'])
             ->where('Status', $attributes['oldStatus'])
             ->update([
-                'Status' => $attributes['newStatus']
+                'Status' => $attributes['newStatus'],
+                'ConfirmationTime' => date('Y-m-d H:i:s')
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
