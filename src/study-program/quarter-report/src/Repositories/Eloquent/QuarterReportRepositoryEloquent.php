@@ -290,7 +290,8 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             ->where('ScriptReviewId', $attributes['scriptReviewId'])
             ->where('Status', $attributes['oldStatus'])
             ->update([
-                'Status' => $attributes['newStatus']
+                'Status' => $attributes['newStatus'],
+                'ConfirmationTime' => date('Y-m-d H:i:s')
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
