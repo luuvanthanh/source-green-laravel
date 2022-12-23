@@ -14,7 +14,7 @@ import FormDetail from '@/components/CommonComponent/FormDetail';
 import Table from '@/components/CommonComponent/Table';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
-import { Helper } from '@/utils';
+import { variables, Helper } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
 import variablesModules from '../utils/variables';
 
@@ -58,9 +58,25 @@ const Index = memo(() => {
         studentId: dataDetails?.student?.id,
         scriptReviewId: dataDetails?.scriptReview?.id,
         schoolYearId: user.schoolYear?.id,
-        status: "REVIEWED",
-        detail: dataDetails?.quarterReportDetail,
-        teacherId: user?.id,
+        status: "NOT_YET_CONFIRM",
+        detail: dataDetails?.quarterReportDetail?.map(i => ({
+          id: i?.id,
+          isSubject: i?.isSubject ? true : undefined,
+          isComment: i?.isComment ? true : undefined,
+          scriptReviewSubjectId: i?.isSubject ? i?.scriptReviewSubjectId : undefined,
+          detailSubject: i?.isSubject ? i?.quarterReportDetailSubject?.map(item => ({
+            id: item?.id,
+            scriptReviewSubjectDetailId: item?.scriptReviewSubjectDetailId,
+            detailSubjectChildren: item?.quarterReportDetailSubjectChildren?.map(itemDetail => ({
+              id: itemDetail?.id,
+              scriptReviewSubjectDetailChildrenId: itemDetail?.scriptReviewSubjectDetailChildrenId,
+              evaluationCriteriaId: itemDetail?.evaluationCriteriaId,
+            }))
+          })) : undefined,
+          scriptReviewCommentId: i?.isComment ? i?.scriptReviewCommentId : undefined,
+          content: i?.isComment ? i?.content : undefined,
+        })),
+        teacherId: user?.objectInfo?.id,
       },
       callback: (response, error) => {
         if (response) {
@@ -127,7 +143,7 @@ const Index = memo(() => {
     const payload = {
       id: params.id,
     };
-    const text = "Do you want to delete?";
+    const text = "Do you want to refuse?";
     Helper.confirmDeleteEnglish({
       callback: () => {
         dispatch({
@@ -163,7 +179,7 @@ const Index = memo(() => {
       scriptReviewId: dataDetails?.scriptReviewId,
       newStatus: variablesModules.STATUS.CONFIRMED,
       oldStatus: "NOT_YET_CONFIRM",
-      teacherManagementId: user?.id,
+      teacherManagementId: user?.objectInfo?.id,
     };
     dispatch({
       type: 'EnglishQuarterReport/ADD_SENT',
@@ -250,6 +266,7 @@ const Index = memo(() => {
   ];
 
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
+  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE)}`;
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
@@ -296,6 +313,9 @@ const Index = memo(() => {
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment period" type="text" />
+                  </Pane>
+                  <Pane className="col-lg-3">
+                    <FormDetail name={detailTearch} label="Teacher report" type="text" />
                   </Pane>
                 </Pane>
               </Pane>
