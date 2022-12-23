@@ -14,69 +14,75 @@ trait ActivityLogTrait
     public static function boot()
     {
         parent::boot();
-       
+
         static::created(function ($model) {
             $user = self::getUserInfo(request()->bearerToken());
-            $subjectId = $model->Id;
-            $subjectType = get_class($model);
-            $causerId = $user->Id;
-            $causerType = get_class($user);
-            $description = 'created';
-            $properties = json_encode(request()->all());
+            if ($user instanceof User) {
+                $subjectId = $model->Id;
+                $subjectType = get_class($model);
+                $causerId = $user->Id;
+                $causerType = get_class($user);
+                $description = 'created';
+                $properties = json_encode(request()->all());
 
-            $array = [
-                'subjectId' => $subjectId,
-                'subjectType' => $subjectType,
-                'causerId' => $causerId,
-                'causerType' => $causerType,
-                'description' => $description,
-                'properties' => $properties
-            ];
+                $array = [
+                    'subjectId' => $subjectId,
+                    'subjectType' => $subjectType,
+                    'causerId' => $causerId,
+                    'causerType' => $causerType,
+                    'description' => $description,
+                    'properties' => $properties
+                ];
 
-            resolve(ActivityLogRepository::class)->create($array);
+                resolve(ActivityLogRepository::class)->create($array);
+            }
         });
 
         static::updated(function ($model) {
             $user = self::getUserInfo(request()->bearerToken());
-            $getChanges = $model->getChanges();
-            $properties = json_encode($getChanges);
-            $subjectId = $model->Id;
-            $subjectType = get_class($model);
-            $causerId = $user->Id;
-            $causerType = get_class($user);
-            $description = 'updated';
+            if ($user instanceof User) {
+                $getChanges = $model->getChanges();
+                $properties = json_encode($getChanges);
+                $subjectId = $model->Id;
+                $subjectType = get_class($model);
+                $causerId = $user->Id;
+                $causerType = get_class($user);
+                $description = 'updated';
 
-            $array = [
-                'subjectId' => $subjectId,
-                'subjectType' => $subjectType,
-                'causerId' => $causerId,
-                'causerType' => $causerType,
-                'description' => $description,
-                'properties' => $properties
-            ];
+                $array = [
+                    'subjectId' => $subjectId,
+                    'subjectType' => $subjectType,
+                    'causerId' => $causerId,
+                    'causerType' => $causerType,
+                    'description' => $description,
+                    'properties' => $properties
+                ];
 
-            resolve(ActivityLogRepository::class)->create($array);
+                resolve(ActivityLogRepository::class)->create($array);
+            }
         });
 
         static::deleted(function ($model) {
             $user = self::getUserInfo(request()->bearerToken());
-            $subjectId = $model->Id;
-            $subjectType = get_class($model);
-            $causerId = $user->Id;
-            $causerType = get_class($user);
-            $description = 'deleted';
-            $properties = json_encode($model->toArray());
+            if ($user instanceof User) {
+                $subjectId = $model->Id;
+                $subjectType = get_class($model);
+                $causerId = $user->Id;
+                $causerType = get_class($user);
+                $description = 'deleted';
+                $properties = json_encode($model->toArray());
 
-            $array = [
-                'subjectId' => $subjectId,
-                'subjectType' => $subjectType,
-                'causerId' => $causerId,
-                'causerType' => $causerType,
-                'description' => $description,
-                'properties' => $properties
-            ];
+                $array = [
+                    'subjectId' => $subjectId,
+                    'subjectType' => $subjectType,
+                    'causerId' => $causerId,
+                    'causerType' => $causerType,
+                    'description' => $description,
+                    'properties' => $properties
+                ];
 
-            resolve(ActivityLogRepository::class)->create($array);
+                resolve(ActivityLogRepository::class)->create($array);
+            }
         });
     }
 
