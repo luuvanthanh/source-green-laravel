@@ -220,7 +220,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         DB::beginTransaction();
         try {
             if ($attributes['status'] == QuarterReport::STATUS['NOT_YET_CONFIRM']) {
-                $attributes['ConfirmationTime'] = date('Y-m-d H:i:s');
+                $attributes['confirmationTime'] = date('Y-m-d H:i:s');
             }
             $result->update($attributes);
 
