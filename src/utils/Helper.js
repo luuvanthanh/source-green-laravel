@@ -16,6 +16,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import Cookies from 'universal-cookie';
 import Tag from '@/components/CommonComponent/Tag';
+import styles from '@/assets/styles/Common/common.scss';
 import L from 'leaflet';
 import { variables } from './variables';
 
@@ -1116,6 +1117,44 @@ export default class Helpers {
       okText: 'Có',
       cancelText: 'Không',
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
+      onOk() {
+        callback();
+      },
+      onCancel() {},
+    });
+  };
+
+  static confirmDelete = ({ callback }, text) => {
+    confirm({
+      icon: '',
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      className: `${styles['wrapper-modal-delete']}`,
+      content: (
+        <>
+          <div className={styles['modal-text']}>{text}</div>
+        </>
+      ),
+      onOk() {
+        callback();
+      },
+      onCancel() {},
+    });
+  };
+
+  static confirmDeleteEnglish = ({ callback }, text) => {
+    confirm({
+      icon: '',
+      centered: true,
+      okText: 'Yes',
+      cancelText: 'No',
+      className: `${styles['wrapper-modal-delete']}`,
+      content: (
+        <>
+          <div className={styles['modal-text']}>{text}</div>
+        </>
+      ),
       onOk() {
         callback();
       },

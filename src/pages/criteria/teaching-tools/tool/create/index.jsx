@@ -9,6 +9,8 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
+
+
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
@@ -18,6 +20,7 @@ import { EditableCell, EditableRow } from '@/components/CommonComponent/Table/Ed
 import TableCus from '@/components/CommonComponent/Table';
 import { v4 as uuidv4 } from 'uuid';
 import Select from '@/components/CommonComponent/Select';
+
 
 const Index = memo(() => {
   const [
@@ -326,17 +329,32 @@ const Index = memo(() => {
     );
   };
 
+  const onChangeInput = (record, e, type) => {
+    if (toolDetailLevels?.find(i => i?.level === e)?.level !== e) {
+      setToolDetailLevels((prev) =>
+        prev.map((item) => ({
+          ...item,
+          [type]: item.id === record.id ? e : item?.[type],
+        })),
+      );
+    }
+  };
+
   const headerLevels = () => {
     const columns = [
       {
         title: 'Cấp độ',
         key: 'level',
-        dataIndex: 'level',
         className: 'min-width-200',
         width: 200,
-        editable: true,
-        type: variables.INPUT_COUNT,
-        render: (value) => <Input value={value} placeholder="Nhập" />,
+        render: (record) =>
+          <FormItem
+            value={record?.level}
+            placeholder="Nhập"
+            rules={[variables.RULES.EMPTY]}
+            type={variables.NUMBER_INPUT}
+            onChange={(e) => onChangeInput(record, e, 'level')}
+          />,
       },
       {
         title: 'Diễn giải',
@@ -445,18 +463,6 @@ const Index = memo(() => {
                   <Pane className="row">
                     <Pane className="col-lg-6">
                       <FormItem label="Nội dung" name="content" type={variables.TEXTAREA} />
-                    </Pane>
-                    <Pane className="col-lg-6">
-                      <FormItem label="Ý nghĩa" name="meanOfLife" type={variables.TEXTAREA} />
-                    </Pane>
-                  </Pane>
-                  <Pane className="row">
-                    <Pane className="col-lg-6">
-                      <FormItem
-                        label="Kỹ năng trẻ đạt được"
-                        name="skillGained"
-                        type={variables.TEXTAREA}
-                      />
                     </Pane>
                   </Pane>
                 </Pane>

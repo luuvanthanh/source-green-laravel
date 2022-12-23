@@ -44,9 +44,15 @@ export const variables = {
   // RULES
   RULES: {
     EMPTY: { required: true, message: 'Vui lòng không được để trống trường này' },
+    EMPTY_ENGLISH: { required: true, message: 'Please do not leave this field blank' },
     EMPTY_INPUT: {
       required: true,
       message: 'Vui lòng không được để trống trường này',
+      whitespace: true,
+    },
+    EMPTY_INPUT_ENGLISH: {
+      required: true,
+      message: 'Please do not leave this field blank',
       whitespace: true,
     },
     MAX_LENGTH_INPUT_CODE: { max: 30, message: 'Trường này không quá 30 kí tự' },

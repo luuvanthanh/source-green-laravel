@@ -13,7 +13,7 @@ import CuratorForm from './forms/curator';
 import AccountForm from './forms/account';
 import NotificationForm from './forms/notification';
 
-import { menu, defaultKey } from './menu';
+import { menu, defaultKey } from '../menu';
 
 const { Item: MenuItem } = Menu;
 
@@ -58,7 +58,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
         <Pane className="col">
           {!params.id && <Heading type="page-title">Tạo hồ sơ phụ huynh</Heading>}
           {params.id && (
-            <Heading type="page-title">Chi tiết hồ sơ phụ huynh ({details.fullName})</Heading>
+            <Heading type="page-title">Chỉnh sửa hồ sơ phụ huynh ({details.fullName})</Heading>
           )}
         </Pane>
       </Pane>

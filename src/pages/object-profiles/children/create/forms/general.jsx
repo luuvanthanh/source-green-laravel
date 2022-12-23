@@ -125,7 +125,7 @@ const General = memo(
         callback: (res, error) => {
           if (res) {
             history.push(
-              `/ho-so-doi-tuong/hoc-sinh/${res?.student?.id}/chi-tiet`,
+              `/ho-so-doi-tuong/hoc-sinh/${res?.student?.id}/chinh-sua`,
             );
           }
           if (error) {
