@@ -23,7 +23,7 @@ class AttendanceTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['attendanceReason', 'attendanceLog', 'studentTransporter', 'student', 'activityLog'];
+    protected $defaultIncludes = ['attendanceReason', 'attendanceLog', 'studentTransporter', 'student'];
     protected $availableIncludes = ['schoolYear'];
 
     /**
