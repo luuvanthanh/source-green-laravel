@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class PayrollSession extends UuidModel
 {
-    use ActivityLogTrait;   
+    //use ActivityLogTrait;   
     protected $table = 'PayrollSessions';
 
     protected $fillable = [

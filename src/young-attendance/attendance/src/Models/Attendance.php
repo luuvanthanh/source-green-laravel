@@ -8,7 +8,7 @@ use GGPHP\Fee\Models\SchoolYear;
 
 class Attendance extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
 
     const STATUS = [
         'ANNUAL_LEAVE' => 1,

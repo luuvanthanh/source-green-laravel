@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class AddSubTimeDetail extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'AddSubTimeDetails';

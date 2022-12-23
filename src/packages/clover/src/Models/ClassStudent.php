@@ -8,7 +8,7 @@ use GGPHP\Fee\Models\SchoolYear;
 
 class ClassStudent extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

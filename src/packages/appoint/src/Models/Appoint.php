@@ -8,7 +8,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class Appoint extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class AbsentType extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     protected $table = 'AbsentTypeStudents';
