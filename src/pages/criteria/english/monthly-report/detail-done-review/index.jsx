@@ -34,15 +34,15 @@ const Index = memo(() => {
     dataType,
     dataEvaluetionCriteria,
     user,
-  } = useSelector(({ EnglishMonthReportAdd, menu, loading, EnglishMonthReport, user }) => ({
-    dataAssess: EnglishMonthReportAdd.dataAssess,
+  } = useSelector(({ EnglishMonthlyReport, menu, loading, EnglishMonthlyReportAdd, user }) => ({
+    dataAssess: EnglishMonthlyReport.dataAssess,
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: EnglishMonthReport.details,
-    dataType: EnglishMonthReportAdd.dataType,
-    dataEvaluetionCriteria: EnglishMonthReport.dataEvaluetionCriteria,
+    details: EnglishMonthlyReportAdd.details,
+    dataType: EnglishMonthlyReport.dataType,
+    dataEvaluetionCriteria: EnglishMonthlyReportAdd.dataEvaluetionCriteria,
     user: user.user,
-    error: EnglishMonthReport.error,
+    error: EnglishMonthlyReportAdd.error,
   }));
 
   const [dataStudent, setDataStudent] = useState(undefined);
@@ -51,7 +51,7 @@ const Index = memo(() => {
 
   const { query } = useLocation();
 
-  const loadingSubmit = effects[`EnglishMonthReport/ADD`];
+  const loadingSubmit = effects[`EnglishMonthlyReportAdd/ADD`];
 
   const onFinish = () => {
 
@@ -79,7 +79,7 @@ const Index = memo(() => {
     }));
 
     dispatch({
-      type: 'EnglishMonthReport/ADD',
+      type: 'EnglishMonthlyReportAdd/ADD',
       payload: {
         id: params.id,
         studentId: params?.id,
@@ -113,7 +113,7 @@ const Index = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'EnglishMonthReport/GET_DATA_STUDENTS',
+        type: 'EnglishMonthlyReportAdd/GET_DATA_STUDENTS',
         payload: params?.id,
         callback: (response) => {
           if (response) {
@@ -129,11 +129,11 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'EnglishMonthReportAdd/GET_DATA_TYPE',
+      type: 'EnglishMonthlyReport/GET_DATA_TYPE',
       payload: {},
     });
     dispatch({
-      type: 'EnglishMonthReport/GET_DATA_SCRIPT_REVIEW',
+      type: 'EnglishMonthlyReportAdd/GET_DATA_SCRIPT_REVIEW',
       payload: {
         nameAssessmentPeriodId: query?.nameAssessmentPeriod,
       },
@@ -144,7 +144,7 @@ const Index = memo(() => {
       },
     });
     dispatch({
-      type: 'EnglishMonthReport/GET_DATA_EVALUATION_CRITERRIA',
+      type: 'EnglishMonthlyReportAdd/GET_DATA_EVALUATION_CRITERRIA',
       payload: {},
     });
   }, []);
@@ -271,7 +271,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['EnglishMonthReport/GET_DATA_SCRIPT_REVIEW']}
+              loading={effects['EnglishMonthlyReportAdd/GET_DATA_SCRIPT_REVIEW']}
               params={{
                 type: 'container',
               }}
@@ -304,7 +304,7 @@ const Index = memo(() => {
                     <FormDetail name={dataStudent?.class?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataType?.find(i => i?.id === query?.nameAssessmentPeriod)?.name} label="Assessment periodr" type="text" />
+                    <FormDetail name={dataType?.find(i => i?.id === query?.nameAssessmentPeriod)?.name} label="Assessment period" type="text" />
                   </Pane>
                 </Pane>
               </Pane>

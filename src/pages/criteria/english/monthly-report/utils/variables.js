@@ -12,6 +12,8 @@ export const variables = {
     REVIEWED: 'REVIEWED',
     NOT_YET_CONFIRM: 'NOT_YET_CONFIRM',
     NOT_YET_SEND: 'NOT_YET_SEND',
+    DONE_REVIEW: 'NOT_REVIEW',
+    DONE_CONFIRM: 'DONE_CONFIRM',
   },
   STATUS_NAME: {
     IN_PROGRESS: 'Đang trao đổi',
@@ -53,6 +55,18 @@ export const variables = {
       name: 'DONE SEND',
     },
   ],
+  STATUS_SEARCH: {
+    NOT_YET_CONFIRM: 'NOT_YET_CONFIRM',
+    NOT_YET_SEND: 'CONFIRMED',
+    NOT_REVIEW: 'NOT_REVIEW',
+    CONFIRMED: 'CONFIRMED',
+    REVIEWED: 'REVIEWED',
+    SENT: 'SENT',
+  },
+  STATUS_SEARCH_TYPE: {
+    REVIEWED: 'DONE_REVIEW',
+    CONFIRMED: 'DONE_CONFIRM',
+  },
   PARENT: 'PARENT',
   TEACHER: 'TEACHER',
   NAME_ROLES: {

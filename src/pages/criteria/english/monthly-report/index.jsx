@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tabs, notification } from 'antd';
+import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
 import { debounce, head, size } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -33,15 +33,15 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ EnglishMonthReport, loading, user }) => ({
+const mapStateToProps = ({ EnglishMonthlyReport, loading, user }) => ({
   loading,
-  pagination: EnglishMonthReport.pagination,
-  classes: EnglishMonthReport.classes,
-  branches: EnglishMonthReport.branches,
-  assessmentPeriod: EnglishMonthReport.assessmentPeriod,
+  pagination: EnglishMonthlyReport.pagination,
+  classes: EnglishMonthlyReport.classes,
+  branches: EnglishMonthlyReport.branches,
+  assessmentPeriod: EnglishMonthlyReport.assessmentPeriod,
   defaultBranch: user.defaultBranch,
-  years: EnglishMonthReport.years,
-  dataType: EnglishMonthReport.dataType,
+  years: EnglishMonthlyReport.years,
+  dataType: EnglishMonthlyReport.dataType,
   user: user.user,
 });
 @connect(mapStateToProps)
@@ -66,9 +66,10 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         status: query?.status || variablesModules.STATUS.NOT_REVIEW,
-        nameAssessmentPeriodId: query?.nameAssessmentPeriodId,
+        scriptReviewId: query?.scriptReviewId,
+        month: query.month && moment(query.month) || null,
       },
-      dataAssess: [],
+      idSent: undefined,
     };
     setIsMounted(true);
   }
@@ -106,16 +107,10 @@ class Index extends PureComponent {
           key: query?.key,
           branchId: query?.branchId,
           classId: query?.classId,
-          from: query?.from
-            ? moment(query?.from).format(variables.DATE_FORMAT.DATE_AFTER)
-            : moment().startOf('months'),
-          to: query?.to
-            ? moment(query?.to).format(variables.DATE_FORMAT.DATE_AFTER)
-            : moment().endOf('months'),
           page: query?.page || variables.PAGINATION.PAGE,
           limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-          nameAssessmentPeriodId: query?.nameAssessmentPeriodId,
           status: query?.status || variablesModules.STATUS.PENDING_APPROVED,
+          month: moment(query.month) || null
         },
       },
       () => {
@@ -126,11 +121,11 @@ class Index extends PureComponent {
   };
 
   loadCategories = () => {
-    const { defaultBranch } = this.props;
+    const { defaultBranch, location: { query } } = this.props;
     const { search } = this.state;
     if (search.branchId) {
       this.props.dispatch({
-        type: 'EnglishMonthReport/GET_CLASSES',
+        type: 'EnglishMonthlyReport/GET_CLASSES',
         payload: {
           branch: search.branchId,
         },
@@ -138,28 +133,38 @@ class Index extends PureComponent {
     }
     if (!defaultBranch?.id) {
       this.props.dispatch({
-        type: 'EnglishMonthReport/GET_BRANCHES',
+        type: 'EnglishMonthlyReport/GET_BRANCHES',
         payload: {},
       });
     }
     this.props.dispatch({
-      type: 'EnglishMonthReport/GET_YEARS',
+      type: 'EnglishMonthlyReport/GET_YEARS',
       payload: {},
     });
     this.props.dispatch({
-      type: 'EnglishMonthReport/GET_DATA_TYPE',
+      type: 'EnglishMonthlyReport/GET_DATA_TYPE',
       payload: {},
     });
-    if (search.schoolYearId) {
+    if (query?.scriptReviewId || (search?.branchId && search?.classId)) {
       this.props.dispatch({
-        type: 'EnglishMonthReport/GET_ASESSMENT_PERIOD',
+        type: 'EnglishMonthlyReport/GET_ASSESS',
         payload: {
           schoolYearId: search.schoolYearId,
+          classId: search.classId,
+          branchId: search.branchId,
+          type: "QUARTER_REPORT",
+        },
+        callback: (response) => {
+          if (head(response.parsePayload)) {
+            this.setStateData({
+              dataAssess: response.parsePayload?.map(i => ({
+                ...i,
+                name: i?.nameAssessmentPeriod?.name,
+              })),
+            });
+          }
         },
       });
-    }
-    if (search.nameAssessmentPeriodId) {
-      this.onChangeSelectAssess(search?.nameAssessmentPeriodId, "auto");
     }
   };
 
@@ -167,74 +172,29 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, dataAssess } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
-    if (search?.status === 'NOT_YET_CONFIRM') {
-      this.props.dispatch({
-        type: 'EnglishMonthReport/GET_DATA',
-        payload: {
-          ...search,
-          status: 'REVIEWED',
-          scriptReviewId: undefined,
-          nameAssessmentPeriodId: undefined,
-        },
-        callback: (response) => {
-          if (response) {
-            this.setStateData({
-              data: response.parsePayload?.map(i => ({
-                ...i,
-                nameAssessmentPeriod: dataAssess?.nameAssessmentPeriod,
-                nameAssessmentPeriodId: search?.nameAssessmentPeriodId,
-              })),
-            });
-          }
-        },
-      });
-    }
-    else if (search?.status === 'NOT_YET_SEND') {
-      this.props.dispatch({
-        type: 'EnglishMonthReport/GET_DATA',
-        payload: {
-          ...search,
-          status: 'CONFIRMED',
-          scriptReviewId: undefined,
-          nameAssessmentPeriodId: undefined,
-        },
-        callback: (response) => {
-          if (response) {
-            this.setStateData({
-              data: response.parsePayload?.map(i => ({
-                ...i,
-                nameAssessmentPeriod: dataAssess?.nameAssessmentPeriod,
-                nameAssessmentPeriodId: search?.nameAssessmentPeriodId,
-              })),
-            });
-          }
-        },
-      });
-    }
-    else {
-      this.props.dispatch({
-        type: 'EnglishMonthReport/GET_DATA',
-        payload: {
-          ...search,
-          scriptReviewId: undefined,
-        },
-        callback: (response) => {
-          if (response) {
-            this.setStateData({
-              data: response.parsePayload?.map(i => ({
-                ...i,
-                nameAssessmentPeriod: dataAssess?.nameAssessmentPeriod,
-                nameAssessmentPeriodId: search?.nameAssessmentPeriodId,
-              })),
-            });
-          }
-        },
-      });
-    }
+    const status = search?.status;
+    this.props.dispatch({
+      type: 'EnglishMonthlyReport/GET_DATA',
+      payload: {
+        ...search,
+        status: variablesModules.STATUS_SEARCH?.[status],
+        nameAssessmentPeriodId: undefined,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            data: response.parsePayload?.map(i => ({
+              ...i,
+              month: search?.month,
+            })),
+          });
+        }
+      },
+    });
     history.push({
       pathname,
       query: Helper.convertParamSearch({
@@ -312,7 +272,10 @@ class Index extends PureComponent {
    * Function change select
    * @param {object} e value of select
    * @param {string} type key of object search
+   * 
    */
+
+
   onChangeSelect = (e, type) => {
     const {
       years,
@@ -333,6 +296,15 @@ class Index extends PureComponent {
       );
       this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
     }
+    this.formRef.current.setFieldsValue({ month: undefined });
+    this.setState(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          month: undefined,
+        },
+      }),
+    );
     this.debouncedSearch(e, type);
   };
 
@@ -342,50 +314,37 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelectBranch = (e, type) => {
+
     this.debouncedSearch(e, type);
     this.props.dispatch({
-      type: 'EnglishMonthReport/GET_CLASSES',
+      type: 'EnglishMonthlyReport/GET_CLASSES',
       payload: {
         branch: e,
       },
     });
+    this.setState(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          classId: undefined,
+          month: undefined,
+        },
+      }),
+    );
+    this.formRef.current.setFieldsValue({ classId: undefined, month: undefined });
   };
 
-  onChangeSelectAssess = (e, type) => {
+  onChangeSelectAssess = (e) => {
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          scriptReviewId: undefined,
-          nameAssessmentPeriodId: e,
+          scriptReviewId: e,
         },
       }),
     );
     this.setStateData({
       data: [],
-    });
-    this.props.dispatch({
-      type: 'EnglishMonthReport/GET_ASSESS',
-      payload: {
-        'nameAssessmentPeriodId': e,
-      },
-      callback: (response) => {
-        if (head(response.parsePayload)) {
-          this.setStateData({
-            dataAssess: head(response.parsePayload),
-          });
-          if (type === "auto") {
-            this.onLoad();
-          }
-          this.debouncedSearch(head(response.parsePayload)?.id, 'scriptReviewId');
-        }
-        else {
-          notification.error({
-            message: 'error',
-            description: 'You need to configure this Script review',
-          });
-        }
-      },
     });
   };
 
@@ -396,7 +355,7 @@ class Index extends PureComponent {
    */
   onChangeSelectStatus = (e, type) => {
     const { search } = this.state;
-    if (search?.schoolYearId && search?.branchId && search?.classId && search?.scriptReviewId) {
+    if (search?.schoolYearId && search?.month && search?.branchId && search?.classId) {
       this.debouncedSearchStatus(e, type);
     }
   };
@@ -464,14 +423,13 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     const self = this;
     dispatch({
-      type: 'EnglishMonthReport/ADD_REVIEW',
+      type: 'EnglishMonthlyReport/ADD_REVIEW',
       payload: {
         id: data?.filter((item) => item?.isActive)?.map((item) => item.id),
         status: type === 'all' ? true : null,
         schoolYearId: type === 'all' ? search?.schoolYearId : null,
         branchId: type === 'all' ? search?.branchId : null,
         classId: type === 'all' ? search?.classId : null,
-        assessmentPeriodId: type === 'all' ? search?.assessmentPeriodId : null,
       },
       callback: (response) => {
         if (response) {
@@ -492,7 +450,7 @@ class Index extends PureComponent {
         <Button
           icon="edit"
           className={stylesModule.edit}
-          onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/add?nameAssessmentPeriod=${search?.nameAssessmentPeriodId}`); }}
+          onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/add?month=${search?.month}`); }}
         />
       );
     }
@@ -509,8 +467,14 @@ class Index extends PureComponent {
   };
 
   onFormSent = (record) => {
-    const { search } = this.state;
-
+    const { search, idSent, data } = this.state;
+    const {
+      loading: { effects }
+    } = this.props;
+    const dataActive = data?.filter((item) => item.isActive);
+    if (effects['EnglishMonthlyReport/ADD_SENT'] && ((record?.id === idSent) || dataActive?.find(i => record?.id === i.id))) {
+      return <div className={stylesModule['lds-ring']}><div /><div /><div /><div /></div>;
+    }
     if (
       search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ||
       search?.status === variablesModules.STATUS.NOT_YET_SEND
@@ -524,18 +488,28 @@ class Index extends PureComponent {
       );
     }
     return "";
+
   };
 
   addSent = (type, id) => {
     const { search, data } = this.state;
+    const {
+      user,
+    } = this.props;
+    this.setStateData(
+      {
+        idSent: id,
+      },);
     if (type === 'one') {
       this.props.dispatch({
-        type: 'EnglishMonthReport/ADD_SENT',
+        type: 'EnglishMonthlyReport/ADD_SENT',
         payload: {
           studentId: [id],
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
-          status: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
+          teacherManagementId: user?.id,
         },
         callback: (response) => {
           if (response) {
@@ -544,14 +518,15 @@ class Index extends PureComponent {
         },
       });
     }
-    else if (type === 'much') {
+    if (type === 'much') {
       this.props.dispatch({
-        type: 'EnglishMonthReport/ADD_SENT',
+        type: 'EnglishMonthlyReport/ADD_SENT',
         payload: {
           studentId: data?.filter(i => i?.isActive)?.map(i => i.id),
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
-          status: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
         },
         callback: (response) => {
           if (response) {
@@ -560,13 +535,74 @@ class Index extends PureComponent {
         },
       });
     }
+    if (type === 'allConfirmed') {
+      this.props.dispatch({
+        type: 'EnglishMonthlyReport/ADD_CONFIRMED_ALL',
+        payload: {
+          schoolYearId: search.schoolYearId,
+          scriptReviewId: search.scriptReviewId,
+          newStatus: 'CONFIRMED',
+          oldStatus: "NOT_YET_CONFIRM",
+        },
+        callback: (response) => {
+          if (response) {
+            this.onLoad();
+          }
+        },
+      });
+    }
+
+    if (type === 'send') {
+      this.props.dispatch({
+        type: 'EnglishMonthlyReport/ADD_SENT_ALL',
+        payload: {
+          schoolYearId: search.schoolYearId,
+          scriptReviewId: search.scriptReviewId,
+          newStatus: 'SENT',
+          oldStatus: "CONFIRMED",
+        },
+        callback: (response) => {
+          if (response) {
+            this.onLoad();
+          }
+        },
+      });
+    }
+
   };
 
+  reportTime = (value) => {
+    const { search } = this.state;
+    if (search?.status === variablesModules.STATUS_SEARCH.REVIEWED) {
+      return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE);
+    }
+    if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_CONFIRM) {
+      return Helper.getDate(head(value?.quarterReport)?.reportTime, variables.DATE_FORMAT.DATE);
+    }
+    if (search?.status === variablesModules.STATUS_SEARCH.CONFIRMED) {
+      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE);
+    }
+    if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_SEND) {
+      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE);
+    }
+    return (
+      Helper.getDate(head(value?.quarterReport)?.lastModificationTime, variables.DATE_FORMAT.DATE)
+    );
+  }
+
+  titleTime = () => {
+    const { search } = this.state;
+    if (search?.status === variablesModules.STATUS.NOT_YET_SEND || search?.status === variablesModules.STATUS.CONFIRMED) {
+      return "Confirmation time";
+    }
+    if (search?.status === variablesModules.STATUS.SENT) {
+      return "Send time";
+    }
+    return "Report time";
+  };
 
   header = () => {
-    const {
-      dataType
-    } = this.props;
+
     const { search } = this.state;
 
     const columns = [
@@ -580,11 +616,10 @@ class Index extends PureComponent {
         },] : []),
       ...(search?.status !== "NOT_REVIEW" ?
         [{
-          title: 'Report time',
+          title: this.titleTime(),
           key: 'text',
           width: 150,
-          align: 'center',
-          render: (value) => Helper.getDate(value?.creationTime, variables.DATE_FORMAT.DATE_TIME),
+          render: (record) => this.reportTime(record),
         },] : []),
       {
         title: 'Center',
@@ -598,7 +633,7 @@ class Index extends PureComponent {
         key: 'Class',
         width: 200,
         className: 'min-width-200',
-        render: (record) => record?.class?.name,
+        render: (record) => record?.classes?.name,
       },
       {
         title: 'Student',
@@ -613,11 +648,11 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Assessment period',
+        title: 'Monthly comment',
         key: 'Assessment',
         className: 'min-width-200',
         width: 200,
-        render: (record) => dataType?.find(i => i?.id === record?.nameAssessmentPeriodId)?.name,
+        render: (record) => Helper.getDate(record?.month, variables.DATE_FORMAT.MONTH_FULL)
       },
       {
         key: 'action',
@@ -647,9 +682,9 @@ class Index extends PureComponent {
   };
 
   onLoadStudents = () => {
-    const { search, dataAssess } = this.state;
+    const { search } = this.state;
     this.props.dispatch({
-      type: 'EnglishMonthReport/GET_DATA_STUDENTS',
+      type: 'EnglishMonthlyReport/GET_DATA_STUDENTS',
       payload: {
         ...search,
         branch: search?.branchId,
@@ -661,7 +696,6 @@ class Index extends PureComponent {
           this.setStateData({
             data: response.items?.map(i => ({
               ...i,
-              nameAssessmentPeriod: dataAssess?.nameAssessmentPeriod,
             })),
           });
         }
@@ -682,7 +716,6 @@ class Index extends PureComponent {
       branches,
       pagination,
       defaultBranch,
-      dataType,
       match: { params },
       location: { pathname },
       loading: { effects },
@@ -697,29 +730,32 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
+
     const { search, defaultBranchs } = this.state;
-    const loading = effects['EnglishMonthReport/GET_DATA'];
+    const loading = effects['EnglishMonthlyReport/GET_DATA'];
     return (
       <>
-        <Helmet title="Monthly comment" />
+        <Helmet title="Mothly report" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Monthly comment</Text>
+            <Text color="dark">Mothly report</Text>
             {
               (search?.status === variablesModules.STATUS.NOT_REVIEW) || (search?.status === variablesModules.STATUS.REVIEWED) || (search?.status === variablesModules.STATUS.SENT) || (search?.status === variablesModules.STATUS.CONFIRMED) ?
                 " " :
                 <div className='d-flex'>
-                  <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')}>
-                    Accept selected reviews
+                  <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')} loading={size(data?.filter((item) => item.isActive)) && effects['EnglishMonthlyReport/ADD_SENT']}>
+                    {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
                   </Button>
-                  <Button
+                  {/* <Button
                     color="success"
                     icon="redo2"
                     className="ml-2"
+                    loading={effects['EnglishMonthlyReport/ADD_CONFIRMED_ALL']}
+                    onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "send")}
                   >
-                    Accept all
-                  </Button>
+                    {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
+                  </Button> */}
                 </div>
             }
           </div>
@@ -730,7 +766,7 @@ class Index extends PureComponent {
                 date: search.from && search.to && [moment(search.from), moment(search.to)],
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                assessmentPeriodId: search.assessmentPeriodId || null,
+                month: search.month && moment(search.month) || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -738,7 +774,7 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
+                    data={[...years]}
                     name="schoolYearId"
                     onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
                     type={variables.SELECT}
@@ -749,8 +785,9 @@ class Index extends PureComponent {
                 {!defaultBranch?.id && (
                   <div className="col-lg-3">
                     <FormItem
-                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                      data={[...branches]}
                       name="branchId"
+                      placeholder="Select branch"
                       onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                       type={variables.SELECT}
                       allowClear={false}
@@ -762,6 +799,7 @@ class Index extends PureComponent {
                     <FormItem
                       data={defaultBranchs}
                       name="branchId"
+                      placeholder="Select branch"
                       onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                       type={variables.SELECT}
                       allowClear={false}
@@ -770,20 +808,19 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                    placeholder="Select class"
                     allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={dataType}
-                    name="nameAssessmentPeriodId"
-                    options={['id', 'name']}
-                    onChange={(event) => this.onChangeSelectAssess(event, 'nameAssessmentPeriodId')}
-                    type={variables.SELECT}
+                    name="month"
+                    onChange={(event) => this.onChangeDate(event, 'month')}
+                    type={variables.MONTH_PICKER}
                     allowClear={false}
                   />
                 </div>
@@ -791,13 +828,13 @@ class Index extends PureComponent {
                   <FormItem
                     name="key"
                     onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa tìm kiếm theo tên"
                     type={variables.INPUT_SEARCH}
+                    placeholder="Enter keyword"
                   />
                 </div>
                 <div className='col-lg-3'>
                   {
-                    search?.branchId && search?.schoolYearId && search?.classId && search?.scriptReviewId ?
+                    search?.schoolYearId && search?.month && search?.branchId && search?.classId ?
                       <Button color="success" icon="report" onClick={this.onChangeSearch}>
                         Load data
                       </Button>
@@ -825,6 +862,8 @@ class Index extends PureComponent {
               rowSelection={
                 search?.status === variablesModules.STATUS.NOT_REVIEW ||
                   search?.status === variablesModules.STATUS.REVIEWED ||
+                  search?.status === variablesModules.STATUS.SENT ||
+                  search?.status === variablesModules.STATUS.NOT_REVIEW ||
                   search?.status === variablesModules.STATUS.CONFIRMED ? null : { ...rowSelection }}
               pagination={this.pagination(pagination)}
               params={{
@@ -834,13 +873,16 @@ class Index extends PureComponent {
               onRow={(record) => ({
                 onClick: () => {
                   if (search.status === variablesModules.STATUS.REVIEWED) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done-review`);
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-review`);
                   }
                   if (search.status === variablesModules.STATUS.CONFIRMED) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done-confirmed`);
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-confirmed`);
                   }
-                  if (search.status === variablesModules.STATUS.NOT_YET_SEND || search.status === variablesModules.STATUS.SENT) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type="done`);
+                  if (search.status === variablesModules.STATUS.NOT_YET_SEND) {
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done`);
+                  }
+                  if (search.status === variablesModules.STATUS.SENT) {
+                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=send`);
                   }
                 },
               })}
@@ -865,7 +907,6 @@ Index.propTypes = {
   defaultBranch: PropTypes.objectOf(PropTypes.any),
   years: PropTypes.arrayOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
-  dataType: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -879,7 +920,6 @@ Index.defaultProps = {
   defaultBranch: {},
   years: [],
   user: {},
-  dataType: [],
 };
 
 export default Index;
