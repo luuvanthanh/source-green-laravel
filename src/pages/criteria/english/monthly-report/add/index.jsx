@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Radio, Checkbox, Input } from 'antd';
+import { Form, Radio, Checkbox, Input, notification } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useParams, history, useLocation } from 'umi';
 import { isEmpty, get, head } from 'lodash';
@@ -11,6 +11,8 @@ import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Table from '@/components/CommonComponent/Table';
+import { variables, Helper } from '@/utils';
+
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -31,39 +33,63 @@ const Index = memo(() => {
     loading: { effects },
     details,
     menuLeftCriteria,
-    dataType,
     dataEvaluetionCriteria,
     user,
-  } = useSelector(({ EnglishMonthReportAdd, menu, loading, EnglishMonthReportAddAdd, user }) => ({
-    dataAssess: EnglishMonthReportAdd.dataAssess,
+  } = useSelector(({ EnglishMonthlyReport, menu, loading, EnglishMonthlyReportAdd, user }) => ({
+    dataAssess: EnglishMonthlyReport.dataAssess,
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: EnglishMonthReportAddAdd.details,
-    dataType: EnglishMonthReportAdd.dataType,
-    dataEvaluetionCriteria: EnglishMonthReportAddAdd.dataEvaluetionCriteria,
+    details: EnglishMonthlyReportAdd.details,
+    dataType: EnglishMonthlyReport.dataType,
+    dataEvaluetionCriteria: EnglishMonthlyReportAdd.dataEvaluetionCriteria,
     user: user.user,
-    error: EnglishMonthReportAddAdd.error,
+    error: EnglishMonthlyReportAdd.error,
   }));
 
   const [dataStudent, setDataStudent] = useState(undefined);
+
+  const [checkFinish, setCheckFinish] = useState(false);
 
   const [dataDetails, setDataDetails] = useState(undefined);
 
   const { query } = useLocation();
 
-  const loadingSubmit = effects[`EnglishMonthReportAddAdd/ADD`];
 
+  const loadingSubmit = effects[`EnglishMonthlyReportAdd/ADD`];
+
+  const dataCommentValue = (i) => {
+    if (isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
+      return "";
+    }
+    if (!isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && !isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
+      return `${(i?.scriptReviewCommentDetail?.map(i => i?.sampleCommentDetail?.name)?.join('.'))}.${head(i?.scriptReviewCommentDetail)?.value}`;
+    }
+    if (!isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
+      return i?.scriptReviewCommentDetail?.map(i => i?.sampleCommentDetail?.name)?.join('.');
+    }
+    if (isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && !isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
+      return head(i?.scriptReviewCommentDetail)?.value;
+    }
+    return "";
+  };
   const onFinish = () => {
 
     // convert mảng object
+    setCheckFinish(true);
     const data = dataDetails?.scriptReviewSubject?.filter(i => i?.isCheck)
       ?.map(item => ({ ...item, scriptReviewSubjectDetail: item?.scriptReviewSubjectDetail?.filter(k => k?.isCheck) }))
-      ?.map(items => ({ ...items, scriptReviewSubjectDetail: items?.scriptReviewSubjectDetail?.map(i => ({ ...i, scriptReviewSubjectDetailChildren: i?.scriptReviewSubjectDetailChildren?.filter(k => k?.radioId) })) }));
+      ?.map(items => ({
+        ...items,
+        checkEmpty: items?.scriptReviewSubjectDetail
+          ?.map(i => ({ ...i, checkEmpty: i?.scriptReviewSubjectDetailChildren?.filter(k => k?.radioId)?.length === i?.scriptReviewSubjectDetailChildren?.filter(i => i?.isCheck)?.length, }))?.filter(k => k?.checkEmpty)?.length === items?.scriptReviewSubjectDetail?.length,
+        scriptReviewSubjectDetail: items?.scriptReviewSubjectDetail
+          ?.map(i => ({ ...i, scriptReviewSubjectDetailChildren: i?.scriptReviewSubjectDetailChildren?.filter(i => i?.isCheck) }))
+      }));
 
     // convert mảng conment
     const dataComment = dataDetails?.scriptReviewComment?.filter(i => i?.isCheck)
-      ?.map(item => ({ ...item, scriptReviewCommentDetail: item?.scriptReviewCommentDetail?.filter(i => i?.checkBox) }))
-      ?.map(item => ({ ...item, scriptReviewCommentDetail: item?.scriptReviewCommentDetail?.map(i => ({ content: i?.sampleCommentDetail?.name, value: i?.value })) }));
+      ?.map(item => ({ ...item, scriptReviewCommentDetail: item?.scriptReviewCommentDetail?.filter(i => i?.isCheck) }))
+      ?.map(item => ({ ...item, scriptReviewCommentDetail: item?.scriptReviewCommentDetail?.map(i => i) }));
 
     // convert payload dataSubjec 
     const dataSubjec = data?.map(i => ({
@@ -77,43 +103,54 @@ const Index = memo(() => {
         }))
       }))
     }));
+    const checkEmpty = data?.filter(i => !i?.checkEmpty);
 
-    dispatch({
-      type: 'EnglishMonthReportAddAdd/ADD',
-      payload: {
-        id: params.id,
-        studentId: params?.id,
-        scriptReviewId: dataDetails?.id,
-        schoolYearId: user.schoolYear?.id,
-        status: "REVIEWED",
-        detail: dataSubjec.concat(dataComment?.map(i => ({
-          isComment: dataDetails?.isCheckSampleComment,
-          scriptReviewCommentId: i?.id,
-          content: `${i?.scriptReviewCommentDetail?.map(i => i?.value)?.join('.')}.${head(i?.scriptReviewCommentDetail)?.content}`,
-        }))),
-      },
-      callback: (response, error) => {
-        history.goBack();
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              form.current.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
+    if (checkEmpty?.length === 0) {
+      dispatch({
+        type: 'EnglishMonthlyReportAdd/ADD',
+        payload: {
+          id: params.id,
+          studentId: params?.id,
+          month: Helper.getDate(query?.month, variables.DATE_FORMAT.DATE_AFTER),
+          schoolYearId: user.schoolYear?.id,
+          teacherId: user?.objectInfo?.id,
+          status: "REVIEWED",
+          detail: dataSubjec.concat(dataComment?.map(i => ({
+            isComment: dataDetails?.isCheckSampleComment,
+            scriptReviewCommentId: i?.id,
+            content: dataCommentValue(i),
+          }))),
+        },
+        callback: (response, error) => {
+          if (response) {
+            history.goBack();
           }
-        }
-      },
-    });
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                form.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    } else {
+      notification.error({
+        message: 'Error',
+        description: 'You need to choose full information.',
+      });
+    }
   };
 
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'EnglishMonthReportAddAdd/GET_DATA_STUDENTS',
+        type: 'EnglishMonthlyReportAdd/GET_DATA_STUDENTS',
         payload: params?.id,
         callback: (response) => {
           if (response) {
@@ -129,13 +166,14 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'EnglishMonthReportAdd/GET_DATA_TYPE',
+      type: 'EnglishMonthlyReport/GET_DATA_TYPE',
       payload: {},
     });
     dispatch({
-      type: 'EnglishMonthReportAddAdd/GET_DATA_SCRIPT_REVIEW',
+      type: 'EnglishMonthlyReportAdd/GET_DATA_SCRIPT_REVIEW',
       payload: {
-        nameAssessmentPeriodId: query?.nameAssessmentPeriod,
+        month: query?.month,
+        type: 'MONTHLY_COMMENT'
       },
       callback: (response) => {
         if (response) {
@@ -144,7 +182,7 @@ const Index = memo(() => {
       },
     });
     dispatch({
-      type: 'EnglishMonthReportAddAdd/GET_DATA_EVALUATION_CRITERRIA',
+      type: 'EnglishMonthlyReportAdd/GET_DATA_EVALUATION_CRITERRIA',
       payload: {},
     });
   }, []);
@@ -186,7 +224,7 @@ const Index = memo(() => {
       title: 'Content',
       key: 'student',
       className: 'min-width-200',
-      render: (record) => record?.subjectSectionDetail?.name,
+      render: (record) => <div className={!record?.radioId && checkFinish ? "text-danger" : "text-dark"}>{record?.subjectSectionDetail?.name}</div>,
     },
     ...(dataEvaluetionCriteria?.length > 0 ?
       (dataEvaluetionCriteria?.map(i => (
@@ -258,11 +296,11 @@ const Index = memo(() => {
       ),
     },
   ];
-
+  const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
-      <Breadcrumbs last={params.id ? 'add' : 'Create new'} menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Breadcrumbs last={dataStudent?.fullName} menu={menuLeftCriteria} />
+      <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
           <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
@@ -271,7 +309,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['EnglishMonthReportAddAdd/GET_DATA_SCRIPT_REVIEW']}
+              loading={effects['EnglishMonthlyReportAdd/GET_DATA_SCRIPT_REVIEW']}
               params={{
                 type: 'container',
               }}
@@ -295,7 +333,7 @@ const Index = memo(() => {
                 </div>
                 <Pane className="row">
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataStudent?.student?.fullName} label="School year" type="text" />
+                    <FormDetail name={detailSchoolYear} label="School year" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail name={dataStudent?.branch?.name} label="Center" type="text" />
@@ -304,7 +342,7 @@ const Index = memo(() => {
                     <FormDetail name={dataStudent?.class?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataType?.find(i => i?.id === query?.nameAssessmentPeriod)?.name} label="Assessment periodr" type="text" />
+                    <FormDetail name={Helper.getDate(query?.month, variables.DATE_FORMAT.MONTH_FULL)} label="Monthly comment" type="text" />
                   </Pane>
                 </Pane>
               </Pane>

@@ -3,15 +3,23 @@ import { Helper } from '@/utils';
 import requestNet from '@/utils/request';
 
 export function add(data = {}) {
-  return request('/v1/quarter-reports', {
+  return request('/v1/monthly-comments', {
     method: 'POST',
     data,
     cancelNotification: true,
   });
 }
 
+export function updateComfirm(data = {}) {
+  return request(`/v1/monthly-comments/${data?.id}`, {
+    method: 'PUT',
+    data,
+    cancelNotification: true,
+  });
+}
+
 export function update(data = {}) {
-  return request(`/v1/quarter-reports/${data.id}`, {
+  return request(`/v1/monthly-comments/${data.id}`, {
     method: 'PUT',
     data: {
       ...data,
@@ -22,14 +30,11 @@ export function update(data = {}) {
 }
 
 export function getData(params = {}) {
-  return request(`/v1/quarter-reports/${params.id}`, {
+  return request(`/v1/monthly-comments/${params.id}`, {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes([
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'childEvaluateDetailChildrent',
-      ]),
+      include: Helper.convertIncludes(['quarterReport', 'branch', 'classes']),
     },
   });
 }
@@ -41,7 +46,7 @@ export function getDataStudent(params = {}) {
 }
 
 export function getDataScriptReview(params = {}) {
-  return request('/v1/script-reviews', {
+  return request(`/v1/script-reviews`, {
     method: 'GET',
     params: {
       ...params,
@@ -71,11 +76,11 @@ export function getDataEvaluetionCriteria(params = {}) {
 }
 
 export function getDatDetail(params = {}) {
-  return request(`/v1/quarter-reports/${params.id}`, {
+  return request(`/v1/monthly-comments/${params.id}`, {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['quarterReport']),
+      include: Helper.convertIncludes(['quarterReport', 'student.branch', 'student.classes']),
     },
   });
 }
