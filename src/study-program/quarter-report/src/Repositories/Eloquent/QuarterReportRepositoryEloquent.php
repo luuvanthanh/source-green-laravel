@@ -222,6 +222,12 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             if ($attributes['status'] == QuarterReport::STATUS['NOT_YET_CONFIRM']) {
                 $attributes['confirmationTime'] = date('Y-m-d H:i:s');
             }
+
+            if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
+                $this->sentNotification($result);
+                $attributes['confirmationTime'] = date('Y-m-d H:i:s');
+                $attributes['SentTime'] = date('Y-m-d H:i:s');
+            }
             $result->update($attributes);
 
             if (!empty($attributes['detail'])) {
@@ -299,13 +305,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function notificationQuarterReport(array $attributes)
     {
-        $this->model->whereIn('StudentId', $attributes['studentId'])
-            ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('ScriptReviewId', $attributes['scriptReviewId'])
-            ->where('Status', $attributes['oldStatus'])
-            ->update([
-                'Status' => $attributes['newStatus']
-            ]);
+        $this->updateStatusQuarterReport($attributes);
 
         $data = $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
@@ -314,36 +314,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             ->get();
 
         foreach ($data as $value) {
-
-            $student = $value->student;
-            $parent = $student->parent()->with('account')->get();
-
-            if (!empty($parent)) {
-                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
-                $images =  json_decode($student->FileImage);
-                $urlImage = '';
-
-                if (!empty($images)) {
-                    $urlImage = env('IMAGE_URL') . $images[0];
-                }
-                $schoolYear = $value->scriptReview->schoolYear->YearFrom . '-' . $value->scriptReview->schoolYear->YearTo;
-                $name = $value->scriptReview->NameAssessmentPeriod->Name;
-
-                $message = $student->FullName . ' ' . 'nhận Quarter report ' . $name . ' school year ' . $schoolYear;
-
-                if (!empty($arrId)) {
-                    $dataNotiCation = [
-                        'users' => $arrId,
-                        'title' => 'English',
-                        'imageURL' => $urlImage,
-                        'message' => $message,
-                        'moduleType' => 25,
-                        'refId' => $value->Id,
-                    ];
-
-                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
-                }
-            }
+            $this->sentNotification($value);
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -351,14 +322,15 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function updateAllStatusQuarterReport($attributes)
     {
-        $data = $this->getAll($attributes);
+        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('SchoolYearId', $attributes['schoolYearId'])
+            ->where('Status', $attributes['oldStatus'])->get();
 
-        foreach ($data['data'] as $value) {
-            $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])
-                ->where('Status', $attributes['oldStatus'])
-                ->update([
-                    'Status' => $attributes['newStatus']
-                ]);
+        foreach ($data as $value) {
+            $value->update([
+                'Status' => $attributes['newStatus'],
+                'ConfirmationTime' => date('Y-m-d H:i:s')
+            ]);
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -366,43 +338,16 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function notificationAllStatusQuarterReport($attributes)
     {
-        $data = $this->getAll($attributes);
+        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('SchoolYearId', $attributes['schoolYearId'])
+            ->where('Status', $attributes['oldStatus'])->get();
 
-        foreach ($data['data'] as $value) {
-            $quarterReport =  $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])->first();
-            $student = $quarterReport->student;
-            $parent = $student->parent()->with('account')->get();
+        foreach ($data as $value) {
+            $this->sentNotification($value);
 
-            if (!empty($parent)) {
-                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
-                $images =  json_decode($student->FileImage);
-                $urlImage = '';
-
-                if (!empty($images)) {
-                    $urlImage = env('IMAGE_URL') . $images[0];
-                }
-
-                $schoolYear = $quarterReport->scriptReview->schoolYear->YearFrom . '-' . $quarterReport->scriptReview->schoolYear->YearTo;
-                $name = $quarterReport->scriptReview->NameAssessmentPeriod->Name;
-
-                $message = $student->FullName . ' ' . 'nhận Quarter report ' . $name . ' school year ' . $schoolYear;
-
-                if (!empty($arrId)) {
-                    $dataNotiCation = [
-                        'users' => $arrId,
-                        'title' => 'English',
-                        'imageURL' => $urlImage,
-                        'message' => $message,
-                        'moduleType' => 25,
-                        'refId' => $quarterReport->Id,
-                    ];
-
-                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
-                }
-            }
-
-            $quarterReport->update([
-                'Status' => $attributes['newStatus']
+            $value->update([
+                'Status' => $attributes['newStatus'],
+                'SentTime' => date('Y-m-d H:i:s'),
             ]);
         }
 
@@ -426,5 +371,40 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function sentNotification($model)
+    {
+        $student = $model->student;
+        $parent = $student->parent()->with('account')->get();
+
+        if (!empty($parent)) {
+            $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
+
+            $images =  json_decode($student->FileImage);
+            $urlImage = '';
+
+            if (!empty($images)) {
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+
+            $schoolYear = $model->scriptReview->schoolYear->YearFrom . '-' . $model->scriptReview->schoolYear->YearTo;
+            $name = $model->scriptReview->NameAssessmentPeriod->Name;
+
+            $message = $student->FullName . ' ' . 'nhận Quarter report ' . $name . ' school year ' . $schoolYear;
+
+            if (!empty($arrId)) {
+                $dataNotiCation = [
+                    'users' => $arrId,
+                    'title' => 'English',
+                    'imageURL' => $urlImage,
+                    'message' => $message,
+                    'moduleType' => 25,
+                    'refId' => $model->Id,
+                ];
+
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+            }
+        }
     }
 }
