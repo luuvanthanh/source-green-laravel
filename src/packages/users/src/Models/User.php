@@ -4,6 +4,7 @@ namespace GGPHP\Users\Models;
 
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Category\Models\TouristDestination;
+use GGPHP\ConfigReceiveNotification\Models\ConfigReceiveNotification;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Notification\Models\Player;
 use Illuminate\Auth\Authenticatable;
@@ -145,5 +146,10 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
     public function camera()
     {
         return $this->belongsToMany(Camera::class, 'camera_user', 'user_id', 'camera_id');
+    }
+
+    public function configReceiveNotification()
+    {
+        return $this->hasMany(ConfigReceiveNotification::class);
     }
 }

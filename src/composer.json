@@ -87,7 +87,8 @@
             "GGPHP\\ApiShare\\": "packages/api-share/src/",
             "GGPHP\\NasConfig\\": "packages/nas-config/src/",
             "GGPHP\\SystemConfig\\": "packages/system-config/src/",
-            "GGPHP\\VerificationCode\\": "packages/verification-code/src/"
+            "GGPHP\\VerificationCode\\": "packages/verification-code/src/",
+            "GGPHP\\ConfigReceiveNotification\\": "packages/config-receive-notification/src/"
         },
         "classmap": [
             "database/seeds",

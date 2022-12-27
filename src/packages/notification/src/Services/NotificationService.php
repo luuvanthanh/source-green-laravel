@@ -2,6 +2,7 @@
 
 namespace GGPHP\Notification\Services;
 
+use GGPHP\ConfigReceiveNotification\Models\ConfigReceiveNotification;
 use GGPHP\Notification\Notification\CameraUpdate;
 use GGPHP\Notification\Notification\CountNumberOfTourist;
 use GGPHP\Notification\Notification\ModelCreated;
@@ -21,7 +22,25 @@ class NotificationService
      */
     public static function eventCreated($type, $model)
     {
-        $recipients = User::whereHas('players')->get();
+        $users = User::get();
+
+        foreach ($users as $user) {
+            $configReceiveNotification = $user->configReceiveNotification;
+            if ($configReceiveNotification->isEmpty()) {
+                $userId[] = $user->id;
+            } else {
+                $configReceiveNotification = ConfigReceiveNotification::where('user_id', $user->id)->where('event_type_id', $model->event_type_id)->first();
+
+                if ($configReceiveNotification->is_use == true) {
+                    $userId[] = $user->id;
+                }
+            }
+        }
+
+        $recipients = User::whereHas('players', function ($query) use ($userId) {
+            $query->whereIn('user_id', $userId);
+        })->get();
+        
         $sendData = new ModelCreated($type, $model, $model->tourist_destination_id);
 
         \Notification::send($recipients, $sendData);

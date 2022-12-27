@@ -232,7 +232,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
                 $attributes['status_show'] = true;
             }
         }
-
+        
         if (is_null($event)) {
             $event = $this->model()::create($attributes);
 
