@@ -31,7 +31,11 @@ class MonthlyComment extends UuidModel
 
     protected $fillable = [
         'StudentId', 'ScriptReviewId', 'Status', 'TeacherId', 'TeacherManagementId', 'SchoolYearId',
-        'ReportTime', 'ConfirmationTime', 'Type', 'QuarterReportId', 'Month'
+        'ReportTime', 'ConfirmationTime', 'Type', 'MonthlyCommentId', 'Month', 'SentTime', 'TeacherSentId'
+    ];
+
+    protected $dateTimeFields = [
+        'ReportTime', 'ConfirmationTime', 'SentTime'
     ];
 
     public function sampleComment()
@@ -67,5 +71,10 @@ class MonthlyComment extends UuidModel
     public function scriptReview()
     {
         return $this->belongsTo(ScriptReview::class, 'ScriptReviewId');
+    }
+
+    public function teacherSent()
+    {
+        return $this->belongsTo(User::class, 'TeacherSentId');
     }
 }
