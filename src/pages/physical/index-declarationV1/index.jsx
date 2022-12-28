@@ -2,6 +2,8 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
+import { Helmet } from 'react-helmet';
+
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -11,6 +13,7 @@ import classnames from 'classnames';
 import { isEmpty } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { variables } from '@/utils';
+import { DeleteOutlined } from '@ant-design/icons';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import variablesModules from './utils/variables';
@@ -24,7 +27,7 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   configuration: crmSaleAdmissionAdd.configuration,
   details: crmSaleAdmissionAdd.details
 });
-const General = memo(({ loading: { effects }, error, details }) => {
+const General = memo(({ loading: { effects }, error }) => {
   const [data, setData] = useState([
     {
       monthNumber: undefined,
@@ -35,6 +38,8 @@ const General = memo(({ loading: { effects }, error, details }) => {
       id: uuidv4(),
     },
   ]);
+
+  const [checkEdit, setCheckEdit] = useState(false);
 
   const [search, setSearch] = useState(
     {
@@ -73,12 +78,16 @@ const General = memo(({ loading: { effects }, error, details }) => {
 
 
   const onChangeInput = (record, e, type) => {
-    setData((prev) =>
-      prev.map((item) => ({
-        ...item,
-        [type]: item.id === record.id ? e : item?.[type],
-      })),
-    );
+    if(type==='delete') {
+      setData(data?.filter(i=> i?.id !== record?.id));
+    }else {
+      setData((prev) =>
+        prev.map((item) => ({
+          ...item,
+          [type]: item.id === record.id ? e : item?.[type],
+        })),
+      );
+    }
   };
 
   const onChangeSelectStatus = (e) => {
@@ -291,11 +300,165 @@ const General = memo(({ loading: { effects }, error, details }) => {
           },
         ]
       },
+      {
+        title: '',
+        key: 'delete',
+        className: 'min-width-60',
+        width: 60,
+        align: 'center',
+        render: (value, record) => (
+          <>
+           <DeleteOutlined   onClick={(e) => onChangeInput(record, e, 'delete')}/>
+          </>
+        )
+      },
+    ];
+    return columns;
+  };
+  const headerEdit = () => {
+    const columns = [
+      {
+        title: 'Tháng tuổi',
+        key: 'monthNumber',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record) => (
+          <>
+            {record?.monthNumber}
+          </>
+        )
+      },
+      {
+        title: 'L',
+        key: 'l',
+        align: 'center',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record) => (
+          <>
+            {record?.l}
+          </>
+        )
+      },
+      {
+        title: 'M',
+        key: 'm',
+        align: 'center',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record) => (
+          <>
+            {record?.m}
+          </>
+        )
+      },
+      {
+        title: 'S',
+        key: 's',
+        align: 'center',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record) => (
+          <>
+            {record?.s}
+          </>
+        )
+      },
+      {
+        title: 'Z-scores (BMI in kg/m2)',
+        width: 150,
+        key: 'scores',
+        children: [
+          {
+            title: '-3 SD',
+            key: 'medianSmallerThirdSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <>
+                {record?.medianSmallerThirdSD}
+              </>
+            )
+          },
+          {
+            title: '-2 SD',
+            key: 'medianSmallerSecondSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <>
+                {record?.medianSmallerSecondSD}
+              </>
+            )
+          },
+          {
+            title: '-1 SD',
+            key: 'medianSmallerFirstSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <>
+                {record?.medianSmallerFirstSD}
+              </>
+            )
+          },
+          {
+            title: 'Median',
+            key: 'median',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <>
+                {record?.median}
+              </>
+            )
+          },
+          {
+            title: '1 SD',
+            key: 'medianLargerThirdSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <>
+                {record?.medianLargerThirdSD}
+              </>
+            )
+          },
+          {
+            title: '2 SD',
+            key: 'medianLargerSecondSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <>
+                {record?.medianLargerSecondSD}
+              </>
+            )
+          },
+          {
+            title: '3 SD',
+            key: 'medianLargerFirstSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <>
+                {record?.medianLargerFirstSD}
+              </>
+            )
+          },
+        ]
+      },
     ];
     return columns;
   };
   const onFinish = () => {
-    console.log("search", search);
     const items = data.map((item) => ({
       monthNumber: item?.monthNumber ? `${item?.monthNumber}` : "0",
       value: {
@@ -349,6 +512,7 @@ const General = memo(({ loading: { effects }, error, details }) => {
 
   return (
     <Pane className="p20">
+      <Helmet title="BMI" />
       <Heading type="form-title" style={{ marginBottom: 20 }}>
         Khai báo chỉ số BMI theo WHO
       </Heading>
@@ -366,7 +530,7 @@ const General = memo(({ loading: { effects }, error, details }) => {
             <div className={stylesModule['wrapper-table']}>
               <Loading loading={loading} isError={error.isError} params={{ error }}>
                 <Table
-                  columns={header()}
+                  columns={checkEdit ? header() : headerEdit()}
                   dataSource={data}
                   pagination={false}
                   loading={loading}
@@ -381,7 +545,7 @@ const General = memo(({ loading: { effects }, error, details }) => {
                   scroll={{ x: '100%' }}
                   footer={(item, index) => (
 
-                    details?.register_status === "CANCEL_REGISTER" ? "" :
+                    !checkEdit ? false :
                       <Button
                         key={index}
                         onClick={() =>
@@ -404,11 +568,27 @@ const General = memo(({ loading: { effects }, error, details }) => {
             </div>
           </Pane>
         </Pane>
-        <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-          <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2" onClick={() => onFinish()}>
-            Lưu
-          </Button>
-        </Pane>
+        {checkEdit ?
+          <Pane className="d-flex justify-content-between align-items-center p20">
+            <p
+              className="btn-delete"
+              role="presentation"
+
+              onClick={() => setCheckEdit(false)}
+            >
+              Cancel
+            </p>
+            <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2" onClick={() => onFinish()}>
+              Lưu
+            </Button>
+          </Pane>
+          :
+          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+            <Button color="success" loading={loadingSubmit} className="ml-2" onClick={() => setCheckEdit(true)}>
+              Edit
+            </Button>
+          </Pane>
+        }
       </Pane>
     </Pane>
   );
@@ -417,13 +597,11 @@ const General = memo(({ loading: { effects }, error, details }) => {
 General.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
   loading: {},
   error: {},
-  details: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));
