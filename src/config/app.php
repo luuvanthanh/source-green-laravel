@@ -205,6 +205,7 @@ return [
         GGPHP\NasConfig\Providers\NasConfigServiceProvider::class,
         GGPHP\SystemConfig\Providers\SystemConfigServiceProvider::class,
         GGPHP\VerificationCode\Providers\VerificationCodeServiceProvider::class,
+        GGPHP\ConfigReceiveNotification\Providers\ConfigReceiveNotificationServiceProvider::class,
     ],
 
     /*
