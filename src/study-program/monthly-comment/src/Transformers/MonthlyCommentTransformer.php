@@ -53,26 +53,38 @@ class MonthlyCommentTransformer extends BaseTransformer
 
     public function includeTeacher(MonthlyComment $monthlyComment)
     {
+        if (is_null($monthlyComment->teacher)) {
+            return null;
+        }
+
         return $this->item($monthlyComment->teacher, new UserTransformer, 'Teacher');
     }
 
     public function includeTeacherManagement(MonthlyComment $monthlyComment)
     {
+        if (is_null($monthlyComment->teacherManagement)) {
+            return null;
+        }
+
         return $this->item($monthlyComment->teacherManagement, new UserTransformer, 'TeacherManagement');
     }
 
     public function includeStudent(MonthlyComment $monthlyComment)
     {
+        if (is_null($monthlyComment->student)) {
+            return null;
+        }
+
         return $this->item($monthlyComment->student, new StudentTransformer, 'Student');
     }
 
     public function includeSchoolYear(MonthlyComment $monthlyComment)
     {
-        if (!is_null($monthlyComment->SchoolYearId)) {
-            return $this->item($monthlyComment->schoolYear, new SchoolYearTransformer, 'SchoolYear');
-        } else {
+        if (is_null($monthlyComment->schoolYear)) {
             return null;
         }
+
+        return $this->item($monthlyComment->schoolYear, new SchoolYearTransformer, 'SchoolYear');
     }
 
     public function includeMonthlyCommentDetail(MonthlyComment $monthlyComment)

@@ -48,7 +48,7 @@ class SubjectCreateRequest extends FormRequest
                 $data['code'] = Subject::CODE . $num;
             }
         } else {
-            $data['code'] = Subject::CODE . '1';
+            $data['code'] = Subject::CODE . '001';
         }
 
         return $data;

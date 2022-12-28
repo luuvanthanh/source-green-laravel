@@ -47,7 +47,7 @@ class EvaluationCriteriaCreateRequest extends FormRequest
                 $data['code'] = EvaluationCriteria::CODE . $num;
             }
         } else {
-            $data['code'] = EvaluationCriteria::CODE . '1';
+            $data['code'] = EvaluationCriteria::CODE . '001';
         }
 
         return $data;

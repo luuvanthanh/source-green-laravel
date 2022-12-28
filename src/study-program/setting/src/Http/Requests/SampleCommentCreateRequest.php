@@ -47,7 +47,7 @@ class SampleCommentCreateRequest extends FormRequest
                 $data['code'] = SampleComment::CODE . $num;
             }
         } else {
-            $data['code'] = SampleComment::CODE . '1';
+            $data['code'] = SampleComment::CODE . '001';
         }
 
         return $data;
