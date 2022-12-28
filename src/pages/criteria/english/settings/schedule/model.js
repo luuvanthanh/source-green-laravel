@@ -1,5 +1,4 @@
 import { notification } from 'antd';
-import { head } from 'lodash';
 
 import * as services from './services';
 
@@ -22,7 +21,7 @@ export default {
     }),
     SET_DATA_SUBJECT: (state, { payload }) => ({
       ...state,
-      dataSubject: head(payload?.items),
+      dataSubject: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
