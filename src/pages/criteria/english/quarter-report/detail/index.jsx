@@ -124,7 +124,8 @@ const Index = memo(() => {
       scriptReviewId: dataDetails?.scriptReviewId,
       newStatus: variablesModules.STATUS.SENT,
       oldStatus: "CONFIRMED",
-      teacherManagementId: user?.id,
+      teacherManagementId: query?.type === "done-review" ? user?.objectInfo?.id : undefined,
+      teacherSentId: query?.type === "done-confirmed" ? user?.objectInfo?.id : undefined,
     };
     dispatch({
       type: 'EnglishQuarterReport/ADD_SENT_ALL',
