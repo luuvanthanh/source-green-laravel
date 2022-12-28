@@ -57,7 +57,7 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           form.setFieldsValue({
-            value: response?.value,
+            value: response,
           });
         }
       },
@@ -66,7 +66,6 @@ const Index = memo(() => {
       type: 'englishSettingSchedule/GET_DATA_SUBJECT',
       payload: {
         MaxResultCount: 1000,
-        keyWord: 'Môn học'
       },
     });
   }, []);
@@ -98,7 +97,7 @@ const Index = memo(() => {
                     <FormItem
                       name="value"
                       placeholder="Select input"
-                      data={dataSubject?.timetableActivityDetails}
+                      data={dataSubject}
                       type={variables.SELECT}
                       label="ID program"
                       rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}

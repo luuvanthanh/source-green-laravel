@@ -20,7 +20,7 @@ export function getData(params = {}) {
 }
 
 export function getDataSubject(data = {}) {
-  return request(`/timetable-activities`, {
+  return request(`/timetable-activities/details`, {
     method: 'GET',
     params: {
       ...data,
