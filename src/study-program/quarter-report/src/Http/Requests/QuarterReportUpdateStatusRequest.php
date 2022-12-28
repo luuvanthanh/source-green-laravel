@@ -26,7 +26,6 @@ class QuarterReportUpdateStatusRequest extends FormRequest
     {
         $status = implode(',', QuarterReport::STATUS);
         return [
-            'studentId' => 'array|required|check_exists:object.Students,Id',
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
             'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
             'newStatus' => 'required|in:' . $status,

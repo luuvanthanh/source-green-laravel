@@ -96,13 +96,13 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         }
 
         if (!empty($attributes['scriptReviewId']) && !empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('ScriptReviewId', $attributes['scriptReviewId']);
             });
         }
 
         if (!empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['NOT_REVIEW'] && !empty($attributes['scriptReviewId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('quarterReport', function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('monthlyComment', function ($query) use ($attributes) {
 
                 if (!empty($attributes['scriptReviewId'])) {
                     $query->where('ScriptReviewId', $attributes['scriptReviewId']);
@@ -113,23 +113,23 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         }
 
         if (!empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
-            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+            }])->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
             });
         }
 
         if (!empty($attributes['type']) && !empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['CONFIRMED']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
                 $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
-            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+            }])->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
             });
         }
 
         if (!empty($attributes['studentId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('StudentId', $attributes['studentId']);
             });
         }
@@ -152,7 +152,7 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             if ($attributes['status'] == MonthlyComment::STATUS['REVIEWED']) {
                 $attributes['reportTime'] = now()->format('Y-m-d H:i:s');
 
-                $quarterReportId = '';
+                $monthlyCommentId = '';
                 for ($i = 1; $i <= 2; $i++) {
                     switch ($i) {
                         case 1:
@@ -160,12 +160,12 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
                             break;
                         case 2:
                             $attributes['status'] = MonthlyComment::STATUS['NOT_YET_CONFIRM'];
-                            $attributes['quarterReportId'] = $quarterReportId;
+                            $attributes['MonthlyCommentId'] = $monthlyCommentId;
                             $attributes['type'] = MonthlyComment::TYPE['DUPLICATE'];
                             break;
                     }
                     $result = $this->model()::create($attributes);
-                    $quarterReportId = $result->Id;
+                    $monthlyCommentId = $result->Id;
 
                     if (!empty($attributes['detail'])) {
                         $this->createDetail($result, $attributes['detail']);
@@ -237,6 +237,7 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             }
             DB::commit();
         } catch (\Throwable $th) {
+            dd($th);
             DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
@@ -244,13 +245,54 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         return parent::parserResult($result);
     }
 
+    public function updateDetail($attributes)
+    {
+        foreach ($attributes as $value) {
+            $detail = MonthlyCommentDetail::find($value['id']);
+
+            if (!is_null($detail)) {
+                $detail->update($value);
+
+                if (!empty($value['detailSubject'])) {
+                    $this->updateDetailSubject($value['detailSubject']);
+                }
+            }
+        }
+    }
+
+    public function updateDetailSubject($attributes)
+    {
+        foreach ($attributes as $value) {
+            $detailSubject = MonthlyCommentDetailSubject::find($value['id']);
+
+            if (!is_null($detailSubject)) {
+                $detailSubject->update($value);
+
+                $this->updateDetailSubjectChildren($value['detailSubjectChildren']);
+            }
+        }
+    }
+
+    public function updateDetailSubjectChildren($attributes)
+    {
+        foreach ($attributes as $value) {
+            $subjectChildren = MonthlyCommentDetailSubjectChildren::find($value['id']);
+
+            if (!is_null($subjectChildren)) {
+                $subjectChildren->update($value);
+            }
+        }
+    }
+
     public function updateStatusMonthlyComment(array $attributes)
     {
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('SampleCommentId', $attributes['sampleCommentId'])
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['oldStatus'])
             ->update([
-                'Status' => $attributes['status']
+                'Status' => $attributes['newStatus'],
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -260,46 +302,22 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
     {
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('SampleCommentId', $attributes['sampleCommentId'])
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['oldStatus'])
             ->update([
-                'Status' => $attributes['status']
+                'Status' => $attributes['newStatus'],
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherSentId' => $attributes['teacherSentId']
             ]);
+
         $data = $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('SampleCommentId', $attributes['sampleCommentId'])->get();
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['newStatus'])
+            ->get();
 
         foreach ($data as $value) {
-
-            $student = $value->student;
-            $parent = $student->parent()->with('account')->get();
-
-            if (!empty($parent)) {
-                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
-                $images =  json_decode($student->FileImage);
-                $urlImage = '';
-
-                if (!empty($images)) {
-                    $urlImage = env('IMAGE_URL') . $images[0];
-                }
-
-                $month = Carbon::parse($value->Month)->format('m');
-                $schoolYear = $value->schoolYear->YearFrom . '-' . $value->schoolYear->YearTo;
-
-                $message = $student->FullName . ' ' . 'nhận monthly comment ' . $month . ' school year ' . $schoolYear;
-
-                if (!empty($arrId)) {
-                    $dataNotiCation = [
-                        'users' => $arrId,
-                        'title' => 'English',
-                        'imageURL' => $urlImage,
-                        'message' => $message,
-                        'moduleType' => 25,
-                        'refId' => $value->Id,
-                    ];
-
-                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
-                }
-            }
+            $this->sentNotification($value);
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -307,13 +325,15 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
 
     public function updateAllStatusMonthlyComment($attributes)
     {
-        $data = $this->getAll($attributes);
+        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('SchoolYearId', $attributes['schoolYearId'])
+            ->where('Status', $attributes['oldStatus'])->get();
 
-        foreach ($data['data'] as $value) {
-            $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])
-                ->update([
-                    'Status' => $attributes['newStatus']
-                ]);
+        foreach ($data as $value) {
+            $value->update([
+                'Status' => $attributes['newStatus'],
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+            ]);
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -321,43 +341,17 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
 
     public function notificationAllStatusMonthlyComment($attributes)
     {
-        $data = $this->getAll($attributes);
+        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('SchoolYearId', $attributes['schoolYearId'])
+            ->where('Status', $attributes['oldStatus'])->get();
 
-        foreach ($data['data'] as $value) {
-            $monthlyComment =  $this->model()::where('StudentId', $value['id'])->where('ScriptReviewId', $attributes['scriptReviewId'])->first();
-            $student = $monthlyComment->student;
-            $parent = $student->parent()->with('account')->get();
+        foreach ($data as $value) {
+            $this->sentNotification($value);
 
-            if (!empty($parent)) {
-                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
-                $images =  json_decode($student->FileImage);
-                $urlImage = '';
-
-                if (!empty($images)) {
-                    $urlImage = env('IMAGE_URL') . $images[0];
-                }
-
-                $schoolYear = $monthlyComment->scriptReview->schoolYear->YearFrom . '-' . $monthlyComment->scriptReview->schoolYear->YearTo;
-                $name = $monthlyComment->scriptReview->NameAssessmentPeriod->Name;
-
-                $message = $student->FullName . ' ' . 'nhận Monthly Comment ' . $name . ' school year ' . $schoolYear;
-
-                if (!empty($arrId)) {
-                    $dataNotiCation = [
-                        'users' => $arrId,
-                        'title' => 'English',
-                        'imageURL' => $urlImage,
-                        'message' => $message,
-                        'moduleType' => 25,
-                        'refId' => $monthlyComment->Id,
-                    ];
-
-                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
-                }
-            }
-
-            $monthlyComment->update([
-                'Status' => $attributes['newStatus']
+            $value->update([
+                'Status' => $attributes['newStatus'],
+                'SentTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherSentId' => $attributes['teacherSentId']
             ]);
         }
 
