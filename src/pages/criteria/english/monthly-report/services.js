@@ -5,14 +5,14 @@ import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/v1/quarter-reports', {
+  return request('/v1/monthly-comments', {
     method: 'GET',
     params: {
       ...params,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      include: Helper.convertIncludes(['quarterReport']),
+      include: Helper.convertIncludes(['quarterReport', 'branch', 'classes']),
     },
   });
 }
@@ -38,19 +38,6 @@ export function remove(id) {
     method: 'DELETE',
     parse: true,
     cancelNotification: true,
-  });
-}
-
-export function getAssessmentPeriod(params = {}) {
-  return request('/v1/assessment-periods', {
-    method: 'GET',
-    params: {
-      ...params,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes(['classes', 'branch', 'nameAssessmentPeriod', 'schoolYear']),
-    },
   });
 }
 
@@ -88,15 +75,10 @@ export function getAssess(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes([
-        'scriptReviewSubject,scriptReviewComment,branch,classes',
-        'scriptReviewSubject.scriptReviewSubjectDetail.scriptReviewSubjectDetailChildren',
-        'scriptReviewComment.scriptReviewCommentDetail',
-        'nameAssessmentPeriod',
-      ]),
+      // orderBy: 'CreationTime',
+      // sortedBy: 'desc',
+      // searchJoin: 'and',
+      include: Helper.convertIncludes(['nameAssessmentPeriod']),
     },
   });
 }
@@ -113,9 +95,49 @@ export function getStudent(params = {}) {
 }
 
 export function addSent(data = {}) {
-  return request('/v1/notification-quarter-reports', {
+  return request('/v1/notification-monthly-comments', {
     method: 'POST',
     data,
+    cancelNotification: true,
+  });
+}
+
+export function addSentAll(data = {}) {
+  return request('/v1/update-all-status-monthly-comments', {
+    method: 'POST',
+    data,
+    cancelNotification: true,
+  });
+}
+
+export function addConfirmedAll(data = {}) {
+  return request('/v1/update-all-status-monthly-comments', {
+    method: 'POST',
+    data,
+    cancelNotification: true,
+  });
+}
+
+export function updateSent(data = {}) {
+  return request('/v1/notification-monthly-comments', {
+    method: 'PUT',
+    data,
+    cancelNotification: true,
+  });
+}
+
+export function addConfirm(data = {}) {
+  return request('/v1/update-status-monthly-comments', {
+    method: 'POST',
+    data,
+    cancelNotification: true,
+  });
+}
+
+export function removeConfirm(id) {
+  return request(`/v1/delete-quarter-report/${id}`, {
+    method: 'DELETE',
+    parse: true,
     cancelNotification: true,
   });
 }

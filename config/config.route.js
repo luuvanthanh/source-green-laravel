@@ -236,6 +236,36 @@ export default [
             authority: [permissions.CTH],
           },
           {
+            path: '/chuong-trinh-hoc/settings/program',
+            component: './criteria/english/settings/program',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/program/add',
+            component: './criteria/english/settings/program/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/program/:id/detail',
+            component: './criteria/english/settings/program/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/program/:id/edit',
+            component: './criteria/english/settings/program/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/settings/cau-hinh',
+            component: './criteria/english/settings/schedule',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
             path: '/chuong-trinh-hoc/settings/subject',
             component: './criteria/english/settings/subject',
             wrappers: ['@/wrappers/auth'],
@@ -382,6 +412,12 @@ export default [
           {
             path: '/chuong-trinh-hoc/monthly-report/:id/edit',
             component: './criteria/english/monthly-report/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/study-plan',
+            component: './criteria/english/study-plan',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },

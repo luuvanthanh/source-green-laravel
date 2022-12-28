@@ -16,7 +16,6 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import { variables, Helper } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
-import variablesModules from '../utils/variables';
 
 import stylesModule from '../styles.module.scss';
 
@@ -173,17 +172,62 @@ const Index = memo(() => {
 
 
   const addSent = () => {
-    const payload = {
-      studentId: [dataDetails?.studentId],
-      schoolYearId: dataDetails?.schoolYearId,
-      scriptReviewId: dataDetails?.scriptReviewId,
-      newStatus: variablesModules.STATUS.CONFIRMED,
-      oldStatus: "NOT_YET_CONFIRM",
-      teacherManagementId: user?.objectInfo?.id,
-    };
+    // const payload = {
+    //   studentId: [dataDetails?.studentId],
+    //   schoolYearId: dataDetails?.schoolYearId,
+    //   scriptReviewId: dataDetails?.scriptReviewId,
+    //   newStatus: variablesModules.STATUS.CONFIRMED,
+    //   oldStatus: "NOT_YET_CONFIRM",
+    //   teacherManagementId: user?.objectInfo?.id,
+    // };
+    // dispatch({
+    //   type: 'EnglishQuarterReport/ADD_SENT',
+    //   payload: { ...payload },
+    //   callback: (response, error) => {
+    //     if (response) {
+    //       history.goBack();
+    //     }
+    //     if (error) {
+    //       if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+    //         error.data.errors.forEach((item) => {
+    //           form.current.setFields([
+    //             {
+    //               name: get(item, 'source.pointer'),
+    //               errors: [get(item, 'detail')],
+    //             },
+    //           ]);
+    //         });
+    //       }
+    //     }
+    //   }
+    // });
     dispatch({
-      type: 'EnglishQuarterReport/ADD_SENT',
-      payload: { ...payload },
+      type: 'EnglishQuarterReportAdd/UPDATE_CONFIRMED',
+      payload: {
+        id: params.id,
+        studentId: dataDetails?.student?.id,
+        scriptReviewId: dataDetails?.scriptReview?.id,
+        schoolYearId: user.schoolYear?.id,
+        status: "CONFIRMED",
+        detail: dataDetails?.quarterReportDetail?.map(i => ({
+          id: i?.id,
+          isSubject: i?.isSubject ? true : undefined,
+          isComment: i?.isComment ? true : undefined,
+          scriptReviewSubjectId: i?.isSubject ? i?.scriptReviewSubjectId : undefined,
+          detailSubject: i?.isSubject ? i?.quarterReportDetailSubject?.map(item => ({
+            id: item?.id,
+            scriptReviewSubjectDetailId: item?.scriptReviewSubjectDetailId,
+            detailSubjectChildren: item?.quarterReportDetailSubjectChildren?.map(itemDetail => ({
+              id: itemDetail?.id,
+              scriptReviewSubjectDetailChildrenId: itemDetail?.scriptReviewSubjectDetailChildrenId,
+              evaluationCriteriaId: itemDetail?.evaluationCriteriaId,
+            }))
+          })) : undefined,
+          scriptReviewCommentId: i?.isComment ? i?.scriptReviewCommentId : undefined,
+          content: i?.isComment ? i?.content : undefined,
+        })),
+        teacherManagementId: user?.objectInfo?.id ? user?.objectInfo?.id : undefined,
+      },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -200,7 +244,7 @@ const Index = memo(() => {
             });
           }
         }
-      }
+      },
     });
   };
 
@@ -266,7 +310,7 @@ const Index = memo(() => {
   ];
 
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
-  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE)}`;
+  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`;
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
@@ -418,7 +462,7 @@ const Index = memo(() => {
                     color="primary"
                     onClick={() => addSent()}
                     size="large"
-                    loading={effects['EnglishQuarterReport/ADD_SENT']}
+                    loading={effects['EnglishQuarterReportAdd/UPDATE_CONFIRMED']}
                   >
                     Accept
                   </Button>
