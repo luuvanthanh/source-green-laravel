@@ -13,6 +13,12 @@ class AddFieldTimeToMonthlyCommentsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('study-program.MonthlyComments', 'MonthlyCommentId')) {
+            Schema::table('study-program.MonthlyCommentDetails', function (Blueprint $table) {
+                $table->dropColumn('MonthlyCommentId');
+            });
+        }
+
         Schema::table('study-program.MonthlyComments', function (Blueprint $table) {
             $table->uuid('TeacherSentId')->nullable()->index();
             $table->uuid('MonthlyCommentId')->nullable()->index();
