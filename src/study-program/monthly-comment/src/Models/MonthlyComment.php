@@ -72,4 +72,9 @@ class MonthlyComment extends UuidModel
     {
         return $this->belongsTo(ScriptReview::class, 'ScriptReviewId');
     }
+
+    public function teacherSent()
+    {
+        return $this->belongsTo(User::class, 'TeacherSentId');
+    }
 }

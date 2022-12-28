@@ -21,7 +21,7 @@ class CreateMonthlyCommentDetailSubjectChildrensTable extends Migration
             $table->uuid('ScriptReviewSubjectDetailChildrenId')->nullable();
             $table->uuid('EvaluationCriteriaId')->nullable();
             $table->uuid('MonthlyCommentDetailSubjectId')->index();
-            $table->foreign('MonthlyCommentDetailSubjectId')->references('Id')->on('study-program.MonthlyCommentDetailSubjects');
+            $table->foreign('MonthlyCommentDetailSubjectId')->references('Id')->on('study-program.MonthlyCommentDetailSubjects')->onDelete('cascade');;
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletedAt', 0);
