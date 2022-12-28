@@ -772,19 +772,19 @@ export async function getLeftMenuCriteria() {
       icon: 'icon icon-dictionary',
       permission: [permissions.CTH],
       children: [
-        // {
-        //   title: 'Monthly comment',
-        //   key: 'Monthly-report',
-        //   url: [
-        //     '/chuong-trinh-hoc/monthly-report',
-        //     '/chuong-trinh-hoc/monthly-report/:id/add',
-        //     '/chuong-trinh-hoc/monthly-report/:id/detail',
-        //     '/chuong-trinh-hoc/monthly-report/:id/edit',
-        //     '/chuong-trinh-hoc/monthly-report/:id/confirmed',
-        //   ],
-        //   permission: [permissions.CTH],
-        //   pro: true,
-        // },
+        {
+          title: 'Monthly comment',
+          key: 'Monthly-report',
+          url: [
+            '/chuong-trinh-hoc/monthly-report',
+            '/chuong-trinh-hoc/monthly-report/:id/add',
+            '/chuong-trinh-hoc/monthly-report/:id/detail',
+            '/chuong-trinh-hoc/monthly-report/:id/edit',
+            '/chuong-trinh-hoc/monthly-report/:id/confirmed',
+          ],
+          permission: [permissions.CTH],
+          pro: true,
+        },
         {
           title: 'Quarter report',
           key: 'Quarter-report',
@@ -798,30 +798,30 @@ export async function getLeftMenuCriteria() {
           permission: [permissions.CTH],
           pro: true,
         },
-        // {
-        //   title: 'Study Plan',
-        //   key: 'study-plan',
-        //   url: ['/chuong-trinh-hoc/study-plan'],
-        //   permission: [permissions.CTH],
-        //   pro: true,
-        // },
+        {
+          title: 'Study Plan',
+          key: 'study-plan',
+          url: ['/chuong-trinh-hoc/study-plan'],
+          permission: [permissions.CTH],
+          pro: true,
+        },
         {
           title: 'Settings',
           key: 'Settings',
           permission: [permissions.CTH],
           children: [
-            // {
-            //   title: 'Program',
-            //   key: 'Program',
-            //   url: [
-            //     '/chuong-trinh-hoc/settings/program',
-            //     '/chuong-trinh-hoc/settings/program/add',
-            //     '/chuong-trinh-hoc/settings/program/:id/detail',
-            //     '/chuong-trinh-hoc/settings/program/:id/edit',
-            //   ],
-            //   permission: [permissions.CTH],
-            //   pro: true,
-            // },
+            {
+              title: 'Program',
+              key: 'Program',
+              url: [
+                '/chuong-trinh-hoc/settings/program',
+                '/chuong-trinh-hoc/settings/program/add',
+                '/chuong-trinh-hoc/settings/program/:id/detail',
+                '/chuong-trinh-hoc/settings/program/:id/edit',
+              ],
+              permission: [permissions.CTH],
+              pro: true,
+            },
             {
               title: 'Subject',
               key: 'Subject',
@@ -870,13 +870,13 @@ export async function getLeftMenuCriteria() {
               permission: [permissions.CTH],
               pro: true,
             },
-            // {
-            //   title: 'Schedule',
-            //   key: 'tkb',
-            //   url: ['/chuong-trinh-hoc/settings/cau-hinh'],
-            //   permission: [permissions.CTH],
-            //   pro: true,
-            // },
+            {
+              title: 'Schedule',
+              key: 'tkb',
+              url: ['/chuong-trinh-hoc/settings/cau-hinh'],
+              permission: [permissions.CTH],
+              pro: true,
+            },
           ],
           pro: true,
         },
