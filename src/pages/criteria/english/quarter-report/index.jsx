@@ -549,7 +549,8 @@ class Index extends PureComponent {
           scriptReviewId: search.scriptReviewId,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
           oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
-          teacherManagementId: user?.id,
+          teacherManagementId: variablesModules.STATUS.NOT_YET_CONFIRM ? user?.id : undefined,
+          teacherSentId: variablesModules.STATUS.NOT_YET_SEND ? user?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -567,6 +568,8 @@ class Index extends PureComponent {
           scriptReviewId: search.scriptReviewId,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
           oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
+          teacherManagementId: variablesModules.STATUS.NOT_YET_CONFIRM ? user?.id : undefined,
+          teacherSentId: variablesModules.STATUS.NOT_YET_SEND ? user?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -583,6 +586,8 @@ class Index extends PureComponent {
           scriptReviewId: search.scriptReviewId,
           newStatus: 'CONFIRMED',
           oldStatus: "NOT_YET_CONFIRM",
+          teacherManagementId: variablesModules.STATUS.NOT_YET_CONFIRM ? user?.id : undefined,
+          teacherSentId: variablesModules.STATUS.NOT_YET_SEND ? user?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -600,6 +605,8 @@ class Index extends PureComponent {
           scriptReviewId: search.scriptReviewId,
           newStatus: 'SENT',
           oldStatus: "CONFIRMED",
+          teacherManagementId: variablesModules.STATUS.NOT_YET_CONFIRM ? user?.id : undefined,
+          teacherSentId: variablesModules.STATUS.NOT_YET_SEND ? user?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -614,19 +621,19 @@ class Index extends PureComponent {
   reportTime = (value) => {
     const { search } = this.state;
     if (search?.status === variablesModules.STATUS_SEARCH.REVIEWED) {
-      return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE);
+      return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE_TIME);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_CONFIRM) {
-      return Helper.getDate(head(value?.quarterReport)?.reportTime, variables.DATE_FORMAT.DATE);
+      return Helper.getDate(head(value?.quarterReport)?.reportTime, variables.DATE_FORMAT.DATE_TIME);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.CONFIRMED) {
-      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE);
+      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE_TIME);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_SEND) {
-      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE);
+      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE_TIME);
     }
     return (
-      Helper.getDate(head(value?.quarterReport)?.lastModificationTime, variables.DATE_FORMAT.DATE)
+      Helper.getDate(head(value?.quarterReport)?.lastModificationTime, variables.DATE_FORMAT.DATE_TIME)
     );
   }
 
@@ -787,15 +794,16 @@ class Index extends PureComponent {
                   <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')} loading={size(data?.filter((item) => item.isActive)) && effects['EnglishQuarterReport/ADD_SENT']}>
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
                   </Button>
-                  {/* <Button
+                  <Button
                     color="success"
                     icon="redo2"
                     className="ml-2"
+                    disabled={!data?.length > 0}
                     loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL']}
                     onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "send")}
                   >
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
-                  </Button> */}
+                  </Button>
                 </div>
             }
           </div>

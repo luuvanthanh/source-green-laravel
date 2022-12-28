@@ -804,6 +804,18 @@ export async function getLeftMenuCriteria() {
           permission: [permissions.CTH],
           children: [
             {
+              title: 'Program',
+              key: 'Program',
+              url: [
+                '/chuong-trinh-hoc/settings/program',
+                '/chuong-trinh-hoc/settings/program/add',
+                '/chuong-trinh-hoc/settings/program/:id/detail',
+                '/chuong-trinh-hoc/settings/program/:id/edit',
+              ],
+              permission: [permissions.CTH],
+              pro: true,
+            },
+            {
               title: 'Subject',
               key: 'Subject',
               url: [
@@ -848,6 +860,13 @@ export async function getLeftMenuCriteria() {
                 '/chuong-trinh-hoc/settings/scriptReview/:id/detail',
                 '/chuong-trinh-hoc/settings/scriptReview/:id/edit',
               ],
+              permission: [permissions.CTH],
+              pro: true,
+            },
+            {
+              title: 'Cấu hình TKB',
+              key: 'tkb',
+              url: ['/chuong-trinh-hoc/settings/cau-hinh'],
               permission: [permissions.CTH],
               pro: true,
             },

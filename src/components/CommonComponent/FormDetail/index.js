@@ -63,6 +63,18 @@ class FormDetail extends Component {
         </div>
       );
     }
+    if (type === 'textBG' && name) {
+      return (
+        <div className="mb20">
+          <div className={styles['wrapper-title']}>
+            <label className={styles.text}>{label}</label>
+          </div>
+          <div size="normal" className={styles['general-detail']} style={{ background: name }}>
+            <p className={styles.text}>{name}</p>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="mb20">
         <div className={styles['wrapper-title']}>

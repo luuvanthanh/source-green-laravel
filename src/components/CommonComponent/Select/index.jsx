@@ -11,10 +11,10 @@ export default function SelectCustom({ options, dataSet, notFoundContent, filter
     <Select
       {...rest}
       filterOption={filterOption}
-      notFoundContent={ notFoundContent || <NoData simple />}
+      notFoundContent={notFoundContent || <NoData simple />}
     >
       {dataSet.map((item) => (
-        <Select.Option key={item[`${options[0]}`]} value={item[`${options[0]}`]} disabled={_.includes(disabledOptions, item[`${options[0]}`])}>
+        <Select.Option style={{ backgroundColor: `${item.name}` }} key={item[`${options[0]}`]} value={item[`${options[0]}`]} disabled={_.includes(disabledOptions, item[`${options[0]}`])}>
           {item[`${options[1]}`]}
         </Select.Option>
       ))}
