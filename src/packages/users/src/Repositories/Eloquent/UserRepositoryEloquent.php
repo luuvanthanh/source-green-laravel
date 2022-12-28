@@ -2,6 +2,7 @@
 
 namespace GGPHP\Users\Repositories\Eloquent;
 
+use GGPHP\Category\Models\EventType;
 use GGPHP\Notification\Models\Player;
 use GGPHP\RolePermission\Models\Role;
 use GGPHP\Users\Jobs\SendEmail;
@@ -132,6 +133,8 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $user->camera()->sync($attributes['camera_id']);
         }
 
+        
+       
         // send mail
         $dataMail = [
             'email' => $user->email,
