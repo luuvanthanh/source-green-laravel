@@ -549,8 +549,8 @@ class Index extends PureComponent {
           scriptReviewId: search.scriptReviewId,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
           oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
-          teacherManagementId: variablesModules.STATUS.NOT_YET_CONFIRM ? user?.id : undefined,
-          teacherSentId: variablesModules.STATUS.NOT_YET_SEND ? user?.id : undefined,
+          teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
+          teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -568,8 +568,8 @@ class Index extends PureComponent {
           scriptReviewId: search.scriptReviewId,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
           oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
-          teacherManagementId: variablesModules.STATUS.NOT_YET_CONFIRM ? user?.id : undefined,
-          teacherSentId: variablesModules.STATUS.NOT_YET_SEND ? user?.id : undefined,
+          teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
+          teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -586,8 +586,8 @@ class Index extends PureComponent {
           scriptReviewId: search.scriptReviewId,
           newStatus: 'CONFIRMED',
           oldStatus: "NOT_YET_CONFIRM",
-          teacherManagementId: variablesModules.STATUS.NOT_YET_CONFIRM ? user?.id : undefined,
-          teacherSentId: variablesModules.STATUS.NOT_YET_SEND ? user?.id : undefined,
+          teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
+          teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -605,8 +605,8 @@ class Index extends PureComponent {
           scriptReviewId: search.scriptReviewId,
           newStatus: 'SENT',
           oldStatus: "CONFIRMED",
-          teacherManagementId: variablesModules.STATUS.NOT_YET_CONFIRM ? user?.id : undefined,
-          teacherSentId: variablesModules.STATUS.NOT_YET_SEND ? user?.id : undefined,
+          teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
+          teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -624,7 +624,7 @@ class Index extends PureComponent {
       return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE_TIME);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_CONFIRM) {
-      return Helper.getDate(head(value?.quarterReport)?.reportTime, variables.DATE_FORMAT.DATE_TIME);
+      return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE_TIME);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.CONFIRMED) {
       return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE_TIME);
@@ -777,7 +777,6 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
-
     const { search, defaultBranchs, dataAssess } = this.state;
     const loading = effects['EnglishQuarterReport/GET_DATA'];
     return (
@@ -799,7 +798,7 @@ class Index extends PureComponent {
                     icon="redo2"
                     className="ml-2"
                     disabled={!data?.length > 0}
-                    loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL']}
+                    loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL']}
                     onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "send")}
                   >
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
