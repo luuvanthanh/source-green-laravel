@@ -325,7 +325,7 @@ const Index = memo(() => {
                           className="btn-delete ml20"
                           role="presentation"
 
-                          onClick={() => history.push(`/chuong-trinh-hoc/settings/subject`)}
+                          onClick={() => history.goBack()}
                         >
                           Cancel
                         </p>

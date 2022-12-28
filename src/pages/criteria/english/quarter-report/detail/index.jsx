@@ -125,10 +125,10 @@ const Index = memo(() => {
       newStatus: variablesModules.STATUS.SENT,
       oldStatus: "CONFIRMED",
       teacherManagementId: query?.type === "done-review" ? user?.objectInfo?.id : undefined,
-      teacherSentId: query?.type === "done-confirmed" ? user?.objectInfo?.id : undefined,
+      teacherSentId: query?.type === "done" ? user?.objectInfo?.id : undefined,
     };
     dispatch({
-      type: 'EnglishQuarterReport/ADD_SENT_ALL',
+      type: 'EnglishQuarterReport/ADD_SENT',
       payload: { ...payload },
       callback: (response, error) => {
         if (response) {
