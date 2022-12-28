@@ -31,7 +31,11 @@ class MonthlyComment extends UuidModel
 
     protected $fillable = [
         'StudentId', 'ScriptReviewId', 'Status', 'TeacherId', 'TeacherManagementId', 'SchoolYearId',
-        'ReportTime', 'ConfirmationTime', 'Type', 'QuarterReportId', 'Month'
+        'ReportTime', 'ConfirmationTime', 'Type', 'MonthlyCommentId', 'Month', 'SentTime', 'TeacherSentId'
+    ];
+
+    protected $dateTimeFields = [
+        'ReportTime', 'ConfirmationTime', 'SentTime'
     ];
 
     public function sampleComment()

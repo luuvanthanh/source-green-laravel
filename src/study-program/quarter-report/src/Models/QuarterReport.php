@@ -30,11 +30,11 @@ class QuarterReport extends UuidModel
 
     protected $fillable = [
         'StudentId', 'ScriptReviewId', 'Status', 'TeacherId', 'TeacherManagementId', 'SchoolYearId',
-        'ReportTime', 'ConfirmationTime', 'Type', 'QuarterReportId'
+        'ReportTime', 'ConfirmationTime', 'Type', 'QuarterReportId', 'SentTime', 'TeacherSentId'
     ];
 
     protected $dateTimeFields = [
-        'ReportTime', 'ConfirmationTime'
+        'ReportTime', 'ConfirmationTime', 'SentTime'
     ];
 
     public function quarterReportDetail()
@@ -65,5 +65,10 @@ class QuarterReport extends UuidModel
     public function schoolYear()
     {
         return $this->belongsTo(SchoolYear::class, 'SchoolYearId');
+    }
+
+    public function teacherSent()
+    {
+        return $this->belongsTo(User::class, 'TeacherSentId');
     }
 }

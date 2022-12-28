@@ -21,7 +21,10 @@ class QuarterReportTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['quarterReportDetail', 'teacher', 'teacherManagement', 'student', 'schoolYear', 'scriptReview'];
+    protected $defaultIncludes = [
+        'quarterReportDetail', 'teacher', 'teacherManagement',
+        'student', 'schoolYear', 'scriptReview', 'teacherSent'
+    ];
 
     /**
      * Array attribute doesn't parse.
@@ -96,5 +99,14 @@ class QuarterReportTransformer extends BaseTransformer
             return null;
         }
         return $this->item($quarterReport->schoolYear, new SchoolYearTransformer, 'SchoolYear');
+    }
+
+    public function includeTeacherSent(QuarterReport $quarterReport)
+    {
+        if (is_null($quarterReport->teacherSent)) {
+            return null;
+        }
+
+        return $this->item($quarterReport->teacherSent, new UserTransformer, 'TeacherSent');
     }
 }
