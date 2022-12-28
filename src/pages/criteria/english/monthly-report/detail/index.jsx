@@ -2,8 +2,8 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
-import { useParams, history } from 'umi';
-import { head } from 'lodash';
+import { useParams, history, useLocation } from 'umi';
+import { head, isEmpty, get } from 'lodash';
 import classnames from 'classnames';
 import Loading from '@/components/CommonComponent/Loading';
 
@@ -11,9 +11,12 @@ import ImgDetail from '@/components/CommonComponent/imageDetail';
 
 import Heading from '@/components/CommonComponent/Heading';
 import FormDetail from '@/components/CommonComponent/FormDetail';
+import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import { variables, Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
+import variablesModules from '../utils/variables';
 import stylesModule from '../styles.module.scss';
 
 
@@ -30,22 +33,24 @@ const Index = memo(() => {
     details,
     menuLeftCriteria,
     dataEvaluetionCriteria,
-  } = useSelector(({ EnglishMonthReportAdd, menu, loading, EnglishMonthReportAddAdd, user }) => ({
-    dataAssess: EnglishMonthReportAdd.dataAssess,
+    user,
+  } = useSelector(({ EnglishMonthlyReport, menu, loading, EnglishMonthlyReportAdd, user }) => ({
+    dataAssess: EnglishMonthlyReport.dataAssess,
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: EnglishMonthReportAddAdd.details,
-    dataType: EnglishMonthReportAdd.dataType,
-    dataEvaluetionCriteria: EnglishMonthReportAddAdd.dataEvaluetionCriteria,
+    details: EnglishMonthlyReportAdd.details,
+    dataType: EnglishMonthlyReport.dataType,
+    dataEvaluetionCriteria: EnglishMonthlyReportAdd.dataEvaluetionCriteria,
     user: user.user,
-    error: EnglishMonthReportAddAdd.error,
+    error: EnglishMonthlyReportAdd.error,
   }));
   const [dataDetails, setDataDetails] = useState(undefined);
+  const { query } = useLocation();
 
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'EnglishMonthReportAddAdd/GET_DATA_DETAIL',
+        type: 'EnglishMonthlyReportAdd/GET_DATA_DETAIL',
         payload: {
           id: params?.id,
         },
@@ -60,11 +65,11 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'EnglishMonthReportAdd/GET_DATA_TYPE',
+      type: 'EnglishMonthlyReport/GET_DATA_TYPE',
       payload: {},
     });
     dispatch({
-      type: 'EnglishMonthReportAddAdd/GET_DATA_EVALUATION_CRITERRIA',
+      type: 'EnglishMonthlyReportAdd/GET_DATA_EVALUATION_CRITERRIA',
       payload: {},
     });
   }, []);
@@ -112,10 +117,78 @@ const Index = memo(() => {
       : []),
   ];
 
+  const addSent = () => {
+    const payload = {
+      studentId: [dataDetails?.studentId],
+      schoolYearId: dataDetails?.schoolYearId,
+      scriptReviewId: dataDetails?.scriptReviewId,
+      newStatus: variablesModules.STATUS.SENT,
+      oldStatus: "CONFIRMED",
+      teacherManagementId: user?.id,
+    };
+    dispatch({
+      type: 'EnglishMonthlyReport/ADD_SENT_ALL',
+      payload: { ...payload },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              form.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      }
+    });
+  };
+  const detailTearch = `${dataDetails?.teacher?.fullName ? dataDetails?.teacher?.fullName : ""}  ${dataDetails?.creationTime ? Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE) : ""}`;
+  const detailTearchManagement = `${dataDetails?.teacherManagement?.fullName ? dataDetails?.teacherManagement?.fullName : ""}  ${dataDetails?.confirmationTime ? Helper.getDate(dataDetails?.confirmationTime, variables.DATE_FORMAT.DATE) : ""}`;
+  const formStatus = () => {
+    if (query?.type === "done-review") {
+      return (
+        <Pane className="col-lg-3">
+          <FormDetail name={detailTearch} label="Teacher report" type="text" />
+        </Pane>
+      );
+    }
+    if (query?.type === "done-confirmed" || query?.type === "done") {
+      return (
+        <>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearch} label="Teacher report" type="text" />
+          </Pane>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearchManagement} label="Approved by" type="text" />
+          </Pane>
+        </>
+      );
+    }
+    if (query?.type === "send") {
+      return (
+        <>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearch} label="Teacher report" type="text" />
+          </Pane>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearchManagement} label="Approved by" type="text" />
+          </Pane>
+        </>
+      );
+    }
+    return "";
+  };
+  const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
           <Form layout="vertical" form={form} initialValues={{
@@ -124,7 +197,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['EnglishMonthReportAddAdd/GET_DATA_DETAIL']}
+              loading={effects['EnglishMonthlyReportAdd/GET_DATA_DETAIL']}
               params={{
                 type: 'container',
               }}
@@ -148,7 +221,7 @@ const Index = memo(() => {
                 </div>
                 <Pane className="row">
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataDetails?.schoolYear?.yearFrom} label="School year" type="text" />
+                    <FormDetail name={detailSchoolYear} label="School year" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail name={dataDetails?.student?.branch?.name} label="Center" type="text" />
@@ -157,8 +230,9 @@ const Index = memo(() => {
                     <FormDetail name={dataDetails?.student?.classes?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment periodr" type="text" />
+                    <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment period" type="text" />
                   </Pane>
+                  {formStatus()}
                 </Pane>
               </Pane>
               <Pane>
@@ -227,8 +301,20 @@ const Index = memo(() => {
 
                   onClick={() => history.goBack()}
                 >
-                  Cancel
+                  Close
                 </p>
+                {
+                  query?.type === 'done' && (
+                    <Button
+                      className="ml10 px25"
+                      color="success"
+                      onClick={() => addSent()}
+                      size="large"
+                      loading={effects['EnglishMonthlyReport/ADD_SENT_ALL']}
+                    >
+                      Send
+                    </Button>)
+                }
               </Pane>
             </Loading>
           </Form>

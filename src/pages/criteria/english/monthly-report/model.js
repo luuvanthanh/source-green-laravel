@@ -4,7 +4,7 @@ import { notification } from 'antd';
 import * as services from './services';
 
 export default {
-  namespace: 'EnglishMonthReport',
+  namespace: 'EnglishMonthlyReport',
   state: {
     data: [],
     years: [],
@@ -37,7 +37,7 @@ export default {
       years:
         payload.parsePayload?.map((item) => ({
           id: item.id,
-          name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+          name: `${item.yearFrom} - ${item.yearTo}`,
           ...item,
         })) || [],
     }),
@@ -245,6 +245,70 @@ export default {
     *ADD_SENT({ payload, callback }, saga) {
       try {
         yield saga.call(services.addSent, payload);
+        callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'You updated to success data.',
+        });
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_SENT_ALL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addSentAll, payload);
+        callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'You updated to success data.',
+        });
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_CONFIRMED_ALL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addConfirmedAll, payload);
+        callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'You updated to success data.',
+        });
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_CONFIRM({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addConfirm, payload);
+        callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'You updated to success data.',
+        });
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *DELETE_CONFIRM({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeConfirm, payload.id);
+        notification.success({
+          message: 'Successful',
+          description: 'You deleted to success data.',
+        });
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *UPDATE_SENT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateSent, payload);
         callback(payload);
         notification.success({
           message: 'Successful',
