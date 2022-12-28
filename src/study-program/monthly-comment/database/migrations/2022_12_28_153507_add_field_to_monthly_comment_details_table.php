@@ -13,11 +13,9 @@ class AddFieldToMonthlyCommentDetailsTable extends Migration
      */
     public function up()
     {
-        if (Schema::hasColumn('study-program.MonthlyCommentDetails', 'ScriptReviewCommentId')) {
-            Schema::table('study-program.MonthlyCommentDetails', function (Blueprint $table) {
-                $table->dropColumn('ScriptReviewCommentId');
-            });
-        }
+        Schema::table('study-program.MonthlyCommentDetails', function (Blueprint $table) {
+            $table->dropColumn('ScriptReviewCommentId');
+        });
 
         Schema::table('study-program.MonthlyCommentDetails', function (Blueprint $table) {
             $table->boolean('IsSubject')->default(false);
