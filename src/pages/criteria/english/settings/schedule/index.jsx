@@ -1,13 +1,14 @@
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { isEmpty, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { variables } from '@/utils';
-import { history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Pane from '@/components/CommonComponent/Pane';
+import FormDetail from '@/components/CommonComponent/FormDetail';
+
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 
@@ -17,7 +18,7 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const {
     loading: { effects },
-    dataSubject
+    dataSubject,
   } = useSelector(({ loading, englishSettingSchedule }) => ({
     loading,
     dataSubject: englishSettingSchedule.dataSubject,
@@ -25,6 +26,10 @@ const Index = memo(() => {
   }));
 
   const loadingSubmit = effects[`englishSettingSchedule/ADD`];
+  const [checkEdit, setCheckEdit] = useState(false);
+  const [details, setDetails] = useState(undefined);
+
+
 
   const onFinish = (value) => {
     dispatch({
@@ -32,7 +37,7 @@ const Index = memo(() => {
       payload: value,
       callback: (response, error) => {
         if (response) {
-          history.goBack();
+          setCheckEdit(false);
         }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -59,6 +64,7 @@ const Index = memo(() => {
           form.setFieldsValue({
             value: response,
           });
+          setDetails(response);
         }
       },
     });
@@ -89,31 +95,60 @@ const Index = memo(() => {
               loading={effects['englishSettingSchedule/GET_DATA']}
             >
               <Heading type="form-title" className="mb15">
-                Cấu hình TKB
+                Schedule
               </Heading>
               <Pane className="card p20">
                 <Pane className="row">
                   <Pane className="col-lg-12">
-                    <FormItem
-                      name="value"
-                      placeholder="Select input"
-                      data={dataSubject}
-                      type={variables.SELECT}
-                      label="ID program"
-                      rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
-                    />
+                    {
+                      checkEdit ?
+                        <FormItem
+                          name="value"
+                          placeholder="Select input"
+                          data={dataSubject}
+                          type={variables.SELECT}
+                          label="Subject apply"
+                          rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
+                        /> :
+                        <FormDetail name={!isEmpty(details) ? details : ""} label="Subject apply" type="select" data={dataSubject} />
+                    }
                   </Pane>
                 </Pane>
               </Pane>
-              <Button
-                className="ml-auto px25"
-                color="success"
-                htmlType="submit"
-                size="large"
-                loading={loadingSubmit}
-              >
-                Save
-              </Button>
+              <Pane className="d-flex justify-content-between align-items-center mb20 mt20">
+                {
+                  checkEdit ?
+                    <>
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+
+                        onClick={() => setCheckEdit(false)}
+                      >
+                        Cancel
+                      </p>
+                      <Button
+                        className="ml-auto px25"
+                        color="success"
+                        htmlType="submit"
+                        size="large"
+                        loading={loadingSubmit}
+                      >
+                        Save
+                      </Button>
+                    </>
+                    :
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      size="large"
+                      htmlType="edit"
+                      onClick={() => setCheckEdit(true)}
+                    >
+                      Edit
+                    </Button>
+                }
+              </Pane>
             </Loading>
           </Form>
         </Pane>

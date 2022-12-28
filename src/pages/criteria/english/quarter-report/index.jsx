@@ -512,7 +512,7 @@ class Index extends PureComponent {
       loading: { effects }
     } = this.props;
     const dataActive = data?.filter((item) => item.isActive);
-    if (effects['EnglishQuarterReport/ADD_SENT'] && ((record?.id === idSent) || dataActive?.find(i => record?.id === i.id))) {
+    if (effects['EnglishQuarterReport/ADD_SENT'] || effects['EnglishQuarterReport/ADD_CONFIRM'] && ((record?.id === idSent) || dataActive?.find(i => record?.id === i.id))) {
       return <div className={stylesModule['lds-ring']}><div /><div /><div /><div /></div>;
     }
     if (
@@ -542,7 +542,7 @@ class Index extends PureComponent {
       },);
     if (type === 'one') {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/ADD_SENT',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishQuarterReport/ADD_CONFIRM' : 'EnglishQuarterReport/ADD_SENT',
         payload: {
           studentId: [id],
           schoolYearId: search.schoolYearId,
@@ -561,7 +561,7 @@ class Index extends PureComponent {
     }
     if (type === 'much') {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/ADD_SENT',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishQuarterReport/ADD_CONFIRM' : 'EnglishQuarterReport/ADD_SENT',
         payload: {
           studentId: data?.filter(i => i?.isActive)?.map(i => i.id),
           schoolYearId: search.schoolYearId,
@@ -580,12 +580,12 @@ class Index extends PureComponent {
     }
     if (type === 'allConfirmed') {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/ADD_CONFIRMED_ALL',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishQuarterReport/ADD_CONFIRMED_ALL' : 'EnglishQuarterReport/ADD_SENT_ALL',
         payload: {
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
-          newStatus: 'CONFIRMED',
-          oldStatus: "NOT_YET_CONFIRM",
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
           teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
           teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
@@ -599,12 +599,12 @@ class Index extends PureComponent {
 
     if (type === 'send') {
       this.props.dispatch({
-        type: 'EnglishQuarterReport/ADD_SENT_ALL',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishQuarterReport/ADD_CONFIRM' : 'EnglishQuarterReport/ADD_SENT',
         payload: {
           schoolYearId: search.schoolYearId,
           scriptReviewId: search.scriptReviewId,
-          newStatus: 'SENT',
-          oldStatus: "CONFIRMED",
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
           teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
           teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
@@ -777,6 +777,7 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
+
     const { search, defaultBranchs, dataAssess } = this.state;
     const loading = effects['EnglishQuarterReport/GET_DATA'];
     return (
@@ -790,7 +791,7 @@ class Index extends PureComponent {
               (search?.status === variablesModules.STATUS.NOT_REVIEW) || (search?.status === variablesModules.STATUS.REVIEWED) || (search?.status === variablesModules.STATUS.SENT) || (search?.status === variablesModules.STATUS.CONFIRMED) ?
                 " " :
                 <div className='d-flex'>
-                  <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')} loading={size(data?.filter((item) => item.isActive)) && effects['EnglishQuarterReport/ADD_SENT']}>
+                  <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')} loading={size(data?.filter((item) => item.isActive)) && effects['EnglishQuarterReport/ADD_SENT'] || effects['EnglishQuarterReport/ADD_CONFIRM']}>
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
                   </Button>
                   <Button
@@ -798,8 +799,8 @@ class Index extends PureComponent {
                     icon="redo2"
                     className="ml-2"
                     disabled={!data?.length > 0}
-                    loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL']}
-                    onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "send")}
+                    loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
+                    onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
                   >
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
                   </Button>

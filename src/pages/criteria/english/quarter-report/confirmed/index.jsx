@@ -226,7 +226,7 @@ const Index = memo(() => {
           scriptReviewCommentId: i?.isComment ? i?.scriptReviewCommentId : undefined,
           content: i?.isComment ? i?.content : undefined,
         })),
-        teacherId: user?.objectInfo?.id,
+        teacherManagementId: user?.objectInfo?.id ? user?.objectInfo?.id : undefined,
       },
       callback: (response, error) => {
         if (response) {

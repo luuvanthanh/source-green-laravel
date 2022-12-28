@@ -415,6 +415,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
+          {
+            path: '/chuong-trinh-hoc/study-plan',
+            component: './criteria/english/study-plan',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
         ],
       },
       // CRITERIA

@@ -103,7 +103,7 @@ export function addSent(data = {}) {
 }
 
 export function addSentAll(data = {}) {
-  return request('/v1/update-all-status-quarter-reports', {
+  return request('/v1/notification-all-status-quarter-reports', {
     method: 'POST',
     data,
     cancelNotification: true,
