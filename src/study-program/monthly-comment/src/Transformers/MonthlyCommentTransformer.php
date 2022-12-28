@@ -7,6 +7,7 @@ use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Transformers\SchoolYearTransformer;
 use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
+use GGPHP\StudyProgram\ScriptReview\Transformers\ScriptReviewTransformer;
 use GGPHP\StudyProgram\Setting\Transformers\SampleCommentTransformer;
 use GGPHP\Users\Transformers\UserTransformer;
 
@@ -22,7 +23,10 @@ class MonthlyCommentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['teacher', 'teacherManagement', 'student', 'schoolYear', 'monthlyCommentDetail'];
+    protected $defaultIncludes = [
+        'teacher', 'teacherManagement', 'student',
+        'monthlyCommentDetail', 'scriptReview', 'teacherSent'
+    ];
 
     /**
      * Array attribute doesn't parse.
@@ -34,7 +38,7 @@ class MonthlyCommentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['schoolYear'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -47,7 +51,8 @@ class MonthlyCommentTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            'Status' => array_search($model->Status, MonthlyComment::STATUS)
+            'Status' => array_search($model->Status, MonthlyComment::STATUS),
+            'Type' => array_search($model->Type, MonthlyComment::TYPE)
         ];
     }
 
@@ -90,5 +95,23 @@ class MonthlyCommentTransformer extends BaseTransformer
     public function includeMonthlyCommentDetail(MonthlyComment $monthlyComment)
     {
         return $this->collection($monthlyComment->monthlyCommentDetail, new MonthlyCommentDetailTransformer, 'MonthlyCommentDetail');
+    }
+
+    public function includeScriptReview(MonthlyComment $monthlyComment)
+    {
+        if (is_null($monthlyComment->scriptReview)) {
+            return null;
+        }
+
+        return $this->item($monthlyComment->scriptReview, new ScriptReviewTransformer, 'ScriptReview');
+    }
+
+    public function includeTeacherSent(MonthlyComment $monthlyComment)
+    {
+        if (is_null($monthlyComment->teacherSent)) {
+            return null;
+        }
+
+        return $this->item($monthlyComment->teacherSent, new UserTransformer, 'TeacherSent');
     }
 }

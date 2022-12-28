@@ -19,7 +19,7 @@ class CreateMonthlyCommentDetailSubjectsTable extends Migration
             $table->uuid('ScriptReviewSubjectDetailId')->nullable();
             $table->string('Content')->nullable();
             $table->uuid('MonthlyCommentDetailId')->index();
-            $table->foreign('MonthlyCommentDetailId')->references('Id')->on('study-program.MonthlyCommentDetails');
+            $table->foreign('MonthlyCommentDetailId')->references('Id')->on('study-program.MonthlyCommentDetails')->onDelete('cascade');;
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
             $table->softDeletes('DeletedAt', 0);

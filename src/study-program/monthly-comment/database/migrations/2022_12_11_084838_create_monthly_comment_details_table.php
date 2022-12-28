@@ -16,8 +16,11 @@ class CreateMonthlyCommentDetailsTable extends Migration
         Schema::create('study-program.MonthlyCommentDetails', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->uuid('ScriptReviewCommentId')->index();
             $table->text('Content')->nullable();
+            $table->boolean('IsSubject')->default(false);
+            $table->boolean('IsComment')->default(false);
+            $table->uuid('ScriptReviewSubjectId')->nullable()->index();
+            $table->uuid('ScriptReviewCommentId')->nullable()->index();
             $table->uuid('MonthlyCommentId')->index();
             $table->foreign('MonthlyCommentId')->references('Id')->on('study-program.MonthlyComments');
             $table->timestamp('CreationTime', 0)->nullable();

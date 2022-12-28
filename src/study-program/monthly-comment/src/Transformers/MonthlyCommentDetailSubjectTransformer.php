@@ -19,7 +19,7 @@ class MonthlyCommentDetailSubjectTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['monthlyCommentDetailSubjectChildren', 'scriptReviewSubjectDetail'];
+    protected $defaultIncludes = ['monthlyCommentDetailSubjectChildren', 'scriptReviewSubjectDetail', 'monthlyCommentDetailSubjectChildren'];
 
     /**
      * Array attribute doesn't parse.
@@ -58,5 +58,10 @@ class MonthlyCommentDetailSubjectTransformer extends BaseTransformer
         }
 
         return $this->item($monthlyCommentDetailSubject->scriptReviewSubjectDetail, new ScriptReviewSubjectDetailTransformer, 'ScriptReviewSubjectDetail');
+    }
+
+    public function includeMonthlyCommentDetailSubjectChildren(MonthlyCommentDetailSubject $monthlyCommentDetailSubject)
+    {
+        return $this->collection($monthlyCommentDetailSubject->monthlyCommentDetailSubjectChildren, new MonthlyCommentDetailSubjectChildrenTransformer, 'MonthlyCommentDetailSubjectChildren');
     }
 }

@@ -21,4 +21,9 @@ class MonthlyCommentDetail extends UuidModel
     {
         return $this->belongsTo(ScriptReviewComment::class, 'ScriptReviewCommentId');
     }
+
+    public function monthlyCommentDetailSubject()
+    {
+        return $this->hasMany(MonthlyCommentDetailSubject::class, 'MonthlyCommentDetailId');
+    }
 }
