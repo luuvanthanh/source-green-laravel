@@ -144,7 +144,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         DB::beginTransaction();
         try {
             if ($attributes['status'] == QuarterReport::STATUS['REVIEWED']) {
-                $attributes['reportTime'] = date('Y-m-d H:i:s');
+                $attributes['reportTime'] = now()->format('Y-m-d H:i:s');
                 $attributes['type'] = QuarterReport::TYPE['DUPLICATE'];
 
                 $quarterReportId = '';
@@ -219,14 +219,12 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $result = $this->model()::find($id);
         DB::beginTransaction();
         try {
-            if ($attributes['status'] == QuarterReport::STATUS['NOT_YET_CONFIRM']) {
-                $attributes['confirmationTime'] = date('Y-m-d H:i:s');
+            if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
+                $attributes['confirmationTime'] = now()->format('Y-m-d H:i:s');
             }
 
-            if ($attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
-                $this->sentNotification($result);
-                $attributes['confirmationTime'] = date('Y-m-d H:i:s');
-                $attributes['SentTime'] = date('Y-m-d H:i:s');
+            if ($attributes['status'] == QuarterReport::STATUS['SENT']) {
+                $attributes['SentTime'] = now()->format('Y-m-d H:i:s');
             }
             $result->update($attributes);
 
@@ -297,7 +295,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             ->where('Status', $attributes['oldStatus'])
             ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => date('Y-m-d H:i:s')
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -305,7 +303,15 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function notificationQuarterReport(array $attributes)
     {
-        $this->updateStatusQuarterReport($attributes);
+        $this->model->whereIn('StudentId', $attributes['studentId'])
+            ->where('SchoolYearId', $attributes['schoolYearId'])
+            ->where('ScriptReviewId', $attributes['scriptReviewId'])
+            ->where('Status', $attributes['oldStatus'])
+            ->update([
+                'Status' => $attributes['newStatus'],
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherSentId' => $attributes['teacherSentId']
+            ]);
 
         $data = $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
@@ -329,7 +335,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         foreach ($data as $value) {
             $value->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => date('Y-m-d H:i:s')
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
             ]);
         }
 
@@ -347,7 +353,8 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
             $value->update([
                 'Status' => $attributes['newStatus'],
-                'SentTime' => date('Y-m-d H:i:s'),
+                'SentTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherSentId' => $attributes['teacherSentId']
             ]);
         }
 
