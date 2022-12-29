@@ -237,7 +237,6 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             }
             DB::commit();
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollback();
             throw new HttpException(500, $th->getMessage());
         }
@@ -284,12 +283,25 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         }
     }
 
+    public function deleteAll($id)
+    {
+        $data = $this->model()::findOrFail($id);
+        $data->monthlyCommentDetail()->forceDelete();
+        $data->forceDelete();
+
+        return parent::all();
+    }
+
     public function updateStatusMonthlyComment(array $attributes)
     {
+        $carbon = Carbon::parse($attributes['month']);
+
         $this->model->whereIn('StudentId', $attributes['studentId'])
             ->where('SchoolYearId', $attributes['schoolYearId'])
             ->where('ScriptReviewId', $attributes['scriptReviewId'])
             ->where('Status', $attributes['oldStatus'])
+            ->whereMonth('Month', $carbon->format('m'))
+            ->whereYear('Month', $carbon->format('Y'))
             ->update([
                 'Status' => $attributes['newStatus'],
                 'ConfirmationTime' => now()->format('Y-m-d H:i:s')

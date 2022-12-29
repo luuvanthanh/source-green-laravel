@@ -28,8 +28,10 @@ class MonthlyCommentUpdateStatusRequest extends FormRequest
         return [
             'studentId' => 'array|required|check_exists:object.Students,Id',
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
-            'sampleCommentId' => 'required|check_exists:study-program.SampleComments,Id',
-            'status' => 'required|in:' . $status,
+            'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
+            'newStatus' => 'required|in:' . $status,
+            "oldStatus" => 'required|in:' . $status,
+            'month' => 'required|date_format:Y-m-d',
         ];
     }
 
@@ -37,8 +39,12 @@ class MonthlyCommentUpdateStatusRequest extends FormRequest
     {
         $data = parent::all();
 
-        if (!empty($data['status'])) {
-            $data['status'] = MonthlyComment::STATUS[$data['status']];
+        if (!empty($data['oldStatus'])) {
+            $data['oldStatus'] = MonthlyComment::STATUS[$data['oldStatus']];
+        }
+
+        if (!empty($data['newStatus'])) {
+            $data['newStatus'] = MonthlyComment::STATUS[$data['newStatus']];
         }
 
         return $data;
