@@ -24,13 +24,31 @@ class UserCreateRequest extends FormRequest
      */
     public function rules()
     {
-        $type = implode(',', array_keys(User::CATEGORY));
+        $type = implode(',', User::CATEGORY);
+        $status = implode(',', User::STATUS);
 
         return [
             'code' => 'unique:Employees,Code',
             'email' => 'unique:Employees,Email',
             'fullName' => 'required|string',
-            'category' => 'required|in:' . $type
+            'category' => 'required|in:' . $type,
+            'status' => 'required|in:' . $status,
+            'typeTeacherId' => 'nullable|check_exists:evaluate_teacher.TypeTeachers,Id'
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+
+        if (!empty($data['status'])) {
+            $data['status'] = User::STATUS[$data['status']];
+        }
+
+        if (!empty($data['category'])) {
+            $data['category'] = User::CATEGORY[$data['category']];
+        }
+
+        return $data;
     }
 }

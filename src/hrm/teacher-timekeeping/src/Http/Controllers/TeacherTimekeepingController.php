@@ -3,7 +3,7 @@
 namespace GGPHP\TeacherTimekeeping\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use GGPHP\TeacherTimekeeping\Http\Requests\CreatTeacherTimekeepingRequest;
+use GGPHP\TeacherTimekeeping\Http\Requests\CreateTeacherTimekeepingRequest;
 use GGPHP\TeacherTimekeeping\Http\Requests\StoreTeacherTimekeepingRequest;
 use GGPHP\TeacherTimekeeping\Http\Requests\UpdateTeacherTimekeepingRequest;
 use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
@@ -46,7 +46,7 @@ class TeacherTimekeepingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreatTeacherTimekeepingRequest $request)
+    public function store(CreateTeacherTimekeepingRequest $request)
     {
         $attribute = $request->all();
 

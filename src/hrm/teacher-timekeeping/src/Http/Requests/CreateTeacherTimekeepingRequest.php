@@ -5,7 +5,7 @@ namespace GGPHP\TeacherTimekeeping\Http\Requests;
 use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreatTeacherTimekeepingRequest extends FormRequest
+class CreateTeacherTimekeepingRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.

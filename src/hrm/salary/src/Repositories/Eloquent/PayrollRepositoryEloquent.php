@@ -95,7 +95,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
     {
         $payroll = Payroll::where('Month', $attributes['month'])->with(['payrollDetail' => function ($query) use ($attributes) {
             $query->whereHas('employee', function ($q2) use ($attributes) {
-                $q2->tranferHistory($attributes);
+                $q2->transferHistory($attributes);
 
                 if (!empty($attributes['fullName'])) {
                     $q2->whereLike('FullName', $attributes['fullName']);
@@ -1353,7 +1353,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         ini_set('max_execution_time', '300');
         $payroll = Payroll::where('Id', $attributes['id'])->with(['payrollDetail' => function ($query) use ($attributes) {
             $query->whereHas('employee', function ($q2) use ($attributes) {
-                $q2->tranferHistory($attributes);
+                $q2->transferHistory($attributes);
 
                 if (!empty($attributes['fullName'])) {
                     $q2->whereLike('FullName', $attributes['fullName']);
@@ -2809,7 +2809,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $result = [];
         $payroll = Payroll::where('Id', $attributes['id'])->with(['payrollDetail' => function ($query) use ($attributes) {
             $query->whereHas('employee', function ($q2) use ($attributes) {
-                $q2->tranferHistory($attributes);
+                $q2->transferHistory($attributes);
 
                 if (!empty($attributes['fullName'])) {
                     $q2->whereLike('FullName', $attributes['fullName']);
@@ -3149,7 +3149,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $query->whereIn('Id', $employeeId);
             }
 
-            $query->tranferHistory($attributes);
+            $query->transferHistory($attributes);
 
             if (!empty($attributes['isForeigner'])) {
                 $query->where('IsForeigner', $attributes['isForeigner']);
