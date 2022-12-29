@@ -10,6 +10,7 @@ use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepositor
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use PhpOffice\PhpSpreadsheet\Reader\Xls\RC4;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TestSemesterController extends Controller
 {
@@ -35,6 +36,8 @@ class TestSemesterController extends Controller
      */
     public function index(Request $request)
     {
+        throw new HttpException(400, 'Hệ thống đang bảo trì.');
+
         $attributes = $request->all();
 
         if (!empty($attributes['status'])) {

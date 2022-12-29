@@ -96,7 +96,7 @@ class MonthlyCommentController extends Controller
      */
     public function destroy($id)
     {
-        $this->monthlyCommentRepository->delete($id);
+        $this->monthlyCommentRepository->deleteAll($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
