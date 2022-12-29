@@ -26,6 +26,8 @@ class CreatOtherDeclarationRequest extends FormRequest
 
         return [
             'time' => 'unique:OtherDeclarations,Time',
+            'startDate' => 'required|date|date_format:Y-m-d|before:endDate',
+            'endDate' => 'required|date|date_format:Y-m-d|after:startDate'
         ];
     }
 }

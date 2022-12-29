@@ -28,9 +28,10 @@ class TypeTeacherCreateRequest extends FormRequest
         return [
             'name' => 'string|check_unique:evaluate_teacher.TypeTeachers,Name',
             'code' => 'string|check_unique:evaluate_teacher.TypeTeachers,Code',
-            'typeOfContractId' => 'required|exists:TypeOfContracts,Id',
-            'ratingLevelFrom' => 'check_exists:evaluate_teacher.RatingLevels,Id',
-            'ratingLevelTo' => 'check_exists:evaluate_teacher.RatingLevels,Id'
+            'typeOfContractId' => 'nullable|exists:TypeOfContracts,Id',
+            'ratingLevelFrom' => 'nullable|check_exists:evaluate_teacher.RatingLevels,Id',
+            'ratingLevelTo' => 'nullable|check_exists:evaluate_teacher.RatingLevels,Id',
+            'basicSalary' => 'required|numeric',
         ];
     }
 }

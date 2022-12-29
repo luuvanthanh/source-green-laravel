@@ -3,6 +3,7 @@
 namespace GGPHP\OtherDeclaration\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\OtherDeclaration\Http\Requests\CalculatorWorkRequest;
 use GGPHP\OtherDeclaration\Http\Requests\CreatOtherDeclarationRequest;
 use GGPHP\OtherDeclaration\Http\Requests\UpdateOtherDeclarationRequest;
 use GGPHP\OtherDeclaration\Repositories\Contracts\OtherDeclarationRepository;
@@ -52,7 +53,6 @@ class OtherDeclarationController extends Controller
         } catch (\Throwable $th) {
             return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
         }
-
     }
 
     /**
@@ -98,5 +98,12 @@ class OtherDeclarationController extends Controller
     {
         $this->otherDeclarationRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    public function calculatorWork(CalculatorWorkRequest $request)
+    {
+        $result = $this->otherDeclarationRepository->calculatorWork($request->all());
+
+        return $this->success($result, trans('lang::messages.common.getInfoSuccess'));
     }
 }

@@ -4,12 +4,14 @@ namespace GGPHP\Users\Models;
 
 use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
+use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Category\Models\Degree;
 use GGPHP\Category\Models\TrainingMajor;
 use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\EvaluateTeacher\Category\Models\TypeTeacher;
+use GGPHP\ExpectedTime\Models\ExpectedTime;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
@@ -40,6 +42,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     use Authorizable, CanResetPassword, MustVerifyEmail;
     use InteractsWithMedia;
     use SyncToDevice;
+    use ActivityLogTrait;
 
     const STATUS = [
         'INACTIVITY' => 1,
@@ -69,7 +72,8 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'Nation', 'IdCard', 'DateOfIssueIdCard', 'PlaceOfIssueIdCard', 'Religion', 'WorkDate',
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
-        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'Description', 'Category'
+        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married', 'EmployeeIdCrm', 'Description', 'Category',
+        'FileAttached', 'IsForeigner', 'LastName', 'TypeTeacherId'
     ];
 
     protected $dateTimeFields = [
@@ -223,10 +227,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         return $this->belongsTo(\GGPHP\Clover\Models\ClassTeacher::class, 'Id', 'EmployeeId');
     }
 
-    public function scopeTranferHistory($query, $attributes)
+    public function scopeTransferHistory($query, $attributes)
     {
         if (!empty($attributes['branchId']) || !empty($attributes['divisionId']) || !empty($attributes['positionId']) || (!empty($attributes['startDate']) && !empty($attributes['endDate']))) {
-            $query->whereHas('positionLevel', function ($q) use ($attributes) {
+            $query->whereHas('positionLevelNow', function ($q) use ($attributes) {
                 if (!empty($attributes['branchId'])) {
                     $branchId = explode(',', $attributes['branchId']);
                     $q->whereIn('BranchId', $branchId);
@@ -250,13 +254,13 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
                             ->orWhere([['StartDate', '<=', $attributes['startDate']], ['EndDate', null]]);
                     });
                 } else {
-                    $now = !empty($attributes['date_tranfer']) ? $attributes['date_tranfer'] : Carbon::now()->format('Y-m-d');
+                    $now = !empty($attributes['dateTransfer']) ? $attributes['dateTransfer'] : Carbon::now()->format('Y-m-d');
                     $q->where(function ($q2) use ($now) {
                         $q2->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
                             ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
                     });
                 }
-            })->with(['positionLevel' => function ($q) use ($attributes) {
+            })->with(['positionLevelNow' => function ($q) use ($attributes) {
                 if (!empty($attributes['branchId'])) {
                     $branchId = explode(',', $attributes['branchId']);
                     $q->whereIn('BranchId', $branchId);
@@ -280,7 +284,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
                             ->orWhere([['StartDate', '<=', $attributes['startDate']], ['EndDate', null]]);
                     });
                 } else {
-                    $now = !empty($attributes['date_tranfer']) ? $attributes['date_tranfer'] : Carbon::now()->format('Y-m-d');
+                    $now = !empty($attributes['dateTransfer']) ? $attributes['dateTransfer'] : Carbon::now()->format('Y-m-d');
                     $q->where(function ($q2) use ($now) {
                         $q2->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
                             ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
@@ -364,7 +368,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
 
     public function typeTeacher()
     {
-        return $this->belongsToMany(TypeTeacher::class, 'EmployeeTypeTeacher', 'EmployeeId', 'TypeTeacherId')->withPivot('CreationTime')->orderBy('CreationTime', 'DESC');
+        return $this->belongsToMany(TypeTeacher::class, 'EmployeeTypeTeacher', 'EmployeeId', 'TypeTeacherId')->withPivot('CreationTime')->orderBy('pivot_CreationTime', 'desc');
     }
 
     /**
@@ -375,5 +379,20 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function TeacherTimekeeping()
     {
         return $this->hasMany(TeacherTimekeeping::class, 'EmployeeId');
+    }
+
+    public function updateLastName()
+    {
+        $this->employeeRepository->updateLastName();
+    }
+
+    public function typeTeacherRelation()
+    {
+        return $this->belongsTo(TypeTeacher::class, 'TypeTeacherId');
+    }
+
+    public function expectedTime()
+    {
+        return $this->hasMany(ExpectedTime::class, 'EmployeeId');
     }
 }

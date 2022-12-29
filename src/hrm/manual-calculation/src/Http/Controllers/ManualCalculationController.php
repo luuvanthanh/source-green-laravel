@@ -59,7 +59,7 @@ class ManualCalculationController extends Controller
      */
     public function store(ManualCalculationCreateRequest $request)
     {
-        $manualCalculation = $this->manualCalculationRepository->storeAll($request->all());
+        $manualCalculation = $this->manualCalculationRepository->create($request->all());
 
         return $this->success($manualCalculation, trans('lang::messages.common.createSuccess'));
     }

@@ -11,6 +11,7 @@ use GGPHP\TeacherTimekeeping\Repositories\Contracts\TeacherTimekeepingRepository
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
+use phpDocumentor\Reflection\Types\Parent_;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -77,6 +78,18 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
                 $query->whereDate('AttendedAt', '>=', Carbon::parse($attribute['startDate'])->format('Y-m-d'))
                     ->whereDate('AttendedAt', '<=', Carbon::parse($attribute['endDate'])->format('Y-m-d'));
             };
+
+            if (!empty($attribute['employeeId'])) {
+                $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
+            }
+
+            if (!empty($attribute['classProjectSessionId'])) {
+                $query->where('ClassProjectSessionId', $attribute['classProjectSessionId']);
+            }
+
+            if (!empty($attribute['attendedAt'])) {
+                $query->whereDate('AttendedAt', $attribute['attendedAt']);
+            }
         })->with(['teacherTimekeeping' => function ($query) use ($attribute) {
             if (!empty($attribute['type'])) {
                 $query->where('Type', $attribute['type']);
@@ -86,6 +99,18 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
                 $query->whereDate('AttendedAt', '>=', Carbon::parse($attribute['startDate'])->format('Y-m-d'))
                     ->whereDate('AttendedAt', '<=', Carbon::parse($attribute['endDate'])->format('Y-m-d'));
             };
+
+            if (!empty($attribute['employeeId'])) {
+                $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
+            }
+
+            if (!empty($attribute['classProjectSessionId'])) {
+                $query->where('ClassProjectSessionId', $attribute['classProjectSessionId']);
+            }
+
+            if (!empty($attribute['attendedAt'])) {
+                $query->whereDate('AttendedAt', $attribute['attendedAt']);
+            }
         }]);
 
         if (!empty($attribute['fullName'])) {
@@ -94,12 +119,6 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
 
         $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->status(User::STATUS['WORKING']);
 
-        if (!empty($attribute['employeeId'])) {
-            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('teacherTimekeeping', function ($query) use ($attribute) {
-                $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
-            });
-        }
-
         if (!empty($attribute['limit'])) {
             $teacherTimekeeping = $this->employeeRepositoryEloquent->paginate($attribute['limit']);
         } else {
@@ -107,5 +126,33 @@ class TeacherTimekeepingRepositoryEloquent extends CoreRepositoryEloquent implem
         }
 
         return $teacherTimekeeping;
+    }
+
+    public function storeTeacherTimekeeping(array $attribute)
+    {
+        if (!empty($attribute['createRows'])) {
+            foreach ($attribute['createRows'] as $value) {
+                $value['status'] = TeacherTimekeeping::STATUS[$value['status']];
+                $value['type'] = TeacherTimekeeping::TYPE[$value['type']];
+
+                $this->model()::create($value);
+            }
+        }
+
+        if (!empty($attribute['updateRows'])) {
+            foreach ($attribute['updateRows'] as $value) {
+                $value['status'] = TeacherTimekeeping::STATUS[$value['status']];
+                $value['type'] = TeacherTimekeeping::TYPE[$value['type']];
+
+                $teacherTimekeeping = $this->model()::find($value['id']);
+                $teacherTimekeeping->update($value);
+            }
+        }
+
+        if (!empty($attribute['deleteRows'])) {
+            $this->model()::whereIn('Id', $attribute['deleteRows'])->delete();
+        }
+
+        return Parent::find(TeacherTimekeeping::first()->Id);
     }
 }

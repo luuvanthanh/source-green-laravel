@@ -163,5 +163,21 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\TeacherTimekeeping\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\BusRegistration\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\ActivityLog\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\Arkki\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+
+        \GGPHP\ExpectedTime\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });

@@ -30,7 +30,6 @@ class RouteRegistrar extends CoreRegistrar
     public function forGuest()
     {
         $this->router->group(['middleware' => []], function ($router) {
-
         });
     }
 
@@ -67,7 +66,22 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'UserController@storage',
                 'as' => 'employees.show',
             ]);
+            \Route::post('send-employee-accountants', [
+                'uses' => 'UserController@sendEmployeeAccountant',
+            ]);
 
+            \Route::post('sync-employees', [
+                'uses' => 'UserController@syncEmployee',
+                'as' => 'employees.show',
+            ]);
+
+            \Route::put('update-status-employees/{id}', [
+                'uses' => 'UserController@updateStatusEmployee',
+            ]);
+
+            \Route::get('update-last-name', [
+                'uses' => 'UserController@updateLastName',
+            ]);
         });
     }
 
@@ -83,7 +97,6 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'UserController@index',
                 'as' => 'employees.index',
             ]);
-
         });
     }
 }

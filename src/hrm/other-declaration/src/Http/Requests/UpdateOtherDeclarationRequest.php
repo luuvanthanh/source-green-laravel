@@ -35,6 +35,34 @@ class UpdateOtherDeclarationRequest extends FormRequest
                     }
                 },
             ],
+            'startDate' => [
+                'nullable',
+                'date',
+                'date_format:Y-m-d',
+                'before:endDate',
+                function ($attribute, $value, $fail) {
+                    $otherDeclaration = OtherDeclaration::whereDate('StartDate', '>=', $value)->whereDate('EndDate', '<=', $value)
+                        ->where('Id', '!=', $this->route('id'))->first();
+
+                    if (!is_null($otherDeclaration)) {
+                        return $fail('Khoảng thời gian đã có trong hệ thống');
+                    }
+                }
+            ],
+            'endDate' => [
+                'nullable',
+                'date',
+                'date_format:Y-m-d',
+                'after:startDate',
+                function ($attribute, $value, $fail) {
+                    $otherDeclaration = OtherDeclaration::whereDate('StartDate', '<=', $value)->whereDate('EndDate', '>=', $value)
+                        ->where('Id', '!=', $this->route('id'))->first();
+
+                    if (!is_null($otherDeclaration)) {
+                        return $fail('Khoảng thời gian đã có trong hệ thống');
+                    }
+                }
+            ]
         ];
     }
 }

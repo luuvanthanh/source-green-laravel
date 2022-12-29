@@ -2,17 +2,19 @@
 
 namespace GGPHP\Profile\Providers;
 
-use GGPHP\Profile\Repositories\Contracts\CollaboratorContractRepository;
+use GGPHP\Profile\Repositories\Contracts\AuthorizedPersonRepository;
 use GGPHP\Profile\Repositories\Contracts\HealthInsuranceRepository;
 use GGPHP\Profile\Repositories\Contracts\InsurranceRepository;
 use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
+use GGPHP\Profile\Repositories\Contracts\NumberFormContractRepository;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
 use GGPHP\Profile\Repositories\Contracts\SabbaticalLeaveRepository;
 use GGPHP\Profile\Repositories\Contracts\SeasonalContractRepository;
-use GGPHP\Profile\Repositories\Eloquent\CollaboratorContractRepositoryEloquent;
+use GGPHP\Profile\Repositories\Eloquent\AuthorizedPersonRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\HealthInsuranceRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\InsurranceRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\LabourContractRepositoryEloquent;
+use GGPHP\Profile\Repositories\Eloquent\NumberFormContractRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\ProbationaryContractRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\SabbaticalLeaveRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\SeasonalContractRepositoryEloquent;
@@ -45,6 +47,7 @@ class ProfileServiceProvider extends ServiceProvider
         $this->app->bind(SabbaticalLeaveRepository::class, SabbaticalLeaveRepositoryEloquent::class);
         $this->app->bind(HealthInsuranceRepository::class, HealthInsuranceRepositoryEloquent::class);
         $this->app->bind(SeasonalContractRepository::class, SeasonalContractRepositoryEloquent::class);
-        $this->app->bind(CollaboratorContractRepository::class, CollaboratorContractRepositoryEloquent::class);
+        $this->app->bind(NumberFormContractRepository::class, NumberFormContractRepositoryEloquent::class);
+        $this->app->bind(AuthorizedPersonRepository::class, AuthorizedPersonRepositoryEloquent::class);
     }
 }

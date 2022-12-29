@@ -19,7 +19,7 @@ class OtherDeclaration extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'NumberOfWorkdays', 'Time',
+        'NumberOfWorkdays', 'Time', 'IsDiseaseSalary', 'StartDate', 'EndDate'
     ];
 
     /**

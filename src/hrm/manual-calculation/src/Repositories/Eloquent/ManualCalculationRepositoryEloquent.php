@@ -107,7 +107,7 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
         return $manualCalculation;
     }
 
-    public function storeAll(array $attributes)
+    public function create(array $attributes)
     {
         $date = Carbon::parse($attributes['date'])->format('Y-m-d');
 
@@ -164,7 +164,7 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
                 'type' => array_search($value->Type, ManualCalculation::TYPE)
             ];
 
-            $this->storeAll($data);
+            $this->create($data);
         }
 
         return $this->parserResult($model);
@@ -206,7 +206,7 @@ class ManualCalculationRepositoryEloquent extends CoreRepositoryEloquent impleme
 
                 foreach ($value['listOfDate'] as $data) {
                     $data['employeeId'] = $value['employeeId'];
-                    $result = $this->storeAll($data);
+                    $result = $this->create($data);
                 }
             }
             DB::commit();

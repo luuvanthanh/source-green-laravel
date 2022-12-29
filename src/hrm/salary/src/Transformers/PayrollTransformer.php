@@ -13,7 +13,7 @@ use GGPHP\Salary\Models\Payroll;
 class PayrollTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['payrollDetail'];
+    protected $availableIncludes = ['payrollDetail', 'payrollSession'];
     protected $defaultIncludes = [];
 
     public function customAttributes($model): array
@@ -32,5 +32,15 @@ class PayrollTransformer extends BaseTransformer
     public function includePayrollDetail(Payroll $payroll)
     {
         return $this->collection($payroll->payrollDetail, new PayrollDetailTransformer, 'PayrollDetail');
+    }
+
+    /**
+     * Include Owner
+     * @param Payroll $absent
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includePayrollSession(Payroll $payroll)
+    {
+        return $this->collection($payroll->payrollSession, new PayrollSessionTransformer, 'PayrollSession');
     }
 }

@@ -20,7 +20,8 @@ class TypeTeacher extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'DescriptionJob', 'TypeOfContractId', 'Policy', 'WorkExperience', 'RatingLevelFrom', 'RatingLevelTo', 'Experience'
+        'Code', 'Name', 'DescriptionJob', 'TypeOfContractId', 'Policy',
+        'WorkExperience', 'RatingLevelFrom', 'RatingLevelTo', 'Experience', 'BasicSalary'
     ];
 
     /**

@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Profile\Http\Rules\ContractUpdateRule;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Profile\Models\ProbationaryContract;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,6 +27,8 @@ class ProbationaryContractUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $probationaryContract = ProbationaryContract::findOrFail($this->id);
+
         return [
             'employeeId' => [
                 'exists:Employees,Id',
@@ -45,17 +48,6 @@ class ProbationaryContractUpdateRequest extends FormRequest
                 },
             ],
             'id' => 'required',
-            'contractNumber' => [
-                'string',
-                function ($attribute, $value, $fail) {
-                    $employeeId = request()->employeeId;
-                    $shift = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->where('ContractNumber', $value)->where('Id', '!=', request()->id)->first();
-
-                    if (!is_null($shift)) {
-                        return $fail('Số hợp đồng đã tồn tại.');
-                    }
-                },
-            ],
             'contractFrom' => [
                 'date',
                 function ($attribute, $value, $fail) {
@@ -68,6 +60,12 @@ class ProbationaryContractUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
+            'ordinalNumber' => [
+                'nullable',
+                'string',
+                new ContractUpdateRule($probationaryContract, $this->numberForm, $this->id)
+            ]
         ];
     }
 }
