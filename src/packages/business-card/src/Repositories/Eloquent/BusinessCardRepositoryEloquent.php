@@ -89,9 +89,9 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
             });
         }
 
-        if (!empty($attributes['status'])) {
-            $this->model = $this->model->where('Status',$attributes['status']);
-        }
+        // if (!empty($attributes['status'])) {
+        //     $this->model = $this->model->where('Status',$attributes['status']);
+        // }
 
         if (!empty($attributes['limit'])) {
             $businessCard = $this->paginate($attributes['limit']);
