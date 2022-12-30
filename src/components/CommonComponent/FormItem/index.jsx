@@ -118,7 +118,6 @@ const renderChildren = (
         styles['input-number-container'],
         styles['input-number-count'],
       )}
-      min={0}
       disabled={disabled}
       onChange={onChange}
       placeholder="0"
