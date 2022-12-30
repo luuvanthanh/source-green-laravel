@@ -75,6 +75,21 @@ class FormDetail extends Component {
         </div>
       );
     }
+    if (type === 'TextArea') {
+      return (
+        <div className="mb20">
+          <div className={styles['wrapper-title']}>
+            <label className={styles.text}>{label}</label>
+          </div>
+          <div size="normal" className={styles['general-detail']} style={{ background: name }}>
+            <div
+              className={styles.text}
+              dangerouslySetInnerHTML={{ __html: name?.replace(/\n/g, '<br />') }}
+            />
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="mb20">
         <div className={styles['wrapper-title']}>
