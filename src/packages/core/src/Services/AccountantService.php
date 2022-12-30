@@ -29,7 +29,7 @@ class AccountantService
         $url = env('ACCOUNTANT_URL') . '/api/app/business-object/sync-master';
         $bearerToken = request()->bearerToken();
         $response = Http::withToken($bearerToken)->put($url, $attributes);
-        
+
         if ($response->failed()) {
             $message = "Có lỗi từ api kế toán";
             if (isset(json_decode($response->body())->error) && isset(json_decode($response->body())->error->message)) {
