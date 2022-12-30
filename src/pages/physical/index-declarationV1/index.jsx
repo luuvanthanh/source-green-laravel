@@ -30,11 +30,6 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
 const General = memo(({ loading: { effects }, error }) => {
   const [data, setData] = useState([
     {
-      monthNumber: undefined,
-      bmiFemale: undefined,
-      bmiMale: undefined,
-      weightFemale: undefined,
-      weightMale: undefined,
       id: uuidv4(),
     },
   ]);
