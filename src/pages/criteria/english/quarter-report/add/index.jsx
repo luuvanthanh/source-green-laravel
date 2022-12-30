@@ -60,10 +60,10 @@ const Index = memo(() => {
       return "";
     }
     if (!isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && !isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
-      return `${(i?.scriptReviewCommentDetail?.map(i => i?.sampleCommentDetail?.name)?.join('.'))}.${head(i?.scriptReviewCommentDetail)?.value}`;
+      return `${i?.scriptReviewCommentDetail?.filter(a => a?.checkBox)?.map(k => k?.sampleCommentDetail?.name)?.join('\n')}\n${head(i?.scriptReviewCommentDetail)?.value}`;
     }
     if (!isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
-      return i?.scriptReviewCommentDetail?.map(i => i?.sampleCommentDetail?.name)?.join('.');
+      return i?.scriptReviewCommentDetail?.filter(a => a?.checkBox)?.map(k => k?.sampleCommentDetail?.name)?.join('\n');
     }
     if (isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && !isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
       return head(i?.scriptReviewCommentDetail)?.value;
@@ -293,6 +293,7 @@ const Index = memo(() => {
       ),
     },
   ];
+
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>

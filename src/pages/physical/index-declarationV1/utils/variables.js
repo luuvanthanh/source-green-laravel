@@ -2,11 +2,11 @@ export const variables = {
   STATUS: {},
   STATUS_TABS: [
     {
-      id: 'BMIFEMALE',
+      id: 'BMIMALE',
       name: 'BMI Nam',
     },
     {
-      id: 'BMIMALE',
+      id: 'BMIFEMALE',
       name: 'BMI Nữ',
     },
   ],
