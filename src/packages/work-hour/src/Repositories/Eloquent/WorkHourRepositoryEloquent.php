@@ -98,9 +98,9 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             });
         }
 
-        if (!empty($attributes['status'])) {
-            $this->model = $this->model->where('Status',$attributes['status']);
-        }
+        // if (!empty($attributes['status'])) {
+        //     $this->model = $this->model->where('Status',$attributes['status']);
+        // }
 
         if (!empty($attributes['limit'])) {
             $workHour = $this->paginate($attributes['limit']);
