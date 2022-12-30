@@ -23,6 +23,10 @@ class GradeDetailTransformer extends BaseTransformer
 
     public function includeCriteria(GradeDetail $gradeDetail)
     {
+        if (is_null($gradeDetail->criteria)) {
+            return null;
+        }
+
         return $this->item($gradeDetail->criteria, new CriteriaTransformer, 'Criteria');
     }
 }

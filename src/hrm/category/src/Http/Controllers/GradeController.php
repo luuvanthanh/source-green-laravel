@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\GradeCreateRequest;
+use GGPHP\Category\Http\Requests\GradeDeleteRequest;
 use GGPHP\Category\Http\Requests\GradeUpdateRequest;
 use GGPHP\Category\Repositories\Contracts\GradeRepository;
 use GGPHP\Core\Http\Controllers\Controller;
@@ -85,7 +86,7 @@ class GradeController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(GradeDeleteRequest $request, $id)
     {
         $this->gradeRepository->delete($id);
 
