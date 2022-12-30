@@ -238,22 +238,14 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         })->with('account')->get();
 
         if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['UNQUALIFIED']) {
-            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS['APPROVED'];
             $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
-            $parentAccount = $testSemester->student->parent()->with('account')->get();
-
             $images =  json_decode($student->FileImage);
-            $urlImage = '';
-
-            if (!empty($images)) {
-                $urlImage = env('IMAGE_URL') . $images[0];
-            }
+            $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
             $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
-
-            $arrId = array_merge(array_column($employee->pluck('account')->toArray(), 'AppUserId'), array_column($parentAccount->pluck('account')->toArray(), 'AppUserId'));
+            $arrId = array_column($employee->pluck('account')->toArray(), 'AppUserId');
 
             if (!empty($arrId)) {
-                $dataNotiCation = [
+                $dataNotifiCation = [
                     'users' => $arrId,
                     'title' => $student->FullName,
                     'imageURL' => $urlImage,
@@ -261,7 +253,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                     'moduleType' => 22,
                     'refId' => $testSemester->Id,
                 ];
-                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
             }
         }
 
