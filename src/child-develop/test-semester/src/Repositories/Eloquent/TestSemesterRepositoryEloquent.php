@@ -455,7 +455,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 $message = $student->FullName . ' ' . 'nhận đánh giá định kỳ' . ' ' . $nameOfTestSemester . ' ' . 'năm học' . ' ' . $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
 
                 if (!empty($studentAccount)) {
-                    $dataNoti = [
+                    $dataNotifiCation = [
                         'users' => array_column($studentAccount->pluck('account')->toArray(), 'AppUserId'),
                         'title' => $title,
                         'imageURL' => $urlImage,
@@ -463,12 +463,12 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                         'moduleType' => 22,
                         'refId' => $testSemester->Id,
                     ];
-                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNoti));
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
                 }
             }
         }
 
-        return parent::all();
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 
     public function updateMultiple(array $attributes)
@@ -636,5 +636,44 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         return $this->excelExporterServices->export('test_semester', $params);
+    }
+
+    public function updateApprovalStatus(array $attributes, $id)
+    {
+        $testSemester = $this->model::findOrFail($id);
+        $testSemester->update([
+            'timeApproved' => now()->format('Y-m-d H:i:s'),
+            'ApprovalStatus' => $attributes['approvalStatus']
+        ]);
+
+        if ($testSemester->ApprovalStatus === TestSemester::APPROVAL_STATUS['APPROVED']) {
+            $student = $testSemester->student;
+            $parent = $student->parent()->with('account')->get();
+
+            if (!empty($parent)) {
+                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
+
+                $images =  json_decode($student->FileImage);
+                $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
+                $nameOfTestSemester = $testSemester->assessmentPeriod->nameAssessmentPeriod->Name;
+                $title = 'Đánh giá định kỳ' . ' ' . $nameOfTestSemester;
+                $message = $student->FullName . ' ' . 'nhận đánh giá định kỳ' . ' ' . $nameOfTestSemester . ' ' . 'năm học' . ' ' . $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
+
+                if (!empty($arrId)) {
+                    $dataNotifiCation = [
+                        'users' => $arrId,
+                        'title' => $title,
+                        'imageURL' => $urlImage,
+                        'message' => $message,
+                        'moduleType' => 22,
+                        'refId' => $testSemester->Id,
+                    ];
+
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+                }
+            }
+        }
+
+        return parent::parserResult($testSemester);
     }
 }
