@@ -36,7 +36,7 @@ class TestSemesterController extends Controller
      */
     public function index(Request $request)
     {
-        throw new HttpException(400, 'Hệ thống đang bảo trì.');
+        // throw new HttpException(400, 'Hệ thống đang bảo trì.');
 
         $attributes = $request->all();
 
