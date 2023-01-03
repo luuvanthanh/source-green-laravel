@@ -1,8 +1,110 @@
 @import "@/assets/styles/mixins.scss";
 
 .card-menuLeft {
-  padding: 20px 20px 0 20px;
+  padding: 15px 15px 0 15px;
   .card-item {
     margin: 0px !important;
+    padding: 6px 10px;
+    border-radius: 4px;
+    .text {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 16px;
+      margin: 0px !important;
+      color: #3e4247;
+    }
+    .textUnit {
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 18px;
+      color: #3e4247;
+      margin: 0px !important;
+    }
+    .textFlex {
+      display: flex;
+      line-height: 18px;
+    }
+    .textPadding {
+      padding: 0px 5px;
+      margin: 0px !important;
+      line-height: 18px;
+    }
+  }
+}
+
+.card-table {
+  padding: 15px 15px 0 15px;
+  height: 100%;
+  .card-item {
+    margin: 0px !important;
+    padding: 6px 10px;
+    border-radius: 4px;
+    .text {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 16px;
+      margin: 0px !important;
+      color: #3e4247;
+    }
+    .textUnit {
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 18px;
+      color: #3e4247;
+      margin: 0px !important;
+    }
+    .textFlex {
+      display: flex;
+      line-height: 18px;
+    }
+    .textPadding {
+      padding: 0px 5px;
+      margin: 0px !important;
+      line-height: 18px;
+    }
+  }
+}
+
+.item-col {
+  min-height: 60px;
+  border-bottom: 1px solid #dfe3ec;
+}
+
+.block-table {
+  padding: 24px;
+  background-color: $background-white;
+  border-radius: 4px;
+  overflow-x: hidden;
+
+  &.block-table-tab {
+    padding: 4px 20px 20px 20px;
+
+    :global(.ant-tabs-content-holder) {
+      display: none;
+    }
+
+    :global(.ant-tabs) {
+      margin: 0 -20px;
+    }
+
+    :global(.ant-tabs-nav-wrap) {
+      padding: 0 20px;
+    }
+
+    :global(.ant-tabs-tab-btn) {
+      color: $text;
+    }
+
+    :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+      color: $text-success;
+      font-weight: unset;
+    }
+
+    :global(.ant-tabs-ink-bar) {
+      background: $background-success;
+    }
+  }
+  :global(.ant-form-item) {
+    margin-bottom: 0px !important;
   }
 }

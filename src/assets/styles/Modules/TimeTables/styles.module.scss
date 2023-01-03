@@ -1,4 +1,4 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 .ant-modal-footer {
   display: flex;
@@ -56,9 +56,81 @@
     box-sizing: unset;
     @for $i from 0 through 10 {
       $value: $i * 33;
-      $unit: 'px';
+      $unit: "px";
       &.size-row-#{$i*1} {
         min-height: #{$value}#{$unit} !important;
+      }
+    }
+  }
+
+  &:not(:first-child) .data-row {
+    cursor: pointer;
+  }
+
+  &:first-child {
+    .header-row {
+      border: 1px solid $border;
+    }
+
+    .cell {
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+      border-left: 1px solid $border;
+    }
+  }
+
+  &:not(:first-child) {
+    .header-row {
+      border-top: 1px solid $border;
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+    }
+
+    .cell {
+      border-right: 1px solid $border;
+      border-bottom: 1px solid $border;
+    }
+  }
+}
+
+.col-block-study-plane {
+  min-width: 150px;
+  padding: 0;
+
+  .header-row {
+    padding: 5px 10px;
+    text-align: center;
+    margin: 0px;
+    background-color: rgb(238, 240, 244);
+  }
+
+  .data-row {
+    position: relative;
+    padding: 5px 10px;
+    text-align: center;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    .dot-warning {
+      position: absolute;
+      right: 5px;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 100%;
+      background-color: $background-danger;
+    }
+  }
+
+  .no-data-row {
+    min-height: 60px !important;
+    box-sizing: unset;
+    @for $i from 0 through 20 {
+      $value: $i * 60;
+      $unit: "px";
+      &.size-col-#{$i*1} {
+        min-height: #{$value}#{$unit} + #{$value}#{$unit} !important;
       }
     }
   }
@@ -119,7 +191,7 @@
     box-sizing: unset;
     @for $i from 0 through 10 {
       $value: $i * 33;
-      $unit: 'px';
+      $unit: "px";
       &.size-row-#{$i*1} {
         min-height: #{$value}#{$unit} !important;
       }
@@ -201,7 +273,7 @@
       box-sizing: unset;
       @for $i from 0 through 10 {
         $value: $i * 33;
-        $unit: 'px';
+        $unit: "px";
         &.size-row-#{$i*1} {
           min-height: #{$value}#{$unit} !important;
         }
@@ -268,7 +340,7 @@
       box-sizing: unset;
       @for $i from 0 through 10 {
         $value: $i * 33;
-        $unit: 'px';
+        $unit: "px";
         &.size-row-#{$i*1} {
           min-height: #{$value}#{$unit} !important;
         }
@@ -308,9 +380,18 @@
 
 @for $i from 0 through 10 {
   $value: $i * 33;
-  $unit: 'px';
+  $unit: "px";
   .size-row-#{$i*1} {
     min-height: calc(#{$value}#{$unit} + 1px);
+  }
+}
+
+@for $i from 0 through 20 {
+  $value: $i * 60;
+  $unit: "px";
+  .size-col-#{$i} {
+    min-height: calc(#{$value}#{$unit});
+    height: auto;
   }
 }
 

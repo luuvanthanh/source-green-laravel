@@ -9,6 +9,8 @@ import classnames from 'classnames';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'dva';
 import { SearchOutlined } from '@ant-design/icons';
+import moment from 'moment';
+
 import { isEmpty, groupBy, size, maxBy, head, last, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
@@ -23,22 +25,98 @@ const getListStyle = (isDraggingOver) => ({
 
 const { Paragraph } = Typography;
 const Index = memo(() => {
+  const [
+    loading,
+    { classes, branches, years, activities, program },
+    { defaultBranch, user },
+  ] = useSelector(({ loading: { effects }, englishStudyPlan, user }) => [
+    effects,
+    englishStudyPlan,
+    user,
+  ]);
+
   const [formRef] = Form.useForm();
+  const { query } = useLocation();
   const [dragRef] = Form.useForm();
   const [propertyForm] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [timeline, setTimeline] = useState('');
   const [items, setItems] = useState([]);
 
-  const [
-    loading,
-    { classes, branches, years, activities },
-    { defaultBranch },
-  ] = useSelector(({ loading: { effects }, englishStudyPlan, user }) => [
-    effects,
-    englishStudyPlan,
-    user,
-  ]);
+  const [formatColumns, setFormatColumns] = useState();
+
+  const [dataTime, setDataTime] = useState([]);
+
+
+  const [dataUnit, setDataUnit] = useState([]);
+  const [dataItemProgram, setDataItemProgram] = useState([]);
+  const [dataProgram, setDataProgram] = useState([]);
+
+  //Time table
+  const [searchDate, setSearchDate] = useState({
+    fromDate: Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
+    toDate: moment().endOf('week').format(variables.DATE_FORMAT.DATE_AFTER),
+    type: 'timeGridWeek',
+    branchId: query?.branchId || defaultBranch?.id,
+    classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
+    schoolYearId: query?.schoolYearId,
+  });
+
+  const getDayOfWeek = (date) => {
+    switch (date) {
+      case 0:
+        return 'Thời gian';
+      case 1:
+        return 'MON';
+      case 2:
+        return 'TUE';
+      case 3:
+        return 'WED';
+      case 4:
+        return 'THU';
+      case 5:
+        return 'FRI';
+      case 6:
+        return 'SAT';
+      default:
+        return 'SUNDAY';
+    }
+  };
+
+  const getDayOfWeekFull = (date) => {
+    switch (date) {
+      case 0:
+        return 'Thời gian';
+      case 1:
+        return 'Monday';
+      case 2:
+        return 'Tuesday';
+      case 3:
+        return 'Wednesday';
+      case 4:
+        return 'Thursday';
+      case 5:
+        return 'Friday';
+      case 6:
+        return 'Saturday';
+      default:
+        return 'Sunday';
+    }
+  };
+
+
+  const arrDate = useMemo(() => {
+    const startWeek = moment(searchDate.fromDate).startOf('week').subtract(1, 'day');
+    const arr = [{ day: 'Thời gian' }];
+    let i = 1;
+    while (startWeek.isBefore(searchDate.toDate)) {
+      arr.push({ date: Helper.getDate(moment(startWeek.add(1, 'day').clone().format(variables.DATE_FORMAT.DATE_AFTER))), day: getDayOfWeek(i), dayfull: getDayOfWeekFull(i) });
+      i += 1;
+    }
+    return arr;
+  }, [searchDate.fromDate, searchDate.toDate]);
+  console.log("arrDate", arrDate);
+  // console.log("arrDate", arrDate);
 
   const dataYears = years.map((item) => ({
     id: item.id,
@@ -52,7 +130,7 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     isGroupByDayOfWeek: false,
     branchId: defaultBranch?.id,
-    timetableSettingId: null,
+    schoolYearId: null,
   });
 
   const [searchText, setSearchText] = useState('');
@@ -101,9 +179,9 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          setSearch((prev) => ({ ...prev, timetableSettingId: head(response)?.id }));
+          setSearch((prev) => ({ ...prev, schoolYearId: head(response)?.id }));
           formRef.setFieldsValue({
-            timetableSettingId: head(response)?.id,
+            schoolYearId: head(response)?.id,
           });
           setTimeline(head(response)?.id);
         }
@@ -130,12 +208,20 @@ const Index = memo(() => {
       type: 'englishStudyPlan/GET_DATA',
       payload: {
         ...search,
+        // fromDate: searchDate?.fromDate,
+        // toDate: searchDate?.toDate
+        fromDate: "2022-12-20",
+        toDate: "2022-12-23"
       },
       callback: (response) => {
+        // console.log("response", response);
         if (response) {
+          const time = response?.timeTableSettingByTime;
+          const data = response?.timeTableSettingByTime.concat(response?.studyPlanGroupByTime);
+          setDataTime(time);
           const { timetableDetailGroupByTimes } = response;
-          const arr = classes.map((classItem) =>
-            timelineColumns.map((timeItem) => {
+          const arr = data.map((classItem) =>
+            time.map((timeItem) => {
               const timetableDetail = timetableDetailGroupByTimes?.find(
                 (item) =>
                   item.startTime === timeItem.startTime && item.endTime === timeItem.endTime,
@@ -145,7 +231,7 @@ const Index = memo(() => {
               );
               return {
                 branchId: search?.branchId,
-                timetableSettingId: search?.timetableSettingId,
+                schoolYearId: search?.schoolYearId,
                 classId: classItem?.id,
                 tasks: timetableDetailClass?.timetableDetailActivities || [],
                 timetableDetailByClassAndActivy: {
@@ -155,7 +241,7 @@ const Index = memo(() => {
               };
             }),
           );
-          setItems(arr);
+          setItems(data);
         }
       },
     });
@@ -170,31 +256,63 @@ const Index = memo(() => {
   useEffect(() => {
     loadCategories();
     loadYears();
+    dispatch({
+      type: 'englishStudyPlan/GET_PROGRAM',
+      payload: {
+      },
+      callback: (response) => {
+        if (response?.items) {
+          setDataItemProgram(response?.items
+            ?.map(i => i.units.map(x => (x.lessions
+              ?.map(k => ({
+                ...k, idUnit: x?.id,
+                programId: i.id,
+                colorText: i?.colorText,
+                programName: i?.name,
+                unitName: x?.name,
+                unitIndex: x?.index,
+                lessionName: x?.name,
+              }))))).flat(Infinity));
+          setDataProgram(response?.items
+            ?.map(i => i.units.map(x => (x.lessions
+              ?.map(k => ({
+                ...k, idUnit: x?.id,
+                programId: i.id,
+                colorText: i?.colorText,
+                programName: i?.name,
+                unitName: x?.name,
+                unitIndex: x?.index,
+                lessionName: x?.name,
+              }))))).flat(Infinity));
+        }
+      },
+    });
   }, []);
 
   useEffect(async () => {
-    if (search.branchId && search.timetableSettingId && !isEmpty(classes)) {
-      await setTimeline(search.timetableSettingId);
+    if (search.branchId && search.schoolYearId && !isEmpty(classes)) {
+      await setTimeline(search.schoolYearId);
       onLoad();
     }
   }, [search, classes]);
 
-  const formatColumns = useMemo(() => {
-    const taskArr = activities.map((item) => item.name);
-    const activyColumns = { 'columns-1': { tasks: taskArr } };
+  useEffect(async () => {
+    const activyColumns = { 'columns-1': { tasks: dataItemProgram } };
     const newColumns = Object.assign(
       {},
       ...items.flat(1).map((item, index) => ({
         [`columns-${index + 2}`]: {
           ...item,
           dragId: uuidv4(),
-          tasks: item?.tasks?.map((item) => ({ ...item, dragId: uuidv4() })),
+          tasks: item?.itemsGroupByDate?.map((item) => ({ ...item, dragId: uuidv4() })) || [],
         },
       })),
     );
-    return { ...activyColumns, ...newColumns };
+    setFormatColumns({ ...activyColumns, ...newColumns });
   }, [items]);
-
+  console.log("items", items);
+  console.log("formatColumns", formatColumns);
+  // console.log("items", items);
   const formatNewItems = useMemo(() => {
     const newItemsFromBackend = Object.assign(
       {},
@@ -204,185 +322,84 @@ const Index = memo(() => {
   }, [activities]);
 
   const onDragEnd = (result) => {
-    if (!result.destination) return;
-    const { source, destination } = result;
-    if (source.droppableId !== destination.droppableId) {
-      const sourceColumn = formatColumns[source.droppableId];
-      const destColumn = formatColumns[destination.droppableId];
-      const sourceItems = [...sourceColumn.tasks];
-      const [removed] = sourceItems.splice(source.index, 1);
-      const timetableActivityDetail = activities.find((item) => item.name === removed);
-      let columnsAfter = {};
-      let arr = [];
-      let groups = {};
-      let payload = {};
-      if (destination.droppableId === 'columns-1') {
-        columnsAfter = {
-          ...formatColumns,
-          [source.droppableId]: {
-            ...formatColumns[source.droppableId],
-            tasks: formatColumns[source.droppableId].tasks.filter(
-              (item) => item?.id !== removed?.id,
-            ),
+    console.log(result);
+    const stringData = JSON.parse(result?.destination?.droppableId);
+    const dataProgram = dataItemProgram?.find((i, index) => index === result?.source?.index);
+
+    const key = stringData?.key;
+    const dataColumn = formatColumns?.[key];
+    console.log("dataItemProgram", dataItemProgram);
+    console.log("dataProgram", dataProgram);
+    const data = formatColumns?.[key]?.tasks;
+    if (formatColumns?.[key]?.tasks?.find(i => i?.date === stringData?.date)) {
+      data?.map(i => ({
+        ...i,
+        lessions: i?.date === stringData?.date ? i.lessions?.push({
+          date: stringData?.date,
+          programId: dataProgram?.programId,
+          dragId: uuidv4(),
+          lession: {
+            colorText: dataProgram?.colorText,
+            programName: dataProgram?.programName,
+            unitIndex: dataProgram?.unitIndex,
+            unitName: dataProgram?.unitName,
+            lessionName: dataProgram?.lessionName,
+            activities: dataProgram?.activities,
+            week: dataProgram?.week,
+            classPeriod: dataProgram?.classPeriod,
           },
-        };
-        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-        groups = groupBy(
-          arr.filter((item) => item.classId),
-          'classId',
-        );
-        setItems(Object.keys(groups).map((key) => groups[key]));
-        dispatch({
-          type: 'englishStudyPlan/REMOVE',
-          payload: {
-            id: removed?.id,
-          },
-          callback: (response, error) => {
-            if (error) {
-              columnsAfter = {
-                ...formatColumns,
-              };
-              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-              const groups = groupBy(
-                arr.filter((item) => item.classId),
-                'classId',
-              );
-              setItems(Object.keys(groups).map((key) => groups[key]));
+        }) : i?.lessions,
+      }));
+    } else {
+      console.log("FALSE");
+      data.push(
+        {
+          date: stringData?.date,
+          lessions: [
+            {
+              date: stringData?.date,
+              programId: dataProgram?.programId,
+              dragId: uuidv4(),
+              lession: {
+                colorText: dataProgram?.colorText,
+                programName: dataProgram?.programName,
+                unitIndex: dataProgram?.unitIndex,
+                unitName: dataProgram?.unitName,
+                lessionName: dataProgram?.lessionName,
+                activities: dataProgram?.activities,
+                week: dataProgram?.week,
+                classPeriod: dataProgram?.classPeriod,
+              },
             }
-          },
-        });
-      } else if (destination.droppableId !== 'columns-1' && source.droppableId !== 'columns-1') {
-        columnsAfter = {
-          ...formatColumns,
-          [destination.droppableId]: {
-            ...formatColumns[destination.droppableId],
-            tasks: [...(formatColumns[destination.droppableId].tasks || []), removed],
-          },
-          [source.droppableId]: {
-            ...formatColumns[source.droppableId],
-            tasks: formatColumns[source.droppableId].tasks.filter(
-              (item) => item?.id !== removed?.id,
-            ),
-          },
-        };
-        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-        groups = groupBy(
-          arr.filter((item) => item.classId),
-          'classId',
-        );
-        setItems(Object.keys(groups).map((key) => groups[key]));
-        dispatch({
-          type: 'englishStudyPlan/DRAG_CELL_BY_CELL',
-          payload: {
-            branchId: destColumn.branchId,
-            timetableSettingId: destColumn.timetableSettingId,
-            timetableDetailByClassAndActivy: {
-              startTime: destColumn.timetableDetailByClassAndActivy.startTime,
-              endTime: destColumn.timetableDetailByClassAndActivy.endTime,
-              classId: destColumn.classId,
-              timetableActivityDetailId: removed?.timetableActivityDetailId,
-            },
-            id: removed?.id,
-          },
-          callback: (response, error) => {
-            if (error) {
-              const columnsAfter = {
-                ...formatColumns,
-              };
-              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-              const groups = groupBy(
-                arr.filter((item) => item.classId),
-                'classId',
-              );
-              setItems(Object.keys(groups).map((key) => groups[key]));
-            }
-          },
-        });
-      } else {
-        columnsAfter = {
-          ...formatColumns,
-          [destination.droppableId]: {
-            ...formatColumns[destination.droppableId],
-            tasks: [
-              ...(formatColumns[destination.droppableId].tasks || []),
-              { timetableActivityDetail },
-            ],
-          },
-        };
-        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-        groups = groupBy(
-          arr.filter((item) => item.classId),
-          'classId',
-        );
-        setItems(Object.keys(groups).map((key) => groups[key]));
-        payload = {
-          branchId: destColumn.branchId,
-          timetableSettingId: destColumn.timetableSettingId,
-          timetableDetailByClassAndActivy: {
-            startTime: destColumn.timetableDetailByClassAndActivy.startTime,
-            endTime: destColumn.timetableDetailByClassAndActivy.endTime,
-            classId: destColumn.classId,
-            timetableActivityDetailId: timetableActivityDetail.id,
-          },
-        };
-        dispatch({
-          type: 'englishStudyPlan/ADD_DRAG',
-          payload,
-          callback: (response, error) => {
-            if (response) {
-              dispatch({
-                type: 'englishStudyPlan/DRAG_AFTER',
-                payload: {
-                  ...search,
-                },
-                callback: (response) => {
-                  if (response) {
-                    const { timetableDetailGroupByTimes } = response;
-                    const arr = classes.map((classItem) =>
-                      timelineColumns.map((timeItem) => {
-                        const timetableDetail = timetableDetailGroupByTimes?.find(
-                          (item) =>
-                            item.startTime === timeItem.startTime &&
-                            item.endTime === timeItem.endTime,
-                        );
-                        const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
-                          (item) => item?.class?.id === classItem?.id,
-                        );
-                        return {
-                          branchId: search?.branchId,
-                          timetableSettingId: search?.timetableSettingId,
-                          classId: classItem?.id,
-                          tasks: timetableDetailClass?.timetableDetailActivities || [],
-                          timetableDetailByClassAndActivy: {
-                            startTime: timeItem?.startTime,
-                            endTime: timeItem?.endTime,
-                          },
-                        };
-                      }),
-                    );
-                    setItems(arr);
-                  }
-                },
-              });
-            }
-            if (error) {
-              const columnsAfter = {
-                ...formatColumns,
-                [destination.droppableId]: {
-                  ...formatColumns[destination.droppableId],
-                },
-              };
-              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-              const groups = groupBy(
-                arr.filter((item) => item.classId),
-                'classId',
-              );
-              setItems(Object.keys(groups).map((key) => groups[key]));
-            }
-          },
-        });
-      }
+          ]
+        }
+      );
     }
+    console.log("formatColumns123", formatColumns);
+    if (key) {
+      setFormatColumns({ ...formatColumns, [key]: { ...formatColumns?.[key], tasks: data } });
+    }
+    console.log("formatColumnsdkhas");
+    // const payload = {
+    //   branchId: search?.branchId,
+    //   classId: search?.classId,
+    //   studyPlanLessions: [
+    //     {
+    //       programId: dataProgram?.programId,
+    //       date: moment(stringData?.date),
+    //       fromTime: dataColumn?.fromTime,
+    //       toTime: dataColumn?.toTime,
+    //       lession: {
+    //         unitIndex: dataProgram,
+    //         lessionName: dataProgram,
+    //         unitName: dataProgram?.unitName,
+    //         activities: dataProgram?.activities,
+    //         week: dataProgram?.week,
+    //         classPeriod: dataProgram?.classPeriod,
+    //       }
+    //     }
+    //   ],
+    // };
   };
 
   const showModal = (value) => {
@@ -408,7 +425,7 @@ const Index = memo(() => {
     propertyForm.validateFields().then((values) => {
       const payload = {
         branchId: search.branchId,
-        timetableSettingId: search.timetableSettingId,
+        schoolYearId: search.schoolYearId,
         timetableDetailByClassesAndActivities: {
           startTime: head(values?.time?.split('-')).trim(),
           endTime: last(values?.time?.split('-')).trim(),
@@ -445,7 +462,7 @@ const Index = memo(() => {
                       );
                       return {
                         branchId: search?.branchId,
-                        timetableSettingId: search?.timetableSettingId,
+                        schoolYearId: search?.schoolYearId,
                         classId: classItem?.id,
                         tasks: timetableDetailClass?.timetableDetailActivities || [],
                         timetableDetailByClassAndActivy: {
@@ -469,16 +486,12 @@ const Index = memo(() => {
     setIsModalVisible(false);
   };
 
-  const getSizeMax = (record) => {
-    const itemsFlat = items
-      .flat(1)
-      .filter(
-        (item) =>
-          item?.timetableDetailByClassAndActivy?.startTime === record?.startTime &&
-          item?.timetableDetailByClassAndActivy?.endTime === record?.endTime,
-      )
-      .map((item) => ({ ...item, size: size(item.tasks) }));
-    return maxBy(itemsFlat, 'size');
+  const getSizeMax = (key) => {
+    const arr1 = formatColumns?.[key]?.tasks?.map(i => ({
+      ...i,
+      count: size(i?.lessions),
+    }));
+    return !isEmpty(arr1) ? Math.max(...arr1.map(i => i.count)) : 1;
   };
 
   const changeFilterDebouce = debounce((name, value) => {
@@ -513,6 +526,16 @@ const Index = memo(() => {
     }
     return tasks;
   };
+
+  const onProgram = (e) => {
+    const data = program?.filter(i => i?.id === e);
+    setDataUnit(head(data)?.units);
+    setDataItemProgram(dataProgram?.filter(i => i?.programId === e));
+  };
+  const onProgramUnit = (e) => {
+    setDataItemProgram(dataProgram?.filter(i => i?.idUnit === e));
+  };
+  console.log("items", items);
 
   return (
     <>
@@ -631,22 +654,34 @@ const Index = memo(() => {
                 <FormItem
                   className="ant-form-item-row"
                   data={dataYears}
-                  label="NĂM HỌC"
-                  name="timetableSettingId"
+                  label="SHOOL YEAR"
+                  name="schoolYearId"
                   type={variables.SELECT}
                   allowClear={false}
-                  onChange={(value) => changeFilter('timetableSettingId')(value)}
+                  onChange={(value) => changeFilter('schoolYearId')(value)}
                 />
               </div>
               <div className="col-lg-4">
                 <FormItem
                   className="ant-form-item-row"
                   data={branches}
-                  label="CƠ SỞ"
+                  label="CENTER"
                   name="branchId"
                   type={variables.SELECT}
                   allowClear={false}
                   onChange={(value) => changeBanchFilter('branchId')(value)}
+                  disabled={!!defaultBranch?.id}
+                />
+              </div>
+              <div className="col-lg-4">
+                <FormItem
+                  className="ant-form-item-row"
+                  data={classes}
+                  label="CLASS"
+                  name="classId"
+                  onChange={(value) => changeFilter('classId')(value)}
+                  type={variables.SELECT}
+                  allowClear={false}
                   disabled={!!defaultBranch?.id}
                 />
               </div>
@@ -662,41 +697,30 @@ const Index = memo(() => {
                   {Object.entries(formatColumns)
                     .slice(0, 1)
                     .map(([key, value], index) => {
-                      const tasks = value.tasks.map((taskId) => formatNewItems[taskId]);
-
+                      console.log("TASK", value);
                       return (
                         <Droppable key={index} droppableId={key}>
                           {(provided) => (
                             <div {...provided.droppableProps} ref={provided.innerRef}>
-                              <div className={classnames(styles['block-table'], "p0")}>
+                              <div className={classnames(stylesModule['block-table'], "p0")}>
                                 <div className="p10 border-bottom">
-                                  <Select
-                                    defaultValue="All program"
-                                    style={{
-                                      width: '100%',
-                                    }}
+                                  <FormItem
+                                    data={program}
+                                    name="programId"
                                     bordered={false}
-                                    options={[
-                                      {
-                                        value: 'lucy',
-                                        label: 'Lucy',
-                                      },
-                                    ]}
+                                    type={variables.SELECT}
+                                    placeholder="All Program"
+                                    onChange={onProgram}
                                   />
                                 </div>
                                 <div className="p10 border-bottom">
-                                  <Select
-                                    defaultValue="All Unit"
-                                    style={{
-                                      width: '100%',
-                                    }}
+                                  <FormItem
+                                    data={dataUnit}
+                                    name="UnitId"
                                     bordered={false}
-                                    options={[
-                                      {
-                                        value: 'lucy',
-                                        label: 'Lucy',
-                                      },
-                                    ]}
+                                    type={variables.SELECT}
+                                    placeholder="All Unit"
+                                    onChange={onProgramUnit}
                                   />
                                 </div>
                                 <div className="p10 border-bottom">
@@ -710,7 +734,7 @@ const Index = memo(() => {
                                     onChange={(e) => setSearchText(e.target.value)}
                                   />
                                 </div>
-                                {formatTextSearch(tasks).map((task, index) => (
+                                {formatTextSearch(value.tasks).map((task, index) => (
                                   <Draggable key={task.id} draggableId={task.name} index={index}>
                                     {(provided) => (
                                       <div
@@ -721,14 +745,18 @@ const Index = memo(() => {
                                       >
                                         <Paragraph
                                           style={{
-                                            backgroundColor: task.colorCode,
+                                            backgroundColor: task.colorText,
                                           }}
                                           className={stylesModule['card-item']}
                                         >
-                                          {/* <p className={stylesModule?.}>Language</p>
-                                          <p>Week 1 - Class period 1</p>
-                                          <h4>Unit 1: My Class</h4>
-                                          <h4>Get to know the students, set...</h4> */}
+                                          <p className={stylesModule?.text}>{task?.programName}</p>
+                                          <div className={stylesModule?.textFlex}>
+                                            <p className={stylesModule?.text}>Week {task?.week}</p>
+                                            <p className={stylesModule?.textPadding}> - </p>
+                                            <p className={stylesModule?.text}>Class period {task?.classPeriod}</p>
+                                          </div>
+                                          <h3 className={stylesModule?.textUnit}>Unit {task?.unitIndex}: {task?.unitName}</h3>
+                                          <p className={stylesModule?.text}>{task?.name}</p>
                                         </Paragraph>
                                       </div>
                                     )}
@@ -742,93 +770,96 @@ const Index = memo(() => {
                       );
                     })}
                 </div>
-                {/* <div className="activiies-block">
+                <div className="activiies-block">
                   <div className={classnames(styles['block-table'], 'block')}>
-                    <div className="col-time">
-                      <Paragraph className="header-row">Thời gian</Paragraph>
-                      {timelineColumns.map((item) => (
-                        <Paragraph
-                          className={classnames(
-                            'data-row cell',
-                            `size-row-${getSizeMax(item)?.size || 1}`,
-                          )}
-                          key={item.id}
-                        >
-                          {`${item.startTime} - ${item.endTime}`}
-                        </Paragraph>
-                      ))}
-                    </div>
                     <div className="wrapper-droppable">
-                      {classes.map((classItem, index) => (
-                        <div className="col-block" key={index}>
-                          <Paragraph className="header-row">{classItem.name}</Paragraph>
-                          {Object.entries(formatColumns)
-                            .slice(1)
-                            .filter((column) => column[1].classId === classItem.id)
-                            .map(([key, value], index) => {
-                              const indexParent = index;
-                              const tasks = value.tasks.map((task) => ({
-                                ...formatNewItems[task?.timetableActivityDetail?.name],
-                                dragId: task.dragId,
-                                isEmptyDayOfWeek: task.isEmptyDayOfWeek,
-                              }));
-                              const sizeMax = getSizeMax(value?.timetableDetailByClassAndActivy);
-
-                              return (
-                                <Droppable key={index} droppableId={key}>
-                                  {(provided, snapshot) => (
-                                    <div
-                                      {...provided.droppableProps}
-                                      ref={provided.innerRef}
-                                      style={getListStyle(snapshot.isDraggingOver)}
-                                      className={classnames(
-                                        'cell',
-                                        `size-row-${sizeMax?.size || 1}`,
-                                      )}
-                                    >
-                                      {tasks.map((task, index) => (
-                                        <Draggable
-                                          key={`${task.id}-${indexParent}-${index}`}
-                                          draggableId={task.dragId}
-                                          index={index}
-                                        >
-                                          {(provided) => (
-                                            <div
-                                              ref={provided.innerRef}
-                                              {...provided.draggableProps}
-                                              {...provided.dragHandleProps}
-                                            >
-                                              <Paragraph
-                                                style={{
-                                                  backgroundColor: task?.colorCode,
-                                                }}
-                                                className="data-row"
-                                                onClick={() => showModal(key)}
-                                              >
-                                                {task?.isEmptyDayOfWeek && (
-                                                  <span className="dot-warning" />
+                      <div className='d-block'>
+                        {
+                          Object.entries(formatColumns).map(([key, valueParent], indexParent) => {
+                            // const tasks = valueParent?.tasks?.map((task) => ({
+                            //   ...task,
+                            //   dragId: task?.dragId,
+                            // })).filter(i => i?.date === classItem?.date);
+                            console.log("d");
+                            return (
+                              <div className='d-flex'>
+                                {arrDate.map((classItem, index) => {
+                                  const tasks = valueParent?.tasks?.map((task) => ({
+                                    ...task,
+                                    dragId: task?.dragId,
+                                  }));
+                                  console.log("tasks", tasks);
+                                  return (
+                                    <div className="col-block-study-plane" key={index}>
+                                      {indexParent === 0 && (<Paragraph className="header-row">{classItem?.day}  {index !== 0 && moment(classItem?.date).format(variables.DATE_FORMAT.DATE_MONTH)}</Paragraph>)}
+                                      <Droppable
+                                        key={indexParent} droppableId={`{"date":"${classItem?.date}","key":"${key}"}`} index={`${index}-${key}`}>
+                                        {(provided, snapshot) => (
+                                          <div
+                                            {...provided?.droppableProps}
+                                            ref={provided.innerRef}
+                                            style={getListStyle(snapshot?.isDraggingOver)}
+                                            className={stylesModule['item-col']}
+                                          >
+                                            {
+                                              index === 0 && (
+                                                <div
+                                                // style={{
+                                                //   backgroundColor: "red",
+                                                // }}
+                                                >
+                                                  123
+                                                </div>
+                                              )
+                                            }
+                                            <div>ádgajsdgasjdga</div>
+                                            {head(tasks)?.lessions?.map((taskItem, index) => (
+                                              <Draggable key={`${taskItem.id}-${indexParent}-${index}`} draggableId={`${taskItem.dragId}-${index}`} index={index}>
+                                                {(provided) => (
+                                                  <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    className={stylesModule['card-table']}
+                                                  >
+                                                    <Paragraph
+                                                      style={{
+                                                        backgroundColor: taskItem?.lession?.colorText,
+                                                      }}
+                                                      className={stylesModule['card-item']}
+                                                    >
+                                                      <p className={stylesModule?.text}>{taskItem?.lession?.programName}</p>
+                                                      <div className={stylesModule?.textFlex}>
+                                                        <p className={stylesModule?.text}>Week {taskItem?.lession?.week}</p>
+                                                        <p className={stylesModule?.textPadding}> - </p>
+                                                        <p className={stylesModule?.text}>Class period {taskItem?.lession?.classPeriod}</p>
+                                                      </div>
+                                                      <h3 className={stylesModule?.textUnit}>Unit  a a a a a a  a a a a a a  a a a a a a â  a a a a a a a a a  a a a a a a a a a a a  a a a a a a a a a a a a {taskItem?.lession?.unitIndex}: {taskItem?.lession?.unitName}</h3>
+                                                      <p className={stylesModule?.text}>{taskItem?.lession?.name}</p>
+                                                    </Paragraph>
+                                                  </div>
                                                 )}
-                                                {task?.name}
-                                              </Paragraph>
-                                            </div>
-                                          )}
-                                        </Draggable>
-                                      ))}
-                                    </div>
-                                  )}
-                                </Droppable>
-                              );
-                            })}
-                        </div>
-                      ))}
+                                              </Draggable>
+                                            ))}
+                                          </div>
+                                        )
+                                        }
+                                      </Droppable>
+                                    </div>);
+                                })}
+                              </div>);
+                          })
+                        }
+                      </div>
                     </div>
                   </div>
-                </div> */}
+                </div>
               </DragDropContext>
             </div>
           </Form>
-        )}
-      </div>
+        )
+        }
+      </div >
     </>
   );
 });

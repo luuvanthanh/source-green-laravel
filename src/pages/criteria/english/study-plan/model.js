@@ -10,6 +10,7 @@ export default {
     years: [],
     activities: [],
     search: [],
+    program: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -37,6 +38,10 @@ export default {
     SET_YEARS: (state, { payload }) => ({
       ...state,
       years: payload.items,
+    }),
+    SET_PROGRAM: (state, { payload }) => ({
+      ...state,
+      program: payload.items,
     }),
     SET_ACTIVITIES: (state, { payload }) => ({
       ...state,
@@ -150,6 +155,21 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_PROGRAM({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getProgram, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_PROGRAM',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

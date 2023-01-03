@@ -51,6 +51,7 @@ const renderChildren = (
   disabledOptions,
   showCount,
   loading,
+  bordered,
 ) => ({
   input: (
     <Input
@@ -154,6 +155,7 @@ const renderChildren = (
       showSearch
       options={options}
       disabled={disabled}
+      bordered={bordered}
       value={value}
       loading={loading}
       disabledOptions={disabledOptions}
@@ -471,6 +473,7 @@ export default function FormItem({
   disabledOptions,
   showCount,
   loading,
+  bordered,
   ...rest
 }) {
   return (
@@ -503,6 +506,7 @@ export default function FormItem({
           disabledOptions,
           showCount,
           loading,
+          bordered,
         )[type]
       }
     </Form.Item>
@@ -540,6 +544,7 @@ FormItem.propTypes = {
   disabledOptions: PropTypes.arrayOf(PropTypes.any),
   showCount: PropTypes.bool,
   loading: PropTypes.string,
+  bordered: PropTypes.any,
 };
 
 FormItem.defaultProps = {
@@ -573,6 +578,7 @@ FormItem.defaultProps = {
   disabledOptions: [],
   showCount: true,
   loading: "",
+  bordered: true,
 };
 
 FormItem.displayName = 'Form';
