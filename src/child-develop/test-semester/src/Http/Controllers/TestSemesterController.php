@@ -3,6 +3,7 @@
 namespace GGPHP\ChildDevelop\TestSemester\Http\Controllers;
 
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
+use GGPHP\ChildDevelop\TestSemester\Http\Requests\ApprovedTestSemesterRequest;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterCreateRequest;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterUpdateApprovalStatusRequest;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
@@ -191,7 +192,7 @@ class TestSemesterController extends Controller
         return $this->success($reportTestSemester, trans('lang::messages.common.getListSuccess'));
     }
 
-    public function approvedTestSemester(Request $request)
+    public function approvedTestSemester(ApprovedTestSemesterRequest $request)
     {
         $testSemester = $this->testSemesterRepository->approvedTestSemester($request->all());
 

@@ -241,13 +241,14 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
             $images =  json_decode($student->FileImage);
             $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
-            $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
-            $arrId = array_column($employee->pluck('account')->toArray(), 'AppUserId');
+            $nameOfTestSemester = $testSemester->assessmentPeriod->nameAssessmentPeriod->Name;
+            $title = 'Đánh giá định kỳ' . ' ' . $nameOfTestSemester;
+            $message = $student->FullName . ' ' . 'nhận đánh giá định kỳ' . ' ' . $nameOfTestSemester . ' ' . 'năm học' . ' ' . $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
 
             if (!empty($arrId)) {
                 $dataNotifiCation = [
                     'users' => $arrId,
-                    'title' => $student->FullName,
+                    'title' => $title,
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 22,
@@ -398,39 +399,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
     public function approvedTestSemester(array $attributes)
     {
-        if (!empty($attributes['id'])) {
-            $testSemesters = $this->model()::WhereIn('Id', explode(',', $attributes['id']))->get();
-        } else {
-            $this->model = $this->model->where('ApprovalStatus', TestSemester::APPROVAL_STATUS['PENDING_APPROVED']);
-
-            if (!empty($attributes['branchId'])) {
-                $this->model = $this->model->whereHas('student.classes', function ($q) use ($attributes) {
-                    $q->where('BranchId', $attributes['branchId']);
-                });
-            }
-
-            if (!empty($attributes['classId'])) {
-                $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
-                    $query->where('ClassId', $attributes['classId']);
-                });
-            }
-
-            if (!empty($attributes['assessmentPeriodId'])) {
-                $this->model = $this->model->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
-            }
-
-            if (!empty($attributes['schoolYearId'])) {
-                $this->model = $this->model->where('SchoolYearId', $attributes['schoolYearId']);
-            }
-
-            if (!empty($attributes['key'])) {
-                $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
-                    $q->whereLike('FullName', $attributes['key']);
-                });
-            }
-
-            $testSemesters = $this->model->orderBy('CreationTime')->get();
-        }
+        $testSemesters = $this->model()::WhereIn('Id', $attributes['id'])->get();
 
         if (count($testSemesters) > 0) {
 
