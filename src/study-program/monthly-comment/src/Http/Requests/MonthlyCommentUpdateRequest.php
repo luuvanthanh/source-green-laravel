@@ -31,7 +31,6 @@ class MonthlyCommentUpdateRequest extends FormRequest
             'status' => 'in:' . $status,
             'teacherId' => 'exists:Employees,Id',
             'TeacherManagementId' => 'exists:Employees,Id',
-            'month' => 'date_format:Y-m-d',
             'detail.*.scriptReviewCommentId' => 'nullable|check_exists:study-program.ScriptReviewComments,Id',
         ];
     }
