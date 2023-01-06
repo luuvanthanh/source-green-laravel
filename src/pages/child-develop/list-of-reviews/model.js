@@ -1,4 +1,5 @@
 import * as categories from '@/services/categories';
+import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -102,6 +103,10 @@ export default {
       try {
         yield saga.call(services.addOneItem, payload);
         callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'Bạn đã gửi thành công đánh giá.',
+        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -110,6 +115,10 @@ export default {
       try {
         yield saga.call(services.addReview, payload);
         callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'Bạn đã gửi thành công đánh giá.',
+        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
