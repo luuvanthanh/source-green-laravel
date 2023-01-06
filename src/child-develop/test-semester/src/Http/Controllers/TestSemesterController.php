@@ -6,6 +6,7 @@ use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\ApprovedTestSemesterRequest;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterCreateRequest;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterUpdateApprovalStatusRequest;
+use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterUpdateRequest;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
@@ -127,13 +128,9 @@ class TestSemesterController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TestSemesterUpdateRequest $request, $id)
     {
         $attributes = $request->all();
-
-        if (!empty($attributes['approvalStatus'])) {
-            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
-        }
 
         $testSemester = $this->testSemesterRepository->update($attributes, $id);
 

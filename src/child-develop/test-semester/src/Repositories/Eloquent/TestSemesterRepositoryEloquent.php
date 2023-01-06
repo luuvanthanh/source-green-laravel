@@ -238,6 +238,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         })->with('account')->get();
 
         if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['UNQUALIFIED']) {
+            $arrId = array_column(array_column($employee->ToArray(), 'account'), 'AppUserId');
             $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
             $images =  json_decode($student->FileImage);
             $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
@@ -254,6 +255,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                     'moduleType' => 22,
                     'refId' => $testSemester->Id,
                 ];
+
                 dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
             }
         }
