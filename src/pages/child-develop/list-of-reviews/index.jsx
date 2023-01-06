@@ -424,12 +424,20 @@ class Index extends PureComponent {
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
-      {
-        title: 'Thời gian duyệt',
-        key: 'name',
-        width: 250,
-        render: (record) => Helper.getDate(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? record?.timePendingApproved : record?.timeApproved, variables.DATE_FORMAT.DATE_TIME),
-      },
+      ...(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ?
+        [{
+          title: 'Thời gian duyệt',
+          key: 'name',
+          width: 200,
+          render: (record) => moment(record?.timePendingApproved).format(variables.DATE_FORMAT.DATE_TIME),
+        },] : []),
+      ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED ?
+        [{
+          title: 'Thời gian gửi',
+          key: 'name',
+          width: 200,
+          render: (record) => moment(record?.timeApproved).format(variables.DATE_FORMAT.DATE_TIME),
+        },] : []),
       {
         title: 'Loại đánh giá',
         key: 'email',
