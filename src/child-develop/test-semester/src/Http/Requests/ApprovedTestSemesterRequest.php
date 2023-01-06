@@ -5,7 +5,7 @@ namespace GGPHP\ChildDevelop\TestSemester\Http\Requests;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TestSemesterUpdateRequest extends FormRequest
+class ApprovedTestSemesterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,21 +24,11 @@ class TestSemesterUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
-    }
+        $approvalStatus = implode(',', array_keys(TestSemester::APPROVAL_STATUS));
 
-    public function all($keys = null)
-    {
-        $data = Parent::all();
-
-        if (!empty($data['status'])) {
-            $data['status'] = TestSemester::STATUS[$data['status']];
-        }
-
-        if (!empty($data['approvalStatus'])) {
-            $data['approvalStatus'] = TestSemester::APPROVAL_STATUS[$data['approvalStatus']];
-        }
-
-        return $data;
+        return [
+            'id' => 'required|array|exists:TestSemesters,Id',
+            'approvalStatus' => 'required|in:' . $approvalStatus,
+        ];
     }
 }

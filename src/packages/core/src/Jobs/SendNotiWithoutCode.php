@@ -34,7 +34,7 @@ class SendNotiWithoutCode
     {
         $data = $this->data;
         $urlNoti = env('NOTI_URL') . '/api/notification/publish';
-        
+
         if (!empty($data['users'])) {
             Http::withToken(request()->bearerToken())->post($urlNoti, [
                 'users' => $data['users'],
