@@ -35,7 +35,7 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::get('report-test-semesters', 'TestSemesterController@reportTestSemester');
 
-            \Route::get('approved-test-semesters', 'TestSemesterController@approvedTestSemester');
+            \Route::post('approved-test-semesters', 'TestSemesterController@approvedTestSemester');
 
             \Route::post('update-multiple', 'TestSemesterController@updateMultiple');
 
@@ -46,6 +46,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('update-data-old-last-test-semesters', 'TestSemesterController@updateDataOldLastTestSemester');
 
             \Route::get('excel-test-semesters', 'TestSemesterController@excelTestSemester');
+
+            \Route::put('update-approval-status/{id}', 'TestSemesterController@updateApprovalStatus');
         });
     }
 

@@ -31,6 +31,7 @@ class MonthlyCommentUpdateStatusRequest extends FormRequest
             'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
             'newStatus' => 'required|in:' . $status,
             "oldStatus" => 'required|in:' . $status,
+            'teacherSentId' => 'nullable|exists:Employees,Id',
             'month' => 'required|date_format:Y-m-d',
         ];
     }

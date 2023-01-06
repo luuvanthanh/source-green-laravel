@@ -318,7 +318,7 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             ->where('Status', $attributes['oldStatus'])
             ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'SentTime' => now()->format('Y-m-d H:i:s'),
                 'TeacherSentId' => $attributes['teacherSentId']
             ]);
 
@@ -391,7 +391,7 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             $message = $student->FullName . ' ' . 'nhận Quarter report ' . $name . ' school year ' . $schoolYear;
 
             if (!empty($arrId)) {
-                $dataNotiCation = [
+                $dataNotifiCation = [
                     'users' => $arrId,
                     'title' => 'English',
                     'imageURL' => $urlImage,
@@ -400,8 +400,27 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
                     'refId' => $model->Id,
                 ];
 
-                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
             }
         }
+    }
+
+    public function deleteMonthlyComment($id)
+    {
+        $monthlyComment = $this->model()::findOrFail($id);
+        DB::beginTransaction();
+        try {
+            $duplicate = $this->model()::where('Id', $monthlyComment->MonthlyCommentId)->first();
+
+            if (!is_null($duplicate)) {
+                $duplicate->forceDelete();
+            }
+            $monthlyComment->forceDelete();
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+        }
+
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 }

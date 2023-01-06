@@ -3,7 +3,9 @@
 namespace GGPHP\ChildDevelop\TestSemester\Http\Controllers;
 
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
+use GGPHP\ChildDevelop\TestSemester\Http\Requests\ApprovedTestSemesterRequest;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterCreateRequest;
+use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterUpdateApprovalStatusRequest;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
@@ -190,7 +192,7 @@ class TestSemesterController extends Controller
         return $this->success($reportTestSemester, trans('lang::messages.common.getListSuccess'));
     }
 
-    public function approvedTestSemester(Request $request)
+    public function approvedTestSemester(ApprovedTestSemesterRequest $request)
     {
         $testSemester = $this->testSemesterRepository->approvedTestSemester($request->all());
 
@@ -234,5 +236,18 @@ class TestSemesterController extends Controller
         }
 
         return $result;
+    }
+
+    public function updateApprovalStatus(TestSemesterUpdateApprovalStatusRequest $request, $id)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['approvalStatus'])) {
+            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
+        }
+
+        $testSemester = $this->testSemesterRepository->updateApprovalStatus($attributes, $id);
+
+        return $this->success($testSemester, trans('lang::messages.common.modifySuccess'));
     }
 }

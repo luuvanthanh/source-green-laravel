@@ -32,7 +32,6 @@ class MonthlyCommentUpdateAllStatusRequest extends FormRequest
             'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
             'newStatus' => 'required|in:' . $status,
             "oldStatus" => 'required|in:' . $status,
-            'month' => 'required|date_format:Y-m-d',
         ];
     }
 
