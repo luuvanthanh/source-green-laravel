@@ -132,4 +132,11 @@ class MonthlyCommentController extends Controller
 
         return $this->success($result, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function deleteMonthlyComment($id)
+    {
+        $this->monthlyCommentRepository->deleteMonthlyComment($id);
+
+        return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
 }
