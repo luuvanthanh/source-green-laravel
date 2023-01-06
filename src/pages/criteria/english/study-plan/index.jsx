@@ -1,18 +1,25 @@
 import React, { useEffect, useState, memo, useMemo } from 'react';
 import styles from '@/assets/styles/Common/common.scss';
-import Button from '@/components/CommonComponent/Button';
-import FormItem from '@/components/CommonComponent/FormItem';
 import Text from '@/components/CommonComponent/Text';
 import { Helper, variables } from '@/utils';
-import { Form, Typography, Modal, Input, Select } from 'antd';
+import { Form, Modal } from 'antd';
 import classnames from 'classnames';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'dva';
-import { SearchOutlined } from '@ant-design/icons';
-import { isEmpty, groupBy, size, maxBy, head, last, debounce } from 'lodash';
+import moment from 'moment';
+
+import { isEmpty, head, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
+
+
 import { v4 as uuidv4 } from 'uuid';
+
+import Search from './components/search';
+import MenuLeft from './components/menu-left';
+import TableItem from './components/table';
+
+
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
 import stylesModule from './styles.module.scss';
 
@@ -21,24 +28,56 @@ const getListStyle = (isDraggingOver) => ({
   backgroundColor: isDraggingOver ? 'rgba(123, 237, 159, 0.3)' : '',
 });
 
-const { Paragraph } = Typography;
 const Index = memo(() => {
-  const [formRef] = Form.useForm();
-  const [dragRef] = Form.useForm();
-  const [propertyForm] = Form.useForm();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [timeline, setTimeline] = useState('');
-  const [items, setItems] = useState([]);
-
   const [
     loading,
-    { classes, branches, years, activities },
-    { defaultBranch },
+    { classes, branches, years, program, checkModal },
+    { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, englishStudyPlan, user }) => [
     effects,
     englishStudyPlan,
     user,
   ]);
+
+  const [formRef] = Form.useForm();
+  const { query } = useLocation();
+  const [dragRef] = Form.useForm();
+  const [items, setItems] = useState([]);
+
+  const [formatColumns, setFormatColumns] = useState();
+  const [checkUse, setCheckUse] = useState(false);
+
+  const [searchLeft, setSearchLeft] = useState({
+    programId: undefined,
+  });
+
+  const [dataUnit, setDataUnit] = useState([]);
+  const [dataItemProgram, setDataItemProgram] = useState([]);
+  const [dataProgram, setDataProgram] = useState([]);
+
+  const [checkEdit, setCheckEdit] = useState(false);
+
+  //Time table
+  const [searchDate, setSearchDate] = useState({
+    fromDate: Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
+    toDate: moment().endOf('week').format(variables.DATE_FORMAT.DATE_AFTER),
+    type: 'timeGridWeek',
+    branchId: query?.branchId || defaultBranch?.id,
+    classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
+    schoolYearId: query?.schoolYearId,
+  });
+
+  const arrDate = useMemo(() => {
+    const startWeek = moment(searchDate.fromDate).startOf('week').subtract(1, 'day');
+
+    const arr = [{ day: 'Time' }];
+    let i = 1;
+    while (startWeek.isBefore(searchDate.toDate)) {
+      arr.push({ date: Helper.getDateUtc(moment(startWeek.add(1, 'day').clone().toISOString())), day: Helper.getDayOfWeek(i), dayfull: Helper.getDayOfWeekFull(i) });
+      i += 1;
+    }
+    return arr;
+  }, [searchDate]);
 
   const dataYears = years.map((item) => ({
     id: item.id,
@@ -52,7 +91,7 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     isGroupByDayOfWeek: false,
     branchId: defaultBranch?.id,
-    timetableSettingId: null,
+    schoolYearId: null,
   });
 
   const [searchText, setSearchText] = useState('');
@@ -101,11 +140,10 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          setSearch((prev) => ({ ...prev, timetableSettingId: head(response)?.id }));
+          setSearch((prev) => ({ ...prev, schoolYearId: head(response)?.id }));
           formRef.setFieldsValue({
-            timetableSettingId: head(response)?.id,
+            schoolYearId: head(response)?.id,
           });
-          setTimeline(head(response)?.id);
         }
       },
     });
@@ -115,47 +153,17 @@ const Index = memo(() => {
     });
   };
 
-  const timelineColumns = useMemo(
-    () =>
-      Helper.generateTimeline(
-        Object.assign({}, ...years.map((item) => ({ [item?.id]: item })))[timeline]?.periodDuration,
-        Object.assign({}, ...years.map((item) => ({ [item?.id]: item })))[timeline]?.fromTime,
-        Object.assign({}, ...years.map((item) => ({ [item?.id]: item })))[timeline]?.toTime,
-      ),
-    [timeline, years],
-  );
-
   const onLoad = () => {
     dispatch({
       type: 'englishStudyPlan/GET_DATA',
       payload: {
         ...search,
+        fromDate: Helper.getDateSearch(moment(searchDate?.fromDate).startOf('week')),
+        toDate: searchDate?.toDate
       },
       callback: (response) => {
         if (response) {
-          const { timetableDetailGroupByTimes } = response;
-          const arr = classes.map((classItem) =>
-            timelineColumns.map((timeItem) => {
-              const timetableDetail = timetableDetailGroupByTimes?.find(
-                (item) =>
-                  item.startTime === timeItem.startTime && item.endTime === timeItem.endTime,
-              );
-              const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
-                (item) => item?.class?.id === classItem?.id,
-              );
-              return {
-                branchId: search?.branchId,
-                timetableSettingId: search?.timetableSettingId,
-                classId: classItem?.id,
-                tasks: timetableDetailClass?.timetableDetailActivities || [],
-                timetableDetailByClassAndActivy: {
-                  startTime: timeItem?.startTime,
-                  endTime: timeItem?.endTime,
-                },
-              };
-            }),
-          );
-          setItems(arr);
+          setItems(response?.timeTableSettingByTime?.concat(response?.studyPlanGroupByTime));
         }
       },
     });
@@ -170,315 +178,308 @@ const Index = memo(() => {
   useEffect(() => {
     loadCategories();
     loadYears();
+    dispatch({
+      type: 'englishStudyPlan/GET_PROGRAM',
+      payload: {
+      },
+      callback: (response) => {
+        if (response?.items) {
+          setDataItemProgram(response?.items
+            ?.map(i => i.units.map(x => (x.lessions
+              ?.map(k => ({
+                ...k, idUnit: x?.id,
+                programId: i.id,
+                colorText: i?.colorText,
+                programName: i?.name,
+                unitName: x?.name,
+                unitIndex: x?.index,
+                lessionName: k?.name,
+              }))))).flat(Infinity));
+          setDataProgram(response?.items
+            ?.map(i => i.units.map(x => (x.lessions
+              ?.map(k => ({
+                ...k, idUnit: x?.id,
+                programId: i.id,
+                colorText: i?.colorText,
+                programName: i?.name,
+                unitName: x?.name,
+                unitIndex: x?.index,
+                lessionName: k?.name,
+              }))))).flat(Infinity));
+        }
+      },
+    });
   }, []);
 
-  useEffect(async () => {
-    if (search.branchId && search.timetableSettingId && !isEmpty(classes)) {
-      await setTimeline(search.timetableSettingId);
+  useEffect(() => {
+    if (search.branchId && search.schoolYearId && search.classId) {
       onLoad();
     }
-  }, [search, classes]);
+  }, [search]);
 
-  const formatColumns = useMemo(() => {
-    const taskArr = activities.map((item) => item.name);
-    const activyColumns = { 'columns-1': { tasks: taskArr } };
+  useEffect(() => {
+    if (search.branchId && search.schoolYearId && search.classId) {
+      onLoad();
+    }
+  }, [arrDate]);
+
+  useEffect(() => {
+    const activyColumns = { 'columns-1': { tasks: dataItemProgram } };
+    const groupItem = _(items)
+      .groupBy('fromTime', 'toTime')
+      .map(item => ({
+        fromTime: head(item)?.fromTime,
+        toTime: head(item)?.toTime,
+        dragId: uuidv4(),
+        dayOfWeeks: head(item)?.dayOfWeeks,
+        tasks: head(item?.filter(i => i?.itemsGroupByDate))?.itemsGroupByDate?.map(i =>
+        (
+          {
+            ...i,
+            dragId: uuidv4(),
+            programId: item?.program?.id,
+            lessions: i?.lessions?.map(k => ({
+              date: i?.date,
+              dragId: uuidv4(),
+              programId: k?.program?.id,
+              lession: {
+                activities: k?.lession?.activities,
+                classPeriod: k?.lession?.classPeriod,
+                colorText: k?.program?.colorText,
+                lessionName: k?.lession?.lessionName,
+                programName: k?.program?.name,
+                unitIndex: k?.lession?.unitIndex,
+                unitName: k?.lession?.unitName,
+                week: k?.lession?.week,
+              }
+            }))
+          }
+        )) || [],
+      })
+      ).value();
     const newColumns = Object.assign(
       {},
-      ...items.flat(1).map((item, index) => ({
+      ...groupItem.map((item, index) => ({
         [`columns-${index + 2}`]: {
           ...item,
-          dragId: uuidv4(),
-          tasks: item?.tasks?.map((item) => ({ ...item, dragId: uuidv4() })),
         },
       })),
     );
-    return { ...activyColumns, ...newColumns };
+    if (!isEmpty(searchLeft?.programId)) {
+      setFormatColumns({ "columns-1": formatColumns?.["columns-1"], ...newColumns });
+    } else {
+      setFormatColumns({ ...activyColumns, ...newColumns });
+    }
   }, [items]);
 
-  const formatNewItems = useMemo(() => {
-    const newItemsFromBackend = Object.assign(
-      {},
-      ...activities.map((item) => ({ [item?.name]: item })),
-    );
-    return newItemsFromBackend;
-  }, [activities]);
-
   const onDragEnd = (result) => {
-    if (!result.destination) return;
-    const { source, destination } = result;
-    if (source.droppableId !== destination.droppableId) {
-      const sourceColumn = formatColumns[source.droppableId];
-      const destColumn = formatColumns[destination.droppableId];
-      const sourceItems = [...sourceColumn.tasks];
-      const [removed] = sourceItems.splice(source.index, 1);
-      const timetableActivityDetail = activities.find((item) => item.name === removed);
-      let columnsAfter = {};
-      let arr = [];
-      let groups = {};
-      let payload = {};
-      if (destination.droppableId === 'columns-1') {
-        columnsAfter = {
-          ...formatColumns,
-          [source.droppableId]: {
-            ...formatColumns[source.droppableId],
-            tasks: formatColumns[source.droppableId].tasks.filter(
-              (item) => item?.id !== removed?.id,
-            ),
-          },
-        };
-        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-        groups = groupBy(
-          arr.filter((item) => item.classId),
-          'classId',
-        );
-        setItems(Object.keys(groups).map((key) => groups[key]));
-        dispatch({
-          type: 'englishStudyPlan/REMOVE',
-          payload: {
-            id: removed?.id,
-          },
-          callback: (response, error) => {
-            if (error) {
-              columnsAfter = {
-                ...formatColumns,
-              };
-              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-              const groups = groupBy(
-                arr.filter((item) => item.classId),
-                'classId',
-              );
-              setItems(Object.keys(groups).map((key) => groups[key]));
+    //cột menu left trùng cột menu left 
+    if (result?.destination?.droppableId === 'columns-1' && result?.source?.droppableId === 'columns-1') {
+      return;
+    }
+    if (!isEmpty(result?.destination)) {
+      setCheckUse(true);
+      // xóa item khỏi cột table
+      if (result?.destination?.droppableId === 'columns-1') {
+        const stringData = JSON?.parse(result?.source?.droppableId);
+        const dataItem = formatColumns?.[stringData?.key]?.tasks?.filter(i => i?.date === stringData?.date)?.map(i => ({
+          ...i,
+          lessions: i?.lessions?.filter((i, index) => index !== result?.source?.index),
+        }));
+        setFormatColumns(
+          {
+            ...formatColumns,
+            [stringData?.key]:
+            {
+              ...formatColumns?.[stringData?.key],
+              tasks: formatColumns?.[stringData?.key]?.tasks?.map(i => ({ ...i, ...(i?.date === head(dataItem)?.date && head(dataItem)) }))
             }
-          },
-        });
-      } else if (destination.droppableId !== 'columns-1' && source.droppableId !== 'columns-1') {
-        columnsAfter = {
-          ...formatColumns,
-          [destination.droppableId]: {
-            ...formatColumns[destination.droppableId],
-            tasks: [...(formatColumns[destination.droppableId].tasks || []), removed],
-          },
-          [source.droppableId]: {
-            ...formatColumns[source.droppableId],
-            tasks: formatColumns[source.droppableId].tasks.filter(
-              (item) => item?.id !== removed?.id,
-            ),
-          },
-        };
-        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-        groups = groupBy(
-          arr.filter((item) => item.classId),
-          'classId',
-        );
-        setItems(Object.keys(groups).map((key) => groups[key]));
-        dispatch({
-          type: 'englishStudyPlan/DRAG_CELL_BY_CELL',
-          payload: {
-            branchId: destColumn.branchId,
-            timetableSettingId: destColumn.timetableSettingId,
-            timetableDetailByClassAndActivy: {
-              startTime: destColumn.timetableDetailByClassAndActivy.startTime,
-              endTime: destColumn.timetableDetailByClassAndActivy.endTime,
-              classId: destColumn.classId,
-              timetableActivityDetailId: removed?.timetableActivityDetailId,
-            },
-            id: removed?.id,
-          },
-          callback: (response, error) => {
-            if (error) {
-              const columnsAfter = {
-                ...formatColumns,
-              };
-              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-              const groups = groupBy(
-                arr.filter((item) => item.classId),
-                'classId',
-              );
-              setItems(Object.keys(groups).map((key) => groups[key]));
+          });
+      }
+      // kéo data vào cột table
+      else if (result?.source?.droppableId === 'columns-1') {
+        const stringData = JSON?.parse(result?.destination?.droppableId);
+        const keyColumns = "columns-1";
+        const dataProgram = formatColumns?.[keyColumns]?.tasks?.find((i, index) => index === result?.source?.index);
+        const key = stringData?.key;
+        const data = formatColumns?.[key]?.tasks;
+        // cột table đã có dữ liệu
+        if (formatColumns?.[key]?.tasks?.find(i => i?.date === stringData?.date)) {
+          data?.map(i => ({
+            ...i,
+            lessions: i?.date === stringData?.date ? i.lessions?.push({
+              date: stringData?.date,
+              programId: dataProgram?.programId,
+              dragId: uuidv4(),
+              lession: {
+                colorText: dataProgram?.colorText,
+                programName: dataProgram?.programName,
+                unitIndex: dataProgram?.unitIndex,
+                unitName: dataProgram?.unitName,
+                lessionName: dataProgram?.lessionName,
+                activities: dataProgram?.activities,
+                week: dataProgram?.week,
+                classPeriod: dataProgram?.classPeriod,
+              },
+            }) : i?.lessions,
+          }));
+        } else {
+          data?.push(
+            {
+              date: stringData?.date,
+              lessions: [
+                {
+                  date: stringData?.date,
+                  programId: dataProgram?.programId,
+                  dragId: uuidv4(),
+                  lession: {
+                    colorText: dataProgram?.colorText,
+                    programName: dataProgram?.programName,
+                    unitIndex: dataProgram?.unitIndex,
+                    unitName: dataProgram?.unitName,
+                    lessionName: dataProgram?.lessionName,
+                    activities: dataProgram?.activities,
+                    week: dataProgram?.week,
+                    classPeriod: dataProgram?.classPeriod,
+                  },
+                }
+              ]
             }
-          },
-        });
-      } else {
-        columnsAfter = {
-          ...formatColumns,
-          [destination.droppableId]: {
-            ...formatColumns[destination.droppableId],
-            tasks: [
-              ...(formatColumns[destination.droppableId].tasks || []),
-              { timetableActivityDetail },
-            ],
-          },
-        };
-        arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-        groups = groupBy(
-          arr.filter((item) => item.classId),
-          'classId',
-        );
-        setItems(Object.keys(groups).map((key) => groups[key]));
-        payload = {
-          branchId: destColumn.branchId,
-          timetableSettingId: destColumn.timetableSettingId,
-          timetableDetailByClassAndActivy: {
-            startTime: destColumn.timetableDetailByClassAndActivy.startTime,
-            endTime: destColumn.timetableDetailByClassAndActivy.endTime,
-            classId: destColumn.classId,
-            timetableActivityDetailId: timetableActivityDetail.id,
-          },
-        };
-        dispatch({
-          type: 'englishStudyPlan/ADD_DRAG',
-          payload,
-          callback: (response, error) => {
-            if (response) {
-              dispatch({
-                type: 'englishStudyPlan/DRAG_AFTER',
-                payload: {
-                  ...search,
-                },
-                callback: (response) => {
-                  if (response) {
-                    const { timetableDetailGroupByTimes } = response;
-                    const arr = classes.map((classItem) =>
-                      timelineColumns.map((timeItem) => {
-                        const timetableDetail = timetableDetailGroupByTimes?.find(
-                          (item) =>
-                            item.startTime === timeItem.startTime &&
-                            item.endTime === timeItem.endTime,
-                        );
-                        const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
-                          (item) => item?.class?.id === classItem?.id,
-                        );
-                        return {
-                          branchId: search?.branchId,
-                          timetableSettingId: search?.timetableSettingId,
-                          classId: classItem?.id,
-                          tasks: timetableDetailClass?.timetableDetailActivities || [],
-                          timetableDetailByClassAndActivy: {
-                            startTime: timeItem?.startTime,
-                            endTime: timeItem?.endTime,
-                          },
-                        };
-                      }),
-                    );
-                    setItems(arr);
-                  }
-                },
-              });
-            }
-            if (error) {
-              const columnsAfter = {
-                ...formatColumns,
-                [destination.droppableId]: {
-                  ...formatColumns[destination.droppableId],
-                },
-              };
-              const arr = Object.keys(columnsAfter).map((key) => columnsAfter[key]);
-              const groups = groupBy(
-                arr.filter((item) => item.classId),
-                'classId',
-              );
-              setItems(Object.keys(groups).map((key) => groups[key]));
-            }
-          },
-        });
+          );
+        }
+        setFormatColumns({ ...formatColumns, [key]: { ...formatColumns?.[key], tasks: data } });
+      }
+      // kéo cột table sang cột table khác
+      else {
+        const stringDestination = JSON?.parse(result?.destination?.droppableId);
+        const stringSource = JSON?.parse(result?.source?.droppableId);
+
+        const dataNewItemSource = formatColumns?.[stringSource?.key]?.tasks?.filter(i => i?.date === stringSource?.date)?.map(i => ({
+          ...i,
+          lessions: i?.lessions?.filter((i, index) => index !== result?.source?.index),
+        }));
+        const dataItemSource = formatColumns?.[stringSource?.key]?.tasks?.filter(i => i?.date === stringSource?.date);
+
+        const dataProgram = head(dataItemSource)?.lessions?.find((_, index) => index === result?.source?.index);
+        const checkDate = formatColumns?.[stringDestination?.key]?.tasks?.find(i => i?.date === stringDestination?.date);
+
+        const dataNewColumns = formatColumns?.[stringDestination?.key]?.tasks;
+
+        const dataFilter = formatColumns?.[stringSource?.key]?.tasks?.map(i => ({ ...i, ...(i?.date === head(dataNewItemSource)?.date && head(dataNewItemSource)) }));
+        // kéo cột table trùng cột table 
+        if (stringDestination?.date === stringSource?.date && stringDestination?.key === stringSource?.key) {
+          return;
+        }
+        // kéo cột table trùng hàng với nhau 
+        if (stringDestination?.key === stringSource?.key) {
+          setFormatColumns(
+            {
+              ...formatColumns,
+              [stringDestination?.key]:
+              {
+                ...formatColumns?.[stringDestination?.key],
+                tasks: isEmpty(checkDate) ? dataFilter?.concat(
+                  [{
+                    date: stringDestination?.date,
+                    lessions: [
+                      {
+                        date: stringDestination?.date,
+                        programId: dataProgram?.programId,
+                        dragId: uuidv4(),
+                        lession: {
+                          colorText: dataProgram?.lession?.colorText,
+                          programName: dataProgram?.lession?.programName,
+                          unitIndex: dataProgram?.lession?.unitIndex,
+                          unitName: dataProgram?.lession?.unitName,
+                          lessionName: dataProgram?.lession?.lessionName,
+                          activities: dataProgram?.lession?.activities,
+                          week: dataProgram?.lession?.week,
+                          classPeriod: dataProgram?.lession?.classPeriod,
+                        },
+                      }
+                    ]
+                  }]
+                ) :
+                  dataFilter?.map(i => ({
+                    ...i,
+                    lessions: i?.date === stringDestination?.date ? i.lessions?.concat([{
+                      date: stringDestination?.date,
+                      programId: dataProgram?.programId,
+                      dragId: uuidv4(),
+                      lession: {
+                        colorText: dataProgram?.lession?.colorText,
+                        programName: dataProgram?.lession?.programName,
+                        unitIndex: dataProgram?.lession?.unitIndex,
+                        unitName: dataProgram?.lession?.unitName,
+                        lessionName: dataProgram?.lession?.lessionName,
+                        activities: dataProgram?.lession?.activities,
+                        week: dataProgram?.lession?.week,
+                        classPeriod: dataProgram?.lession?.classPeriod,
+                      },
+                    }]) : i?.lessions,
+                  })),
+              }
+            });
+        }
+        // kéo cột table khác hàng với nhau  
+        else {
+          setFormatColumns(
+            {
+              ...formatColumns,
+              [stringSource?.key]:
+              {
+                ...formatColumns?.[stringSource?.key],
+                tasks: formatColumns?.[stringSource?.key]?.tasks?.map(i => ({ ...i, ...(i?.date === head(dataNewItemSource)?.date && head(dataNewItemSource)) }))
+              },
+              [stringDestination?.key]:
+              {
+                ...formatColumns?.[stringDestination?.key],
+                tasks: isEmpty(checkDate) ? dataNewColumns?.concat(
+                  [{
+                    date: stringDestination?.date,
+                    lessions: [
+                      {
+                        date: stringDestination?.date,
+                        programId: dataProgram?.programId,
+                        dragId: uuidv4(),
+                        lession: {
+                          colorText: dataProgram?.lession?.colorText,
+                          programName: dataProgram?.lession?.programName,
+                          unitIndex: dataProgram?.lession?.unitIndex,
+                          unitName: dataProgram?.lession?.unitName,
+                          lessionName: dataProgram?.lession?.lessionName,
+                          activities: dataProgram?.lession?.activities,
+                          week: dataProgram?.lession?.week,
+                          classPeriod: dataProgram?.lession?.classPeriod,
+                        },
+                      }
+                    ]
+                  }]
+                ) :
+                  dataNewColumns?.map(i => ({
+                    ...i,
+                    lessions: i?.date === stringDestination?.date ? i.lessions?.concat([{
+                      date: stringDestination?.date,
+                      programId: dataProgram?.programId,
+                      dragId: uuidv4(),
+                      lession: {
+                        colorText: dataProgram?.lession?.colorText,
+                        programName: dataProgram?.lession?.programName,
+                        unitIndex: dataProgram?.lession?.unitIndex,
+                        unitName: dataProgram?.lession?.unitName,
+                        lessionName: dataProgram?.lession?.lessionName,
+                        activities: dataProgram?.lession?.activities,
+                        week: dataProgram?.lession?.week,
+                        classPeriod: dataProgram?.lession?.classPeriod,
+                      },
+                    }]) : i?.lessions,
+                  })),
+              }
+            });
+        }
+
       }
     }
-  };
-
-  const showModal = (value) => {
-    const columnInfo = formatColumns[value];
-    const { timetableDetailByClassAndActivy } = columnInfo;
-    propertyForm.setFieldsValue({
-      ...columnInfo,
-      time: `${timetableDetailByClassAndActivy.startTime} - ${timetableDetailByClassAndActivy.endTime}`,
-      branchId: columnInfo?.branchId,
-      classIds: [columnInfo?.classId],
-      activities: columnInfo?.tasks.map((item) => ({
-        id: item.id,
-        name: item?.timetableActivityDetail?.name,
-        timetableActivityDetailId: item.timetableActivityDetailId,
-        timetableDetailId: item.timetableDetailId,
-        dayOfWeeks: item?.dayOfWeeks.filter(Boolean),
-      })),
-    });
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    propertyForm.validateFields().then((values) => {
-      const payload = {
-        branchId: search.branchId,
-        timetableSettingId: search.timetableSettingId,
-        timetableDetailByClassesAndActivities: {
-          startTime: head(values?.time?.split('-')).trim(),
-          endTime: last(values?.time?.split('-')).trim(),
-          classIds: values.classIds,
-          activities: values?.activities?.map((item) => ({
-            timetableActivityDetailId: item?.timetableActivityDetailId,
-            dayOfWeeks: item?.dayOfWeeks,
-          })),
-        },
-      };
-      dispatch({
-        type: 'englishStudyPlan/UPDATE_ACTIVITIES',
-        payload,
-        callback: (response) => {
-          if (response) {
-            setIsModalVisible(false);
-            dispatch({
-              type: 'englishStudyPlan/DRAG_AFTER',
-              payload: {
-                ...search,
-              },
-              callback: (response) => {
-                if (response) {
-                  const { timetableDetailGroupByTimes } = response;
-                  const arr = classes.map((classItem) =>
-                    timelineColumns.map((timeItem) => {
-                      const timetableDetail = timetableDetailGroupByTimes?.find(
-                        (item) =>
-                          item.startTime === timeItem.startTime &&
-                          item.endTime === timeItem.endTime,
-                      );
-                      const timetableDetailClass = timetableDetail?.timetableDetailGroupByClasses?.find(
-                        (item) => item?.class?.id === classItem?.id,
-                      );
-                      return {
-                        branchId: search?.branchId,
-                        timetableSettingId: search?.timetableSettingId,
-                        classId: classItem?.id,
-                        tasks: timetableDetailClass?.timetableDetailActivities || [],
-                        timetableDetailByClassAndActivy: {
-                          startTime: timeItem?.startTime,
-                          endTime: timeItem?.endTime,
-                        },
-                      };
-                    }),
-                  );
-                  setItems(arr);
-                }
-              },
-            });
-          }
-        },
-      });
-    });
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  const getSizeMax = (record) => {
-    const itemsFlat = items
-      .flat(1)
-      .filter(
-        (item) =>
-          item?.timetableDetailByClassAndActivy?.startTime === record?.startTime &&
-          item?.timetableDetailByClassAndActivy?.endTime === record?.endTime,
-      )
-      .map((item) => ({ ...item, size: size(item.tasks) }));
-    return maxBy(itemsFlat, 'size');
   };
 
   const changeFilterDebouce = debounce((name, value) => {
@@ -489,7 +490,6 @@ const Index = memo(() => {
   }, 300);
 
   const changeFilter = (name) => (value) => {
-    setTimeline(value);
     changeFilterDebouce(name, value);
   };
 
@@ -500,6 +500,13 @@ const Index = memo(() => {
         payload: {
           branch: value,
         },
+      });
+      setSearch({
+        ...search,
+        classId: undefined,
+      });
+      formRef.setFieldsValue({
+        classId: undefined,
       });
     }
     changeFilterDebouce(name, value);
@@ -514,145 +521,109 @@ const Index = memo(() => {
     return tasks;
   };
 
+  const handleSave = () => {
+    setCheckUse(false);
+    const data = Object.keys(formatColumns)
+      .slice(1)
+      .map((key) => formatColumns[key]?.tasks
+        ?.map(i => i?.lessions
+          ?.map(k => ({
+            programId: k?.programId,
+            date: k?.date,
+            fromTime: formatColumns[key]?.fromTime,
+            toTime: formatColumns[key]?.toTime,
+            lession: {
+              unitIndex: k?.lession?.unitIndex,
+              unitName: k?.lession?.unitName,
+              lessionName: k?.lession?.lessionName,
+              activities: k?.lession?.activities,
+              week: k?.lession?.week,
+              classPeriod: k?.lession?.classPeriod,
+            }
+          })))).flat(Infinity);
+
+    dispatch({
+      type: 'englishStudyPlan/ADD_STUDY_PLAN',
+      payload: {
+        branchId: search?.branchId,
+        classId: search?.classId,
+        studyPlanLessions: data,
+      },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
+
+  const onCancelModal = () => {
+    dispatch({
+      type: 'englishStudyPlan/SET_MODAL_ITEM',
+      payload: { check: false },
+    });
+  };
+
   return (
-    <>
-      <Helmet title="Study Plan" />
+    < div className={stylesModule['container-study']}>
       <Modal
-        title="Chi tiết"
         centered
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={[
-          <p key="back" role="presentation" onClick={handleCancel}>
-            Hủy
-          </p>,
-          <Button
-            key="submit"
-            color="success"
-            type="primary"
-            onClick={handleOk}
-            loading={loading['englishStudyPlan/UPDATE_ACTIVITIES']}
-          >
-            Lưu
-          </Button>,
-        ]}
+        title=""
+        visible={checkModal?.check}
+        onCancel={() => onCancelModal()}
+        footer={null}
+        className={stylesModule['study-modal']}
+        width={300}
       >
-        <Form form={propertyForm}>
-          <div className="row">
-            <div className="col-lg-4">
-              <FormItem
-                className="flex-column form-timetable-disabled"
-                label="Thời gian"
-                name="time"
-                type={variables.INPUT}
-                disabled
-              />
-            </div>
-
-            <div className="col-lg-4">
-              <FormItem
-                className="flex-column form-timetable-disabled"
-                data={branches}
-                label="Cơ sở"
-                name="branchId"
-                type={variables.SELECT}
-                disabled
-              />
-            </div>
-
-            <div className="col-lg-12">
-              <FormItem
-                className="flex-column"
-                data={classes}
-                label="Lớp áp dụng"
-                name="classIds"
-                type={variables.SELECT_MUTILPLE}
-                disabled
-              />
-            </div>
-
-            <div className="col-lg-12">
-              <Form.List name="activities">
-                {(fields, { remove }) => (
-                  <>
-                    {fields.map((field, index) => (
-                      <div className="row align-items-center" key={index}>
-                        <div className="col-10">
-                          <FormItem
-                            className="flex-column form-timetable-disabled"
-                            label={`Hoạt động ${index + 1}`}
-                            name={[field.name, 'name']}
-                            type={variables.INPUT}
-                            disabled
-                          />
-                        </div>
-
-                        <div className="col-2 d-flex justify-content-end">
-                          {fields.length > 1 && (
-                            <button
-                              type="button"
-                              className={styles['button-remove']}
-                              onClick={() => remove(field.name)}
-                            >
-                              <span className="icon-remove" />
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="col-12">
-                          <FormItem
-                            className="flex-column"
-                            data={Helper.objectToArray(variables.DAY_OF_WEEKS_TEXT)}
-                            label="Thứ"
-                            name={[field.name, 'dayOfWeeks']}
-                            type={variables.SELECT_MUTILPLE}
-                            allowClear
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )}
-              </Form.List>
-            </div>
+        <div
+          style={{
+            backgroundColor: checkModal?.data?.lession?.colorText,
+          }}
+          className={stylesModule['card-item']}
+        >
+          <p className={stylesModule?.text}>{checkModal?.data?.lession?.programName}</p>
+          <div className={stylesModule?.textFlex}>
+            <p className={stylesModule?.text}>Week {checkModal?.data?.lession?.week}</p>
+            <p className={stylesModule?.textPadding}> - </p>
+            <p className={stylesModule?.text}>Class period {checkModal?.data?.lession?.classPeriod}</p>
           </div>
-        </Form>
+          <h3 className={stylesModule?.textUnit}>Unit {checkModal?.data?.lession?.unitIndex}: {checkModal?.data?.lession?.unitName}</h3>
+          <p className={stylesModule?.text}>Content: {checkModal?.data?.lession?.lessionName}</p>
+          <p className={stylesModule?.text}>Activities: {checkModal?.data?.lession?.activities}</p>
+        </div>
       </Modal>
+      <Helmet title="Study Plan" />
       <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-        <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
           <Text color="dark">Study Plan</Text>
         </div>
         {/* FORM SEARCH */}
-        <div className={classnames(styles.search, 'pt20')}>
-          <Form layout="vertical" form={formRef} initialValues={{ ...search }}>
-            <div className="row">
-              <div className="col-lg-4">
-                <FormItem
-                  className="ant-form-item-row"
-                  data={dataYears}
-                  label="NĂM HỌC"
-                  name="timetableSettingId"
-                  type={variables.SELECT}
-                  allowClear={false}
-                  onChange={(value) => changeFilter('timetableSettingId')(value)}
-                />
-              </div>
-              <div className="col-lg-4">
-                <FormItem
-                  className="ant-form-item-row"
-                  data={branches}
-                  label="CƠ SỞ"
-                  name="branchId"
-                  type={variables.SELECT}
-                  allowClear={false}
-                  onChange={(value) => changeBanchFilter('branchId')(value)}
-                  disabled={!!defaultBranch?.id}
-                />
-              </div>
-            </div>
-          </Form>
-        </div>
+        <Search
+          formRef={formRef}
+          search={search}
+          dataYears={dataYears}
+          changeFilter={changeFilter}
+          changeBanchFilter={changeBanchFilter}
+          checkEdit={checkEdit}
+          setCheckEdit={setCheckEdit}
+          handleSave={handleSave}
+          branches={branches}
+          classes={classes}
+          defaultBranch={defaultBranch}
+          loading={loading}
+        />
         {/* FORM DRAG */}
         {!isEmpty(classes) && !isEmpty(items) && (
           <Form layout="vertical" form={dragRef}>
@@ -661,175 +632,47 @@ const Index = memo(() => {
                 <div className="col-activites">
                   {Object.entries(formatColumns)
                     .slice(0, 1)
-                    .map(([key, value], index) => {
-                      const tasks = value.tasks.map((taskId) => formatNewItems[taskId]);
-
-                      return (
-                        <Droppable key={index} droppableId={key}>
-                          {(provided) => (
-                            <div {...provided.droppableProps} ref={provided.innerRef}>
-                              <div className={classnames(styles['block-table'], "p0")}>
-                                <div className="p10 border-bottom">
-                                  <Select
-                                    defaultValue="All program"
-                                    style={{
-                                      width: '100%',
-                                    }}
-                                    bordered={false}
-                                    options={[
-                                      {
-                                        value: 'lucy',
-                                        label: 'Lucy',
-                                      },
-                                    ]}
-                                  />
-                                </div>
-                                <div className="p10 border-bottom">
-                                  <Select
-                                    defaultValue="All Unit"
-                                    style={{
-                                      width: '100%',
-                                    }}
-                                    bordered={false}
-                                    options={[
-                                      {
-                                        value: 'lucy',
-                                        label: 'Lucy',
-                                      },
-                                    ]}
-                                  />
-                                </div>
-                                <div className="p10 border-bottom">
-                                  <Input
-                                    prefix={<SearchOutlined style={{
-                                      marginRight: '10px',
-                                    }} />}
-                                    placeholder="Nhập"
-                                    value={searchText}
-                                    bordered={false}
-                                    onChange={(e) => setSearchText(e.target.value)}
-                                  />
-                                </div>
-                                {formatTextSearch(tasks).map((task, index) => (
-                                  <Draggable key={task.id} draggableId={task.name} index={index}>
-                                    {(provided) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        className={stylesModule['card-menuLeft']}
-                                      >
-                                        <Paragraph
-                                          style={{
-                                            backgroundColor: task.colorCode,
-                                          }}
-                                          className={stylesModule['card-item']}
-                                        >
-                                          {/* <p className={stylesModule?.}>Language</p>
-                                          <p>Week 1 - Class period 1</p>
-                                          <h4>Unit 1: My Class</h4>
-                                          <h4>Get to know the students, set...</h4> */}
-                                        </Paragraph>
-                                      </div>
-                                    )}
-                                  </Draggable>
-                                ))}
-                              </div>
-                              {provided.placeholder}
-                            </div>
-                          )}
-                        </Droppable>
-                      );
-                    })}
+                    .map(([keyItem, value], index) => (
+                      <MenuLeft
+                        index={index}
+                        keyItem={keyItem}
+                        program={program}
+                        dataUnit={dataUnit}
+                        searchText={searchText}
+                        setSearchText={setSearchText}
+                        formatTextSearch={formatTextSearch}
+                        searchDate={searchDate}
+                        value={value}
+                        checkEdit={checkEdit}
+                        setSearchLeft={setSearchLeft}
+                        searchLeft={searchLeft}
+                        setDataUnit={setDataUnit}
+                        setFormatColumns={setFormatColumns}
+                        formatColumns={formatColumns}
+                        dataProgram={dataProgram}
+                      />
+                    )
+                    )}
                 </div>
-                {/* <div className="activiies-block">
-                  <div className={classnames(styles['block-table'], 'block')}>
-                    <div className="col-time">
-                      <Paragraph className="header-row">Thời gian</Paragraph>
-                      {timelineColumns.map((item) => (
-                        <Paragraph
-                          className={classnames(
-                            'data-row cell',
-                            `size-row-${getSizeMax(item)?.size || 1}`,
-                          )}
-                          key={item.id}
-                        >
-                          {`${item.startTime} - ${item.endTime}`}
-                        </Paragraph>
-                      ))}
-                    </div>
-                    <div className="wrapper-droppable">
-                      {classes.map((classItem, index) => (
-                        <div className="col-block" key={index}>
-                          <Paragraph className="header-row">{classItem.name}</Paragraph>
-                          {Object.entries(formatColumns)
-                            .slice(1)
-                            .filter((column) => column[1].classId === classItem.id)
-                            .map(([key, value], index) => {
-                              const indexParent = index;
-                              const tasks = value.tasks.map((task) => ({
-                                ...formatNewItems[task?.timetableActivityDetail?.name],
-                                dragId: task.dragId,
-                                isEmptyDayOfWeek: task.isEmptyDayOfWeek,
-                              }));
-                              const sizeMax = getSizeMax(value?.timetableDetailByClassAndActivy);
-
-                              return (
-                                <Droppable key={index} droppableId={key}>
-                                  {(provided, snapshot) => (
-                                    <div
-                                      {...provided.droppableProps}
-                                      ref={provided.innerRef}
-                                      style={getListStyle(snapshot.isDraggingOver)}
-                                      className={classnames(
-                                        'cell',
-                                        `size-row-${sizeMax?.size || 1}`,
-                                      )}
-                                    >
-                                      {tasks.map((task, index) => (
-                                        <Draggable
-                                          key={`${task.id}-${indexParent}-${index}`}
-                                          draggableId={task.dragId}
-                                          index={index}
-                                        >
-                                          {(provided) => (
-                                            <div
-                                              ref={provided.innerRef}
-                                              {...provided.draggableProps}
-                                              {...provided.dragHandleProps}
-                                            >
-                                              <Paragraph
-                                                style={{
-                                                  backgroundColor: task?.colorCode,
-                                                }}
-                                                className="data-row"
-                                                onClick={() => showModal(key)}
-                                              >
-                                                {task?.isEmptyDayOfWeek && (
-                                                  <span className="dot-warning" />
-                                                )}
-                                                {task?.name}
-                                              </Paragraph>
-                                            </div>
-                                          )}
-                                        </Draggable>
-                                      ))}
-                                    </div>
-                                  )}
-                                </Droppable>
-                              );
-                            })}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div> */}
+                <TableItem
+                  setSearchDate={setSearchDate}
+                  searchDate={searchDate}
+                  search={search}
+                  loading={loading}
+                  formatColumns={formatColumns}
+                  arrDate={arrDate}
+                  getListStyle={getListStyle}
+                  checkEdit={checkEdit}
+                  checkUse={checkUse}
+                  setCheckUse={setCheckUse}
+                />
               </DragDropContext>
             </div>
           </Form>
-        )}
-      </div>
-    </>
+        )
+        }
+      </div >
+    </div>
   );
 });
 
