@@ -394,18 +394,13 @@ class Index extends PureComponent {
   };
 
   onClickAddReview = (type) => {
-    const { data, search } = this.state;
+    const { data } = this.state;
     const { dispatch } = this.props;
     const self = this;
     dispatch({
       type: 'listOfReviews/ADD_REVIEW',
       payload: {
-        id: data?.filter((item) => item?.isActive)?.map((item) => item.id),
-        status: type === 'all' ? true : null,
-        schoolYearId: type === 'all' ? search?.schoolYearId : null,
-        branchId: type === 'all' ? search?.branchId : null,
-        classId: type === 'all' ? search?.classId : null,
-        assessmentPeriodId: type === 'all' ? search?.assessmentPeriodId : null,
+        id: type === 'all' ? data?.filter((item, index) => index <= 9)?.map((item) => item.id) : data?.filter((item, index) => item?.isActive && index <= 9)?.map((item) => item.id),
       },
       callback: (response) => {
         if (response) {

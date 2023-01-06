@@ -2673,13 +2673,13 @@ export async function getLeftMenuChildDevelop() {
         },
       ],
     },
-    // {
-    //   title: 'Đánh giá đã duyệt',
-    //   key: 'list-of-reviews',
-    //   icon: 'icon icon-list',
-    //   permission: [],
-    //   url: ['/su-phat-trien-cua-tre/danh-gia-da-duyet'],
-    // },
+    {
+      title: 'Đánh giá đã duyệt',
+      key: 'list-of-reviews',
+      icon: 'icon icon-list',
+      permission: [],
+      url: ['/su-phat-trien-cua-tre/danh-gia-da-duyet'],
+    },
     {
       title: 'Cấu hình kịch bản đánh giá',
       key: '/childrens-problems',
