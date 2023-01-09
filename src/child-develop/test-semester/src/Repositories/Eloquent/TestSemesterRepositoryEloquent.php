@@ -244,7 +244,8 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
             $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
             $nameOfTestSemester = $testSemester->assessmentPeriod->nameAssessmentPeriod->Name;
             $title = 'Đánh giá định kỳ' . ' ' . $nameOfTestSemester;
-            $message = $student->FullName . ' ' . 'nhận đánh giá định kỳ' . ' ' . $nameOfTestSemester . ' ' . 'năm học' . ' ' . $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
+            $schoolYear = $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
+            $message = 'Đánh giá định kỳ ' . $nameOfTestSemester . ' năm học ' .   $schoolYear . ' của ' . $student->FullName . ' đang chờ duyệt';
 
             if (!empty($arrId)) {
                 $dataNotifiCation = [
@@ -252,7 +253,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                     'title' => $title,
                     'imageURL' => $urlImage,
                     'message' => $message,
-                    'moduleType' => 22,
+                    'moduleType' => 25,
                     'refId' => $testSemester->Id,
                 ];
 
