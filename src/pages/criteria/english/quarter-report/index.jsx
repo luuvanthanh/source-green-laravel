@@ -910,6 +910,7 @@ class Index extends PureComponent {
               bordered={false}
               columns={this.header(params)}
               dataSource={data}
+              description="No data"
               loading={loading}
               rowSelection={
                 search?.status === variablesModules.STATUS.NOT_REVIEW ||

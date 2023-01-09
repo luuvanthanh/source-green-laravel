@@ -400,6 +400,7 @@ class Index extends PureComponent {
     dispatch({
       type: 'listOfReviews/ADD_REVIEW',
       payload: {
+        type,
         id: type === 'all' ? data?.filter((item, index) => index <= 9)?.map((item) => item.id) : data?.filter((item, index) => item?.isActive && index <= 9)?.map((item) => item.id),
       },
       callback: (response) => {
@@ -424,13 +425,12 @@ class Index extends PureComponent {
         render: (text, record, index) =>
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
-      ...(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ?
-        [{
-          title: 'Thời gian duyệt',
-          key: 'name',
-          width: 200,
-          render: (record) => moment(record?.timePendingApproved).format(variables.DATE_FORMAT.DATE_TIME),
-        },] : []),
+      {
+        title: 'Thời gian duyệt',
+        key: 'name',
+        width: 200,
+        render: (record) => moment(record?.timePendingApproved).format(variables.DATE_FORMAT.DATE_TIME),
+      },
       ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED ?
         [{
           title: 'Thời gian gửi',
@@ -533,13 +533,20 @@ class Index extends PureComponent {
             {
               search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
                 <div className='d-flex'>
-                  <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview()}>
+                  <Button
+                    disabled={!size(data.filter((item) => item.isActive))}
+                    color="primary" icon="redo2"
+                    className="ml-2"
+                    loading={effects['listOfReviews/ADD_REVIEW']}
+                    onClick={() => this.onClickAddReview()}>
                     Gửi đánh giá đã chọn
                   </Button>
                   <Button
                     color="success"
                     icon="redo2"
                     className="ml-2"
+                    loading={effects['listOfReviews/ADD_REVIEW']}
+                    disabled={!size(data)}
                     onClick={() => this.onClickAddReview('all')}
                   >
                     Gửi tất cả
