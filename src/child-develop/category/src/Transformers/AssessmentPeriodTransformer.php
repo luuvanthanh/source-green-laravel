@@ -50,11 +50,11 @@ class AssessmentPeriodTransformer extends BaseTransformer
         $tested = 0;
         $unTest = 0;
 
-        if (!empty(request()->headMasterBranch)) {
-            $student = Student::where('Status', Student::OFFICAL)->where('BranchId', request()->headMasterBranch)->count();
+        if (!empty(request()->headMasterBranchId)) {
+            $student = Student::where('Status', Student::OFFICAL)->where('BranchId', request()->headMasterBranchId)->count();
 
             $testSemester = TestSemester::where('AssessmentPeriodId', $model->Id)->whereHas('student', function ($query) {
-                $query->where('BranchId', request()->headMasterBranch);
+                $query->where('BranchId', request()->headMasterBranchId);
             })->count();
 
             $total = $student;
