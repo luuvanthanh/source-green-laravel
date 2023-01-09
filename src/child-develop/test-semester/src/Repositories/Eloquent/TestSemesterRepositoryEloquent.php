@@ -253,7 +253,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                     'title' => $title,
                     'imageURL' => $urlImage,
                     'message' => $message,
-                    'moduleType' => 25,
+                    'moduleType' => 26,
                     'refId' => $testSemester->Id,
                 ];
 
