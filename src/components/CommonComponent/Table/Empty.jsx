@@ -13,7 +13,7 @@ Index.propTypes = {
 };
 
 Index.defaultProps = {
-  description: 'No data'
+  description: 'Chưa có dữ liệu'
 };
 
 Index.displayName = 'Index';

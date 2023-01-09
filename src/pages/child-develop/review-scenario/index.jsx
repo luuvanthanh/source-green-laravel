@@ -253,7 +253,7 @@ class Index extends PureComponent {
           {record.age === '6' ? '30 - 36 ' : ""}
           {record.age === '7' ? '36 - 50 ' : ""}
           {record.age === '8' ? '50- 60 ' : ""}
-          {record.age === '9' ? '61- 72 ' : ""}
+          {record.age === '9' ? '61- 100 ' : ""}
           Tháng</Text>,
       },
       {

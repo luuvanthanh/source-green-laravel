@@ -308,6 +308,7 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
+              description="No data"
               pagination={this.pagination(pagination)}
               error={error}
               isError={error.isError}
