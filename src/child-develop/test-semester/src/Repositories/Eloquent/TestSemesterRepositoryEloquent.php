@@ -351,10 +351,8 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         if (!empty($attributes['classId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($attributes) {
-                $arrayClass = explode(',', $attributes['classId']);
-                $query->whereIn('ClassId', $arrayClass);
-            });
+            $arrayClass = explode(',', $attributes['classId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('ClassId', $arrayClass);
         }
 
         if (!empty($attributes['studentId'])) {
