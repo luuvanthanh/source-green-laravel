@@ -4,6 +4,8 @@ namespace GGPHP\ChildDevelop\Category\Transformers;
 
 use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\ChildDevelop\Category\Models\AssessmentPeriod;
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
+use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Transformers\ClassesTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Transformers\SchoolYearTransformer;
@@ -44,7 +46,27 @@ class AssessmentPeriodTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $total = 0;
+        $tested = 0;
+        $unTest = 0;
+
+        if (!empty(request()->headMasterBranch)) {
+            $student = Student::where('Status', Student::OFFICAL)->where('BranchId', request()->headMasterBranch)->count();
+
+            $testSemester = TestSemester::where('AssessmentPeriodId', $model->Id)->whereHas('student', function ($query) {
+                $query->where('BranchId', request()->headMasterBranch);
+            })->count();
+
+            $total = $student;
+            $tested = $testSemester;
+            $unTest = $total - $tested;
+        }
+
+        return [
+            'total' => $total,
+            'tested' => $tested,
+            'unTest' => $unTest
+        ];
     }
 
     public function includeClasses(AssessmentPeriod $assessmentPeriod)
