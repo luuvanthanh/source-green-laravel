@@ -1,5 +1,6 @@
 import * as categories from '@/services/categories';
 import { notification } from 'antd';
+import { size } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -115,10 +116,17 @@ export default {
       try {
         yield saga.call(services.addReview, payload);
         callback(payload);
-        notification.success({
-          message: 'Successful',
-          description: 'Bạn đã gửi thành công đánh giá.',
-        });
+        if (payload?.type === 'all') {
+          notification.success({
+            message: 'Successful',
+            description: `Bạn đã gửi thành công ${size(payload?.id)} đánh giá.`,
+          });
+        } else {
+          notification.success({
+            message: 'Successful',
+            description: 'Bạn đã gửi thành công đánh giá.',
+          });
+        }
       } catch (error) {
         callback(null, error?.data?.error);
       }

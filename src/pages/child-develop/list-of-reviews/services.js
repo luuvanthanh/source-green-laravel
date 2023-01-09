@@ -6,22 +6,6 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      // from: Helper.getDateTime({
-      //   value: Helper.setDate({
-      //     ...variables.setDateData,
-      //     originValue: params.from,
-      //     targetValue: '00:00:00',
-      //   }),
-      //   isUTC: true,
-      // }),
-      // to: Helper.getDateTime({
-      //   value: Helper.setDate({
-      //     ...variables.setDateData,
-      //     originValue: params.to,
-      //     targetValue: '23:59:59',
-      //   }),
-      //   isUTC: true,
-      // }),
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
@@ -85,7 +69,7 @@ export function addReview(params = {}) {
   return request('/v1/approved-test-semesters', {
     method: 'POST',
     data: {
-      ...params,
+      id: params.id,
       approvalStatus: 'APPROVED',
     },
     cancelNotification: true,

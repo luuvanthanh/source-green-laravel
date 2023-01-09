@@ -9,7 +9,7 @@ export const variables = {
     { id: '6', name: '30 - 36 tháng' },
     { id: '7', name: '36 - 50 tháng' },
     { id: '8', name: '50- 60 tháng' },
-    { id: '9', name: '61- 72 tháng' },
+    { id: '9', name: '61- 100 tháng' },
   ],
   AGE_TABLE: [
     { id: '0-6', name: '0 - 6 tháng' },
@@ -21,7 +21,7 @@ export const variables = {
     { id: '30-36', name: '30 - 36 tháng' },
     { id: '36-50', name: '36 - 50 tháng' },
     { id: '50-60', name: '50- 60 tháng' },
-    { id: '61-72', name: '61- 72 tháng' },
+    { id: '61-100', name: '61- 100 tháng' },
   ],
   APPLY: [
     { id: 'inputAssessment', name: 'Test đầu vào' },

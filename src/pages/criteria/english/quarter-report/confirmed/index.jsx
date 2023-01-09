@@ -391,6 +391,7 @@ const Index = memo(() => {
                                           pagination={false}
                                           rowKey={(record) => record.id}
                                           scroll={{ x: '100%' }}
+                                          description="No data"
                                           isEmpty
                                         />
                                       </div>
