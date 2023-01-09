@@ -4,6 +4,7 @@ namespace GGPHP\ChildDevelop\Category\Models;
 
 use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Category\Models\Branch;
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\SchoolYear;
@@ -37,5 +38,10 @@ class AssessmentPeriod extends UuidModel
     public function nameAssessmentPeriod()
     {
         return $this->belongsTo(NameAssessmentPeriod::class, 'NameAssessmentPeriodId');
+    }
+
+    public function testSemester()
+    {
+        return $this->hasMany(TestSemester::class, 'AssessmentPeriodId');
     }
 }
