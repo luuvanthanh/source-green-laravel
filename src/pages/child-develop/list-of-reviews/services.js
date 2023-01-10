@@ -10,11 +10,7 @@ export function get(params = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
-        'student.classStudent.class.branch',
-        'assessmentPeriod.schoolYear',
-        'student,testSemesterDetail,testSemesterDetail.testSemesterDetailChildren',
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'assessmentPeriod.nameAssessmentPeriod',
+        'student.classes.branch,assessmentPeriod.schoolYear,student,testSemesterDetail,testSemesterDetail.testSemesterDetailChildren,childEvaluateDetail.childEvaluateDetailChildren,assessmentPeriod.nameAssessmentPeriod',
       ]),
     },
   });

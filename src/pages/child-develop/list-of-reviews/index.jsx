@@ -448,14 +448,14 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'branch',
         width: 150,
-        render: (record) => record?.student?.classStudent?.class?.branch?.name,
+        render: (record) => record?.student?.classes?.branch?.name,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record?.student?.classStudent?.class?.name,
+        render: (record) => record?.student?.classes?.name,
       },
       {
         title: 'Học sinh',
