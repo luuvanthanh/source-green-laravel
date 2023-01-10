@@ -2798,7 +2798,7 @@ export default [
           },
           {
             path: '/phat-trien-the-chat/khai-bao-chi-so-who',
-            component: './physical/index-declarationV1',
+            component: './physical/index-declaration',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THECHAT],
           },
