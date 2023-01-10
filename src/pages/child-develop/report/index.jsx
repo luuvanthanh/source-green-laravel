@@ -259,7 +259,7 @@ class Index extends PureComponent {
                 width: 150,
                 render: (value, record) => (
                     <div className='d-flex' >
-                        {record.classStudent?.class?.name}
+                        {record?.classes?.name}
                     </div>
                 ),
             },
@@ -326,7 +326,6 @@ class Index extends PureComponent {
             loading: { effects },
             user,
         } = this.props;
-
         const { search, defaultBranchs } = this.state;
         const loading = effects['childDevelopReport/GET_DATA'];
         return (

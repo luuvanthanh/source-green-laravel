@@ -214,20 +214,6 @@ export default {
         });
       }
     },
-    *GET_ASESSMENT_PERIOD({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getAssessmentPeriod, payload);
-        yield saga.put({
-          type: 'SET_ASESSMENT_PERIOD',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
     *GET_DATA_TYPE({ payload }, saga) {
       try {
         const response = yield saga.call(services.getDataType, payload);

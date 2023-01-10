@@ -394,18 +394,14 @@ class Index extends PureComponent {
   };
 
   onClickAddReview = (type) => {
-    const { data, search } = this.state;
+    const { data } = this.state;
     const { dispatch } = this.props;
     const self = this;
     dispatch({
       type: 'listOfReviews/ADD_REVIEW',
       payload: {
-        id: data?.filter((item) => item?.isActive)?.map((item) => item.id),
-        status: type === 'all' ? true : null,
-        schoolYearId: type === 'all' ? search?.schoolYearId : null,
-        branchId: type === 'all' ? search?.branchId : null,
-        classId: type === 'all' ? search?.classId : null,
-        assessmentPeriodId: type === 'all' ? search?.assessmentPeriodId : null,
+        type,
+        id: type === 'all' ? data?.filter((item, index) => index <= 9)?.map((item) => item.id) : data?.filter((item, index) => item?.isActive && index <= 9)?.map((item) => item.id),
       },
       callback: (response) => {
         if (response) {
@@ -432,9 +428,16 @@ class Index extends PureComponent {
       {
         title: 'Thời gian duyệt',
         key: 'name',
-        width: 250,
-        render: (record) => Helper.getDate(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? record?.timePendingApproved : record?.timeApproved, variables.DATE_FORMAT.DATE_TIME),
+        width: 200,
+        render: (record) => moment(record?.timePendingApproved).format(variables.DATE_FORMAT.DATE_TIME),
       },
+      ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED ?
+        [{
+          title: 'Thời gian gửi',
+          key: 'name',
+          width: 200,
+          render: (record) => moment(record?.timeApproved).format(variables.DATE_FORMAT.DATE_TIME),
+        },] : []),
       {
         title: 'Loại đánh giá',
         key: 'email',
@@ -445,14 +448,14 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'branch',
         width: 150,
-        render: (record) => record?.student?.classStudent?.class?.branch?.name,
+        render: (record) => record?.student?.classes?.branch?.name,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record?.student?.classStudent?.class?.name,
+        render: (record) => record?.student?.classes?.name,
       },
       {
         title: 'Học sinh',
@@ -530,13 +533,20 @@ class Index extends PureComponent {
             {
               search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
                 <div className='d-flex'>
-                  <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview()}>
+                  <Button
+                    disabled={!size(data.filter((item) => item.isActive))}
+                    color="primary" icon="redo2"
+                    className="ml-2"
+                    loading={effects['listOfReviews/ADD_REVIEW']}
+                    onClick={() => this.onClickAddReview()}>
                     Gửi đánh giá đã chọn
                   </Button>
                   <Button
                     color="success"
                     icon="redo2"
                     className="ml-2"
+                    loading={effects['listOfReviews/ADD_REVIEW']}
+                    disabled={!size(data)}
                     onClick={() => this.onClickAddReview('all')}
                   >
                     Gửi tất cả

@@ -36,7 +36,7 @@ export default function TableCustom({ ...props }) {
       />
     );
   }
-  return <Empty />;
+  return <Empty   {...props} />;
 }
 
 TableCustom.propTypes = {

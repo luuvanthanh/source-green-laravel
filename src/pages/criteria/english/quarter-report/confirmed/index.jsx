@@ -391,6 +391,7 @@ const Index = memo(() => {
                                           pagination={false}
                                           rowKey={(record) => record.id}
                                           scroll={{ x: '100%' }}
+                                          description="No data"
                                           isEmpty
                                         />
                                       </div>
@@ -419,7 +420,7 @@ const Index = memo(() => {
                         <Pane className="row pl20 pb20 pr20">
                           <Pane className="col-lg-12">
                             <FormItem label="Content">
-                              <TextArea rows={2} placeholder="Nhập" value={i?.content} onChange={(e) => onChangeInput(e, i)} />
+                              <TextArea rows={4} placeholder="Nhập" defaultValue={i?.content} onChange={(e) => onChangeInput(e, i)} />
                             </FormItem>
                           </Pane>
                         </Pane>

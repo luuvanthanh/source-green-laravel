@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, DatePicker } from 'antd';
+import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import { isEmpty, omit, last, head } from 'lodash';
 
@@ -13,7 +13,6 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
-import stylesModule from '../styles.module.scss';
 import variablesModules from '../utils/variables';
 
 
@@ -32,7 +31,7 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, childDevelopAssessmentPeriodAdd }) => ({
+const mapStateToProps = ({ menu, loading, childDevelopAssessmentPeriodAdd, user }) => ({
   loading,
   menuData: menu.menuLeftChildDevelop,
   details: childDevelopAssessmentPeriodAdd.details,
@@ -41,6 +40,7 @@ const mapStateToProps = ({ menu, loading, childDevelopAssessmentPeriodAdd }) => 
   problems: childDevelopAssessmentPeriodAdd.problems,
   branches: childDevelopAssessmentPeriodAdd.branches,
   dataClass: childDevelopAssessmentPeriodAdd.dataClass,
+  user: user.user,
 });
 
 @connect(mapStateToProps)
@@ -49,7 +49,11 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
+    const {
+      user,
+    } = props;
     this.state = {
+      dataYear: user ? user?.schoolYear : {},
       type: (variablesModules.TYPE.PERIODIC),
     };
     setIsMounted(true);
@@ -125,7 +129,7 @@ class Index extends PureComponent {
         ...details,
         branchId: details.branch.map((i) => i.id),
         classesId: details.classes.map((i) => i.id),
-        selectDate: details?.startDate &&
+        date: details?.startDate &&
           details?.endDate && [
             moment(details?.startDate),
             moment(details?.endDate),
@@ -164,13 +168,13 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const payload = {
-      ...omit(values, 'selectDate'),
+      ...omit(values, 'date'),
       startDate:
-        head(values.selectDate) &&
-        Helper.getDate(head(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
+        head(values.date) &&
+        Helper.getDate(head(values.date), variables.DATE_FORMAT.DATE_AFTER),
       endDate:
-        last(values.selectDate) &&
-        Helper.getDate(last(values.selectDate), variables.DATE_FORMAT.DATE_AFTER),
+        last(values.date) &&
+        Helper.getDate(last(values.date), variables.DATE_FORMAT.DATE_AFTER),
       ...values,
       id: params.id,
       periodic: type === 'PERIODIC' ? true : 'false',
@@ -218,9 +222,22 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeStatus = (e, type) => {
+    const {
+      schoolYear,
+    } = this.props;
+    if (type === 'schoolYearId') {
+      const data = schoolYear?.find(i => i.id === e);
+      this.setStateData({
+        dataYear: data,
+      });
+      this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+    }
+  };
+
   render() {
     const {
-
+      user,
       menuData,
       dataClass,
       schoolYear,
@@ -228,7 +245,9 @@ class Index extends PureComponent {
       branches,
       loading: { effects },
       match: { params },
+      location: { query },
     } = this.props;
+    const { dataYear } = this.state;
     const loadingSubmit = effects['childDevelopAssessmentPeriodAdd/ADD'] || effects['childDevelopAssessmentPeriodAdd/UPDATE'];
     const loading = effects['childDevelopAssessmentPeriodAdd/GET_DETAILS'];
 
@@ -242,6 +261,11 @@ class Index extends PureComponent {
             colon={false}
             ref={this.formRef}
             onFinish={this.onFinish}
+            initialValues={{
+              schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
+              date: dataYear?.startDate &&
+                dataYear?.endDate && [moment(dataYear?.startDate), moment(dataYear?.endDate)],
+            }}
           >
             <div className={styles['content-form']}>
               <Pane className="pl20 pr20 mt20">
@@ -271,19 +295,24 @@ class Index extends PureComponent {
                             data={schoolYear.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}` }))}
                             placeholder="Chọn"
                             type={variables.SELECT}
+                            onChange={(event) => this.onChangeStatus(event, 'schoolYearId')}
                             label="Năm học"
                             rules={[variables.RULES.EMPTY_INPUT]}
                           />
                         </Pane>
                         <Pane className="col-lg-6">
-                          <div className={styles['form-item']}>
-                            <label htmlFor="userId" className={stylesModule['wrapper-lable']} >Thời gian đánh giá</label>
-                            <Form.Item name="selectDate" style={{ marginBottom: 0 }} rules={[variables.RULES.EMPTY]}>
-                              <DatePicker.RangePicker
-                                format={[variables.DATE_FORMAT.DATE, variables.DATE_FORMAT.DATE]}
-                              />
-                            </Form.Item>
-                          </div>
+                          <FormItem
+                            name="date"
+                            label="Thời gian đánh giá"
+                            type={variables.RANGE_PICKER}
+                            rules={[variables.RULES.EMPTY]}
+                            disabledDate={(current) =>
+                              (dataYear?.startDate &&
+                                current < moment(dataYear?.startDate).startOf('day')) ||
+                              (dataYear?.endDate &&
+                                current >= moment(dataYear?.endDate).endOf('day'))
+                            }
+                          />
                         </Pane>
                         <Pane className="col-lg-12">
                           <FormItem
@@ -354,6 +383,9 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   dataClass: PropTypes.arrayOf(PropTypes.any),
   problems: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
+
 };
 
 Index.defaultProps = {
@@ -366,6 +398,8 @@ Index.defaultProps = {
   branches: [],
   dataClass: [],
   problems: [],
+  user: {},
+  location: {},
 };
 
 export default Index;

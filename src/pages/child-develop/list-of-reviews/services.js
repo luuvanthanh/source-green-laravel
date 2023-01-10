@@ -6,31 +6,11 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      // from: Helper.getDateTime({
-      //   value: Helper.setDate({
-      //     ...variables.setDateData,
-      //     originValue: params.from,
-      //     targetValue: '00:00:00',
-      //   }),
-      //   isUTC: true,
-      // }),
-      // to: Helper.getDateTime({
-      //   value: Helper.setDate({
-      //     ...variables.setDateData,
-      //     originValue: params.to,
-      //     targetValue: '23:59:59',
-      //   }),
-      //   isUTC: true,
-      // }),
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
-        'student.classStudent.class.branch',
-        'assessmentPeriod.schoolYear',
-        'student,testSemesterDetail,testSemesterDetail.testSemesterDetailChildren',
-        'childEvaluateDetail.childEvaluateDetailChildren',
-        'assessmentPeriod.nameAssessmentPeriod',
+        'student.classes.branch,assessmentPeriod.schoolYear,student,testSemesterDetail,testSemesterDetail.testSemesterDetailChildren,childEvaluateDetail.childEvaluateDetailChildren,assessmentPeriod.nameAssessmentPeriod',
       ]),
     },
   });
@@ -72,20 +52,22 @@ export function getAssessmentPeriod(params = {}) {
 
 export function addOneItem(params = {}) {
   return request(`/v1/approved-test-semesters`, {
-    method: 'GET',
-    params: {
+    method: 'POST',
+    data: {
       approvalStatus: 'APPROVED',
       id: [params?.id],
     },
+    cancelNotification: true,
   });
 }
 
 export function addReview(params = {}) {
   return request('/v1/approved-test-semesters', {
-    method: 'GET',
-    params: {
-      ...params,
+    method: 'POST',
+    data: {
+      id: params.id,
       approvalStatus: 'APPROVED',
     },
+    cancelNotification: true,
   });
 }

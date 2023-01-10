@@ -2,6 +2,8 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
+import { Helmet } from 'react-helmet';
+
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -11,6 +13,7 @@ import classnames from 'classnames';
 import { isEmpty } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { variables } from '@/utils';
+import { DeleteOutlined } from '@ant-design/icons';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import variablesModules from './utils/variables';
@@ -24,21 +27,18 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   configuration: crmSaleAdmissionAdd.configuration,
   details: crmSaleAdmissionAdd.details
 });
-const General = memo(({ loading: { effects }, error, details }) => {
+const General = memo(({ loading: { effects }, error }) => {
   const [data, setData] = useState([
     {
-      monthNumber: undefined,
-      bmiFemale: undefined,
-      bmiMale: undefined,
-      weightFemale: undefined,
-      weightMale: undefined,
       id: uuidv4(),
     },
   ]);
 
+  const [checkEdit, setCheckEdit] = useState(false);
+
   const [search, setSearch] = useState(
     {
-      type: "BMIFEMALE",
+      type: "BMIMALE",
     },
   );
 
@@ -73,12 +73,16 @@ const General = memo(({ loading: { effects }, error, details }) => {
 
 
   const onChangeInput = (record, e, type) => {
-    setData((prev) =>
-      prev.map((item) => ({
-        ...item,
-        [type]: item.id === record.id ? e : item?.[type],
-      })),
-    );
+    if (type === 'delete') {
+      setData(data?.filter(i => i?.id !== record?.id));
+    } else {
+      setData((prev) =>
+        prev.map((item) => ({
+          ...item,
+          [type]: item.id === record.id ? e : item?.[type],
+        })),
+      );
+    }
   };
 
   const onChangeSelectStatus = (e) => {
@@ -94,13 +98,16 @@ const General = memo(({ loading: { effects }, error, details }) => {
         width: 80,
         render: (value, record) => (
           <>
-            <FormItem
-              className={classnames('mb-0', stylesModule['icon-input'])}
-              type={variables.NUMBER_INPUT}
-              rules={[variables.RULES.EMPTY]}
-              value={record?.monthNumber}
-              onChange={(e) => onChangeInput(record, e, 'monthNumber')}
-            />
+            {
+              !checkEdit ? <>    {record?.monthNumber}</> :
+                <FormItem
+                  className={classnames('mb-0', stylesModule['icon-input'])}
+                  type={variables.NUMBER_INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                  value={record?.monthNumber}
+                  onChange={(e) => onChangeInput(record, e, 'monthNumber')}
+                />
+            }
           </>
         )
       },
@@ -112,13 +119,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
         width: 80,
         render: (value, record) => (
           <>
-            <FormItem
-              className={classnames('mb-0', stylesModule['icon-input'])}
-              type={variables.NUMBER_INPUT}
-              rules={[variables.RULES.EMPTY]}
-              value={record?.l}
-              onChange={(e) => onChangeInput(record, e, 'l')}
-            />
+            {
+              !checkEdit ? <> {record?.l}</>
+                :
+                <FormItem
+                  className={classnames('mb-0', stylesModule['icon-input'])}
+                  type={variables.NUMBER_INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                  value={record?.l}
+                  onChange={(e) => onChangeInput(record, e, 'l')}
+                />
+            }
           </>
         )
       },
@@ -130,13 +141,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
         width: 80,
         render: (value, record) => (
           <>
-            <FormItem
-              className={classnames('mb-0', stylesModule['icon-input'])}
-              type={variables.NUMBER_INPUT}
-              rules={[variables.RULES.EMPTY]}
-              value={record?.m}
-              onChange={(e) => onChangeInput(record, e, 'm')}
-            />
+            {
+              !checkEdit ? <> {record?.m}</>
+                :
+                <FormItem
+                  className={classnames('mb-0', stylesModule['icon-input'])}
+                  type={variables.NUMBER_INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                  value={record?.m}
+                  onChange={(e) => onChangeInput(record, e, 'm')}
+                />
+            }
           </>
         )
       },
@@ -148,13 +163,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
         width: 80,
         render: (value, record) => (
           <>
-            <FormItem
-              className={classnames('mb-0', stylesModule['icon-input'])}
-              type={variables.NUMBER_INPUT}
-              rules={[variables.RULES.EMPTY]}
-              value={record?.s}
-              onChange={(e) => onChangeInput(record, e, 's')}
-            />
+            {
+              !checkEdit ? <> {record?.s}</>
+                :
+                <FormItem
+                  className={classnames('mb-0', stylesModule['icon-input'])}
+                  type={variables.NUMBER_INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                  value={record?.s}
+                  onChange={(e) => onChangeInput(record, e, 's')}
+                />
+            }
           </>
         )
       },
@@ -171,13 +190,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
             align: 'center',
             render: (value, record) => (
               <>
-                <FormItem
-                  className={classnames('mb-0')}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.medianSmallerThirdSD}
-                  onChange={(e) => onChangeInput(record, e, 'medianSmallerThirdSD')}
-                />
+                {
+                  !checkEdit ? <> {record?.medianSmallerThirdSD}</>
+                    :
+                    <FormItem
+                      className={classnames('mb-0')}
+                      type={variables.NUMBER_INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                      value={record?.medianSmallerThirdSD}
+                      onChange={(e) => onChangeInput(record, e, 'medianSmallerThirdSD')}
+                    />
+                }
               </>
             )
           },
@@ -189,13 +212,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
             align: 'center',
             render: (value, record) => (
               <>
-                <FormItem
-                  className={classnames('mb-0')}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.medianSmallerSecondSD}
-                  onChange={(e) => onChangeInput(record, e, 'medianSmallerSecondSD')}
-                />
+                {
+                  !checkEdit ? <> {record?.medianSmallerSecondSD}</>
+                    :
+                    <FormItem
+                      className={classnames('mb-0')}
+                      type={variables.NUMBER_INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                      value={record?.medianSmallerSecondSD}
+                      onChange={(e) => onChangeInput(record, e, 'medianSmallerSecondSD')}
+                    />
+                }
               </>
             )
           },
@@ -207,13 +234,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
             align: 'center',
             render: (value, record) => (
               <>
-                <FormItem
-                  className={classnames('mb-0')}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.medianSmallerFirstSD}
-                  onChange={(e) => onChangeInput(record, e, 'medianSmallerFirstSD')}
-                />
+                {
+                  !checkEdit ? <> {record?.medianSmallerFirstSD}</>
+                    :
+                    <FormItem
+                      className={classnames('mb-0')}
+                      type={variables.NUMBER_INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                      value={record?.medianSmallerFirstSD}
+                      onChange={(e) => onChangeInput(record, e, 'medianSmallerFirstSD')}
+                    />
+                }
               </>
             )
           },
@@ -225,13 +256,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
             align: 'center',
             render: (value, record) => (
               <>
-                <FormItem
-                  className={classnames('mb-0')}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.median}
-                  onChange={(e) => onChangeInput(record, e, 'median')}
-                />
+                {
+                  !checkEdit ? <> {record?.median}</>
+                    :
+                    <FormItem
+                      className={classnames('mb-0')}
+                      type={variables.NUMBER_INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                      value={record?.median}
+                      onChange={(e) => onChangeInput(record, e, 'median')}
+                    />
+                }
               </>
             )
           },
@@ -243,13 +278,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
             align: 'center',
             render: (value, record) => (
               <>
-                <FormItem
-                  className={classnames('mb-0')}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.medianLargerThirdSD}
-                  onChange={(e) => onChangeInput(record, e, 'medianLargerThirdSD')}
-                />
+                {
+                  !checkEdit ? <> {record?.medianLargerThirdSD}</>
+                    :
+                    <FormItem
+                      className={classnames('mb-0')}
+                      type={variables.NUMBER_INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                      value={record?.medianLargerThirdSD}
+                      onChange={(e) => onChangeInput(record, e, 'medianLargerThirdSD')}
+                    />
+                }
               </>
             )
           },
@@ -261,13 +300,17 @@ const General = memo(({ loading: { effects }, error, details }) => {
             align: 'center',
             render: (value, record) => (
               <>
-                <FormItem
-                  className={classnames('mb-0')}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.medianLargerSecondSD}
-                  onChange={(e) => onChangeInput(record, e, 'medianLargerSecondSD')}
-                />
+                {
+                  !checkEdit ? <> {record?.medianLargerSecondSD}</>
+                    :
+                    <FormItem
+                      className={classnames('mb-0')}
+                      type={variables.NUMBER_INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                      value={record?.medianLargerSecondSD}
+                      onChange={(e) => onChangeInput(record, e, 'medianLargerSecondSD')}
+                    />
+                }
               </>
             )
           },
@@ -279,23 +322,43 @@ const General = memo(({ loading: { effects }, error, details }) => {
             align: 'center',
             render: (value, record) => (
               <>
-                <FormItem
-                  className={classnames('mb-0')}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.medianLargerFirstSD}
-                  onChange={(e) => onChangeInput(record, e, 'medianLargerFirstSD')}
-                />
+                {
+                  !checkEdit ? <> {record?.medianLargerFirstSD}</>
+                    :
+                    <FormItem
+                      className={classnames('mb-0')}
+                      type={variables.NUMBER_INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                      value={record?.medianLargerFirstSD}
+                      onChange={(e) => onChangeInput(record, e, 'medianLargerFirstSD')}
+                    />
+                }
               </>
             )
           },
         ]
       },
+      ...((checkEdit)
+        ? [
+          {
+            title: '',
+            key: 'delete',
+            className: 'min-width-60',
+            width: 60,
+            align: 'center',
+            render: (record) => (
+              <>
+                <DeleteOutlined onClick={(e) => onChangeInput(record, e, 'delete')} />
+              </>
+            ),
+          },
+        ]
+        : []),
     ];
     return columns;
   };
+
   const onFinish = () => {
-    console.log("search", search);
     const items = data.map((item) => ({
       monthNumber: item?.monthNumber ? `${item?.monthNumber}` : "0",
       value: {
@@ -318,7 +381,7 @@ const General = memo(({ loading: { effects }, error, details }) => {
         if (response) {
           dispatch({
             type: 'physicalIndexDeclarationV1/GET_DATA',
-            payload: {},
+            payload: { ...search },
             callback: (response) => {
               if (response) {
                 if (response?.items?.length > 0) {
@@ -349,6 +412,7 @@ const General = memo(({ loading: { effects }, error, details }) => {
 
   return (
     <Pane className="p20">
+      <Helmet title="BMI" />
       <Heading type="form-title" style={{ marginBottom: 20 }}>
         Khai báo chỉ số BMI theo WHO
       </Heading>
@@ -381,7 +445,7 @@ const General = memo(({ loading: { effects }, error, details }) => {
                   scroll={{ x: '100%' }}
                   footer={(item, index) => (
 
-                    details?.register_status === "CANCEL_REGISTER" ? "" :
+                    !checkEdit ? false :
                       <Button
                         key={index}
                         onClick={() =>
@@ -404,11 +468,27 @@ const General = memo(({ loading: { effects }, error, details }) => {
             </div>
           </Pane>
         </Pane>
-        <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-          <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2" onClick={() => onFinish()}>
-            Lưu
-          </Button>
-        </Pane>
+        {checkEdit ?
+          <Pane className="d-flex justify-content-between align-items-center p20">
+            <p
+              className="btn-delete"
+              role="presentation"
+
+              onClick={() => setCheckEdit(false)}
+            >
+              Cancel
+            </p>
+            <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2" onClick={() => onFinish()}>
+              Lưu
+            </Button>
+          </Pane>
+          :
+          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+            <Button color="success" className="ml-2" onClick={() => setCheckEdit(true)}>
+              Edit
+            </Button>
+          </Pane>
+        }
       </Pane>
     </Pane>
   );
@@ -417,13 +497,11 @@ const General = memo(({ loading: { effects }, error, details }) => {
 General.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
   loading: {},
   error: {},
-  details: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

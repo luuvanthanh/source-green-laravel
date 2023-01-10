@@ -750,14 +750,14 @@ export async function getLeftMenuCriteria() {
         },
       ],
     },
-    {
-      title: 'Tiếng Anh',
-      key: 'dictionary',
-      url: ['/chuong-trinh-hoc/tieng-anh'],
-      icon: 'icon icon-dictionary',
-      permission: [permissions.CTH],
-      pro: true,
-    },
+    // {
+    //   title: 'Tiếng Anh',
+    //   key: 'dictionary',
+    //   url: ['/chuong-trinh-hoc/tieng-anh'],
+    //   icon: 'icon icon-dictionary',
+    //   permission: [permissions.CTH],
+    //   pro: true,
+    // },
     {
       title: 'Thể chất',
       key: 'biceps',
@@ -2673,13 +2673,13 @@ export async function getLeftMenuChildDevelop() {
         },
       ],
     },
-    // {
-    //   title: 'Đánh giá đã duyệt',
-    //   key: 'list-of-reviews',
-    //   icon: 'icon icon-list',
-    //   permission: [],
-    //   url: ['/su-phat-trien-cua-tre/danh-gia-da-duyet'],
-    // },
+    {
+      title: 'Đánh giá đã duyệt',
+      key: 'list-of-reviews',
+      icon: 'icon icon-list',
+      permission: [],
+      url: ['/su-phat-trien-cua-tre/danh-gia-da-duyet'],
+    },
     {
       title: 'Cấu hình kịch bản đánh giá',
       key: '/childrens-problems',

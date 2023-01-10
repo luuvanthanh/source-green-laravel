@@ -190,6 +190,7 @@ const Index = memo(() => {
     }
     return "";
   };
+
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
@@ -269,6 +270,7 @@ const Index = memo(() => {
                                           pagination={false}
                                           rowKey={(record) => record.id}
                                           scroll={{ x: '100%' }}
+                                          description="No data"
                                           isEmpty
                                         />
                                       </div>
@@ -291,7 +293,7 @@ const Index = memo(() => {
                       <Pane className="card mb20">
                         <Pane className="row p20">
                           <Pane className="col-lg-12">
-                            <FormDetail name={i?.content} label={i?.scriptReviewComment?.sampleComment?.name} type="text" />
+                            <FormDetail name={i?.content} label={i?.scriptReviewComment?.sampleComment?.name} type="TextArea" />
                           </Pane>
                         </Pane>
                       </Pane>

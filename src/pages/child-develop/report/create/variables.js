@@ -9,7 +9,7 @@ export const variables = {
     6: '30 - 36 tháng',
     7: '36 - 50 tháng',
     8: '50- 60 tháng',
-    9: '61- 72 tháng',
+    9: '61- 100 tháng',
   },
 };
 export default variables;
