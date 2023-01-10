@@ -10,6 +10,7 @@ use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Transformers\ParentsTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\InOutHistories\Transformers\InOutHistoriesTransformer;
+use GGPHP\StudyProgram\AttendancePhysical\Transformers\AttendancePhysicalTransformer;
 use GGPHP\StudyProgram\MonthlyComment\Transformers\MonthlyCommentTransformer;
 use GGPHP\StudyProgram\QuarterReport\Transformers\QuarterReportTransformer;
 use GGPHP\YoungAttendance\Absent\Transformers\AbsentTransformer;
@@ -41,7 +42,7 @@ class StudentTransformer extends BaseTransformer
      */
     protected $availableIncludes = [
         'schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent',
-        'studentTransporter', 'testSemester', 'classes', 'quarterReport', 'monthlyComment', 'branch'
+        'studentTransporter', 'testSemester', 'classes', 'quarterReport', 'monthlyComment', 'branch', 'attendancePhysical'
     ];
 
     /**
@@ -183,5 +184,10 @@ class StudentTransformer extends BaseTransformer
             return;
         }
         return $this->item($student->branch, new BranchTransformer, 'Branch');
+    }
+
+    public function includeAttendancePhysical(Student $student)
+    {
+        return $this->collection($student->attendancePhysical, new AttendancePhysicalTransformer, 'AttendancePhysical');
     }
 }
