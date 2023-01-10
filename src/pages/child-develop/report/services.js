@@ -12,6 +12,7 @@ export function get(data = {}) {
         'testSemester.testSemesterDetail.testSemesterDetailChildren',
         'classStudent.class',
         'schoolYear',
+        'classes',
       ]),
     },
   });
