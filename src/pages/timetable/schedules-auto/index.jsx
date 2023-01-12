@@ -130,6 +130,7 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
+          console.log("res", response);
           const { timetableDetailGroupByTimes } = response;
           const arr = classes.map((classItem) =>
             timelineColumns.map((timeItem) => {
@@ -191,7 +192,8 @@ const Index = memo(() => {
     );
     return { ...activyColumns, ...newColumns };
   }, [items]);
-
+  console.log("items", items);
+  console.log("formatColumns", formatColumns);
   const formatNewItems = useMemo(() => {
     const newItemsFromBackend = Object.assign(
       {},
@@ -201,6 +203,7 @@ const Index = memo(() => {
   }, [activities]);
 
   const onDragEnd = (result) => {
+    console.log("result", result);
     if (!result.destination) return;
     const { source, destination } = result;
     if (source.droppableId !== destination.droppableId) {
@@ -732,7 +735,7 @@ const Index = memo(() => {
                                 isEmptyDayOfWeek: task.isEmptyDayOfWeek,
                               }));
                               const sizeMax = getSizeMax(value?.timetableDetailByClassAndActivy);
-
+                              console.log("tasks", value);
                               return (
                                 <Droppable key={index} droppableId={key}>
                                   {(provided, snapshot) => (
