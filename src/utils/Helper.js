@@ -106,6 +106,13 @@ export default class Helpers {
     return null;
   };
 
+  static getDateUtc = (value, format = variables.DATE_FORMAT.DATE_TIME_UTC_ONE) => {
+    if (value) {
+      return moment.utc(value).local().format(format);
+    }
+    return null;
+  };
+
   static getDateSearch = (value, format = variables.DATE_FORMAT.DATE_AFTER) => {
     if (value) {
       return moment(value).format(format);
@@ -1457,6 +1464,48 @@ export default class Helpers {
   static unique = (items, key = 'name') => {
     if (isEmpty(items)) return [];
     return [...new Set(items.map((item) => item[key]))];
+  };
+
+  static getDayOfWeek = (date) => {
+    switch (date) {
+      case 0:
+        return 'Time';
+      case 1:
+        return 'MON';
+      case 2:
+        return 'TUE';
+      case 3:
+        return 'WED';
+      case 4:
+        return 'THU';
+      case 5:
+        return 'FRI';
+      case 6:
+        return 'SAT';
+      default:
+        return 'SUNDAY';
+    }
+  };
+
+  static getDayOfWeekFull = (date) => {
+    switch (date) {
+      case 0:
+        return 'Time';
+      case 1:
+        return 'Monday';
+      case 2:
+        return 'Tuesday';
+      case 3:
+        return 'Wednesday';
+      case 4:
+        return 'Thursday';
+      case 5:
+        return 'Friday';
+      case 6:
+        return 'Saturday';
+      default:
+        return 'Sunday';
+    }
   };
 
   static objectToArray = (object, keyName = 'name') =>

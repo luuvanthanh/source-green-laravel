@@ -1,4 +1,5 @@
 import * as categories from '@/services/categories';
+import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -10,6 +11,11 @@ export default {
     years: [],
     activities: [],
     search: [],
+    program: [],
+    checkModal: {
+      check: false,
+      data: {},
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -38,9 +44,17 @@ export default {
       ...state,
       years: payload.items,
     }),
+    SET_PROGRAM: (state, { payload }) => ({
+      ...state,
+      program: payload.items,
+    }),
     SET_ACTIVITIES: (state, { payload }) => ({
       ...state,
       activities: payload,
+    }),
+    SET_MODAL: (state, { payload }) => ({
+      ...state,
+      checkModal: payload,
     }),
   },
   effects: {
@@ -151,6 +165,39 @@ export default {
       } catch (error) {
         callback(null, error?.data?.error);
       }
+    },
+    *GET_PROGRAM({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getProgram, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_PROGRAM',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_STUDY_PLAN({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addStudyPlane, payload);
+        callback(payload);
+        notification.success({
+          message: 'Successful',
+          description: 'You updated to success data.',
+        });
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *SET_MODAL_ITEM({ payload }, saga) {
+      yield saga.put({
+        type: 'SET_MODAL',
+        payload,
+      });
     },
   },
   subscriptions: {},

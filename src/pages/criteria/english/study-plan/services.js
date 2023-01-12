@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
 export function get(params = {}) {
-  return request('/timetables/detail-by-conditions', {
+  return request('/study-plan', {
     method: 'GET',
     params,
   });
@@ -25,7 +25,7 @@ export function addDrag(data = {}) {
   return request('/timetables/by-drag-drop', {
     method: 'POST',
     data,
-    cancelNotification: true
+    cancelNotification: true,
   });
 }
 
@@ -46,5 +46,22 @@ export function dragCellByCell(data = {}) {
   return request(`/timetables/by-drag-drop/${data.id}`, {
     method: 'PUT',
     data,
+  });
+}
+
+export function getProgram(params = {}) {
+  return request('/program', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function addStudyPlane(data = {}) {
+  return request('/study-plan', {
+    method: 'POST',
+    data,
+    cancelNotification: true,
   });
 }
