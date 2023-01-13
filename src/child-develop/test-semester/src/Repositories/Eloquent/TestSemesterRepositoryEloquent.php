@@ -126,7 +126,8 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         if (!empty($attributes['assessmentPeriodId'])) {
-            $this->model = $this->model->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
+            $arrAssessmentPeriod = explode(',', $attributes['assessmentPeriodId']);
+            $this->model = $this->model->whereIn('AssessmentPeriodId', $arrAssessmentPeriod);
         }
 
         if (!empty($attributes['schoolYearId'])) {
