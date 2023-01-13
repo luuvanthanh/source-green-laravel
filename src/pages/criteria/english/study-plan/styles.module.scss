@@ -17,18 +17,20 @@
     padding: 30px 10px 10px 10px;
     border-radius: 6px;
     .text {
-      font-weight: 400;
       font-size: 12px;
       line-height: 16px;
+      font-family: $proxima-nova__font-family;
+      font-weight: 400 !important;
       margin: 0px !important;
       color: #3e4247;
     }
     .textUnit {
-      font-weight: 700;
       font-size: 12px;
       line-height: 18px;
       color: #3e4247;
       margin: 0px !important;
+      font-family: $proxima-nova__font-family;
+      font-weight: 700 !important;
     }
     .textFlex {
       display: flex;
@@ -82,11 +84,12 @@
       padding: 6px 10px;
       border-radius: 4px;
       .text {
-        font-weight: 400;
         font-size: 12px;
         line-height: 16px;
         margin: 0px !important;
         color: #3e4247;
+        font-family: $proxima-nova__font-family;
+        font-weight: 400 !important;
       }
       .textUnit {
         font-weight: 700;
@@ -94,6 +97,8 @@
         line-height: 18px;
         color: #3e4247;
         margin: 0px !important;
+        font-family: $proxima-nova__font-family;
+        font-weight: 700 !important;
       }
       .textFlex {
         display: flex;
@@ -115,11 +120,12 @@
       padding: 6px 10px;
       border-radius: 4px;
       .text {
-        font-weight: 400;
         font-size: 12px;
         line-height: 16px;
         margin: 0px !important;
         color: #3e4247;
+        font-family: $proxima-nova__font-family;
+        font-weight: 400 !important;
       }
       .textUnit {
         font-weight: 700;
@@ -127,6 +133,8 @@
         line-height: 18px;
         color: #3e4247;
         margin: 0px !important;
+        font-family: $proxima-nova__font-family;
+        font-weight: 700 !important;
       }
       .textFlex {
         display: flex;

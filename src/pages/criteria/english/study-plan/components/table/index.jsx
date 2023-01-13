@@ -3,6 +3,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import Text from '@/components/CommonComponent/Text';
 import { Helper, variables } from '@/utils';
+import { useDispatch, useSelector } from 'dva';
 import classnames from 'classnames';
 import Loading from '@/components/CommonComponent/Loading';
 import moment from 'moment';
@@ -30,11 +31,14 @@ const Index = memo(({
   arrDate,
   getListStyle,
   setSearchDate,
-  checkEdit,
-  checkUse,
-  setCheckUse }) => {
+  checkEdit, }) => {
 
-
+  const [
+    { checkUse },
+  ] = useSelector(({ englishStudyPlan }) => [
+    englishStudyPlan,
+  ]);
+  const dispatch = useDispatch();
   const debouncedSearchDate = debounce((fromDate = moment(), toDate = moment()) => {
     setSearchDate((prev) => ({
       ...prev,
@@ -50,25 +54,34 @@ const Index = memo(({
 
   const onCheckUse = (type) => {
     const text = "Data has changed, do you want to delete the data?";
-    if (checkUse) {
+    if (checkUse?.check) {
       Helper.confirmDeleteEnglish({
         callback: () => {
           if (type === 'left') {
-            setCheckUse(false);
+            dispatch({
+              type: 'englishStudyPlan/CHECK_USE',
+              payload: { check: false },
+            });
             debouncedSearchDate(
               moment(searchDate.fromDate).subtract(1, 'weeks'),
               moment(searchDate.toDate).subtract(1, 'weeks').endOf('week'),
             );
           }
           if (type === 'right') {
-            setCheckUse(false);
+            dispatch({
+              type: 'englishStudyPlan/CHECK_USE',
+              payload: { check: false },
+            });
             debouncedSearchDate(
               moment(searchDate.fromDate).add(1, 'weeks'),
               moment(searchDate.toDate).add(1, 'weeks').endOf('week'),
             );
           }
           if (type === 'today') {
-            setCheckUse(false);
+            dispatch({
+              type: 'englishStudyPlan/CHECK_USE',
+              payload: { check: false },
+            });
             debouncedSearchDate(moment(), moment().endOf('week'));
           }
         },
@@ -187,8 +200,6 @@ Index.propTypes = {
   getListStyle: PropTypes.PropTypes.any,
   setSearchDate: PropTypes.PropTypes.any,
   checkEdit: PropTypes.PropTypes.any,
-  checkUse: PropTypes.PropTypes.any,
-  setCheckUse: PropTypes.PropTypes.any,
 };
 
 Index.defaultProps = {
@@ -200,8 +211,6 @@ Index.defaultProps = {
   getListStyle: {},
   setSearchDate: null,
   checkEdit: false,
-  checkUse: false,
-  setCheckUse: null,
 };
 
 export default Index;
