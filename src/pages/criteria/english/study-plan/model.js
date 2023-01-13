@@ -16,6 +16,9 @@ export default {
       check: false,
       data: {},
     },
+    checkUse: {
+      check: false,
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -55,6 +58,10 @@ export default {
     SET_MODAL: (state, { payload }) => ({
       ...state,
       checkModal: payload,
+    }),
+    SET_USE: (state, { payload }) => ({
+      ...state,
+      checkUse: payload,
     }),
   },
   effects: {
@@ -196,6 +203,12 @@ export default {
     *SET_MODAL_ITEM({ payload }, saga) {
       yield saga.put({
         type: 'SET_MODAL',
+        payload,
+      });
+    },
+    *CHECK_USE({ payload }, saga) {
+      yield saga.put({
+        type: 'SET_USE',
         payload,
       });
     },

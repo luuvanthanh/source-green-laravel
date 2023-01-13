@@ -45,7 +45,7 @@ const Index = memo(() => {
           code: values?.code,
           colorText: values?.colorText,
           units: values?.units?.map((i, index) => ({
-            index,
+            index: index + 1,
             name: i?.name,
             lessions: i?.lessions?.map(k => ({
               name: k?.name,

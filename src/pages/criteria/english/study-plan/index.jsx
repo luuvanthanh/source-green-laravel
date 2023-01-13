@@ -8,11 +8,11 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'dva';
 import moment from 'moment';
 
-import { isEmpty, head, debounce } from 'lodash';
+import { isEmpty, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
 
-
+import Loading from '@/components/CommonComponent/Loading';
 import { v4 as uuidv4 } from 'uuid';
 
 import Search from './components/search';
@@ -45,13 +45,13 @@ const Index = memo(() => {
   const [items, setItems] = useState([]);
 
   const [formatColumns, setFormatColumns] = useState();
-  const [checkUse, setCheckUse] = useState(false);
 
   const [searchLeft, setSearchLeft] = useState({
     programId: undefined,
   });
 
   const [dataUnit, setDataUnit] = useState([]);
+  const defaultBranchs = defaultBranch?.id ? [defaultBranch] : [];
   const [dataItemProgram, setDataItemProgram] = useState([]);
   const [dataProgram, setDataProgram] = useState([]);
 
@@ -90,8 +90,9 @@ const Index = memo(() => {
 
   const [search, setSearch] = useState({
     isGroupByDayOfWeek: false,
-    branchId: defaultBranch?.id,
+    branchId: query?.branchId || defaultBranch?.id,
     schoolYearId: null,
+    classId: query?.class || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
   });
 
   const [searchText, setSearchText] = useState('');
@@ -225,6 +226,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     const activyColumns = { 'columns-1': { tasks: dataItemProgram } };
+    // eslint-disable-next-line no-undef
     const groupItem = _(items)
       .groupBy('fromTime', 'toTime')
       .map(item => ({
@@ -278,7 +280,10 @@ const Index = memo(() => {
       return;
     }
     if (!isEmpty(result?.destination)) {
-      setCheckUse(true);
+      dispatch({
+        type: 'englishStudyPlan/CHECK_USE',
+        payload: { check: true },
+      });
       // xóa item khỏi cột table
       if (result?.destination?.droppableId === 'columns-1') {
         const stringData = JSON?.parse(result?.source?.droppableId);
@@ -482,36 +487,6 @@ const Index = memo(() => {
     }
   };
 
-  const changeFilterDebouce = debounce((name, value) => {
-    setSearch((prevSearch) => ({
-      ...prevSearch,
-      [name]: value,
-    }));
-  }, 300);
-
-  const changeFilter = (name) => (value) => {
-    changeFilterDebouce(name, value);
-  };
-
-  const changeBanchFilter = (name) => (value) => {
-    if (value) {
-      dispatch({
-        type: 'englishStudyPlan/GET_CLASSES',
-        payload: {
-          branch: value,
-        },
-      });
-      setSearch({
-        ...search,
-        classId: undefined,
-      });
-      formRef.setFieldsValue({
-        classId: undefined,
-      });
-    }
-    changeFilterDebouce(name, value);
-  };
-
   const formatTextSearch = (tasks) => {
     if (searchText) {
       return tasks.filter(
@@ -522,7 +497,10 @@ const Index = memo(() => {
   };
 
   const handleSave = () => {
-    setCheckUse(false);
+    dispatch({
+      type: 'englishStudyPlan/CHECK_USE',
+      payload: { check: false },
+    });
     const data = Object.keys(formatColumns)
       .slice(1)
       .map((key) => formatColumns[key]?.tasks
@@ -614,8 +592,7 @@ const Index = memo(() => {
           formRef={formRef}
           search={search}
           dataYears={dataYears}
-          changeFilter={changeFilter}
-          changeBanchFilter={changeBanchFilter}
+          setSearch={setSearch}
           checkEdit={checkEdit}
           setCheckEdit={setCheckEdit}
           handleSave={handleSave}
@@ -623,52 +600,59 @@ const Index = memo(() => {
           classes={classes}
           defaultBranch={defaultBranch}
           loading={loading}
+          defaultBranchs={defaultBranchs}
+          user={user}
         />
         {/* FORM DRAG */}
         {!isEmpty(classes) && !isEmpty(items) && (
-          <Form layout="vertical" form={dragRef}>
-            <div className={classnames('schedules-custom', 'mt20')}>
-              <DragDropContext onDragEnd={onDragEnd}>
-                <div className="col-activites">
-                  {Object.entries(formatColumns)
-                    .slice(0, 1)
-                    .map(([keyItem, value], index) => (
-                      <MenuLeft
-                        index={index}
-                        keyItem={keyItem}
-                        program={program}
-                        dataUnit={dataUnit}
-                        searchText={searchText}
-                        setSearchText={setSearchText}
-                        formatTextSearch={formatTextSearch}
-                        searchDate={searchDate}
-                        value={value}
-                        checkEdit={checkEdit}
-                        setSearchLeft={setSearchLeft}
-                        searchLeft={searchLeft}
-                        setDataUnit={setDataUnit}
-                        setFormatColumns={setFormatColumns}
-                        formatColumns={formatColumns}
-                        dataProgram={dataProgram}
-                      />
-                    )
-                    )}
-                </div>
-                <TableItem
-                  setSearchDate={setSearchDate}
-                  searchDate={searchDate}
-                  search={search}
-                  loading={loading}
-                  formatColumns={formatColumns}
-                  arrDate={arrDate}
-                  getListStyle={getListStyle}
-                  checkEdit={checkEdit}
-                  checkUse={checkUse}
-                  setCheckUse={setCheckUse}
-                />
-              </DragDropContext>
-            </div>
-          </Form>
+          <Loading
+            loading={loading['englishStudyPlan/GET_DATA']}
+            params={{
+              type: 'container',
+            }}
+          >
+            <Form layout="vertical" form={dragRef}>
+              <div className={classnames('schedules-custom', 'mt20')}>
+                <DragDropContext onDragEnd={onDragEnd}>
+                  <div className="col-activites">
+                    {Object.entries(formatColumns)
+                      .slice(0, 1)
+                      .map(([keyItem, value], index) => (
+                        <MenuLeft
+                          index={index}
+                          keyItem={keyItem}
+                          program={program}
+                          dataUnit={dataUnit}
+                          searchText={searchText}
+                          setSearchText={setSearchText}
+                          formatTextSearch={formatTextSearch}
+                          searchDate={searchDate}
+                          value={value}
+                          checkEdit={checkEdit}
+                          setSearchLeft={setSearchLeft}
+                          searchLeft={searchLeft}
+                          setDataUnit={setDataUnit}
+                          setFormatColumns={setFormatColumns}
+                          formatColumns={formatColumns}
+                          dataProgram={dataProgram}
+                        />
+                      )
+                      )}
+                  </div>
+                  <TableItem
+                    setSearchDate={setSearchDate}
+                    searchDate={searchDate}
+                    search={search}
+                    loading={loading}
+                    formatColumns={formatColumns}
+                    arrDate={arrDate}
+                    getListStyle={getListStyle}
+                    checkEdit={checkEdit}
+                  />
+                </DragDropContext>
+              </div>
+            </Form>
+          </Loading>
         )
         }
       </div >
