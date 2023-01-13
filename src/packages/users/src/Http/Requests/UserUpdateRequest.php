@@ -2,6 +2,7 @@
 
 namespace GGPHP\Users\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserUpdateRequest extends FormRequest
@@ -23,6 +24,14 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'code' => function ($attribute, $value, $fail) {
+                $user = User::where('Code', $value)->where('Id', '!=', $this->id)->first();
+
+                if (!is_null($user)) {
+                    return $fail('Trường đã có trong cơ sở dữ liệu.');
+                }
+            },
+        ];
     }
 }
