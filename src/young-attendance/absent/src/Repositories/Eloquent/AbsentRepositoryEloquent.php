@@ -566,10 +566,10 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
     public function absentStudentExcel(array $attributes)
     {
         $absentStudent = $this->filterAbsent($attributes, false);
-
+        $absentStudent = $absentStudent->orderBy('CreationTime', 'desc');
         if ($absentStudent->get()->isNotEmpty()) {
-            $code = 1;
             foreach ($absentStudent->get() as $key => $value) {
+                $params['[code]'][] = 'XP' . ($key + 1);
                 $params['[time]'][] = $value->CreationTime->format('Y-m-d h:i');
                 $params['[schoolYear]'][] = $value->schoolYear->YearFrom . '-' . $value->schoolYear->YearTo;
                 $params['[branch]'][] = !empty($value->student->branch) ? $value->student->branch->Name : '...';
@@ -577,11 +577,30 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 $params['[name]'][] = !empty($value->student) ? $value->student->FullName : '...';
                 $params['[absentTime]'][] = $value->StartDate->format('Y/m/d') . ' / ' . $value->EndDate->format('Y/m/d');
                 $params['[reason]'][] = !empty($value->absentReason) ? $value->absentReason->Name : '...';
+                $params['[status]'][] = $this->getStatusAbsentStudent($value);
             }
         } else {
             throw new HttpException(400, 'Xuất excel không thành công.');
         }
 
         return $this->excelExporterServices->export('absent_student', $params);
+    }
+
+    public function getStatusAbsentStudent($value)
+    {
+        $stringStatus = '';
+        switch ($value->Status) {
+            case 'PENDING':
+                $stringStatus = 'Chờ xác nhận';
+                break;
+            case 'CONFIRM':
+                $stringStatus = 'Đã nhận';
+                break;
+            default:
+                $stringStatus = 'Từ chối';
+                break;
+        }
+
+        return $stringStatus;
     }
 }

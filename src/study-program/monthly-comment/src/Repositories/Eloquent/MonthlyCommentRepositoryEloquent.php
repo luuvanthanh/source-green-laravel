@@ -147,7 +147,7 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
     {
         DB::beginTransaction();
         try {
-            $attributes['month'] = now()->format('Y-m-d H:i:s');
+            $attributes['month'] = Carbon::parse()->day(1)->format('Y-m-d H:i:s');
 
             if ($attributes['status'] == MonthlyComment::STATUS['REVIEWED']) {
                 $attributes['reportTime'] = now()->format('Y-m-d H:i:s');
