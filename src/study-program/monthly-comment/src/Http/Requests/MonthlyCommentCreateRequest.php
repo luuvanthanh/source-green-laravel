@@ -31,7 +31,7 @@ class MonthlyCommentCreateRequest extends FormRequest
             'status' => 'required|in:' . $status,
             'teacherId' => 'exists:Employees,Id',
             'TeacherManagementId' => 'exists:Employees,Id',
-            'month' => 'required|date_format:Y-m-d',
+            // 'month' => 'required|date_format:Y-m-d',
             'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
             'detail' => 'array',
             'detail.*.scriptReviewSubjectId' => 'nullable|check_exists:study-program.ScriptReviewSubjects,Id',
