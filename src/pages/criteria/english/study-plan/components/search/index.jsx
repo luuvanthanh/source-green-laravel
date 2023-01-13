@@ -24,7 +24,8 @@ const Index = memo(({
   loading,
   defaultBranchs,
   user,
-  setSearch
+  setSearch,
+  onLoad
 }) => {
   const [
     { checkUse },
@@ -35,14 +36,30 @@ const Index = memo(({
   const dispatch = useDispatch();
 
   const changeFilterDebouce = debounce((name, value) => {
-    setSearch((prevSearch) => ({
-      ...prevSearch,
-      [name]: value,
-    }));
+    const text = variables.RULES.ERR_STUDY_PLANE;
+    if (checkUse?.check) {
+      Helper.confirmDeleteEnglish({
+        callback: () => {
+          setSearch((prevSearch) => ({
+            ...prevSearch,
+            [name]: value,
+          }));
+          dispatch({
+            type: 'englishStudyPlan/CHECK_USE',
+            payload: { check: false },
+          });
+        }
+      }, text);
+    } else {
+      setSearch((prevSearch) => ({
+        ...prevSearch,
+        [name]: value,
+      }));
+    }
   }, 300);
 
   const changeBanchFilter = (name) => (value) => {
-    const text = "Data has changed, do you want to delete the data?";
+    const text = variables.RULES.ERR_STUDY_PLANE;
     if (checkUse?.check) {
       Helper.confirmDeleteEnglish({
         callback: () => {
@@ -89,15 +106,32 @@ const Index = memo(({
     changeFilterDebouce(name, value);
   };
 
+  const onCancelData = () => {
+    const text = variables.RULES.ERR_STUDY_PLANE;
+    if (checkUse?.check) {
+      Helper.confirmDeleteEnglish({
+        callback: () => {
+          onLoad();
+          setCheckEdit(false);
+          dispatch({
+            type: 'englishStudyPlan/CHECK_USE',
+            payload: { check: false },
+          });
+        }
+      }, text);
+    } else {
+      setCheckEdit(false);
+    }
+  };
 
   return (
     <div className={classnames(styles.search, 'pt20', 'pb20')}>
-      <Form layout="vertical" form={formRef} initialValues={{ ...search }}>
+      <Form layout="vertical" form={formRef} initialValues={{ ...search, schoolYearId: search?.schoolYearId }}>
         <div className="row">
           <div className="col-lg-3 m0">
             <FormItem
               className="ant-form-item-row"
-              data={dataYears}
+              data={dataYears?.filter(i => i?.id === user?.schoolYear?.id)}
               label="SHOOL YEAR"
               name="schoolYearId"
               type={variables.SELECT}
@@ -148,7 +182,7 @@ const Index = memo(({
                 <p
                   className="btn-delete ml20 mr20"
                   role="presentation"
-                  onClick={() => setCheckEdit(false)}
+                  onClick={() => onCancelData()}
                 >
                   Cancel
                 </p>
@@ -195,6 +229,7 @@ Index.propTypes = {
   defaultBranchs: PropTypes.PropTypes.any,
   user: PropTypes.PropTypes.any,
   setSearch: PropTypes.PropTypes.any,
+  onLoad: PropTypes.PropTypes.any,
 };
 
 Index.defaultProps = {
@@ -211,6 +246,7 @@ Index.defaultProps = {
   defaultBranchs: [],
   user: {},
   setSearch: {},
+  onLoad: () => { },
 };
 
 export default Index;
