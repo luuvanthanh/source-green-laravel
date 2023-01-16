@@ -3,18 +3,19 @@ import React from 'react';
 import store from 'store';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { connect, Link, withRouter } from 'umi';
+import { connect, Link, withRouter, history } from 'umi';
 import { Menu, Layout, Badge, Popover } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { isValidCondition } from '@/utils/authority';
 import validator from 'validator';
+import { Helper, variables } from '@/utils';
 import feature from '@/services/feature';
 import styles from './style.module.scss';
 
 const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
 
-const mapStateToProps = ({ menu, settings, user }) => ({
+const mapStateToProps = ({ menu, settings, user, englishStudyPlan }) => ({
   menuData: menu.menuLeftSchedules,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
@@ -23,6 +24,7 @@ const mapStateToProps = ({ menu, settings, user }) => ({
   isMobileMenuOpen: settings.isMobileMenuOpen,
   categories: settings.categories,
   user,
+  checkUse: englishStudyPlan.checkUse,
 });
 
 @withRouter
@@ -185,8 +187,37 @@ class MenuLeft extends React.Component {
     });
   };
 
+  onClickItem = (url, type) => {
+    const { checkUse } = this.props;
+    const text = variables.RULES.ERR_STUDY_PLANE;
+    if (checkUse?.check) {
+      Helper.confirmDeleteEnglish(
+        {
+          callback: () => {
+            this.props.dispatch({
+              type: 'englishStudyPlan/CHECK_USE',
+              payload: { check: false },
+            });
+            if (type === 'ITEM') {
+              history.push(url[0]);
+            }
+            if (type === 'LOGO') {
+              history.push(url);
+            }
+          },
+        },
+        text,
+      );
+    } else {
+      this.props.dispatch({
+        type: 'englishStudyPlan/CHECK_USE',
+        payload: { check: false },
+      });
+    }
+  };
+
   generateMenuItems = () => {
-    const { user } = this.props;
+    const { user, checkUse } = this.props;
     const { menuData = [] } = this.state;
     const generateItem = (item) => {
       const { key, title, url, icon, disabled, pro } = item;
@@ -209,7 +240,10 @@ class MenuLeft extends React.Component {
                 {pro && <Badge className="ml-2 badge-custom" dot count={item.count || 0} />}
               </a>
             ) : (
-              <Link to={_.isArray(url) ? url[0] : url}>
+              <Link
+                to={_.isArray(url) && !checkUse?.check ? url[0] : url}
+                onClick={() => this.onClickItem(url, 'ITEM')}
+              >
                 {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
                 <span className={styles.title}>{title}</span>
                 {key === 'labours-contracts' && (
@@ -320,7 +354,7 @@ class MenuLeft extends React.Component {
 
   render() {
     const { selectedKeys, openedKeys, data } = this.state;
-    const { isMobileView, isMenuCollapsed, isLightTheme, info } = this.props;
+    const { isMobileView, isMenuCollapsed, isLightTheme, info, checkUse } = this.props;
     const menuSettings = isMobileView
       ? {
           width: 256,
@@ -344,7 +378,7 @@ class MenuLeft extends React.Component {
             if (item.target) {
               return (
                 <a
-                  href={item.url}
+                  href={!checkUse?.check && item.url}
                   target="_blank"
                   className={styles.item}
                   key={index}
@@ -373,6 +407,7 @@ class MenuLeft extends React.Component {
         </div>
       </Scrollbars>
     );
+
     return (
       <Sider
         {...menuSettings}
@@ -380,7 +415,11 @@ class MenuLeft extends React.Component {
       >
         <div className={styles.logo}>
           <div className={styles.logoContainer}>
-            <Link to="/" className={styles['block-menu']}>
+            <Link
+              to={!checkUse?.check && '/'}
+              onClick={() => this.onClickItem('/', 'LOGO')}
+              className={styles['block-menu']}
+            >
               <img
                 alt="Clean UI React Admin Template"
                 className={styles.image}
@@ -392,8 +431,9 @@ class MenuLeft extends React.Component {
               <Popover
                 placement="rightTop"
                 className={styles['popover-custom']}
-                content={content}
+                content={!checkUse?.check ? content : null}
                 trigger="click"
+                onClick={() => this.onClickItem()}
               >
                 <span className="icon-toggle" />
               </Popover>
@@ -448,6 +488,7 @@ MenuLeft.propTypes = {
   info: PropTypes.objectOf(PropTypes.any),
   menu: PropTypes.arrayOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  checkUse: PropTypes.objectOf(PropTypes.any),
 };
 MenuLeft.defaultProps = {
   isMobileView: false,
@@ -462,5 +503,6 @@ MenuLeft.defaultProps = {
   info: {},
   menu: [],
   location: {},
+  checkUse: {},
 };
 export default MenuLeft;
