@@ -8,7 +8,7 @@ export default {
     data: [],
     branches: [],
     classes: [],
-    years: [],
+    dataYears: [],
     activities: [],
     search: [],
     program: [],
@@ -45,7 +45,12 @@ export default {
     }),
     SET_YEARS: (state, { payload }) => ({
       ...state,
-      years: payload.items,
+      dataYears:
+        payload.parsePayload?.map((item) => ({
+          id: item.id,
+          name: `${item.yearFrom} - ${item.yearTo}`,
+          ...item,
+        })) || [],
     }),
     SET_PROGRAM: (state, { payload }) => ({
       ...state,
@@ -95,16 +100,16 @@ export default {
         });
       }
     },
-    *GET_YEARS({ payload, callback }, saga) {
+    *GET_YEARS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getYears, payload);
+        const response = yield saga.call(categories.getYears, payload);
         yield saga.put({
           type: 'SET_YEARS',
-          payload: response,
+          payload: {
+            parsePayload: response,
+          },
         });
-        callback(response.items || []);
       } catch (error) {
-        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

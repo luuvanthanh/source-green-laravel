@@ -53,7 +53,7 @@ const Index = memo(({
   );
 
   const onCheckUse = (type) => {
-    const text = "Data has changed, do you want to delete the data?";
+    const text = variables.RULES.ERR_STUDY_PLANE;
     if (checkUse?.check) {
       Helper.confirmDeleteEnglish({
         callback: () => {

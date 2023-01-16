@@ -12,13 +12,11 @@ import { isEmpty, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { useHistory, useLocation } from 'umi';
 
-import Loading from '@/components/CommonComponent/Loading';
 import { v4 as uuidv4 } from 'uuid';
 
 import Search from './components/search';
 import MenuLeft from './components/menu-left';
 import TableItem from './components/table';
-
 
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
 import stylesModule from './styles.module.scss';
@@ -31,7 +29,7 @@ const getListStyle = (isDraggingOver) => ({
 const Index = memo(() => {
   const [
     loading,
-    { classes, branches, years, program, checkModal },
+    { classes, branches, dataYears, program, checkModal },
     { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, englishStudyPlan, user }) => [
     effects,
@@ -42,7 +40,7 @@ const Index = memo(() => {
   const [formRef] = Form.useForm();
   const { query } = useLocation();
   const [dragRef] = Form.useForm();
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(undefined);
 
   const [formatColumns, setFormatColumns] = useState();
 
@@ -64,7 +62,6 @@ const Index = memo(() => {
     type: 'timeGridWeek',
     branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
-    schoolYearId: query?.schoolYearId,
   });
 
   const arrDate = useMemo(() => {
@@ -79,11 +76,6 @@ const Index = memo(() => {
     return arr;
   }, [searchDate]);
 
-  const dataYears = years.map((item) => ({
-    id: item.id,
-    name: `${item.fromYear} - ${item.toYear}`,
-  }));
-
   const dispatch = useDispatch();
   const { pathname } = useLocation();
   const history = useHistory();
@@ -91,7 +83,7 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     isGroupByDayOfWeek: false,
     branchId: query?.branchId || defaultBranch?.id,
-    schoolYearId: null,
+    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
     classId: query?.class || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
   });
 
@@ -139,14 +131,6 @@ const Index = memo(() => {
     dispatch({
       type: 'englishStudyPlan/GET_YEARS',
       payload: {},
-      callback: (response) => {
-        if (response) {
-          setSearch((prev) => ({ ...prev, schoolYearId: head(response)?.id }));
-          formRef.setFieldsValue({
-            schoolYearId: head(response)?.id,
-          });
-        }
-      },
     });
     dispatch({
       type: 'englishStudyPlan/GET_ACTIVITIES',
@@ -209,6 +193,13 @@ const Index = memo(() => {
               }))))).flat(Infinity));
         }
       },
+    });
+  }, []);
+
+  useEffect(() => {
+    dispatch({
+      type: 'englishStudyPlan/CHECK_USE',
+      payload: { check: false },
     });
   }, []);
 
@@ -529,7 +520,7 @@ const Index = memo(() => {
       },
       callback: (response, error) => {
         if (response) {
-          history.goBack();
+          setCheckEdit(false);
         }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
@@ -602,57 +593,51 @@ const Index = memo(() => {
           loading={loading}
           defaultBranchs={defaultBranchs}
           user={user}
+          onLoad={onLoad}
         />
         {/* FORM DRAG */}
-        {!isEmpty(classes) && !isEmpty(items) && (
-          <Loading
-            loading={loading['englishStudyPlan/GET_DATA']}
-            params={{
-              type: 'container',
-            }}
-          >
-            <Form layout="vertical" form={dragRef}>
-              <div className={classnames('schedules-custom', 'mt20')}>
-                <DragDropContext onDragEnd={onDragEnd}>
-                  <div className="col-activites">
-                    {Object.entries(formatColumns)
-                      .slice(0, 1)
-                      .map(([keyItem, value], index) => (
-                        <MenuLeft
-                          index={index}
-                          keyItem={keyItem}
-                          program={program}
-                          dataUnit={dataUnit}
-                          searchText={searchText}
-                          setSearchText={setSearchText}
-                          formatTextSearch={formatTextSearch}
-                          searchDate={searchDate}
-                          value={value}
-                          checkEdit={checkEdit}
-                          setSearchLeft={setSearchLeft}
-                          searchLeft={searchLeft}
-                          setDataUnit={setDataUnit}
-                          setFormatColumns={setFormatColumns}
-                          formatColumns={formatColumns}
-                          dataProgram={dataProgram}
-                        />
-                      )
-                      )}
-                  </div>
-                  <TableItem
-                    setSearchDate={setSearchDate}
-                    searchDate={searchDate}
-                    search={search}
-                    loading={loading}
-                    formatColumns={formatColumns}
-                    arrDate={arrDate}
-                    getListStyle={getListStyle}
-                    checkEdit={checkEdit}
-                  />
-                </DragDropContext>
-              </div>
-            </Form>
-          </Loading>
+        {!isEmpty(classes) && items !== undefined && (
+          <Form layout="vertical" form={dragRef}>
+            <div className={classnames('schedules-custom', 'mt20')}>
+              <DragDropContext onDragEnd={onDragEnd}>
+                <div className="col-activites">
+                  {Object.entries(formatColumns)
+                    .slice(0, 1)
+                    .map(([keyItem, value], index) => (
+                      <MenuLeft
+                        index={index}
+                        keyItem={keyItem}
+                        program={program}
+                        dataUnit={dataUnit}
+                        searchText={searchText}
+                        setSearchText={setSearchText}
+                        formatTextSearch={formatTextSearch}
+                        searchDate={searchDate}
+                        value={value}
+                        checkEdit={checkEdit}
+                        setSearchLeft={setSearchLeft}
+                        searchLeft={searchLeft}
+                        setDataUnit={setDataUnit}
+                        setFormatColumns={setFormatColumns}
+                        formatColumns={formatColumns}
+                        dataProgram={dataProgram}
+                      />
+                    )
+                    )}
+                </div>
+                <TableItem
+                  setSearchDate={setSearchDate}
+                  searchDate={searchDate}
+                  search={search}
+                  loading={loading}
+                  formatColumns={formatColumns}
+                  arrDate={arrDate}
+                  getListStyle={getListStyle}
+                  checkEdit={checkEdit}
+                />
+              </DragDropContext>
+            </div>
+          </Form>
         )
         }
       </div >

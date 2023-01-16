@@ -7,13 +7,6 @@ export function get(params = {}) {
   });
 }
 
-export function getYears(params = {}) {
-  return request('/timetable-settings', {
-    method: 'GET',
-    params,
-  });
-}
-
 export function getActivities(params = {}) {
   return request('/timetable-activities/details', {
     method: 'GET',
