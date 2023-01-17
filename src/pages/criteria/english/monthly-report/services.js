@@ -9,10 +9,8 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes(['quarterReport', 'branch', 'classes']),
+      month: undefined,
+      include: Helper.convertIncludes(['monthlyComment', 'branch', 'classes']),
     },
   });
 }

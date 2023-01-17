@@ -67,7 +67,9 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         status: query?.status || variablesModules.STATUS.NOT_REVIEW,
         scriptReviewId: query?.scriptReviewId,
-        month: query.month && moment(query.month) || null,
+        month: query.month
+          ? moment(query.month).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().startOf('month').format('YYYY-MM-DD'),
       },
       idSent: undefined,
     };
@@ -366,7 +368,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    this.debouncedSearch(moment(e).startOf('month').format('YYYY-MM-DD'), type);
   };
 
   /**
@@ -459,7 +461,7 @@ class Index extends PureComponent {
         <Button
           icon="edit"
           className={stylesModule.edit}
-          onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${head(record.quarterReport)?.id}/confirmed`); }}
+          onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${head(record.monthlyComment)?.id}/confirmed`); }}
         />
       );
     }
@@ -574,19 +576,19 @@ class Index extends PureComponent {
   reportTime = (value) => {
     const { search } = this.state;
     if (search?.status === variablesModules.STATUS_SEARCH.REVIEWED) {
-      return Helper.getDate(head(value?.quarterReport)?.creationTime, variables.DATE_FORMAT.DATE);
+      return Helper.getDate(head(value?.monthlyComment)?.creationTime, variables.DATE_FORMAT.DATE);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_CONFIRM) {
-      return Helper.getDate(head(value?.quarterReport)?.reportTime, variables.DATE_FORMAT.DATE);
+      return Helper.getDate(head(value?.monthlyComment)?.reportTime, variables.DATE_FORMAT.DATE);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.CONFIRMED) {
-      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE);
+      return Helper.getDate(head(value?.monthlyComment)?.confirmationTime, variables.DATE_FORMAT.DATE);
     }
     if (search?.status === variablesModules.STATUS_SEARCH.NOT_YET_SEND) {
-      return Helper.getDate(head(value?.quarterReport)?.confirmationTime, variables.DATE_FORMAT.DATE);
+      return Helper.getDate(head(value?.monthlyComment)?.confirmationTime, variables.DATE_FORMAT.DATE);
     }
     return (
-      Helper.getDate(head(value?.quarterReport)?.lastModificationTime, variables.DATE_FORMAT.DATE)
+      Helper.getDate(head(value?.monthlyComment)?.lastModificationTime, variables.DATE_FORMAT.DATE)
     );
   }
 
@@ -660,7 +662,7 @@ class Index extends PureComponent {
         width: 100,
         fixed: 'right',
         render: (record) => (
-          <div className={stylesModule['wraper-container-quarterReport']}>
+          <div className={stylesModule['wraper-container-monthlyComment']}>
             <div className={stylesModule['list-button']} >
               {this.onFormEdit(record)}
               {this.onFormSent(record)}
@@ -730,7 +732,7 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
-
+    console.log("data", data);
     const { search, defaultBranchs } = this.state;
     const loading = effects['EnglishMonthlyReport/GET_DATA'];
     return (
@@ -856,6 +858,7 @@ class Index extends PureComponent {
             </Form>
             <Table
               bordered={false}
+              description="No data"
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -873,16 +876,16 @@ class Index extends PureComponent {
               onRow={(record) => ({
                 onClick: () => {
                   if (search.status === variablesModules.STATUS.REVIEWED) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-review`);
+                    history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done-review`);
                   }
                   if (search.status === variablesModules.STATUS.CONFIRMED) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-confirmed`);
+                    history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done-confirmed`);
                   }
                   if (search.status === variablesModules.STATUS.NOT_YET_SEND) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done`);
+                    history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done`);
                   }
                   if (search.status === variablesModules.STATUS.SENT) {
-                    history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=send`);
+                    history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=send`);
                   }
                 },
               })}

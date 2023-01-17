@@ -1,27 +1,26 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Radio, Checkbox, Input, notification } from 'antd';
+import { Form, notification } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useParams, history, useLocation } from 'umi';
 import { isEmpty, get, head } from 'lodash';
-import classnames from 'classnames';
 import ImgDetail from '@/components/CommonComponent/imageDetail';
 
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import FormDetail from '@/components/CommonComponent/FormDetail';
-import Table from '@/components/CommonComponent/Table';
 import { variables, Helper } from '@/utils';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
+import Subject from './subject';
+import Comment from './comment';
+
 import stylesModule from '../styles.module.scss';
 
 
 const marginProps = { style: { paddingTop: 12, paddingBottom: 20 } };
-const { Item: FormItem } = Form;
-const { TextArea } = Input;
 
 const Index = memo(() => {
   const [form] = Form.useForm();
@@ -32,6 +31,7 @@ const Index = memo(() => {
     dataAssess,
     loading: { effects },
     details,
+    dataDetails,
     menuLeftCriteria,
     dataEvaluetionCriteria,
     user,
@@ -41,6 +41,7 @@ const Index = memo(() => {
     menuLeftCriteria: menu.menuLeftCriteria,
     details: EnglishMonthlyReportAdd.details,
     dataType: EnglishMonthlyReport.dataType,
+    dataDetails: EnglishMonthlyReportAdd.dataDetails,
     dataEvaluetionCriteria: EnglishMonthlyReportAdd.dataEvaluetionCriteria,
     user: user.user,
     error: EnglishMonthlyReportAdd.error,
@@ -50,10 +51,7 @@ const Index = memo(() => {
 
   const [checkFinish, setCheckFinish] = useState(false);
 
-  const [dataDetails, setDataDetails] = useState(undefined);
-
   const { query } = useLocation();
-
 
   const loadingSubmit = effects[`EnglishMonthlyReportAdd/ADD`];
 
@@ -62,10 +60,10 @@ const Index = memo(() => {
       return "";
     }
     if (!isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && !isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
-      return `${(i?.scriptReviewCommentDetail?.map(i => i?.sampleCommentDetail?.name)?.join('.'))}.${head(i?.scriptReviewCommentDetail)?.value}`;
+      return `${i?.scriptReviewCommentDetail?.filter(a => a?.checkBox)?.map(k => k?.sampleCommentDetail?.name)?.join('\n')}\n${head(i?.scriptReviewCommentDetail)?.value}`;
     }
     if (!isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
-      return i?.scriptReviewCommentDetail?.map(i => i?.sampleCommentDetail?.name)?.join('.');
+      return i?.scriptReviewCommentDetail?.filter(a => a?.checkBox)?.map(k => k?.sampleCommentDetail?.name)?.join('\n');
     }
     if (isEmpty(i?.scriptReviewCommentDetail?.filter(i => i?.checkBox)) && !isEmpty(head(i?.scriptReviewCommentDetail)?.value)) {
       return head(i?.scriptReviewCommentDetail)?.value;
@@ -113,6 +111,7 @@ const Index = memo(() => {
           studentId: params?.id,
           month: Helper.getDate(query?.month, variables.DATE_FORMAT.DATE_AFTER),
           schoolYearId: user.schoolYear?.id,
+          scriptReviewId: dataDetails?.id,
           teacherId: user?.objectInfo?.id,
           status: "REVIEWED",
           detail: dataSubjec.concat(dataComment?.map(i => ({
@@ -177,7 +176,10 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          setDataDetails(head(response.parsePayload));
+          dispatch({
+            type: 'EnglishMonthlyReportAdd/GET_SET_DATA_DETAIL',
+            payload: head(response.parsePayload),
+          });
         }
       },
     });
@@ -201,104 +203,9 @@ const Index = memo(() => {
     }
   }, [details]);
 
-  const onCheckBox = (e, record) => {
-    setDataDetails(
-      {
-        ...dataDetails,
-        scriptReviewSubject: dataDetails?.scriptReviewSubject?.map(i => ({
-          ...i,
-          scriptReviewSubjectDetail: i?.scriptReviewSubjectDetail?.map(item => ({
-            ...item,
-            scriptReviewSubjectDetailChildren: item?.scriptReviewSubjectDetailChildren?.map(itemChildDetail => ({
-              ...itemChildDetail,
-              radioId: record?.id === itemChildDetail?.id ? e.target.value : itemChildDetail?.radioId,
-            }))
-          }))
-        }))
-      }
-    );
-  };
-
-  const header = () => [
-    {
-      title: 'Content',
-      key: 'student',
-      className: 'min-width-200',
-      render: (record) => <div className={!record?.radioId && checkFinish ? "text-danger" : "text-dark"}>{record?.subjectSectionDetail?.name}</div>,
-    },
-    ...(dataEvaluetionCriteria?.length > 0 ?
-      (dataEvaluetionCriteria?.map(i => (
-        {
-          title: `${i?.name}`,
-          key: 'img',
-          align: 'center',
-          width: 200,
-          className: classnames('min-width-200', 'max-width-200'),
-          render: (record) => (
-            <>
-              <Radio.Group
-                onChange={(e) => onCheckBox(e, record, 'avtActive')}
-                value={record?.radioId}
-                style={{ display: 'flex', justifyContent: 'center' }}
-              >
-                <Radio value={i?.id} />
-              </Radio.Group>
-            </>
-          ),
-        }
-      )))
-      : []),
-  ];
-
-  const onChangeUseTable = (e, record) => {
-    setDataDetails(
-      {
-        ...dataDetails,
-        scriptReviewComment: dataDetails?.scriptReviewComment?.map(i => ({
-          ...i,
-          scriptReviewCommentDetail: i?.scriptReviewCommentDetail?.map(item => ({
-            ...item,
-            checkBox: record?.id === item?.id ? e.target.checked : item?.checkBox,
-          }))
-        }))
-      }
-    );
-  };
-
-  const onChangeInput = (value, record) => {
-    setDataDetails(
-      {
-        ...dataDetails,
-        scriptReviewComment: dataDetails?.scriptReviewComment?.map(i => ({
-          ...i,
-          scriptReviewCommentDetail: i?.scriptReviewCommentDetail?.map(item => ({
-            ...item,
-            value: record?.id === i?.id ? value.target.value : item?.value,
-          }))
-        }))
-      }
-    );
-  };
-
-  const headerComment = () => [
-    {
-      title: 'Use',
-      key: 'Use',
-      className: 'min-width-200',
-      render: (record) => (
-        <div className={classnames(stylesModule['wrapper-checkbox'])}>
-          <Checkbox
-            className="mr15"
-            onChange={(e) => onChangeUseTable(e, record)}
-          />
-          <p className={stylesModule.textChild} >{record?.sampleCommentDetail?.name}</p>
-        </div>
-      ),
-    },
-  ];
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
-    <div className={stylesModule['wraper-container-quarterReport']}>
+    <div className={stylesModule['wraper-container-monthlyComment']}>
       <Breadcrumbs last={dataStudent?.fullName} menu={menuLeftCriteria} />
       <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
@@ -319,7 +226,7 @@ const Index = memo(() => {
                   {dataAssess?.nameAssessmentPeriod?.name}
                 </Heading>
                 <div className="row" {...marginProps} style={{ paddingLeft: 20, paddingRight: 20 }} >
-                  <div className={stylesModule['quarterReport-header-img']}>
+                  <div className={stylesModule['monthlyComment-header-img']}>
                     <ImgDetail
                       fileImage={details?.student?.fileImage}
                     />
@@ -358,30 +265,11 @@ const Index = memo(() => {
                       dataDetails?.isCheckSubject && (
                         dataDetails?.scriptReviewSubject?.map(item => (
                           item?.isCheck && (
-                            <>
-                              <Pane className="col-lg-12 pt20 border-top">
-                                <h3 className={stylesModule['item-text-header']}>{item?.subject?.name}</h3>
-                              </Pane>
-                              <Pane className="col-lg-12 pb20">
-                                {
-                                  item?.scriptReviewSubjectDetail?.map(itemDetail => (
-                                    itemDetail?.isCheck && (
-                                      <div className={stylesModule['wrapper-table-item']}>
-                                        <h3 className={stylesModule['text-item-table']}>{itemDetail?.subjectSection?.name}</h3>
-                                        <Table
-                                          columns={header()}
-                                          dataSource={itemDetail?.scriptReviewSubjectDetailChildren?.filter(k => k?.isCheck)}
-                                          pagination={false}
-                                          rowKey={(record) => record.id}
-                                          scroll={{ x: '100%' }}
-                                          isEmpty
-                                        />
-                                      </div>
-                                    )
-                                  ))
-                                }
-                              </Pane>
-                            </>
+                            <Subject
+                              item={item}
+                              checkFinish={checkFinish}
+                              dataEvaluetionCriteria={dataEvaluetionCriteria}
+                            />
                           )
                         ))
                       )
@@ -391,34 +279,11 @@ const Index = memo(() => {
 
                 {
                   dataDetails?.isCheckSampleComment &&
-                  dataDetails?.scriptReviewComment?.map(i => (
-                    i?.isCheck && (
-                      <Pane className="card mb20">
-                        <Pane className="p20">
-                          <Heading type="form-title">
-                            {i?.sampleComment?.name}
-                          </Heading>
-                        </Pane>
-                        <Pane className="row pl20 pb20 pr20">
-                          <Pane className="col-lg-12">
-                            <div className={stylesModule['wrapper-table-item']}>
-                              <Table
-                                columns={headerComment()}
-                                dataSource={i?.scriptReviewCommentDetail?.filter(k => k?.isCheck)}
-                                pagination={false}
-                                rowKey={(record) => record.id}
-                                scroll={{ x: '100%' }}
-                                isEmpty
-                              />
-                            </div>
-                          </Pane>
-                          <Pane className="col-lg-12">
-                            <FormItem label="Content">
-                              <TextArea rows={2} placeholder="Nhập" onChange={(e) => onChangeInput(e, i)} />
-                            </FormItem>
-                          </Pane>
-                        </Pane>
-                      </Pane>
+                  dataDetails?.scriptReviewComment?.map(itemParent => (
+                    itemParent?.isCheck && (
+                      <Comment
+                        itemParent={itemParent}
+                      />
                     )
                   ))
                 }

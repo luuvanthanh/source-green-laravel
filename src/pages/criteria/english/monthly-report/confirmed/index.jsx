@@ -16,7 +16,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import { variables, Helper } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
-import variablesModules from '../utils/variables';
+import Subject from './subject';
 
 import stylesModule from '../styles.module.scss';
 
@@ -34,40 +34,42 @@ const Index = memo(() => {
     dataAssess,
     loading: { effects },
     details,
+    dataDetails,
     menuLeftCriteria,
     dataEvaluetionCriteria,
     user,
-  } = useSelector(({ EnglishMonthlyReport, menu, loading, EnglishMonthlyReportAdd, user }) => ({
+  } = useSelector(({ EnglishMonthlyReport, menu, loading, EnglishMonthlyReportConfirmed, user }) => ({
     dataAssess: EnglishMonthlyReport.dataAssess,
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: EnglishMonthlyReportAdd.details,
+    dataDetails: EnglishMonthlyReportConfirmed.dataDetails,
+    details: EnglishMonthlyReportConfirmed.details,
     dataType: EnglishMonthlyReport.dataType,
-    dataEvaluetionCriteria: EnglishMonthlyReportAdd.dataEvaluetionCriteria,
+    dataEvaluetionCriteria: EnglishMonthlyReportConfirmed.dataEvaluetionCriteria,
     user: user.user,
-    error: EnglishMonthlyReportAdd.error,
+    error: EnglishMonthlyReportConfirmed.error,
   }));
 
-  const [dataDetails, setDataDetails] = useState(undefined);
+  // const [dataDetails, setDataDetails] = useState(undefined);
 
   const onFinish = () => {
     dispatch({
-      type: 'EnglishMonthlyReportAdd/UPDATE_CONFIRMED',
+      type: 'EnglishMonthlyReportConfirmed/UPDATE_CONFIRMED',
       payload: {
         id: params.id,
         studentId: dataDetails?.student?.id,
         scriptReviewId: dataDetails?.scriptReview?.id,
         schoolYearId: user.schoolYear?.id,
         status: "NOT_YET_CONFIRM",
-        detail: dataDetails?.quarterReportDetail?.map(i => ({
+        detail: dataDetails?.monthlyCommentDetail?.map(i => ({
           id: i?.id,
           isSubject: i?.isSubject ? true : undefined,
           isComment: i?.isComment ? true : undefined,
           scriptReviewSubjectId: i?.isSubject ? i?.scriptReviewSubjectId : undefined,
-          detailSubject: i?.isSubject ? i?.quarterReportDetailSubject?.map(item => ({
+          detailSubject: i?.isSubject ? i?.monthlyCommentDetailSubject?.map(item => ({
             id: item?.id,
             scriptReviewSubjectDetailId: item?.scriptReviewSubjectDetailId,
-            detailSubjectChildren: item?.quarterReportDetailSubjectChildren?.map(itemDetail => ({
+            detailSubjectChildren: item?.monthlyCommentDetailSubjectChildren?.map(itemDetail => ({
               id: itemDetail?.id,
               scriptReviewSubjectDetailChildrenId: itemDetail?.scriptReviewSubjectDetailChildrenId,
               evaluationCriteriaId: itemDetail?.evaluationCriteriaId,
@@ -101,13 +103,18 @@ const Index = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'EnglishMonthlyReportAdd/GET_DATA_DETAIL',
+        type: 'EnglishMonthlyReportConfirmed/GET_DATA_DETAIL',
         payload: {
           id: params?.id,
         },
         callback: (response) => {
           if (response) {
-            setDataDetails(response.parsePayload);
+            console.log("response", response);
+            console.log("head(response.parsePayload)", head(response.parsePayload));
+            dispatch({
+              type: 'EnglishMonthlyReportConfirmed/GET_SET_DATA_DETAIL',
+              payload: response.parsePayload,
+            });
           }
         },
       });
@@ -120,7 +127,7 @@ const Index = memo(() => {
       payload: {},
     });
     dispatch({
-      type: 'EnglishMonthlyReportAdd/GET_DATA_EVALUATION_CRITERRIA',
+      type: 'EnglishMonthlyReportConfirmed/GET_DATA_EVALUATION_CRITERRIA',
       payload: {},
     });
   }, []);
@@ -173,17 +180,33 @@ const Index = memo(() => {
 
 
   const addSent = () => {
-    const payload = {
-      studentId: [dataDetails?.studentId],
-      schoolYearId: dataDetails?.schoolYearId,
-      scriptReviewId: dataDetails?.scriptReviewId,
-      newStatus: variablesModules.STATUS.CONFIRMED,
-      oldStatus: "NOT_YET_CONFIRM",
-      teacherManagementId: user?.objectInfo?.id,
-    };
     dispatch({
-      type: 'EnglishMonthlyReport/ADD_SENT',
-      payload: { ...payload },
+      type: 'EnglishMonthlyReportConfirmed/UPDATE_CONFIRMED',
+      payload: {
+        id: params.id,
+        studentId: dataDetails?.student?.id,
+        scriptReviewId: dataDetails?.scriptReview?.id,
+        schoolYearId: user.schoolYear?.id,
+        status: "CONFIRMED",
+        detail: dataDetails?.monthlyCommentDetail?.map(i => ({
+          id: i?.id,
+          isSubject: i?.isSubject ? true : undefined,
+          isComment: i?.isComment ? true : undefined,
+          scriptReviewSubjectId: i?.isSubject ? i?.scriptReviewSubjectId : undefined,
+          detailSubject: i?.isSubject ? i?.monthlyCommentDetailSubject?.map(item => ({
+            id: item?.id,
+            scriptReviewSubjectDetailId: item?.scriptReviewSubjectDetailId,
+            detailSubjectChildren: item?.monthlyCommentDetailSubjectChildren?.map(itemDetail => ({
+              id: itemDetail?.id,
+              scriptReviewSubjectDetailChildrenId: itemDetail?.scriptReviewSubjectDetailChildrenId,
+              evaluationCriteriaId: itemDetail?.evaluationCriteriaId,
+            }))
+          })) : undefined,
+          scriptReviewCommentId: i?.isComment ? i?.scriptReviewCommentId : undefined,
+          content: i?.isComment ? i?.content : undefined,
+        })),
+        teacherManagementId: user?.objectInfo?.id ? user?.objectInfo?.id : undefined,
+      },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -200,39 +223,21 @@ const Index = memo(() => {
             });
           }
         }
-      }
+      },
     });
   };
 
-  const onCheckBox = (e, record) => {
-    setDataDetails(
-      {
-        ...dataDetails,
-        quarterReportDetail: dataDetails?.quarterReportDetail?.map(i => ({
-          ...i,
-          quarterReportDetailSubject: i?.isSubject ? i?.quarterReportDetailSubject?.map(item => ({
-            ...item,
-            quarterReportDetailSubjectChildren: item?.quarterReportDetailSubjectChildren?.map(itemChildDetail => ({
-              ...itemChildDetail,
-              evaluationCriteriaId: record?.id === itemChildDetail?.id ? e.target.value : itemChildDetail?.evaluationCriteriaId,
-            }))
-          })) : undefined,
-        }))
-      }
-    );
-  };
-
-  const onChangeInput = (value, record) => {
-    setDataDetails(
-      {
-        ...dataDetails,
-        quarterReportDetail: dataDetails?.quarterReportDetail?.map(i => ({
-          ...i,
-          content: i?.isComment && record?.id === i?.id ? value.target.value : i?.content,
-        }))
-      }
-    );
-  };
+  // const onChangeInput = (value, record) => {
+  //   setDataDetails(
+  //     {
+  //       ...dataDetails,
+  //       monthlyCommentDetail: dataDetails?.monthlyCommentDetail?.map(i => ({
+  //         ...i,
+  //         content: i?.isComment && record?.id === i?.id ? value.target.value : i?.content,
+  //       }))
+  //     }
+  //   );
+  // };
 
   const header = () => [
     {
@@ -264,11 +269,11 @@ const Index = memo(() => {
       )))
       : []),
   ];
-
+  console.log("dataDetails", dataDetails);
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
-  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE)}`;
+  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`;
   return (
-    <div className={stylesModule['wraper-container-quarterReport']}>
+    <div className={stylesModule['wraper-container-monthlyComment']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
       <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
@@ -279,7 +284,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['EnglishMonthlyReportAdd/GET_DATA_DETAIL']}
+              loading={effects['EnglishMonthlyReportConfirmed/GET_DATA_DETAIL']}
               params={{
                 type: 'container',
               }}
@@ -289,7 +294,7 @@ const Index = memo(() => {
                   {dataAssess?.nameAssessmentPeriod?.name}
                 </Heading>
                 <div className="row" {...marginProps} style={{ paddingLeft: 20, paddingRight: 20 }} >
-                  <div className={stylesModule['quarterReport-header-img']}>
+                  <div className={stylesModule['monthlyComment-header-img']}>
                     <ImgDetail
                       fileImage={dataDetails?.student?.fileImage}
                     />
@@ -327,44 +332,24 @@ const Index = memo(() => {
                     </Heading>
                   </Pane>
                   <Pane className="row  pl20 pb20 pr20">
-                    {
-                      dataDetails?.quarterReportDetail.find(i => i?.isSubject) && (
-                        dataDetails?.quarterReportDetail.filter(i => i?.isSubject)?.map(item => (
+                    {!isEmpty(dataDetails) && (
+                      dataDetails?.monthlyCommentDetail.find(i => i?.isSubject) && (
+                        dataDetails?.monthlyCommentDetail.filter(i => i?.isSubject)?.map(item => (
                           (
-                            <>
-                              <Pane className="col-lg-12 pt20 border-top">
-                                <h3 className={stylesModule['item-text-header']}>{item?.scriptReviewSubject?.subject?.name}</h3>
-                              </Pane>
-                              <Pane className="col-lg-12 pb20">
-                                {
-                                  item?.quarterReportDetailSubject?.map(itemDetail => (
-                                    (
-                                      <div className={stylesModule['wrapper-table-item']}>
-                                        <h3 className={stylesModule['text-item-table']}>{itemDetail?.scriptReviewSubjectDetail?.subjectSection?.name}</h3>
-                                        <Table
-                                          columns={header()}
-                                          dataSource={itemDetail?.quarterReportDetailSubjectChildren}
-                                          pagination={false}
-                                          rowKey={(record) => record.id}
-                                          scroll={{ x: '100%' }}
-                                          isEmpty
-                                        />
-                                      </div>
-                                    )
-                                  ))
-                                }
-                              </Pane>
-                            </>
+                            <Subject
+                              item={item}
+                              dataEvaluetionCriteria={dataEvaluetionCriteria}
+                            />
                           )
                         ))
-                      )
+                      ))
                     }
                   </Pane>
                 </Pane>
 
-                {
-                  dataDetails?.quarterReportDetail.find(i => i?.isComment) &&
-                  dataDetails?.quarterReportDetail.filter(i => i?.isComment)?.map(i => (
+                {/* {
+                  dataDetails?.monthlyCommentDetail.find(i => i?.isComment) &&
+                  dataDetails?.monthlyCommentDetail.filter(i => i?.isComment)?.map(i => (
                     (
                       <Pane className="card mb20">
                         <Pane className="p20">
@@ -375,14 +360,14 @@ const Index = memo(() => {
                         <Pane className="row pl20 pb20 pr20">
                           <Pane className="col-lg-12">
                             <FormItem label="Content">
-                              <TextArea rows={2} placeholder="Nhập" value={i?.content} onChange={(e) => onChangeInput(e, i)} />
+                              <TextArea rows={4} placeholder="Nhập" defaultValue={i?.content} onChange={(e) => onChangeInput(e, i)} />
                             </FormItem>
                           </Pane>
                         </Pane>
                       </Pane>
                     )
                   ))
-                }
+                } */}
 
               </Pane>
               <Pane className="d-flex justify-content-between align-items-center mb20">
@@ -409,7 +394,7 @@ const Index = memo(() => {
                     color="success"
                     htmlType="submit"
                     size="large"
-                    loading={effects['EnglishMonthlyReportAdd/UPDATE_CONFIRMED']}
+                    loading={effects['EnglishMonthlyReportConfirmed/UPDATE_CONFIRMED']}
                   >
                     Save
                   </Button>
@@ -418,7 +403,7 @@ const Index = memo(() => {
                     color="primary"
                     onClick={() => addSent()}
                     size="large"
-                    loading={effects['EnglishMonthlyReport/ADD_SENT']}
+                    loading={effects['EnglishMonthlyReportConfirmed/UPDATE_CONFIRMED']}
                   >
                     Accept
                   </Button>

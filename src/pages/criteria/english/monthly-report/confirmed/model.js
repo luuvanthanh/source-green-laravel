@@ -2,7 +2,7 @@ import { notification } from 'antd';
 import * as services from './services';
 
 export default {
-  namespace: 'EnglishMonthlyReportAdd',
+  namespace: 'EnglishMonthlyReportConfirmed',
   state: {
     details: [],
     dataScriptReview: [],
@@ -194,6 +194,7 @@ export default {
       }
     },
     *GET_SET_DATA_DETAIL({ payload }, saga) {
+      console.log('payload', payload);
       yield saga.put({
         type: 'SET_DATA_DETAIL',
         payload,
