@@ -5,9 +5,9 @@ export default {
   namespace: 'EnglishMonthlyReportAdd',
   state: {
     details: [],
-    skill: [],
     dataScriptReview: [],
     dataEvaluetionCriteria: [],
+    dataDetails: {},
     error: {
       isError: false,
       data: {},
@@ -32,14 +32,67 @@ export default {
         },
       },
     }),
-    SET_SKILL: (state, { payload }) => ({
-      ...state,
-      skill: payload.parsePayload.filter((i) => i.use === true),
-    }),
     SET_DATA_EVALUATION_CRITERRIA: (state, { payload }) => ({
       ...state,
       dataEvaluetionCriteria: payload.parsePayload,
     }),
+    SET_DATA_DETAIL: (state, { payload }) => {
+      if (payload?.type === 'itemRadio') {
+        return {
+          ...state,
+          dataDetails: {
+            ...state?.dataDetails,
+            scriptReviewSubject: state?.dataDetails?.scriptReviewSubject?.map((i) => ({
+              ...i,
+              scriptReviewSubjectDetail: i?.scriptReviewSubjectDetail?.map((item) => ({
+                ...item,
+                scriptReviewSubjectDetailChildren: item?.scriptReviewSubjectDetailChildren?.map(
+                  (itemChildDetail) => ({
+                    ...itemChildDetail,
+                    radioId:
+                      payload?.record?.id === itemChildDetail?.id
+                        ? payload?.value.target.value
+                        : itemChildDetail?.radioId,
+                  }),
+                ),
+              })),
+            })),
+          },
+        };
+      }
+      if (payload?.type === 'itemCheckInput') {
+        return {
+          ...state,
+          dataDetails: {
+            ...state?.dataDetails,
+            scriptReviewComment: state?.dataDetails?.scriptReviewComment?.map((i) => ({
+              ...i,
+              scriptReviewCommentDetail: i?.scriptReviewCommentDetail?.map((item) => ({
+                ...item,
+                value: payload?.record?.id === i?.id ? payload?.value.target.value : item?.value,
+              })),
+            })),
+          },
+        };
+      }
+      if (payload?.type === 'itemCheckBox') {
+        return {
+          ...state,
+          dataDetails: {
+            ...state?.dataDetails,
+            scriptReviewComment: state?.dataDetails?.scriptReviewComment?.map((i) => ({
+              ...i,
+              scriptReviewCommentDetail: i?.scriptReviewCommentDetail?.map((item) => ({
+                ...item,
+                checkBox:
+                  payload?.record?.id === item?.id ? payload?.value.target.checked : item?.checkBox,
+              })),
+            })),
+          },
+        };
+      }
+      return { ...state, dataDetails: payload };
+    },
   },
   effects: {
     *GET_DATA({ payload, callback }, saga) {
@@ -139,6 +192,12 @@ export default {
           payload: error.data,
         });
       }
+    },
+    *GET_SET_DATA_DETAIL({ payload }, saga) {
+      yield saga.put({
+        type: 'SET_DATA_DETAIL',
+        payload,
+      });
     },
   },
 };
