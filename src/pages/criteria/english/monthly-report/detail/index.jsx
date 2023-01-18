@@ -186,7 +186,7 @@ const Index = memo(() => {
   };
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
-    <div className={stylesModule['wraper-container-quarterReport']}>
+    <div className={stylesModule['wraper-container-monthlyComment']}>
       <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
       <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
@@ -207,7 +207,7 @@ const Index = memo(() => {
                   {dataAssess?.nameAssessmentPeriod?.name}
                 </Heading>
                 <div className="row" {...marginProps} style={{ paddingLeft: 20, paddingRight: 20 }} >
-                  <div className={stylesModule['quarterReport-header-img']}>
+                  <div className={stylesModule['monthlyComment-header-img']}>
                     <ImgDetail
                       fileImage={dataDetails?.student?.fileImage}
                     />
@@ -230,7 +230,7 @@ const Index = memo(() => {
                     <FormDetail name={dataDetails?.student?.classes?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment period" type="text" />
+                    <FormDetail name={Helper.getDate(dataDetails?.month, variables.DATE_FORMAT.MONTH_FULL)} label="Monthly comment" type="text" />
                   </Pane>
                   {formStatus()}
                 </Pane>
@@ -244,8 +244,8 @@ const Index = memo(() => {
                   </Pane>
                   <Pane className="row  pl20 pb20 pr20">
                     {
-                      dataDetails?.quarterReportDetail.find(i => i?.isSubject) && (
-                        dataDetails?.quarterReportDetail.filter(i => i?.isSubject)?.map(item => (
+                      dataDetails?.monthlyCommentDetail?.find(i => i?.isSubject) && (
+                        dataDetails?.monthlyCommentDetail?.filter(i => i?.isSubject)?.map(item => (
                           (
                             <>
                               <Pane className="col-lg-12 pt20 border-top">
@@ -253,13 +253,13 @@ const Index = memo(() => {
                               </Pane>
                               <Pane className="col-lg-12 pb20">
                                 {
-                                  item?.quarterReportDetailSubject?.map(itemDetail => (
+                                  item?.monthlyCommentDetailSubject?.map(itemDetail => (
                                     (
                                       <div className={stylesModule['wrapper-table-item']}>
                                         <h3 className={stylesModule['text-item-table']}>{itemDetail?.scriptReviewSubjectDetail?.subjectSection?.name}</h3>
                                         <Table
                                           columns={header()}
-                                          dataSource={itemDetail?.quarterReportDetailSubjectChildren}
+                                          dataSource={itemDetail?.monthlyCommentDetailSubjectChildren}
                                           pagination={false}
                                           rowKey={(record) => record.id}
                                           scroll={{ x: '100%' }}
@@ -279,13 +279,13 @@ const Index = memo(() => {
                 </Pane>
 
                 {
-                  dataDetails?.quarterReportDetail.find(i => i?.isComment) &&
-                  dataDetails?.quarterReportDetail.filter(i => i?.isComment)?.map(i => (
+                  dataDetails?.monthlyCommentDetail.find(i => i?.isComment) &&
+                  dataDetails?.monthlyCommentDetail.filter(i => i?.isComment)?.map(i => (
                     (
                       <Pane className="card mb20">
                         <Pane className="row p20">
                           <Pane className="col-lg-12">
-                            <FormDetail name={i?.content} label={i?.scriptReviewComment?.sampleComment?.name} type="text" />
+                            <FormDetail name={i?.content} label={i?.scriptReviewComment?.sampleComment?.name} type="TextArea" />
                           </Pane>
                         </Pane>
                       </Pane>

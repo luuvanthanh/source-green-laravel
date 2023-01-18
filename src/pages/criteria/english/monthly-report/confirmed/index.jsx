@@ -16,7 +16,6 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import { variables, Helper } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
-import variablesModules from '../utils/variables';
 
 import stylesModule from '../styles.module.scss';
 
@@ -59,15 +58,15 @@ const Index = memo(() => {
         scriptReviewId: dataDetails?.scriptReview?.id,
         schoolYearId: user.schoolYear?.id,
         status: "NOT_YET_CONFIRM",
-        detail: dataDetails?.quarterReportDetail?.map(i => ({
+        detail: dataDetails?.monthlyCommentDetail?.map(i => ({
           id: i?.id,
           isSubject: i?.isSubject ? true : undefined,
           isComment: i?.isComment ? true : undefined,
           scriptReviewSubjectId: i?.isSubject ? i?.scriptReviewSubjectId : undefined,
-          detailSubject: i?.isSubject ? i?.quarterReportDetailSubject?.map(item => ({
+          detailSubject: i?.isSubject ? i?.monthlyCommentDetailSubject?.map(item => ({
             id: item?.id,
             scriptReviewSubjectDetailId: item?.scriptReviewSubjectDetailId,
-            detailSubjectChildren: item?.quarterReportDetailSubjectChildren?.map(itemDetail => ({
+            detailSubjectChildren: item?.monthlyCommentDetailSubjectChildren?.map(itemDetail => ({
               id: itemDetail?.id,
               scriptReviewSubjectDetailChildrenId: itemDetail?.scriptReviewSubjectDetailChildrenId,
               evaluationCriteriaId: itemDetail?.evaluationCriteriaId,
@@ -173,17 +172,62 @@ const Index = memo(() => {
 
 
   const addSent = () => {
-    const payload = {
-      studentId: [dataDetails?.studentId],
-      schoolYearId: dataDetails?.schoolYearId,
-      scriptReviewId: dataDetails?.scriptReviewId,
-      newStatus: variablesModules.STATUS.CONFIRMED,
-      oldStatus: "NOT_YET_CONFIRM",
-      teacherManagementId: user?.objectInfo?.id,
-    };
+    // const payload = {
+    //   studentId: [dataDetails?.studentId],
+    //   schoolYearId: dataDetails?.schoolYearId,
+    //   scriptReviewId: dataDetails?.scriptReviewId,
+    //   newStatus: variablesModules.STATUS.CONFIRMED,
+    //   oldStatus: "NOT_YET_CONFIRM",
+    //   teacherManagementId: user?.objectInfo?.id,
+    // };
+    // dispatch({
+    //   type: 'EnglishMonthlyReport/ADD_SENT',
+    //   payload: { ...payload },
+    //   callback: (response, error) => {
+    //     if (response) {
+    //       history.goBack();
+    //     }
+    //     if (error) {
+    //       if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+    //         error.data.errors.forEach((item) => {
+    //           form.current.setFields([
+    //             {
+    //               name: get(item, 'source.pointer'),
+    //               errors: [get(item, 'detail')],
+    //             },
+    //           ]);
+    //         });
+    //       }
+    //     }
+    //   }
+    // });
     dispatch({
-      type: 'EnglishMonthlyReport/ADD_SENT',
-      payload: { ...payload },
+      type: 'EnglishMonthlyReportAdd/UPDATE_CONFIRMED',
+      payload: {
+        id: params.id,
+        studentId: dataDetails?.student?.id,
+        scriptReviewId: dataDetails?.scriptReview?.id,
+        schoolYearId: user.schoolYear?.id,
+        status: "CONFIRMED",
+        detail: dataDetails?.monthlyCommentDetail?.map(i => ({
+          id: i?.id,
+          isSubject: i?.isSubject ? true : undefined,
+          isComment: i?.isComment ? true : undefined,
+          scriptReviewSubjectId: i?.isSubject ? i?.scriptReviewSubjectId : undefined,
+          detailSubject: i?.isSubject ? i?.monthlyCommentDetailSubject?.map(item => ({
+            id: item?.id,
+            scriptReviewSubjectDetailId: item?.scriptReviewSubjectDetailId,
+            detailSubjectChildren: item?.monthlyCommentDetailSubjectChildren?.map(itemDetail => ({
+              id: itemDetail?.id,
+              scriptReviewSubjectDetailChildrenId: itemDetail?.scriptReviewSubjectDetailChildrenId,
+              evaluationCriteriaId: itemDetail?.evaluationCriteriaId,
+            }))
+          })) : undefined,
+          scriptReviewCommentId: i?.isComment ? i?.scriptReviewCommentId : undefined,
+          content: i?.isComment ? i?.content : undefined,
+        })),
+        teacherManagementId: user?.objectInfo?.id ? user?.objectInfo?.id : undefined,
+      },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -200,7 +244,7 @@ const Index = memo(() => {
             });
           }
         }
-      }
+      },
     });
   };
 
@@ -208,11 +252,11 @@ const Index = memo(() => {
     setDataDetails(
       {
         ...dataDetails,
-        quarterReportDetail: dataDetails?.quarterReportDetail?.map(i => ({
+        monthlyCommentDetail: dataDetails?.monthlyCommentDetail?.map(i => ({
           ...i,
-          quarterReportDetailSubject: i?.isSubject ? i?.quarterReportDetailSubject?.map(item => ({
+          monthlyCommentDetailSubject: i?.isSubject ? i?.monthlyCommentDetailSubject?.map(item => ({
             ...item,
-            quarterReportDetailSubjectChildren: item?.quarterReportDetailSubjectChildren?.map(itemChildDetail => ({
+            monthlyCommentDetailSubjectChildren: item?.monthlyCommentDetailSubjectChildren?.map(itemChildDetail => ({
               ...itemChildDetail,
               evaluationCriteriaId: record?.id === itemChildDetail?.id ? e.target.value : itemChildDetail?.evaluationCriteriaId,
             }))
@@ -226,7 +270,7 @@ const Index = memo(() => {
     setDataDetails(
       {
         ...dataDetails,
-        quarterReportDetail: dataDetails?.quarterReportDetail?.map(i => ({
+        monthlyCommentDetail: dataDetails?.monthlyCommentDetail?.map(i => ({
           ...i,
           content: i?.isComment && record?.id === i?.id ? value.target.value : i?.content,
         }))
@@ -266,9 +310,9 @@ const Index = memo(() => {
   ];
 
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
-  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE)}`;
+  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`;
   return (
-    <div className={stylesModule['wraper-container-quarterReport']}>
+    <div className={stylesModule['wraper-container-monthlyComment']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
       <Helmet title="Quarter report" />
       <Pane className="pl20 pr20 pb20">
@@ -289,7 +333,7 @@ const Index = memo(() => {
                   {dataAssess?.nameAssessmentPeriod?.name}
                 </Heading>
                 <div className="row" {...marginProps} style={{ paddingLeft: 20, paddingRight: 20 }} >
-                  <div className={stylesModule['quarterReport-header-img']}>
+                  <div className={stylesModule['monthlyComment-header-img']}>
                     <ImgDetail
                       fileImage={dataDetails?.student?.fileImage}
                     />
@@ -328,8 +372,8 @@ const Index = memo(() => {
                   </Pane>
                   <Pane className="row  pl20 pb20 pr20">
                     {
-                      dataDetails?.quarterReportDetail.find(i => i?.isSubject) && (
-                        dataDetails?.quarterReportDetail.filter(i => i?.isSubject)?.map(item => (
+                      dataDetails?.monthlyCommentDetail.find(i => i?.isSubject) && (
+                        dataDetails?.monthlyCommentDetail.filter(i => i?.isSubject)?.map(item => (
                           (
                             <>
                               <Pane className="col-lg-12 pt20 border-top">
@@ -337,16 +381,17 @@ const Index = memo(() => {
                               </Pane>
                               <Pane className="col-lg-12 pb20">
                                 {
-                                  item?.quarterReportDetailSubject?.map(itemDetail => (
+                                  item?.monthlyCommentDetailSubject?.map(itemDetail => (
                                     (
                                       <div className={stylesModule['wrapper-table-item']}>
                                         <h3 className={stylesModule['text-item-table']}>{itemDetail?.scriptReviewSubjectDetail?.subjectSection?.name}</h3>
                                         <Table
                                           columns={header()}
-                                          dataSource={itemDetail?.quarterReportDetailSubjectChildren}
+                                          dataSource={itemDetail?.monthlyCommentDetailSubjectChildren}
                                           pagination={false}
                                           rowKey={(record) => record.id}
                                           scroll={{ x: '100%' }}
+                                          description="No data"
                                           isEmpty
                                         />
                                       </div>
@@ -363,8 +408,8 @@ const Index = memo(() => {
                 </Pane>
 
                 {
-                  dataDetails?.quarterReportDetail.find(i => i?.isComment) &&
-                  dataDetails?.quarterReportDetail.filter(i => i?.isComment)?.map(i => (
+                  dataDetails?.monthlyCommentDetail.find(i => i?.isComment) &&
+                  dataDetails?.monthlyCommentDetail.filter(i => i?.isComment)?.map(i => (
                     (
                       <Pane className="card mb20">
                         <Pane className="p20">
@@ -375,7 +420,7 @@ const Index = memo(() => {
                         <Pane className="row pl20 pb20 pr20">
                           <Pane className="col-lg-12">
                             <FormItem label="Content">
-                              <TextArea rows={2} placeholder="Nhập" value={i?.content} onChange={(e) => onChangeInput(e, i)} />
+                              <TextArea rows={4} placeholder="Nhập" defaultValue={i?.content} onChange={(e) => onChangeInput(e, i)} />
                             </FormItem>
                           </Pane>
                         </Pane>
@@ -418,7 +463,7 @@ const Index = memo(() => {
                     color="primary"
                     onClick={() => addSent()}
                     size="large"
-                    loading={effects['EnglishMonthlyReport/ADD_SENT']}
+                    loading={effects['EnglishMonthlyReportAdd/UPDATE_CONFIRMED']}
                   >
                     Accept
                   </Button>
