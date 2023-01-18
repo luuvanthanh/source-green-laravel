@@ -758,14 +758,14 @@ export async function getLeftMenuCriteria() {
     //   permission: [permissions.CTH],
     //   pro: true,
     // },
-    {
-      title: 'Thể chất',
-      key: 'biceps',
-      url: ['/chuong-trinh-hoc/the-chat'],
-      icon: 'icon icon-biceps',
-      permission: [permissions.CTH],
-      pro: true,
-    },
+    // {
+    //   title: 'Thể chất',
+    //   key: 'biceps',
+    //   url: ['/chuong-trinh-hoc/the-chat'],
+    //   icon: 'icon icon-biceps',
+    //   permission: [permissions.CTH],
+    //   pro: true,
+    // },
     {
       title: 'English',
       key: 'English',
@@ -878,6 +878,85 @@ export async function getLeftMenuCriteria() {
               pro: true,
             },
           ],
+          pro: true,
+        },
+      ],
+      pro: true,
+    },
+    {
+      title: 'Thể chất',
+      key: 'physical',
+      icon: 'icon icon-biceps',
+      permission: [permissions.THECHAT],
+      children: [
+        {
+          title: 'Nhận xét tiết học',
+          key: 'lesson-comments',
+          url: [
+            '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc',
+            '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/detail',
+            '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/edit'
+          ],
+          permission: [permissions.THECHAT],
+          pro: true,
+        },
+        {
+          title: 'Đo lường định kỳ',
+          key: 'periodic-measurement',
+          url: [
+            '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky',
+            '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/detail',
+            '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/edit'
+          ],
+          permission: [permissions.THECHAT],
+          pro: true,
+        },
+        {
+          title: 'Bài học',
+          key: 'lesson',
+          url: [
+            '/chuong-trinh-hoc/the-chat/bai-hoc',
+            '/chuong-trinh-hoc/the-chat/bai-hoc/add',
+            '/chuong-trinh-hoc/the-chat/bai-hoc/:id/detail',
+            '/chuong-trinh-hoc/the-chat/bai-hoc/:id/edit'
+          ],
+          permission: [permissions.THECHAT],
+          pro: true,
+        },
+        {
+          title: 'Nhận xét mẫu',
+          key: 'exampleComments',
+          url: [
+            '/chuong-trinh-hoc/the-chat/nhan-xet-mau',
+            '/chuong-trinh-hoc/the-chat/nhan-xet-mau/add',
+            '/chuong-trinh-hoc/the-chat/nhan-xet-mau/:id/detail',
+            '/chuong-trinh-hoc/the-chat/nhan-xet-mau/:id/edit'
+          ],
+          permission: [permissions.THECHAT],
+          pro: true,
+        },
+        {
+          title: 'Môn đánh giá',
+          key: 'subjectComments',
+          url: [
+            '/chuong-trinh-hoc/the-chat/mon-danh-gia',
+            '/chuong-trinh-hoc/the-chat/mon-danh-gia/add',
+            '/chuong-trinh-hoc/the-chat/mon-danh-gia/:id/detail',
+            '/chuong-trinh-hoc/the-chat/mon-danh-gia/:id/edit'
+          ],
+          permission: [permissions.THECHAT],
+          pro: true,
+        },
+        {
+          title: 'Cấu hình đánh giá',
+          key: 'configurationReviews',
+          url: [
+            '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia',
+            '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia/add',
+            '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia/:id/detail',
+            '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia/:id/edit'
+          ],
+          permission: [permissions.THECHAT],
           pro: true,
         },
       ],
