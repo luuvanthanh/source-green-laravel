@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { Helmet } from 'react-helmet';
 
@@ -16,18 +16,18 @@ import stylesModule from '../styles.module.scss';
 const General = memo(() => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const { menuLeftCriteria, details, loading: { effects } } = useSelector(({ menu, englishSettingSampleCommentsAdd, loading }) =>
+  const { menuLeftCriteria, loading: { effects } } = useSelector(({ menu, loading }) =>
   ({
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    details: englishSettingSampleCommentsAdd.details
   }));
   const mounted = useRef(false);
 
   const params = useParams();
 
-
   const history = useHistory();
+
+  const [details, setDetails] = useState(undefined);
 
   useEffect(() => {
     mounted.current = true;
@@ -43,16 +43,20 @@ const General = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'englishSettingSampleCommentsAdd/GET_DATA',
+        type: 'sampleCommentAdd/GET_DATA',
         payload: params,
-        callback: () => { },
+        callback: (response) => {
+          if (response) {
+            setDetails(response);
+          }
+        },
       });
     }
   }, [params.id]);
 
   return (
     <>
-      <Breadcrumbs last={details?.type} menu={menuLeftCriteria} />
+      <Breadcrumbs last={details?.code} menu={menuLeftCriteria} />
       <Helmet title="Sample comments" />
       <Pane className="p20">
         <Form
@@ -60,52 +64,49 @@ const General = memo(() => {
           form={form}
           initialValues={{}}
         >          <Loading
-          loading={effects['englishSettingSampleCommentsAdd/GET_DATA']}
+          loading={effects['sampleCommentAdd/GET_DATA']}
         >
             <Pane>
               <Pane className="card">
                 <Pane className="p20">
                   <Heading type="form-title" className="mb20">
-                    General info
+                    Thông tin chung
                   </Heading>
                   <Pane className="row mt20">
                     <Pane className="col-lg-6">
                       <FormDetail name={details?.code} label="ID" />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormDetail name={details?.name} label="Type" />
+                      <FormDetail name={details?.name} label="Loại nhận xét" />
                     </Pane>
                     <Pane className="col-lg-12">
                       <Heading type="form-title" className="mb20">
-                        Sample comments
+                        Nhận xét mẫu
                       </Heading>
 
                       <Pane >
                         <div className={stylesModule['wrapper-table']}>
                           <div className={stylesModule['card-heading']}>
                             <div className={stylesModule.col}>
-                              <p className={stylesModule.norm}>Content</p>
+                              <p className={stylesModule.norm}>Nội dung</p>
                             </div>
                             <div className={stylesModule.cols}>
                               <p className={stylesModule.norm} />
                             </div>
                           </div>
                           <>
-                            {details?.sampleCommentDetail?.map((fieldItem, index) => {
-                              const itemData = details?.sampleCommentDetail?.find((item, indexWater) => indexWater === index);
-                              return (
+                            {details?.content?.items?.map((fieldItem, index) => (
                                 <Pane
                                   key={index}
                                   className="d-flex"
                                 >
                                   <div className={stylesModule['card-item']}>
                                     <div className={classnames(stylesModule.colDetail)}>
-                                      <FormDetail name={itemData?.name} type="table" />
+                                      <FormDetail name={fieldItem} type="table" />
                                     </div>
                                   </div>
                                 </Pane>
-                              );
-                            })}
+                              ))}
                           </>
                         </div>
                       </Pane>
@@ -118,17 +119,17 @@ const General = memo(() => {
 
                       onClick={() => history.goBack()}
                     >
-                      Close
+                      Đóng
                     </p>
                     <Button
                       className="ml-auto px25"
                       color="success"
                       size="large"
                       onClick={() => {
-                        history.push(`/chuong-trinh-hoc/settings/sampleComments/${details?.id}/edit`);
+                        history.push(`/chuong-trinh-hoc/the-chat/nhan-xet-mau/${details?.id}/edit`);
                       }}
                     >
-                      Edit
+                      Sửa
                     </Button>
                   </Pane>
                 </Pane>

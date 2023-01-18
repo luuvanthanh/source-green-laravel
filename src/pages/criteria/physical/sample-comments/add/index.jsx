@@ -20,12 +20,11 @@ const General = memo(() => {
   const dispatch = useDispatch();
   const [{ menuLeftCriteria }, effects] = useSelector(({ menu, loading: { effects } }) => [menu, effects]);
   const mounted = useRef(false);
-  const loadingSubmit = effects['englishSettingSampleCommentsAdd/ADD'] || effects['englishSettingSampleCommentsAdd/UPDATE'];
+  const loadingSubmit = effects['sampleCommentAdd/ADD'] || effects['sampleCommentAdd/UPDATE'];
 
-  // const loading = effects['englishSettingSampleCommentsAdd/GET_DATA'];
+  const loading = effects['sampleCommentAdd/GET_DATA'];
   const params = useParams();
-
-  const [removeId, setRemoveId] = useState([]);
+  const [details, setDetails] = useState(undefined);
 
   const history = useHistory();
 
@@ -37,107 +36,91 @@ const General = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'englishSettingSampleCommentsAdd/GET_DATA',
+        type: 'sampleCommentAdd/GET_DATA',
         payload: params,
         callback: (response) => {
           if (response) {
             form.setFieldsValue({
-              name: response?.parsePayload?.name,
-              code: response?.parsePayload?.code,
-              data: response?.parsePayload?.sampleCommentDetail?.map(i => ({
-                ...i,
-              }))
+              name: response?.name,
+              code: response?.code,
+              data: response?.content?.items
             });
+            setDetails(response);
           }
         },
       });
     }
   }, [params.id]);
 
-  const onFinish = () => {
-    form.validateFields().then((values) => {
-      dispatch({
-        type: params.id ? 'englishSettingSampleCommentsAdd/UPDATE' : 'englishSettingSampleCommentsAdd/ADD',
-        payload: {
-          id: params.id,
-          name: values?.name,
-          detail: {
-            createRows: values?.data?.filter((i) => !i?.id).map(item => ({
-              name: item.name,
-              id: item.id,
-            })),
-            updateRows: values?.data?.filter((i) => i?.id).map(item => ({
-              name: item.name,
-              id: item.id,
-            })),
-            deleteRows: removeId,
-          }
-        },
-        callback: (response, error) => {
+  const onFinish = (values) => {
+    dispatch({
+      type: params.id ? 'sampleCommentAdd/UPDATE' : 'sampleCommentAdd/ADD',
+      payload: {
+        id: params.id,
+        name: values?.name,
+        content: {
+          items: values?.data
+        }
+      },
+      callback: (response, error) => {
+        if (response) {
           if (response) {
-            if (response) {
-              history.push(`/chuong-trinh-hoc/settings/sampleComments`);
-            }
+            history.push(`/chuong-trinh-hoc/the-chat/nhan-xet-mau`);
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                form.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              form.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
           }
-        },
-      });
+        }
+      },
     });
   };
 
   return (
     <>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftCriteria} />
       <Helmet title="Sample comments" />
       <Pane className="p20">
         <Form
           layout="vertical"
           form={form}
-          initialValues={{
-            data: [
-              {},
-            ],
-          }}
           onFinish={onFinish}
         >
           <Pane>
             <Loading
-              // loading={loading}
+              loading={loading}
               params={{ type: 'container' }}
             >
               <Pane className="card">
                 <Pane className="p20">
                   <Heading type="form-title" className="mb20">
-                    General info
+                    Thông tin chung
                   </Heading>
                   <Pane className="row mt20">
                     <Pane className="col-lg-6">
                       <FormItem label="ID" name="code" type={variables.INPUT} disabled placeholder={" "} />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormItem label="Type" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT_ENGLISH]} placeholder="Input text" />
+                      <FormItem label="Loại nhận xét" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
                     </Pane>
                     <Pane className="col-lg-12">
                       <Heading type="form-title" className="mb20">
-                        Sample comments
+                        Nhận xét mẫu
                       </Heading>
 
                       <Pane >
                         <div className={stylesModule['wrapper-table']}>
                           <div className={stylesModule['card-heading']}>
                             <div className={stylesModule.col}>
-                              <p className={stylesModule.norm}>Content</p>
+                              <p className={stylesModule.norm}>Nội dung</p>
                             </div>
                             <div className={stylesModule.cols}>
                               <p className={stylesModule.norm} />
@@ -146,44 +129,38 @@ const General = memo(() => {
                           <Form.List name="data">
                             {(fields, { add, remove }) => (
                               <>
-                                {fields.map((fieldItem, index) => {
-                                  const data = form?.getFieldsValue();
-                                  const itemData = data?.data?.find((item, indexWater) => indexWater === index);
-                                  return (
-                                    <Pane
-                                      key={index}
-                                      className="d-flex"
-                                    >
-                                      <div className={stylesModule['card-item']}>
-                                        <div className={classnames(stylesModule.col)}>
-                                          <FormItem
-                                            className={stylesModule.item}
-                                            fieldKey={[fieldItem.fieldKey, 'name']}
-                                            name={[fieldItem.name, 'name']}
-                                            type={variables.INPUT}
-                                            placeholder="Input text"
-                                          />
-                                        </div>
-                                        <div className={classnames(stylesModule.cols)}>
-                                          {fields.length > 1 && (
-                                            <div className={styles['list-button']}>
-                                              <button
-                                                className={styles['button-circle']}
-                                                onClick={() => {
-                                                  remove(index);
-                                                  setRemoveId([...removeId, itemData?.id]);
-                                                }}
-                                                type="button"
-                                              >
-                                                <span className="icon-remove" />
-                                              </button>
-                                            </div>
-                                          )}
-                                        </div>
+                                {fields.map((fieldItem, index) => (
+                                  <Pane
+                                    key={index}
+                                    className="d-flex"
+                                  >
+                                    <div className={stylesModule['card-item']}>
+                                      <div className={classnames(stylesModule.col)}>
+                                        <FormItem
+                                          className={stylesModule.item}
+                                          fieldKey={fieldItem.fieldKey}
+                                          name={fieldItem.name}
+                                          type={variables.INPUT}
+                                        />
                                       </div>
-                                    </Pane>
-                                  );
-                                })}
+                                      <div className={classnames(stylesModule.cols)}>
+                                        {fields.length > 1 && (
+                                          <div className={styles['list-button']}>
+                                            <button
+                                              className={styles['button-circle']}
+                                              onClick={() => {
+                                                remove(index);
+                                              }}
+                                              type="button"
+                                            >
+                                              <span className="icon-remove" />
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </Pane>
+                                ))}
                                 <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer " >
                                   <span
                                     onClick={() => add()}
@@ -191,7 +168,7 @@ const General = memo(() => {
                                     className={stylesModule.add}
                                   >
                                     <span className="icon-plus-circle mr5" />
-                                    Add
+                                    Thêm
                                   </span>
                                 </Pane>
                               </>
@@ -208,7 +185,7 @@ const General = memo(() => {
 
                       onClick={() => history.goBack()}
                     >
-                      Cancel
+                      Hủy
                     </p>
                     <Button
                       className="ml-auto px25"
@@ -217,7 +194,7 @@ const General = memo(() => {
                       size="large"
                       loading={loadingSubmit}
                     >
-                      Save
+                      Lưu
                     </Button>
                   </Pane>
                 </Pane>
