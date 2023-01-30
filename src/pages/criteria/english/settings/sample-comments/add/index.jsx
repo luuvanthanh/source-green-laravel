@@ -136,8 +136,8 @@ const General = memo(() => {
                       <Pane >
                         <div className={stylesModule['wrapper-table']}>
                           <div className={stylesModule['card-heading']}>
-                            <div className={stylesModule.col}>
-                              <p className={stylesModule.norm}>Content</p>
+                            <div className="d-flex flex-row w-100">
+                              <p className={classnames(stylesModule.norm, stylesModule['wrapper-lable'])}>Content</p>
                             </div>
                             <div className={stylesModule.cols}>
                               <p className={stylesModule.norm} />

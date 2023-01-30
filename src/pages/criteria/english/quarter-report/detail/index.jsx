@@ -151,7 +151,7 @@ const Index = memo(() => {
   };
   const detailTearch = `${dataDetails?.teacher?.fullName ? dataDetails?.teacher?.fullName : ""}  ${dataDetails?.creationTime ? Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE_TIME) : ""}`;
   const detailTearchManagement = `${dataDetails?.teacherManagement?.fullName ? dataDetails?.teacherManagement?.fullName : ""}  ${dataDetails?.confirmationTime ? Helper.getDate(dataDetails?.confirmationTime, variables.DATE_FORMAT.DATE_TIME) : ""}`;
-  const detailTearchManagementSend = `${dataDetails?.teacherSent?.fullName ? dataDetails?.teacherSent?.fullName : ""}  ${dataDetails?.lastModificationTime ? Helper.getDate(dataDetails?.confirmationTime, variables.DATE_FORMAT.DATE_TIME) : ""}`;
+  const detailTearchManagementSend = `${dataDetails?.teacherSent?.fullName ? dataDetails?.teacherSent?.fullName : ""}  ${dataDetails?.lastModificationTime ? Helper.getDate(dataDetails?.lastModificationTime, variables.DATE_FORMAT.DATE_TIME) : ""}`;
 
   const formStatus = () => {
     if (query?.type === "done-review") {
@@ -192,6 +192,7 @@ const Index = memo(() => {
   };
 
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
+
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
       <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
