@@ -416,6 +416,12 @@ export default [
             authority: [permissions.CTH],
           },
           {
+            path: '/chuong-trinh-hoc/monthly-report/:id/confirmed',
+            component: './criteria/english/monthly-report/confirmed',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
             path: '/chuong-trinh-hoc/study-plan',
             component: './criteria/english/study-plan',
             wrappers: ['@/wrappers/auth'],

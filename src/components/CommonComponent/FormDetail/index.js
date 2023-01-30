@@ -16,6 +16,15 @@ class FormDetail extends Component {
         </div>
       );
     }
+    if (type === 'label') {
+      return (
+        <div>
+          <div className={styles['wrapper-title']}>
+            <label className={styles.text}>{label}</label>
+          </div>
+        </div>
+      );
+    }
     if (type === 'day' && name) {
       return (
         <div className="mb20">

@@ -34,7 +34,7 @@ export function getData(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['quarterReport', 'branch', 'classes']),
+      include: Helper.convertIncludes(['monthlyComment', 'branch', 'classes']),
     },
   });
 }
@@ -80,7 +80,7 @@ export function getDatDetail(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['quarterReport', 'student.branch', 'student.classes']),
+      include: Helper.convertIncludes(['monthlyComment', 'student.branch', 'student.classes']),
     },
   });
 }
