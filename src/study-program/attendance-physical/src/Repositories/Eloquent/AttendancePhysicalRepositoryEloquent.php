@@ -122,16 +122,16 @@ class AttendancePhysicalRepositoryEloquent extends BaseRepository implements Att
             $attributes['dateHaveInClass'] = Carbon::now()->format('Y-m-d H:i:s');
             $attendancePhysical = AttendancePhysical::create($attributes);
 
-            //$this->created($attributes);
+            $this->created($attributes);
         }
 
         return $this->parserResult($attendancePhysical);
     }
-
+    
     public function created($attributes)
     {
         $physicalStudyProgramSession = PhysicalStudyProgramSession::findOrFail($attributes['physicalStudyProgramSessionId']);
-
+        
         if ($physicalStudyProgramSession->IsUsed != true) {
             $physicalStudyProgramSession->update(['IsUsed' => true]);
         }

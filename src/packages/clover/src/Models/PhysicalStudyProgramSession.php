@@ -10,11 +10,11 @@ class PhysicalStudyProgramSession extends UuidModel
 {
     //use ActivityLogTrait;
     public $incrementing = false;
-
+    public $timestamps = false;
     /**
      * Declare the table name
      */
-    protected $table = 'physical.PhysicalStudyProgramSession';
+    protected $table = 'physical.PhysicalStudyProgramSessions';
 
     /**
      * The attributes that are mass assignable.
