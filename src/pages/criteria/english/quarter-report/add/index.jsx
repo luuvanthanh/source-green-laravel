@@ -319,7 +319,7 @@ const Index = memo(() => {
                 <div className="row" {...marginProps} style={{ paddingLeft: 20, paddingRight: 20 }} >
                   <div className={stylesModule['quarterReport-header-img']}>
                     <ImgDetail
-                      fileImage={details?.student?.fileImage}
+                      fileImage={dataStudent?.fileImage}
                     />
                     <div className='d-block ml20'>
                       <h3 className={stylesModule['general-fullName']}>

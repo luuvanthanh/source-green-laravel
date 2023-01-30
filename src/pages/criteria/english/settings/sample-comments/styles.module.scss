@@ -12,6 +12,23 @@
 
 .wrapper-table {
   border: 1px solid #e6e6e6;
+  .wrapper-lable {
+    height: 22px;
+    margin: 8px 15px;
+    font-size: 14px !important;
+    font-weight: 500;
+    width: auto !important;
+    position: relative;
+    &::after {
+      color: $danger;
+      content: "*";
+      font-size: 13px;
+      line-height: 1;
+      position: absolute;
+      right: -10px;
+      top: 2px;
+    }
+  }
   .card-heading {
     background-color: #3b5cad;
     display: flex;

@@ -172,35 +172,6 @@ const Index = memo(() => {
 
 
   const addSent = () => {
-    // const payload = {
-    //   studentId: [dataDetails?.studentId],
-    //   schoolYearId: dataDetails?.schoolYearId,
-    //   scriptReviewId: dataDetails?.scriptReviewId,
-    //   newStatus: variablesModules.STATUS.CONFIRMED,
-    //   oldStatus: "NOT_YET_CONFIRM",
-    //   teacherManagementId: user?.objectInfo?.id,
-    // };
-    // dispatch({
-    //   type: 'EnglishQuarterReport/ADD_SENT',
-    //   payload: { ...payload },
-    //   callback: (response, error) => {
-    //     if (response) {
-    //       history.goBack();
-    //     }
-    //     if (error) {
-    //       if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-    //         error.data.errors.forEach((item) => {
-    //           form.current.setFields([
-    //             {
-    //               name: get(item, 'source.pointer'),
-    //               errors: [get(item, 'detail')],
-    //             },
-    //           ]);
-    //         });
-    //       }
-    //     }
-    //   }
-    // });
     dispatch({
       type: 'EnglishQuarterReportAdd/UPDATE_CONFIRMED',
       payload: {

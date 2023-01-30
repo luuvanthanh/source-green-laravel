@@ -360,6 +360,10 @@ export const variables = {
     CUSTOMERLEAD: 'customerlead',
     CEO: 'ceo',
   },
+  LANGUAGE: {
+    VIETNAM: 'VIETNAM',
+    ENGLISH: 'ENGLISH',
+  },
 };
 
 export default variables;

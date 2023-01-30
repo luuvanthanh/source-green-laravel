@@ -52,6 +52,7 @@ const renderChildren = (
   showCount,
   loading,
   bordered,
+  language
 ) => ({
   input: (
     <Input
@@ -295,9 +296,9 @@ const renderChildren = (
     <DatePicker
       disabled={disabled}
       disabledDate={disabledDate}
-      format="[Tháng] MM/YYYY"
+      format={language === variables.LANGUAGE.ENGLISH ? "[Month] MM/YYYY" : "[Tháng] MM/YYYY"}
       onChange={onChange}
-      placeholder="Chọn"
+      placeholder={language === variables.LANGUAGE.ENGLISH ? "Select month" : "Chọn"}
       picker="month"
       allowClear={allowClear}
       value={value}
@@ -474,6 +475,7 @@ export default function FormItem({
   showCount,
   loading,
   bordered,
+  language,
   ...rest
 }) {
   return (
@@ -507,6 +509,7 @@ export default function FormItem({
           showCount,
           loading,
           bordered,
+          language,
         )[type]
       }
     </Form.Item>
@@ -545,6 +548,7 @@ FormItem.propTypes = {
   showCount: PropTypes.bool,
   loading: PropTypes.string,
   bordered: PropTypes.any,
+  language: PropTypes.any,
 };
 
 FormItem.defaultProps = {
@@ -579,6 +583,7 @@ FormItem.defaultProps = {
   showCount: true,
   loading: "",
   bordered: true,
+  language: ""
 };
 
 FormItem.displayName = 'Form';
