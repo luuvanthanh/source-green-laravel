@@ -24,6 +24,8 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Container\Container as Application;
 
+use function Clue\StreamFilter\fun;
+
 /**
  * Class UserRepositoryEloquent.
  *
@@ -98,7 +100,39 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             if ($attributes['hasClass'] == 'true') {
                 $this->model = $this->model->whereHas('classTeacher');
             } else {
-                $this->model = $this->model->whereDoesnthave('classTeacher');
+                $users = User::whereHas('transferDetail', function ($query) use ($attributes) {
+                    $query->whereHas('transfer', function ($query) use ($attributes) {
+                        $now = Carbon::now()->format('Y-m-d');
+                        $query->where('TimeApply', '<=', $now);
+                    });
+                })->with(['transferDetail' => function ($query) {
+                    $query->select('TransferDetails.*')
+                        ->join('Transfers', 'TransferDetails.TransferId', '=', 'Transfers.Id')
+                        ->orderby('Transfers.TimeApply', 'DESC')->limit(1);
+                }])->get();
+
+                $userId = [];
+
+                foreach ($users as $key => $user) {
+
+                    if (!is_null($user->transferDetail->first())) {
+                        if (!is_null($user->classTeacherNew)) {
+                            if ($user->transferDetail->first()->BranchId != $user->classTeacherNew->classes->BranchId) {
+                                $userId[] = $user->Id;
+                            }
+                        } else {
+                            $userId[] = $user->Id;
+                        }
+                    } else {
+                        $userId[] = $user->Id;
+                    }
+                }
+
+                $userIdInClassTeacher = $this->model->whereDoesnthave('classTeacher')->pluck('Id')->toArray();
+                
+                $dataUserId = array_merge($userId, $userIdInClassTeacher);
+                
+                $this->model = $this->model->whereIn('Id', $dataUserId);   
             }
         }
 
@@ -1001,7 +1035,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     public function getEmployeeBirthday()
     {
         $dateNow = Carbon::now();
-        
+
         $employeeBirthday =  User::whereMonth('DateOfBirth', $dateNow->format('m'))->whereDay('DateOfBirth', $dateNow->format('d'))->get();
 
         $dataEmployeeBirthday = $employeeBirthday->map(function ($item) use ($dateNow) {
@@ -1020,7 +1054,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
-        
+
         if ($dateNow->format('y') == $dateConfigNotification->format('y')) {
             //lấy sinh nhật nhân viên cùng năm
             $dataEmployeeBirthdayUpcoming = $this->getEmployeeBirthdayUpcoming($dateNow, $dateConfigNotification);
