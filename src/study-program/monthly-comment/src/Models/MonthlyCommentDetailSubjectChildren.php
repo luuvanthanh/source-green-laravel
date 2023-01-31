@@ -19,7 +19,7 @@ class MonthlyCommentDetailSubjectChildren extends UuidModel
 
     public function scriptReviewSubjectDetailChildren()
     {
-        return $this->belongsTo(ScriptReviewSubjectDetailChildren::class, 'ScriptReviewSubjectDetailChildrenId');
+        return $this->belongsTo(ScriptReviewSubjectDetailChildren::class, 'ScriptReviewSubjectDetailChildrenId')->orderBy('CreationTime');;
     }
 
     public function evaluationCriteria()

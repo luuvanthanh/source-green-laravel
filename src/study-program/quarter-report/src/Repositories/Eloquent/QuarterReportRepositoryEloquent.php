@@ -328,25 +328,18 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
     public function updateAllStatusQuarterReport($attributes)
     {
-        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
-            ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('Status', $attributes['oldStatus'])->get();
-
-        foreach ($data as $value) {
-            $value->update([
+        $data = $this->model->whereIn('Id', $attributes['id'])
+            ->update([
                 'Status' => $attributes['newStatus'],
                 'ConfirmationTime' => now()->format('Y-m-d H:i:s')
             ]);
-        }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 
     public function notificationAllStatusQuarterReport($attributes)
     {
-        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
-            ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('Status', $attributes['oldStatus'])->get();
+        $data = $this->model->whereIn('Id', $attributes['id'])->get();
 
         foreach ($data as $value) {
             $this->sentNotification($value);

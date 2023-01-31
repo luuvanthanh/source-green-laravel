@@ -65,7 +65,7 @@ class MonthlyComment extends UuidModel
 
     public function monthlyCommentDetail()
     {
-        return $this->hasMany(MonthlyCommentDetail::class, 'MonthlyCommentId');
+        return $this->hasMany(MonthlyCommentDetail::class, 'MonthlyCommentId')->orderBy('CreationTime');
     }
 
     public function scriptReview()
