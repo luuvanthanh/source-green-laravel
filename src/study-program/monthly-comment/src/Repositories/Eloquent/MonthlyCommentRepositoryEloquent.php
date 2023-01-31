@@ -147,7 +147,6 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
     {
         DB::beginTransaction();
         try {
-            $attributes['month'] = Carbon::parse()->day(1)->format('Y-m-d H:i:s');
 
             if ($attributes['status'] == MonthlyComment::STATUS['REVIEWED']) {
                 $attributes['reportTime'] = now()->format('Y-m-d H:i:s');
@@ -337,24 +336,18 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
 
     public function updateAllStatusMonthlyComment($attributes)
     {
-        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
-            ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('Status', $attributes['oldStatus'])->get();
-
-        foreach ($data as $value) {
-            $value->update([
-                'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
-            ]);
-        }
+        $this->model->whereIn('Id', $attributes['id'])
+        ->update([
+            'Status' => $attributes['newStatus'],
+            'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+        ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 
     public function notificationAllStatusMonthlyComment($attributes)
     {
-        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
-            ->where('SchoolYearId', $attributes['schoolYearId'])
+        $data = $this->model->whereIn('Id', $attributes['id'])
             ->where('Status', $attributes['oldStatus'])->get();
 
         foreach ($data as $value) {

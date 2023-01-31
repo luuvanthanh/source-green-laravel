@@ -509,7 +509,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                         }
                         break;
                     case self::MEAL_FEE:
-
                         $getFirstFeeDetail = $feePolicie->moneyMeal()
                             ->where('ClassTypeId', $listMonthAge['countClassType'][0])
                             ->where('PaymentFormId', $detail->paymentFormId)->first();
@@ -522,6 +521,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 })->first();
 
                             $listMonthAge['detailStudent'][$key]['money'] = $feeDetail->Money;
+                            $listMonthAge['replaceDetailStudent'][$valueMonthAge['date']]['money'] = $feeDetail->Money;
                         }
 
                         $arrDate = $this->getDatesFromRange($begin->format('Y-m-d'), $end->format('Y-m-d'));
@@ -534,17 +534,22 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             }
 
                             $date = new DateTime($value);
-                            $holidayDetail = HolidayDetail::whereYear('StartDate', $date->format('Y'))->orWhereYear('EndDate', $date->format('Y'))->get();
+                            $holiday = Holiday::whereIn('Name', [$schoolYear->YearFrom, $schoolYear->YearTo])->get();
+
                             $arrHoliday = [];
-                            foreach ($holidayDetail as $key => $valueHolidayDetail) {
-                                $arrHoliday[] = $this->getDatesFromRange($valueHolidayDetail->StartDate, $valueHolidayDetail->EndDate);
+                            foreach ($holiday as $key => $valueHoliday) {
+                                foreach ($valueHoliday->holidayDetail as $key => $valueHolidayDetail) {
+                                    $arrHoliday[] = $this->getDatesFromRange($valueHolidayDetail->StartDate, $valueHolidayDetail->EndDate);
+                                }
                             }
-                            $arrFlatten = $this->flatten($arrHoliday);
-                            $totalDaySemester1 = count(array_diff($arrDate, $arrFlatten));
+
+                            $holidayDate = $this->flatten($arrHoliday);
                         }
+                        $totalDaySemester1 = count(array_diff($arrDate, $holidayDate));
 
                         if (!is_null($feeDetail)) {
                             $money = !is_null($getFirstFeeDetail) ? $getFirstFeeDetail->Money : 0;
+
                             switch ($paymentForm->Code) {
                                 case self::SEMESTER1:
                                     $isMonth = ChangeParameterDetail::where('ChangeParameterId', $schoolYear->changeParameter->Id)
@@ -596,23 +601,46 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     $result = $listMonthAge['detailStudent'][$month->Date]['money'] * $totalDaySemester1 + $sumSemesterLeft1;
                                     break;
                                 case self::YEAR:
-                                    // tháng còn lại năm học
-                                    $monthLeft = ChangeParameterDetail::where('ChangeParameterId', $schoolYear->changeParameter->Id)
-                                        ->whereHas('paymentForm', function ($query) use ($month) {
-                                            $query->where('StartDate', '>', $month->EndDate);
-                                            $query->where('Date', '!=', $month->Date);
-                                        })->get();
+                                    $sumTotalYear = 0;
+                                    foreach ($listMonthAge['detailStudent'] as $key => $value) {
+                                        $feeDetail = $feePolicie->moneyMeal()
+                                            ->where('ClassTypeId', $value['classTypeId'])
+                                            ->whereHas('paymentForm', function ($q) use ($paymentForm) {
+                                                $q->where('Code', $paymentForm->Code);
+                                            })->first();
 
-                                    $sumAllYear = 0;
-                                    foreach ($monthLeft as $key => $valueAllYear) {
-                                        $sumAllYear += $listMonthAge['detailStudent'][$valueAllYear->Date]['money'] * $valueAllYear->SchoolDay;
+                                        $schoolDay = $schoolYear->changeParameter->changeParameterDetail->where('Date', $value['date'])->first();
+                                        $sumTotalYear += $feeDetail->Money * $schoolDay->SchoolDay;
                                     }
 
-                                    $result = $listMonthAge['detailStudent'][$month->Date]['money'] * $totalDaySemester1 + $sumAllYear;
+                                    if ($dayAdmission <= $schoolYear->StartDate) {
+                                        $result = $sumTotalYear;
+                                    } else {
+
+                                        foreach ($listMonthAge['detailStudent'] as $key => $value) {
+                                            $feeDetail = $feePolicie->moneyMeal()
+                                                ->where('ClassTypeId', $value['classTypeId'])
+                                                ->whereHas('paymentForm', function ($q) use ($paymentForm) {
+                                                    $q->where('Code', $paymentForm->Code);
+                                                })->first();
+
+                                            $schoolDay = $schoolYear->changeParameter->changeParameterDetail->where('Date', $value['date'])->first();
+
+                                            if ($dayAdmissionCarbon->day(1)->format('Y-m-d') === $value['date']) {
+                                                $listMonthAge['replaceDetailStudent'][$value['date']]['money'] = $feeDetail->Money * $totalDaySemester1;
+                                            } elseif ($dayAdmissionCarbon->format('Y-m-d') > $value['date']) {
+                                                $listMonthAge['replaceDetailStudent'][$value['date']]['money'] = 0;
+                                            } else {
+                                                $listMonthAge['replaceDetailStudent'][$value['date']]['money'] = $feeDetail->Money * $schoolDay->SchoolDay;
+                                            }
+                                        }
+
+                                        $result = array_sum(array_column($listMonthAge['replaceDetailStudent'], 'money'));
+                                    }
 
                                     break;
                                 case self::MONTH:
-                                    $result = $totalDaySemester1 * $listMonthAge['detailStudent'][$month->Date]['money'];
+                                    $result = $totalDaySemester1 * $listMonthAge['replaceDetailStudent'][$month->Date]['money'];
                                     $moneyMonth = $money;
                                     break;
                             }
@@ -750,7 +778,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 case self::MEAL_FEE:
                                     if ($month->format('Y-m') >= $applyDate) {
                                         $changeParamDetail = $schoolYear->changeParameter->changeParameterDetail()->where('Date', $month->setDay(1)->format('Y-m-d'))->first();
-                                        $result = $listMonthAge['detailStudent'][$month->setDay(1)->format('Y-m-d')]['money'] * $changeParamDetail->SchoolDay;
+                                        $result = $listMonthAge['replaceDetailStudent'][$month->setDay(1)->format('Y-m-d')]['money'] * $changeParamDetail->SchoolDay;
                                         $totalMoneyMonth += $result;
 
                                         $fee[] = [
