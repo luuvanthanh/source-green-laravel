@@ -18,7 +18,7 @@ class MonthlyCommentDetailSubject extends UuidModel
 
     public function monthlyCommentDetailSubjectChildren()
     {
-        return $this->hasMany(MonthlyCommentDetailSubjectChildren::class, 'MonthlyCommentDetailSubjectId');
+        return $this->hasMany(MonthlyCommentDetailSubjectChildren::class, 'MonthlyCommentDetailSubjectId')->orderBy('CreationTime');;
     }
 
     public function scriptReviewSubjectDetail()

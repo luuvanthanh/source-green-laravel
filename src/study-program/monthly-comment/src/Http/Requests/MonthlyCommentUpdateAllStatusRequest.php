@@ -28,8 +28,7 @@ class MonthlyCommentUpdateAllStatusRequest extends FormRequest
         $status = implode(',', MonthlyComment::STATUS);
 
         return [
-            'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
-            'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
+            'id' => 'required|array|check_exists:study-program.MonthlyComments,Id',
             'newStatus' => 'required|in:' . $status,
             "oldStatus" => 'required|in:' . $status,
         ];
