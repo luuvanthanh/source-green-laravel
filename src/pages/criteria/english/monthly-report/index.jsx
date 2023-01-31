@@ -498,7 +498,7 @@ class Index extends PureComponent {
       return (
         <Button
           icon="checkmark"
-          onClick={(e) => { e.stopPropagation(); this.addSent('one', record?.id); }}
+          onClick={(e) => { e.stopPropagation(); this.addSent('one', record); }}
           className={stylesModule.check}
         />
       );
@@ -507,20 +507,22 @@ class Index extends PureComponent {
 
   };
 
-  addSent = (type, id) => {
+  addSent = (type, record) => {
     const { search, data } = this.state;
     const {
       user,
     } = this.props;
     this.setStateData(
       {
-        idSent: id,
+        idSent: record?.id,
       },);
     if (type === 'one') {
       this.props.dispatch({
         type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishMonthlyReport/ADD_CONFIRM' : 'EnglishMonthlyReport/ADD_SENT',
         payload: {
-          studentId: [id],
+          studentId: [record?.id],
+          scriptReviewId: head(record?.monthlyComment)?.scriptReviewId,
+          id: head(record?.monthlyComment)?.id,
           schoolYearId: search.schoolYearId,
           month: search?.month,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
@@ -537,9 +539,11 @@ class Index extends PureComponent {
     }
     if (type === 'much') {
       this.props.dispatch({
-        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishMonthlyReport/ADD_CONFIRM' : 'EnglishMonthlyReport/ADD_SENT',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishMonthlyReport/ADD_CONFIRMED_ALL' : 'EnglishMonthlyReport/ADD_SENT_ALL',
         payload: {
           studentId: data?.filter(i => i?.isActive)?.map(i => i.id),
+          scriptReviewId: data?.filter(i => i?.isActive)?.map(i => head(i.monthlyComment)?.id),
+          id: data?.filter(i => i?.isActive)?.map(i => head(i.monthlyComment)?.id),
           schoolYearId: search.schoolYearId,
           month: search?.month,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
@@ -558,6 +562,8 @@ class Index extends PureComponent {
       this.props.dispatch({
         type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishMonthlyReport/ADD_CONFIRMED_ALL' : 'EnglishMonthlyReport/ADD_SENT_ALL',
         payload: {
+          studentId: data?.map(i => i.id),
+          id: data?.map(i => head(i.monthlyComment)?.id),
           schoolYearId: search.schoolYearId,
           month: search?.month,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
@@ -746,7 +752,6 @@ class Index extends PureComponent {
       user,
     } = this.props;
     const { data, dataYear } = this.state;
-
     const rowSelection = {
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
@@ -767,7 +772,14 @@ class Index extends PureComponent {
               (search?.status === variablesModules.STATUS.NOT_REVIEW) || (search?.status === variablesModules.STATUS.REVIEWED) || (search?.status === variablesModules.STATUS.SENT) || (search?.status === variablesModules.STATUS.CONFIRMED) ?
                 " " :
                 <div className='d-flex'>
-                  <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')} loading={size(data?.filter((item) => item.isActive)) && effects['EnglishMonthlyReport/ADD_SENT']}>
+                  <Button
+                    disabled={!size(data?.filter((item) => item.isActive))}
+                    color="primary"
+                    icon="redo2"
+                    className="ml-2"
+                    onClick={() => this.addSent('much')}
+                    loading={effects['EnglishMonthlyReport/ADD_CONFIRMED_ALL'] || effects['EnglishMonthlyReport/ADD_SENT_ALL'] || effects['EnglishMonthlyReport/ADD_CONFIRM']}
+                  >
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
                   </Button>
                   <Button
