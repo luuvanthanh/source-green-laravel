@@ -9,7 +9,6 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      month: undefined,
       include: Helper.convertIncludes(['monthlyComment', 'branch', 'classes']),
     },
   });
@@ -101,7 +100,7 @@ export function addSent(data = {}) {
 }
 
 export function addSentAll(data = {}) {
-  return request('/v1/update-all-status-monthly-comments', {
+  return request('/v1/notification-all-status-monthly-comments', {
     method: 'POST',
     data,
     cancelNotification: true,
@@ -133,7 +132,7 @@ export function addConfirm(data = {}) {
 }
 
 export function removeConfirm(id) {
-  return request(`/v1/delete-quarter-report/${id}`, {
+  return request(`/v1/delete-monthly-comments/${id}`, {
     method: 'DELETE',
     parse: true,
     cancelNotification: true,

@@ -171,6 +171,9 @@ class Index extends PureComponent {
         },
       });
     }
+    if (search?.branchId && search?.classId && search?.scriptReviewId && !search?.checkLoad) {
+      this.onLoad();
+    }
   };
 
   /**
@@ -379,6 +382,7 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           scriptReviewId: e,
+          checkLoad: true,
         },
       }),
     );

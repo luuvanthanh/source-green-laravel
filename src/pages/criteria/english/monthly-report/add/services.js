@@ -80,7 +80,12 @@ export function getDatDetail(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['monthlyComment', 'student.branch', 'student.classes']),
+      include: Helper.convertIncludes([
+        'monthlyComment',
+        'schoolYear',
+        'student.branch',
+        'student.classes',
+      ]),
     },
   });
 }

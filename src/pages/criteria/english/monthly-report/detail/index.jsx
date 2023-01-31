@@ -121,13 +121,13 @@ const Index = memo(() => {
     const payload = {
       studentId: [dataDetails?.studentId],
       schoolYearId: dataDetails?.schoolYearId,
-      scriptReviewId: dataDetails?.scriptReviewId,
+      month: dataDetails?.month,
       newStatus: variablesModules.STATUS.SENT,
       oldStatus: "CONFIRMED",
-      teacherManagementId: user?.id,
+      teacherSentId: query?.type === "done" ? user?.objectInfo?.id : undefined,
     };
     dispatch({
-      type: 'EnglishMonthlyReport/ADD_SENT_ALL',
+      type: 'EnglishMonthlyReport/ADD_SENT',
       payload: { ...payload },
       callback: (response, error) => {
         if (response) {
@@ -184,6 +184,7 @@ const Index = memo(() => {
     }
     return "";
   };
+
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
   return (
     <div className={stylesModule['wraper-container-monthlyComment']}>

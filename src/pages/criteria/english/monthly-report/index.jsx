@@ -58,6 +58,7 @@ class Index extends PureComponent {
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       data: [],
+      dataYear: user ? user?.schoolYear : {},
       search: {
         key: query?.key,
         branchId: query?.branchId || defaultBranch?.id,
@@ -168,6 +169,9 @@ class Index extends PureComponent {
         },
       });
     }
+    if (search?.branchId && search?.classId && !search?.checkLoad) {
+      this.onLoad();
+    }
   };
 
   /**
@@ -185,6 +189,8 @@ class Index extends PureComponent {
         ...search,
         status: variablesModules.STATUS_SEARCH?.[status],
         nameAssessmentPeriodId: undefined,
+        month: search?.status === variablesModules.STATUS.NOT_REVIEW ? undefined : search?.month,
+
       },
       callback: (response) => {
         if (response) {
@@ -368,6 +374,14 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          checkLoad: true,
+        },
+      }),
+    );
     this.debouncedSearch(moment(e).startOf('month').format('YYYY-MM-DD'), type);
   };
 
@@ -504,15 +518,15 @@ class Index extends PureComponent {
       },);
     if (type === 'one') {
       this.props.dispatch({
-        type: 'EnglishMonthlyReport/ADD_SENT',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishMonthlyReport/ADD_CONFIRM' : 'EnglishMonthlyReport/ADD_SENT',
         payload: {
           studentId: [id],
           schoolYearId: search.schoolYearId,
-          scriptReviewId: search.scriptReviewId,
+          month: search?.month,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
           oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
-          teacherManagementId: user?.id,
-          month: search?.month,
+          teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
+          teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -523,14 +537,15 @@ class Index extends PureComponent {
     }
     if (type === 'much') {
       this.props.dispatch({
-        type: 'EnglishMonthlyReport/ADD_SENT',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishMonthlyReport/ADD_CONFIRM' : 'EnglishMonthlyReport/ADD_SENT',
         payload: {
           studentId: data?.filter(i => i?.isActive)?.map(i => i.id),
           schoolYearId: search.schoolYearId,
-          scriptReviewId: search.scriptReviewId,
+          month: search?.month,
           newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
           oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
-          month: search?.month,
+          teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
+          teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -541,13 +556,14 @@ class Index extends PureComponent {
     }
     if (type === 'allConfirmed') {
       this.props.dispatch({
-        type: 'EnglishMonthlyReport/ADD_CONFIRMED_ALL',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishMonthlyReport/ADD_CONFIRMED_ALL' : 'EnglishMonthlyReport/ADD_SENT_ALL',
         payload: {
           schoolYearId: search.schoolYearId,
-          scriptReviewId: search.scriptReviewId,
-          newStatus: 'CONFIRMED',
-          oldStatus: "NOT_YET_CONFIRM",
           month: search?.month,
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
+          teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
+          teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -559,13 +575,14 @@ class Index extends PureComponent {
 
     if (type === 'send') {
       this.props.dispatch({
-        type: 'EnglishMonthlyReport/ADD_SENT_ALL',
+        type: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'EnglishMonthlyReport/ADD_CONFIRM' : 'EnglishMonthlyReport/ADD_SENT',
         payload: {
           schoolYearId: search.schoolYearId,
-          scriptReviewId: search.scriptReviewId,
-          newStatus: 'SENT',
-          oldStatus: "CONFIRMED",
           month: search?.month,
+          newStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'CONFIRMED' : 'SENT',
+          oldStatus: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "NOT_YET_CONFIRM" : "CONFIRMED",
+          teacherManagementId: search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? user?.objectInfo?.id : undefined,
+          teacherSentId: search?.status === variablesModules.STATUS.NOT_YET_SEND ? user?.objectInfo?.id : undefined,
         },
         callback: (response) => {
           if (response) {
@@ -658,7 +675,7 @@ class Index extends PureComponent {
         key: 'Assessment',
         className: 'min-width-200',
         width: 200,
-        render: (record) => Helper.getDate(record?.month, variables.DATE_FORMAT.MONTH_FULL)
+        render: (record) => Helper.getDate(record?.month, variables.DATE_FORMAT.MONTH_FULL_ENGLISH)
       },
       {
         key: 'action',
@@ -728,7 +745,8 @@ class Index extends PureComponent {
       years,
       user,
     } = this.props;
-    const { data } = this.state;
+    const { data, dataYear } = this.state;
+
     const rowSelection = {
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
@@ -740,11 +758,11 @@ class Index extends PureComponent {
     const loading = effects['EnglishMonthlyReport/GET_DATA'];
     return (
       <>
-        <Helmet title="Mothly report" />
+        <Helmet title="Mothly comment" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Mothly report</Text>
+            <Text color="dark">Mothly comment</Text>
             {
               (search?.status === variablesModules.STATUS.NOT_REVIEW) || (search?.status === variablesModules.STATUS.REVIEWED) || (search?.status === variablesModules.STATUS.SENT) || (search?.status === variablesModules.STATUS.CONFIRMED) ?
                 " " :
@@ -752,15 +770,16 @@ class Index extends PureComponent {
                   <Button disabled={!size(data?.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.addSent('much')} loading={size(data?.filter((item) => item.isActive)) && effects['EnglishMonthlyReport/ADD_SENT']}>
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
                   </Button>
-                  {/* <Button
+                  <Button
                     color="success"
                     icon="redo2"
                     className="ml-2"
-                    loading={effects['EnglishMonthlyReport/ADD_CONFIRMED_ALL']}
-                    onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "send")}
+                    disabled={!data?.length > 0}
+                    loading={effects['EnglishMonthlyReport/ADD_CONFIRMED_ALL'] || effects['EnglishMonthlyReport/ADD_SENT_ALL'] || effects['EnglishMonthlyReport/ADD_CONFIRM']}
+                    onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
                   >
                     {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
-                  </Button> */}
+                  </Button>
                 </div>
             }
           </div>
@@ -827,6 +846,13 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'month')}
                     type={variables.MONTH_PICKER}
                     allowClear={false}
+                    disabledDate={(current) =>
+                      (dataYear?.startDate &&
+                        current < moment(dataYear?.startDate).startOf('day')) ||
+                      (dataYear?.endDate &&
+                        current >= moment(dataYear?.endDate).endOf('day'))
+                    }
+                    language={variables.LANGUAGE.ENGLISH}
                   />
                 </div>
                 <div className="col-lg-3">

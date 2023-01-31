@@ -163,7 +163,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Bài học" />
       <Loading
         loading={effects[`physicalLessonAdd/GET_DATA`]}
       >
@@ -279,7 +279,8 @@ const Index = memo(() => {
                                     fieldKey={[fieldItem.fieldKey, 'weekIndex']}
                                     name={[fieldItem.name, 'weekIndex']}
                                     placeholder="Nhập"
-                                    type={variables.INPUT_COUNT}
+                                    type={variables.NUMBER_INPUT}
+                                    rules={[variables.RULES.EMPTY]}
                                   />
                                 </div>
                                 <div className={classnames(stylesModule.col)}>
@@ -289,6 +290,7 @@ const Index = memo(() => {
                                     name={[fieldItem.name, 'name']}
                                     placeholder="Nhập"
                                     type={variables.INPUT}
+                                    rules={[variables.RULES.EMPTY_INPUT]}
                                   />
                                 </div>
                                 <div className={classnames(stylesModule.col)}>
