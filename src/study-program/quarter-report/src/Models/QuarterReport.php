@@ -54,7 +54,7 @@ class QuarterReport extends UuidModel
 
     public function teacherManagement()
     {
-        return $this->belongsTo(User::class, 'TeacherId');
+        return $this->belongsTo(User::class, 'TeacherManagementId');
     }
 
     public function student()
