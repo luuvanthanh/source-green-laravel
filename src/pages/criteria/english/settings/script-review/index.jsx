@@ -291,8 +291,14 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
+              permission="WEB_TIENGANH_KICHBANDANHGIA_UPDATE"
             />
-            <Button color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
+            <Button
+              color="danger"
+              icon="remove"
+              onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
+              permission="WEB_TIENGANH_KICHBANDANHGIA_DELETE"
+            />
           </div>
         ),
       },
@@ -340,7 +346,12 @@ class Index extends PureComponent {
         <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Script review</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/add`)}
+              permission="WEB_TIENGANH_KICHBANDANHGIA_CREATE"
+            >
               Create new
             </Button>
           </div>
