@@ -145,7 +145,6 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         try {
             if ($attributes['status'] == QuarterReport::STATUS['REVIEWED']) {
                 $attributes['reportTime'] = now()->format('Y-m-d H:i:s');
-                $attributes['type'] = QuarterReport::TYPE['DUPLICATE'];
 
                 $quarterReportId = '';
                 for ($i = 1; $i <= 2; $i++) {
