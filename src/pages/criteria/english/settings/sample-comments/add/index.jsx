@@ -161,6 +161,7 @@ const General = memo(() => {
                                             fieldKey={[fieldItem.fieldKey, 'name']}
                                             name={[fieldItem.name, 'name']}
                                             type={variables.INPUT}
+                                            rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
                                             placeholder="Input text"
                                           />
                                         </div>
@@ -216,6 +217,7 @@ const General = memo(() => {
                       htmlType="submit"
                       size="large"
                       loading={loadingSubmit}
+                      permission={"WEB_TIENGANH_QUANLYCOMMENT_UPDATE" || "WEB_TIENGANH_QUANLYCOMMENT_DELETE"}
                     >
                       Save
                     </Button>
