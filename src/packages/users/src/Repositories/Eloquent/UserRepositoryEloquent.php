@@ -98,7 +98,31 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             if ($attributes['hasClass'] == 'true') {
                 $this->model = $this->model->whereHas('classTeacher');
             } else {
-                $this->model = $this->model->whereDoesnthave('classTeacher');
+                
+                $users = User::whereHas('transferDetail', function ($query) use ($attributes) {
+                    $query->whereHas('transfer', function ($query) use ($attributes) {
+                        $now = Carbon::now()->format('Y-m-d');
+                        $query->where('TimeApply', '<=', $now);
+                    });
+                })->with(['transferDetail' => function ($query) {
+                    $query->select('TransferDetails.*')
+                        ->join('Transfers', 'TransferDetails.TransferId', '=', 'Transfers.Id')
+                        ->orderby('Transfers.TimeApply', 'DESC');
+                }])->get();
+
+                $userId = [];
+
+                foreach ($users as $key => $user) {
+                    if (!is_null($user->classTeacherNew)) {
+                        if ($user->transferDetail->first()->BranchId != $user->classTeacherNew->classes->BranchId) {
+                            $userId[] = $user->Id;
+                        }
+                    }
+                }
+
+                $userIdInClassTeacher = User::whereDoesnthave('classTeacher')->pluck('Id')->toArray();
+                $dataUserId = array_merge($userId, $userIdInClassTeacher);
+                $this->model = $this->model->whereIn('Id', $dataUserId);
             }
         }
 
