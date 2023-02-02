@@ -397,6 +397,6 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
 
     public function classTeacherNew()
     {
-        return $this->hasOne(ClassTeacher::class, 'EmployeeId')->orderBy('StartDate', 'DESC');
+        return $this->hasOne(ClassTeacher::class, 'EmployeeId')->where('IsLastest', true);
     }
 }

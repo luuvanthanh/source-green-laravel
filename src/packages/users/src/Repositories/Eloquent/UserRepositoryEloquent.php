@@ -100,6 +100,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             if ($attributes['hasClass'] == 'true') {
                 $this->model = $this->model->whereHas('classTeacher');
             } else {
+
                 $users = User::whereHas('transferDetail', function ($query) use ($attributes) {
                     $query->whereHas('transfer', function ($query) use ($attributes) {
                         $now = Carbon::now()->format('Y-m-d');
@@ -108,31 +109,22 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
                 })->with(['transferDetail' => function ($query) {
                     $query->select('TransferDetails.*')
                         ->join('Transfers', 'TransferDetails.TransferId', '=', 'Transfers.Id')
-                        ->orderby('Transfers.TimeApply', 'DESC')->limit(1);
+                        ->orderby('Transfers.TimeApply', 'DESC');
                 }])->get();
 
                 $userId = [];
 
                 foreach ($users as $key => $user) {
-
-                    if (!is_null($user->transferDetail->first())) {
-                        if (!is_null($user->classTeacherNew)) {
-                            if ($user->transferDetail->first()->BranchId != $user->classTeacherNew->classes->BranchId) {
-                                $userId[] = $user->Id;
-                            }
-                        } else {
+                    if (!is_null($user->classTeacherNew)) {
+                        if ($user->transferDetail->first()->BranchId != $user->classTeacherNew->classes->BranchId) {
                             $userId[] = $user->Id;
                         }
-                    } else {
-                        $userId[] = $user->Id;
                     }
                 }
 
-                $userIdInClassTeacher = $this->model->whereDoesnthave('classTeacher')->pluck('Id')->toArray();
-                
+                $userIdInClassTeacher = User::whereDoesnthave('classTeacher')->pluck('Id')->toArray();
                 $dataUserId = array_merge($userId, $userIdInClassTeacher);
-                
-                $this->model = $this->model->whereIn('Id', $dataUserId);   
+                $this->model = $this->model->whereIn('Id', $dataUserId);
             }
         }
 
