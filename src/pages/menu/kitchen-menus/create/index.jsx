@@ -215,7 +215,6 @@ const Index = memo(() => {
   //     },
   //   });
   // };
-
   const convertMenuMeal = (items) => {
     const o = {};
     return items?.reduce((r, el) => {
@@ -673,7 +672,6 @@ const Index = memo(() => {
   //   });
   //   return size(listEnable);
   // };
-
   const onCollapsed = (record) => {
     setWeeksKitchen((prevState) =>
       prevState.map((item) =>
