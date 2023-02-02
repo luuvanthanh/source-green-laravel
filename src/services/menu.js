@@ -770,7 +770,7 @@ export async function getLeftMenuCriteria() {
       title: 'English',
       key: 'English',
       icon: 'icon icon-dictionary',
-      permission: [permissions.CTH],
+      permission: [permissions.WEB_TIENGANH_VIEW],
       children: [
         {
           title: 'Monthly comment',
@@ -808,7 +808,7 @@ export async function getLeftMenuCriteria() {
         {
           title: 'Settings',
           key: 'Settings',
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_VIEW],
           children: [
             {
               title: 'Program',

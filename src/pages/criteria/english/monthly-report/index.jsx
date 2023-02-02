@@ -366,8 +366,11 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelectStatus = (e, type) => {
+    const {
+      loading: { effects },
+    } = this.props;
     const { search } = this.state;
-    if (search?.schoolYearId && search?.month && search?.branchId && search?.classId) {
+    if (search?.schoolYearId && search?.month && search?.branchId && search?.classId && !(effects['EnglishMonthlyReport/GET_DATA'])) {
       this.debouncedSearchStatus(e, type);
     }
   };
@@ -465,7 +468,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
 
-    if (search?.status === 'NOT_REVIEW' && ability.can('WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_CREATE', 'WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_CREATE')) {
+    if (search?.status === 'NOT_REVIEW' && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE')) {
       return (
         <Button
           icon="edit"
