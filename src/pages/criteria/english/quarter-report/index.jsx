@@ -401,8 +401,11 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelectStatus = (e, type) => {
+    const {
+      loading: { effects },
+    } = this.props;
     const { search } = this.state;
-    if (search?.schoolYearId && search?.scriptReviewId) {
+    if (search?.schoolYearId && search?.scriptReviewId && !effects['EnglishQuarterReport/GET_DATA']) {
       this.debouncedSearchStatus(e, type);
     }
   };

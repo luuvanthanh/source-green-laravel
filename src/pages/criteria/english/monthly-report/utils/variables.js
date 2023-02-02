@@ -33,8 +33,8 @@ export const variables = {
   },
   STATUS_TABS: [
     ...(ability.can(
-      'WEB_TIENGANH_DANHGIATHANG_CHUAGUI_VIEW',
-      'WEB_TIENGANH_DANHGIATHANG_CHUAGUI_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_VIEW',
     )
       ? [
           {

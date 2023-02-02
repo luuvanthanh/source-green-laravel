@@ -320,6 +320,7 @@ const Index = memo(() => {
                       onClick={() => addSent()}
                       size="large"
                       loading={effects['EnglishQuarterReport/ADD_SENT_ALL']}
+                      permission="WEB_TIENGANH_GUIDANHGIADINHKY_CHUAGUI_CREATE"
                     >
                       Send
                     </Button>)
