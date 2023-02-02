@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { debounce, head, size } from 'lodash';
+import { debounce, head, size, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -14,6 +14,8 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 // import HelperModules from './utils/Helper';
+import ability from '@/utils/ability';
+
 import variablesModules from './utils/variables';
 import stylesModule from './styles.module.scss';
 
@@ -185,24 +187,26 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const status = search?.status;
-    this.props.dispatch({
-      type: 'EnglishQuarterReport/GET_DATA',
-      payload: {
-        ...search,
-        status: variablesModules.STATUS_SEARCH?.[status],
-        nameAssessmentPeriodId: undefined,
-      },
-      callback: (response) => {
-        if (response) {
-          this.setStateData({
-            data: response.parsePayload?.map(i => ({
-              ...i,
-              scriptReviewId: search?.scriptReviewId,
-            })),
-          });
-        }
-      },
-    });
+    if (!isEmpty(variablesModules.STATUS_TABS)) {
+      this.props.dispatch({
+        type: 'EnglishQuarterReport/GET_DATA',
+        payload: {
+          ...search,
+          status: variablesModules.STATUS_SEARCH?.[status],
+          nameAssessmentPeriodId: undefined,
+        },
+        callback: (response) => {
+          if (response) {
+            this.setStateData({
+              data: response.parsePayload?.map(i => ({
+                ...i,
+                scriptReviewId: search?.scriptReviewId,
+              })),
+            });
+          }
+        },
+      });
+    }
     history.push({
       pathname,
       query: Helper.convertParamSearch({
@@ -397,8 +401,11 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelectStatus = (e, type) => {
+    const {
+      loading: { effects },
+    } = this.props;
     const { search } = this.state;
-    if (search?.schoolYearId && search?.scriptReviewId) {
+    if (search?.schoolYearId && search?.scriptReviewId && !effects['EnglishQuarterReport/GET_DATA']) {
       this.debouncedSearchStatus(e, type);
     }
   };
@@ -489,7 +496,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
 
-    if (search?.status === 'NOT_REVIEW') {
+    if (search?.status === 'NOT_REVIEW' && ability.can('WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_CREATE', 'WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_CREATE')) {
       return (
         <Button
           icon="edit"
@@ -498,7 +505,7 @@ class Index extends PureComponent {
         />
       );
     }
-    if (search?.status === 'NOT_YET_CONFIRM') {
+    if (search?.status === 'NOT_YET_CONFIRM' && ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE')) {
       return (
         <Button
           icon="edit"
@@ -520,8 +527,20 @@ class Index extends PureComponent {
       return <div className={stylesModule['lds-ring']}><div /><div /><div /><div /></div>;
     }
     if (
-      search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ||
-      search?.status === variablesModules.STATUS.NOT_YET_SEND
+      search?.status === variablesModules.STATUS.NOT_YET_CONFIRM &&
+      ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE')
+    ) {
+      return (
+        <Button
+          icon="checkmark"
+          onClick={(e) => { e.stopPropagation(); this.addSent('one', record); }}
+          className={stylesModule.check}
+        />
+      );
+    }
+    if (
+      search?.status === variablesModules.STATUS.NOT_YET_SEND &&
+      ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE')
     ) {
       return (
         <Button
@@ -667,7 +686,8 @@ class Index extends PureComponent {
           key: 'text',
           width: 60,
           align: 'center',
-          render: (text, record, index) => index + 1,
+          render: (text, record, index) =>
+            Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
         },] : []),
       ...(search?.status !== "NOT_REVIEW" ?
         [{
@@ -765,6 +785,48 @@ class Index extends PureComponent {
   };
 
 
+  formBtnHeader = () => {
+    const {
+      loading: { effects },
+    } = this.props;
+    const { search } = this.state;
+    const { data } = this.state;
+
+    if (ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE') ||
+      ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE')
+    ) {
+      if (search?.status === head(variablesModules.STATUS_TABS)?.id ||
+        (search?.status === variablesModules.STATUS.REVIEWED) ||
+        (search?.status === variablesModules.STATUS.SENT) ||
+        (search?.status === variablesModules.STATUS.CONFIRMED)) {
+
+        return <div className='d-flex'>
+          <Button
+            disabled={!size(data?.filter((item) => item.isActive))}
+            color="primary"
+            icon="redo2"
+            className="ml-2"
+            onClick={() => this.addSent('much')}
+            loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
+          >
+            {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
+          </Button>
+          <Button
+            color="success"
+            icon="redo2"
+            className="ml-2"
+            disabled={!data?.length > 0}
+            loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
+            onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
+          >
+            {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
+          </Button>
+        </div>;
+      }
+    }
+    return "";
+  };
+
   render() {
     const {
       classes,
@@ -796,30 +858,7 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Quarter report</Text>
             {
-              (search?.status === variablesModules.STATUS.NOT_REVIEW) || (search?.status === variablesModules.STATUS.REVIEWED) || (search?.status === variablesModules.STATUS.SENT) || (search?.status === variablesModules.STATUS.CONFIRMED) ?
-                " " :
-                <div className='d-flex'>
-                  <Button
-                    disabled={!size(data?.filter((item) => item.isActive))}
-                    color="primary"
-                    icon="redo2"
-                    className="ml-2"
-                    onClick={() => this.addSent('much')}
-                    loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
-                  >
-                    {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
-                  </Button>
-                  <Button
-                    color="success"
-                    icon="redo2"
-                    className="ml-2"
-                    disabled={!data?.length > 0}
-                    loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
-                    onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
-                  >
-                    {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
-                  </Button>
-                </div>
+              this.formBtnHeader()
             }
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'], 'pt20')}>

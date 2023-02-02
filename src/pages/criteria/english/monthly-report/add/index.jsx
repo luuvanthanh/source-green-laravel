@@ -100,7 +100,7 @@ const Index = memo(() => {
           evaluationCriteriaId: itemDetail?.radioId
         }))
       }))
-    }));
+    })).filter(i => i?.isSubject);
     const checkEmpty = data?.filter(i => !i?.checkEmpty);
 
     if (checkEmpty?.length === 0) {
@@ -304,6 +304,7 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
+                  permission="WEB_TIENGANH_DANHGIATHANG_CREATE"
                 >
                   Save
                 </Button>

@@ -1,3 +1,5 @@
+import ability from '@/utils/ability';
+
 export const variables = {
   STATUS: {
     NEW: 'NEW',
@@ -30,30 +32,72 @@ export const variables = {
     SENT: 'DONE SEND',
   },
   STATUS_TABS: [
-    {
-      id: 'NOT_REVIEW',
-      name: 'NOT YET REVIEW',
-    },
-    {
-      id: 'REVIEWED',
-      name: 'DONE REVIEW',
-    },
-    {
-      id: 'NOT_YET_CONFIRM',
-      name: 'NOT YET CONFIRM',
-    },
-    {
-      id: 'CONFIRMED',
-      name: 'DONE CONFIRM',
-    },
-    {
-      id: 'NOT_YET_SEND',
-      name: 'NOT YET SEND',
-    },
-    {
-      id: 'SENT',
-      name: 'DONE SEND',
-    },
+    ...(ability.can(
+      'WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_VIEW',
+    )
+      ? [
+          {
+            id: 'NOT_REVIEW',
+            name: 'NOT YET REVIEW',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_TIENGANH_DANHGIATHANG_DADANHGIA_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_DADANHGIA_VIEW',
+    )
+      ? [
+          {
+            id: 'REVIEWED',
+            name: 'DONE REVIEW',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_TIENGANH_DUYETDANHGIATHANG_CHUADUYET_VIEW',
+      'WEB_TIENGANH_DUYETDANHGIATHANG_CHUADUYET_VIEW',
+    )
+      ? [
+          {
+            id: 'NOT_YET_CONFIRM',
+            name: 'NOT YET CONFIRM',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_TIENGANH_DUYETDANHGIATHANG_DADUYET_VIEW',
+      'WEB_TIENGANH_DUYETDANHGIATHANG_DADUYET_VIEW',
+    )
+      ? [
+          {
+            id: 'CONFIRMED',
+            name: 'DONE CONFIRM',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_VIEW',
+      'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_VIEW',
+    )
+      ? [
+          {
+            id: 'NOT_YET_SEND',
+            name: 'NOT YET SEND',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_VIEW',
+      'WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_VIEW',
+    )
+      ? [
+          {
+            id: 'SENT',
+            name: 'DONE SEND',
+          },
+        ]
+      : []),
   ],
   STATUS_SEARCH: {
     NOT_YET_CONFIRM: 'NOT_YET_CONFIRM',

@@ -770,7 +770,7 @@ export async function getLeftMenuCriteria() {
       title: 'English',
       key: 'English',
       icon: 'icon icon-dictionary',
-      permission: [permissions.CTH],
+      permission: [permissions.WEB_TIENGANH_VIEW],
       children: [
         {
           title: 'Monthly comment',
@@ -782,7 +782,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/monthly-report/:id/edit',
             '/chuong-trinh-hoc/monthly-report/:id/confirmed',
           ],
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_DANHGIATHANG_VIEW],
           pro: true,
         },
         {
@@ -795,20 +795,20 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/quarter-report/:id/edit',
             '/chuong-trinh-hoc/quarter-report/:id/confirmed',
           ],
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_DANHGIADINHKY_VIEW],
           pro: true,
         },
         {
           title: 'Study Plan',
           key: 'study-plan',
           url: ['/chuong-trinh-hoc/study-plan'],
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_THOIKHOABIEU_VIEW],
           pro: true,
         },
         {
           title: 'Settings',
           key: 'Settings',
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_VIEW],
           children: [
             {
               title: 'Program',
@@ -819,7 +819,7 @@ export async function getLeftMenuCriteria() {
                 '/chuong-trinh-hoc/settings/program/:id/detail',
                 '/chuong-trinh-hoc/settings/program/:id/edit',
               ],
-              permission: [permissions.CTH],
+              permission: [permissions.WEB_TIENGANH_QUANLYBAIGIANG_VIEW],
               pro: true,
             },
             {
@@ -831,7 +831,7 @@ export async function getLeftMenuCriteria() {
                 '/chuong-trinh-hoc/settings/subject/:id/detail',
                 '/chuong-trinh-hoc/settings/subject/:id/edit',
               ],
-              permission: [permissions.CTH],
+              permission: [permissions.WEB_TIENGANH_QUANLYPHANMUC_VIEW],
               pro: true,
             },
             {
@@ -843,7 +843,7 @@ export async function getLeftMenuCriteria() {
                 '/chuong-trinh-hoc/settings/evaluationCriteria/:id/detail',
                 '/chuong-trinh-hoc/settings/evaluationCriteria/:id/edit',
               ],
-              permission: [permissions.CTH],
+              permission: [permissions.WEB_TIENGANH_QUANLYTIEUCHI_VIEW],
               pro: true,
             },
             {
@@ -855,7 +855,7 @@ export async function getLeftMenuCriteria() {
                 '/chuong-trinh-hoc/settings/sampleComments/:id/detail',
                 '/chuong-trinh-hoc/settings/sampleComments/:id/edit',
               ],
-              permission: [permissions.CTH],
+              permission: [permissions.WEB_TIENGANH_QUANLYCOMMENT_VIEW],
               pro: true,
             },
             {
@@ -867,7 +867,7 @@ export async function getLeftMenuCriteria() {
                 '/chuong-trinh-hoc/settings/scriptReview/:id/detail',
                 '/chuong-trinh-hoc/settings/scriptReview/:id/edit',
               ],
-              permission: [permissions.CTH],
+              permission: [permissions.WEB_TIENGANH_KICHBANDANHGIA_VIEW],
               pro: true,
             },
             {
@@ -895,7 +895,7 @@ export async function getLeftMenuCriteria() {
           url: [
             '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc',
             '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/detail',
-            '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/edit'
+            '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/edit',
           ],
           permission: [permissions.THECHAT],
           pro: true,
@@ -906,7 +906,7 @@ export async function getLeftMenuCriteria() {
           url: [
             '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky',
             '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/detail',
-            '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/edit'
+            '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/edit',
           ],
           permission: [permissions.THECHAT],
           pro: true,
@@ -918,7 +918,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/the-chat/bai-hoc',
             '/chuong-trinh-hoc/the-chat/bai-hoc/add',
             '/chuong-trinh-hoc/the-chat/bai-hoc/:id/detail',
-            '/chuong-trinh-hoc/the-chat/bai-hoc/:id/edit'
+            '/chuong-trinh-hoc/the-chat/bai-hoc/:id/edit',
           ],
           permission: [permissions.THECHAT],
           pro: true,
@@ -930,7 +930,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/the-chat/nhan-xet-mau',
             '/chuong-trinh-hoc/the-chat/nhan-xet-mau/add',
             '/chuong-trinh-hoc/the-chat/nhan-xet-mau/:id/detail',
-            '/chuong-trinh-hoc/the-chat/nhan-xet-mau/:id/edit'
+            '/chuong-trinh-hoc/the-chat/nhan-xet-mau/:id/edit',
           ],
           permission: [permissions.THECHAT],
           pro: true,
@@ -942,7 +942,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/the-chat/mon-danh-gia',
             '/chuong-trinh-hoc/the-chat/mon-danh-gia/add',
             '/chuong-trinh-hoc/the-chat/mon-danh-gia/:id/detail',
-            '/chuong-trinh-hoc/the-chat/mon-danh-gia/:id/edit'
+            '/chuong-trinh-hoc/the-chat/mon-danh-gia/:id/edit',
           ],
           permission: [permissions.THECHAT],
           pro: true,
@@ -954,7 +954,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia',
             '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia/add',
             '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia/:id/detail',
-            '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia/:id/edit'
+            '/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia/:id/edit',
           ],
           permission: [permissions.THECHAT],
           pro: true,
