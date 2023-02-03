@@ -42,7 +42,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     use Authorizable, CanResetPassword, MustVerifyEmail;
     use InteractsWithMedia;
     use SyncToDevice;
-    use ActivityLogTrait;
+    //  use ActivityLogTrait;
 
     const STATUS = [
         'INACTIVITY' => 1,
