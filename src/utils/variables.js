@@ -94,6 +94,7 @@ export const variables = {
     PAGE_SIZE_OPTIONS: ['10', '20', '50', '100'],
     SHOW_SIZE_CHANGER: true,
     PER_PAGE_TEXT: '/ trang',
+    PER_PAGE_TEXT_ENGLISH: '/ Page',
   },
   // DATE FORMAT
   DATE_FORMAT: {
@@ -116,7 +117,7 @@ export const variables = {
     DATE_MONTH: 'DD/MM',
     SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
     MONTH_FULL: '[Tháng] MM/YYYY',
-    MONTH_FULL_ENGLISH: '[Month] MM/YYYY',
+    MONTH_FULL_ENGLISH: 'MM/YYYY',
     MONTH_NAME: '[Tháng] MM',
     MONTH_YEAR: 'MM/YYYY',
     YEAR_MONTH_DAY: 'YYYY/MM/DD',

@@ -281,7 +281,7 @@ const Index = memo(() => {
   ];
 
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
-  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`;
+  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.MONTH_FULL_ENGLISH)}`;
   return (
     <div className={stylesModule['wraper-container-monthlyComment']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
@@ -335,49 +335,52 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane>
-                <Pane className="card mb20">
-                  <Pane className="p20">
-                    <Heading type="form-title">
-                      Subject
-                    </Heading>
-                  </Pane>
-                  <Pane className="row  pl20 pb20 pr20">
-                    {
-                      dataDetails?.monthlyCommentDetail.find(i => i?.isSubject) && (
-                        dataDetails?.monthlyCommentDetail.filter(i => i?.isSubject)?.map(item => (
-                          (
-                            <>
-                              <Pane className="col-lg-12 pt20 border-top">
-                                <h3 className={stylesModule['item-text-header']}>{item?.scriptReviewSubject?.subject?.name}</h3>
-                              </Pane>
-                              <Pane className="col-lg-12 pb20">
-                                {
-                                  item?.monthlyCommentDetailSubject?.map(itemDetail => (
-                                    (
-                                      <div className={stylesModule['wrapper-table-item']}>
-                                        <h3 className={stylesModule['text-item-table']}>{itemDetail?.scriptReviewSubjectDetail?.subjectSection?.name}</h3>
-                                        <Table
-                                          columns={header()}
-                                          dataSource={itemDetail?.monthlyCommentDetailSubjectChildren}
-                                          pagination={false}
-                                          rowKey={(record) => record.id}
-                                          scroll={{ x: '100%' }}
-                                          description="No data"
-                                          isEmpty
-                                        />
-                                      </div>
-                                    )
-                                  ))
-                                }
-                              </Pane>
-                            </>
+                {
+                  dataDetails?.monthlyCommentDetail.find(i => i?.isSubject) && (
+                    <Pane className="card mb20">
+                      <Pane className="p20">
+                        <Heading type="form-title">
+                          Subject
+                        </Heading>
+                      </Pane>
+                      <Pane className="row  pl20 pb20 pr20">
+                        {
+                          dataDetails?.monthlyCommentDetail.find(i => i?.isSubject) && (
+                            dataDetails?.monthlyCommentDetail.filter(i => i?.isSubject)?.map(item => (
+                              (
+                                <>
+                                  <Pane className="col-lg-12 pt20 border-top">
+                                    <h3 className={stylesModule['item-text-header']}>{item?.scriptReviewSubject?.subject?.name}</h3>
+                                  </Pane>
+                                  <Pane className="col-lg-12 pb20">
+                                    {
+                                      item?.monthlyCommentDetailSubject?.map(itemDetail => (
+                                        (
+                                          <div className={stylesModule['wrapper-table-item']}>
+                                            <h3 className={stylesModule['text-item-table']}>{itemDetail?.scriptReviewSubjectDetail?.subjectSection?.name}</h3>
+                                            <Table
+                                              columns={header()}
+                                              dataSource={itemDetail?.monthlyCommentDetailSubjectChildren}
+                                              pagination={false}
+                                              rowKey={(record) => record.id}
+                                              scroll={{ x: '100%' }}
+                                              description="No data"
+                                              isEmpty
+                                            />
+                                          </div>
+                                        )
+                                      ))
+                                    }
+                                  </Pane>
+                                </>
+                              )
+                            ))
                           )
-                        ))
-                      )
-                    }
-                  </Pane>
-                </Pane>
-
+                        }
+                      </Pane>
+                    </Pane>
+                  )
+                }
                 {
                   dataDetails?.monthlyCommentDetail.find(i => i?.isComment) &&
                   dataDetails?.monthlyCommentDetail.filter(i => i?.isComment)?.map(i => (
@@ -417,7 +420,7 @@ const Index = memo(() => {
                     onClick={() => addDelete()}
                     size="large"
                     loading={effects['EnglishMonthlyReport/DELETE_CONFIRM']}
-                    permission="WEB_TIENGANH_DUYETDANHGIATHANG_DELETE"
+                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE"
                   >
                     Refuse
                   </Button>
@@ -427,7 +430,7 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={effects['EnglishMonthlyReportAdd/UPDATE_CONFIRMED']}
-                    permission="WEB_TIENGANH_DUYETDANHGIATHANG_UPDATE"
+                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE"
                   >
                     Save
                   </Button>
@@ -437,7 +440,7 @@ const Index = memo(() => {
                     onClick={() => addSent()}
                     size="large"
                     loading={effects['EnglishMonthlyReportAdd/UPDATE_CONFIRMED']}
-                    permission="WEB_TIENGANH_DUYETDANHGIATHANG_UPDATE"
+                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE"
                   >
                     Accept
                   </Button>

@@ -55,8 +55,8 @@ export const variables = {
         ]
       : []),
     ...(ability.can(
-      'WEB_TIENGANH_DUYETDANHGIATHANG_CHUADUYET_VIEW',
-      'WEB_TIENGANH_DUYETDANHGIATHANG_CHUADUYET_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_CHUADUYET_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_CHUADUYET_VIEW',
     )
       ? [
           {
@@ -66,8 +66,8 @@ export const variables = {
         ]
       : []),
     ...(ability.can(
-      'WEB_TIENGANH_DUYETDANHGIATHANG_DADUYET_VIEW',
-      'WEB_TIENGANH_DUYETDANHGIATHANG_DADUYET_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_DADUYET_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_DADUYET_VIEW',
     )
       ? [
           {
@@ -77,8 +77,8 @@ export const variables = {
         ]
       : []),
     ...(ability.can(
-      'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_VIEW',
-      'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_CHUAGUI_VIEW',
+      'WEB_TIENGANH_DANHGIATHANG_CHUAGUI_VIEW',
     )
       ? [
           {
@@ -87,10 +87,7 @@ export const variables = {
           },
         ]
       : []),
-    ...(ability.can(
-      'WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_VIEW',
-      'WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_VIEW',
-    )
+    ...(ability.can('WEB_TIENGANH_DANHGIATHANG_DAGUI_VIEW', 'WEB_TIENGANH_DANHGIATHANG_DAGUI_VIEW')
       ? [
           {
             id: 'SENT',

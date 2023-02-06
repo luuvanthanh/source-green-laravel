@@ -148,8 +148,10 @@ const Index = memo(() => {
       }
     });
   };
-  const detailTearch = `${dataDetails?.teacher?.fullName ? dataDetails?.teacher?.fullName : ""}  ${dataDetails?.creationTime ? Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE) : ""}`;
-  const detailTearchManagement = `${dataDetails?.teacherManagement?.fullName ? dataDetails?.teacherManagement?.fullName : ""}  ${dataDetails?.confirmationTime ? Helper.getDate(dataDetails?.confirmationTime, variables.DATE_FORMAT.DATE) : ""}`;
+  const detailTearch = `${dataDetails?.teacher?.fullName ? dataDetails?.teacher?.fullName : ""}  ${dataDetails?.creationTime ? Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE_TIME) : ""}`;
+  const detailTearchManagement = `${dataDetails?.teacherManagement?.fullName ? dataDetails?.teacherManagement?.fullName : ""}  ${dataDetails?.confirmationTime ? Helper.getDate(dataDetails?.confirmationTime, variables.DATE_FORMAT.DATE_TIME) : ""}`;
+  const detailTearchManagementSend = `${dataDetails?.teacherSent?.fullName ? dataDetails?.teacherSent?.fullName : ""}  ${dataDetails?.lastModificationTime ? Helper.getDate(dataDetails?.lastModificationTime, variables.DATE_FORMAT.DATE_TIME) : ""}`;
+
   const formStatus = () => {
     if (query?.type === "done-review") {
       return (
@@ -179,6 +181,9 @@ const Index = memo(() => {
           <Pane className="col-lg-3">
             <FormDetail name={detailTearchManagement} label="Approved by" type="text" />
           </Pane>
+          <Pane className="col-lg-3">
+            <FormDetail name={detailTearchManagementSend} label="Sender" type="text" />
+          </Pane>
         </>
       );
     }
@@ -189,7 +194,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container-monthlyComment']}>
       <Breadcrumbs last="Detail" menu={menuLeftCriteria} />
-      <Helmet title="Quarter report" />
+      <Helmet title="Monthly report" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
           <Form layout="vertical" form={form} initialValues={{
@@ -231,7 +236,7 @@ const Index = memo(() => {
                     <FormDetail name={dataDetails?.student?.classes?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={Helper.getDate(dataDetails?.month, variables.DATE_FORMAT.MONTH_FULL)} label="Monthly comment" type="text" />
+                    <FormDetail name={Helper.getDate(dataDetails?.month, variables.DATE_FORMAT.MONTH_FULL_ENGLISH)} label="Monthly comment" type="text" />
                   </Pane>
                   {formStatus()}
                 </Pane>
@@ -312,7 +317,7 @@ const Index = memo(() => {
                       onClick={() => addSent()}
                       size="large"
                       loading={effects['EnglishMonthlyReport/ADD_SENT_ALL']}
-                      permission="WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_CREATE"
+                      permission="WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE"
                     >
                       Send
                     </Button>)
