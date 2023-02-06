@@ -114,7 +114,7 @@ const Index = memo(() => {
       <Pane className="pl20 pr20 pb20">
         <Pane >
           <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
-            data: [
+            units: [
               {},
             ],
           }}>

@@ -155,7 +155,7 @@ class Index extends PureComponent {
    * @param {object} pagination value of pagination items
    */
   pagination = (pagination) =>
-    Helper.paginationLavarel({
+    Helper.paginationEnglish({
       pagination,
       callback: (response) => {
         this.changePagination(response);
@@ -187,23 +187,6 @@ class Index extends PureComponent {
     }, text);
   };
 
-  covertChildEvaluateDetail = items => {
-    let array = [];
-    items.forEach(({ id }) => {
-      const existAssessment = items.find(item => item.inputAssessment && item.id === id);
-      const existPeriodicAssessment = items.find(item => item.periodicAssessment && item.id === id);
-      if (existAssessment && existPeriodicAssessment) {
-        array = [...array, 'Test đầu vào', 'Đánh giá định kỳ'];
-      }
-      if (existAssessment && !existPeriodicAssessment) {
-        array = [...array, 'Test đầu vào'];
-      }
-      if (!existAssessment && existPeriodicAssessment) {
-        array = [...array, 'Đánh giá định kỳ'];
-      }
-    });
-    return [...new Set(array)];
-  }
 
   /**
    * Function header table

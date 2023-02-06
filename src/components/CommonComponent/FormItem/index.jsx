@@ -98,6 +98,7 @@ const renderChildren = (
       onChange={onChange}
       placeholder="Nhập"
       value={value}
+      min={0}
     />
   ),
   inputCountForm: (
@@ -296,7 +297,7 @@ const renderChildren = (
     <DatePicker
       disabled={disabled}
       disabledDate={disabledDate}
-      format={language === variables.LANGUAGE.ENGLISH ? "[Month] MM/YYYY" : "[Tháng] MM/YYYY"}
+      format={language === variables.LANGUAGE.ENGLISH ? "MM/YYYY" : "[Tháng] MM/YYYY"}
       onChange={onChange}
       placeholder={language === variables.LANGUAGE.ENGLISH ? "Select month" : "Chọn"}
       picker="month"

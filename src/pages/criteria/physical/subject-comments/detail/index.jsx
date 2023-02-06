@@ -1,7 +1,6 @@
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Radio } from 'antd';
-import { isEmpty, get } from 'lodash';
+import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useParams, history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
@@ -11,64 +10,22 @@ import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import classnames from 'classnames';
 import FormDetail from '@/components/CommonComponent/FormDetail';
+import Text from '@/components/CommonComponent/Text';
 import stylesModule from '../styles.module.scss';
-
-const { Group: RadioGroup } = Radio;
 
 const Index = memo(() => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const params = useParams();
   const mounted = useRef(false);
+  const [details, setDetails] = useState(undefined);
   const {
     loading: { effects },
-    details,
     menuLeftCriteria,
-  } = useSelector(({ menu, loading, englishSettingevaluationCriteriaAdd }) => ({
+  } = useSelector(({ menu, loading }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
-    details: englishSettingevaluationCriteriaAdd.details,
-    error: englishSettingevaluationCriteriaAdd.error,
+    menuLeftCriteria: menu.menuLeftCriteria
   }));
-
-
-  const loadingSubmit = effects[`englishSettingevaluationCriteriaAdd/UPDATE`] || effects[`englishSettingevaluationCriteriaAdd/ADD`];
-
-  const onFinish = (values) => {
-    dispatch({
-      type: params.id ? 'englishSettingevaluationCriteriaAdd/UPDATE' : 'englishSettingevaluationCriteriaAdd/ADD',
-      payload: { name: values?.name, content: values?.content, id: params.id },
-      callback: (response, error) => {
-        if (response) {
-          if (response) {
-            history.push(`/chuong-trinh-hoc/settings/evaluationCriteria`);
-          }
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              form.current.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
-  };
-
-  useEffect(() => {
-    if (params.id) {
-      dispatch({
-        type: 'englishSettingevaluationCriteriaAdd/GET_DATA',
-        payload: params,
-        callback: () => {},
-      });
-    }
-  }, [params.id]);
 
   useEffect(() => {
     mounted.current = true;
@@ -77,25 +34,27 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (params.id) {
-      form.setFieldsValue({
-        ...details,
+      dispatch({
+        type: 'subjectCommentAdd/GET_DATA',
+        payload: params,
+        callback: (response) => {
+          if (response) {
+            setDetails(response);
+          }
+        },
       });
     }
-  }, [details]);
+  }, [params.id]);
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Tạo mới'} menu={menuLeftCriteria} />
-      <Helmet title="Evaluation criteria" />
+      <Breadcrumbs last={details?.code} menu={menuLeftCriteria} />
+      <Helmet title="Môn đánh giá" />
       <Pane className="pl20 pr20">
         <Pane className="col-lg-6 offset-lg-3">
-          <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
-            data: [
-              {},
-            ],
-          }}>
+          <Form layout="vertical" form={form}>
             <Loading
-              loading={effects['englishSettingevaluationCriteriaAdd/GET_DATA']}
+              loading={effects['subjectCommentAdd/GET_DATA']}
             >
               <Pane className="card p20">
                 <Heading type="form-title" className="mb15">
@@ -106,7 +65,7 @@ const Index = memo(() => {
                     <FormDetail name={details?.code} label="ID" />
                   </Pane>
                   <Pane className="col-lg-12">
-                    <FormDetail name={details?.code} label="Môn đánh giá" />
+                    <FormDetail name={details?.name} label="Môn đánh giá" />
                   </Pane>
                 </Pane>
               </Pane>
@@ -114,57 +73,58 @@ const Index = memo(() => {
                 <Heading type="form-title" className="mb15">
                   Tiêu chí đánh giá
                 </Heading>
-                <RadioGroup className="pb20">
-                  <Radio value={1}>Chọn tiêu chí</Radio>
-                  <Radio value={2}>Nhập thông tin</Radio>
-                </RadioGroup>
-                <Pane >
-                  <div className={stylesModule['wrapper-table']}>
-                    <div className={stylesModule['card-heading']}>
-                      <div className={stylesModule.col}>
-                        <p className={stylesModule.norm}>Nội dung</p>
-                      </div>
-                      <div className={stylesModule.cols}>
-                        <p className={stylesModule.norm} />
-                      </div>
-                    </div>
-                    <>
-                      {details?.sampleCommentDetail?.map((fieldItem, index) => {
-                        const itemData = details?.sampleCommentDetail?.find((item, indexWater) => indexWater === index);
-                        return (
-                          <Pane
-                            key={index}
-                            className="d-flex"
-                          >
-                            <div className={stylesModule['card-item']}>
-                              <div className={classnames(stylesModule.colDetail)}>
-                                <FormDetail name={itemData?.name} type="table" />
+                <Text color='dark' size='normal' className="mb15">{details?.content?.type === 'INFORMATION' ? "Nhập thông tin" : "Chọn tiêu chí"}</Text>
+                {
+                  details?.content?.type === 'INFORMATION' ? (
+                    <></>
+                  ) : (
+                    <Pane >
+                      <div className={stylesModule['wrapper-table']}>
+                        <div className={stylesModule['card-heading']}>
+                          <div className={stylesModule.col}>
+                            <p className={stylesModule.norm}>Nội dung</p>
+                          </div>
+                          <div className={stylesModule.cols}>
+                            <p className={stylesModule.norm} />
+                          </div>
+                        </div>
+                        <>
+                          {details?.content?.items?.map((fieldItem, index) => (
+                            <Pane
+                              key={index}
+                              className="d-flex"
+                            >
+                              <div className={stylesModule['card-item']}>
+                                <div className={classnames(stylesModule.colDetail)}>
+                                  <FormDetail name={fieldItem} type="table" />
+                                </div>
                               </div>
-                            </div>
-                          </Pane>
-                        );
-                      })}
-                    </>
-                  </div>
-                </Pane>
+                            </Pane>
+                          ))}
+                        </>
+                      </div>
+                    </Pane>
+                  )
+                }
               </Pane>
               <Pane className="d-flex justify-content-between align-items-center mb20">
                 <p
                   className="btn-delete"
                   role="presentation"
 
-                  onClick={() => history.push(`/chuong-trinh-hoc/the-chat/mon-danh-gia`)}
+                  onClick={() => history.goBack()}
                 >
-                  Hủy
+                  Đóng
                 </p>
                 <Button
                   className="ml-auto px25"
                   color="success"
-                  htmlType="submit"
                   size="large"
-                  loading={loadingSubmit}
+                  onClick={() => {
+                    history.push(`/chuong-trinh-hoc/the-chat/mon-danh-gia/${details?.id}/edit`);
+                  }}
                 >
-                  Lưu
+                  Sửa
                 </Button>
               </Pane>
             </Loading>

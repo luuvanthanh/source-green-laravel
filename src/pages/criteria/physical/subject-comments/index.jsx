@@ -26,11 +26,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ englishSettingSampleComments, loading }) => ({
-  data: englishSettingSampleComments.data,
-  error: englishSettingSampleComments.error,
-  pagination: englishSettingSampleComments.pagination,
-  skill: englishSettingSampleComments.skill,
+const mapStateToProps = ({ subjectComment, loading }) => ({
+  data: subjectComment.data,
+  error: subjectComment.error,
+  pagination: subjectComment.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -44,13 +43,9 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
+        keyWord: query?.keyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        categorySkillId: query?.categorySkillId,
-        age: query?.age,
-        aplly: query?.aplly,
-
       },
     };
     setIsMounted(true);
@@ -58,7 +53,6 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
-    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -88,7 +82,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'englishSettingSampleComments/GET_DATA',
+      type: 'subjectComment/GET_DATA',
       payload: {
         ...search,
       },
@@ -101,14 +95,6 @@ class Index extends PureComponent {
         variables.QUERY_STRING,
       )}`,
     );
-  };
-
-  loadCategories = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'englishSettingSampleComments/GET_SKILL',
-      payload: {},
-    });
   };
 
   /**
@@ -178,11 +164,11 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
-    const text = "Do you want to delete?";
-    Helper.confirmDeleteEnglish({
+    const text = "Bạn có chắc chắn muốn xóa Môn đánh giá này không?";
+    Helper.confirmDelete({
       callback: () => {
         dispatch({
-          type: 'englishSettingSampleComments/REMOVE',
+          type: 'subjectComment/REMOVE',
           payload: {
             id,
           },
@@ -196,24 +182,6 @@ class Index extends PureComponent {
     }, text);
   };
 
-  covertChildEvaluateDetail = items => {
-    let array = [];
-    items.forEach(({ id }) => {
-      const existAssessment = items.find(item => item.inputAssessment && item.id === id);
-      const existPeriodicAssessment = items.find(item => item.periodicAssessment && item.id === id);
-      if (existAssessment && existPeriodicAssessment) {
-        array = [...array, 'Test đầu vào', 'Đánh giá định kỳ'];
-      }
-      if (existAssessment && !existPeriodicAssessment) {
-        array = [...array, 'Test đầu vào'];
-      }
-      if (!existAssessment && existPeriodicAssessment) {
-        array = [...array, 'Đánh giá định kỳ'];
-      }
-    });
-    return [...new Set(array)];
-  }
-
   /**
    * Function header table
    */
@@ -224,7 +192,7 @@ class Index extends PureComponent {
     const columns = [
       {
         title: 'Mã ID',
-        key: 'skill',
+        key: 'code',
         className: 'min-width-150',
         width: 150,
         render: (record) => <Text size="normal">{record?.code}</Text>,
@@ -254,10 +222,6 @@ class Index extends PureComponent {
     return columns;
   };
 
-  onChangeSelect = (e, type) => {
-    this.debouncedSearch(e, type);
-  };
-
   debouncedSearch = debounce((value, type) => {
     this.setStateData(
       (prevState) => ({
@@ -282,7 +246,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['englishSettingSampleComments/GET_DATA'];
+    const loading = effects['subjectComment/GET_DATA'];
     return (
       <>
         <Helmet title="Môn đánh giá" />
@@ -304,8 +268,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />

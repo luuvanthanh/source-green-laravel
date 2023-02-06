@@ -438,7 +438,7 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
-                  permission="WEB_TIENGANH_DANHGIADINHKY_CREATE"
+                  permission="WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE"
                 >
                   Save
                 </Button>

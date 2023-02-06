@@ -1191,6 +1191,24 @@ export default class Helpers {
     showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
+  static paginationEnglish = ({ pagination, callback }) => ({
+    size: 'default',
+    total: pagination?.total,
+    pageSize: pagination?.per_page,
+    defaultCurrent: pagination?.current_page,
+    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT_ENGLISH },
+    onChange: (page, size) => {
+      callback({ page, limit: size });
+    },
+    onShowSizeChange: (current, size) => {
+      callback({ page: current, limit: size });
+    },
+    showTotal: (total, [start, end]) => `Display ${start}-${end} in ${total}`,
+  });
+
   /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
