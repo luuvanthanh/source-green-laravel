@@ -417,7 +417,7 @@ const Index = memo(() => {
                     onClick={() => addDelete()}
                     size="large"
                     loading={effects['EnglishQuarterReport/DELETE_CONFIRM']}
-                    permission="WEB_TIENGANH_DUYETDANHGIADINHKY_DELETE"
+                    permission="WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE"
                   >
                     Refuse
                   </Button>
@@ -427,7 +427,7 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={effects['EnglishQuarterReportAdd/UPDATE_CONFIRMED']}
-                    permission="WEB_TIENGANH_DUYETDANHGIADINHKY_UPDATE"
+                    permission="WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE"
                   >
                     Save
                   </Button>
@@ -437,7 +437,7 @@ const Index = memo(() => {
                     onClick={() => addSent()}
                     size="large"
                     loading={effects['EnglishQuarterReportAdd/UPDATE_CONFIRMED']}
-                    permission="WEB_TIENGANH_DUYETDANHGIADINHKY_UPDATE"
+                    permission="WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"
                   >
                     Accept
                   </Button>

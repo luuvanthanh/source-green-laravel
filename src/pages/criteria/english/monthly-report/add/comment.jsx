@@ -41,7 +41,7 @@ const Index = memo(({
         </Pane>
         <Pane className="col-lg-12">
           <FormDetail label="Content" type="label" />
-          <TextArea rows={4} placeholder="Nhập" onChange={(e) => onChangeInput(e, itemParent)} />
+          <TextArea rows={4} placeholder="Input" onChange={(e) => onChangeInput(e, itemParent)} />
         </Pane>
       </Pane>
     </Pane>

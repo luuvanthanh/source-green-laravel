@@ -207,7 +207,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container-monthlyComment']}>
       <Breadcrumbs last={dataStudent?.fullName} menu={menuLeftCriteria} />
-      <Helmet title="Quarter report" />
+      <Helmet title="Monthly report" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
           <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
@@ -249,33 +249,37 @@ const Index = memo(() => {
                     <FormDetail name={dataStudent?.class?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={Helper.getDate(query?.month, variables.DATE_FORMAT.MONTH_FULL)} label="Monthly comment" type="text" />
+                    <FormDetail name={Helper.getDate(query?.month, variables.DATE_FORMAT.MONTH_FULL_ENGLISH)} label="Monthly comment" type="text" />
                   </Pane>
                 </Pane>
               </Pane>
               <Pane>
-                <Pane className="card mb20">
-                  <Pane className="p20">
-                    <Heading type="form-title">
-                      Subject
-                    </Heading>
-                  </Pane>
-                  <Pane className="row  pl20 pb20 pr20">
-                    {
-                      dataDetails?.isCheckSubject && (
-                        dataDetails?.scriptReviewSubject?.map(item => (
-                          item?.isCheck && (
-                            <Subject
-                              item={item}
-                              checkFinish={checkFinish}
-                              dataEvaluetionCriteria={dataEvaluetionCriteria}
-                            />
+                {
+                  dataDetails?.isCheckSubject && (
+                    <Pane className="card mb20">
+                      <Pane className="p20">
+                        <Heading type="form-title">
+                          Subject
+                        </Heading>
+                      </Pane>
+                      <Pane className="row  pl20 pb20 pr20">
+                        {
+                          dataDetails?.isCheckSubject && (
+                            dataDetails?.scriptReviewSubject?.map(item => (
+                              item?.isCheck && (
+                                <Subject
+                                  item={item}
+                                  checkFinish={checkFinish}
+                                  dataEvaluetionCriteria={dataEvaluetionCriteria}
+                                />
+                              )
+                            ))
                           )
-                        ))
-                      )
-                    }
-                  </Pane>
-                </Pane>
+                        }
+                      </Pane>
+                    </Pane>
+                  )
+                }
 
                 {
                   dataDetails?.isCheckSampleComment &&
@@ -304,7 +308,7 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
-                  permission="WEB_TIENGANH_DANHGIATHANG_CREATE"
+                  permission="WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE"
                 >
                   Save
                 </Button>

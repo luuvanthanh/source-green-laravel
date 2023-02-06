@@ -33,8 +33,8 @@ export const variables = {
   },
   STATUS_TABS: [
     ...(ability.can(
-      'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_VIEW',
-      'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_VIEW',
     )
       ? [
           {
@@ -55,8 +55,8 @@ export const variables = {
         ]
       : []),
     ...(ability.can(
-      'WEB_TIENGANH_DUYETDANHGIADINHKY_CHUADUYET_VIEW',
-      'WEB_TIENGANH_DUYETDANHGIADINHKY_CHUADUYET_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_VIEW',
     )
       ? [
           {
@@ -66,8 +66,8 @@ export const variables = {
         ]
       : []),
     ...(ability.can(
-      'WEB_TIENGANH_DUYETDANHGIADINHKY_DADUYET_VIEW',
-      'WEB_TIENGANH_DUYETDANHGIADINHKY_DADUYET_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_DADUYET_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_DADUYET_VIEW',
     )
       ? [
           {
@@ -77,8 +77,8 @@ export const variables = {
         ]
       : []),
     ...(ability.can(
-      'WEB_TIENGANH_GUIDANHGIADINHKY_CHUAGUI_VIEW',
-      'WEB_TIENGANH_GUIDANHGIADINHKY_CHUAGUI_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_VIEW',
     )
       ? [
           {
@@ -88,8 +88,8 @@ export const variables = {
         ]
       : []),
     ...(ability.can(
-      'WEB_TIENGANH_GUIDANHGIADINHKY_DAGUI_VIEW',
-      'WEB_TIENGANH_GUIDANHGIADINHKY_DAGUI_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_DAGUI_VIEW',
+      'WEB_TIENGANH_DANHGIADINHKY_DAGUI_VIEW',
     )
       ? [
           {

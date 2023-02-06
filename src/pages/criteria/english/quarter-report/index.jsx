@@ -459,7 +459,7 @@ class Index extends PureComponent {
     const {
       location: { query },
     } = this.props;
-    return Helper.paginationNet({
+    return Helper.paginationEnglish({
       pagination,
       query,
       callback: (response) => {
@@ -496,7 +496,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
 
-    if (search?.status === 'NOT_REVIEW' && ability.can('WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_CREATE', 'WEB_TIENGANH_GUIDANHGIATHANG_DAGUI_CREATE')) {
+    if (search?.status === 'NOT_REVIEW' && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE')) {
       return (
         <Button
           icon="edit"
@@ -505,7 +505,7 @@ class Index extends PureComponent {
         />
       );
     }
-    if (search?.status === 'NOT_YET_CONFIRM' && ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE')) {
+    if (search?.status === 'NOT_YET_CONFIRM' && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE')) {
       return (
         <Button
           icon="edit"
@@ -528,7 +528,7 @@ class Index extends PureComponent {
     }
     if (
       search?.status === variablesModules.STATUS.NOT_YET_CONFIRM &&
-      ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE')
+      ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE')
     ) {
       return (
         <Button
@@ -540,7 +540,7 @@ class Index extends PureComponent {
     }
     if (
       search?.status === variablesModules.STATUS.NOT_YET_SEND &&
-      ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE')
+      ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE')
     ) {
       return (
         <Button
@@ -792,37 +792,34 @@ class Index extends PureComponent {
     const { search } = this.state;
     const { data } = this.state;
 
-    if (ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUADUYET_UPDATE') ||
-      ability.can('WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE', 'WEB_TIENGANH_GUIDANHGIATHANG_CHUAGUI_UPDATE')
-    ) {
-      if (search?.status === head(variablesModules.STATUS_TABS)?.id ||
-        (search?.status === variablesModules.STATUS.REVIEWED) ||
-        (search?.status === variablesModules.STATUS.SENT) ||
-        (search?.status === variablesModules.STATUS.CONFIRMED)) {
+    if (
+      (search?.status === variablesModules.STATUS.NOT_YET_CONFIRM) ||
+      (search?.status === variablesModules.STATUS.NOT_YET_SEND)) {
 
-        return <div className='d-flex'>
-          <Button
-            disabled={!size(data?.filter((item) => item.isActive))}
-            color="primary"
-            icon="redo2"
-            className="ml-2"
-            onClick={() => this.addSent('much')}
-            loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
-          >
-            {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
-          </Button>
-          <Button
-            color="success"
-            icon="redo2"
-            className="ml-2"
-            disabled={!data?.length > 0}
-            loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
-            onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
-          >
-            {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
-          </Button>
-        </div>;
-      }
+      return <div className='d-flex'>
+        <Button
+          disabled={!size(data?.filter((item) => item.isActive))}
+          color="primary"
+          icon="redo2"
+          className="ml-2"
+          onClick={() => this.addSent('much')}
+          loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
+          permission={"WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE" || "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"}
+        >
+          {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
+        </Button>
+        <Button
+          color="success"
+          icon="redo2"
+          className="ml-2"
+          disabled={!data?.length > 0}
+          loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
+          onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
+          permission={"WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE" || "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"}
+        >
+          {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
+        </Button>
+      </div>;
     }
     return "";
   };
