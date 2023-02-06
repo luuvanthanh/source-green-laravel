@@ -337,10 +337,10 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
     public function updateAllStatusMonthlyComment($attributes)
     {
         $this->model->whereIn('Id', $attributes['id'])
-        ->update([
-            'Status' => $attributes['newStatus'],
-            'ConfirmationTime' => now()->format('Y-m-d H:i:s')
-        ]);
+            ->update([
+                'Status' => $attributes['newStatus'],
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+            ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
@@ -379,9 +379,9 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             }
 
             $schoolYear = $model->scriptReview->schoolYear->YearFrom . '-' . $model->scriptReview->schoolYear->YearTo;
-            $name = $model->scriptReview->NameAssessmentPeriod->Name;
+            $month = Carbon::parse($model->Month)->format('m');
 
-            $message = $student->FullName . ' ' . 'nhận Quarter report ' . $name . ' school year ' . $schoolYear;
+            $message = $student->FullName . ' ' . 'nhận monthly comment ' . $month . ' school year ' . $schoolYear;
 
             if (!empty($arrId)) {
                 $dataNotifiCation = [
