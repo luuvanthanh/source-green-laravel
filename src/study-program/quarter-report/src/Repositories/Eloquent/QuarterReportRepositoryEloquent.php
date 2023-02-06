@@ -308,7 +308,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             ->where('Status', $attributes['oldStatus'])
             ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'SentTime' => now()->format('Y-m-d H:i:s'),
                 'TeacherSentId' => $attributes['teacherSentId']
             ]);
 
