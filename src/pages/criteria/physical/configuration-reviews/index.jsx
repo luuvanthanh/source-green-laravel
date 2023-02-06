@@ -22,8 +22,8 @@ const setIsMounted = (value = true) => {
   return isMounted;
 };
 const dataType = [
-  { id: 'MONTHLY_COMMENT', name: 'Monthly comment' },
-  { id: 'QUARTER_REPORT', name: 'Quarter report' }
+  { id: 'LESSION_FEEDBACK', name: 'Nhận xét tiết học' },
+  { id: 'PERIODIC_MEASUREMENT', name: 'Đo lường định kỳ' }
 ];
 
 /**
@@ -31,12 +31,10 @@ const dataType = [
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ englishSettingScriptReview, loading, user }) => ({
-  data: englishSettingScriptReview.data,
-  error: englishSettingScriptReview.error,
-  pagination: englishSettingScriptReview.pagination,
-  skill: englishSettingScriptReview.skill,
-  defaultBranch: user.defaultBranch,
+const mapStateToProps = ({ configurationReviews, loading }) => ({
+  data: configurationReviews.data,
+  error: configurationReviews.error,
+  pagination: configurationReviews.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -50,13 +48,9 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
+        keyWord: query?.keyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        categorySkillId: query?.categorySkillId,
-        age: query?.age,
-        aplly: query?.aplly,
-
       },
     };
     setIsMounted(true);
@@ -64,7 +58,6 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
-    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -95,7 +88,7 @@ class Index extends PureComponent {
       defaultBranch,
     } = this.props;
     this.props.dispatch({
-      type: 'englishSettingScriptReview/GET_DATA',
+      type: 'configurationReviews/GET_DATA',
       payload: {
         ...search,
         branchId: defaultBranch?.id,
@@ -109,14 +102,6 @@ class Index extends PureComponent {
         variables.QUERY_STRING,
       )}`,
     );
-  };
-
-  loadCategories = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'englishSettingScriptReview/GET_SKILL',
-      payload: {},
-    });
   };
 
   /**
@@ -186,11 +171,11 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
-    const text = "Do you want to delete?";
-    Helper.confirmDeleteEnglish({
+    const text = "Bạn có chắc chắn muốn xóa cấu hình đánh giá này không?";
+    Helper.confirmDelete({
       callback: () => {
         dispatch({
-          type: 'englishSettingScriptReview/REMOVE',
+          type: 'configurationReviews/REMOVE',
           payload: {
             id,
           },
@@ -204,22 +189,11 @@ class Index extends PureComponent {
     }, text);
   };
 
-  covertChildEvaluateDetail = items => {
-    let array = [];
-    items.forEach(({ id }) => {
-      const existAssessment = items.find(item => item.inputAssessment && item.id === id);
-      const existPeriodicAssessment = items.find(item => item.periodicAssessment && item.id === id);
-      if (existAssessment && existPeriodicAssessment) {
-        array = [...array, 'Test đầu vào', 'Đánh giá định kỳ'];
-      }
-      if (existAssessment && !existPeriodicAssessment) {
-        array = [...array, 'Test đầu vào'];
-      }
-      if (!existAssessment && existPeriodicAssessment) {
-        array = [...array, 'Đánh giá định kỳ'];
-      }
-    });
-    return [...new Set(array)];
+  getBranchs = (classes) => {
+    const branchs = classes?.map((item) => item?.class?.branch);
+    const result = Array.from(new Set(branchs)?.map(a => a.id))
+      .map(id => branchs.find(a => a.id === id));
+    return result;
   }
 
   /**
@@ -243,14 +217,14 @@ class Index extends PureComponent {
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.type === 'QUARTER_REPORT' ? 'Quarter report' : 'Monthly comment'}</Text>,
+        render: (record) => <Text size="normal">{record?.type === 'LESSION_FEEDBACK' ? 'Nhật xét tiết học' : 'Đo lường định kỳ'}</Text>,
       },
       {
         title: 'Tên',
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.nameAssessmentPeriod?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.assessmentPeriod?.name}</Text>,
       },
       {
         title: 'Năm học',
@@ -264,22 +238,19 @@ class Index extends PureComponent {
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">  {record?.branch?.map((item, index) =>
-          <div size="normal" key={index} className='d-flex'>
-            {item?.name}{index + 1 === record.branch.length ? "" : ",  "}
-          </div>
-        )}</Text>,
+        render: (record) => <Text size="normal">{
+          this.getBranchs(record?.classes)?.map((item, index) => (
+            <>{`${item?.name}${index !== this.getBranchs(record?.classes)?.length - 1 ? ', ' : ''}`}</>
+          ))
+        }</Text>,
       },
       {
         title: 'Số lớp áp dụng',
         key: 'total',
         className: 'min-width-140 center',
         width: 140,
-        render: (record) => <Text size="normal">  {record?.classes?.map((item, index) =>
-          <div size="normal" key={index} className='d-flex'>
-            {item?.name}{index + 1 === record.classes.length ? "" : ",  "}
-          </div>
-        )}</Text>,
+        align: 'center',
+        render: (record) => <Text size="normal">  {record?.classes?.length}</Text>,
       },
       {
         key: 'action',
@@ -333,7 +304,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
 
-    const loading = effects['englishSettingScriptReview/GET_DATA'];
+    const loading = effects['configurationReviews/GET_DATA'];
     return (
       <>
         <Helmet title="Cấu hình đánh giá" />
@@ -355,8 +326,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Từ khóa"
                     type={variables.INPUT_SEARCH}
                   />

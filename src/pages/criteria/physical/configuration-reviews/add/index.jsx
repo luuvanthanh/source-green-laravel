@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Checkbox } from 'antd';
-import { isEmpty, get, head } from 'lodash';
+import { isEmpty, get, head, last } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import { variables } from '@/utils';
@@ -13,13 +13,14 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
+import FormDetail from '@/components/CommonComponent/FormDetail';
 import stylesModule from '../styles.module.scss';
 import Comment from './comment';
 import Subject from './subject';
 
 const typeSelect = [
-  { id: 'QUARTER_REPORT', name: 'Quarter report' },
-  { id: 'MONTHLY_COMMENT', name: 'Monthly comment' },
+  { id: 'LESSION_FEEDBACK', name: 'Nhận xét tiết học' },
+  { id: 'PERIODIC_MEASUREMENT', name: 'Đo lường định kỳ' },
 ];
 
 const Index = memo(() => {
@@ -35,73 +36,71 @@ const Index = memo(() => {
     loading: { effects },
     user,
     defaultBranch
-  } = useSelector(({ menu, loading, englishSettingScriptReviewAdd, user }) => ({
+  } = useSelector(({ menu, loading, configurationReviewsAdd, user }) => ({
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    branches: englishSettingScriptReviewAdd?.branches,
-    dataType: englishSettingScriptReviewAdd.dataType,
-    years: englishSettingScriptReviewAdd.years,
-    error: englishSettingScriptReviewAdd.error,
+    branches: configurationReviewsAdd?.branches,
+    dataType: configurationReviewsAdd.dataType,
+    years: configurationReviewsAdd.years,
+    error: configurationReviewsAdd.error,
     user: user.user,
     defaultBranch: user.defaultBranch,
   }));
 
   const [type, setType] = useState('');
   const [dataClass, setDataClass] = useState([]);
-  const [dataSubjec, setDataSubjec] = useState(undefined);
+  const [dataSubject, setDataSubject] = useState(undefined);
   const [dataComment, setDataComment] = useState(undefined);
 
   const [details, setDetails] = useState(undefined);
 
-  const [loadingComment, setLoadingComment] = useState(true);
+  const [loadingComment, setLoadingComment] = useState(false);
   const [loadingSubject, setLoadingSubject] = useState(false);
 
-  const [isCheckDataSbuject, setIsCheckDataSbuject] = useState(false);
+  const [isCheckDataSubject, setIsCheckDataSubject] = useState(false);
   const [isCheckDataComment, setIsCheckDataComment] = useState(false);
 
   const onFinish = (values) => {
-
+    const payload = {
+      id: params.id,
+      schoolYearId: user?.schoolYear?.id,
+      assessmentPeriodId: values?.assessmentPeriodId,
+      templates: [
+        {
+          type: "FEEDBACK",
+          isEnable: values?.isCheckSampleComment || false,
+          physicalCriteraiTemplates: dataComment?.filter(i => !!i?.isChecked)?.map(j => ({
+            id: j?.id,
+            name: j?.name,
+            content: {
+              type: j?.content?.type,
+              items: j?.content?.items?.filter(k => !!k?.isChecked)?.map(h => h?.item)
+            }
+          }))
+        },
+        {
+          type: "CRITERIA",
+          isEnable: values?.isCheckSubjectComment || false,
+          physicalCriteraiTemplates: dataSubject?.filter(i => !!i?.isChecked)?.map(j => ({
+            id: j?.id,
+            name: j?.name,
+            content: {
+              type: j?.content?.type,
+              items: j?.content?.items?.filter(k => !!k?.isChecked)?.map(h => h?.item)
+            }
+          }))
+        }
+      ],
+      type: values?.type,
+      classIds: values?.classIds
+    };
     dispatch({
-      type: params.id ? 'englishSettingScriptReviewAdd/UPDATE' : 'englishSettingScriptReviewAdd/ADD',
-      payload: {
-        type: values?.type,
-        schoolYearId: values?.schoolYearId,
-        nameAssessmentPeriodId: values?.nameAssessmentPeriodId,
-        isCheckSampleComment: values?.isCheckSampleComment || false,
-        isCheckSubject: values?.isCheckSubject || false,
-        branchId: !params?.id && defaultBranch?.id ? [values?.branchId] : values?.branchId,
-        classId: !params?.id && user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [values?.classId] : values?.classId,
-        subject: dataSubjec?.map(i => ({
-          subjectId: params?.id ? i?.subjectId : i?.id,
-          id: params?.id ? i?.id : undefined,
-          isCheck: i?.isCheck || false,
-          subjectSection: i?.subjectSection?.map(k => ({
-            subjectSectionId: params?.id ? k?.subjectSectionId : k?.id,
-            id: params?.id ? k?.id : undefined,
-            isCheck: k?.isCheck || false,
-            detail: k?.subjectSectionDetail?.map(z => ({
-              subjectSectionDetailId: params?.id ? z?.subjectSectionDetailId : z?.id,
-              id: params?.id ? z?.id : undefined,
-              isCheck: z?.isCheck || false,
-            }))
-          }))
-        })),
-        comment: dataComment?.map(i => ({
-          sampleCommentId: params?.id ? i?.sampleCommentId : i?.id,
-          isCheck: i?.isCheck || false,
-          id: params?.id ? i?.id : undefined,
-          commentDetail: i?.sampleCommentDetail?.map(k => ({
-            sampleCommentDetailId: params?.id ? k?.sampleCommentDetailId : k?.id,
-            isCheck: k?.isCheck || false,
-            id: params?.id ? k?.id : undefined,
-          }))
-        })),
-        id: params.id
-      },
+      type: params.id ? 'configurationReviewsAdd/UPDATE' : 'configurationReviewsAdd/ADD',
+      payload,
       callback: (response, error) => {
         if (response) {
           if (response) {
-            history.push(`/chuong-trinh-hoc/settings/scriptReview`);
+            history.push(`/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia`);
           }
         }
         if (error) {
@@ -123,11 +122,11 @@ const Index = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'englishSettingScriptReviewAdd/GET_DATA',
+        type: 'configurationReviewsAdd/GET_DATA',
         payload: params,
         callback: (response) => {
           if (response) {
-            setDetails(response.parsePayload);
+            setDetails(response);
           }
         },
       });
@@ -141,114 +140,119 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (params.id) {
-      if (details?.id) {
-        form.setFieldsValue({
-          ...details,
-          branchId: details?.branch.map((i) => i?.id),
-          classId: details?.classes?.map((i) => i?.id),
-        });
-        if (isCheckDataSbuject) {
-          setDataSubjec(dataSubjec?.map(item => ({
-            ...item,
-            isSubject: details?.isCheckSubject,
-            isCheck: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.isCheck,
-            id: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.id,
-            subjectId: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.subjectId,
-            subjectSection: item?.subjectSection?.map(itemDetail => ({
-              ...itemDetail,
-              isCheck: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.isCheck,
-              id: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.id,
-              subjectSectionId: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.subjectSectionId,
-              subjectSectionDetail: itemDetail?.subjectSectionDetail?.map(itemDetailItem => ({
-                ...itemDetailItem,
-                isCheck: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.scriptReviewSubjectDetailChildren.find(e => e?.subjectSectionDetailId === itemDetailItem?.id)?.isCheck,
-                id: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.scriptReviewSubjectDetailChildren.find(e => e?.subjectSectionDetailId === itemDetailItem?.id)?.id,
-                subjectSectionDetailId: details?.scriptReviewSubject?.find(k => k?.subjectId === item?.id)?.scriptReviewSubjectDetail?.find(b => b?.subjectSectionId === itemDetail?.id)?.scriptReviewSubjectDetailChildren.find(e => e?.subjectSectionDetailId === itemDetailItem?.id)?.subjectSectionDetailId,
-              }))
-            })),
-          })));
-        }
-        if (isCheckDataComment) {
-          setDataComment(dataComment?.map(i => ({
-            ...i,
-            isComent: details?.isCheckSampleComment,
-            isCheck: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.isCheck,
-            sampleCommentId: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.sampleCommentId,
-            id: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.id,
-            sampleCommentDetail: i?.sampleCommentDetail?.map(z => ({
-              ...z,
-              isCheck: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.scriptReviewCommentDetail?.find(b => b?.sampleCommentDetailId === z?.id)?.isCheck,
-              sampleCommentDetailId: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.scriptReviewCommentDetail?.find(b => b?.sampleCommentDetailId === z?.id)?.sampleCommentDetailId,
-              id: details?.scriptReviewComment?.find(k => k?.sampleCommentId === i?.id)?.scriptReviewCommentDetail?.find(b => b?.sampleCommentDetailId === z?.id)?.id,
-            })),
-          })));
-        }
-
-        if (details?.type === 'QUARTER_REPORT') {
+      if (details) {
+        if (details?.type === 'PERIODIC_MEASUREMENT') {
           setType(details?.type);
           dispatch({
-            type: 'englishSettingScriptReviewAdd/GET_DATA_TYPE',
+            type: 'configurationReviewsAdd/GET_DATA_TYPE',
             payload: details?.type,
           });
         }
         dispatch({
-          type: 'englishSettingScriptReviewAdd/GET_CLASSES',
-          payload: { branchIds: details?.branch.map((i) => i?.id) },
+          type: 'configurationReviewsAdd/GET_CLASSES',
+          payload: { branchIds: Array.from(new Set(details?.classes?.map((i) => i?.class?.branch?.id))) },
           callback: (response) => {
             if (response) {
               setDataClass(response);
             }
           },
         });
+        form.setFieldsValue({
+          assessmentPeriodId: details?.assessmentPeriod?.id,
+          type: details?.type,
+          branchIds: Array.from(new Set(details?.classes?.map((i) => i?.class?.branch?.id))),
+          classIds: details?.classes?.map((i) => i?.class?.id),
+          schoolYearId: details?.schoolYear?.id,
+          isCheckSampleComment: head(details?.templates)?.isEnable,
+          isCheckSubjectComment: last(details?.templates)?.isEnable
+        });
+
+        if (head(details?.templates)?.isEnable) {
+          setDataComment(head(details?.templates)?.physicalCriteraiTemplates?.map(i => ({
+            ...i,
+            isComment: true,
+            isChecked: i?.isChecked,
+            content: {
+              ...i?.content,
+              items: i?.content?.items?.map((k, index) => ({
+                ...k,
+                id: `${i?.id}${index}`
+              })),
+            }
+          })));
+        }
+
+        if (last(details?.templates)?.isEnable) {
+          setDataSubject(last(details?.templates)?.physicalCriteraiTemplates?.map(i => ({
+            ...i,
+            isSubject: true,
+            isChecked: i?.isChecked,
+            content: {
+              ...i?.content,
+              items: i?.content?.items?.map((k, index) => ({
+                ...k,
+                id: `${i?.id}${index}`
+              })),
+            }
+          })));
+        }
       }
     }
-  }, [details, isCheckDataSbuject, isCheckDataComment]);
+  }, [details, isCheckDataSubject, isCheckDataComment]);
 
+  const convertDataType = (dataType) => {
+    let result = [];
+    if (isEmpty(dataType)) {
+      return result;
+    }
+    result = dataType?.filter(i => i?.use)?.map(j => ({
+      id: j?.id,
+      name: j?.nameAssessmentPeriod?.name
+    }));
+    return result;
+
+  };
   const onChangeUseTable = (e, id, type) => {
-    if (type === 'OBJECT') {
-      setDataSubjec(dataSubjec?.map(i => ({
+    if (type === 'SUBJECT') {
+      setDataSubject(dataSubject?.map(i => ({
         ...i,
-        isCheck: i?.isCheck,
-        subjectId: i?.subjectId,
-        subjectSection: i?.subjectSection?.map(k => ({
-          ...k,
-          subjectSectionId: k?.subjectSectionId,
-          subjectSectionDetail: k?.subjectSectionDetail?.map(z => ({
-            ...z,
-            id: z?.id,
-            subjectSectionDetailId: z?.subjectSectionDetailId,
-            isCheck: z?.id === id ? e.target.checked : z?.isCheck,
+        content: {
+          ...i?.content,
+          items: i?.content?.items?.map(j => ({
+            ...j,
+            isChecked: j?.id === id ? e.target.checked : j?.isChecked,
           })),
-        })),
+        }
       })));
     }
     else {
       setDataComment(dataComment?.map(i => ({
         ...i,
-        sampleCommentId: i?.sampleCommentId,
-        sampleCommentDetail: i?.sampleCommentDetail?.map(z => ({
-          ...z,
-          sampleCommentDetailId: z?.sampleCommentDetailId,
-          isCheck: z?.id === id ? e.target.checked : z?.isCheck,
-        })),
+        content: {
+          ...i?.content,
+          items: i?.content?.items?.map(j => ({
+            ...j,
+            isChecked: j?.id === id ? e.target.checked : j?.isChecked,
+          })),
+        }
       })));
     }
   };
 
   const header = (type) => [
     {
-      title: `${type === 'OBJECT' ? "Use skill" : "Use sample comments"}`,
+      title: `${type === 'SUBJECT' ? "Sử dụng tiêu chí" : "Sử dụng"}`,
       key: 'student',
       width: 200,
       className: 'min-width-200',
       render: (record) => (
         <div className={classnames(stylesModule['wrapper-checkbox'])}>
           <Checkbox
-            checked={record?.isCheck || false}
+            checked={record?.isChecked || false}
             className="mr15"
             onChange={(e) => onChangeUseTable(e, record.id, type)}
           />
-          <p className={stylesModule.textChild} >{record?.name}</p>
+          <p className={stylesModule.textChild} >{record?.item}</p>
         </div>
       ),
     },
@@ -256,42 +260,51 @@ const Index = memo(() => {
 
   const onChangeType = (e) => {
     setType(e);
-    if (e === 'QUARTER_REPORT') {
+    if (e === 'PERIODIC_MEASUREMENT') {
       dispatch({
-        type: 'englishSettingScriptReviewAdd/GET_DATA_TYPE',
-        payload: e,
+        type: 'configurationReviewsAdd/GET_DATA_TYPE',
+        payload: {
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.SIZEMAX,
+        },
       });
     }
   };
 
   useEffect(() => {
     dispatch({
-      type: 'englishSettingScriptReviewAdd/GET_BRANCHES',
+      type: 'configurationReviewsAdd/GET_BRANCHES',
       payload: {},
     });
     dispatch({
-      type: 'englishSettingScriptReviewAdd/GET_YEARS',
+      type: 'configurationReviewsAdd/GET_YEARS',
       payload: {},
     });
     dispatch({
-      type: 'englishSettingScriptReviewAdd/GET_DATA_SUBJECT',
-      payload: {},
+      type: 'configurationReviewsAdd/GET_DATA_SUBJECT',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
       callback: (response) => {
-        if (response?.parsePayload) {
-          setIsCheckDataSbuject(true);
-          setDataSubjec(response?.parsePayload);
-          setLoadingComment(false);
+        if (response) {
+          setIsCheckDataSubject(true);
+          setDataSubject(response?.items);
+          setLoadingSubject(false);
         }
       },
     });
     dispatch({
-      type: 'englishSettingScriptReviewAdd/GET_DATA_COMMENT',
-      payload: {},
+      type: 'configurationReviewsAdd/GET_DATA_COMMENT',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
       callback: (response) => {
-        if (response.parsePayload) {
+        if (response) {
           setIsCheckDataComment(true);
-          setDataComment(response?.parsePayload);
-          setLoadingSubject(false);
+          setDataComment(response?.items);
+          setLoadingComment(false);
         }
       },
     });
@@ -300,7 +313,7 @@ const Index = memo(() => {
   useEffect(() => {
     if (defaultBranch?.id) {
       dispatch({
-        type: 'englishSettingScriptReviewAdd/GET_CLASSES',
+        type: 'configurationReviewsAdd/GET_CLASSES',
         payload: { branchIds: defaultBranch?.id },
         callback: (response) => {
           if (response) {
@@ -311,11 +324,9 @@ const Index = memo(() => {
     }
   }, [defaultBranch]);
 
-
-
   const onChangeBranch = (e) => {
     dispatch({
-      type: 'englishSettingScriptReviewAdd/GET_CLASSES',
+      type: 'configurationReviewsAdd/GET_CLASSES',
       payload: { branchIds: e },
       callback: (response) => {
         if (response) {
@@ -329,67 +340,63 @@ const Index = memo(() => {
   };
 
   const onChangeUse = (e, type) => {
-    if (type === 'OBJECT') {
-      setDataSubjec(dataSubjec?.map(i => ({
+    if (type === 'SUBJECT') {
+      setDataSubject(dataSubject?.map(i => ({
         ...i,
         isSubject: e,
-        isCheck: e !== true ? false : i?.isCheck,
-        subjectSection: i?.subjectSection?.map(k => ({
-          ...k,
-          isCheck: e !== true ? false : k?.isCheck,
-          subjectSectionDetail: k?.subjectSectionDetail?.map(z => ({
-            ...z,
-            isCheck: e !== true ? false : z?.isCheck,
-          })),
-        })),
+        isChecked: e !== true ? false : i?.isChecked,
+        content: {
+          ...i?.content,
+          items: i?.content?.items?.map((k, index) => typeof (k) === 'string' ? ({
+            item: k,
+            isChecked: e !== true ? false : k?.isChecked,
+            id: `${i?.id}${index}`
+          }) : k
+          ),
+        }
       })));
     }
     else {
       setDataComment(dataComment?.map(i => ({
         ...i,
-        isComent: e,
-        isCheck: e !== true ? false : i?.isCheck,
-        sampleCommentDetail: i?.sampleCommentDetail?.map(z => ({
-          ...z,
-          isCheck: e !== true ? false : z?.isCheck,
-        })),
+        isComment: e,
+        isChecked: e !== true ? false : i?.isChecked,
+        content: {
+          ...i?.content,
+          items: i?.content?.items?.map((k, index) => typeof (k) === 'string' ? ({
+            item: k,
+            isChecked: e !== true ? false : k?.isChecked,
+            id: `${i?.id}${index}`
+          }) : k
+          ),
+        }
       })));
     }
   };
 
   const onChangeUseItem = (e, id, type) => {
-    if (type === 'OBJECT') {
-      setDataSubjec(dataSubjec?.map(i => ({
+    if (type === 'SUBJECT') {
+      setDataSubject(dataSubject?.map(i => ({
         ...i,
-        isCheck: i?.id === id ? e.target.checked : i?.isCheck,
+        isChecked: i?.id === id ? e.target.checked : i?.isChecked,
       })));
     }
     else {
       setDataComment(dataComment?.map(i => ({
         ...i,
-        isCheck: i?.id === id ? e.target.checked : i?.isCheck,
+        isChecked: i?.id === id ? e.target.checked : i?.isChecked,
       })));
     }
   };
 
-  const onChangeUseItemTable = (e, id) => {
-    setDataSubjec(dataSubjec?.map(i => ({
-      ...i,
-      subjectSection: i?.subjectSection?.map(k => ({
-        ...k,
-        isCheck: k?.id === id ? e.target.checked : k?.isCheck,
-      })),
-    })));
-  };
-
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? 'Edit' : 'Tạo mới'} menu={menuLeftCriteria} />
       <Helmet title="Cấu hình đánh giá" />
       <Pane className="pl20 pr20 pb20">
         <Pane >
           <Loading
-            loading={effects[`englishSettingScriptReviewAdd/GET_DATA`]}
+            loading={effects[`configurationReviewsAdd/GET_DATA`]}
           >
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
               data: [
@@ -405,15 +412,7 @@ const Index = memo(() => {
                 </Heading>
                 <Pane className="row">
                   <div className="col-lg-3">
-                    <FormItem
-                      data={years?.filter(i => i?.id === user?.schoolYear?.id)}
-                      name="schoolYearId"
-                      type={variables.SELECT}
-                      placeholder="Choose school year"
-                      label="Năm học"
-                      allowClear={false}
-                      rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
-                    />
+                    <FormDetail name={user?.schoolYear?.id} label="Năm học" data={years} type="select" />
                   </div>
                   <Pane className="col-lg-3">
                     <FormItem
@@ -423,66 +422,77 @@ const Index = memo(() => {
                       type={variables.SELECT}
                       label="Loại đánh giá"
                       onChange={onChangeType}
-                      rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
+                      rules={[variables.RULES.EMPTY_INPUT]}
                     />
                   </Pane>
                   {
-                    type === 'QUARTER_REPORT' && (
+                    type === 'PERIODIC_MEASUREMENT' && (
                       <Pane className="col-lg-3">
                         <FormItem
-                          name="nameAssessmentPeriodId"
+                          name="assessmentPeriodId"
                           placeholder="Chọn kỳ đánh giá"
-                          data={dataType}
+                          data={convertDataType(dataType)}
                           type={variables.SELECT}
                           label="Kỳ đánh giá"
-                          rules={[variables.RULES.EMPTY_INPUT_ENGLISH]}
+                          rules={[variables.RULES.EMPTY_INPUT]}
                         />
                       </Pane>
                     )
                   }
                   <Pane className="col-lg-12">
                     <FormItem
-                      name="branchId"
+                      name="branchIds"
                       data={defaultBranch?.id ? [defaultBranch] : branches}
                       type={variables.SELECT_MUTILPLE}
-                      rules={[variables.RULES.EMPTY_ENGLISH]}
+                      rules={[variables.RULES.EMPTY]}
                       label="Cơ sở áp dụng"
                       onChange={onChangeBranch}
                     />
                   </Pane>
                   <Pane className="col-lg-12">
                     <FormItem
-                      name="classId"
+                      name="classIds"
                       data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? dataClass?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId) : dataClass}
                       type={variables.SELECT_MUTILPLE}
-                      rules={[variables.RULES.EMPTY_ENGLISH]}
+                      rules={[variables.RULES.EMPTY]}
                       label="Lớp áp dụng"
                     />
                   </Pane>
                 </Pane>
               </Pane>
-              <Pane className="card mb20">
-                <Pane className="pl20 pr20 pt20">
-                  <Heading type="form-title" className="mb15">
-                    Môn đánh giá
-                  </Heading>
-                  <Pane className="row">
-                    <Pane className="col-lg-4 pb20">
-                      <FormItem
-                        valuePropName="checked"
-                        label="Sử dụng"
-                        name='isCheckSubject'
-                        className="checkbox-row-form no-label m0"
-                        type={variables.SWITCH}
-                        onChange={(e) => onChangeUse(e, 'OBJECT')}
-                      />
+              {
+                type !== 'LESSION_FEEDBACK' && (
+                  <Pane className="card mb20">
+                    <Pane className="pl20 pr20 pt20">
+                      <Heading type="form-title" className="mb15">
+                        Môn đánh giá
+                      </Heading>
+                      <Pane className="row">
+                        <Pane className="col-lg-4 pb20">
+                          <FormItem
+                            valuePropName="checked"
+                            label="Sử dụng"
+                            name='isCheckSubjectComment'
+                            className="checkbox-row-form no-label m0"
+                            type={variables.SWITCH}
+                            onChange={(e) => onChangeUse(e, 'SUBJECT')}
+                          />
+                        </Pane>
+                      </Pane>
+                    </Pane>
+                    <Pane className="row">
+                      <Pane className="col-lg-12">
+                        <Subject
+                          loadingSubject={loadingSubject}
+                          dataSubject={dataSubject || []}
+                          header={header}
+                          onChangeUseItem={onChangeUseItem}
+                        />
+                      </Pane>
                     </Pane>
                   </Pane>
-                </Pane>
-                <Pane className="row">
-                  <Subject loadingSubject={loadingSubject} dataSubjec={dataSubjec} onChangeUseItemTable={onChangeUseItemTable} header={header} onChangeUseItem={onChangeUseItem} />
-                </Pane>
-              </Pane>
+                )
+              }
 
               <Pane className="card mb20">
                 <Pane className="p20">
@@ -504,7 +514,12 @@ const Index = memo(() => {
                 </Pane>
                 <Pane className="row">
                   <Pane className="col-lg-12">
-                    <Comment loadingComment={loadingComment} dataComment={dataComment} onChangeUseItem={onChangeUseItem} header={header} />
+                    <Comment
+                      loadingComment={loadingComment}
+                      dataComment={dataComment || []}
+                      onChangeUseItem={onChangeUseItem}
+                      header={header}
+                    />
                   </Pane>
                 </Pane>
               </Pane>
@@ -522,7 +537,6 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
-                  loading={effects[`EnglishQuarterReport/ADD_SENT`]}
                 >
                   Lưu
                 </Button>
