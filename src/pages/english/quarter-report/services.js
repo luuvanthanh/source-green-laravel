@@ -12,6 +12,7 @@ export function get(params = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
+      countStudentByStatus: 'true',
       include: Helper.convertIncludes(['quarterReport', 'branch', 'classes']),
     },
   });
