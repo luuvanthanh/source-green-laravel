@@ -267,7 +267,7 @@ const Index = memo(() => {
                   color="success"
                   size="large"
                   onClick={() => {
-                    history.push(`/chuong-trinh-hoc/settings/scriptReview/${details?.id}/edit`);
+                    history.push(`/english/settings/scriptReview/${details?.id}/edit`);
                   }}
                 >
                   Edit

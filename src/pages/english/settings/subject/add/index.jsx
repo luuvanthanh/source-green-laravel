@@ -85,7 +85,7 @@ const Index = memo(() => {
         callback: (response, error) => {
           if (response) {
             if (response) {
-              history.push(`/chuong-trinh-hoc/settings/subject`);
+              history.push(`/english/settings/subject`);
             }
           }
           if (error) {
@@ -321,7 +321,7 @@ const Index = memo(() => {
                           className="btn-delete ml20"
                           role="presentation"
 
-                          onClick={() => history.push(`/chuong-trinh-hoc/settings/subject`)}
+                          onClick={() => history.push(`/english/settings/subject`)}
                         >
                           Cancel
                         </p>
