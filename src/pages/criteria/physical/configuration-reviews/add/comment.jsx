@@ -17,21 +17,21 @@ const Index = memo(({ dataComment, onChangeUseItem, header, loadingComment }) =>
     )
       :
       dataComment?.map(i => (
-        i?.isComent && (
+        i?.isComment && (
           <Pane className="col-lg-12">
             <div className={classnames(stylesModule['wrapper-checkbox'], 'border-top', 'p20')}>
               <Checkbox
-                checked={i?.isCheck || false}
+                checked={i?.isChecked || false}
                 onChange={(e) => onChangeUseItem(e, i?.id, 'COMMENT')}
                 className="mr15"
               />
               <p className={stylesModule.textParent} >{i?.name}</p>
             </div>
-            {i?.isCheck && (
+            {i?.isChecked && (
               <div className={stylesModule['wrapper-table-details']}>
                 <Table
                   columns={header('COMMENT')}
-                  dataSource={i?.sampleCommentDetail}
+                  dataSource={i?.content?.items}
                   pagination={false}
                   className="pl20 pr20 pb20"
                   rowKey={(record) => record.id}
@@ -55,8 +55,8 @@ Index.propTypes = {
 
 Index.defaultProps = {
   dataComment: [],
-  onChangeUseItem: () => { },
-  header: () => { },
+  onChangeUseItem: () => {},
+  header: () => {},
   loadingComment: false,
 };
 
