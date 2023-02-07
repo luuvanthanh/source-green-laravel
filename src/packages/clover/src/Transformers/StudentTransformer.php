@@ -66,6 +66,18 @@ class StudentTransformer extends BaseTransformer
         ];
     }
 
+
+    public function customMeta(): array
+    {
+        $data = [];
+        
+        if (!empty(request()->countStudentByStatus)) {
+            $data['countStudentByStatus'] = request()->countStudentByStatus;
+        }
+        
+        return $data;
+    }
+
     /**
      * Include schedules
      * @param Student $student
