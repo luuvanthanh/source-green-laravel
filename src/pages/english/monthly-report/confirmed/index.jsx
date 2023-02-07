@@ -327,7 +327,7 @@ const Index = memo(() => {
                     <FormDetail name={dataDetails?.student?.classes?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataDetails?.scriptReview?.nameAssessmentPeriod?.name} label="Assessment period" type="text" />
+                    <FormDetail name={Helper.getDate(dataDetails?.month, variables.DATE_FORMAT.MONTH_FULL_ENGLISH)} label="Monthly comment" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail name={detailTearch} label="Teacher report" type="text" />
@@ -420,7 +420,7 @@ const Index = memo(() => {
                     onClick={() => addDelete()}
                     size="large"
                     loading={effects['EnglishMonthlyReport/DELETE_CONFIRM']}
-                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE"
+                  // permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE"
                   >
                     Refuse
                   </Button>
@@ -430,7 +430,7 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={effects['EnglishMonthlyReportAdd/UPDATE_CONFIRMED']}
-                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE"
+                  // permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE"
                   >
                     Save
                   </Button>
@@ -440,7 +440,7 @@ const Index = memo(() => {
                     onClick={() => addSent()}
                     size="large"
                     loading={effects['EnglishMonthlyReportAdd/UPDATE_CONFIRMED']}
-                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE"
+                  // permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE"
                   >
                     Accept
                   </Button>

@@ -11,6 +11,8 @@ import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Table from '@/components/CommonComponent/Table';
+import { variables, Helper } from '@/utils';
+
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -31,7 +33,6 @@ const Index = memo(() => {
     loading: { effects },
     details,
     menuLeftEnglish,
-    dataType,
     dataEvaluetionCriteria,
     user,
   } = useSelector(({ EnglishMonthlyReport, menu, loading, EnglishMonthlyReportAdd, user }) => ({
@@ -39,7 +40,6 @@ const Index = memo(() => {
     loading,
     menuLeftEnglish: menu.menuLeftEnglish,
     details: EnglishMonthlyReportAdd.details,
-    dataType: EnglishMonthlyReport.dataType,
     dataEvaluetionCriteria: EnglishMonthlyReportAdd.dataEvaluetionCriteria,
     user: user.user,
     error: EnglishMonthlyReportAdd.error,
@@ -304,7 +304,7 @@ const Index = memo(() => {
                     <FormDetail name={dataStudent?.class?.name} label="Class" type="text" />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={dataType?.find(i => i?.id === query?.nameAssessmentPeriod)?.name} label="Assessment period" type="text" />
+                    <FormDetail name={Helper.getDate(dataDetails?.month, variables.DATE_FORMAT.MONTH_FULL_ENGLISH)} label="Monthly comment" type="text" />
                   </Pane>
                 </Pane>
               </Pane>

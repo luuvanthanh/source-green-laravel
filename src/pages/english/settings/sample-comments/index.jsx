@@ -236,13 +236,13 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
-              permission="WEB_TIENGANH_QUANLYCOMMENT_UPDATE"
+            // permission="WEB_TIENGANH_QUANLYCOMMENT_UPDATE"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
-              permission="WEB_TIENGANH_QUANLYCOMMENT_DELETE"
+            // permission="WEB_TIENGANH_QUANLYCOMMENT_DELETE"
             />
           </div>
         ),
@@ -290,7 +290,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/add`)}
-              permission="WEB_TIENGANH_QUANLYCOMMENT_CREATE"
+            // permission="WEB_TIENGANH_QUANLYCOMMENT_CREATE"
             >
               Create new
             </Button>
