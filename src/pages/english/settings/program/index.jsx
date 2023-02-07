@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Tag } from 'antd';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -21,20 +21,16 @@ const setIsMounted = (value = true) => {
   isMounted = value;
   return isMounted;
 };
-const dataType = [
-  { id: 'LESSION_FEEDBACK', name: 'Nhận xét tiết học' },
-  { id: 'PERIODIC_MEASUREMENT', name: 'Đo lường định kỳ' }
-];
-
 /**
  * Get isMounted
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ configurationReviews, loading }) => ({
-  data: configurationReviews.data,
-  error: configurationReviews.error,
-  pagination: configurationReviews.pagination,
+const mapStateToProps = ({ englishSettingProgram, loading }) => ({
+  data: englishSettingProgram.data,
+  error: englishSettingProgram.error,
+  pagination: englishSettingProgram.pagination,
+  skill: englishSettingProgram.skill,
   loading,
 });
 @connect(mapStateToProps)
@@ -51,6 +47,10 @@ class Index extends PureComponent {
         keyWord: query?.keyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        categorySkillId: query?.categorySkillId,
+        age: query?.age,
+        aplly: query?.aplly,
+
       },
     };
     setIsMounted(true);
@@ -85,13 +85,11 @@ class Index extends PureComponent {
     const { search } = this.state;
     const {
       location: { pathname },
-      defaultBranch,
     } = this.props;
     this.props.dispatch({
-      type: 'configurationReviews/GET_DATA',
+      type: 'englishSettingProgram/GET_DATA',
       payload: {
         ...search,
-        branchId: defaultBranch?.id,
       },
     });
     history.push(
@@ -157,7 +155,7 @@ class Index extends PureComponent {
    * @param {object} pagination value of pagination items
    */
   pagination = (pagination) =>
-    Helper.paginationLavarel({
+    Helper.paginationEnglish({
       pagination,
       callback: (response) => {
         this.changePagination(response);
@@ -171,11 +169,11 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
-    const text = "Bạn có chắc chắn muốn xóa cấu hình đánh giá này không?";
-    Helper.confirmDelete({
+    const text = "Do you want to delete?";
+    Helper.confirmDeleteEnglish({
       callback: () => {
         dispatch({
-          type: 'configurationReviews/REMOVE',
+          type: 'englishSettingProgram/REMOVE',
           payload: {
             id,
           },
@@ -189,12 +187,6 @@ class Index extends PureComponent {
     }, text);
   };
 
-  getBranchs = (classes) => {
-    const branchs = classes?.map((item) => item?.class?.branch);
-    const result = Array.from(new Set(branchs)?.map(a => a.id))
-      .map(id => branchs.find(a => a.id === id));
-    return result;
-  }
 
   /**
    * Function header table
@@ -205,52 +197,38 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) => <Text size="normal">{index + 1}</Text>,
-      },
-      {
-        title: 'Loại đánh giá',
-        key: 'name',
+        title: 'ID',
+        key: 'skill',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.type === 'LESSION_FEEDBACK' ? 'Nhật xét tiết học' : 'Đo lường định kỳ'}</Text>,
+        render: (record) => <Text size="normal">{record?.code}</Text>,
       },
       {
-        title: 'Tên',
+        title: 'Program name',
         key: 'name',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.assessmentPeriod?.name}</Text>,
+        width: 250,
+        className: 'min-width-250',
+        render: (record) => <Text size="normal">{record?.name}</Text>,
       },
       {
-        title: 'Năm học',
+        title: 'Number of units',
         key: 'name',
-        className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text>,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.units?.length}</Text>,
       },
       {
-        title: 'Cơ sở áp dụng',
+        title: 'Number of lessons',
         key: 'name',
-        className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{
-          this.getBranchs(record?.classes)?.map((item, index) => (
-            <>{`${item?.name}${index !== this.getBranchs(record?.classes)?.length - 1 ? ', ' : ''}`}</>
-          ))
-        }</Text>,
+        className: 'min-width-150',
       },
       {
-        title: 'Số lớp áp dụng',
-        key: 'total',
-        className: 'min-width-140 center',
-        width: 140,
-        align: 'center',
-        render: (record) => <Text size="normal">  {record?.classes?.length}</Text>,
+        title: 'Color',
+        key: 'name',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => <Tag color={record?.colorText}>{record?.colorText}</Tag>,
       },
       {
         key: 'action',
@@ -262,8 +240,17 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
+            // permission="WEB_TIENGANH_QUANLYBAIGIANG_UPDATE"
             />
-            <Button color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
+            <Button
+              color="danger"
+              icon="remove"
+              onClick={(e) => {
+                e.stopPropagation();
+                this.onRemove(record.id);
+              }}
+            // permission="WEB_TIENGANH_QUANLYBAIGIANG_DELETE" 
+            />
           </div>
         ),
       },
@@ -289,10 +276,6 @@ class Index extends PureComponent {
     );
   }, 300);
 
-  onChangeStatus = (e, type) => {
-    this.debouncedSearch(e, type);
-  };
-
   render() {
     const {
       error,
@@ -303,16 +286,20 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-
-    const loading = effects['configurationReviews/GET_DATA'];
+    const loading = effects['englishSettingProgram/GET_DATA'];
     return (
       <>
-        <Helmet title="Cấu hình đánh giá" />
+        <Helmet title="Program" />
         <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Cấu hình đánh giá</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
-              Tạo mới
+            <Text color="dark">Program</Text>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/add`)}
+            // permission="WEB_TIENGANH_QUANLYBAIGIANG_CREATE"
+            >
+              Create new
             </Button>
           </div>
           <div className={styles['block-table']}>
@@ -328,17 +315,8 @@ class Index extends PureComponent {
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Từ khóa"
+                    placeholder="Enter keyword"
                     type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Tất cả loại' }, ...dataType]}
-                    name="type"
-                    onChange={(event) => this.onChangeStatus(event, 'type')}
-                    type={variables.SELECT}
-                    allowClear={false}
                   />
                 </div>
               </div>
@@ -348,6 +326,7 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
+              description="No data"
               pagination={this.pagination(pagination)}
               error={error}
               isError={error.isError}
@@ -378,7 +357,6 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
-  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -389,7 +367,6 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
-  defaultBranch: {},
 };
 
 export default Index;

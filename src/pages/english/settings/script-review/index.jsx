@@ -22,8 +22,8 @@ const setIsMounted = (value = true) => {
   return isMounted;
 };
 const dataType = [
-  { id: 'LESSION_FEEDBACK', name: 'Nhận xét tiết học' },
-  { id: 'PERIODIC_MEASUREMENT', name: 'Đo lường định kỳ' }
+  { id: 'MONTHLY_COMMENT', name: 'Monthly comment' },
+  { id: 'QUARTER_REPORT', name: 'Quarter report' }
 ];
 
 /**
@@ -31,10 +31,12 @@ const dataType = [
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ configurationReviews, loading }) => ({
-  data: configurationReviews.data,
-  error: configurationReviews.error,
-  pagination: configurationReviews.pagination,
+const mapStateToProps = ({ englishSettingScriptReview, loading, user }) => ({
+  data: englishSettingScriptReview.data,
+  error: englishSettingScriptReview.error,
+  pagination: englishSettingScriptReview.pagination,
+  skill: englishSettingScriptReview.skill,
+  defaultBranch: user.defaultBranch,
   loading,
 });
 @connect(mapStateToProps)
@@ -48,9 +50,13 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        keyWord: query?.keyWord,
+        key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        categorySkillId: query?.categorySkillId,
+        age: query?.age,
+        aplly: query?.aplly,
+
       },
     };
     setIsMounted(true);
@@ -58,6 +64,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -88,7 +95,7 @@ class Index extends PureComponent {
       defaultBranch,
     } = this.props;
     this.props.dispatch({
-      type: 'configurationReviews/GET_DATA',
+      type: 'englishSettingScriptReview/GET_DATA',
       payload: {
         ...search,
         branchId: defaultBranch?.id,
@@ -102,6 +109,14 @@ class Index extends PureComponent {
         variables.QUERY_STRING,
       )}`,
     );
+  };
+
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'englishSettingScriptReview/GET_SKILL',
+      payload: {},
+    });
   };
 
   /**
@@ -157,7 +172,7 @@ class Index extends PureComponent {
    * @param {object} pagination value of pagination items
    */
   pagination = (pagination) =>
-    Helper.paginationLavarel({
+    Helper.paginationEnglish({
       pagination,
       callback: (response) => {
         this.changePagination(response);
@@ -171,11 +186,11 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
-    const text = "Bạn có chắc chắn muốn xóa cấu hình đánh giá này không?";
-    Helper.confirmDelete({
+    const text = "Do you want to delete?";
+    Helper.confirmDeleteEnglish({
       callback: () => {
         dispatch({
-          type: 'configurationReviews/REMOVE',
+          type: 'englishSettingScriptReview/REMOVE',
           payload: {
             id,
           },
@@ -189,13 +204,6 @@ class Index extends PureComponent {
     }, text);
   };
 
-  getBranchs = (classes) => {
-    const branchs = classes?.map((item) => item?.class?.branch);
-    const result = Array.from(new Set(branchs)?.map(a => a.id))
-      .map(id => branchs.find(a => a.id === id));
-    return result;
-  }
-
   /**
    * Function header table
    */
@@ -205,7 +213,7 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'STT',
+        title: 'No',
         key: 'index',
         className: 'min-width-60',
         width: 60,
@@ -213,44 +221,47 @@ class Index extends PureComponent {
         render: (text, record, index) => <Text size="normal">{index + 1}</Text>,
       },
       {
-        title: 'Loại đánh giá',
+        title: 'Type review',
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.type === 'LESSION_FEEDBACK' ? 'Nhật xét tiết học' : 'Đo lường định kỳ'}</Text>,
+        render: (record) => <Text size="normal">{record?.type === 'QUARTER_REPORT' ? 'Quarter report' : 'Monthly comment'}</Text>,
       },
       {
-        title: 'Tên',
+        title: 'Name',
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.assessmentPeriod?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.nameAssessmentPeriod?.name}</Text>,
       },
       {
-        title: 'Năm học',
+        title: 'School year',
         key: 'name',
         className: 'min-width-150',
         width: 150,
         render: (record) => <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text>,
       },
       {
-        title: 'Cơ sở áp dụng',
+        title: 'Apply basis',
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{
-          this.getBranchs(record?.classes)?.map((item, index) => (
-            <>{`${item?.name}${index !== this.getBranchs(record?.classes)?.length - 1 ? ', ' : ''}`}</>
-          ))
-        }</Text>,
+        render: (record) => <Text size="normal">  {record?.branch?.map((item, index) =>
+          <div size="normal" key={index} className='d-flex'>
+            {item?.name}{index + 1 === record.branch.length ? "" : ",  "}
+          </div>
+        )}</Text>,
       },
       {
-        title: 'Số lớp áp dụng',
+        title: 'Apply class',
         key: 'total',
         className: 'min-width-140 center',
         width: 140,
-        align: 'center',
-        render: (record) => <Text size="normal">  {record?.classes?.length}</Text>,
+        render: (record) => <Text size="normal">  {record?.classes?.map((item, index) =>
+          <div size="normal" key={index} className='d-flex'>
+            {item?.name}{index + 1 === record.classes.length ? "" : ",  "}
+          </div>
+        )}</Text>,
       },
       {
         key: 'action',
@@ -262,8 +273,14 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
+            // permission="WEB_TIENGANH_KICHBANDANHGIA_UPDATE"
             />
-            <Button color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
+            <Button
+              color="danger"
+              icon="remove"
+              onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
+            // permission="WEB_TIENGANH_KICHBANDANHGIA_DELETE"
+            />
           </div>
         ),
       },
@@ -304,15 +321,20 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
 
-    const loading = effects['configurationReviews/GET_DATA'];
+    const loading = effects['englishSettingScriptReview/GET_DATA'];
     return (
       <>
-        <Helmet title="Cấu hình đánh giá" />
+        <Helmet title="Script review" />
         <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Cấu hình đánh giá</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
-              Tạo mới
+            <Text color="dark">Script review</Text>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/add`)}
+            // permission="WEB_TIENGANH_KICHBANDANHGIA_CREATE"
+            >
+              Create new
             </Button>
           </div>
           <div className={styles['block-table']}>
@@ -324,20 +346,21 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                {/* <div className="col-lg-3">
                   <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Từ khóa"
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
+                    placeholder="Enter keyword"
                     type={variables.INPUT_SEARCH}
                   />
-                </div>
+                </div> */}
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả loại' }, ...dataType]}
+                    data={[{ id: null, name: 'Select all type' }, ...dataType]}
                     name="type"
                     onChange={(event) => this.onChangeStatus(event, 'type')}
                     type={variables.SELECT}
+                    placeholder="Select status"
                     allowClear={false}
                   />
                 </div>
@@ -348,6 +371,7 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
+              description="No data"
               pagination={this.pagination(pagination)}
               error={error}
               isError={error.isError}

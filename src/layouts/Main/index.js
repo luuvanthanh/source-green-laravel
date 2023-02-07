@@ -127,6 +127,11 @@ const OBJECTS = {
     title: 'Biểu phí',
     menu: 'menuLeftCurrency',
   },
+  ENGLISH: {
+    icon: '/images/home/english.svg',
+    title: 'English',
+    menu: 'menuLeftEnglish',
+  },
 };
 
 @withRouter
@@ -196,6 +201,9 @@ class MainLayout extends React.PureComponent {
     }
     if (/^\/bieu-phi(?=\/|$)/i.test(pathname)) {
       key = 'CURRENCY';
+    }
+    if (/^\/english(?=\/|$)/i.test(pathname)) {
+      key = 'ENGLISH';
     }
     return key;
   };
