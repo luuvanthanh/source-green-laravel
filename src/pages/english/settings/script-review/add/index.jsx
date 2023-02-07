@@ -529,7 +529,7 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={effects[`EnglishQuarterReport/ADD_SENT`]}
-                  permission={"WEB_TIENGANH_KICHBANDANHGIA_UPDATE" || "WEB_TIENGANH_KICHBANDANHGIA_CREATE"}
+                // permission={"WEB_TIENGANH_KICHBANDANHGIA_UPDATE" || "WEB_TIENGANH_KICHBANDANHGIA_CREATE"}
                 >
                   Save
                 </Button>

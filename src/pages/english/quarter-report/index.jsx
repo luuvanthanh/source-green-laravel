@@ -14,7 +14,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 // import HelperModules from './utils/Helper';
-import ability from '@/utils/ability';
+// import ability from '@/utils/ability';
 
 import variablesModules from './utils/variables';
 import stylesModule from './styles.module.scss';
@@ -496,7 +496,9 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
 
-    if (search?.status === 'NOT_REVIEW' && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE')) {
+    if (search?.status === 'NOT_REVIEW'
+      // && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE')
+    ) {
       return (
         <Button
           icon="edit"
@@ -505,7 +507,9 @@ class Index extends PureComponent {
         />
       );
     }
-    if (search?.status === 'NOT_YET_CONFIRM' && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE')) {
+    if (search?.status === 'NOT_YET_CONFIRM'
+      // && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE')
+    ) {
       return (
         <Button
           icon="edit"
@@ -527,8 +531,8 @@ class Index extends PureComponent {
       return <div className={stylesModule['lds-ring']}><div /><div /><div /><div /></div>;
     }
     if (
-      search?.status === variablesModules.STATUS.NOT_YET_CONFIRM &&
-      ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE')
+      search?.status === variablesModules.STATUS.NOT_YET_CONFIRM
+      // && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE')
     ) {
       return (
         <Button
@@ -539,8 +543,8 @@ class Index extends PureComponent {
       );
     }
     if (
-      search?.status === variablesModules.STATUS.NOT_YET_SEND &&
-      ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE')
+      search?.status === variablesModules.STATUS.NOT_YET_SEND
+      // && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE')
     ) {
       return (
         <Button
@@ -804,7 +808,7 @@ class Index extends PureComponent {
           className="ml-2"
           onClick={() => this.addSent('much')}
           loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
-          permission={"WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE" || "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"}
+        // permission={"WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE" || "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"}
         >
           {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
         </Button>
@@ -815,7 +819,7 @@ class Index extends PureComponent {
           disabled={!data?.length > 0}
           loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
           onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
-          permission={"WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE" || "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"}
+        // permission={"WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE" || "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"}
         >
           {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
         </Button>

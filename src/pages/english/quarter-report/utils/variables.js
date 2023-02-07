@@ -1,4 +1,4 @@
-import ability from '@/utils/ability';
+// import ability from '@/utils/ability';
 
 export const variables = {
   STATUS: {
@@ -31,73 +31,99 @@ export const variables = {
     NOT_YET_SEND: 'NOT YET SEND',
     SENT: 'DONE SEND',
   },
+  // STATUS_TABS: [
+  //   ...(ability.can(
+  //     'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_VIEW',
+  //     'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_VIEW',
+  //   )
+  //     ? [
+  //         {
+  //           id: 'NOT_REVIEW',
+  //           name: 'NOT YET REVIEW',
+  //         },
+  //       ]
+  //     : []),
+  //   ...(ability.can(
+  //     'WEB_TIENGANH_DANHGIADINHKY_DADANHGIA_VIEW',
+  //     'WEB_TIENGANH_DANHGIADINHKY_DADANHGIA_VIEW',
+  //   )
+  //     ? [
+  //         {
+  //           id: 'REVIEWED',
+  //           name: 'DONE REVIEW',
+  //         },
+  //       ]
+  //     : []),
+  //   ...(ability.can(
+  //     'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_VIEW',
+  //     'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_VIEW',
+  //   )
+  //     ? [
+  //         {
+  //           id: 'NOT_YET_CONFIRM',
+  //           name: 'NOT YET CONFIRM',
+  //         },
+  //       ]
+  //     : []),
+  //   ...(ability.can(
+  //     'WEB_TIENGANH_DANHGIADINHKY_DADUYET_VIEW',
+  //     'WEB_TIENGANH_DANHGIADINHKY_DADUYET_VIEW',
+  //   )
+  //     ? [
+  //         {
+  //           id: 'CONFIRMED',
+  //           name: 'DONE CONFIRM',
+  //         },
+  //       ]
+  //     : []),
+  //   ...(ability.can(
+  //     'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_VIEW',
+  //     'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_VIEW',
+  //   )
+  //     ? [
+  //         {
+  //           id: 'NOT_YET_SEND',
+  //           name: 'NOT YET SEND',
+  //         },
+  //       ]
+  //     : []),
+  //   ...(ability.can(
+  //     'WEB_TIENGANH_DANHGIADINHKY_DAGUI_VIEW',
+  //     'WEB_TIENGANH_DANHGIADINHKY_DAGUI_VIEW',
+  //   )
+  //     ? [
+  //         {
+  //           id: 'SENT',
+  //           name: 'DONE SEND',
+  //         },
+  //       ]
+  //     : []),
+  // ],
   STATUS_TABS: [
-    ...(ability.can(
-      'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_VIEW',
-      'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_VIEW',
-    )
-      ? [
-          {
-            id: 'NOT_REVIEW',
-            name: 'NOT YET REVIEW',
-          },
-        ]
-      : []),
-    ...(ability.can(
-      'WEB_TIENGANH_DANHGIADINHKY_DADANHGIA_VIEW',
-      'WEB_TIENGANH_DANHGIADINHKY_DADANHGIA_VIEW',
-    )
-      ? [
-          {
-            id: 'REVIEWED',
-            name: 'DONE REVIEW',
-          },
-        ]
-      : []),
-    ...(ability.can(
-      'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_VIEW',
-      'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_VIEW',
-    )
-      ? [
-          {
-            id: 'NOT_YET_CONFIRM',
-            name: 'NOT YET CONFIRM',
-          },
-        ]
-      : []),
-    ...(ability.can(
-      'WEB_TIENGANH_DANHGIADINHKY_DADUYET_VIEW',
-      'WEB_TIENGANH_DANHGIADINHKY_DADUYET_VIEW',
-    )
-      ? [
-          {
-            id: 'CONFIRMED',
-            name: 'DONE CONFIRM',
-          },
-        ]
-      : []),
-    ...(ability.can(
-      'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_VIEW',
-      'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_VIEW',
-    )
-      ? [
-          {
-            id: 'NOT_YET_SEND',
-            name: 'NOT YET SEND',
-          },
-        ]
-      : []),
-    ...(ability.can(
-      'WEB_TIENGANH_DANHGIADINHKY_DAGUI_VIEW',
-      'WEB_TIENGANH_DANHGIADINHKY_DAGUI_VIEW',
-    )
-      ? [
-          {
-            id: 'SENT',
-            name: 'DONE SEND',
-          },
-        ]
-      : []),
+    {
+      id: 'NOT_REVIEW',
+      name: 'NOT YET REVIEW',
+    },
+    {
+      id: 'REVIEWED',
+      name: 'DONE REVIEW',
+    },
+    {
+      id: 'NOT_YET_CONFIRM',
+      name: 'NOT YET CONFIRM',
+    },
+    {
+      id: 'CONFIRMED',
+      name: 'DONE CONFIRM',
+    },
+    {
+      id: 'NOT_YET_SEND',
+      name: 'NOT YET SEND',
+    },
+    {
+      id: 'SENT',
+      name: 'DONE SEND',
+    },
   ],
   STATUS_SEARCH: {
     NOT_YET_CONFIRM: 'NOT_YET_CONFIRM',

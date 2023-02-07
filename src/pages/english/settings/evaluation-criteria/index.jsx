@@ -218,13 +218,13 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
-              permission="WEB_TIENGANH_QUANLYTIEUCHI_UPDATE"
+            // permission="WEB_TIENGANH_QUANLYTIEUCHI_UPDATE"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
-              permission="WEB_TIENGANH_QUANLYTIEUCHI_DELETE"
+            // permission="WEB_TIENGANH_QUANLYTIEUCHI_DELETE"
             />
           </div>
         ),
@@ -272,7 +272,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/add`)}
-              permission="WEB_TIENGANH_QUANLYTIEUCHI_CREATE"
+            // permission="WEB_TIENGANH_QUANLYTIEUCHI_CREATE"
             >
               Create new
             </Button>
