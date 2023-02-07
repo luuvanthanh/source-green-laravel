@@ -18,6 +18,7 @@ use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Container\Container as Application;
+use Illuminate\Http\Request;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -128,6 +129,10 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('StudentId', $attributes['studentId']);
             });
+        }
+
+        if (!empty($attributes['countStudentByStatus']) && $attributes['countStudentByStatus'] == 'true') {
+            $this->countStudentByStatus($attributes);
         }
 
         if (!empty($attributes['limit'])) {
@@ -405,5 +410,62 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                 dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
             }
         }
+    }
+
+    public function countStudentByStatus($attributes)
+    {
+        $quantityNotYetReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereDoesntHave('quarterReport', function ($query) use ($attributes) {
+
+            if (!empty($attributes['scriptReviewId'])) {
+                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+            }
+
+            $query->orderBy('CreationTime', 'DESC');
+        })->count();
+
+        $quantityDoneReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+        })->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('Status', QuarterReport::STATUS['REVIEWED']);
+        })->count();
+
+        $quantityNotYetConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+        })->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('Status', QuarterReport::STATUS['NOT_YET_CONFIRM']);
+        })->count();
+
+        $quantityDoneConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+        })->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('Status', QuarterReport::STATUS['CONFIRMED']);
+        })->count();
+
+        $quantityDoneSend = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+        })->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('Status', QuarterReport::STATUS['SENT']);
+        })->count();
+
+        $data = [
+            'quantityNotYetReview' => $quantityNotYetReview,
+            'quantityDoneReview' => $quantityDoneReview,
+            'quantityNotYetConfirm' => $quantityNotYetConfirm,
+            'quantityDoneConfirm' => $quantityDoneConfirm,
+            'quantityNotYetSend' => $quantityDoneConfirm,
+            'quantityDoneSend' => $quantityDoneSend
+        ];
+
+        request()->merge(['countStudentByStatus' => $data]);
     }
 }
