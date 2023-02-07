@@ -767,123 +767,6 @@ export async function getLeftMenuCriteria() {
     //   pro: true,
     // },
     {
-      title: 'English',
-      key: 'English',
-      icon: 'icon icon-dictionary',
-      permission: [permissions.WEB_TIENGANH_VIEW],
-      children: [
-        {
-          title: 'Monthly comment',
-          key: 'Monthly-report',
-          url: [
-            '/chuong-trinh-hoc/monthly-report',
-            '/chuong-trinh-hoc/monthly-report/:id/add',
-            '/chuong-trinh-hoc/monthly-report/:id/detail',
-            '/chuong-trinh-hoc/monthly-report/:id/edit',
-            '/chuong-trinh-hoc/monthly-report/:id/confirmed',
-          ],
-          permission: [permissions.WEB_TIENGANH_DANHGIATHANG_VIEW],
-          pro: true,
-        },
-        {
-          title: 'Quarter report',
-          key: 'Quarter-report',
-          url: [
-            '/chuong-trinh-hoc/quarter-report',
-            '/chuong-trinh-hoc/quarter-report/:id/add',
-            '/chuong-trinh-hoc/quarter-report/:id/detail',
-            '/chuong-trinh-hoc/quarter-report/:id/edit',
-            '/chuong-trinh-hoc/quarter-report/:id/confirmed',
-          ],
-          permission: [permissions.WEB_TIENGANH_DANHGIADINHKY_VIEW],
-          pro: true,
-        },
-        {
-          title: 'Study Plan',
-          key: 'study-plan',
-          url: ['/chuong-trinh-hoc/study-plan'],
-          permission: [permissions.WEB_TIENGANH_THOIKHOABIEU_VIEW],
-          pro: true,
-        },
-        {
-          title: 'Settings',
-          key: 'Settings',
-          permission: [permissions.WEB_TIENGANH_VIEW],
-          children: [
-            {
-              title: 'Program',
-              key: 'Program',
-              url: [
-                '/chuong-trinh-hoc/settings/program',
-                '/chuong-trinh-hoc/settings/program/add',
-                '/chuong-trinh-hoc/settings/program/:id/detail',
-                '/chuong-trinh-hoc/settings/program/:id/edit',
-              ],
-              permission: [permissions.WEB_TIENGANH_QUANLYBAIGIANG_VIEW],
-              pro: true,
-            },
-            {
-              title: 'Subject',
-              key: 'Subject',
-              url: [
-                '/chuong-trinh-hoc/settings/subject',
-                '/chuong-trinh-hoc/settings/subject/add',
-                '/chuong-trinh-hoc/settings/subject/:id/detail',
-                '/chuong-trinh-hoc/settings/subject/:id/edit',
-              ],
-              permission: [permissions.WEB_TIENGANH_QUANLYPHANMUC_VIEW],
-              pro: true,
-            },
-            {
-              title: 'Evaluation criteria',
-              key: 'EvaluationCriteria',
-              url: [
-                '/chuong-trinh-hoc/settings/evaluationCriteria',
-                '/chuong-trinh-hoc/settings/evaluationCriteria/add',
-                '/chuong-trinh-hoc/settings/evaluationCriteria/:id/detail',
-                '/chuong-trinh-hoc/settings/evaluationCriteria/:id/edit',
-              ],
-              permission: [permissions.WEB_TIENGANH_QUANLYTIEUCHI_VIEW],
-              pro: true,
-            },
-            {
-              title: 'Sample comments',
-              key: 'sampleComments',
-              url: [
-                '/chuong-trinh-hoc/settings/sampleComments',
-                '/chuong-trinh-hoc/settings/sampleComments/add',
-                '/chuong-trinh-hoc/settings/sampleComments/:id/detail',
-                '/chuong-trinh-hoc/settings/sampleComments/:id/edit',
-              ],
-              permission: [permissions.WEB_TIENGANH_QUANLYCOMMENT_VIEW],
-              pro: true,
-            },
-            {
-              title: 'Script review',
-              key: 'script-review',
-              url: [
-                '/chuong-trinh-hoc/settings/scriptReview',
-                '/chuong-trinh-hoc/settings/scriptReview/add',
-                '/chuong-trinh-hoc/settings/scriptReview/:id/detail',
-                '/chuong-trinh-hoc/settings/scriptReview/:id/edit',
-              ],
-              permission: [permissions.WEB_TIENGANH_KICHBANDANHGIA_VIEW],
-              pro: true,
-            },
-            {
-              title: 'Schedule',
-              key: 'tkb',
-              url: ['/chuong-trinh-hoc/settings/cau-hinh'],
-              permission: [permissions.CTH],
-              pro: true,
-            },
-          ],
-          pro: true,
-        },
-      ],
-      pro: true,
-    },
-    {
       title: 'Thể chất',
       key: 'physical',
       icon: 'icon icon-biceps',
@@ -2843,6 +2726,119 @@ export async function getLeftMenuCurrency() {
       icon: 'icon icon-list',
       permission: [permissions.BIEUPHI],
       url: ['/bieu-phi/cau-hinh-noi-dung'],
+    },
+  ];
+}
+
+export async function getLeftMenuEnglish() {
+  return [
+    {
+      title: 'Monthly comment',
+      key: 'Monthly-report',
+      url: [
+        '/english/monthly-report',
+        '/english/monthly-report/:id/add',
+        '/english/monthly-report/:id/detail',
+        '/english/monthly-report/:id/edit',
+        '/english/monthly-report/:id/confirmed',
+      ],
+      permission: [permissions.WEB_TIENGANH_DANHGIATHANG_VIEW],
+      pro: true,
+    },
+    {
+      title: 'Quarter report',
+      key: 'Quarter-report',
+      url: [
+        '/english/quarter-report',
+        '/english/quarter-report/:id/add',
+        '/english/quarter-report/:id/detail',
+        '/english/quarter-report/:id/edit',
+        '/english/quarter-report/:id/confirmed',
+      ],
+      permission: [permissions.WEB_TIENGANH_DANHGIADINHKY_VIEW],
+      pro: true,
+    },
+    {
+      title: 'Study Plan',
+      key: 'study-plan',
+      url: ['/english/study-plan'],
+      permission: [permissions.WEB_TIENGANH_THOIKHOABIEU_VIEW],
+      pro: true,
+    },
+    {
+      title: 'Settings',
+      key: 'Settings',
+      permission: [permissions.WEB_TIENGANH_VIEW],
+      children: [
+        {
+          title: 'Program',
+          key: 'Program',
+          url: [
+            '/english/settings/program',
+            '/english/settings/program/add',
+            '/english/settings/program/:id/detail',
+            '/english/settings/program/:id/edit',
+          ],
+          permission: [permissions.WEB_TIENGANH_QUANLYBAIGIANG_VIEW],
+          pro: true,
+        },
+        {
+          title: 'Subject',
+          key: 'Subject',
+          url: [
+            '/english/settings/subject',
+            '/english/settings/subject/add',
+            '/english/settings/subject/:id/detail',
+            '/english/settings/subject/:id/edit',
+          ],
+          permission: [permissions.WEB_TIENGANH_QUANLYPHANMUC_VIEW],
+          pro: true,
+        },
+        {
+          title: 'Evaluation criteria',
+          key: 'EvaluationCriteria',
+          url: [
+            '/english/settings/evaluationCriteria',
+            '/english/settings/evaluationCriteria/add',
+            '/english/settings/evaluationCriteria/:id/detail',
+            '/english/settings/evaluationCriteria/:id/edit',
+          ],
+          permission: [permissions.WEB_TIENGANH_QUANLYTIEUCHI_VIEW],
+          pro: true,
+        },
+        {
+          title: 'Sample comments',
+          key: 'sampleComments',
+          url: [
+            '/english/settings/sampleComments',
+            '/english/settings/sampleComments/add',
+            '/english/settings/sampleComments/:id/detail',
+            '/english/settings/sampleComments/:id/edit',
+          ],
+          permission: [permissions.WEB_TIENGANH_QUANLYCOMMENT_VIEW],
+          pro: true,
+        },
+        {
+          title: 'Script review',
+          key: 'script-review',
+          url: [
+            '/english/settings/scriptReview',
+            '/english/settings/scriptReview/add',
+            '/english/settings/scriptReview/:id/detail',
+            '/english/settings/scriptReview/:id/edit',
+          ],
+          permission: [permissions.WEB_TIENGANH_KICHBANDANHGIA_VIEW],
+          pro: true,
+        },
+        {
+          title: 'Schedule',
+          key: 'tkb',
+          url: ['/english/settings/cau-hinh'],
+          permission: [permissions.WEB_TIENGANH_VIEW],
+          pro: true,
+        },
+      ],
+      pro: true,
     },
   ];
 }
