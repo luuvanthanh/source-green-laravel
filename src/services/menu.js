@@ -2743,7 +2743,7 @@ export async function getLeftMenuEnglish() {
         '/english/monthly-report/:id/confirmed',
       ],
       // permission: [permissions.WEB_TIENGANH_DANHGIATHANG_VIEW],
-      permission: [],
+      permission: [permissions.CTH],
       pro: true,
     },
     {
@@ -2757,7 +2757,7 @@ export async function getLeftMenuEnglish() {
         '/english/quarter-report/:id/confirmed',
       ],
       // permission: [permissions.WEB_TIENGANH_DANHGIADINHKY_VIEW],
-      permission: [],
+      permission: [permissions.CTH],
       pro: true,
     },
     {
@@ -2765,14 +2765,14 @@ export async function getLeftMenuEnglish() {
       key: 'study-plan',
       url: ['/english/study-plan'],
       // permission: [permissions.WEB_TIENGANH_THOIKHOABIEU_VIEW],
-      permission: [],
+      permission: [permissions.CTH],
       pro: true,
     },
     {
       title: 'Settings',
       key: 'Settings',
       // permission: [permissions.WEB_TIENGANH_VIEW],
-      permission: [],
+      permission: [permissions.CTH],
       children: [
         {
           title: 'Program',
@@ -2784,7 +2784,7 @@ export async function getLeftMenuEnglish() {
             '/english/settings/program/:id/edit',
           ],
           // permission: [permissions.WEB_TIENGANH_QUANLYBAIGIANG_VIEW],
-          permission: [],
+          permission: [permissions.CTH],
           pro: true,
         },
         {
@@ -2797,7 +2797,7 @@ export async function getLeftMenuEnglish() {
             '/english/settings/subject/:id/edit',
           ],
           // permission: [permissions.WEB_TIENGANH_QUANLYPHANMUC_VIEW],
-          permission: [],
+          permission: [permissions.CTH],
           pro: true,
         },
         {
@@ -2810,6 +2810,7 @@ export async function getLeftMenuEnglish() {
             '/english/settings/evaluationCriteria/:id/edit',
           ],
           // permission: [permissions.WEB_TIENGANH_QUANLYTIEUCHI_VIEW],
+          permission: [permissions.CTH],
           pro: true,
         },
         {
@@ -2822,7 +2823,7 @@ export async function getLeftMenuEnglish() {
             '/english/settings/sampleComments/:id/edit',
           ],
           // permission: [permissions.WEB_TIENGANH_QUANLYCOMMENT_VIEW],
-          permission: [],
+          permission: [permissions.CTH],
           pro: true,
         },
         {
@@ -2835,7 +2836,8 @@ export async function getLeftMenuEnglish() {
             '/english/settings/scriptReview/:id/edit',
           ],
           // permission: [permissions.WEB_TIENGANH_KICHBANDANHGIA_VIEW],
-          permission: [],
+          permission: [permissions.CTH],
+
           pro: true,
         },
         {
@@ -2843,7 +2845,7 @@ export async function getLeftMenuEnglish() {
           key: 'tkb',
           url: ['/english/settings/cau-hinh'],
           // permission: [permissions.WEB_TIENGANH_VIEW],
-          permission: [],
+          permission: [permissions.CTH],
           pro: true,
         },
       ],
