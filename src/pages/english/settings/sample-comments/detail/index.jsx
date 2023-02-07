@@ -125,7 +125,7 @@ const General = memo(() => {
                       color="success"
                       size="large"
                       onClick={() => {
-                        history.push(`/chuong-trinh-hoc/settings/sampleComments/${details?.id}/edit`);
+                        history.push(`/english/settings/sampleComments/${details?.id}/edit`);
                       }}
                     >
                       Edit

@@ -101,7 +101,7 @@ const Index = memo(() => {
       callback: (response, error) => {
         if (response) {
           if (response) {
-            history.push(`/chuong-trinh-hoc/settings/scriptReview`);
+            history.push(`/english/settings/scriptReview`);
           }
         }
         if (error) {
