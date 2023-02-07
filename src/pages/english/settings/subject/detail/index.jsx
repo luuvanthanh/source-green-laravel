@@ -185,7 +185,7 @@ const Index = memo(() => {
                         color="success"
                         size="large"
                         onClick={() => {
-                          history.push(`/chuong-trinh-hoc/settings/subject/${details?.id}/edit`);
+                          history.push(`/english/settings/subject/${details?.id}/edit`);
                         }}
                       >
                         Edit

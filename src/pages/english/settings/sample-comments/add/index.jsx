@@ -76,7 +76,7 @@ const General = memo(() => {
         callback: (response, error) => {
           if (response) {
             if (response) {
-              history.push(`/chuong-trinh-hoc/settings/sampleComments`);
+              history.push(`/english/settings/sampleComments`);
             }
           }
           if (error) {
