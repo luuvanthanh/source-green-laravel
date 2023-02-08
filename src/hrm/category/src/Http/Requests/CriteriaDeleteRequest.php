@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\GradeDetail;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CriteriaDeleteRequest extends FormRequest
@@ -23,6 +24,17 @@ class CriteriaDeleteRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $gradeDetail = GradeDetail::where('CriteriaId', $value)->first();
+
+                    if (!is_null($gradeDetail)) {
+                        return $fail('Dữ liệu đang được sử dụng!');
+                    }
+                },
+            ],
+        ];
     }
 }
