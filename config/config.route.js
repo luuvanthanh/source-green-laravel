@@ -3728,7 +3728,7 @@ export default [
             authority: [permissions.CTH],
           },
           {
-            path: '/monthly-report/:id/add',
+            path: '/english/monthly-report/:id/add',
             component: './english/monthly-report/add',
             wrappers: ['@/wrappers/auth'],
             // authority: [permissions.WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE],
