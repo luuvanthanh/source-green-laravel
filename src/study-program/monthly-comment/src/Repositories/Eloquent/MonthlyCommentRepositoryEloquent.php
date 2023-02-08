@@ -303,7 +303,8 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             ->whereYear('Month', $carbon->format('Y'))
             ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherManagementId' => $attributes['teacherManagementId']
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -339,7 +340,8 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         $this->model->whereIn('Id', $attributes['id'])
             ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherManagementId' => $attributes['teacherManagementId']
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
