@@ -110,17 +110,13 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         }
 
         if (!empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status']);
-            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
             });
         }
 
         if (!empty($attributes['type']) && !empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
-                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
-            }])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
             });
         }
@@ -134,6 +130,20 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         if (!empty($attributes['countStudentByStatus']) && $attributes['countStudentByStatus'] == 'true') {
             $this->countStudentByStatus($attributes);
         }
+
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
+            if (!empty($attributes['scriptReviewId'])) {
+                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+            }
+
+            if (!empty($arrayClass['Type'])) {
+                $query->where('Type', $attributes['type']);
+            }
+
+            if (!empty($arrayClass['Status'])) {
+                $query->where('Status', $attributes['status']);
+            }
+        }]);
 
         if (!empty($attributes['limit'])) {
             $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);

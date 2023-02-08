@@ -108,17 +108,13 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         }
 
         if (!empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status']);
-            }])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
             });
         }
 
         if (!empty($attributes['type']) && !empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['CONFIRMED']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
-                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
-            }])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
             });
         }
@@ -128,6 +124,25 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
                 $query->where('StudentId', $attributes['studentId']);
             });
         }
+
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
+            if (!empty($attributes['scriptReviewId'])) {
+                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+            }
+
+            if (!empty($attributes['Type'])) {
+                $query->where('Type', $attributes['type']);
+            }
+
+            if (!empty($attributes['Status'])) {
+                $query->where('Status', $attributes['status']);
+            }
+
+            if (!empty($attributes['month'])) {
+                $query->where('Month', $attributes['month']);
+            }
+            
+        }]);
 
         if (!empty($attributes['limit'])) {
             $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
