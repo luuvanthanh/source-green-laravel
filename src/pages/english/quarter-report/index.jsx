@@ -43,6 +43,7 @@ const mapStateToProps = ({ EnglishQuarterReport, loading, user }) => ({
   assessmentPeriod: EnglishQuarterReport.assessmentPeriod,
   defaultBranch: user.defaultBranch,
   years: EnglishQuarterReport.years,
+  dataTotal: EnglishQuarterReport.dataTotal,
   dataType: EnglishQuarterReport.dataType,
   user: user.user,
 });
@@ -848,7 +849,6 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
-
     const { search, defaultBranchs, dataAssess } = this.state;
     const loading = effects['EnglishQuarterReport/GET_DATA'];
     return (
