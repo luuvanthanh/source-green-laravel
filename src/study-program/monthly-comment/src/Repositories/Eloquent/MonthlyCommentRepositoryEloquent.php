@@ -101,13 +101,8 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             });
         }
 
-        if (!empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['NOT_REVIEW'] && !empty($attributes['scriptReviewId'])) {
+        if (!empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('monthlyComment', function ($query) use ($attributes) {
-
-                if (!empty($attributes['scriptReviewId'])) {
-                    $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-                }
-
                 $query->orderBy('CreationTime', 'DESC');
             });
         }
