@@ -299,7 +299,8 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             ->where('Status', $attributes['oldStatus'])
             ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherManagementId' => $attributes['teacherManagementId']
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -335,7 +336,8 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $data = $this->model->whereIn('Id', $attributes['id'])
             ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherManagementId' => $attributes['teacherManagementId']
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
