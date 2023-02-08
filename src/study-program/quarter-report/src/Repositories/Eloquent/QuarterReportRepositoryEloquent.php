@@ -468,4 +468,61 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
 
         request()->merge(['countStudentByStatus' => $data]);
     }
+
+    public function countStudentQuarterReportByStatus($attributes)
+    {
+        $quantityNotYetReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereDoesntHave('quarterReport', function ($query) use ($attributes) {
+
+            if (!empty($attributes['scriptReviewId'])) {
+                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+            }
+
+            $query->orderBy('CreationTime', 'DESC');
+        })->count();
+
+        $quantityDoneReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+        })->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('Status', QuarterReport::STATUS['REVIEWED']);
+        })->count();
+
+        $quantityNotYetConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+        })->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('Status', QuarterReport::STATUS['NOT_YET_CONFIRM']);
+        })->count();
+
+        $quantityDoneConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+        })->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('Status', QuarterReport::STATUS['CONFIRMED']);
+        })->count();
+
+        $quantityDoneSend = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+        })->whereHas('quarterReport', function ($query) use ($attributes) {
+            $query->where('Status', QuarterReport::STATUS['SENT']);
+        })->count();
+
+        $data = [
+            'quantityNotYetReview' => $quantityNotYetReview,
+            'quantityDoneReview' => $quantityDoneReview,
+            'quantityNotYetConfirm' => $quantityNotYetConfirm,
+            'quantityDoneConfirm' => $quantityDoneConfirm,
+            'quantityNotYetSend' => $quantityDoneConfirm,
+            'quantityDoneSend' => $quantityDoneSend
+        ];
+
+        return $data;
+    }
 }
