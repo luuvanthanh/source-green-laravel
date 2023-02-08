@@ -75,7 +75,6 @@ const Index = memo(() => {
           scriptReviewCommentId: i?.isComment ? i?.scriptReviewCommentId : undefined,
           content: i?.isComment ? i?.content : undefined,
         })),
-        teacherId: user?.objectInfo?.id,
       },
       callback: (response, error) => {
         if (response) {

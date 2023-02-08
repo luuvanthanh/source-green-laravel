@@ -7,6 +7,7 @@ export default {
   namespace: 'EnglishQuarterReport',
   state: {
     data: [],
+    dataTotal: {},
     years: [],
     assessmentPeriod: [],
     dataType: [],
@@ -23,6 +24,7 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+      dataTotal: payload.dataTotal,
     }),
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
