@@ -76,6 +76,10 @@ class ExpectedTimeRepositoryEloquent extends CoreRepositoryEloquent implements E
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->where('Id', $attribute['employeeId']);
         }
 
+        if (!empty($attribute['fullName'])) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attribute['fullName']);
+        }
+
         if (!empty($attribute['limit'])) {
             $result = $this->employeeRepositoryEloquent->paginate($attribute['limit']);
         } else {
