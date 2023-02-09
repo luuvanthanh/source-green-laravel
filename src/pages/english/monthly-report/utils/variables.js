@@ -100,26 +100,32 @@ export const variables = {
     {
       id: 'NOT_REVIEW',
       name: 'NOT YET REVIEW',
+      type: 'quantityNotYetReview',
     },
     {
       id: 'REVIEWED',
       name: 'DONE REVIEW',
+      type: 'quantityDoneReview',
     },
     {
       id: 'NOT_YET_CONFIRM',
       name: 'NOT YET CONFIRM',
+      type: 'quantityNotYetConfirm',
     },
     {
       id: 'CONFIRMED',
       name: 'DONE CONFIRM',
+      type: 'quantityDoneConfirm',
     },
     {
       id: 'NOT_YET_SEND',
       name: 'NOT YET SEND',
+      type: 'quantityNotYetSend',
     },
     {
       id: 'SENT',
       name: 'DONE SEND',
+      type: 'quantityDoneSend',
     },
   ],
   STATUS_SEARCH: {
