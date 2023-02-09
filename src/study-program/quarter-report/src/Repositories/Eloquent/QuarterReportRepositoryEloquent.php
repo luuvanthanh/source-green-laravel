@@ -92,12 +92,6 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
         }
 
-        if (!empty($attributes['scriptReviewId']) && !empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
-                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-            });
-        }
-
         if (!empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['NOT_REVIEW'] && !empty($attributes['scriptReviewId'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('quarterReport', function ($query) use ($attributes) {
 
@@ -112,23 +106,19 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         if (!empty($attributes['status']) && $attributes['status'] != QuarterReport::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
-            });
-        }
+                
+                if (!empty($attributes['scriptReviewId'])) {
+                    $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+                }
 
-        if (!empty($attributes['type']) && !empty($attributes['status']) && $attributes['status'] == QuarterReport::STATUS['CONFIRMED']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
-                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
-            });
-        }
+                if (!empty($attributes['type'])) {
+                    $query->where('Type', $attributes['type']);
+                }
 
-        if (!empty($attributes['studentId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('quarterReport', function ($query) use ($attributes) {
-                $query->where('StudentId', $attributes['studentId']);
+                if (!empty($attributes['studentId'])) {
+                    $query->where('StudentId', $attributes['studentId']);
+                }
             });
-        }
-
-        if (!empty($attributes['countStudentByStatus']) && $attributes['countStudentByStatus'] == 'true') {
-            $this->countStudentByStatus($attributes);
         }
 
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['quarterReport' => function ($query) use ($attributes) {
@@ -136,11 +126,11 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                 $query->where('ScriptReviewId', $attributes['scriptReviewId']);
             }
 
-            if (!empty($arrayClass['Type'])) {
+            if (!empty($attributes['type'])) {
                 $query->where('Type', $attributes['type']);
             }
 
-            if (!empty($arrayClass['Status'])) {
+            if (!empty($attributes['status'])) {
                 $query->where('Status', $attributes['status']);
             }
         }]);
@@ -424,63 +414,6 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         }
     }
 
-    public function countStudentByStatus($attributes)
-    {
-        $quantityNotYetReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
-            $query->where('BranchId', $attributes['branchId']);
-        })->where('ClassId', $attributes['classId'])->whereDoesntHave('quarterReport', function ($query) use ($attributes) {
-
-            if (!empty($attributes['scriptReviewId'])) {
-                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-            }
-
-            $query->orderBy('CreationTime', 'DESC');
-        })->count();
-
-        $quantityDoneReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
-            $query->where('BranchId', $attributes['branchId']);
-        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-        })->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('Status', QuarterReport::STATUS['REVIEWED']);
-        })->count();
-
-        $quantityNotYetConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
-            $query->where('BranchId', $attributes['branchId']);
-        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-        })->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('Status', QuarterReport::STATUS['NOT_YET_CONFIRM']);
-        })->count();
-
-        $quantityDoneConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
-            $query->where('BranchId', $attributes['branchId']);
-        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-        })->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('Status', QuarterReport::STATUS['CONFIRMED']);
-        })->count();
-
-        $quantityDoneSend = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
-            $query->where('BranchId', $attributes['branchId']);
-        })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-        })->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('Status', QuarterReport::STATUS['SENT']);
-        })->count();
-
-        $data = [
-            'quantityNotYetReview' => $quantityNotYetReview,
-            'quantityDoneReview' => $quantityDoneReview,
-            'quantityNotYetConfirm' => $quantityNotYetConfirm,
-            'quantityDoneConfirm' => $quantityDoneConfirm,
-            'quantityNotYetSend' => $quantityDoneConfirm,
-            'quantityDoneSend' => $quantityDoneSend
-        ];
-
-        request()->merge(['countStudentByStatus' => $data]);
-    }
-
     public function countStudentQuarterReportByStatus($attributes)
     {
         $quantityNotYetReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
@@ -497,33 +430,25 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
         $quantityDoneReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
             $query->where('BranchId', $attributes['branchId']);
         })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-        })->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('Status', QuarterReport::STATUS['REVIEWED']);
+            $query->where('ScriptReviewId', $attributes['scriptReviewId'])->where('Status', QuarterReport::STATUS['REVIEWED']);
         })->count();
 
         $quantityNotYetConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
             $query->where('BranchId', $attributes['branchId']);
         })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-        })->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('Status', QuarterReport::STATUS['NOT_YET_CONFIRM']);
+            $query->where('ScriptReviewId', $attributes['scriptReviewId'])->where('Status', QuarterReport::STATUS['NOT_YET_CONFIRM']);
         })->count();
 
         $quantityDoneConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
             $query->where('BranchId', $attributes['branchId']);
         })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-        })->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('Status', QuarterReport::STATUS['CONFIRMED']);
+            $query->where('ScriptReviewId', $attributes['scriptReviewId'])->where('Status', QuarterReport::STATUS['CONFIRMED']);
         })->count();
 
         $quantityDoneSend = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
             $query->where('BranchId', $attributes['branchId']);
         })->where('ClassId', $attributes['classId'])->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-        })->whereHas('quarterReport', function ($query) use ($attributes) {
-            $query->where('Status', QuarterReport::STATUS['SENT']);
+            $query->where('ScriptReviewId', $attributes['scriptReviewId'])->where('Status', QuarterReport::STATUS['SENT']);
         })->count();
 
         $data = [
