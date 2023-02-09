@@ -517,8 +517,8 @@ const Index = memo(() => {
         branchId: search?.branchId,
         classId: search?.classId,
         schoolYearId: search?.schoolYearId,
-        fromDate: searchDate?.fromDate,
-        toDate: searchDate?.toDate,
+        fromDate: Helper.getDate(moment(searchDate?.fromDate), variables.DATE_FORMAT.DATE_TIME_UTC_ONE),
+        toDate: Helper.getDate(moment(searchDate?.toDate), variables.DATE_FORMAT.DATE_TIME_UTC_ONE),
         studyPlanLessions: data,
       },
       callback: (response, error) => {
