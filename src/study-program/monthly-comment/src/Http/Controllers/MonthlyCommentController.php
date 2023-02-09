@@ -139,4 +139,11 @@ class MonthlyCommentController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    public function countStudentMonthlyCommentByStatus(Request $request)
+    {
+        $result = $this->monthlyCommentRepository->countStudentMonthlyCommentByStatus($request->all());
+
+        return $this->success(['data' => $result], trans('lang::messages.common.getListSuccess'));
+    }
 }
