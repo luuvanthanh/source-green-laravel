@@ -24,7 +24,6 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Container\Container as Application;
 
-use function Clue\StreamFilter\fun;
 
 /**
  * Class UserRepositoryEloquent.
@@ -100,7 +99,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             if ($attributes['hasClass'] == 'true') {
                 $this->model = $this->model->whereHas('classTeacher');
             } else {
-
+                
                 $users = User::whereHas('transferDetail', function ($query) use ($attributes) {
                     $query->whereHas('transfer', function ($query) use ($attributes) {
                         $now = Carbon::now()->format('Y-m-d');

@@ -22,7 +22,6 @@ use GGPHP\Profile\Models\Insurrance;
 use GGPHP\ResignationDecision\Models\ResignationDecision;
 use GGPHP\Salary\Models\PayrollSession;
 use GGPHP\Timekeeping\Models\Timekeeping;
-use GGPHP\Transfer\Models\Transfer;
 use GGPHP\Transfer\Models\TransferDetail;
 use GGPHP\WorkOnline\Models\WorkOnline;
 use Illuminate\Auth\Authenticatable;
