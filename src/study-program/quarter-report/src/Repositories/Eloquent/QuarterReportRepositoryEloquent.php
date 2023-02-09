@@ -405,7 +405,7 @@ class QuarterReportRepositoryEloquent extends BaseRepository implements QuarterR
                     'title' => 'English',
                     'imageURL' => $urlImage,
                     'message' => $message,
-                    'moduleType' => 25,
+                    'moduleType' => 27,
                     'refId' => $model->Id,
                 ];
 
