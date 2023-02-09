@@ -192,8 +192,7 @@ class Index extends PureComponent {
           ...search,
           status: variablesModules.STATUS_SEARCH?.[status],
           nameAssessmentPeriodId: undefined,
-          month: search?.status === head(variablesModules.STATUS_TABS)?.id ? undefined : search?.month,
-
+          month: search?.month,
         },
         callback: (response) => {
           if (response) {
