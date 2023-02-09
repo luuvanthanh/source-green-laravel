@@ -129,6 +129,17 @@ export default {
         });
       }
     },
+    *GET_DATA_TOTAL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDataTotal, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA_STUDENTS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getStudent, payload);

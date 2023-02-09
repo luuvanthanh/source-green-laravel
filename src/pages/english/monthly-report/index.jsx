@@ -61,6 +61,7 @@ class Index extends PureComponent {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       data: [],
       dataYear: user ? user?.schoolYear : {},
+      dataTotal: {},
       search: {
         key: query?.key,
         branchId: query?.branchId || defaultBranch?.id,
@@ -173,6 +174,7 @@ class Index extends PureComponent {
     }
     if (search?.branchId && search?.classId && !search?.checkLoad) {
       this.onLoad();
+      this.onloadTotal();
     }
   };
 
@@ -214,6 +216,26 @@ class Index extends PureComponent {
     });
   };
 
+  onloadTotal = () => {
+    const { search } = this.state;
+    const status = search?.status;
+    this.props.dispatch({
+      type: 'EnglishMonthlyReport/GET_DATA_TOTAL',
+      payload: {
+        ...search,
+        status: variablesModules.STATUS_SEARCH?.[status],
+        nameAssessmentPeriodId: undefined,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            dataTotal: response.payload
+          });
+        }
+      },
+    });
+  };
+
   /**
    * Function debounce search
    * @param {string} value value of object search
@@ -248,7 +270,7 @@ class Index extends PureComponent {
           limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
-      () => this.onLoad(),
+      () => { this.onLoad(); this.onloadTotal(); },
     );
   },);
 
@@ -555,6 +577,7 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.onLoad();
+            this.onloadTotal();
           }
         },
       });
@@ -576,6 +599,7 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.onLoad();
+            this.onloadTotal();
           }
         },
       });
@@ -596,6 +620,7 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.onLoad();
+            this.onloadTotal();
           }
         },
       });
@@ -615,6 +640,7 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.onLoad();
+            this.onloadTotal();
           }
         },
       });
@@ -758,7 +784,7 @@ class Index extends PureComponent {
 
   onChangeSearch = () => {
     this.onLoad();
-    // this.onLoadStudents();
+    this.onloadTotal();
   };
 
   formBtnHeader = () => {
@@ -811,7 +837,6 @@ class Index extends PureComponent {
       years,
       user,
     } = this.props;
-    const { data, dataYear } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
@@ -819,7 +844,7 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
-    const { search, defaultBranchs } = this.state;
+    const { search, defaultBranchs, data, dataYear, dataTotal } = this.state;
     const loading = effects['EnglishMonthlyReport/GET_DATA'];
     return (
       <>
@@ -930,7 +955,11 @@ class Index extends PureComponent {
                 onChange={(event) => this.onChangeSelectStatus(event, 'status')}
               >
                 {variablesModules.STATUS_TABS.map((item) => (
-                  <TabPane tab={`${item.name}`} key={item.id} />
+                  <TabPane
+                    tab={`${item.name} ${(!isEmpty(dataTotal)) ?
+                      `(${dataTotal?.[variablesModules.STATUS_TABS.find(i => i?.id === item?.id)?.type]})` : ""}`}
+                    key={item.id}
+                  />
                 ))}
               </Tabs>
             </Form>
