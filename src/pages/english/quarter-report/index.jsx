@@ -60,9 +60,9 @@ class Index extends PureComponent {
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       data: [],
+      dataTotal: {},
       search: {
         key: query?.key,
-        dataTotal: {},
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
@@ -577,6 +577,7 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.onLoad();
+            this.onloadTotal();
           }
         },
       });
@@ -597,6 +598,7 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.onLoad();
+            this.onloadTotal();
           }
         },
       });
@@ -617,6 +619,7 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.onLoad();
+            this.onloadTotal();
           }
         },
       });
@@ -636,6 +639,7 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.onLoad();
+            this.onloadTotal();
           }
         },
       });
@@ -834,7 +838,6 @@ class Index extends PureComponent {
       years,
       user,
     } = this.props;
-    const { data, dataTotal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
@@ -842,7 +845,7 @@ class Index extends PureComponent {
         name: record.status,
       }),
     };
-    const { search, defaultBranchs, dataAssess } = this.state;
+    const { search, defaultBranchs, dataAssess, data, dataTotal } = this.state;
     const loading = effects['EnglishQuarterReport/GET_DATA'];
     return (
       <>
@@ -952,7 +955,7 @@ class Index extends PureComponent {
                 {variablesModules.STATUS_TABS.map((item) => (
                   <TabPane
                     tab={`${item.name} ${(!isEmpty(dataTotal)) ?
-                      `(${dataTotal?.[variablesModules.STATUS_TABS_TOTAL.find(i => i?.id === item?.id)?.name]})` : ""}`}
+                      `(${dataTotal?.[variablesModules.STATUS_TABS.find(i => i?.id === item?.id)?.type]})` : ""}`}
                     key={item.id}
                   />
                 ))}

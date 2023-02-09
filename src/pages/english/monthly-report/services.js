@@ -14,6 +14,19 @@ export function get(params = {}) {
   });
 }
 
+export function getDataTotal(params = {}) {
+  return request('/v1/count-student-monthly-comment-by-status', {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      countStudentByStatus: 'true',
+    },
+  });
+}
+
 export function add(data = {}) {
   return request('/notes', {
     method: 'POST',
