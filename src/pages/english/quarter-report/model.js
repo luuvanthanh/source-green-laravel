@@ -7,7 +7,6 @@ export default {
   namespace: 'EnglishQuarterReport',
   state: {
     data: [],
-    dataTotal: {},
     years: [],
     assessmentPeriod: [],
     dataType: [],
@@ -24,7 +23,6 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
-      dataTotal: payload.dataTotal,
     }),
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
@@ -124,6 +122,17 @@ export default {
           type: 'SET_DATA',
           payload: response,
         });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA_TOTAL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDataTotal, payload);
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

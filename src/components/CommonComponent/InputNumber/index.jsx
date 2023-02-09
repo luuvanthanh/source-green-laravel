@@ -76,5 +76,5 @@ InputNumberCus.propTypes = {
 
 InputNumberCus.defaultProps = {
   value: null,
-  onChange: () => {},
+  onChange: () => { },
 };

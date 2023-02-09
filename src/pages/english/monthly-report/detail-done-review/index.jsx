@@ -309,47 +309,50 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane>
-                <Pane className="card mb20">
-                  <Pane className="p20">
-                    <Heading type="form-title">
-                      Subject
-                    </Heading>
+                {
+                  dataDetails?.isCheckSubject &&
+                  <Pane className="card mb20">
+                    <Pane className="p20">
+                      <Heading type="form-title">
+                        Subject
+                      </Heading>
+                    </Pane>
+                    <Pane className="row  pl20 pb20 pr20">
+                      {
+                        dataDetails?.isCheckSubject && (
+                          dataDetails?.scriptReviewSubject?.map(item => (
+                            item?.isCheck && (
+                              <>
+                                <Pane className="col-lg-12 pt20 border-top">
+                                  <h3 className={stylesModule['item-text-header']}>{item?.subject?.name}</h3>
+                                </Pane>
+                                <Pane className="col-lg-12 pb20">
+                                  {
+                                    item?.scriptReviewSubjectDetail?.map(itemDetail => (
+                                      itemDetail?.isCheck && (
+                                        <div className={stylesModule['wrapper-table-item']}>
+                                          <h3 className={stylesModule['text-item-table']}>{itemDetail?.subjectSection?.name}</h3>
+                                          <Table
+                                            columns={header()}
+                                            dataSource={itemDetail?.scriptReviewSubjectDetailChildren?.filter(k => k?.isCheck)}
+                                            pagination={false}
+                                            rowKey={(record) => record.id}
+                                            scroll={{ x: '100%' }}
+                                            isEmpty
+                                          />
+                                        </div>
+                                      )
+                                    ))
+                                  }
+                                </Pane>
+                              </>
+                            )
+                          ))
+                        )
+                      }
+                    </Pane>
                   </Pane>
-                  <Pane className="row  pl20 pb20 pr20">
-                    {
-                      dataDetails?.isCheckSubject && (
-                        dataDetails?.scriptReviewSubject?.map(item => (
-                          item?.isCheck && (
-                            <>
-                              <Pane className="col-lg-12 pt20 border-top">
-                                <h3 className={stylesModule['item-text-header']}>{item?.subject?.name}</h3>
-                              </Pane>
-                              <Pane className="col-lg-12 pb20">
-                                {
-                                  item?.scriptReviewSubjectDetail?.map(itemDetail => (
-                                    itemDetail?.isCheck && (
-                                      <div className={stylesModule['wrapper-table-item']}>
-                                        <h3 className={stylesModule['text-item-table']}>{itemDetail?.subjectSection?.name}</h3>
-                                        <Table
-                                          columns={header()}
-                                          dataSource={itemDetail?.scriptReviewSubjectDetailChildren?.filter(k => k?.isCheck)}
-                                          pagination={false}
-                                          rowKey={(record) => record.id}
-                                          scroll={{ x: '100%' }}
-                                          isEmpty
-                                        />
-                                      </div>
-                                    )
-                                  ))
-                                }
-                              </Pane>
-                            </>
-                          )
-                        ))
-                      )
-                    }
-                  </Pane>
-                </Pane>
+                }
 
                 {
                   dataDetails?.isCheckSampleComment &&

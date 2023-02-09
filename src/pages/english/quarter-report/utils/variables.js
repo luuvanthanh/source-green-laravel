@@ -125,6 +125,32 @@ export const variables = {
       name: 'DONE SEND',
     },
   ],
+  STATUS_TABS_TOTAL: [
+    {
+      id: 'NOT_REVIEW',
+      name: 'quantityNotYetReview',
+    },
+    {
+      id: 'REVIEWED',
+      name: 'quantityDoneReview',
+    },
+    {
+      id: 'NOT_YET_CONFIRM',
+      name: 'quantityNotYetConfirm',
+    },
+    {
+      id: 'CONFIRMED',
+      name: 'quantityDoneConfirm',
+    },
+    {
+      id: 'NOT_YET_SEND',
+      name: 'quantityNotYetSend',
+    },
+    {
+      id: 'SENT',
+      name: 'quantityDoneSend',
+    },
+  ],
   STATUS_SEARCH: {
     NOT_YET_CONFIRM: 'NOT_YET_CONFIRM',
     NOT_YET_SEND: 'CONFIRMED',
