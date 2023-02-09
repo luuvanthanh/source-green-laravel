@@ -96,9 +96,9 @@ const renderChildren = (
       )}
       disabled={disabled}
       onChange={onChange}
-      placeholder="Nhập"
       value={value}
       min={0}
+      placeholder={language === variables.LANGUAGE.ENGLISH ? "Select month" : "Nhập"}
     />
   ),
   inputCountForm: (

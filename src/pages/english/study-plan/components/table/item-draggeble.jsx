@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { Typography } from 'antd';
 import { Draggable } from 'react-beautiful-dnd';
 import { useDispatch } from 'dva';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 
 import '@/assets/styles/Modules/TimeTables/styles.module.scss';
@@ -17,6 +18,7 @@ const Index = memo(({
   index,
   timeTable,
   time,
+  checkDisabled
 }) => {
 
   const dispatch = useDispatch();
@@ -26,10 +28,9 @@ const Index = memo(({
       payload: { check: true, data: taskItem },
     });
   };
-
   return (
     <>
-      <Draggable key={`${taskItem.id}-${indexParent}-${index}`} draggableId={`${taskItem.dragId}-${index}`} isDragDisabled={!checkEdit || check && timeTable.toISOString() > time.toISOString()} index={index}>
+      <Draggable key={`${taskItem.id}-${indexParent}-${index}`} draggableId={`${taskItem.dragId}-${index}`} isDragDisabled={!checkEdit || isEmpty(checkDisabled) || check && timeTable.toISOString() > time.toISOString()} index={index}>
         {(provided) => (
           <div
             ref={provided.innerRef}
@@ -69,6 +70,7 @@ Index.propTypes = {
   timeTable: PropTypes.PropTypes.any,
   time: PropTypes.PropTypes.any,
   check: PropTypes.PropTypes.any,
+  checkDisabled: PropTypes.PropTypes.any,
 };
 
 Index.defaultProps = {
@@ -79,6 +81,7 @@ Index.defaultProps = {
   timeTable: null,
   time: null,
   check: null,
+  checkDisabled: null,
 };
 
 export default Index;

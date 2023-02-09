@@ -12,8 +12,20 @@ export function get(params = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      countStudentByStatus: 'true',
       include: Helper.convertIncludes(['quarterReport', 'branch', 'classes']),
+    },
+  });
+}
+
+export function getDataTotal(params = {}) {
+  return request('/v1/count-student-quarter-report-by-status', {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      countStudentByStatus: 'true',
     },
   });
 }

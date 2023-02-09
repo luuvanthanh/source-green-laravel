@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { variables } from '@/utils';
 
 export function get(params = {}) {
   return request('/study-plan', {
@@ -47,6 +48,7 @@ export function getProgram(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      maxResultCount: variables.PAGINATION.SIZEMAX,
     },
   });
 }

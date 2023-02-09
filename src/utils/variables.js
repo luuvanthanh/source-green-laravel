@@ -75,6 +75,7 @@ export const variables = {
     MAX_LENGTH_255: { max: 255, message: 'Trường này không quá 255 kí tự' },
     MAX_NUMBER: { max: 15, message: 'Trường này không quá 15 kí tự' },
     NUMBER: { pattern: /^\d+$/, message: 'Trường này là chỉ là số' },
+    NUMBER_ENGLISH: { pattern: /^\d+$/, message: 'This field is just integer' },
     EMAIL: { type: 'email', message: 'Trường này là email' },
     PHONE: {
       pattern: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/,

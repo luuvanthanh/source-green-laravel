@@ -50,8 +50,8 @@ const Index = memo(() => {
             lessions: i?.lessions?.map(k => ({
               name: k?.name,
               activities: k?.activities,
-              week: k?.week,
-              classPeriod: k?.classPeriod
+              week: parseInt(k?.week || '0', 10),
+              classPeriod: parseInt(k?.classPeriod || '0', 10)
             }))
           }))
         },
@@ -249,8 +249,10 @@ const Index = memo(() => {
                                                               className={stylesModule.item}
                                                               fieldKey={[fieldItem.fieldKey, 'week']}
                                                               name={[fieldItem.name, 'week']}
-                                                              placeholder="Input text"
                                                               type={variables.INPUT_COUNT}
+                                                              language={variables.LANGUAGE.ENGLISH}
+                                                              rules={[variables.RULES.NUMBER_ENGLISH]}
+
                                                             />
                                                           </div>
                                                           <div className={classnames(stylesModule.cols)}>
@@ -258,8 +260,9 @@ const Index = memo(() => {
                                                               className={stylesModule.item}
                                                               fieldKey={[fieldItem.fieldKey, 'classPeriod']}
                                                               name={[fieldItem.name, 'classPeriod']}
-                                                              placeholder="Input text"
                                                               type={variables.INPUT_COUNT}
+                                                              language={variables.LANGUAGE.ENGLISH}
+                                                              rules={[variables.RULES.NUMBER_ENGLISH]}
                                                             />
                                                           </div>
                                                           <div className={classnames(stylesModule.cols)}>
