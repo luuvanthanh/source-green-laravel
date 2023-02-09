@@ -28,7 +28,6 @@ const Index = memo(() => {
   const params = useParams();
   const mounted = useRef(false);
   const {
-    dataAssess,
     loading: { effects },
     details,
     menuLeftEnglish,
@@ -212,7 +211,7 @@ const Index = memo(() => {
             >
               <Pane className="card p20">
                 <Heading type="form-title" className="mb15">
-                  {dataAssess?.nameAssessmentPeriod?.name}
+                  {dataDetails?.scriptReview?.nameAssessmentPeriod?.name}
                 </Heading>
                 <div className="row" {...marginProps} style={{ paddingLeft: 20, paddingRight: 20 }} >
                   <div className={stylesModule['quarterReport-header-img']}>
