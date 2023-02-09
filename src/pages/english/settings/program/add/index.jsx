@@ -60,12 +60,12 @@ const Index = memo(() => {
             history.goBack();
           }
           if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                form.current.setFields([
+            if (!isEmpty(error?.validationErrors)) {
+              error?.validationErrors.forEach((item) => {
+                form.setFields([
                   {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
+                    name: get(item, 'member').toLowerCase(),
+                    errors: [get(item, 'message')],
                   },
                 ]);
               });

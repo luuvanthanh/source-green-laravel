@@ -28,7 +28,6 @@ const Index = memo(() => {
   const params = useParams();
   const mounted = useRef(false);
   const {
-    dataAssess,
     loading: { effects },
     details,
     dataDetails,
@@ -223,7 +222,7 @@ const Index = memo(() => {
             >
               <Pane className="card p20">
                 <Heading type="form-title" className="mb15">
-                  {dataAssess?.nameAssessmentPeriod?.name}
+                  Monthly comment {Helper.getDate(query?.month, variables.DATE_FORMAT.MONTH_FULL_ENGLISH)}
                 </Heading>
                 <div className="row" {...marginProps} style={{ paddingLeft: 20, paddingRight: 20 }} >
                   <div className={stylesModule['monthlyComment-header-img']}>
