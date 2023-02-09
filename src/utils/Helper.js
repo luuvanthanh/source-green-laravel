@@ -106,6 +106,13 @@ export default class Helpers {
     return null;
   };
 
+  static getDateUtc = (value, format = variables.DATE_FORMAT.DATE_TIME_UTC_ONE) => {
+    if (value) {
+      return moment.utc(value).local().format(format);
+    }
+    return null;
+  };
+
   static getDateSearch = (value, format = variables.DATE_FORMAT.DATE_AFTER) => {
     if (value) {
       return moment(value).format(format);
@@ -1184,6 +1191,43 @@ export default class Helpers {
     showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
+  static paginationEnglish = ({ pagination, callback }) => ({
+    size: 'default',
+    total: pagination?.total,
+    pageSize: pagination?.per_page,
+    defaultCurrent: pagination?.current_page,
+    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT_ENGLISH },
+    onChange: (page, size) => {
+      callback({ page, limit: size });
+    },
+    onShowSizeChange: (current, size) => {
+      callback({ page: current, limit: size });
+    },
+    showTotal: (total, [start, end]) => `Display ${start}-${end} in ${total}`,
+  });
+
+  static paginationEnglishNet = ({ pagination, query, callback }) => ({
+    size: 'default',
+    total: pagination?.total,
+    pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(query?.page || variables.PAGINATION.PAGE),
+    current: Number(query?.page || variables.PAGINATION.PAGE),
+    hideOnSinglePage: pagination?.total <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
+    onChange: (page, size) => {
+      callback({ page, limit: size });
+    },
+    onShowSizeChange: (current, size) => {
+      callback({ page: current, limit: size });
+    },
+    showTotal: (total, [start, end]) => `Display ${start}-${end} in ${total}`,
+  });
+
   /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
@@ -1457,6 +1501,48 @@ export default class Helpers {
   static unique = (items, key = 'name') => {
     if (isEmpty(items)) return [];
     return [...new Set(items.map((item) => item[key]))];
+  };
+
+  static getDayOfWeek = (date) => {
+    switch (date) {
+      case 0:
+        return 'Time';
+      case 1:
+        return 'MON';
+      case 2:
+        return 'TUE';
+      case 3:
+        return 'WED';
+      case 4:
+        return 'THU';
+      case 5:
+        return 'FRI';
+      case 6:
+        return 'SAT';
+      default:
+        return 'SUNDAY';
+    }
+  };
+
+  static getDayOfWeekFull = (date) => {
+    switch (date) {
+      case 0:
+        return 'Time';
+      case 1:
+        return 'Monday';
+      case 2:
+        return 'Tuesday';
+      case 3:
+        return 'Wednesday';
+      case 4:
+        return 'Thursday';
+      case 5:
+        return 'Friday';
+      case 6:
+        return 'Saturday';
+      default:
+        return 'Sunday';
+    }
   };
 
   static objectToArray = (object, keyName = 'name') =>

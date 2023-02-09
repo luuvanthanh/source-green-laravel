@@ -1,0 +1,88 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-title {
+  color: #36383a;
+  font-family: $base__font-family;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+.wrapper-table-details {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3b5cad !important;
+    font-weight: 700;
+    color: white !important;
+  }
+}
+
+.wrapper-table-object {
+  border-top: 1px solid #eaeaea;
+  padding: 20px 50px;
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3b5cad !important;
+    font-weight: 700;
+    color: white !important;
+  }
+  .table-object {
+    background-color: #f6f8fc;
+    border-radius: 3px;
+    border: 1px solid #eaeaea;
+  }
+}
+
+.wrapper-checkbox {
+  display: flex;
+  align-items: center;
+  .textParent {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+  }
+  .textChild {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #3e4247;
+  }
+}
+
+.wrapper-checkBox {
+  font-family: $base__font-family;
+  margin-bottom: 8px;
+  font-style: normal;
+  height: 22px;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 20px;
+  color: #35373a;
+}
+
+.checkBox-item {
+  :global(.checkbox-small) {
+    margin-bottom: 0px !important;
+    height: 32px !important;
+  }
+}
+
+.wrapper-tag {
+  :global(.ant-tag) {
+    margin: 5px !important;
+  }
+}
+
+.wraper-container {
+  :global(.ant-collapse-arrow) {
+    top: -25px !important;
+  }
+  :global(.ant-collapse-header) {
+    padding: 0px !important;
+  }
+}

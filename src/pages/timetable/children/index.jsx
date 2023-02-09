@@ -195,7 +195,6 @@ const Index = memo(() => {
   //     getClass();
   //   }
   // }, [search.branchId]);
-
   useEffect(() => {
     getYears();
     getBranch();

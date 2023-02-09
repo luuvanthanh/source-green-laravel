@@ -170,6 +170,13 @@ export const feature = {
       target: true,
       permission: [permissions.CAMERAAI],
     },
+    {
+      title: 'English',
+      src: '/images/home/english.svg',
+      animation: animationImage.english,
+      url: '/english',
+      permission: [permissions.CTH],
+    },
   ],
 };
 
