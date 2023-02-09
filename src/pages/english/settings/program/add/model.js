@@ -52,7 +52,7 @@ export default {
           description: 'You updated to success data.',
         });
       } catch (error) {
-        callback(null, error?.data);
+        callback(null, error?.data?.error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
