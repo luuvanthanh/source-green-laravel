@@ -73,9 +73,25 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
     {
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', Student::OFFICAL);
 
-        if (!empty($attributes['month'])) {
+        if (!empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
-                $query->where('Month', $attributes['month']);
+                $query->where('Status', $attributes['status']);
+                
+                if (!empty($attributes['month'])) {
+                    $query->where('Month', $attributes['month']);
+                }
+
+                if (!empty($attributes['scriptReviewId'])) {
+                    $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+                }
+
+                if (!empty($attributes['type'])) {
+                    $query->where('Type', $attributes['type']);
+                }
+
+                if (!empty($attributes['studentId'])) {
+                    $query->where('StudentId', $attributes['studentId']);
+                }
             });
         }
 
@@ -95,27 +111,11 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
         }
 
-        if (!empty($attributes['scriptReviewId']) && !empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
-                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-            });
-        }
-
         if (!empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('monthlyComment', function ($query) use ($attributes) {
-                $query->orderBy('CreationTime', 'DESC');
-            });
-        }
-
-        if (!empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status']);
-            });
-        }
-
-        if (!empty($attributes['type']) && !empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['CONFIRMED']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
-                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
+                if (!empty($attributes['month'])) {
+                    $query->where('Month', $attributes['month']);
+                }
             });
         }
 
@@ -130,11 +130,11 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
                 $query->where('ScriptReviewId', $attributes['scriptReviewId']);
             }
 
-            if (!empty($attributes['Type'])) {
+            if (!empty($attributes['type'])) {
                 $query->where('Type', $attributes['type']);
             }
 
-            if (!empty($attributes['Status'])) {
+            if (!empty($attributes['status'])) {
                 $query->where('Status', $attributes['status']);
             }
 
