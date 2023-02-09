@@ -122,6 +122,7 @@ const Index = memo(() => {
       studentId: [dataDetails?.studentId],
       schoolYearId: dataDetails?.schoolYearId,
       month: dataDetails?.month,
+      scriptReviewId: dataDetails?.scriptReviewId,
       newStatus: variablesModules.STATUS.SENT,
       oldStatus: "CONFIRMED",
       teacherSentId: query?.type === "done" ? user?.objectInfo?.id : undefined,
@@ -242,47 +243,50 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane>
-                <Pane className="card mb20">
-                  <Pane className="p20">
-                    <Heading type="form-title">
-                      Subject
-                    </Heading>
+                {
+                  dataDetails?.monthlyCommentDetail?.find(i => i?.isSubject) &&
+                  <Pane className="card mb20">
+                    <Pane className="p20">
+                      <Heading type="form-title">
+                        Subject
+                      </Heading>
+                    </Pane>
+                    <Pane className="row  pl20 pb20 pr20">
+                      {
+                        dataDetails?.monthlyCommentDetail?.find(i => i?.isSubject) && (
+                          dataDetails?.monthlyCommentDetail?.filter(i => i?.isSubject)?.map(item => (
+                            (
+                              <>
+                                <Pane className="col-lg-12 pt20 border-top">
+                                  <h3 className={stylesModule['item-text-header']}>{item?.scriptReviewSubject?.subject?.name}</h3>
+                                </Pane>
+                                <Pane className="col-lg-12 pb20">
+                                  {
+                                    item?.monthlyCommentDetailSubject?.map(itemDetail => (
+                                      (
+                                        <div className={stylesModule['wrapper-table-item']}>
+                                          <h3 className={stylesModule['text-item-table']}>{itemDetail?.scriptReviewSubjectDetail?.subjectSection?.name}</h3>
+                                          <Table
+                                            columns={header()}
+                                            dataSource={itemDetail?.monthlyCommentDetailSubjectChildren}
+                                            pagination={false}
+                                            rowKey={(record) => record.id}
+                                            scroll={{ x: '100%' }}
+                                            isEmpty
+                                          />
+                                        </div>
+                                      )
+                                    ))
+                                  }
+                                </Pane>
+                              </>
+                            )
+                          ))
+                        )
+                      }
+                    </Pane>
                   </Pane>
-                  <Pane className="row  pl20 pb20 pr20">
-                    {
-                      dataDetails?.monthlyCommentDetail?.find(i => i?.isSubject) && (
-                        dataDetails?.monthlyCommentDetail?.filter(i => i?.isSubject)?.map(item => (
-                          (
-                            <>
-                              <Pane className="col-lg-12 pt20 border-top">
-                                <h3 className={stylesModule['item-text-header']}>{item?.scriptReviewSubject?.subject?.name}</h3>
-                              </Pane>
-                              <Pane className="col-lg-12 pb20">
-                                {
-                                  item?.monthlyCommentDetailSubject?.map(itemDetail => (
-                                    (
-                                      <div className={stylesModule['wrapper-table-item']}>
-                                        <h3 className={stylesModule['text-item-table']}>{itemDetail?.scriptReviewSubjectDetail?.subjectSection?.name}</h3>
-                                        <Table
-                                          columns={header()}
-                                          dataSource={itemDetail?.monthlyCommentDetailSubjectChildren}
-                                          pagination={false}
-                                          rowKey={(record) => record.id}
-                                          scroll={{ x: '100%' }}
-                                          isEmpty
-                                        />
-                                      </div>
-                                    )
-                                  ))
-                                }
-                              </Pane>
-                            </>
-                          )
-                        ))
-                      )
-                    }
-                  </Pane>
-                </Pane>
+                }
 
                 {
                   dataDetails?.monthlyCommentDetail.find(i => i?.isComment) &&

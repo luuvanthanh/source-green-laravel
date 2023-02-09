@@ -28,7 +28,6 @@ const Index = memo(({
   getListStyle,
   checkEdit
 }) => {
-
   const formTable = (indexParent, classItem, indexItem, valueParent, checkDisabled, dataTasks, key, timeTable, time) => {
     if (indexParent === 0) {
       return <Paragraph className="header-row" >{classItem?.day}  {indexItem !== 0 && moment(classItem?.date).format(variables.DATE_FORMAT.DATE_MONTH)}</Paragraph>;
@@ -57,6 +56,7 @@ const Index = memo(({
                 index={index}
                 indexParent={indexParent}
                 checkEdit={checkEdit}
+                checkDisabled={checkDisabled}
                 timeTable={timeTable}
                 time={time}
                 check
@@ -84,6 +84,7 @@ const Index = memo(({
                   index={index}
                   indexParent={indexParent}
                   checkEdit={checkEdit}
+                  checkDisabled={checkDisabled}
                   check={false}
                 />
               ))}

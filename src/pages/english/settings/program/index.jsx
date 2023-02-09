@@ -154,13 +154,18 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) =>
-    Helper.paginationEnglish({
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationEnglishNet({
       pagination,
+      query,
       callback: (response) => {
         this.changePagination(response);
       },
     });
+  };
 
   /**
  * Function remove items
@@ -213,15 +218,18 @@ class Index extends PureComponent {
       {
         title: 'Number of units',
         key: 'name',
+        align: 'center',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.units?.length}</Text>,
+        render: (record) => <Text size="normal">{record?.numberOfUnits}</Text>,
       },
       {
         title: 'Number of lessons',
         key: 'name',
         width: 150,
+        align: 'center',
         className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.numberOfLessions}</Text>,
       },
       {
         title: 'Color',

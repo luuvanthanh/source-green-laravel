@@ -280,7 +280,7 @@ const Index = memo(() => {
   ];
 
   const detailSchoolYear = `${dataDetails?.schoolYear?.yearFrom} - ${dataDetails?.schoolYear?.yearTo}`;
-  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.MONTH_FULL_ENGLISH)}`;
+  const detailTearch = `${dataDetails?.teacher?.fullName} lúc ${Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`;
   return (
     <div className={stylesModule['wraper-container-monthlyComment']}>
       <Breadcrumbs last={params.id ? 'Edit' : 'Create new'} menu={menuLeftEnglish} />
