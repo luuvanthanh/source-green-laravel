@@ -73,9 +73,25 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
     {
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', Student::OFFICAL);
 
-        if (!empty($attributes['month'])) {
+        if (!empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
-                $query->where('Month', $attributes['month']);
+                $query->where('Status', $attributes['status']);
+
+                if (!empty($attributes['month'])) {
+                    $query->where('Month', $attributes['month']);
+                }
+
+                if (!empty($attributes['scriptReviewId'])) {
+                    $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+                }
+
+                if (!empty($attributes['type'])) {
+                    $query->where('Type', $attributes['type']);
+                }
+
+                if (!empty($attributes['studentId'])) {
+                    $query->where('StudentId', $attributes['studentId']);
+                }
             });
         }
 
@@ -95,36 +111,11 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['key']);
         }
 
-        if (!empty($attributes['scriptReviewId']) && !empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
-                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
-            });
-        }
-
-        if (!empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['NOT_REVIEW'] && !empty($attributes['scriptReviewId'])) {
+        if (!empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereDoesntHave('monthlyComment', function ($query) use ($attributes) {
-
-                if (!empty($attributes['scriptReviewId'])) {
-                    $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+                if (!empty($attributes['month'])) {
+                    $query->where('Month', $attributes['month']);
                 }
-
-                $query->orderBy('CreationTime', 'DESC');
-            });
-        }
-
-        if (!empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status']);
-            }])->whereHas('monthlyComment', function ($query) use ($attributes) {
-                $query->where('Status', $attributes['status']);
-            });
-        }
-
-        if (!empty($attributes['type']) && !empty($attributes['status']) && $attributes['status'] == MonthlyComment::STATUS['CONFIRMED']) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
-                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
-            }])->whereHas('monthlyComment', function ($query) use ($attributes) {
-                $query->where('Type', $attributes['type'])->where('Status', $attributes['status']);
             });
         }
 
@@ -133,6 +124,24 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
                 $query->where('StudentId', $attributes['studentId']);
             });
         }
+
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['monthlyComment' => function ($query) use ($attributes) {
+            if (!empty($attributes['scriptReviewId'])) {
+                $query->where('ScriptReviewId', $attributes['scriptReviewId']);
+            }
+
+            if (!empty($attributes['type'])) {
+                $query->where('Type', $attributes['type']);
+            }
+
+            if (!empty($attributes['status'])) {
+                $query->where('Status', $attributes['status']);
+            }
+
+            if (!empty($attributes['month'])) {
+                $query->where('Month', $attributes['month']);
+            }
+        }]);
 
         if (!empty($attributes['limit'])) {
             $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
@@ -147,7 +156,6 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
     {
         DB::beginTransaction();
         try {
-            $attributes['month'] = Carbon::parse()->day(1)->format('Y-m-d H:i:s');
 
             if ($attributes['status'] == MonthlyComment::STATUS['REVIEWED']) {
                 $attributes['reportTime'] = now()->format('Y-m-d H:i:s');
@@ -304,7 +312,8 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             ->whereYear('Month', $carbon->format('Y'))
             ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherManagementId' => $attributes['teacherManagementId']
             ]);
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
@@ -337,24 +346,19 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
 
     public function updateAllStatusMonthlyComment($attributes)
     {
-        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
-            ->where('SchoolYearId', $attributes['schoolYearId'])
-            ->where('Status', $attributes['oldStatus'])->get();
-
-        foreach ($data as $value) {
-            $value->update([
+        $this->model->whereIn('Id', $attributes['id'])
+            ->update([
                 'Status' => $attributes['newStatus'],
-                'ConfirmationTime' => now()->format('Y-m-d H:i:s')
+                'ConfirmationTime' => now()->format('Y-m-d H:i:s'),
+                'TeacherManagementId' => $attributes['teacherManagementId']
             ]);
-        }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 
     public function notificationAllStatusMonthlyComment($attributes)
     {
-        $data = $this->model->where('ScriptReviewId', $attributes['scriptReviewId'])
-            ->where('SchoolYearId', $attributes['schoolYearId'])
+        $data = $this->model->whereIn('Id', $attributes['id'])
             ->where('Status', $attributes['oldStatus'])->get();
 
         foreach ($data as $value) {
@@ -386,9 +390,9 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             }
 
             $schoolYear = $model->scriptReview->schoolYear->YearFrom . '-' . $model->scriptReview->schoolYear->YearTo;
-            $name = $model->scriptReview->NameAssessmentPeriod->Name;
+            $month = Carbon::parse($model->Month)->format('m');
 
-            $message = $student->FullName . ' ' . 'nhận Quarter report ' . $name . ' school year ' . $schoolYear;
+            $message = $student->FullName . ' ' . 'nhận monthly comment ' . $month . ' school year ' . $schoolYear;
 
             if (!empty($arrId)) {
                 $dataNotifiCation = [
@@ -422,5 +426,54 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function countStudentMonthlyCommentByStatus($attributes)
+    {
+        $quantityNotYetReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereDoesntHave('monthlyComment', function ($query) use ($attributes) {
+
+            if (!empty($attributes['month'])) {
+                $query->where('Month', $attributes['month']);
+            }
+
+            $query->orderBy('CreationTime', 'DESC');
+        })->count();
+
+        $quantityDoneReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $query->where('Month', $attributes['month'])->where('Status', MonthlyComment::STATUS['REVIEWED']);
+        })->count();
+
+        $quantityNotYetConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $query->where('Month', $attributes['month'])->where('Status', MonthlyComment::STATUS['NOT_YET_CONFIRM']);
+        })->count();
+
+        $quantityDoneConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $query->where('Month', $attributes['month'])->where('Status', MonthlyComment::STATUS['CONFIRMED']);
+        })->count();
+
+        $quantityDoneSend = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $query->where('Month', $attributes['month'])->where('Status', MonthlyComment::STATUS['SENT']);
+        })->count();
+
+        $data = [
+            'quantityNotYetReview' => $quantityNotYetReview,
+            'quantityDoneReview' => $quantityDoneReview,
+            'quantityNotYetConfirm' => $quantityNotYetConfirm,
+            'quantityDoneConfirm' => $quantityDoneConfirm,
+            'quantityNotYetSend' => $quantityDoneConfirm,
+            'quantityDoneSend' => $quantityDoneSend
+        ];
+
+        return $data;
     }
 }

@@ -24,6 +24,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Container\Container as Application;
 
+
 /**
  * Class UserRepositoryEloquent.
  *
@@ -1025,7 +1026,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
     public function getEmployeeBirthday()
     {
         $dateNow = Carbon::now();
-        
+
         $employeeBirthday =  User::whereMonth('DateOfBirth', $dateNow->format('m'))->whereDay('DateOfBirth', $dateNow->format('d'))->get();
 
         $dataEmployeeBirthday = $employeeBirthday->map(function ($item) use ($dateNow) {
@@ -1044,7 +1045,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
-        
+
         if ($dateNow->format('y') == $dateConfigNotification->format('y')) {
             //lấy sinh nhật nhân viên cùng năm
             $dataEmployeeBirthdayUpcoming = $this->getEmployeeBirthdayUpcoming($dateNow, $dateConfigNotification);

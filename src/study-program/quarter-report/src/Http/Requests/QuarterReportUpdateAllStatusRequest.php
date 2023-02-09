@@ -28,6 +28,7 @@ class QuarterReportUpdateAllStatusRequest extends FormRequest
         return [
             'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
             'scriptReviewId' => 'required|check_exists:study-program.ScriptReviews,Id',
+            'id' => 'required|array|check_exists:study-program.QuarterReports,Id',
             "oldStatus" => 'required|in:' . $status,
             'newStatus' => 'required|in:' . $status,
         ];

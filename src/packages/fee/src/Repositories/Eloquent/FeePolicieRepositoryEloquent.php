@@ -305,7 +305,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 $begin = new DateTime($dayAdmission);
 
                 $end = new DateTime($getEndDate->EndDate);
-
                 switch ($fee->Type) {
                     case self::TUITION_FEE:
                         $feeDetail = $feePolicie->feeDetail()
@@ -317,199 +316,186 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             ->where('PaymentFormId', $detail->paymentFormId)->get();
                         $years = $schoolYear->changeParameter->changeParameterDetail()->where('StartDate', '>=', $dayAdmission)->orWhere('EndDate', '>=', $dayAdmission)->get();
                         $arrOfDate = $this->getAllDay($years);
-                        if (!is_null($feeDetail)) {
 
-                            switch ($paymentForm->Code) {
-                                case self::SEMESTER1:
-                                    $isMonth = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $detail->paymentFormId)
-                                        ->whereMonth('Date', $monthAdmission->format('m'))->whereYear('Date', $monthAdmission->format('Y'))
-                                        ->first();
+                        switch ($paymentForm->Code) {
+                            case self::SEMESTER1:
+                                $countSemester1 = $schoolYear->changeParameter->changeParameterDetail()->whereHas('paymentForm', function ($query) {
+                                    $query->where('Code', self::SEMESTER1);
+                                })->get();
 
-                                    if (is_null($isMonth)) {
-                                        break;
+                                $countSemester2 = $schoolYear->changeParameter->changeParameterDetail()->whereHas('paymentForm', function ($query) {
+                                    $query->where('Code', self::SEMESTER2);
+                                })->get();
+                                $paymentFormSemester1Id = array_unique(array_column($countSemester1->ToArray(), 'PaymentFormId'))[0];
+                                $paymentFormSemester2Id = array_unique(array_column($countSemester2->ToArray(), 'PaymentFormId'))[0];
+
+                                foreach ($listMonthAge['detailStudent'] as $key => $value) {
+                                    $schoolYearDay = $schoolYear->changeParameter->changeParameterDetail()->where('Date', $value['date'])->first();
+                                    $listMonthAge['detailStudent'][$key]['paymentFormId'] = $schoolYearDay->PaymentFormId;
+
+                                    $feeDetail = $feePolicie->feeDetail()
+                                        ->where('ClassTypeId', $value['classTypeId'])
+                                        ->where('PaymentFormId', $schoolYearDay->PaymentFormId)->first();
+
+                                    $listMonthAge['detailStudent'][$key]['money'] = $feeDetail->OldStudent;
+                                    $value['money'] = $feeDetail->OldStudent;
+                                    $value['paymentFormId'] = $schoolYearDay->PaymentFormId;
+
+                                    if (in_array($paymentFormSemester1Id, $value)) {
+                                        $listMonthAge['detailStudent'][$key]['count'] = $countSemester1->count();
+                                        $value['count'] = $countSemester1->count();
                                     }
 
-                                    $monthStart = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $detail->paymentFormId)->orderBy('StartDate')->first();
-                                    $monthStudied = $monthAdmission->diffInMonths(Carbon::parse($monthStart->StartDate)->floorMonth()) + 1;
+                                    if (in_array($paymentFormSemester2Id, $value)) {
+                                        $listMonthAge['detailStudent'][$key]['count'] = $countSemester2->count();
+                                        $value['count'] = $countSemester2->count();
+                                    }
 
-                                    // tháng học kỳ 1
-                                    $monthSemester1 = $schoolYear->changeParameter->changeParameterDetail()->whereHas('paymentForm', function ($query) {
-                                        $query->where('Code', self::SEMESTER1);
-                                    })->get();
+                                    $listMonthAge['detailStudent'][$key]['total'] = $value['money'] / $value['count'];
+                                }
 
-                                    $totalMonthSemester1 = array_sum(array_column($monthSemester1->ToArray(), 'FullMonth'));
-
-                                    foreach ($monthSemester1 as $key => $semester1) {
-                                        $classTypeIdByAge = $listMonthAge['detailStudent'][$semester1->Date]['classTypeId'];
-                                        $feeDetail = $feePolicie->feeDetail()->where('ClassTypeId', $classTypeIdByAge)
-                                            ->where('PaymentFormId', $detail->paymentFormId)->first();
-
-                                        switch ($attributes['student']) {
-                                            case 'new':
-                                                $money = $feeDetail->NewStudent;
-                                                break;
-                                            case 'old':
-                                                $money = $feeDetail->OldStudent;
-                                                break;
-                                        }
-
-                                        if ($monthAdmission->format('Y-m-d') === $semester1->Date) {
-                                            $weekMoney = ($money / $totalMonthSemester1) / $semester1->ActualWeek;
-
-                                            $checkDay = $this->checkDayThursdayFriday($schoolYear);
-
-                                            if ($checkDay) {
-                                                $numOfWeek = $semester1->ActualWeek - $dayAdmissionCarbon->weekOfMonth;
-                                            } else {
-                                                $numOfWeek = ($semester1->ActualWeek - $dayAdmissionCarbon->weekOfMonth) + 1;
-                                            }
-
-                                            $listMonthAge['detailStudent'][$semester1->Date]['moneySemester1'] = $weekMoney * $numOfWeek;
-                                        } elseif ($monthAdmission->format('Y-m-d') < $semester1->Date) {
-                                            $listMonthAge['detailStudent'][$semester1->Date]['moneySemester1'] = $money / $totalMonthSemester1;
-                                        } else {
-                                            $listMonthAge['detailStudent'][$semester1->Date]['moneySemester1'] = 0;
+                                $x = [];
+                                if ($dayAdmission <= $schoolYear->StartDate) {
+                                    foreach ($listMonthAge['detailStudent'] as $key => $value) {
+                                        if ($paymentFormSemester1Id == $value['paymentFormId']) {
+                                            $x[] = $value;
                                         }
                                     }
+                                    $sumSemester1 = array_column($x, 'total');
+                                    $result = array_sum($sumSemester1);
+                                } else {
+                                    $result = 0;
+                                }
 
-                                    if ($totalMonthSemester1 > 0 && $totalWeekStudyInMonth > 0) {
-                                        $result = array_sum(array_column($listMonthAge['detailStudent'], 'moneySemester1'));
+                                break;
+                            case self::SEMESTER2:
+
+                                $countSemester1 = $schoolYear->changeParameter->changeParameterDetail()->whereHas('paymentForm', function ($query) {
+                                    $query->where('Code', self::SEMESTER1);
+                                })->get();
+
+                                $countSemester2 = $schoolYear->changeParameter->changeParameterDetail()->whereHas('paymentForm', function ($query) {
+                                    $query->where('Code', self::SEMESTER2);
+                                })->get();
+                                $paymentFormSemester1Id = array_unique(array_column($countSemester1->ToArray(), 'PaymentFormId'))[0];
+                                $paymentFormSemester2Id = array_unique(array_column($countSemester2->ToArray(), 'PaymentFormId'))[0];
+
+                                foreach ($listMonthAge['detailStudent'] as $key => $value) {
+                                    $schoolYearDay = $schoolYear->changeParameter->changeParameterDetail()->where('Date', $value['date'])->first();
+                                    $listMonthAge['detailStudent'][$key]['paymentFormId'] = $schoolYearDay->PaymentFormId;
+
+                                    $feeDetail = $feePolicie->feeDetail()
+                                        ->where('ClassTypeId', $value['classTypeId'])
+                                        ->where('PaymentFormId', $schoolYearDay->PaymentFormId)->first();
+
+                                    $listMonthAge['detailStudent'][$key]['money'] = $feeDetail->OldStudent;
+                                    $value['money'] = $feeDetail->OldStudent;
+                                    $value['paymentFormId'] = $schoolYearDay->PaymentFormId;
+
+                                    if (in_array($paymentFormSemester1Id, $value)) {
+                                        $listMonthAge['detailStudent'][$key]['count'] = $countSemester1->count();
+                                        $value['count'] = $countSemester1->count();
                                     }
-                                    break;
-                                case self::SEMESTER2:
-                                    $isMonth =  $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $detail->paymentFormId)
-                                        ->whereMonth('Date', $monthAdmission->format('m'))->whereYear('Date', $monthAdmission->format('Y'))
-                                        ->first();
 
-                                    if (is_null($isMonth)) {
-                                        break;
+                                    if (in_array($paymentFormSemester2Id, $value)) {
+                                        $listMonthAge['detailStudent'][$key]['count'] = $countSemester2->count();
+                                        $value['count'] = $countSemester2->count();
                                     }
 
-                                    $monthStart = $schoolYear->changeParameter->changeParameterDetail()->where('PaymentFormId', $detail->paymentFormId)->orderBy('StartDate')->first();
-                                    $monthStudied = $monthAdmission->diffInMonths(Carbon::parse($monthStart->StartDate)->floorMonth()) + 1;
+                                    $listMonthAge['detailStudent'][$key]['total'] = $value['money'] / $value['count'];
+                                }
 
-                                    // tháng học kỳ 2
-                                    $monthSemester2 = $schoolYear->changeParameter->changeParameterDetail()->whereHas('paymentForm', function ($query) {
-                                        $query->where('Code', self::SEMESTER2);
-                                    })->get();
+                                $y = [];
 
+                                if ($dayAdmission <= $schoolYear->StartDate) {
+                                    foreach ($listMonthAge['detailStudent'] as $key => $valueStudent) {
 
-                                    $totalMonthSemester2 = array_sum(array_column($monthSemester2->ToArray(), 'FullMonth'));
-
-                                    foreach ($monthSemester2 as $key => $semester2) {
-                                        $classTypeIdByAge = $listMonthAge['detailStudent'][$semester2->Date]['classTypeId'];
-                                        $feeDetail = $feePolicie->feeDetail()->where('ClassTypeId', $classTypeIdByAge)
-                                            ->where('PaymentFormId', $detail->paymentFormId)->first();
-
-                                        switch ($attributes['student']) {
-                                            case 'new':
-                                                $money = $feeDetail->NewStudent;
-                                                break;
-                                            case 'old':
-                                                $money = $feeDetail->OldStudent;
-                                                break;
-                                        }
-
-                                        if ($monthAdmission->format('Y-m-d') === $semester2->Date) {
-                                            $weekMoney = ($money / $totalMonthSemester2) / $semester2->ActualWeek;
-
-                                            $checkDay = $this->checkDayThursdayFriday($schoolYear);
-
-                                            if ($checkDay) {
-                                                $numOfWeek = $semester2->ActualWeek - $dayAdmissionCarbon->weekOfMonth;
-                                            } else {
-                                                $numOfWeek = ($semester2->ActualWeek - $dayAdmissionCarbon->weekOfMonth) + 1;
-                                            }
-
-                                            $listMonthAge['detailStudent'][$semester2->Date]['moneySemester2'] = $weekMoney * $numOfWeek;
-                                        } elseif ($monthAdmission->format('Y-m-d') < $semester2->Date) {
-                                            $listMonthAge['detailStudent'][$semester2->Date]['moneySemester2'] = $money / $totalMonthSemester2;
-                                        } else {
-                                            $listMonthAge['detailStudent'][$semester2->Date]['moneySemester2'] = 0;
+                                        if ($paymentFormSemester2Id == $valueStudent['paymentFormId']) {
+                                            $y[] = $valueStudent;
                                         }
                                     }
+                                    $sumSemester2 = array_column($y, 'total');
+                                    $result = array_sum($sumSemester2);
+                                } else {
+                                    $result = 0;
+                                }
+                                break;
+                            case self::YEAR:
+                                $totalMonthSemester2 = array_sum(array_column($schoolYear->changeParameter->changeParameterDetail->ToArray(), 'FullMonth'));
 
-                                    if ($totalMonthSemester2 > 0 && $totalWeekStudyInMonth > 0) {
-                                        $result = array_sum(array_column($listMonthAge['detailStudent'], 'moneySemester2'));
+                                foreach ($schoolYear->changeParameter->changeParameterDetail as $key => $year) {
+                                    $classTypeId = $listMonthAge['detailStudent'][$year->StartDate]['classTypeId'];
+                                    $sumFullMonth[$classTypeId][] = $year->FullMonth;
+                                }
+
+                                foreach ($sumFullMonth as $key => $value) {
+                                    $sumClassTypeId[$key] = array_sum($sumFullMonth[$key]);
+                                }
+
+                                foreach ($years as $key => $year) {
+                                    $classTypeIdByAge = $listMonthAge['detailStudent'][$year->StartDate]['classTypeId'];
+                                    $feeDetail = $feePolicie->feeDetail()->where('ClassTypeId', $classTypeIdByAge)
+                                        ->where('PaymentFormId', $detail->paymentFormId)->first();
+
+                                    switch ($attributes['student']) {
+                                        case 'new':
+                                            $money = $feeDetail->NewStudent;
+                                            break;
+                                        case 'old':
+                                            $money = $feeDetail->OldStudent;
+                                            break;
                                     }
-                                    break;
-                                case self::YEAR:
-                                    $totalMonthSemester2 = array_sum(array_column($schoolYear->changeParameter->changeParameterDetail->ToArray(), 'FullMonth'));
+                                    $listMonthAge['detailStudent'][$year->Date]['fullMonth'] = $year->FullMonth;
 
-                                    foreach ($schoolYear->changeParameter->changeParameterDetail as $key => $year) {
-                                        $classTypeId = $listMonthAge['detailStudent'][$year->StartDate]['classTypeId'];
-                                        $sumFullMonth[$classTypeId][] = $year->FullMonth;
-                                    }
+                                    $countClass[$feeDetail->ClassTypeId][] = count($listMonthAge[$feeDetail->ClassTypeId]);
+                                    $numberOfMonth = count($listMonthAge[$feeDetail->ClassTypeId]);
+                                    $agv = ((($money * $sumClassTypeId[$feeDetail->ClassTypeId]) / $totalMonthSemester2)) / $numberOfMonth;
+                                    $checkWeekend = !empty($arrOfDate[$dayAdmission]['numberOfWeek']) ? $arrOfDate[$dayAdmission]['numberOfWeek'] : $arrOfDate[$dayAdmission] - 1;
 
-                                    foreach ($sumFullMonth as $key => $value) {
-                                        $sumClassTypeId[$key] = array_sum($sumFullMonth[$key]);
-                                    }
-
-                                    foreach ($years as $key => $year) {
-                                        $classTypeIdByAge = $listMonthAge['detailStudent'][$year->StartDate]['classTypeId'];
-                                        $feeDetail = $feePolicie->feeDetail()->where('ClassTypeId', $classTypeIdByAge)
-                                            ->where('PaymentFormId', $detail->paymentFormId)->first();
-
-                                        switch ($attributes['student']) {
-                                            case 'new':
-                                                $money = $feeDetail->NewStudent;
-                                                break;
-                                            case 'old':
-                                                $money = $feeDetail->OldStudent;
-                                                break;
-                                        }
-                                        $listMonthAge['detailStudent'][$year->Date]['fullMonth'] = $year->FullMonth;
-
-                                        $countClass[$feeDetail->ClassTypeId][] = count($listMonthAge[$feeDetail->ClassTypeId]);
-                                        $numberOfMonth = count($listMonthAge[$feeDetail->ClassTypeId]);
-                                        $agv = ((($money * $sumClassTypeId[$feeDetail->ClassTypeId]) / $totalMonthSemester2)) / $numberOfMonth;
-                                        $checkWeekend = !empty($arrOfDate[$dayAdmission]['numberOfWeek']) ? $arrOfDate[$dayAdmission]['numberOfWeek'] : $arrOfDate[$dayAdmission] - 1;
-
-                                        if ($key == 0) {
-                                            $sumTuition[] = $agv * ($year->ActualWeek - $checkWeekend) / $year->ActualWeek;
-                                        } else {
-                                            $sumTuition[] = $agv;
-                                        }
-                                    }
-
-                                    if ($dayAdmissionCarbon->format('Y-m-d') <= $schoolYear->StartDate) {
-                                        $result = array_sum($sumTuition);
+                                    if ($key == 0) {
+                                        $sumTuition[] = $agv * ($year->ActualWeek - $checkWeekend) / $year->ActualWeek;
                                     } else {
-                                        $result = array_sum(($sumTuition));
+                                        $sumTuition[] = $agv;
                                     }
+                                }
 
-                                    break;
-                                case self::MONTH:
-                                    foreach ($listMonthAge['detailStudent'] as $key1 => $valueMonthAge) {
-                                        $query = $feePolicie->feeDetail()->where('PaymentFormId', $detail->paymentFormId)->where('ClassTypeId', $valueMonthAge['classTypeId'])->get();
-                                        $getMoney = $this->getMoneyByDate($query->ToArray(), $attributes);
-                                        $money = !empty($getMoney[$valueMonthAge['month']]) ? $getMoney[$valueMonthAge['month']] : 0;
-                                        $setDate = $listMonthAge['detailStudent'][$valueMonthAge['month']]['date'];
-                                        $listMonthAge['detailStudent'][$valueMonthAge['month']]['money'] = $money;
-                                        $listMonthAge['detailMoney'][$setDate] = $money;
-                                    }
+                                if ($dayAdmissionCarbon->format('Y-m-d') <= $schoolYear->StartDate) {
+                                    $result = array_sum($sumTuition);
+                                } else {
+                                    $result = array_sum(($sumTuition));
+                                }
 
-                                    if ($dayAdmission == $schoolYear->StartDate) {
+                                break;
+                            case self::MONTH:
+                                foreach ($listMonthAge['detailStudent'] as $key1 => $valueMonthAge) {
+                                    $query = $feePolicie->feeDetail()->where('PaymentFormId', $detail->paymentFormId)->where('ClassTypeId', $valueMonthAge['classTypeId'])->get();
+                                    $getMoney = $this->getMoneyByDate($query->ToArray(), $attributes);
+                                    $money = !empty($getMoney[$valueMonthAge['month']]) ? $getMoney[$valueMonthAge['month']] : 0;
+                                    $setDate = $listMonthAge['detailStudent'][$valueMonthAge['month']]['date'];
+                                    $listMonthAge['detailStudent'][$valueMonthAge['month']]['money'] = $money;
+                                    $listMonthAge['detailMoney'][$setDate] = $money;
+                                }
 
-                                        $getMoney = $listMonthAge['detailStudent'][$schoolYear->StartDate]['money'];
-                                        $result = $getMoney;
-                                        $moneyMonth = $getMoney;
-                                    } else {
-                                        $checkWeekend = !empty($arrOfDate[$dayAdmission]['numberOfWeek']) ? $arrOfDate[$dayAdmission]['numberOfWeek'] : $arrOfDate[$dayAdmission] - 1;
-                                        $setDay = $dayAdmissionCarbon->day(1)->format('Y-m-d');
-                                        $moneyFirstMonth = $listMonthAge['detailMoney'][$setDay];
-                                        $firstMonth = $schoolYear->changeParameter->changeParameterDetail()->whereMonth('Date', $dayAdmissionCarbon->format('m'))->first();
-                                        $money = $moneyFirstMonth * ($firstMonth->ActualWeek - $checkWeekend) / $firstMonth->ActualWeek;
-                                        $result = $money;
-                                        $moneyMonth = $money;
-                                    }
+                                if ($dayAdmission == $schoolYear->StartDate) {
 
-                                    break;
-                            }
+                                    $getMoney = $listMonthAge['detailStudent'][$schoolYear->StartDate]['money'];
+                                    $result = $getMoney;
+                                    $moneyMonth = $getMoney;
+                                } else {
+                                    $checkWeekend = !empty($arrOfDate[$dayAdmission]['numberOfWeek']) ? $arrOfDate[$dayAdmission]['numberOfWeek'] : $arrOfDate[$dayAdmission] - 1;
+                                    $setDay = $dayAdmissionCarbon->day(1)->format('Y-m-d');
+                                    $moneyFirstMonth = $listMonthAge['detailMoney'][$setDay];
+                                    $firstMonth = $schoolYear->changeParameter->changeParameterDetail()->whereMonth('Date', $dayAdmissionCarbon->format('m'))->first();
+                                    $money = $moneyFirstMonth * ($firstMonth->ActualWeek - $checkWeekend) / $firstMonth->ActualWeek;
+                                    $result = $money;
+                                    $moneyMonth = $money;
+                                }
+
+                                break;
                         }
+
                         break;
                     case self::MEAL_FEE:
-
                         $getFirstFeeDetail = $feePolicie->moneyMeal()
                             ->where('ClassTypeId', $listMonthAge['countClassType'][0])
                             ->where('PaymentFormId', $detail->paymentFormId)->first();
@@ -522,6 +508,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 })->first();
 
                             $listMonthAge['detailStudent'][$key]['money'] = $feeDetail->Money;
+                            $listMonthAge['replaceDetailStudent'][$valueMonthAge['date']]['money'] = $feeDetail->Money;
                         }
 
                         $arrDate = $this->getDatesFromRange($begin->format('Y-m-d'), $end->format('Y-m-d'));
@@ -534,17 +521,22 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             }
 
                             $date = new DateTime($value);
-                            $holidayDetail = HolidayDetail::whereYear('StartDate', $date->format('Y'))->orWhereYear('EndDate', $date->format('Y'))->get();
+                            $holiday = Holiday::whereIn('Name', [$schoolYear->YearFrom, $schoolYear->YearTo])->get();
+
                             $arrHoliday = [];
-                            foreach ($holidayDetail as $key => $valueHolidayDetail) {
-                                $arrHoliday[] = $this->getDatesFromRange($valueHolidayDetail->StartDate, $valueHolidayDetail->EndDate);
+                            foreach ($holiday as $key => $valueHoliday) {
+                                foreach ($valueHoliday->holidayDetail as $key => $valueHolidayDetail) {
+                                    $arrHoliday[] = $this->getDatesFromRange($valueHolidayDetail->StartDate, $valueHolidayDetail->EndDate);
+                                }
                             }
-                            $arrFlatten = $this->flatten($arrHoliday);
-                            $totalDaySemester1 = count(array_diff($arrDate, $arrFlatten));
+
+                            $holidayDate = $this->flatten($arrHoliday);
                         }
+                        $totalDaySemester1 = count(array_diff($arrDate, $holidayDate));
 
                         if (!is_null($feeDetail)) {
                             $money = !is_null($getFirstFeeDetail) ? $getFirstFeeDetail->Money : 0;
+
                             switch ($paymentForm->Code) {
                                 case self::SEMESTER1:
                                     $isMonth = ChangeParameterDetail::where('ChangeParameterId', $schoolYear->changeParameter->Id)
@@ -596,23 +588,46 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     $result = $listMonthAge['detailStudent'][$month->Date]['money'] * $totalDaySemester1 + $sumSemesterLeft1;
                                     break;
                                 case self::YEAR:
-                                    // tháng còn lại năm học
-                                    $monthLeft = ChangeParameterDetail::where('ChangeParameterId', $schoolYear->changeParameter->Id)
-                                        ->whereHas('paymentForm', function ($query) use ($month) {
-                                            $query->where('StartDate', '>', $month->EndDate);
-                                            $query->where('Date', '!=', $month->Date);
-                                        })->get();
+                                    $sumTotalYear = 0;
+                                    foreach ($listMonthAge['detailStudent'] as $key => $value) {
+                                        $feeDetail = $feePolicie->moneyMeal()
+                                            ->where('ClassTypeId', $value['classTypeId'])
+                                            ->whereHas('paymentForm', function ($q) use ($paymentForm) {
+                                                $q->where('Code', $paymentForm->Code);
+                                            })->first();
 
-                                    $sumAllYear = 0;
-                                    foreach ($monthLeft as $key => $valueAllYear) {
-                                        $sumAllYear += $listMonthAge['detailStudent'][$valueAllYear->Date]['money'] * $valueAllYear->SchoolDay;
+                                        $schoolDay = $schoolYear->changeParameter->changeParameterDetail->where('Date', $value['date'])->first();
+                                        $sumTotalYear += $feeDetail->Money * $schoolDay->SchoolDay;
                                     }
 
-                                    $result = $listMonthAge['detailStudent'][$month->Date]['money'] * $totalDaySemester1 + $sumAllYear;
+                                    if ($dayAdmission <= $schoolYear->StartDate) {
+                                        $result = $sumTotalYear;
+                                    } else {
+
+                                        foreach ($listMonthAge['detailStudent'] as $key => $value) {
+                                            $feeDetail = $feePolicie->moneyMeal()
+                                                ->where('ClassTypeId', $value['classTypeId'])
+                                                ->whereHas('paymentForm', function ($q) use ($paymentForm) {
+                                                    $q->where('Code', $paymentForm->Code);
+                                                })->first();
+
+                                            $schoolDay = $schoolYear->changeParameter->changeParameterDetail->where('Date', $value['date'])->first();
+
+                                            if ($dayAdmissionCarbon->day(1)->format('Y-m-d') === $value['date']) {
+                                                $listMonthAge['replaceDetailStudent'][$value['date']]['money'] = $feeDetail->Money * $totalDaySemester1;
+                                            } elseif ($dayAdmissionCarbon->format('Y-m-d') > $value['date']) {
+                                                $listMonthAge['replaceDetailStudent'][$value['date']]['money'] = 0;
+                                            } else {
+                                                $listMonthAge['replaceDetailStudent'][$value['date']]['money'] = $feeDetail->Money * $schoolDay->SchoolDay;
+                                            }
+                                        }
+
+                                        $result = array_sum(array_column($listMonthAge['replaceDetailStudent'], 'money'));
+                                    }
 
                                     break;
                                 case self::MONTH:
-                                    $result = $totalDaySemester1 * $listMonthAge['detailStudent'][$month->Date]['money'];
+                                    $result = $totalDaySemester1 * $listMonthAge['replaceDetailStudent'][$month->Date]['money'];
                                     $moneyMonth = $money;
                                     break;
                             }
@@ -750,7 +765,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 case self::MEAL_FEE:
                                     if ($month->format('Y-m') >= $applyDate) {
                                         $changeParamDetail = $schoolYear->changeParameter->changeParameterDetail()->where('Date', $month->setDay(1)->format('Y-m-d'))->first();
-                                        $result = $listMonthAge['detailStudent'][$month->setDay(1)->format('Y-m-d')]['money'] * $changeParamDetail->SchoolDay;
+                                        $result = $listMonthAge['replaceDetailStudent'][$month->setDay(1)->format('Y-m-d')]['money'] * $changeParamDetail->SchoolDay;
                                         $totalMoneyMonth += $result;
 
                                         $fee[] = [
@@ -976,7 +991,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 ];
                                 $totalMoneyMonth += $moneyFeePolicies['money'];
                             } else if (!is_null($firstMonthHk2)  && ($month->format('Y-m') ==  Carbon::parse($firstMonthHk2->Date)->format('Y-m'))) {
-                                $dayAdmission = $month->format('Y-m') == $value['applyDate']->format('Y-m') ? $dayAdmission : $firstMonthHk2->StartDate;
+                                // $dayAdmission = $month->format('Y-m') == $value['applyDate']->format('Y-m') ? $dayAdmission : $firstMonthHk2->StartDate;
                                 $detail = [];
                                 $detail[] = [
                                     'paymentFormId' => PaymentForm::where('Code', self::SEMESTER2)->first()->Id,

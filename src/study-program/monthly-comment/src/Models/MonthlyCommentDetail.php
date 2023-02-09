@@ -19,11 +19,11 @@ class MonthlyCommentDetail extends UuidModel
 
     public function scriptReviewComment()
     {
-        return $this->belongsTo(ScriptReviewComment::class, 'ScriptReviewCommentId');
+        return $this->belongsTo(ScriptReviewComment::class, 'ScriptReviewCommentId')->orderBy('CreationTime');;
     }
 
     public function monthlyCommentDetailSubject()
     {
-        return $this->hasMany(MonthlyCommentDetailSubject::class, 'MonthlyCommentDetailId');
+        return $this->hasMany(MonthlyCommentDetailSubject::class, 'MonthlyCommentDetailId')->orderBy('CreationTime');;
     }
 }

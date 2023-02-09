@@ -50,7 +50,7 @@ class MonthlyComment extends UuidModel
 
     public function teacherManagement()
     {
-        return $this->belongsTo(User::class, 'TeacherId');
+        return $this->belongsTo(User::class, 'TeacherManagementId');
     }
 
     public function student()
@@ -65,7 +65,7 @@ class MonthlyComment extends UuidModel
 
     public function monthlyCommentDetail()
     {
-        return $this->hasMany(MonthlyCommentDetail::class, 'MonthlyCommentId');
+        return $this->hasMany(MonthlyCommentDetail::class, 'MonthlyCommentId')->orderBy('CreationTime');
     }
 
     public function scriptReview()

@@ -145,4 +145,11 @@ class QuarterReportController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    public function countStudentQuarterReportByStatus(Request $request)
+    {
+        $result = $this->quarterReportRepository->countStudentQuarterReportByStatus($request->all());
+
+        return $this->success(['data' => $result], trans('lang::messages.common.getListSuccess'));
+    }
 }

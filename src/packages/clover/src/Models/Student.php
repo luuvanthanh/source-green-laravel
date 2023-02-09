@@ -8,6 +8,7 @@ use GGPHP\Category\Models\Branch;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use GGPHP\StudyProgram\AttendancePhysical\Models\AttendancePhysical;
 use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
 use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -133,5 +134,10 @@ class Student extends UuidModel
     public function monthlyComment()
     {
         return $this->hasMany(MonthlyComment::class, 'StudentId');
+    }
+
+    public function attendancePhysical()
+    {
+        return $this->hasMany(AttendancePhysical::class, 'StudentId');
     }
 }
