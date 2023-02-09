@@ -76,7 +76,7 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         if (!empty($attributes['status']) && $attributes['status'] != MonthlyComment::STATUS['NOT_REVIEW']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('monthlyComment', function ($query) use ($attributes) {
                 $query->where('Status', $attributes['status']);
-                
+
                 if (!empty($attributes['month'])) {
                     $query->where('Month', $attributes['month']);
                 }
@@ -141,7 +141,6 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
             if (!empty($attributes['month'])) {
                 $query->where('Month', $attributes['month']);
             }
-            
         }]);
 
         if (!empty($attributes['limit'])) {
@@ -427,5 +426,54 @@ class MonthlyCommentRepositoryEloquent extends BaseRepository implements Monthly
         }
 
         return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
+    }
+
+    public function countStudentMonthlyCommentByStatus($attributes)
+    {
+        $quantityNotYetReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereDoesntHave('monthlyComment', function ($query) use ($attributes) {
+
+            if (!empty($attributes['month'])) {
+                $query->where('Month', $attributes['month']);
+            }
+
+            $query->orderBy('CreationTime', 'DESC');
+        })->count();
+
+        $quantityDoneReview = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $query->where('Month', $attributes['month'])->where('Status', MonthlyComment::STATUS['REVIEWED']);
+        })->count();
+
+        $quantityNotYetConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $query->where('Month', $attributes['month'])->where('Status', MonthlyComment::STATUS['NOT_YET_CONFIRM']);
+        })->count();
+
+        $quantityDoneConfirm = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $query->where('Month', $attributes['month'])->where('Status', MonthlyComment::STATUS['CONFIRMED']);
+        })->count();
+
+        $quantityDoneSend = Student::where('Status', Student::OFFICAL)->whereHas('classes', function ($query) use ($attributes) {
+            $query->where('BranchId', $attributes['branchId']);
+        })->where('ClassId', $attributes['classId'])->whereHas('monthlyComment', function ($query) use ($attributes) {
+            $query->where('Month', $attributes['month'])->where('Status', MonthlyComment::STATUS['SENT']);
+        })->count();
+
+        $data = [
+            'quantityNotYetReview' => $quantityNotYetReview,
+            'quantityDoneReview' => $quantityDoneReview,
+            'quantityNotYetConfirm' => $quantityNotYetConfirm,
+            'quantityDoneConfirm' => $quantityDoneConfirm,
+            'quantityNotYetSend' => $quantityDoneConfirm,
+            'quantityDoneSend' => $quantityDoneSend
+        ];
+
+        return $data;
     }
 }
