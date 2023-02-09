@@ -516,6 +516,9 @@ const Index = memo(() => {
       payload: {
         branchId: search?.branchId,
         classId: search?.classId,
+        schoolYearId: search?.schoolYearId,
+        fromDate: searchDate?.fromDate,
+        toDate: searchDate?.toDate,
         studyPlanLessions: data,
       },
       callback: (response, error) => {
