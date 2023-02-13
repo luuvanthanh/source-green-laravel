@@ -788,8 +788,9 @@ export async function getLeftMenuCriteria() {
           key: 'periodic-measurement',
           url: [
             '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky',
+            '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/add',
             '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/detail',
-            '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/edit',
+            '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/confirmed',
           ],
           permission: [permissions.THECHAT],
           pro: true,

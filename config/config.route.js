@@ -331,6 +331,30 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THECHAT],
           },
+          {
+            path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky',
+            component: './criteria/physical/periodic-measurement',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/add',
+            component: './criteria/physical/periodic-measurement/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/detail',
+            component: './criteria/physical/periodic-measurement/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/confirmed',
+            component: './criteria/physical/periodic-measurement/confirmed',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
         ],
       },
       // CRITERIA
