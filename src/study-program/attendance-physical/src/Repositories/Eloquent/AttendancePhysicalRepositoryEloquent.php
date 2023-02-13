@@ -79,19 +79,15 @@ class AttendancePhysicalRepositoryEloquent extends BaseRepository implements Att
         } elseif (!empty($attributes['status']) && $attributes['status'] == AttendancePhysical::STATUS['HAVE_IN_CLASS']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendancePhysical', function ($query) use ($attributes, $now) {
                 $query->whereDate('DateHaveInClass', $now->format('Y-m-d'));
-            });
 
-            if (!empty($attributes['physicalStudyProgramId'])) {
-                $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendancePhysical', function ($query) use ($attributes) {
+                if (!empty($attributes['physicalStudyProgramId'])) {
                     $query->where('PhysicalStudyProgramId', $attributes['physicalStudyProgramId']);
-                });
-            }
+                }
 
-            if (!empty($attributes['physicalStudyProgramSessionId'])) {
-                $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendancePhysical', function ($query) use ($attributes) {
+                if (!empty($attributes['physicalStudyProgramSessionId'])) {
                     $query->where('PhysicalStudyProgramSessionId', $attributes['physicalStudyProgramSessionId']);
-                });
-            }
+                }
+            });
         }
 
         if (!empty($attributes['classId'])) {
