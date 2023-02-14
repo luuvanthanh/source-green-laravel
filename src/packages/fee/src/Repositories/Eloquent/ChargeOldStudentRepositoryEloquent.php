@@ -253,4 +253,49 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
         $data['countClassType'] = array_values(array_unique($data['countClassType']));
         return $data;
     }
+
+    public function getMonthAgeDetailStudentBySchoolYear($schoolYear, $student): array
+    {
+        $data['dataClassType'] = [];
+        foreach ($schoolYear->changeParameter->changeParameterDetail as $key => $value) {
+            $now = Carbon::parse($student->DayOfBirth);
+            $valueDate = Carbon::parse($value->Date);
+            $ageMonth = (($valueDate->format('Y') - $now->format('Y')) * 12) + ($valueDate->format('m') - $now->format('m'));
+
+            $classType = ClassType::where('From', '<=', $ageMonth)->where('To', '>=', $ageMonth)->first();
+
+            $data['countClassType'][] = !empty($classType) ? $classType->Id : 0;
+
+            if (!array_key_exists($classType->Id, $data['dataClassType'])) {
+                $data['dataClassType'][$classType->Id] = [
+                    'classTypeId' => !empty($classType) ? $classType->Id : null,
+                    'classType' => !empty($classType->Name) ? $classType->Name : null,
+                    'numberMonth' => $value->FullMonth,
+                    'schoolDay' => $value->SchoolDay,
+                ];
+                $numberMonthVariableOne = $data['dataClassType'][$classType->Id]['numberMonth'];
+            } else {
+                $data['dataClassType'][$classType->Id]['numberMonth'] += $value->FullMonth;
+                $data['dataClassType'][$classType->Id]['schoolDay'] += $value->SchoolDay;
+                $numberMonthVariableTwo = $data['dataClassType'][$classType->Id]['numberMonth'] + $value->FullMonth;
+            }
+
+
+
+            $data['detailStudent'][$value->StartDate] = [
+                'month' => $value->StartDate,
+                'ageMont' => (int) $ageMonth,
+                'classType' => !empty($classType->Name) ? $classType->Name : null,
+                'classTypeId' => !empty($classType) ? $classType->Id : null,
+                'date' => $value->Date,
+                'schoolDay' => $value->SchoolDay,
+                'fullMonth' => $value->FullMonth
+            ];
+            $data[$classType->Id][] = $value->Id;
+        }
+        $data['dataClassType']['totalMonth'] = $numberMonthVariableOne + $numberMonthVariableTwo;
+        $data['countClassType'] = array_values(array_unique($data['countClassType']));
+       
+        return $data;
+    }
 }

@@ -50,7 +50,7 @@ class RouteRegistrar extends CoreRegistrar
             //potential-students
             Route::resource('potential-students', 'PotentialStudentController');
 
-            Route::get('money-fee-policies', 'FeePolicieController@moneyFeePolicies');
+            //Route::get('money-fee-policies', 'FeePolicieController@moneyFeePolicies');
 
             Route::get('change-parameter-details', 'ChangeParameterDetailController@index');
 
@@ -77,6 +77,8 @@ class RouteRegistrar extends CoreRegistrar
             Route::put('update-is-check-school-years/{id}', 'SchoolYearController@updateIsCheckSchoolYear');
 
             Route::get('get-month-age-detail-students', 'ChargeOldStudentController@getMonthAgeDetailStudent');
+            //Tịnh phí học sinh v2
+            Route::get('money-fee-policies', 'FeePolicieController@moneyFeePoliciesV2');
         });
     }
 

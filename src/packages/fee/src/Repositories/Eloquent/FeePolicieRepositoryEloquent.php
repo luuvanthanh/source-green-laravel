@@ -10,11 +10,14 @@ use DateTime;
 use Exception;
 use GGPHP\Category\Models\Holiday;
 use GGPHP\Category\Models\HolidayDetail;
+use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Fee\Models\ChangeParameterDetail;
 use GGPHP\Fee\Models\Fee;
+use GGPHP\Fee\Models\FeeDetail;
 use GGPHP\Fee\Models\FeePolicie;
 use GGPHP\Fee\Models\MoneyBus;
+use GGPHP\Fee\Models\MoneyMeal;
 use GGPHP\Fee\Models\PaymentForm;
 use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\Fee\Presenters\FeePoliciePresenter;
@@ -1183,5 +1186,145 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         }
 
         return $dates_array;
+    }
+
+    //tính phí học sinh
+    public function moneyFeePoliciesV2($attributes)
+    {
+        $details = $attributes['details'];
+        //ngày nhập học
+        $dayAdmission = $attributes['dayAdmission'];
+
+        //năm học
+        $schoolYear = SchoolYear::findOrFail($attributes['schoolYearId']);
+
+        //ngày bắt đầu của năm học
+        $startDateSchoolYear = $schoolYear->StartDate;
+
+        //học sinh
+        $student = Student::findOrFail($attributes['studentId']);
+
+        //ngày sinh học sinh
+        $birthDayStudent = $student->DayOfBirth;
+
+        //tháng tuổi học sinh theo từng tháng của năm học 
+        $listMonthAge = resolve(ChargeOldStudentRepositoryEloquent::class)->getMonthAgeDetailStudentBySchoolYear($schoolYear, $student);
+
+        //lấy cấu hình tiền đóng
+        $feePolicie = FeePolicie::where('SchoolYearId', $attributes['schoolYearId'])->where('BranchId', $attributes['branchId'])->first();
+
+        if (is_null($feePolicie)) {
+            throw new HttpException(400, 'Chưa hoàn thành cấu hình tiền đóng.');
+        }
+
+        foreach ($details as $detail) {
+            //tên phí
+            $fee = Fee::findOrFail($detail['feeId']);
+
+            //hình thức đóng phí
+            $paymentForm = PaymentForm::findOrFail($detail['paymentFormId']);
+
+            if ($dayAdmission <= $startDateSchoolYear) {
+                $result[] =  $this->calculatorCaseOne($listMonthAge, $fee, $paymentForm, $feePolicie);
+            }
+        }
+        dd($result);
+
+        //dd($attributes, $dayAdmission, $birthDayStudent, $listMonthAge, $startDateSchoolYear, $feePolicie, $feePolicie, $moneyMeals);
+    }
+
+    //tính phí học sinh vào trước ngày nhập học
+    public function calculatorCaseOne($listMonthAge, $fee, $paymentForm, $feePolicie)
+    {
+        switch ($paymentForm->Code) {
+            case self::MONTH:
+                $result = $this->calculatorMoneyFeeAndMoneyMealByMonth($listMonthAge, $fee, $paymentForm, $feePolicie);
+                break;
+            case self::YEAR:
+                $result = $this->calculatorMoneyFeeAndMoneyMealByYear($listMonthAge, $fee, $paymentForm, $feePolicie);
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        return $result;
+    }
+
+    //tính tiền học phí và tiền ăn của học sinh theo tháng
+    public function calculatorMoneyFeeAndMoneyMealByMonth($listMonthAge, $fee, $paymentForm, $feePolicie)
+    {
+        foreach ($listMonthAge['detailStudent'] as $monthAge) {
+
+            if ($fee->Type == self::TUITION_FEE) {
+                $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])->first();
+                $dataTuitionFee = [
+                    'classType' => $monthAge['classType'],
+                    'month' => $monthAge['month'],
+                    'fee' => $feeDetail->OldStudent,
+                    'content' => $feeDetail->Content
+                ];
+                $result['dataTuitionFee'][] = $dataTuitionFee;
+            }
+
+            if ($fee->Type == self::MEAL_FEE) {
+                $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])->first();
+                $dataMealFee = [
+                    'classType' => $monthAge['classType'],
+                    'month' => $monthAge['month'],
+                    'moneyMeal' => $moneyMeal->Money * $monthAge['schoolDay'],
+                ];
+
+                $result['dataMealFee'][] = $dataMealFee;
+            }
+        }
+
+        return $result;
+    }
+
+    public function calculatorMoneyFeeAndMoneyMealByYear($listMonthAge, $fee, $paymentForm, $feePolicie)
+    {
+        //dd($listMonthAge);
+        $totalFee = 0;
+        $totalMealFee = 0;
+        foreach ($listMonthAge['dataClassType'] as $key => $dataClassType) {
+            if (is_array($dataClassType)) {
+                $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $dataClassType['classTypeId'])->first();
+                $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $dataClassType['classTypeId'])->first();
+                $totalFee += (int) round(($feeDetail->OldStudent * $dataClassType['numberMonth']) / $listMonthAge['dataClassType']['totalMonth']);
+                $totalMealFee += $moneyMeal->Money * $dataClassType['schoolDay'];
+            }
+        }
+        //làm tới đây
+        dd($totalMealFee);
+        foreach ($listMonthAge['detailStudent'] as $monthAge) {
+
+            if ($fee->Type == self::TUITION_FEE) {
+                $dataTuitionFee = [
+                    'classType' => $monthAge['classType'],
+                    'month' => $monthAge['month'],
+                    'fee' => !isset($dataTuitionFee) ? $totalFee : 0,
+                    'content' => $feeDetail->Content
+                ];
+                $result['dataTuitionFee'][] = $dataTuitionFee;
+            }
+
+            if ($fee->Type == self::MEAL_FEE) {
+                $result = [];
+            }
+
+            // if ($fee->Type == self::MEAL_FEE) {
+            //     $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])->first();
+            //     $data[] = [
+            //         'classType' => $monthAge['classType'],
+            //         'month' => $monthAge['month'],
+            //         'moneyMeal' => $moneyMeal->Money * $monthAge['schoolDay'],
+            //     ];
+
+            //     $result[] = $data;
+            // }
+        }
+
+        return $result;
     }
 }
