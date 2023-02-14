@@ -97,7 +97,7 @@ class AttendancePhysicalRepositoryEloquent extends BaseRepository implements Att
         if (!empty($attributes['branchId'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($attributes) {
                 $query->whereHas('classes', function ($query2) use ($attributes) {
-                    $query2->whereIn('BranchId', $attributes['branchId']);
+                    $query2->where('BranchId', $attributes['branchId']);
                 });
             });
         }
