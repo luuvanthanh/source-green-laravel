@@ -75,7 +75,9 @@ class AttendancePhysicalRepositoryEloquent extends BaseRepository implements Att
         if (!empty($attributes['status']) && $attributes['status'] == AttendancePhysical::STATUS['HAVE_OUT_CLASS']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendance', function ($query) use ($attributes, $now) {
                 $query->where('Date', $now->format('Y-m-d'))->where('Status', Attendance::STATUS['HAVE_IN']);
-            })->doesntHave('attendancePhysical');
+            })->whereDoesntHave('attendancePhysical', function ($query) use ($now) {
+                $query->whereDate('DateHaveInClass', $now->format('Y-m-d'));
+            });
         } elseif (!empty($attributes['status']) && $attributes['status'] == AttendancePhysical::STATUS['HAVE_IN_CLASS']) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendancePhysical', function ($query) use ($attributes, $now) {
                 $query->whereDate('DateHaveInClass', $now->format('Y-m-d'));
@@ -97,10 +99,22 @@ class AttendancePhysicalRepositoryEloquent extends BaseRepository implements Att
         if (!empty($attributes['branchId'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($attributes) {
                 $query->whereHas('classes', function ($query2) use ($attributes) {
-                    $query2->whereIn('BranchId', $attributes['branchId']);
+                    $query2->where('BranchId', $attributes['branchId']);
                 });
             });
         }
+
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['attendancePhysical' => function ($query) use ($attributes, $now) {
+            $query->whereDate('DateHaveInClass', $now->format('Y-m-d'));
+
+            if (!empty($attributes['physicalStudyProgramId'])) {
+                $query->where('PhysicalStudyProgramId', $attributes['physicalStudyProgramId']);
+            }
+
+            if (!empty($attributes['physicalStudyProgramSessionId'])) {
+                $query->where('PhysicalStudyProgramSessionId', $attributes['physicalStudyProgramSessionId']);
+            }
+        }]);
 
         if (!empty($attributes['limit'])) {
             $student = $this->studentRepositoryEloquent->paginate($attributes['limit']);
@@ -123,11 +137,11 @@ class AttendancePhysicalRepositoryEloquent extends BaseRepository implements Att
 
         return $this->parserResult($attendancePhysical);
     }
-    
+
     public function created($attributes)
     {
         $physicalStudyProgramSession = PhysicalStudyProgramSession::findOrFail($attributes['physicalStudyProgramSessionId']);
-        
+
         if ($physicalStudyProgramSession->IsUsed != true) {
             $physicalStudyProgramSession->update(['IsUsed' => true]);
         }
