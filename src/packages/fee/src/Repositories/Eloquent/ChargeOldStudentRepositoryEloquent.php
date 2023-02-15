@@ -24,6 +24,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implements ChargeOldStudentRepository
 {
+    const SEMESTER1 = 'HOCKY1';
+    const SEMESTER2 = 'HOCKY2';
+
     protected $fieldSearchable = [
         'Id',
         'CreationTime',
@@ -257,6 +260,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
     public function getMonthAgeDetailStudentBySchoolYear($schoolYear, $student): array
     {
         $data['dataClassType'] = [];
+        $data['dataPaymentForm'] = [];
         foreach ($schoolYear->changeParameter->changeParameterDetail as $key => $value) {
             $now = Carbon::parse($student->DayOfBirth);
             $valueDate = Carbon::parse($value->Date);
@@ -280,7 +284,42 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 $numberMonthVariableTwo = $data['dataClassType'][$classType->Id]['numberMonth'] + $value->FullMonth;
             }
 
+            if ($value->paymentForm->Code == self::SEMESTER1 || $value->paymentForm->Code == self::SEMESTER2) {
+                if (!array_key_exists($value->paymentForm->Code, $data['dataPaymentForm'])) {
+                    $data['dataPaymentForm'][$value->paymentForm->Code] = [
+                        'paymentFormCode' => $value->paymentForm->Code,
+                        'paymentFormId' => $value->paymentForm->Id,
+                        'numberMonthInSemester' => 1,
+                        'dataClassType' => []
+                    ];
 
+                    if (!array_key_exists($classType->Id, $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'])) {
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id] = [
+                            'classTypeId' => !empty($classType) ? $classType->Id : null,
+                            'classType' => !empty($classType->Name) ? $classType->Name : null,
+                            'numberClassType' => 1,
+                            'schoolDay' => $value->SchoolDay,
+                        ];
+                    } else {
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id]['numberClassType'] += 1;
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id]['schoolDay'] +=  $value->SchoolDay;
+                    }
+                } else {
+                    if (!array_key_exists($classType->Id, $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'])) {
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id] = [
+                            'classTypeId' => !empty($classType) ? $classType->Id : null,
+                            'classType' => !empty($classType->Name) ? $classType->Name : null,
+                            'numberClassType' => 1,
+                            'schoolDay' => $value->SchoolDay,
+                        ];
+                    } else {
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id]['numberClassType'] += 1;
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id]['schoolDay'] +=  $value->SchoolDay;
+                    }
+
+                    $data['dataPaymentForm'][$value->paymentForm->Code]['numberMonthInSemester'] += 1;
+                }
+            }
 
             $data['detailStudent'][$value->StartDate] = [
                 'month' => $value->StartDate,
@@ -289,13 +328,15 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 'classTypeId' => !empty($classType) ? $classType->Id : null,
                 'date' => $value->Date,
                 'schoolDay' => $value->SchoolDay,
-                'fullMonth' => $value->FullMonth
+                'fullMonth' => $value->FullMonth,
+                'paymentFormCode' => $value->paymentForm->Code,
+                'actualWeek' => $value->ActualWeek
             ];
             $data[$classType->Id][] = $value->Id;
         }
         $data['dataClassType']['totalMonth'] = $numberMonthVariableOne + $numberMonthVariableTwo;
         $data['countClassType'] = array_values(array_unique($data['countClassType']));
-       
+        
         return $data;
     }
 }
