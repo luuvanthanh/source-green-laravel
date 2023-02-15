@@ -3,6 +3,8 @@ import { Helmet } from 'react-helmet';
 import { history, useLocation } from 'umi';
 import { useSelector, useParams, useDispatch } from 'dva';
 import C3Chart from 'react-c3js';
+import d3 from 'd3';
+
 import { isEmpty, map, get } from 'lodash';
 import moment from 'moment';
 
@@ -20,7 +22,7 @@ import variablesModule from './variables';
 const Index = memo(() => {
   const [
     menuData,
-    { details, error },
+    { details, dataConfiguration, error },
     loading
   ] = useSelector(({ menu, physicalDetails, loading: { effects } }) => [
     menu.menuLeftPhysical,
@@ -33,14 +35,15 @@ const Index = memo(() => {
   const location = useLocation();
   const params = useParams();
   const dispatch = useDispatch();
-
+  console.log("dataConfiguration", dataConfiguration?.items?.filter(i => details?.bmiReport?.map(item => item?.monthNumber === i?.monthNumber)));
+  console.log("Configuration", dataConfiguration)
   const mounted = useRef(false);
 
   const convertData = (data, name, columnName) => {
     const result = [`${columnName}`];
     if (!isEmpty(data)) {
-      if (name === 'date') {
-        return result.concat(data.map(item => item.date ? moment(item.date, 'MM/YYYY').format(variables.DATE_FORMAT.DATE_AFTER) : ''));
+      if (name === 'monthAge') {
+        return result.concat(data.map(item => item.monthAge ? item?.monthAge : ''));
       }
       return result.concat(map(data, name));
     }
@@ -51,7 +54,7 @@ const Index = memo(() => {
     data: {
       x: 'x',
       columns: [
-        convertData(details?.heightReport, 'date', 'x'),
+        convertData(details?.heightReport, 'monthAge', 'x'),
         convertData(details?.heightReport, 'value', 'Chiều cao'),
       ],
       type: 'spline',
@@ -71,10 +74,10 @@ const Index = memo(() => {
           text: 'Thời gian (tháng)',
           position: 'outer-center',
         },
-        type: 'timeseries',
+        type: '',
         tick: {
           format(x) {
-            return new Date(x).getMonth() + 1;
+            return x;
           }
         }
       },
@@ -94,7 +97,7 @@ const Index = memo(() => {
     data: {
       ...dataHeight.data,
       columns: [
-        convertData(details?.weightReport, 'date', 'x'),
+        convertData(details?.weightReport, 'monthAge', 'x'),
         convertData(details?.weightReport, 'value', 'Cân nặng'),
       ],
     },
@@ -108,6 +111,44 @@ const Index = memo(() => {
     },
     color: {
       pattern: ['#FF8300'],
+    },
+  };
+
+  const dataBmi = {
+    data: {
+      E: 'E',
+      columns: [
+        ['C', 0, 90, 100, 90, 80, 100, 90, 90, 90, 90, 90, 90],
+        ['D', 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+        ['E', 200, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150],
+        ['G', 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300],
+        ['F', 220, 200, 0, 110, 200, 110, 400, 110, 110, 110, 110, 110],
+
+      ],
+      type: 'spline',
+      order: false,
+      colors: {
+        E: d3.rgb('#FC696A').darker(0),
+        C: d3.rgb('white').darker(0),
+        D: d3.rgb('#71E47D').darker(0),
+        G: d3.rgb('#E2E22B').darker(0),
+      },
+      types: {
+        D: 'area-spline',
+        E: 'area-spline',
+        C: 'area-spline',
+        G: 'area-spline',
+        F: 'spline'
+      },
+      groups: [
+        ['C', 'D', 'E', 'G']
+      ]
+    },
+    point: {
+      show: false
+    },
+    color: {
+      pattern: ['#0019F8'],
     },
   };
 
@@ -126,6 +167,15 @@ const Index = memo(() => {
       });
     }
   }, [params?.id]);
+
+  useEffect(() => {
+    if (details?.student?.sex) {
+      dispatch({
+        type: 'physicalDetails/GET_CONFIRMATION',
+        payload: { type: details?.student?.sex === 'MALE' ? 'BMIMALE' : 'BMIFEMALE' },
+      });
+    }
+  }, [details]);
 
   const getAvatar = (images) => {
     const avatar = images ? JSON.parse(images) : [];
@@ -150,7 +200,7 @@ const Index = memo(() => {
       </span>
     );
   };
-
+  console.log("details", details);
   return (
     <Loading loading={loading['physicalDetails/GET_DETAILS']} isError={error.isError} params={{ error, goBack: '/phat-trien-the-chat/tat-ca-hoc-sinh' }}>
       <Helmet title="Chi tiết phát triển thể chất học sinh" />
@@ -220,9 +270,10 @@ const Index = memo(() => {
               <Heading className="text-success mb10" type="page-title">Báo cáo BMI</Heading>
               <Text>Chỉ số BMI: {get(details, 'bmiConclusion.bmi', 0).toFixed(2)}</Text>
               <p className="mb20 font-size-16 font-weight-bold">Biểu đồ BMI</p>
-              <div className="mb15">
+              {/* <div className="mb15">
                 <img className={styles['img-bmi']} src="/images/bmi.svg" alt="bmi" />
-              </div>
+              </div> */}
+              <C3Chart {...dataBmi} />
               {/* <div className={styles['result-bmi']}>
                 <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, '')}</p>
                 {details?.bmiConclusion?.status && details?.bmiConclusion?.status !== 'NORMAL' ? (

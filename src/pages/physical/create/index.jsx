@@ -374,7 +374,7 @@ const Index = memo(() => {
     // }
     const payload = [];
     [...studentsPost].forEach((item) => {
-      if (item?.weight?.new) {
+      if (item?.weight?.new || item?.height?.new) {
         payload.push({
           reportDate: Helper.getDateTime({
             value: Helper.setDate({
@@ -385,24 +385,23 @@ const Index = memo(() => {
           }),
           criteriaGroupPropertyId: physicals.find((i) => i.code === 'WEIGHT').id || '',
           studentId: item?.student?.id || '',
-          value: String(item?.weight?.new || 0),
+          value: String(item?.weight?.new || item?.weight?.value || 0),
           note: '',
-        });
-      }
-      if (item?.height?.new) {
-        payload.push({
-          reportDate: Helper.getDateTime({
-            value: Helper.setDate({
-              ...variables.setDateData,
-              originValue: moment(),
+        },
+          {
+            reportDate: Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: moment(),
+              }),
+              isUTC: false,
             }),
-            isUTC: false,
-          }),
-          criteriaGroupPropertyId: physicals.find((i) => i.code === 'HEIGHT').id || '',
-          studentId: item?.student?.id || '',
-          value: String(item?.height?.new || 0),
-          note: '',
-        });
+            criteriaGroupPropertyId: physicals.find((i) => i.code === 'HEIGHT').id || '',
+            studentId: item?.student?.id || '',
+            value: String(item?.height?.new || item?.height?.value || 0),
+            note: '',
+          }
+        );
       }
     });
     return dispatch({

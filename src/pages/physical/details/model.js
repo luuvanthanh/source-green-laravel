@@ -4,6 +4,7 @@ export default {
   namespace: 'physicalDetails',
   state: {
     details: {},
+    dataConfiguration: [],
     error: {
       isError: false,
       data: {},
@@ -19,6 +20,10 @@ export default {
         isError: false,
         data: {},
       },
+    }),
+    SET_CONFIRMATION: (state, { payload }) => ({
+      ...state,
+      dataConfiguration: payload.parsePayload,
     }),
     SET_PHYSICAL: (state, { payload }) => ({
       ...state,
@@ -40,6 +45,22 @@ export default {
         const response = yield saga.call(services.getDetails, payload);
         yield saga.put({
           type: 'SET_DATA',
+          payload: {
+            parsePayload: response,
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CONFIRMATION({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getConfirmation, payload);
+        yield saga.put({
+          type: 'SET_CONFIRMATION',
           payload: {
             parsePayload: response,
           },
