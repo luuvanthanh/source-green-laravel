@@ -6,6 +6,7 @@ import C3Chart from 'react-c3js';
 import d3 from 'd3';
 
 import { isEmpty, map, get, head, last } from 'lodash';
+import Table from '@/components/CommonComponent/Table';
 import moment from 'moment';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -35,7 +36,8 @@ const Index = memo(() => {
   const location = useLocation();
   const params = useParams();
 
-  const [dataConfiguration, setDataConfiguration] = useState(false);
+  const [dataConfiguration, setDataConfiguration] = useState([]);
+  const [dataHistory, setDataHistory] = useState([]);
 
 
   const dispatch = useDispatch();
@@ -52,6 +54,29 @@ const Index = memo(() => {
     return [];
   };
 
+  const header = () => {
+    const columns = [
+      {
+        title: 'Thời gian ',
+        key: 'index',
+        width: 80,
+        render: (record) => record?.date
+      },
+      {
+        title: 'Chiều cao (cm)',
+        key: 'index',
+        width: 80,
+        render: (record) => record?.value
+      },
+      {
+        title: 'Cân nặng (kg)',
+        key: 'index',
+        width: 80,
+        render: (record) => record?.weightReport
+      },
+    ];
+    return columns;
+  };
   const dataHeight = {
     data: {
       x: 'x',
@@ -73,7 +98,7 @@ const Index = memo(() => {
     axis: {
       x: {
         label: {
-          text: 'Thời gian (tháng)',
+          text: 'Tuổi (tháng)',
           position: 'outer-center',
         },
         type: '',
@@ -177,7 +202,7 @@ const Index = memo(() => {
     axis: {
       x: {
         label: {
-          text: 'Thời gian (tháng)',
+          text: 'Tuổi (tháng)',
           position: 'outer-center',
         },
         type: '',
@@ -216,6 +241,9 @@ const Index = memo(() => {
   }, [params?.id]);
 
   useEffect(() => {
+    if (details) {
+      setDataHistory(details?.heightReport?.map(i => ({ ...i, weightReport: head(details?.weightReport?.filter(k => k?.monthAge === i?.monthAge))?.value })));
+    }
     if (details?.student?.sex) {
       dispatch({
         type: 'physicalDetails/GET_CONFIRMATION',
@@ -252,7 +280,7 @@ const Index = memo(() => {
       </span>
     );
   };
- 
+
   return (
     <Loading loading={loading['physicalDetails/GET_DETAILS']} isError={error.isError} params={{ error, goBack: '/phat-trien-the-chat/tat-ca-hoc-sinh' }}>
       <Helmet title="Chi tiết phát triển thể chất học sinh" />
@@ -323,6 +351,29 @@ const Index = memo(() => {
               <Text>Chỉ số BMI: {get(details, 'bmiConclusion.bmi', 0).toFixed(2)}</Text>
               <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo BMI  {head(details?.bmiReport)?.monthAge} Tháng Tuổi - {last(details?.bmiReport)?.monthAge} Tháng Tuổi</Text>
               <C3Chart {...dataBmi} />
+              <div className={styles['wrapper-conclude']}> 
+              <div className="d-flex align-items-center">
+                <h3 className={styles.title}>Kết luận </h3>
+                <p className={styles.conclude}>Học sinh { variablesModule.STATUS.[details?.bmiConclusion?.status]} </p>
+              </div>
+              <p className={styles.content}>{details?.bmiConclusion?.statusText}</p>
+            </div>
+              </div>
+          </div>
+          <div className="col-lg-6">
+            <div className={styles.block}>
+              <Heading className="text-success mb10" type="page-title">Lịch sử phát triển</Heading>
+              <Table
+                columns={header()}
+                dataSource={dataHistory}
+                pagination={false}
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
             </div>
           </div>
         </div>

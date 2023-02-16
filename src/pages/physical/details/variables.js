@@ -9,6 +9,13 @@ export const variables = {
     OBESITY: '',
     NORMAL: '',
   },
+
+  STATUS: {
+    UNDERWEIGHT: 'thiếu cân',
+    OVERWEIGHT: 'thừa cân',
+    OBESITY: 'béo phì',
+    NORMAL: 'bình thường',
+  },
 };
 
 export default variables;
