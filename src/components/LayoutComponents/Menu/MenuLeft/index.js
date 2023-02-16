@@ -83,6 +83,24 @@ class MenuLeft extends React.Component {
         },
       });
     }
+    if (/^\/bao-cao-erp(?=\/|$)/i.test(pathname)) {
+      this.props.dispatch({
+        type: 'menu/GET_MENU_REPORT',
+        payload: { type: 'METABASE' },
+        callback: (response) => {
+          if (response) {
+            const dataMenu = response?.map((item) => ({
+              title: item.name,
+              key: `report-${item.id}`,
+              url: [`/bao-cao-erp/${item.id}`],
+              permission: [],
+              pro: true,
+            }));
+            this.onSetMenu(dataMenu);
+          }
+        },
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -132,7 +150,9 @@ class MenuLeft extends React.Component {
     const selectedItem = flattenItems(menuData, 'children').find((item) => {
       if (_.isArray(item.url)) {
         return item.url.filter(
-          (itemChildren) => itemChildren === this.convertPathname(props.location.pathname),
+          (itemChildren) =>
+            itemChildren === this.convertPathname(props.location.pathname) ||
+            itemChildren === props.location.pathname,
         )[0];
       }
       return item.url === props.location.pathname;

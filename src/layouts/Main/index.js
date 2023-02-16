@@ -132,6 +132,11 @@ const OBJECTS = {
     title: 'English',
     menu: 'menuLeftEnglish',
   },
+  REPORTERP: {
+    icon: '/images/home/training.svg',
+    title: 'Báo cáo ERP',
+    menu: 'menuLeftReport',
+  },
 };
 
 @withRouter
@@ -204,6 +209,9 @@ class MainLayout extends React.PureComponent {
     }
     if (/^\/english(?=\/|$)/i.test(pathname)) {
       key = 'ENGLISH';
+    }
+    if (/^\/bao-cao-erp(?=\/|$)/i.test(pathname)) {
+      key = 'REPORTERP';
     }
     return key;
   };
