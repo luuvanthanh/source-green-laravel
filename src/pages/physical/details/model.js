@@ -51,6 +51,23 @@ export default {
         });
       }
     },
+    *GET_CONFIRMATION({ payload,callback }, saga) {
+      try {
+        const response = yield saga.call(services.getConfirmation, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_CONFIRMATION',
+          payload: {
+            parsePayload: response,
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);

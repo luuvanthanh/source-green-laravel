@@ -177,6 +177,13 @@ export const feature = {
       url: '/english',
       permission: [permissions.CTH],
     },
+    {
+      title: 'Báo cáo ERP',
+      src: '/images/home/training.svg',
+      animation: animationImage.report,
+      url: '/bao-cao-erp',
+      permission: [permissions.WEB_BAO_CAO_ERP_VIEW],
+    },
   ],
 };
 
