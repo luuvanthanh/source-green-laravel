@@ -242,7 +242,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     if (details) {
-      setDataHistory(details?.heightReport?.map(i => ({ ...i, weightReport: head(details?.weightReport?.filter(k => k?.monthAge === i?.monthAge))?.value })));
+      setDataHistory(details?.heightReport?.map(i => ({ ...i, weightReport: head(details?.weightReport?.filter(k => k?.monthAge === i?.monthAge))?.value })).reverse());
     }
     if (details?.student?.sex) {
       dispatch({
@@ -354,7 +354,7 @@ const Index = memo(() => {
               <div className={styles['wrapper-conclude']}> 
               <div className="d-flex align-items-center">
                 <h3 className={styles.title}>Kết luận </h3>
-                <p className={styles.conclude}>Học sinh { variablesModule.STATUS.[details?.bmiConclusion?.status]} </p>
+                <p className={styles.conclude} style={{color :  variablesModule.STATUS_COLOR.[details?.bmiConclusion?.status] }}>Trẻ đang ở trạng thái { variablesModule.STATUS.[details?.bmiConclusion?.status]} </p>
               </div>
               <p className={styles.content}>{details?.bmiConclusion?.statusText}</p>
             </div>
