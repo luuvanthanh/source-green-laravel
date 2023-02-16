@@ -24,6 +24,7 @@ import {
   getLeftMenuCurrency,
   getLeftMenuEnglish,
 } from '@/services/menu';
+import * as services from '@/services/categories';
 
 export default {
   namespace: 'menu',
@@ -52,9 +53,15 @@ export default {
     menuLeftChildDevelop: [],
     menuLeftCurrency: [],
     menuLeftEnglish: [],
+    menuLeftReport: [],
+    dataReport: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
+    SET_MENU_REPORT: (state, { payload }) => ({
+      ...state,
+      dataReport: payload,
+    }),
   },
   effects: {
     *GET_DATA(action, { put, call }) {
@@ -111,6 +118,18 @@ export default {
           menuLeftEnglish,
         },
       });
+    },
+    *GET_MENU_REPORT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getReport, payload);
+        yield saga.put({
+          type: 'SET_MENU_REPORT',
+          payload: response.items,
+        });
+        callback(response.items);
+      } catch (error) {
+        throw error.data;
+      }
     },
   },
   subscriptions: {

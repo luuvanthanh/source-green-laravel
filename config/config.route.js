@@ -3765,6 +3765,20 @@ export default [
         ],
       },
 
+      // BAO CAO ERP
+      {
+        path: '/bao-cao-erp',
+        component: './menu/layout',
+        routes: [
+          {
+            path: '/bao-cao-erp/:type',
+            component: './report-erp',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+
       //PHYSICAL
       {
         path: '/error',

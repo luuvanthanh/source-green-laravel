@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import { omit } from 'lodash';
 import requestLaravel from '@/utils/requestLavarel';
+import requestSSO from '@/utils/requestSSO';
 import { Helper, variables } from '@/utils';
 
 export function getRoles(params = {}) {
@@ -272,6 +273,16 @@ export function getYears() {
     method: 'GET',
     params: {
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getReport(params = {}) {
+  return requestSSO('/api/modules/tree', {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+      ...params,
     },
   });
 }
