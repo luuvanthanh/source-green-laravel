@@ -13,9 +13,17 @@ export const variables = {
   STATUS: {
     UNDERWEIGHT: 'thiếu cân',
     OVERWEIGHT: 'thừa cân',
-    OBESITY: 'béo phì',
+    OBESITY: 'thừa cân',
     NORMAL: 'bình thường',
   },
+
+  STATUS_COLOR: {
+    UNDERWEIGHT: '#AE1818',
+    OVERWEIGHT: '#AE1818',
+    OBESITY: '#AE1818',
+    NORMAL: '#36383A',
+  },
+
 };
 
 export default variables;

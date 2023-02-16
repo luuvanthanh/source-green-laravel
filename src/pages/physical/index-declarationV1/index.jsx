@@ -393,6 +393,7 @@ const General = memo(({ loading: { effects }, error }) => {
               };
             },
           });
+          setCheckEdit(false);
         }
         if (error) {
           if (error?.errors && !isEmpty(error?.errors)) {
