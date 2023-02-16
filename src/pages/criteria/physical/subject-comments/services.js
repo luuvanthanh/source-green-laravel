@@ -1,10 +1,12 @@
 import request from '@/utils/request';
+import { Helper } from '@/utils';
 
 export function get(params = {}) {
   return request('/physical-criteria-template/criteria/list-of-pagging', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
+      ...Helper.getPagination(params.page, params.limit),
     },
   });
 }

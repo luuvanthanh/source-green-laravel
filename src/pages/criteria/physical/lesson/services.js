@@ -1,10 +1,12 @@
 import request from '@/utils/request';
+import { Helper } from '@/utils';
 
 export function get(params = {}) {
   return request('/physical-study-programs/list-of-pagging', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
+      ...Helper.getPagination(params.page, params.limit),
     },
   });
 }

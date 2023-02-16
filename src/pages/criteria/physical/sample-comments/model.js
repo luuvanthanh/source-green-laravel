@@ -16,7 +16,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.items,
+      data: payload.parsePayload,
       pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
@@ -36,7 +36,12 @@ export default {
         if (response) {
           yield saga.put({
             type: 'SET_DATA',
-            payload: response,
+            payload: {
+              parsePayload: response.items,
+              pagination: {
+                total: response.totalCount,
+              },
+            },
           });
         }
       } catch (error) {
