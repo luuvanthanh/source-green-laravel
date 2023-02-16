@@ -278,7 +278,7 @@ export function getYears() {
 }
 
 export function getReport(params = {}) {
-  return requestSSO('/api/modules/tree', {
+  return requestSSO('/api/modules/by-type', {
     method: 'GET',
     params: {
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),

@@ -182,7 +182,7 @@ export const feature = {
       src: '/images/home/training.svg',
       animation: animationImage.report,
       url: '/bao-cao-erp',
-      permission: [permissions.CTH],
+      permission: [permissions.WEB_BAO_CAO_ERP_VIEW],
     },
   ],
 };
