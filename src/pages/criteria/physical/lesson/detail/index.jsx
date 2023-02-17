@@ -10,6 +10,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Loading from '@/components/CommonComponent/Loading';
 import classnames from 'classnames';
+import { Helper } from '@/utils';
 import stylesModule from '../styles.module.scss';
 
 const Index = memo(() => {
@@ -32,6 +33,25 @@ const Index = memo(() => {
 
   const [details, setDetails] = useState(undefined);
 
+  const onRemove = (id) => {
+    const text = "Bạn có chắc chắn muốn xóa bài học này không?";
+    Helper.confirmDelete({
+      callback: () => {
+        dispatch({
+          type: 'physicalLesson/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              history.goBack();
+            }
+          },
+        });
+      },
+    }, text);
+  };
+
   useEffect(() => {
     if (params.id) {
       dispatch({
@@ -53,7 +73,7 @@ const Index = memo(() => {
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Bài học" />
       <Loading
         loading={effects['physicalLessonAdd/GET_DATA']}
       >
@@ -159,6 +179,9 @@ const Index = memo(() => {
           <Pane className="d-flex justify-content-between align-items-center mb20 mt20">
             <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
               Đóng
+            </p>
+            <p className="btn-delete ml-4" role="presentation" onClick={() => onRemove(details?.id)}>
+              Xóa
             </p>
             <Button
               className="ml-auto px25"
