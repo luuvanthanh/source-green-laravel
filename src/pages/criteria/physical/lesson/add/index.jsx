@@ -21,7 +21,6 @@ const Index = memo(() => {
   const history = useHistory();
   const dispatch = useDispatch();
   const mounted = useRef(false);
-
   const {
     branches,
     years,
@@ -39,6 +38,7 @@ const Index = memo(() => {
     defaultBranch: user.defaultBranch,
   }));
 
+  const loadingSubmit = effects['physicalLessonAdd/ADD'] || effects['physicalLessonAdd/UPDATE'];
   const [dataClass, setDataClass] = useState([]);
   const [details, setDetails] = useState(undefined);
 
@@ -348,7 +348,13 @@ const Index = memo(() => {
                   <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
                     Hủy
                   </p>
-                  <Button className="ml-auto px25" color="success" htmlType="submit" size="large">
+                  <Button
+                    className="ml-auto px25"
+                    color="success"
+                    htmlType="submit"
+                    size="large"
+                    loading={loadingSubmit}
+                  >
                     Lưu
                   </Button>
                 </Pane>
