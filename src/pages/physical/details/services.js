@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { variables } from '@/utils';
 
 export function getDetails(data = {}) {
   return request(`/student-criterias/statistic-by-physical/${data.id}`, {
@@ -19,6 +20,16 @@ export function getPhysical(params = {}) {
     params: {
       ...params,
       type: 'PHYSICAL',
+    },
+  });
+}
+
+export function getConfirmation(data = {}) {
+  return request(`/criteria-standards`, {
+    method: 'GET',
+    params: {
+      maxResultCount: variables.PAGINATION.SIZEMAX,
+      type: data?.type,
     },
   });
 }

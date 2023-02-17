@@ -250,7 +250,7 @@ const Index = memo(() => {
                 />
               </Pane>
               <div className="d-flex justify-content-between align-items-center">
-                <p className="mb0 font-size-14 underline">Hủy</p>
+                <p className="mb0 font-size-14 underline" role="presentation" onClick={() => history.goBack()}>Hủy</p>
                 <Button
                   icon="save"
                   size="large"

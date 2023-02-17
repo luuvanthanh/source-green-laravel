@@ -1,9 +1,12 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { history, useLocation } from 'umi';
 import { useSelector, useParams, useDispatch } from 'dva';
 import C3Chart from 'react-c3js';
-import { isEmpty, map, get } from 'lodash';
+import d3 from 'd3';
+
+import { isEmpty, map, get, head, last } from 'lodash';
+import Table from '@/components/CommonComponent/Table';
 import moment from 'moment';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -32,26 +35,53 @@ const Index = memo(() => {
 
   const location = useLocation();
   const params = useParams();
-  const dispatch = useDispatch();
 
+  const [dataConfiguration, setDataConfiguration] = useState([]);
+  const [dataHistory, setDataHistory] = useState([]);
+
+
+  const dispatch = useDispatch();
   const mounted = useRef(false);
 
   const convertData = (data, name, columnName) => {
     const result = [`${columnName}`];
     if (!isEmpty(data)) {
-      if (name === 'date') {
-        return result.concat(data.map(item => item.date ? moment(item.date, 'MM/YYYY').format(variables.DATE_FORMAT.DATE_AFTER) : ''));
+      if (name === 'monthAge') {
+        return result.concat(data.map(item => item.monthAge ? item?.monthAge : ''));
       }
       return result.concat(map(data, name));
     }
     return [];
   };
 
+  const header = () => {
+    const columns = [
+      {
+        title: 'Thời gian ',
+        key: 'index',
+        width: 80,
+        render: (record) => record?.date
+      },
+      {
+        title: 'Chiều cao (cm)',
+        key: 'index',
+        width: 80,
+        render: (record) => record?.value
+      },
+      {
+        title: 'Cân nặng (kg)',
+        key: 'index',
+        width: 80,
+        render: (record) => record?.weightReport
+      },
+    ];
+    return columns;
+  };
   const dataHeight = {
     data: {
       x: 'x',
       columns: [
-        convertData(details?.heightReport, 'date', 'x'),
+        convertData(details?.heightReport, 'monthAge', 'x'),
         convertData(details?.heightReport, 'value', 'Chiều cao'),
       ],
       type: 'spline',
@@ -68,13 +98,13 @@ const Index = memo(() => {
     axis: {
       x: {
         label: {
-          text: 'Thời gian (tháng)',
+          text: 'Tuổi (tháng)',
           position: 'outer-center',
         },
-        type: 'timeseries',
+        type: '',
         tick: {
           format(x) {
-            return new Date(x).getMonth() + 1;
+            return x;
           }
         }
       },
@@ -94,7 +124,7 @@ const Index = memo(() => {
     data: {
       ...dataHeight.data,
       columns: [
-        convertData(details?.weightReport, 'date', 'x'),
+        convertData(details?.weightReport, 'monthAge', 'x'),
         convertData(details?.weightReport, 'value', 'Cân nặng'),
       ],
     },
@@ -108,6 +138,109 @@ const Index = memo(() => {
     },
     color: {
       pattern: ['#FF8300'],
+    },
+  };
+
+  const convertDataBmi = (data, columnName) => {
+    const result = [`${columnName}`];
+    const maxBmi = Math.max(...data.map(i => head(i?.dataDetail)?.bmi));
+    const maxMedianLargerThirdSD = Math.max(...data.map(i => i?.value?.medianLargerThirdSD));
+    if (!isEmpty(data)) {
+      if (columnName === 'Thiếu cân') {
+        return result.concat(data.map(item => item?.value?.medianSmallerFirstSD));
+      }
+      if (columnName === 'Sức khỏe dinh dưỡng tốt') {
+        return result.concat(data.map(item => item?.value?.medianLargerFirstSD - item?.value?.medianSmallerFirstSD));
+      }
+      if (columnName === 'Nguy cơ béo phì') {
+        return result.concat(data.map(item => item?.value?.medianLargerSecondSD - item?.value?.medianLargerFirstSD));
+      }
+      if (columnName === 'Béo phì') {
+        if (maxBmi > maxMedianLargerThirdSD) {
+          return result.concat(data.map(item => maxBmi - item?.value?.medianLargerSecondSD));
+        }
+        return result.concat(data.map(item => item?.value?.medianLargerThirdSD - item?.value?.medianLargerSecondSD));
+      }
+      if (columnName === 'BMI') {
+        return result.concat(data.map(item => head(item?.dataDetail)?.bmi));
+      }
+      if (columnName === 'x') {
+        return result.concat(data.map(item => item?.monthNumber));
+      }
+      if (columnName === 'Chỉ số BMI') {
+        return result.concat(data.map(item => head(item?.dataDetail)?.bmi));
+      }
+    }
+    return [];
+  };
+
+  const dataBmi = {
+    data: {
+      x: 'x',
+      columns: [
+        convertDataBmi(dataConfiguration, 'Thiếu cân'),
+        convertDataBmi(dataConfiguration, 'Sức khỏe dinh dưỡng tốt'),
+        convertDataBmi(dataConfiguration, 'Nguy cơ béo phì'),
+        convertDataBmi(dataConfiguration, 'Béo phì'),
+        convertDataBmi(dataConfiguration, 'BMI'),
+        convertDataBmi(dataConfiguration, 'Chỉ số BMI'),
+        convertDataBmi(dataConfiguration, 'x'),
+      ],
+      type: 'scatter',
+      order: false,
+      colors: {
+        'Thiếu cân': d3.rgb('#FFFFFF').darker(0),
+        'Sức khỏe dinh dưỡng tốt': d3.rgb('#71E47D').darker(0),
+        'Nguy cơ béo phì': d3.rgb('#E2E22B').darker(0),
+        'Béo phì': d3.rgb('#FC696A').darker(0),
+      },
+      types: {
+        'Thiếu cân': 'area-spline',
+        'Sức khỏe dinh dưỡng tốt': 'area-spline',
+        'Nguy cơ béo phì': 'area-spline',
+        'Béo phì': 'area-spline',
+        'Chỉ số BMI': 'spline',
+        value: 'spline',
+      },
+      groups: [
+        ['Thiếu cân', 'Sức khỏe dinh dưỡng tốt', 'Nguy cơ béo phì', 'Béo phì']
+      ],
+    },
+    note: false,
+    point: {
+      show: false
+    },
+    tooltip: {
+      grouped: false,
+      format: {
+        title() { return ""; },
+        value(value, ratio, id) {
+          return id === 'BMI' ? value.toFixed(1) : "";
+        }
+      }
+    },
+    axis: {
+      x: {
+        label: {
+          text: 'Tuổi (tháng)',
+          position: 'outer-center',
+        },
+        type: '',
+        tick: {
+          format(x) {
+            return x;
+          }
+        }
+      },
+      y: {
+        label: {
+          text: 'BMI',
+        },
+        min: 11,
+      },
+    },
+    color: {
+      pattern: ['#0019F8'],
     },
   };
 
@@ -126,6 +259,23 @@ const Index = memo(() => {
       });
     }
   }, [params?.id]);
+
+  useEffect(() => {
+    if (details) {
+      setDataHistory(details?.heightReport?.map(i => ({ ...i, weightReport: head(details?.weightReport?.filter(k => k?.monthAge === i?.monthAge))?.value })).reverse());
+    }
+    if (details?.student?.sex) {
+      dispatch({
+        type: 'physicalDetails/GET_CONFIRMATION',
+        payload: { type: details?.student?.sex === 'MALE' ? 'BMIMALE' : 'BMIFEMALE' },
+        callback: (response) => {
+          if (response) {
+            setDataConfiguration((response?.items?.map(i => ({ ...i, dataDetail: details?.bmiReport?.filter(k => k?.monthAge === i?.monthNumber) })))?.filter(i => !isEmpty(i?.dataDetail)));
+          }
+        }
+      });
+    }
+  }, [details]);
 
   const getAvatar = (images) => {
     const avatar = images ? JSON.parse(images) : [];
@@ -203,7 +353,7 @@ const Index = memo(() => {
             <div className={styles.block}>
               <Heading className="text-success mb10" type="page-title">BÁO CÁO CHIỀU CAO</Heading>
               <Text>{height?.value || 0} cm - Nhập ngày {Helper.getDate((height?.reportDate || moment()), variables.DATE_FORMAT.DATE_MONTH)}</Text>
-              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo Tháng {Helper.getDate(details?.fromDate, variables.DATE_FORMAT.MONTH_YEAR)} - Tháng {Helper.getDate(details?.toDate, variables.DATE_FORMAT.MONTH_YEAR)}</Text>
+              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo {head(details?.heightReport)?.monthAge} Tháng Tuổi - {last(details?.heightReport)?.monthAge} Tháng Tuổi</Text>
               <C3Chart {...dataHeight} />
             </div>
           </div>
@@ -211,7 +361,7 @@ const Index = memo(() => {
             <div className={styles.block}>
               <Heading className="text-success mb10" type="page-title">BÁO CÁO CÂN NẶNG</Heading>
               <Text>{weight?.value || 0} kg - Nhập ngày {Helper.getDate((weight?.reportDate || moment()), variables.DATE_FORMAT.DATE_MONTH)}</Text>
-              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo Tháng {Helper.getDate(details?.fromDate, variables.DATE_FORMAT.MONTH_YEAR)} - Tháng {Helper.getDate(details?.toDate, variables.DATE_FORMAT.MONTH_YEAR)}</Text>
+              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo {head(details?.weightReport)?.monthAge} Tháng Tuổi - {last(details?.weightReport)?.monthAge} Tháng Tuổi</Text>
               <C3Chart {...dataWeight} />
             </div>
           </div>
@@ -219,18 +369,31 @@ const Index = memo(() => {
             <div className={styles.block}>
               <Heading className="text-success mb10" type="page-title">Báo cáo BMI</Heading>
               <Text>Chỉ số BMI: {get(details, 'bmiConclusion.bmi', 0).toFixed(2)}</Text>
-              <p className="mb20 font-size-16 font-weight-bold">Biểu đồ BMI</p>
-              <div className="mb15">
-                <img className={styles['img-bmi']} src="/images/bmi.svg" alt="bmi" />
+              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo BMI  {head(details?.bmiReport)?.monthAge} Tháng Tuổi - {last(details?.bmiReport)?.monthAge} Tháng Tuổi</Text>
+              <C3Chart {...dataBmi} />
+              <div className={styles['wrapper-conclude']}>
+                <div className="d-flex align-items-center">
+                  <h3 className={styles.title}>Kết luận </h3>
+                  <p className={styles.conclude} style={{ color: variablesModule.STATUS_COLOR?.[details?.bmiConclusion?.status] }}>Trẻ đang ở trạng thái {variablesModule.STATUS?.[details?.bmiConclusion?.status]} </p>
+                </div>
+                <p className={styles.content}>{details?.bmiConclusion?.statusText}</p>
               </div>
-              {/* <div className={styles['result-bmi']}>
-                <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, '')}</p>
-                {details?.bmiConclusion?.status && details?.bmiConclusion?.status !== 'NORMAL' ? (
-                  <p className="font-size-15 mb0">Cân nặng cần đạt được: <span className="text-danger mx5">{details?.bmiConclusion?.ideaWeight.toFixed(1) || 0}</span>kg</p>
-                ) : (
-                  <p className="font-size-15 mb0">Cần giữ chế độ ăn uống hiện tại của trẻ</p>
-                )}
-              </div> */}
+            </div>
+          </div>
+          <div className="col-lg-6">
+            <div className={styles.block}>
+              <Heading className="text-success mb10" type="page-title">Lịch sử phát triển</Heading>
+              <Table
+                columns={header()}
+                dataSource={dataHistory}
+                pagination={false}
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
             </div>
           </div>
         </div>

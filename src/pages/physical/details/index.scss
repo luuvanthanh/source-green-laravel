@@ -1,5 +1,8 @@
+@import "@/assets/styles/mixins.scss";
 
-@import '@/assets/styles/mixins.scss';
+:global(.c3-area) {
+  opacity: 1 !important;
+}
 
 .container-information-student {
   background-color: $white;
@@ -7,7 +10,7 @@
   display: flex;
   border-radius: 6px;
   .title {
-    min-width: 150px
+    min-width: 150px;
   }
   .avatar-student {
     width: 150px;
@@ -25,7 +28,7 @@
   .detail-information-student {
     display: flex;
     flex-wrap: wrap;
-    border-top: 2px solid #F2F2F2;
+    border-top: 2px solid #f2f2f2;
     .group-attribute {
       margin-top: 20px;
       width: 20%;
@@ -47,7 +50,7 @@
 }
 
 .result-bmi {
-  background: #F4F5F8;
+  background: #f4f5f8;
   padding: 20px;
 }
 
@@ -55,4 +58,35 @@
   max-width: 100%;
   width: 100%;
   height: auto;
+}
+
+.wrapper-conclude {
+  padding: 15px;
+  background-color: #f4f5f8;
+  border-radius: 6px;
+  .title {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 18px;
+    color: #36383a;
+  }
+  .conclude {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 18px;
+    margin-left: 10px;
+  }
+  .content {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 18px;
+    margin-top: 4px;
+    color: #36383a;
+  }
 }

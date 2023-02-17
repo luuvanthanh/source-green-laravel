@@ -97,18 +97,13 @@ const General = memo(({ loading: { effects }, error }) => {
         className: 'min-width-80',
         width: 80,
         render: (value, record) => (
-          <>
-            {
-              !checkEdit ? <>    {record?.monthNumber}</> :
-                <FormItem
-                  className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.monthNumber}
-                  onChange={(e) => onChangeInput(record, e, 'monthNumber')}
-                />
-            }
-          </>
+          <FormItem
+            className={classnames('mb-0', stylesModule['icon-input'])}
+            type={variables.NUMBER_INPUT}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.monthNumber}
+            onChange={(e) => onChangeInput(record, e, 'monthNumber')}
+          />
         )
       },
       {
@@ -118,19 +113,13 @@ const General = memo(({ loading: { effects }, error }) => {
         className: 'min-width-80',
         width: 80,
         render: (value, record) => (
-          <>
-            {
-              !checkEdit ? <> {record?.l}</>
-                :
-                <FormItem
-                  className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.l}
-                  onChange={(e) => onChangeInput(record, e, 'l')}
-                />
-            }
-          </>
+          <FormItem
+            className={classnames('mb-0', stylesModule['icon-input'])}
+            type={variables.NUMBER_INPUT}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.l}
+            onChange={(e) => onChangeInput(record, e, 'l')}
+          />
         )
       },
       {
@@ -140,19 +129,13 @@ const General = memo(({ loading: { effects }, error }) => {
         className: 'min-width-80',
         width: 80,
         render: (value, record) => (
-          <>
-            {
-              !checkEdit ? <> {record?.m}</>
-                :
-                <FormItem
-                  className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.m}
-                  onChange={(e) => onChangeInput(record, e, 'm')}
-                />
-            }
-          </>
+          <FormItem
+            className={classnames('mb-0', stylesModule['icon-input'])}
+            type={variables.NUMBER_INPUT}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.m}
+            onChange={(e) => onChangeInput(record, e, 'm')}
+          />
         )
       },
       {
@@ -162,19 +145,13 @@ const General = memo(({ loading: { effects }, error }) => {
         className: 'min-width-80',
         width: 80,
         render: (value, record) => (
-          <>
-            {
-              !checkEdit ? <> {record?.s}</>
-                :
-                <FormItem
-                  className={classnames('mb-0', stylesModule['icon-input'])}
-                  type={variables.NUMBER_INPUT}
-                  rules={[variables.RULES.EMPTY]}
-                  value={record?.s}
-                  onChange={(e) => onChangeInput(record, e, 's')}
-                />
-            }
-          </>
+          <FormItem
+            className={classnames('mb-0', stylesModule['icon-input'])}
+            type={variables.NUMBER_INPUT}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.s}
+            onChange={(e) => onChangeInput(record, e, 's')}
+          />
         )
       },
       {
@@ -189,19 +166,13 @@ const General = memo(({ loading: { effects }, error }) => {
             width: 80,
             align: 'center',
             render: (value, record) => (
-              <>
-                {
-                  !checkEdit ? <> {record?.medianSmallerThirdSD}</>
-                    :
-                    <FormItem
-                      className={classnames('mb-0')}
-                      type={variables.NUMBER_INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                      value={record?.medianSmallerThirdSD}
-                      onChange={(e) => onChangeInput(record, e, 'medianSmallerThirdSD')}
-                    />
-                }
-              </>
+              <FormItem
+                className={classnames('mb-0')}
+                type={variables.NUMBER_INPUT}
+                rules={[variables.RULES.EMPTY]}
+                value={record?.medianSmallerThirdSD}
+                onChange={(e) => onChangeInput(record, e, 'medianSmallerThirdSD')}
+              />
             )
           },
           {
@@ -211,19 +182,13 @@ const General = memo(({ loading: { effects }, error }) => {
             width: 80,
             align: 'center',
             render: (value, record) => (
-              <>
-                {
-                  !checkEdit ? <> {record?.medianSmallerSecondSD}</>
-                    :
-                    <FormItem
-                      className={classnames('mb-0')}
-                      type={variables.NUMBER_INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                      value={record?.medianSmallerSecondSD}
-                      onChange={(e) => onChangeInput(record, e, 'medianSmallerSecondSD')}
-                    />
-                }
-              </>
+              <FormItem
+                className={classnames('mb-0')}
+                type={variables.NUMBER_INPUT}
+                rules={[variables.RULES.EMPTY]}
+                value={record?.medianSmallerSecondSD}
+                onChange={(e) => onChangeInput(record, e, 'medianSmallerSecondSD')}
+              />
             )
           },
           {
@@ -233,19 +198,13 @@ const General = memo(({ loading: { effects }, error }) => {
             width: 80,
             align: 'center',
             render: (value, record) => (
-              <>
-                {
-                  !checkEdit ? <> {record?.medianSmallerFirstSD}</>
-                    :
-                    <FormItem
-                      className={classnames('mb-0')}
-                      type={variables.NUMBER_INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                      value={record?.medianSmallerFirstSD}
-                      onChange={(e) => onChangeInput(record, e, 'medianSmallerFirstSD')}
-                    />
-                }
-              </>
+              <FormItem
+                className={classnames('mb-0')}
+                type={variables.NUMBER_INPUT}
+                rules={[variables.RULES.EMPTY]}
+                value={record?.medianSmallerFirstSD}
+                onChange={(e) => onChangeInput(record, e, 'medianSmallerFirstSD')}
+              />
             )
           },
           {
@@ -255,41 +214,29 @@ const General = memo(({ loading: { effects }, error }) => {
             width: 80,
             align: 'center',
             render: (value, record) => (
-              <>
-                {
-                  !checkEdit ? <> {record?.median}</>
-                    :
-                    <FormItem
-                      className={classnames('mb-0')}
-                      type={variables.NUMBER_INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                      value={record?.median}
-                      onChange={(e) => onChangeInput(record, e, 'median')}
-                    />
-                }
-              </>
+              <FormItem
+                className={classnames('mb-0')}
+                type={variables.NUMBER_INPUT}
+                rules={[variables.RULES.EMPTY]}
+                value={record?.median}
+                onChange={(e) => onChangeInput(record, e, 'median')}
+              />
             )
           },
           {
             title: '1 SD',
-            key: 'medianLargerThirdSD',
+            key: 'medianLargerFirstSD',
             className: 'min-width-80',
             width: 80,
             align: 'center',
             render: (value, record) => (
-              <>
-                {
-                  !checkEdit ? <> {record?.medianLargerThirdSD}</>
-                    :
-                    <FormItem
-                      className={classnames('mb-0')}
-                      type={variables.NUMBER_INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                      value={record?.medianLargerThirdSD}
-                      onChange={(e) => onChangeInput(record, e, 'medianLargerThirdSD')}
-                    />
-                }
-              </>
+              <FormItem
+                className={classnames('mb-0')}
+                type={variables.NUMBER_INPUT}
+                rules={[variables.RULES.EMPTY]}
+                value={record?.medianLargerFirstSD}
+                onChange={(e) => onChangeInput(record, e, 'medianLargerFirstSD')}
+              />
             )
           },
           {
@@ -299,41 +246,167 @@ const General = memo(({ loading: { effects }, error }) => {
             width: 80,
             align: 'center',
             render: (value, record) => (
-              <>
-                {
-                  !checkEdit ? <> {record?.medianLargerSecondSD}</>
-                    :
-                    <FormItem
-                      className={classnames('mb-0')}
-                      type={variables.NUMBER_INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                      value={record?.medianLargerSecondSD}
-                      onChange={(e) => onChangeInput(record, e, 'medianLargerSecondSD')}
-                    />
-                }
-              </>
+              <FormItem
+                className={classnames('mb-0')}
+                type={variables.NUMBER_INPUT}
+                rules={[variables.RULES.EMPTY]}
+                value={record?.medianLargerSecondSD}
+                onChange={(e) => onChangeInput(record, e, 'medianLargerSecondSD')}
+              />
             )
           },
           {
             title: '3 SD',
+            key: 'medianLargerThirdSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <FormItem
+                className={classnames('mb-0')}
+                type={variables.NUMBER_INPUT}
+                rules={[variables.RULES.EMPTY]}
+                value={record?.medianLargerThirdSD}
+                onChange={(e) => onChangeInput(record, e, 'medianLargerThirdSD')}
+              />
+            )
+          },
+        ]
+      },
+      ...((checkEdit)
+        ? [
+          {
+            title: '',
+            key: 'delete',
+            className: 'min-width-60',
+            width: 60,
+            align: 'center',
+            render: (record) => (
+              <>
+                <DeleteOutlined onClick={(e) => onChangeInput(record, e, 'delete')} />
+              </>
+            ),
+          },
+        ]
+        : []),
+    ];
+    return columns;
+  };
+
+  const headerText = () => {
+    const columns = [
+      {
+        title: 'Tháng tuổi',
+        key: 'monthNumber',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record) => (
+          <>    {record?.monthNumber}</>
+        )
+      },
+      {
+        title: 'L',
+        key: 'l',
+        align: 'center',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record) => (
+          <> {record?.l}</>
+        )
+      },
+      {
+        title: 'M',
+        key: 'm',
+        align: 'center',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record) => (
+          <> {record?.m}</>
+        )
+      },
+      {
+        title: 'S',
+        key: 's',
+        align: 'center',
+        className: 'min-width-80',
+        width: 80,
+        render: (value, record) => (
+          <> {record?.s}</>
+        )
+      },
+      {
+        title: 'Z-scores (BMI in kg/m2)',
+        width: 150,
+        key: 'scores',
+        children: [
+          {
+            title: '-3 SD',
+            key: 'medianSmallerThirdSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <> {record?.medianSmallerThirdSD}</>
+            )
+          },
+          {
+            title: '-2 SD',
+            key: 'medianSmallerSecondSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <> {record?.medianSmallerSecondSD}</>
+            )
+          },
+          {
+            title: '-1 SD',
+            key: 'medianSmallerFirstSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <> {record?.medianSmallerFirstSD}</>
+            )
+          },
+          {
+            title: 'Median',
+            key: 'median',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <> {record?.median}</>
+            )
+          },
+          {
+            title: '1 SD',
             key: 'medianLargerFirstSD',
             className: 'min-width-80',
             width: 80,
             align: 'center',
             render: (value, record) => (
-              <>
-                {
-                  !checkEdit ? <> {record?.medianLargerFirstSD}</>
-                    :
-                    <FormItem
-                      className={classnames('mb-0')}
-                      type={variables.NUMBER_INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                      value={record?.medianLargerFirstSD}
-                      onChange={(e) => onChangeInput(record, e, 'medianLargerFirstSD')}
-                    />
-                }
-              </>
+              <> {record?.medianLargerFirstSD}</>
+            )
+          },
+          {
+            title: '2 SD',
+            key: 'medianLargerSecondSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <> {record?.medianLargerSecondSD}</>
+            )
+          },
+          {
+            title: '3 SD',
+            key: 'medianLargerThirdSD',
+            className: 'min-width-80',
+            width: 80,
+            align: 'center',
+            render: (value, record) => (
+              <> {record?.medianLargerThirdSD}</>
             )
           },
         ]
@@ -393,6 +466,7 @@ const General = memo(({ loading: { effects }, error }) => {
               };
             },
           });
+          setCheckEdit(false);
         }
         if (error) {
           if (error?.errors && !isEmpty(error?.errors)) {
@@ -430,7 +504,7 @@ const General = memo(({ loading: { effects }, error }) => {
             <div className={stylesModule['wrapper-table']}>
               <Loading loading={loading} isError={error.isError} params={{ error }}>
                 <Table
-                  columns={header()}
+                  columns={checkEdit ? header() : headerText()}
                   dataSource={data}
                   pagination={false}
                   loading={loading}
@@ -485,7 +559,7 @@ const General = memo(({ loading: { effects }, error }) => {
           :
           <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             <Button color="success" className="ml-2" onClick={() => setCheckEdit(true)}>
-              Edit
+              Sửa
             </Button>
           </Pane>
         }
@@ -505,3 +579,4 @@ General.defaultProps = {
 };
 
 export default withRouter(connect(mapStateToProps)(General));
+
