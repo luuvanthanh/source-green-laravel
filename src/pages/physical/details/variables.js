@@ -21,9 +21,8 @@ export const variables = {
     UNDERWEIGHT: '#AE1818',
     OVERWEIGHT: '#AE1818',
     OBESITY: '#AE1818',
-    NORMAL: '#36383A',
+    NORMAL: '#27A600',
   },
-
 };
 
 export default variables;
