@@ -143,24 +143,32 @@ const Index = memo(() => {
 
   const convertDataBmi = (data, columnName) => {
     const result = [`${columnName}`];
+    const maxBmi = Math.max(...data.map(i => head(i?.dataDetail)?.bmi));
+    const maxMedianLargerThirdSD = Math.max(...data.map(i => i?.value?.medianLargerThirdSD));
     if (!isEmpty(data)) {
       if (columnName === 'Thiếu cân') {
         return result.concat(data.map(item => item?.value?.medianSmallerFirstSD));
       }
       if (columnName === 'Sức khỏe dinh dưỡng tốt') {
-        return result.concat(data.map(item => item?.value?.medianLargerThirdSD - item?.value?.medianSmallerFirstSD));
+        return result.concat(data.map(item => item?.value?.medianLargerFirstSD - item?.value?.medianSmallerFirstSD));
       }
       if (columnName === 'Nguy cơ béo phì') {
-        return result.concat(data.map(item => item?.value?.medianLargerSecondSD - item?.value?.medianLargerThirdSD));
+        return result.concat(data.map(item => item?.value?.medianLargerSecondSD - item?.value?.medianLargerFirstSD));
       }
       if (columnName === 'Béo phì') {
-        return result.concat(data.map(item => item?.value?.medianLargerFirstSD - item?.value?.medianLargerSecondSD));
+        if (maxBmi > maxMedianLargerThirdSD) {
+          return result.concat(data.map(item => maxBmi - item?.value?.medianLargerSecondSD));
+        }
+        return result.concat(data.map(item => item?.value?.medianLargerThirdSD - item?.value?.medianLargerSecondSD));
       }
       if (columnName === 'BMI') {
         return result.concat(data.map(item => head(item?.dataDetail)?.bmi));
       }
       if (columnName === 'x') {
         return result.concat(data.map(item => item?.monthNumber));
+      }
+      if (columnName === 'Chỉ số BMI') {
+        return result.concat(data.map(item => head(item?.dataDetail)?.bmi));
       }
     }
     return [];
@@ -175,9 +183,10 @@ const Index = memo(() => {
         convertDataBmi(dataConfiguration, 'Nguy cơ béo phì'),
         convertDataBmi(dataConfiguration, 'Béo phì'),
         convertDataBmi(dataConfiguration, 'BMI'),
+        convertDataBmi(dataConfiguration, 'Chỉ số BMI'),
         convertDataBmi(dataConfiguration, 'x'),
       ],
-      type: 'spline',
+      type: 'scatter',
       order: false,
       colors: {
         'Thiếu cân': d3.rgb('#FFFFFF').darker(0),
@@ -190,14 +199,25 @@ const Index = memo(() => {
         'Sức khỏe dinh dưỡng tốt': 'area-spline',
         'Nguy cơ béo phì': 'area-spline',
         'Béo phì': 'area-spline',
-        value: 'spline'
+        'Chỉ số BMI': 'spline',
+        value: 'spline',
       },
       groups: [
         ['Thiếu cân', 'Sức khỏe dinh dưỡng tốt', 'Nguy cơ béo phì', 'Béo phì']
-      ]
+      ],
     },
+    note: false,
     point: {
       show: false
+    },
+    tooltip: {
+      grouped: false,
+      format: {
+        title() { return ""; },
+        value(value, ratio, id) {
+          return id === 'BMI' ? value.toFixed(1) : "";
+        }
+      }
     },
     axis: {
       x: {
@@ -351,14 +371,14 @@ const Index = memo(() => {
               <Text>Chỉ số BMI: {get(details, 'bmiConclusion.bmi', 0).toFixed(2)}</Text>
               <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo BMI  {head(details?.bmiReport)?.monthAge} Tháng Tuổi - {last(details?.bmiReport)?.monthAge} Tháng Tuổi</Text>
               <C3Chart {...dataBmi} />
-              <div className={styles['wrapper-conclude']}> 
-              <div className="d-flex align-items-center">
-                <h3 className={styles.title}>Kết luận </h3>
-                <p className={styles.conclude} style={{color :  variablesModule.STATUS_COLOR.[details?.bmiConclusion?.status] }}>Trẻ đang ở trạng thái { variablesModule.STATUS.[details?.bmiConclusion?.status]} </p>
+              <div className={styles['wrapper-conclude']}>
+                <div className="d-flex align-items-center">
+                  <h3 className={styles.title}>Kết luận </h3>
+                  <p className={styles.conclude} style={{ color: variablesModule.STATUS_COLOR?.[details?.bmiConclusion?.status] }}>Trẻ đang ở trạng thái {variablesModule.STATUS?.[details?.bmiConclusion?.status]} </p>
+                </div>
+                <p className={styles.content}>{details?.bmiConclusion?.statusText}</p>
               </div>
-              <p className={styles.content}>{details?.bmiConclusion?.statusText}</p>
             </div>
-              </div>
           </div>
           <div className="col-lg-6">
             <div className={styles.block}>
