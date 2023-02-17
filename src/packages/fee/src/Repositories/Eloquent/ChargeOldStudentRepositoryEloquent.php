@@ -257,7 +257,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
         return $data;
     }
 
-    public function getMonthAgeDetailStudentBySchoolYear($schoolYear, $student): array
+    public function getMonthAgeDetailStudentBySchoolYear($schoolYear, $student, $dayAdmission, $allDateOfSchoolYear): array
     {
         $data['dataClassType'] = [];
         $data['dataPaymentForm'] = [];
@@ -269,19 +269,43 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
             $classType = ClassType::where('From', '<=', $ageMonth)->where('To', '>=', $ageMonth)->first();
 
             $data['countClassType'][] = !empty($classType) ? $classType->Id : 0;
-
+            $dateOfMonth = [];
             if (!array_key_exists($classType->Id, $data['dataClassType'])) {
+                if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($value->EndDate)->format('Y-m')) {
+                    foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
+                        if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
+                            //số ngày trong tháng trước lúc bé nhập học
+                            $dateOfMonth[] = $dateOfSchoolYear;
+                        }
+                    }
+                }
+
                 $data['dataClassType'][$classType->Id] = [
                     'classTypeId' => !empty($classType) ? $classType->Id : null,
                     'classType' => !empty($classType->Name) ? $classType->Name : null,
                     'numberMonth' => $value->FullMonth,
                     'schoolDay' => $value->SchoolDay,
+                    'numberMonthCaseTwo' => 1,
+                    'dateOfMonth' => !empty($dateOfMonth) ? array_sum($dateOfMonth) : 0
                 ];
+
                 $numberMonthVariableOne = $data['dataClassType'][$classType->Id]['numberMonth'];
+                $numberMonthVariableOneCaseTwo = $data['dataClassType'][$classType->Id]['numberMonthCaseTwo'];
             } else {
                 $data['dataClassType'][$classType->Id]['numberMonth'] += $value->FullMonth;
+                $data['dataClassType'][$classType->Id]['numberMonthCaseTwo'] += 1;
                 $data['dataClassType'][$classType->Id]['schoolDay'] += $value->SchoolDay;
+                if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($value->EndDate)->format('Y-m')) {
+                    foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
+                        if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
+                            //số ngày trong tháng trước lúc bé nhập học
+                            $dateOfMonth[] = $dateOfSchoolYear;
+                        }
+                    }
+                }
+                $data['dataClassType'][$classType->Id]['dateOfMonth'] += array_sum($dateOfMonth);
                 $numberMonthVariableTwo = $data['dataClassType'][$classType->Id]['numberMonth'] + $value->FullMonth;
+                $numberMonthVariableTwoCaseTwo = $data['dataClassType'][$classType->Id]['numberMonthCaseTwo'] + 1;
             }
 
             if ($value->paymentForm->Code == self::SEMESTER1 || $value->paymentForm->Code == self::SEMESTER2) {
@@ -335,8 +359,9 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
             $data[$classType->Id][] = $value->Id;
         }
         $data['dataClassType']['totalMonth'] = $numberMonthVariableOne + $numberMonthVariableTwo;
+        $data['dataClassType']['totalMonthCaseTwo'] = $numberMonthVariableOneCaseTwo + $numberMonthVariableTwoCaseTwo;
         $data['countClassType'] = array_values(array_unique($data['countClassType']));
-        
+
         return $data;
     }
 }
