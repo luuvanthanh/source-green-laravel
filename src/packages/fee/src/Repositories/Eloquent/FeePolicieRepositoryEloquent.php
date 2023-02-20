@@ -1598,7 +1598,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 $result = $this->calculatorMoneyFeeAndMoneyMealByYearCaseTwo($listMonthAge, $fees, $paymentForm, $feePolicie, $allDateOfSchoolYear, $isWeekend, $locationWeekOfTheMonth, $dayAdmission, $student);
                 break;
             case self::SEMESTER1_SEMESTER2:
-                $result = $this->calculatorMoneyFeeAndMoneyMealBySemesterCaseTwo($listMonthAge, $fees, $paymentForm, $feePolicie, $allDateOfSchoolYear, $isWeekend, $locationWeekOfTheMonth, $dayAdmission);
+                $result = $this->calculatorMoneyFeeAndMoneyMealBySemesterCaseTwo($listMonthAge, $fees, $paymentForm, $feePolicie, $allDateOfSchoolYear, $isWeekend, $locationWeekOfTheMonth, $dayAdmission, $student);
                 break;
             default:
                 # code...
@@ -1632,13 +1632,21 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_name' => $fee->Name,
                                 'money' => (($monthAge['actualWeek'] - ($locationWeekOfTheMonth - 1)) / $monthAge['actualWeek'] * $feeOneWeekOfMonth) + $feeRemainingWeekOfMonth
                             ];
-                        } else {
+                        } elseif (Carbon::parse($monthAge['month'])->format('Y-m') > Carbon::parse($dayAdmission)->format('Y-m')) {
                             $result[] = [
                                 'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
                                 'fee_id' => $fee->Id,
                                 'fee_id_crm' => $fee->FeeCrmId,
                                 'fee_name' => $fee->Name,
                                 'money' => $feeDetail->OldStudent
+                            ];
+                        } else {
+                            $result[] = [
+                                'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                                'fee_id' => $fee->Id,
+                                'fee_id_crm' => $fee->FeeCrmId,
+                                'fee_name' => $fee->Name,
+                                'money' => 0
                             ];
                         }
                     }
@@ -1656,13 +1664,21 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 'fee_name' => $fee->Name,
                                 'money' => (($monthAge['actualWeek'] - ($locationWeekOfTheMonth - 0)) / $monthAge['actualWeek'] * $feeOneWeekOfMonth) + $feeRemainingWeekOfMonth
                             ];
-                        } else {
+                        } elseif (Carbon::parse($monthAge['month'])->format('Y-m') > Carbon::parse($dayAdmission)->format('Y-m')) {
                             $result[] = [
                                 'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
                                 'fee_id' => $fee->Id,
                                 'fee_id_crm' => $fee->FeeCrmId,
                                 'fee_name' => $fee->Name,
                                 'money' => $feeDetail->OldStudent
+                            ];
+                        } else {
+                            $result[] = [
+                                'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                                'fee_id' => $fee->Id,
+                                'fee_id_crm' => $fee->FeeCrmId,
+                                'fee_name' => $fee->Name,
+                                'money' => 0
                             ];
                         }
                     }
@@ -1679,13 +1695,21 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             'fee_name' => $fee->Name,
                             'money' => $moneyMeal->Money * array_sum($dateOfMonth),
                         ];
+                    } elseif (Carbon::parse($monthAge['month'])->format('Y-m') > Carbon::parse($dayAdmission)->format('Y-m')) {
+                        $result[] = [
+                            'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                            'fee_id' => $fee->Id,
+                            'fee_id_crm' => $fee->FeeCrmId,
+                            'fee_name' => $fee->Name,
+                            'money' =>  $moneyMeal->Money * $monthAge['schoolDay'],
+                        ];
                     } else {
                         $result[] = [
                             'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
                             'fee_id' => $fee->Id,
                             'fee_id_crm' => $fee->FeeCrmId,
                             'fee_name' => $fee->Name,
-                            'money' => $moneyMeal->Money * $monthAge['schoolDay'],
+                            'money' => 0,
                         ];
                     }
                 }
@@ -1700,20 +1724,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
     {
         $totalFee = 0;
         $totalMealFee = 0;
-        foreach ($listMonthAge['dataClassType'] as $key => $dataClassType) {
-
-            if (is_array($dataClassType)) {
-                $ageMonth = ((Carbon::parse($dayAdmission)->format('Y') - Carbon::parse($student->DayOfBirth)->format('Y')) * 12) + (Carbon::parse($dayAdmission)->format('m') - Carbon::parse($student->DayOfBirth)->format('m'));
-                $classType = ClassType::where('From', '<=', $ageMonth)->where('To', '>=', $ageMonth)->first();
-
-                if ($classType->Id == $dataClassType['classTypeId']) {
-                    $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $dataClassType['classTypeId'])->first();
-
-                    $totalMealFee += $moneyMeal->Money * ($dataClassType['schoolDay'] - $dataClassType['dateOfMonth']);
-                }
-            }
-        }
-
+        
         foreach ($listMonthAge['detailStudent'] as $monthAge) {
             foreach ($fees as $key => $fee) {
                 if ($isWeekend === false) {
@@ -1726,9 +1737,11 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $feeOneWeekOfMonth = $feeOfMonth / $monthAge['actualWeek'];
                             $feeRemainingWeekOfMonth = $feeOneWeekOfMonth * ($monthAge['actualWeek'] - $locationWeekOfTheMonth);
                             $totalFee = (($monthAge['actualWeek'] - ($locationWeekOfTheMonth - 1)) / $monthAge['actualWeek'] * $feeOneWeekOfMonth) + $feeRemainingWeekOfMonth;
-                        } else {
+                        } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
                             $feeOfMonth = $feeDetail->OldStudent / $listMonthAge['dataClassType']['totalMonthCaseTwo'];
                             $totalFee += $feeOfMonth;
+                        } else {
+                            $totalFee += 0;
                         }
                     }
                 } else {
@@ -1741,11 +1754,31 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                             $feeOneWeekOfMonth = $feeOfMonth / $monthAge['actualWeek'];
                             $feeRemainingWeekOfMonth = $feeOneWeekOfMonth * ($monthAge['actualWeek'] - $locationWeekOfTheMonth);
                             $totalFee = (($monthAge['actualWeek'] - ($locationWeekOfTheMonth - 0)) / $monthAge['actualWeek'] * $feeOneWeekOfMonth) + $feeRemainingWeekOfMonth;
-                        } else {
+                        } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
                             $feeOfMonth = $feeDetail->OldStudent / $listMonthAge['dataClassType']['totalMonthCaseTwo'];
                             $totalFee += $feeOfMonth;
+                        } else {
+                            $totalFee += 0;
                         }
                     }
+                }
+
+                if ($fee->Type == self::MEAL_FEE) {
+                    $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
+                        if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
+                            foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
+                                if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
+                                    //số ngày trong tháng trước lúc bé nhập học
+                                    $dateOfMonth[] = $dateOfSchoolYear;
+                                }
+                            }
+
+                            $totalMealFee = $moneyMeal->Money * ($monthAge['schoolDay'] - array_sum($dateOfMonth));
+                        } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
+                            $totalMealFee +=  $moneyMeal->Money * $monthAge['schoolDay'];
+                        } else {
+                            $totalMealFee += 0;
+                        }
                 }
             }
         }
@@ -1772,6 +1805,222 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                         'fee_name' => $fee->Name,
                         'money' => !isset($dataMealFee) ? $totalMealFee : 0,
                     ];
+
+                    $result[] = $dataMealFee;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function calculatorMoneyFeeAndMoneyMealBySemesterCaseTwo($listMonthAge, $fees, $paymentForm, $feePolicie, $allDateOfSchoolYear, $isWeekend, $locationWeekOfTheMonth, $dayAdmission, $student)
+    {
+        $totalFeeSemester1 = 0;
+        $totalFeeSemester2 = 0;
+        $totalMealSemester1 = 0;
+        $totalMealSemester2 = 0;
+
+        foreach ($listMonthAge['dataPaymentForm'] as $dataPaymentForm) {
+            if ($dataPaymentForm['paymentFormCode'] == self::SEMESTER1) {
+                $numberMonthInSemester1 = $dataPaymentForm['numberMonthInSemester'];
+            }
+
+            if ($dataPaymentForm['paymentFormCode'] == self::SEMESTER2) {
+                $numberMonthInSemester2 = $dataPaymentForm['numberMonthInSemester'];
+            }
+        }
+
+        foreach ($listMonthAge['detailStudent'] as $monthAge) {
+            foreach ($fees as $key => $fee) {
+                if ($isWeekend === false) {
+                    if ($fee->Type == self::TUITION_FEE) {
+                        if ($monthAge['paymentFormCode'] == self::SEMESTER1) {
+                            $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
+
+                            if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
+
+                                $feeOfMonth = $feeDetail->OldStudent / $numberMonthInSemester1;
+
+                                $feeOneWeekOfMonth = $feeOfMonth / $monthAge['actualWeek'];
+                                $feeRemainingWeekOfMonth = $feeOneWeekOfMonth * ($monthAge['actualWeek'] - $locationWeekOfTheMonth);
+                                $totalFeeSemester1 = (($monthAge['actualWeek'] - ($locationWeekOfTheMonth - 1)) / $monthAge['actualWeek'] * $feeOneWeekOfMonth) + $feeRemainingWeekOfMonth;
+                            } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
+                                $feeOfMonth = $feeDetail->OldStudent / $numberMonthInSemester1;
+                                $totalFeeSemester1 += $feeOfMonth;
+                            } else {
+                                $totalFeeSemester1 += 0;
+                            }
+                        }
+
+                        if ($monthAge['paymentFormCode'] == self::SEMESTER2) {
+                            $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
+
+                            if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
+
+                                $feeOfMonth = $feeDetail->OldStudent / $numberMonthInSemester2;
+
+                                $feeOneWeekOfMonth = $feeOfMonth / $monthAge['actualWeek'];
+                                $feeRemainingWeekOfMonth = $feeOneWeekOfMonth * ($monthAge['actualWeek'] - $locationWeekOfTheMonth);
+                                $totalFeeSemester2 = (($monthAge['actualWeek'] - ($locationWeekOfTheMonth - 1)) / $monthAge['actualWeek'] * $feeOneWeekOfMonth) + $feeRemainingWeekOfMonth;
+                            } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
+                                $feeOfMonth = $feeDetail->OldStudent / $numberMonthInSemester2;
+                                $totalFeeSemester2 += $feeOfMonth;
+                            } else {
+                                $totalFeeSemester2 += 0;
+                            }
+                        }
+                    }
+                } else {
+                    if ($fee->Type == self::TUITION_FEE) {
+                        if ($monthAge['paymentFormCode'] == self::SEMESTER1) {
+                            $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
+
+                            if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
+
+                                $feeOfMonth = $feeDetail->OldStudent / $numberMonthInSemester1;
+
+                                $feeOneWeekOfMonth = $feeOfMonth / $monthAge['actualWeek'];
+                                $feeRemainingWeekOfMonth = $feeOneWeekOfMonth * ($monthAge['actualWeek'] - $locationWeekOfTheMonth);
+                                $totalFeeSemester1 = (($monthAge['actualWeek'] - ($locationWeekOfTheMonth - 0)) / $monthAge['actualWeek'] * $feeOneWeekOfMonth) + $feeRemainingWeekOfMonth;
+                            } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
+                                $feeOfMonth = $feeDetail->OldStudent / $numberMonthInSemester1;
+                                $totalFeeSemester1 += $feeOfMonth;
+                            } else {
+                                $totalFeeSemester1 += 0;
+                            }
+                        }
+
+                        if ($monthAge['paymentFormCode'] == self::SEMESTER2) {
+                            $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
+
+                            if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
+
+                                $feeOfMonth = $feeDetail->OldStudent / $numberMonthInSemester2;
+
+                                $feeOneWeekOfMonth = $feeOfMonth / $monthAge['actualWeek'];
+                                $feeRemainingWeekOfMonth = $feeOneWeekOfMonth * ($monthAge['actualWeek'] - $locationWeekOfTheMonth);
+                                $totalFeeSemester2 = (($monthAge['actualWeek'] - ($locationWeekOfTheMonth - 0)) / $monthAge['actualWeek'] * $feeOneWeekOfMonth) + $feeRemainingWeekOfMonth;
+                            } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
+                                $feeOfMonth = $feeDetail->OldStudent / $numberMonthInSemester2;
+                                $totalFeeSemester2 += $feeOfMonth;
+                            } else {
+                                $totalFeeSemester2 += 0;
+                            }
+                        }
+                    }
+                }
+
+                if ($fee->Type == self::MEAL_FEE) {
+                    
+                    if ($monthAge['paymentFormCode'] == self::SEMESTER1) {
+                        $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
+                        if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
+                            foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
+                                if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
+                                    //số ngày trong tháng trước lúc bé nhập học
+                                    $dateOfMonth[] = $dateOfSchoolYear;
+                                }
+                            }
+
+                            $totalMealSemester1 = $moneyMeal->Money * ($monthAge['schoolDay'] - array_sum($dateOfMonth));
+                        } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
+                            $totalMealSemester1 +=  $moneyMeal->Money * $monthAge['schoolDay'];
+                        } else {
+                            $totalMealSemester1 += 0;
+                        }
+                    }
+
+                    if ($monthAge['paymentFormCode'] == self::SEMESTER2) {
+                        $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
+                        if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
+                            foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
+                                if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
+                                    //số ngày trong tháng trước lúc bé nhập học
+                                    $dateOfMonth2[] = $dateOfSchoolYear;
+                                }
+                            }
+                            $totalMealSemester2 = $moneyMeal->Money * ($monthAge['schoolDay'] - array_sum($dateOfMonth2));
+                        } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
+                            $totalMealSemester2 +=  $moneyMeal->Money * $monthAge['schoolDay'];
+                        } else {
+                            $totalMealSemester2 += 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach ($listMonthAge['detailStudent'] as $monthAge) {
+            foreach ($fees as  $fee) {
+                if ($fee->Type == self::TUITION_FEE) {
+                    if ($monthAge['paymentFormCode'] == self::SEMESTER1) {
+                        $dataTuitionFee = [
+                            'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                            'fee_id' => $fee->Id,
+                            'fee_id_crm' => $fee->FeeCrmId,
+                            'fee_name' => $fee->Name,
+                            'money' => !isset($dataTuitionFee) ? $totalFeeSemester1 : 0,
+                        ];
+                    }
+
+                    if ($monthAge['paymentFormCode'] == self::SEMESTER2) {
+                        if (isset($isFirstMonthSemester2TuitionFee)) {
+                            $dataTuitionFee = [
+                                'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                                'fee_id' => $fee->Id,
+                                'fee_id_crm' => $fee->FeeCrmId,
+                                'fee_name' => $fee->Name,
+                                'money' =>  0,
+                            ];
+                        } else {
+                            $isFirstMonthSemester2TuitionFee = true;
+                            $dataTuitionFee = [
+                                'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                                'fee_id' => $fee->Id,
+                                'fee_id_crm' => $fee->FeeCrmId,
+                                'fee_name' => $fee->Name,
+                                'money' => $totalFeeSemester2,
+
+                            ];
+                        }
+                    }
+
+                    $result[] = $dataTuitionFee;
+                }
+
+                if ($fee->Type == self::MEAL_FEE) {
+                    if ($monthAge['paymentFormCode'] == self::SEMESTER1) {
+                        $dataMealFee = [
+                            'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                            'fee_id' => $fee->Id,
+                            'fee_id_crm' => $fee->FeeCrmId,
+                            'fee_name' => $fee->Name,
+                            'money' => !isset($dataMealFee) ? $totalMealSemester1 : 0,
+                        ];
+                    }
+
+                    if ($monthAge['paymentFormCode'] == self::SEMESTER2) {
+                        if (isset($isFirstMonthSemester2MealFee)) {
+                            $dataMealFee = [
+                                'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                                'fee_id' => $fee->Id,
+                                'fee_id_crm' => $fee->FeeCrmId,
+                                'fee_name' => $fee->Name,
+                                'money' => 0,
+                            ];
+                        } else {
+                            $isFirstMonthSemester2MealFee = true;
+                            $dataMealFee = [
+                                'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
+                                'fee_id' => $fee->Id,
+                                'fee_id_crm' => $fee->FeeCrmId,
+                                'fee_name' => $fee->Name,
+                                'money' => $totalMealSemester2,
+
+                            ];
+                        }
+                    }
 
                     $result[] = $dataMealFee;
                 }

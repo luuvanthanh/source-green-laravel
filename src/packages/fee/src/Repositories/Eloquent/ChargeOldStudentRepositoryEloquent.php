@@ -303,6 +303,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                         }
                     }
                 }
+
                 $data['dataClassType'][$classType->Id]['dateOfMonth'] += array_sum($dateOfMonth);
                 $numberMonthVariableTwo = $data['dataClassType'][$classType->Id]['numberMonth'] + $value->FullMonth;
                 $numberMonthVariableTwoCaseTwo = $data['dataClassType'][$classType->Id]['numberMonthCaseTwo'] + 1;
@@ -354,6 +355,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 'schoolDay' => $value->SchoolDay,
                 'fullMonth' => $value->FullMonth,
                 'paymentFormCode' => $value->paymentForm->Code,
+                'idPaymentForm' =>$value->paymentForm->Id,
                 'actualWeek' => $value->ActualWeek
             ];
             $data[$classType->Id][] = $value->Id;
@@ -361,7 +363,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
         $data['dataClassType']['totalMonth'] = $numberMonthVariableOne + $numberMonthVariableTwo;
         $data['dataClassType']['totalMonthCaseTwo'] = $numberMonthVariableOneCaseTwo + $numberMonthVariableTwoCaseTwo;
         $data['countClassType'] = array_values(array_unique($data['countClassType']));
-
+        
         return $data;
     }
 }
