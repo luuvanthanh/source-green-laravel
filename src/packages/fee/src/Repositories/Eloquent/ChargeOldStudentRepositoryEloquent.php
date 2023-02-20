@@ -267,7 +267,9 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
             $ageMonth = (($valueDate->format('Y') - $now->format('Y')) * 12) + ($valueDate->format('m') - $now->format('m'));
 
             $classType = ClassType::where('From', '<=', $ageMonth)->where('To', '>=', $ageMonth)->first();
-
+            if (is_null($classType)) {
+                continue;
+            }
             $data['countClassType'][] = !empty($classType) ? $classType->Id : 0;
             $dateOfMonth = [];
             if (!array_key_exists($classType->Id, $data['dataClassType'])) {
@@ -355,7 +357,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 'schoolDay' => $value->SchoolDay,
                 'fullMonth' => $value->FullMonth,
                 'paymentFormCode' => $value->paymentForm->Code,
-                'idPaymentForm' =>$value->paymentForm->Id,
+                'idPaymentForm' => $value->paymentForm->Id,
                 'actualWeek' => $value->ActualWeek
             ];
             $data[$classType->Id][] = $value->Id;
@@ -363,7 +365,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
         $data['dataClassType']['totalMonth'] = $numberMonthVariableOne + $numberMonthVariableTwo;
         $data['dataClassType']['totalMonthCaseTwo'] = $numberMonthVariableOneCaseTwo + $numberMonthVariableTwoCaseTwo;
         $data['countClassType'] = array_values(array_unique($data['countClassType']));
-        
+
         return $data;
     }
 }
