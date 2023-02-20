@@ -72,6 +72,20 @@ class FormDetail extends Component {
         </div>
       );
     }
+    if (type === 'selectTagsV2' && name) {
+      return (
+        <div className="mb20">
+          <div className={styles['wrapper-title']}>
+            <label className={styles.text}>{label}</label>
+          </div>
+          <div size="normal" className={styles['general-detail']}>
+            {name?.map((i) => (
+              <Tag className={i?.id === '8c4265dd-21c7-412b-b003-9a2a493d897a' || i?.branchId === '8c4265dd-21c7-412b-b003-9a2a493d897a' ? styles.tag__green : styles.tag__blue}>{i?.name}</Tag>
+            ))}
+          </div>
+        </div>
+      );
+    }
     if (type === 'textBG' && name) {
       return (
         <div className="mb20">
@@ -116,13 +130,13 @@ FormDetail.propTypes = {
   name: PropTypes.any,
   type: PropTypes.any,
   data: PropTypes.any,
-  label: PropTypes.string,
+  label: PropTypes.string
 };
 FormDetail.defaultProps = {
   name: '',
   label: '',
   data: [],
-  type: '',
+  type: ''
 };
 
 export default FormDetail;
