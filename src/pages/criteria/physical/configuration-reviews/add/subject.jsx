@@ -45,7 +45,7 @@ const Index = memo(({ dataSubject, onChangeUseItem, header, loadingSubject }) =>
             }
             {
               i?.isChecked && i?.content?.type === 'INFORMATION' && (
-                <Text color='dark' size='normal' className="mb15">Nhập thông tin</Text>
+                <Text color='dark' size='normal' className="mb15 ml20">Nhập thông tin</Text>
               )
             }
           </Pane>
