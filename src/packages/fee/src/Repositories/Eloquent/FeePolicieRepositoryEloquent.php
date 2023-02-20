@@ -1192,8 +1192,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
     //tính phí học sinh
     public function moneyFeePoliciesV2($attributes)
     {
+        $results = [];
+        $data = [];
+        
         $details = json_decode($attributes['details'], true);
-
         //ngày nhập học
         $dayAdmission = $attributes['dayAdmission'];
 
@@ -1724,7 +1726,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
     {
         $totalFee = 0;
         $totalMealFee = 0;
-        
+
         foreach ($listMonthAge['detailStudent'] as $monthAge) {
             foreach ($fees as $key => $fee) {
                 if ($isWeekend === false) {
@@ -1765,20 +1767,20 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
                 if ($fee->Type == self::MEAL_FEE) {
                     $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
-                        if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
-                            foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
-                                if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
-                                    //số ngày trong tháng trước lúc bé nhập học
-                                    $dateOfMonth[] = $dateOfSchoolYear;
-                                }
+                    if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
+                        foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
+                            if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
+                                //số ngày trong tháng trước lúc bé nhập học
+                                $dateOfMonth[] = $dateOfSchoolYear;
                             }
-
-                            $totalMealFee = $moneyMeal->Money * ($monthAge['schoolDay'] - array_sum($dateOfMonth));
-                        } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
-                            $totalMealFee +=  $moneyMeal->Money * $monthAge['schoolDay'];
-                        } else {
-                            $totalMealFee += 0;
                         }
+
+                        $totalMealFee = $moneyMeal->Money * ($monthAge['schoolDay'] - array_sum($dateOfMonth));
+                    } elseif (Carbon::parse($dayAdmission)->format('Y-m') < Carbon::parse($monthAge['month'])->format('Y-m')) {
+                        $totalMealFee +=  $moneyMeal->Money * $monthAge['schoolDay'];
+                    } else {
+                        $totalMealFee += 0;
+                    }
                 }
             }
         }
@@ -1912,7 +1914,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 }
 
                 if ($fee->Type == self::MEAL_FEE) {
-                    
+
                     if ($monthAge['paymentFormCode'] == self::SEMESTER1) {
                         $moneyMeal = MoneyMeal::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $monthAge['idPaymentForm'])->where('ClassTypeId', $monthAge['classTypeId'])->first();
                         if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
