@@ -560,7 +560,7 @@ class ReportService
                 'tourist_destination' => $dataBytouristDestination
             ];
         }
-        
+
         $numberOfGuestMaxColumn = array_column($numberOfGuestMax, 'number_of_guest');
         array_multisort($numberOfGuestMaxColumn, SORT_DESC, $numberOfGuestMax);
         $numberOfGuestMax = array_slice($numberOfGuestMax, 0, 5);
@@ -781,26 +781,32 @@ class ReportService
         $total = 0;
         $totalRunning = 0;
         $totalFail = 0;
+        $totalPending = 0;
         $data = [];
 
         foreach ($touristDestinations as $key => $value) {
             $cameraRunning = Camera::where('tourist_destination_id', $value->id)
                 ->whereIn('status', [Camera::STATUS['STATUS_RUNNING']])->get();
             $cameraFailed = Camera::where('tourist_destination_id', $value->id)
-                ->whereIn('status', [Camera::STATUS['STATUS_FAILED']])->get();
-
+                ->whereIn('status', [Camera::STATUS['STATUS_FAILED']])
+                ->get();
+            $cameraPending = Camera::where('tourist_destination_id', $value->id)
+                ->whereIn('status', [Camera::STATUS['STATUS_PENDING']])->get();
+            $failedCamera = $cameraFailed->merge($cameraPending);
             $countCameraRunning = count($cameraRunning);
             $countCameraFailed = count($cameraFailed);
+            $countCameraPending = count($cameraPending);
 
             $totalRunning += $countCameraRunning;
-            $totalFail += $countCameraFailed;
-            $total += $countCameraRunning + $countCameraFailed;
+            $totalFail += $countCameraFailed + $countCameraPending;
+            $totalPending += $countCameraPending;
+            $total += $countCameraRunning + $countCameraFailed + $countCameraPending;
             $data[] = [
                 'name' => $value->name,
                 'number_running' => $countCameraRunning,
-                'number_failed' => $countCameraFailed,
+                'number_failed' => $countCameraFailed + $countCameraPending,
                 'list_cam_run' => $cameraRunning,
-                'list_cam_faild' => $cameraFailed
+                'list_cam_faild' => $failedCamera
             ];
         }
 
