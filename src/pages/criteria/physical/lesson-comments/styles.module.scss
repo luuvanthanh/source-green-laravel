@@ -37,6 +37,13 @@
 }
 
 .wraper-container-quarterReport {
+  .wrapper-table-details {
+    :global(.ant-table-thead > tr > th) {
+      background-color: #3b5cad !important;
+      font-weight: 700;
+      color: white !important;
+    }
+  }
   .wrapper-checkbox {
     display: flex;
     align-items: center;
@@ -64,7 +71,7 @@
     .check {
       width: 32px;
       height: 32px;
-      margin-left: 5px;
+      margin-left: 15px;
       color: #27a600;
       border-radius: 50%;
       border: 1px solid #c4cdd4;
@@ -72,7 +79,7 @@
     .edit {
       width: 32px;
       height: 32px;
-      margin-right: 5px;
+      margin-left: 15px;
       color: #27a600;
       border-radius: 50%;
       border: 1px solid #c4cdd4;
@@ -97,9 +104,6 @@
     display: flex;
     align-items: center;
     width: 100%;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eaeaea;
     .general-fullName {
       font-family: $proxima-nova__font-family;
       font-style: normal;

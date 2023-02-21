@@ -778,6 +778,7 @@ export async function getLeftMenuCriteria() {
           url: [
             '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc',
             '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/detail',
+            '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/add',
             '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/edit',
           ],
           permission: [permissions.THECHAT],

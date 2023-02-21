@@ -643,6 +643,7 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
+                  loading={effects['configurationReviewsAdd/ADD'] || effects['configurationReviewsAdd/UPDATE']}
                 >
                   Lưu
                 </Button>
