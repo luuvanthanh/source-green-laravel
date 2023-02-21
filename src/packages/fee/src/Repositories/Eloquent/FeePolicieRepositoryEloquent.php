@@ -1194,7 +1194,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
     {
         $results = [];
         $data = [];
-        
+
         $details = json_decode($attributes['details'], true);
         //ngày nhập học
         $dayAdmission = $attributes['dayAdmission'];
@@ -1405,10 +1405,12 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
     public function calculatorMoneyFeeAndMoneyMealByMonthCaseOne($listMonthAge, $fees, $paymentForm, $feePolicie)
     {
         foreach ($listMonthAge['detailStudent'] as $monthAge) {
-
             foreach ($fees as $key => $fee) {
                 if ($fee->Type == self::TUITION_FEE) {
-                    $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])->first();
+                    $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])
+                        ->whereMonth('ApplyStartTime', '<=', Carbon::parse($monthAge['month']))
+                        ->whereMonth('ApplyEndTime', '>=', Carbon::parse($monthAge['month']))->first();
+
                     $result[] = [
                         'month' => Carbon::parse($monthAge['month'])->format('Y-m'),
                         'fee_id' => $fee->Id,
@@ -1623,7 +1625,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             foreach ($fees as $key => $fee) {
                 if ($isWeekend === false) {
                     if ($fee->Type == self::TUITION_FEE) {
-                        $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])->first();
+                        $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])
+                            ->whereMonth('ApplyStartTime', '<=', Carbon::parse($monthAge['month']))
+                            ->whereMonth('ApplyEndTime', '>=', Carbon::parse($monthAge['month']))->first();
                         if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
                             $feeOneWeekOfMonth = $feeDetail->OldStudent / $monthAge['actualWeek'];
                             $feeRemainingWeekOfMonth = $feeOneWeekOfMonth * ($monthAge['actualWeek'] - $locationWeekOfTheMonth);
@@ -1654,7 +1658,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                     }
                 } else {
                     if ($fee->Type == self::TUITION_FEE) {
-                        $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])->first();
+                        $feeDetail = FeeDetail::where('FeePoliceId', $feePolicie->Id)->where('PaymentFormId', $paymentForm->Id)->where('ClassTypeId', $monthAge['classTypeId'])
+                            ->whereMonth('ApplyStartTime', '<=', Carbon::parse($monthAge['month']))
+                            ->whereMonth('ApplyEndTime', '>=', Carbon::parse($monthAge['month']))->first();
                         if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($monthAge['month'])->format('Y-m')) {
                             $feeOneWeekOfMonth = $feeDetail->OldStudent / $monthAge['actualWeek'];
                             $feeRemainingWeekOfMonth = $feeOneWeekOfMonth * ($monthAge['actualWeek'] - $locationWeekOfTheMonth);
