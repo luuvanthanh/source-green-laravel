@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?z70epb');
-  src:  url('fonts/icomoon.eot?z70epb#iefix') format('embedded-opentype'),
+  src: url('fonts/icomoon.eot?z70epb');
+  src: url('fonts/icomoon.eot?z70epb#iefix') format('embedded-opentype'),
     url('fonts/icomoon.ttf?z70epb') format('truetype'),
     url('fonts/icomoon.woff?z70epb') format('woff'),
     url('fonts/icomoon.svg?z70epb#icomoon') format('svg');
@@ -10,7 +10,8 @@
   font-display: block;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^="icon-"],
+[class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'icomoon' !important;
   speak: never;
@@ -25,14 +26,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-mail-add:before {
-  content: "\e9c9";
+.icon-accept:before {
+  content: "\e9ec";
 }
-.icon-phone-off:before {
-  content: "\e9dc";
-}
-.icon-phone1:before {
-  content: "\e9dd";
+.icon-excel:before {
+  content: "\e9ea";
 }
 .icon-add-file-plus:before {
   content: "\e9e9";
@@ -984,4 +982,13 @@
 }
 .icon-telephone:before {
   content: "\e9cf";
+}
+.icon-mail-add:before {
+  content: "\e9c9";
+}
+.icon-phone-off:before {
+  content: "\e9dc";
+}
+.icon-phone1:before {
+  content: "\e9dd";
 }

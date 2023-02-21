@@ -331,6 +331,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THECHAT],
           },
+          {
+            path: '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/add',
+            component: './criteria/physical/lesson-comments/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/detail',
+            component: './criteria/physical/lesson-comments/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
         ],
       },
       // CRITERIA

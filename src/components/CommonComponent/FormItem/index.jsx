@@ -231,6 +231,8 @@ const renderChildren = (
       autoSize={{ minRows: 3, maxRows: 5 }}
       placeholder={placeholder || 'Nhập'}
       showCount={showCount}
+      onChange={onChange}
+      value={value}
     />
   ),
   rangePicker: (
