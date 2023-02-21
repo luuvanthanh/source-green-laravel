@@ -52,7 +52,8 @@ const renderChildren = (
   showCount,
   loading,
   bordered,
-  language
+  language,
+  tagRender
 ) => ({
   input: (
     <Input
@@ -196,6 +197,7 @@ const renderChildren = (
       placeholder={placeholder || 'Chọn'}
       showSearch
       disabledOptions={disabledOptions}
+      tagRender={tagRender}
       showArrow
     />
   ),
@@ -477,6 +479,7 @@ export default function FormItem({
   loading,
   bordered,
   language,
+  tagRender,
   ...rest
 }) {
   return (
@@ -511,6 +514,7 @@ export default function FormItem({
           loading,
           bordered,
           language,
+          tagRender
         )[type]
       }
     </Form.Item>
@@ -550,6 +554,7 @@ FormItem.propTypes = {
   loading: PropTypes.string,
   bordered: PropTypes.any,
   language: PropTypes.any,
+  tagRender: PropTypes.func
 };
 
 FormItem.defaultProps = {
@@ -559,16 +564,16 @@ FormItem.defaultProps = {
   rules: [],
   placeholder: '',
   data: [],
-  handleScroll: () => { },
-  onChange: () => { },
-  onSearch: () => { },
-  onBlur: () => { },
+  handleScroll: () => {},
+  onChange: () => {},
+  onSearch: () => {},
+  onBlur: () => {},
   disabled: null,
   disabledDate: () => false,
   fieldNames: { label: 'name', value: 'id', children: 'children' },
   maxTagCount: 20,
   dropdownRender: null,
-  onSelect: () => { },
+  onSelect: () => {},
   allowClear: true,
   picker: 'date',
   disabledHours: null,
@@ -584,7 +589,8 @@ FormItem.defaultProps = {
   showCount: true,
   loading: "",
   bordered: true,
-  language: ""
+  language: "",
+  tagRender: null
 };
 
 FormItem.displayName = 'Form';

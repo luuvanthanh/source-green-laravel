@@ -1,11 +1,10 @@
 import * as categories from '@/services/categories';
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
   namespace: 'configurationReviewsAdd',
   state: {
-    details: {},
+    deatailDataType: {},
     skill: [],
     years: [],
     branches: [],
@@ -16,10 +15,6 @@ export default {
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, data: [] }),
-    SET_DATA: (state, { payload }) => ({
-      ...state,
-      details: payload.parsePayload,
-    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -32,6 +27,10 @@ export default {
     SET_DATA_TYPE: (state, { payload }) => ({
       ...state,
       dataType: payload.parsePayload,
+    }),
+    SET_DETAIL_DATA_TYPE: (state, { payload }) => ({
+      ...state,
+      deatailDataType: payload.parsePayload
     }),
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
@@ -52,10 +51,6 @@ export default {
       try {
         const response = yield saga.call(services.getData, payload);
         callback(response);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: response,
-        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -67,10 +62,6 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
-        notification.success({
-          message: 'Successful',
-          description: 'You updated to success data.',
-        });
       } catch (error) {
         callback(null, error?.data);
       }
@@ -89,14 +80,27 @@ export default {
         });
       }
     },
+    *GET_DETAIL_DATA_TYPE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDetailDataType, payload);
+        if (response) {
+          callback(response);
+          yield saga.put({
+            type: 'SET_DETAIL_DATA_TYPE',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
-        notification.success({
-          message: 'Successful',
-          description: 'You updated to success data.',
-        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -105,17 +109,14 @@ export default {
       try {
         yield saga.call(services.remove, payload.id);
         callback(payload);
-        notification.success({
-          message: 'Successful',
-          description: 'You deleted to success data.',
-        });
       } catch (error) {
         callback(null, error);
       }
     },
-    *GET_BRANCHES({ payload }, saga) {
+    *GET_BRANCHES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_BRANCHES',
           payload: response,

@@ -82,7 +82,11 @@ const Index = memo(() => {
           });
         }
 
-        if (head(details?.templates)?.isEnable) {
+        if (details?.type === 'LESSION_FEEDBACK') {
+          setType(details?.type);
+        }
+
+        if (head(details?.templates)?.type === 'FEEDBACK' && head(details?.templates)?.isEnable) {
           setDataComment(head(details?.templates)?.physicalCriteraiTemplates?.map(i => ({
             ...i,
             isComment: true,
@@ -97,7 +101,7 @@ const Index = memo(() => {
           })));
         }
 
-        if (last(details?.templates)?.isEnable) {
+        if (last(details?.templates)?.type === 'CRITERIA' && last(details?.templates)?.isEnable) {
           setDataSubject(last(details?.templates)?.physicalCriteraiTemplates?.map(i => ({
             ...i,
             isSubject: true,
@@ -187,7 +191,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? 'Chi tiết' : 'Tạo mới'} menu={menuLeftCriteria} />
       <Helmet title="Cấu hình đánh giá" />
       <Pane className="pl20 pr20 pb20">
         <Pane >
@@ -221,14 +225,14 @@ const Index = memo(() => {
                     <FormDetail
                       name={[...new Map(details?.classes?.map(i => i?.class?.branch)?.map(item => [item.id, item])).values()]}
                       label="Cở sở áp dụng"
-                      type="selectTags"
+                      type="selectTagsV2"
                     />
                   </Pane>
                   <Pane className="col-lg-12">
                     <FormDetail
                       name={details?.classes?.map(i => i?.class)}
                       label="Lớp áp dụng"
-                      type="selectTags"
+                      type="selectTagsV2"
                     />
                   </Pane>
                 </Pane>
