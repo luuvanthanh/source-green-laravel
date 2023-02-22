@@ -80,6 +80,7 @@ async function covertData(response) {
         unread: get(dataRoot, 'meta.UNREAD'),
         payload: data,
         detailData: get(dataRoot, 'detailData'),
+        dataTotal: get(dataRoot, 'meta.countStudentByStatus'),
       };
     }
     return dataRoot;

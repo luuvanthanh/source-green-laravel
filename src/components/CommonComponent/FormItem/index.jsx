@@ -51,6 +51,8 @@ const renderChildren = (
   disabledOptions,
   showCount,
   loading,
+  bordered,
+  language
 ) => ({
   input: (
     <Input
@@ -94,8 +96,9 @@ const renderChildren = (
       )}
       disabled={disabled}
       onChange={onChange}
-      placeholder="Nhập"
       value={value}
+      min={0}
+      placeholder={language === variables.LANGUAGE.ENGLISH ? "Select month" : "Nhập"}
     />
   ),
   inputCountForm: (
@@ -154,6 +157,7 @@ const renderChildren = (
       showSearch
       options={options}
       disabled={disabled}
+      bordered={bordered}
       value={value}
       loading={loading}
       disabledOptions={disabledOptions}
@@ -293,9 +297,9 @@ const renderChildren = (
     <DatePicker
       disabled={disabled}
       disabledDate={disabledDate}
-      format="[Tháng] MM/YYYY"
+      format={language === variables.LANGUAGE.ENGLISH ? "MM/YYYY" : "[Tháng] MM/YYYY"}
       onChange={onChange}
-      placeholder="Chọn"
+      placeholder={language === variables.LANGUAGE.ENGLISH ? "Select month" : "Chọn"}
       picker="month"
       allowClear={allowClear}
       value={value}
@@ -471,6 +475,8 @@ export default function FormItem({
   disabledOptions,
   showCount,
   loading,
+  bordered,
+  language,
   ...rest
 }) {
   return (
@@ -503,6 +509,8 @@ export default function FormItem({
           disabledOptions,
           showCount,
           loading,
+          bordered,
+          language,
         )[type]
       }
     </Form.Item>
@@ -540,6 +548,8 @@ FormItem.propTypes = {
   disabledOptions: PropTypes.arrayOf(PropTypes.any),
   showCount: PropTypes.bool,
   loading: PropTypes.string,
+  bordered: PropTypes.any,
+  language: PropTypes.any,
 };
 
 FormItem.defaultProps = {
@@ -573,6 +583,8 @@ FormItem.defaultProps = {
   disabledOptions: [],
   showCount: true,
   loading: "",
+  bordered: true,
+  language: ""
 };
 
 FormItem.displayName = 'Form';

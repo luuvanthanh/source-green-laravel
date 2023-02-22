@@ -41,6 +41,7 @@ export const variables = {
   DATE_REGISTERS_DAY: 'registersDay',
   NUMBER_INPUT: 'numberInput',
   RANGE_PICKER_MONTH: 'rangePickerMonth',
+  GET: 'get',
   // RULES
   RULES: {
     EMPTY: { required: true, message: 'Vui lòng không được để trống trường này' },
@@ -75,6 +76,7 @@ export const variables = {
     MAX_LENGTH_255: { max: 255, message: 'Trường này không quá 255 kí tự' },
     MAX_NUMBER: { max: 15, message: 'Trường này không quá 15 kí tự' },
     NUMBER: { pattern: /^\d+$/, message: 'Trường này là chỉ là số' },
+    NUMBER_ENGLISH: { pattern: /^\d+$/, message: 'This field is just integer' },
     EMAIL: { type: 'email', message: 'Trường này là email' },
     PHONE: {
       pattern: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/,
@@ -83,6 +85,7 @@ export const variables = {
     YEAR_FROM: 'Từ Năm không được lớn hơn Đến Năm',
     YEAR_TO: 'Đến Năm không được nhỏ hơn Từ Năm',
     INVALID_DATE: 'Ngày không hợp lệ',
+    ERR_STUDY_PLANE: 'Data has changed, do you want to delete the data?',
   },
   // PAGINATION
   PAGINATION: {
@@ -93,6 +96,7 @@ export const variables = {
     PAGE_SIZE_OPTIONS: ['10', '20', '50', '100'],
     SHOW_SIZE_CHANGER: true,
     PER_PAGE_TEXT: '/ trang',
+    PER_PAGE_TEXT_ENGLISH: '/ Page',
   },
   // DATE FORMAT
   DATE_FORMAT: {
@@ -115,6 +119,7 @@ export const variables = {
     DATE_MONTH: 'DD/MM',
     SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
     MONTH_FULL: '[Tháng] MM/YYYY',
+    MONTH_FULL_ENGLISH: 'MM/YYYY',
     MONTH_NAME: '[Tháng] MM',
     MONTH_YEAR: 'MM/YYYY',
     YEAR_MONTH_DAY: 'YYYY/MM/DD',
@@ -122,6 +127,7 @@ export const variables = {
     ONLY_MINUTES: 'mm',
     WEEK: 'W',
     YEAR_MONTH: 'YYYY-MM',
+    DATE_TIME_UTC_ONE: 'YYYY-MM-DD[T]HH:mm:ss[Z]',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
@@ -356,6 +362,10 @@ export const variables = {
     HELTHCARE: 'healthcare',
     CUSTOMERLEAD: 'customerlead',
     CEO: 'ceo',
+  },
+  LANGUAGE: {
+    VIETNAM: 'VIETNAM',
+    ENGLISH: 'ENGLISH',
   },
 };
 

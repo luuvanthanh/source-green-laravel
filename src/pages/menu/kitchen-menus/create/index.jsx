@@ -100,7 +100,7 @@ const Index = memo(() => {
             ...(menuItem.isAdd
               ? omit(menuItem, 'id', 'isAdd')
               : { ...omit(menuItem, 'originId'), id: menuItem?.foodId ? menuItem.originId : undefined }),
-          })) || undefined,
+          }))?.filter(i => i?.foodId) || undefined,
         name: item.menuMealDetails ? item.name : undefined,
         id: item?.isAdd ? undefined : item.id || item.originId,
       })),
@@ -215,7 +215,6 @@ const Index = memo(() => {
   //     },
   //   });
   // };
-
   const convertMenuMeal = (items) => {
     const o = {};
     return items?.reduce((r, el) => {
@@ -472,6 +471,28 @@ const Index = memo(() => {
   };
 
   const onChangeFood = (foodId, itemWeek, itemMenuMeals, timeline, itemMenuMealDetail, itemDay) => {
+    const dataDay = [
+      {
+        dayOfWeek: 'Monday',
+        foodId: null,
+      },
+      {
+        dayOfWeek: 'Tuesday',
+        foodId: null,
+      },
+      {
+        dayOfWeek: 'Wednesday',
+        foodId: null,
+      },
+      {
+        dayOfWeek: 'Thursday',
+        foodId: null,
+      },
+      {
+        dayOfWeek: 'Friday',
+        foodId: null,
+      },
+    ];
     setWeeksKitchen((prevState) =>
       prevState.map((item) => {
         if (item.weekIndex === itemWeek.weekIndex) {
@@ -489,10 +510,10 @@ const Index = memo(() => {
                           if (itemMenuDetail.id === itemMenuMealDetail.id) {
                             return {
                               ...itemMenuDetail,
-                              week: itemMenuDetail.week.map((itemWeekDetail) =>
+                              week: dataDay.map((itemWeekDetail) =>
                                 itemWeekDetail.dayOfWeek === itemDay.id
                                   ? { ...itemWeekDetail, foodId }
-                                  : itemWeekDetail,
+                                  : { ...itemWeekDetail, ...itemMenuDetail.week.find(i => i?.dayOfWeek === itemWeekDetail.dayOfWeek) },
                               ),
                             };
                           }
@@ -651,7 +672,6 @@ const Index = memo(() => {
   //   });
   //   return size(listEnable);
   // };
-
   const onCollapsed = (record) => {
     setWeeksKitchen((prevState) =>
       prevState.map((item) =>
