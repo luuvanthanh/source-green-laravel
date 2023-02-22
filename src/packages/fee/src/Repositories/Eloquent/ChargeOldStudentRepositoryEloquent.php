@@ -261,6 +261,8 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
     {
         $data['dataClassType'] = [];
         $data['dataPaymentForm'] = [];
+        $totalMonthCaseTwo = 0;
+        $numberMonthVariableTwo = 0;
         foreach ($schoolYear->changeParameter->changeParameterDetail as $key => $value) {
             $now = Carbon::parse($student->DayOfBirth);
             $valueDate = Carbon::parse($value->Date);
@@ -292,7 +294,6 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 ];
 
                 $numberMonthVariableOne = $data['dataClassType'][$classType->Id]['numberMonth'];
-                $numberMonthVariableOneCaseTwo = $data['dataClassType'][$classType->Id]['numberMonthCaseTwo'];
             } else {
                 $data['dataClassType'][$classType->Id]['numberMonth'] += $value->FullMonth;
                 $data['dataClassType'][$classType->Id]['numberMonthCaseTwo'] += 1;
@@ -307,8 +308,7 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 }
 
                 $data['dataClassType'][$classType->Id]['dateOfMonth'] += array_sum($dateOfMonth);
-                $numberMonthVariableTwo = $data['dataClassType'][$classType->Id]['numberMonth'] + $value->FullMonth;
-                $numberMonthVariableTwoCaseTwo = $data['dataClassType'][$classType->Id]['numberMonthCaseTwo'] + 1;
+                $numberMonthVariableTwo +=  $value->FullMonth;
             }
 
             if ($value->paymentForm->Code == self::SEMESTER1 || $value->paymentForm->Code == self::SEMESTER2) {
@@ -361,9 +361,11 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
                 'actualWeek' => $value->ActualWeek
             ];
             $data[$classType->Id][] = $value->Id;
+            $totalMonthCaseTwo += 1;
         }
+
         $data['dataClassType']['totalMonth'] = $numberMonthVariableOne + $numberMonthVariableTwo;
-        $data['dataClassType']['totalMonthCaseTwo'] = $numberMonthVariableOneCaseTwo + $numberMonthVariableTwoCaseTwo;
+        $data['dataClassType']['totalMonthCaseTwo'] = $totalMonthCaseTwo;
         $data['countClassType'] = array_values(array_unique($data['countClassType']));
 
         return $data;
