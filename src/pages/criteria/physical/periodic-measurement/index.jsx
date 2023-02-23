@@ -296,7 +296,7 @@ const Index = () => {
         <Button
           icon="edit"
           className={stylesModule.edit}
-          onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record?.student?.id}/add?assessmentPeriodId=${search?.assessmentPeriodId}&classId=${record?.class?.id}&schoolYearId=${search?.schoolYearId}`); }}
+          onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record?.student?.id}/add?assessmentPeriodId=${search?.assessmentPeriodId}&classId=${record?.class?.id}&schoolYearId=${search?.schoolYearId}&type=add`); }}
         />
       );
     }

@@ -20,7 +20,7 @@ const Index = memo(({
       title: 'Tỉ lệ tham gia',
       key: 'name',
       className: 'min-width-200',
-      render: (record) => (<p style={{ color: !record?.isLevelOut ? "#B11010" : "#36383A" }}>{record?.rate} %</p>),
+      render: (record) => (<p style={{ color: record?.isLevelOut ? "#B11010" : "#36383A" }}>{record?.rate} %</p>),
     },
   ];
 
