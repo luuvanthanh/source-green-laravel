@@ -48,6 +48,13 @@ export default {
           id: uuidv4(),
           ...item,
         })),
+        templates: payload?.templates?.map(item=> ({
+          ...item,
+          templates: item?.type ==="FEEDBACK" ? item?.templates?.map(i=> ({
+            ...i,
+            content: `${((i?.template?.content?.items?.filter(k=> k?.isChecked)?.map(k => k?.item)).concat(`${i?.content}`))?.join('\n')}`
+          })) : item?.templates,
+        })),
         information: {
           student: payload?.student,
           branch: payload?.student?.branch,
@@ -104,7 +111,9 @@ export default {
                       items: item.content?.items?.map((itemDetail) => ({
                         ...itemDetail,
                         isChecked:
-                          itemDetail?.checkId === payload?.value ? true : itemDetail?.isChecked,
+                        payload?.record?.id === item?.id
+                        ? itemDetail?.checkId === payload?.value
+                        : itemDetail?.isChecked,
                       })),
                     },
                     checkEmpty: payload?.record?.id === item?.id ? true : item?.checkEmpty,

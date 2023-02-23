@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
+import { useLocation } from 'umi';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import ImgDetail from '@/components/CommonComponent/imageDetail';
 import { variables, Helper } from '@/utils';
@@ -14,7 +16,15 @@ const Index = memo(({
   dataDetails,
   type
 }) => {
+  const {
+    user,
+  } = useSelector(({ user }) => ({
+    user: user.user,
+  }));
+  const { query } = useLocation();
+
   const detailSchoolYear = `${dataDetails?.information?.schoolYear?.yearFrom} - ${dataDetails?.information?.schoolYear?.yearTo}`;
+  const detailSchoolYearAdd = `${user?.schoolYear?.yearFrom} - ${user?.schoolYear?.yearTo}`;
   const marginProps = { style: { paddingTop: 12, paddingBottom: 20 } };
   const detailTeacher = `${dataDetails?.approvedEmployee?.fullName ? dataDetails?.approvedEmployee?.fullName : ""}  ${dataDetails?.approvedDate ? Helper.getDate(dataDetails?.approvedDate, variables.DATE_FORMAT.DATE_TIME) : ""}`;
   const detailTeacherManagement = `${dataDetails?.approvedEmployee?.fullName ? dataDetails?.approvedEmployee?.fullName : ""}  ${dataDetails?.approvedDate ? Helper.getDate(dataDetails?.approvedDate, variables.DATE_FORMAT.DATE_TIME) : ""}`;
@@ -75,7 +85,7 @@ const Index = memo(({
       </div>
       <Pane className="row">
         <Pane className="col-lg-3">
-          <FormDetail name={detailSchoolYear} label="School year" type="text" />
+          <FormDetail name={query?.type === 'add' ? detailSchoolYearAdd: detailSchoolYear} label="School year" type="text" />
         </Pane>
         <Pane className="col-lg-3">
           <FormDetail name={dataDetails?.information?.branch?.name} label="Center" type="text" />

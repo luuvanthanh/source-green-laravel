@@ -43,7 +43,7 @@ const Index = memo(({
               },
               {
                 name: 'BMI',
-                index: response?.bmiConclusion?.bmi,
+                index: response?.bmiConclusion?.bmi.toFixed(1),
               },
             ]);
             dispatch({
