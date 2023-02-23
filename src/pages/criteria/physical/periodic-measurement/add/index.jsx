@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Form, notification } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useParams, history, useLocation } from 'umi';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, head } from 'lodash';
 
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
@@ -53,7 +53,7 @@ const Index = memo(() => {
   const onFinish = () => {
     setCheckFinish(true);
     const data = dataTemplates?.filter(i => i?.type === "CRITERIA");
-    const checkEmpty = data?.filter(i => !i?.checkEmpty);
+    const checkEmpty = head(data)?.physicalCriteraiTemplates?.filter(i => !i?.checkEmpty);
     if (checkEmpty?.length === 0) {
       dispatch({
         type: 'physicalPeriodicMeasurementAdd/ADD',
@@ -149,7 +149,7 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
-              loading={effects['physicalPeriodicMeasurementAdd/GET_DATA_SCRIPT_REVIEW']}
+              loading={effects['physicalPeriodicMeasurementAdd/GET_DATA_STUDENTS']}
               params={{
                 type: 'container',
               }}
@@ -221,7 +221,7 @@ const Index = memo(() => {
                   loading={loadingSubmit}
                 // permission="WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE"
                 >
-                  Save
+                  Lưu
                 </Button>
               </Pane>
             </Loading>
