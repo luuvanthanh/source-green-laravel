@@ -74,6 +74,20 @@ request.interceptors.response.use(
       };
     }
     const dataRoot = await response.clone().json();
+    if (
+      optionsRoot?.method === variables?.GET &&
+      response.status >= 400 &&
+      response.status <= 500
+    ) {
+      notification.error({
+        message: 'Thông báo',
+        description:
+          get(dataRoot, 'error.validationErrors[0].message') ||
+          get(dataRoot, 'error.message') ||
+          get(dataRoot, 'data') ||
+          'Lỗi hệ thống vui lòng kiểm tra lại',
+      });
+    }
     if (variables.method.includes(optionsRoot?.method?.toLowerCase())) {
       if (response.status >= 400 && response.status <= 500) {
         notification.error({
