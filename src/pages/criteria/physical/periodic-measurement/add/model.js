@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import * as services from './services';
 
@@ -6,13 +5,11 @@ export default {
   namespace: 'physicalPeriodicMeasurementAdd',
   state: {
     details: [],
-    dataScriptReview: [],
     dataEvaluetionCriteria: [],
     dataStudent: {},
     dataTemplates: [],
     dataDetailItem: [],
     dataDetails: {},
-    dataConfiguration: [],
     error: {
       isError: false,
       data: {},
@@ -23,14 +20,6 @@ export default {
     SET_DATA: (state, { payload }) => ({
       ...state,
       details: payload.parsePayload,
-    }),
-    SET_DATA_SCRIPT_REVIEW: (state, { payload }) => ({
-      ...state,
-      dataScriptReview: payload.parsePayload,
-    }),
-    SET_DATA_CONFIGURATION: (state, { payload }) => ({
-      ...state,
-      dataConfiguration: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -118,8 +107,8 @@ export default {
                           itemDetail?.checkId === payload?.value ? true : itemDetail?.isChecked,
                       })),
                     },
+                    checkEmpty: payload?.record?.id === item?.id ? true : item?.checkEmpty,
                   })),
-            checkEmpty: true,
           })),
         };
       }
@@ -136,8 +125,8 @@ export default {
                     isChecked: true,
                     contentInput:
                       item?.id === payload?.record?.id ? payload?.value : item?.contentInput,
+                    checkEmpty: payload?.record?.id === item?.id ? true : item?.checkEmpty,
                   })),
-            checkEmpty: true,
           })),
         };
       }
@@ -190,21 +179,6 @@ export default {
     },
   },
   effects: {
-    *GET_DATA({ payload, callback }, saga) {
-      try {
-        const response = yield saga.call(services.getData, payload);
-        callback(response);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
     *GET_DATA_STUDENTS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getDataStudent, payload);
@@ -228,51 +202,6 @@ export default {
         callback(null, error?.data);
       }
     },
-    *UPDATE_CONFIRMED({ payload, callback }, saga) {
-      try {
-        const response = yield saga.call(services.updateComfirm, payload);
-        callback(response);
-        notification.success({
-          message: 'Successful',
-          description: 'You update to success data.',
-        });
-      } catch (error) {
-        callback(null, error?.data);
-      }
-    },
-    *GET_DATA_SCRIPT_REVIEW({ payload, callback }, saga) {
-      try {
-        const response = yield saga.call(services.getDataScriptReview, payload);
-        callback(response);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA_SCRIPT_REVIEW',
-            payload: response,
-          });
-        }
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *GET_DATA_EVALUATION_CRITERRIA({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getDataEvaluetionCriteria, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA_EVALUATION_CRITERRIA',
-            payload: response,
-          });
-        }
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
     *GET_DATA_DETAIL({ payload }, saga) {
       try {
         const response = yield saga.call(services.getDatDetail, payload);
@@ -292,28 +221,6 @@ export default {
         type: 'SET_DATA_DETAIL',
         payload,
       });
-    },
-    *GET_DATA_CONFIGURATION({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.getDataConfiguration, payload);
-        yield saga.put({
-          type: 'SET_DATA_CONFIGURATION',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *SEND_ITEM({ payload, callback }, saga) {
-      try {
-        const response = yield saga.call(services.sendItem, payload);
-        callback(response);
-      } catch (error) {
-        callback(null, error?.data);
-      }
     },
   },
 };
