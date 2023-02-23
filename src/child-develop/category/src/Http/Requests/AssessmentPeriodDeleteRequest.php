@@ -8,7 +8,7 @@ use GGPHP\Clover\Models\PhysicalCriteriaStudent;
 use GGPHP\Clover\Models\PhysicalEvaluateTemplate;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AssessmentPeriodUpdateRequest extends FormRequest
+class AssessmentPeriodDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -35,9 +35,18 @@ class AssessmentPeriodUpdateRequest extends FormRequest
                 $physicalCriteriaStudent  = PhysicalCriteriaStudent::where('AssessmentPeriodId', $value)->first();
 
                 if (!is_null($testSemester) || !is_null($periodicAssessmentPhysical) || !is_null($physicalEvaluateTemplate) || !is_null($physicalCriteriaStudent)) {
-                    return $fail('Dữ liệu đã được sử dụng không được chỉnh sửa');
+                    return $fail('Dữ liệu đã được sử dụng không được xóa');
                 }
             }
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+       
+        $data['id'] = $data['id'] = $this->route('assessment_period');
+
+        return $data;
     }
 }
