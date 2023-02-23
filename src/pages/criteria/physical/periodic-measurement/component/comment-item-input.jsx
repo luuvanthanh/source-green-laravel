@@ -30,7 +30,7 @@ const Index = memo(({
   return (
     <>
       <FormDetail label="Content" type="label" />
-      <TextArea rows={4} placeholder="Input" onChange={(e) => onChangeInput(e, itemParent)} defaultValue={itemParent?.contentInput} />
+      <TextArea rows={4} placeholder="Nhập" onChange={(e) => onChangeInput(e, itemParent)} defaultValue={itemParent?.contentInput} />
     </>
   );
 });

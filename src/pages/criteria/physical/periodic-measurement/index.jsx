@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'umi';
 import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
@@ -179,6 +179,14 @@ const Index = () => {
         }
       }
     });
+    if (defaultBranch?.id) {
+      dispatch({
+        type: 'physicalPeriodicMeasurement/GET_CLASSES',
+        payload: {
+          branch: defaultBranch?.id,
+        },
+      });
+    }
   }, []);
   useEffect(() => {
     if (search?.branchId && search?.classId && search?.assessmentPeriodId && checkLoad) {
@@ -272,16 +280,15 @@ const Index = () => {
   };
 
 
-  const paginationFunction = useMemo(
-    () =>
-      Helper.paginationNet({
-        pagination,
-        callback: (response) => {
-          changePagination(response);
-        },
-      }),
-    [pagination],
-  );
+  const paginationFunction = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });;
+
 
   const onFormEdit = (record) => {
     if (search?.status === variablesModules.STATUS.NOT_MEASURED) {
@@ -375,7 +382,7 @@ const Index = () => {
     const columns = [
       ...(search?.status === "NOT_MEASURED" ?
         [{
-          title: 'NO',
+          title: 'STT',
           key: 'text',
           width: 60,
           align: 'center',
@@ -390,21 +397,21 @@ const Index = () => {
           render: (record) => reportTime(record),
         },] : []),
       {
-        title: 'Center',
+        title: 'Cơ sở',
         key: 'email',
         width: 200,
         className: 'min-width-200',
         render: (record) => search?.status === "NOT_MEASURED" ? record?.branch?.name : record?.student?.branch?.name,
       },
       {
-        title: 'Class',
+        title: 'Lớp',
         key: 'Class',
         width: 200,
         className: 'min-width-200',
         render: (record) => record?.class?.name,
       },
       {
-        title: 'Student',
+        title: 'Học sinh',
         key: 'class',
         className: 'min-width-150',
         width: 200,
@@ -415,13 +422,14 @@ const Index = () => {
           />
         ),
       },
-      {
-        title: 'Monthly comment',
-        key: 'Assessment',
-        className: 'min-width-200',
-        width: 200,
-        render: (record) => record?.nameAssessmentPeriod,
-      },
+      ...(search?.status !== "NOT_MEASURED" ?
+        [{
+          title: 'Kì đo lường',
+          key: 'Assessment',
+          className: 'min-width-200',
+          width: 200,
+          render: (record) => record?.nameAssessmentPeriod,
+        },] : []),
       {
         key: 'action',
         className: 'min-width-100',
@@ -579,11 +587,11 @@ const Index = () => {
                 {
                   search?.schoolYearId && search?.assessmentPeriodId && search?.branchId && search?.classId ?
                     <Button color="success" icon="report" onClick={onChangeSearch}>
-                      Load data
+                      Tải dữ liệu
                     </Button>
                     :
                     <Button color="success" icon="report" disabled >
-                      Load data
+                      Tải dữ liệu
                     </Button>
                 }
               </div>
@@ -605,7 +613,7 @@ const Index = () => {
             columns={header()}
             dataSource={data}
             loading={loading['physicalPeriodicMeasurement/GET_DATA'] || loading['physicalPeriodicMeasurement/GET_DATA_APPROVED']}
-            pagination={paginationFunction}
+            pagination={paginationFunction(pagination)}
             defaultExpandAllRows
             rowSelection={
               search?.status === head(variablesModules.STATUS_TABS)?.id ||
