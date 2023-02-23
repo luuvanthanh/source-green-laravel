@@ -12,6 +12,7 @@ import FormDetail from '@/components/CommonComponent/FormDetail';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
+import { Helper } from '@/utils';
 import Rate from '../component/rate';
 import DetailStudent from '../component/detail-student';
 import Bmi from '../component/bmi';
@@ -151,27 +152,32 @@ const Index = memo(() => {
   };
 
   const addDelete = () => {
-    dispatch({
-      type: 'physicalPeriodicMeasurementConfirmed/DELETE',
-      payload: { id: params?.id },
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              form.current.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
-          }
-        }
+    const text = "Bạn có chắc muốn từ chối bài đo lường này không?";
+    Helper.confirmDelete({
+      callback: () => {
+        dispatch({
+          type: 'physicalPeriodicMeasurementConfirmed/DELETE',
+          payload: { id: params?.id },
+          callback: (response, error) => {
+            if (response) {
+              history.goBack();
+            }
+            if (error) {
+              if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                error.data.errors.forEach((item) => {
+                  form.current.setFields([
+                    {
+                      name: get(item, 'source.pointer'),
+                      errors: [get(item, 'detail')],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
       },
-    });
+    }, text);
   };
 
   return (

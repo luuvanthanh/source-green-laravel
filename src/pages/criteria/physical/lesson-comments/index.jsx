@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { debounce, get, head, isEmpty, size } from 'lodash';
+import { debounce, head, size } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -236,6 +236,7 @@ class Index extends PureComponent {
       this.setStateData(
         (prevState) => ({
           search: {
+            ...prevState.search,
             schoolYearId: prevState?.search?.schoolYearId,
             status: value,
             page: variables.PAGINATION.PAGE,
@@ -245,7 +246,6 @@ class Index extends PureComponent {
         () => this.onLoad(),
       );
     }
-    this.formRef.current.setFieldsValue({ classId: undefined, date: undefined, branchId: undefined, keyWord: undefined });
   }, 200);
 
   /**
@@ -408,7 +408,8 @@ class Index extends PureComponent {
         key: 'stt',
         width: 60,
         align: 'center',
-        render: (text, record, index) => index + 1,
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'Cơ sở',
@@ -450,7 +451,7 @@ class Index extends PureComponent {
           key: 'commentdate',
           className: 'min-width-200',
           width: 200,
-          render: (record) => Helper.getDate(record?.joinedDate, variables.DATE_FORMAT.DATE_TIME)
+          render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_TIME)
         }] : []),
       ...(this?.state?.search?.status === variablesModules.STATUS.APPROVED_FEEDBACK ?
         [{
@@ -496,15 +497,9 @@ class Index extends PureComponent {
         isAll,
         listIdApprove: this?.state.dataSelected
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           this.onLoad();
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            // eslint-disable-next-line no-console
-            console.log(error, 'error');
-          }
         }
       },
     });
@@ -516,15 +511,9 @@ class Index extends PureComponent {
       payload: {
         listIdApprove: [id]
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           this.onLoad();
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            // eslint-disable-next-line no-console
-            console.log(error, 'error');
-          }
         }
       },
     });
@@ -645,6 +634,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'date')}
                     type={variables.DATE_PICKER}
                     allowClear={false}
+                    disabledDate={(current) => current && (current < moment(user?.schoolYear?.startDate) || current > moment(user?.schoolYear?.endDate))}
                   />
                 </div>
                 <div className="col-lg-4">

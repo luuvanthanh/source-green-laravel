@@ -48,7 +48,8 @@ export function getSampleComments(params = {}) {
   return requestNet('/physical-criteria-template/feedback/list-of-pagging', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
+      ...Helper.getPagination(params.page, params.limit),
     },
   });
 }
@@ -57,7 +58,8 @@ export function getSubjectComments(params = {}) {
   return requestNet('/physical-criteria-template/criteria/list-of-pagging', {
     method: 'GET',
     params: {
-      ...params
+      ...params,
+      ...Helper.getPagination(params.page, params.limit),
     },
   });
 }
