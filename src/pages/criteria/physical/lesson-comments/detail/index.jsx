@@ -10,7 +10,7 @@ import FormDetail from '@/components/CommonComponent/FormDetail';
 import Loading from '@/components/CommonComponent/Loading';
 import { Helper, variables } from '@/utils';
 import ImgDetail from '@/components/CommonComponent/imageDetail';
-import { isEmpty } from 'lodash';
+import { isEmpty, isUndefined } from 'lodash';
 import classnames from 'classnames';
 import variablesModules from '../utils/variables';
 import stylesModule from '../styles.module.scss';
@@ -135,7 +135,7 @@ const Index = memo(() => {
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail
-                      name={`${details?.creator?.name} lúc ${Helper.getDate(details?.joinedDate, variables.DATE_FORMAT.DATE_TIME)}`}
+                      name={`${details?.creator?.name} lúc ${Helper.getDate(details?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`}
                       label="Giáo viên nhận xét"
                     />
                   </Pane>
@@ -143,7 +143,7 @@ const Index = memo(() => {
                     type === variablesModules.STATUS.APPROVED_FEEDBACK && (
                       <Pane className="col-lg-3">
                         <FormDetail
-                          name={`${details?.approvedEmployee?.name} lúc ${Helper.getDate(details?.approvedDate, variables.DATE_FORMAT.DATE_TIME)}`}
+                          name={`${details?.approvedEmployee?.fullName} lúc ${Helper.getDate(details?.approvedDate, variables.DATE_FORMAT.DATE_TIME)}`}
                           label="Người duyệt"
                         />
                       </Pane>
@@ -162,7 +162,7 @@ const Index = memo(() => {
                   </Heading>
                   <Pane className="col-lg-12 p-0">
                     <FormDetail
-                      name={getContent(item?.template?.content?.items?.map(i => i?.item), item?.content)}
+                      name={getContent(item?.template?.content?.items?.map(i => i?.isChecked ? i?.item : undefined)?.filter(j => !isUndefined(j)), item?.content)}
                       label="Nội dung nhận xét"
                       type="TextArea"
                     />

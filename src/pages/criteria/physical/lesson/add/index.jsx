@@ -60,12 +60,12 @@ const Index = memo(() => {
           }
         }
         if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              form.current.setFields([
+          if (!isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              form.setFields([
                 {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
+                  name: get(item, 'member').toLowerCase(),
+                  errors: [get(item, 'message')],
                 },
               ]);
             });
@@ -214,9 +214,9 @@ const Index = memo(() => {
                     <FormItem
                       name="rateOfApplication"
                       placeholder="Tỉ lệ áp dụng"
-                      type={variables.NUMBER_INPUT}
                       label="Tỉ lệ áp dụng (%)"
-                      rules={[variables.RULES.EMPTY]}
+                      type={variables.INPUT_COUNT}
+                      rules={[variables.RULES.NUMBER]}
                     />
                   </Pane>
                   <Pane className="col-lg-12">
@@ -279,8 +279,8 @@ const Index = memo(() => {
                                     fieldKey={[fieldItem.fieldKey, 'weekIndex']}
                                     name={[fieldItem.name, 'weekIndex']}
                                     placeholder="Nhập"
-                                    type={variables.NUMBER_INPUT}
-                                    rules={[variables.RULES.EMPTY]}
+                                    type={variables.INPUT_COUNT}
+                                    rules={[variables.RULES.NUMBER]}
                                   />
                                 </div>
                                 <div className={classnames(stylesModule.col)}>

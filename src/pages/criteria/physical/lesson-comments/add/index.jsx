@@ -311,7 +311,7 @@ const Index = memo(() => {
                     !isNotFeedback && (
                       <Pane className="col-lg-3">
                         <FormDetail
-                          name={`${details?.creator?.name} lúc ${Helper.getDate(details?.joinedDate, variables.DATE_FORMAT.DATE_TIME)}`}
+                          name={`${details?.creator?.name} lúc ${Helper.getDate(details?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`}
                           label="Giáo viên nhận xét"
                         />
                       </Pane>
