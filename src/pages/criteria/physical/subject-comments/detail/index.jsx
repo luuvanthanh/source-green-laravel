@@ -11,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import classnames from 'classnames';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Text from '@/components/CommonComponent/Text';
+import { Helper } from '@/utils';
 import stylesModule from '../styles.module.scss';
 
 const Index = memo(() => {
@@ -45,6 +46,25 @@ const Index = memo(() => {
       });
     }
   }, [params.id]);
+
+  const onRemove = (id) => {
+    const text = "Bạn có chắc chắn muốn xóa Môn đánh giá này không?";
+    Helper.confirmDelete({
+      callback: () => {
+        dispatch({
+          type: 'subjectCommentAdd/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              history.goBack();
+            }
+          },
+        });
+      },
+    }, text);
+  };
 
   return (
     <div className={stylesModule['wraper-container']}>
@@ -115,6 +135,9 @@ const Index = memo(() => {
                   onClick={() => history.goBack()}
                 >
                   Đóng
+                </p>
+                <p className="btn-delete ml-4" role="presentation" onClick={() => onRemove(details?.id)}>
+                  Xóa
                 </p>
                 <Button
                   className="ml-auto px25"

@@ -11,6 +11,7 @@ import classnames from 'classnames';
 import Button from '@/components/CommonComponent/Button';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { Helper } from '@/utils';
 import stylesModule from '../styles.module.scss';
 
 const General = memo(() => {
@@ -54,6 +55,25 @@ const General = memo(() => {
     }
   }, [params.id]);
 
+  const onRemove = (id) => {
+    const text = "Bạn có chắc chắn muốn xóa nhận xét này không?";
+    Helper.confirmDelete({
+      callback: () => {
+        dispatch({
+          type: 'sampleCommentAdd/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              history.goBack();
+            }
+          },
+        });
+      },
+    }, text);
+  };
+
   return (
     <>
       <Breadcrumbs last={details?.code} menu={menuLeftCriteria} />
@@ -96,17 +116,17 @@ const General = memo(() => {
                           </div>
                           <>
                             {details?.content?.items?.map((fieldItem, index) => (
-                                <Pane
-                                  key={index}
-                                  className="d-flex"
-                                >
-                                  <div className={stylesModule['card-item']}>
-                                    <div className={classnames(stylesModule.colDetail)}>
-                                      <FormDetail name={fieldItem} type="table" />
-                                    </div>
+                              <Pane
+                                key={index}
+                                className="d-flex"
+                              >
+                                <div className={stylesModule['card-item']}>
+                                  <div className={classnames(stylesModule.colDetail)}>
+                                    <FormDetail name={fieldItem} type="table" />
                                   </div>
-                                </Pane>
-                              ))}
+                                </div>
+                              </Pane>
+                            ))}
                           </>
                         </div>
                       </Pane>
@@ -120,6 +140,9 @@ const General = memo(() => {
                       onClick={() => history.goBack()}
                     >
                       Đóng
+                    </p>
+                    <p className="btn-delete ml-4" role="presentation" onClick={() => onRemove(details?.id)}>
+                      Xóa
                     </p>
                     <Button
                       className="ml-auto px25"

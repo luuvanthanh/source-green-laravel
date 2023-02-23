@@ -332,6 +332,18 @@ export default [
             authority: [permissions.THECHAT],
           },
           {
+            path: '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/add',
+            component: './criteria/physical/lesson-comments/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/detail',
+            component: './criteria/physical/lesson-comments/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
             path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky',
             component: './criteria/physical/periodic-measurement',
             wrappers: ['@/wrappers/auth'],
@@ -3785,6 +3797,20 @@ export default [
             wrappers: ['@/wrappers/auth'],
             // authority: [permissions.WEB_TIENGANH_THOIKHOABIEU_VIEW],
             authority: [permissions.CTH],
+          },
+        ],
+      },
+
+      // BAO CAO ERP
+      {
+        path: '/bao-cao-erp',
+        component: './menu/layout',
+        routes: [
+          {
+            path: '/bao-cao-erp/:type',
+            component: './report-erp',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
           },
         ],
       },

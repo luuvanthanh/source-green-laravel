@@ -27,5 +27,13 @@
   .tag {
     background-color: #27a600 !important;
     color: $text-white;
+    &__green {
+      background-color: #27a600 !important;
+      color: $text-white;
+    }
+    &__blue {
+      background-color: #0072d6 !important;
+      color: $text-white;
+    }
   }
 }

@@ -156,13 +156,18 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) =>
-    Helper.paginationLavarel({
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
       pagination,
+      query,
       callback: (response) => {
         this.changePagination(response);
       },
     });
+  }
 
   /**
  * Function remove items

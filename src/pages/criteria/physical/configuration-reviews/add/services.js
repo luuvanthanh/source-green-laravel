@@ -5,8 +5,7 @@ import { Helper } from '@/utils';
 export function add(data = {}) {
   return requestNet('/physical-evaluate-template', {
     method: 'POST',
-    data,
-    cancelNotification: true,
+    data
   });
 }
 
@@ -15,9 +14,9 @@ export function update(data = {}) {
     method: 'PUT',
     data: {
       ...data,
+      id: undefined
     },
-    parse: true,
-    cancelNotification: true,
+    parse: true
   });
 }
 
@@ -32,8 +31,7 @@ export function getData(params = {}) {
 
 export function remove(id = {}) {
   return requestNet(`/physical-evaluate-template/${id}`, {
-    method: 'DELETE',
-    cancelNotification: true,
+    method: 'DELETE'
   });
 }
 
@@ -85,6 +83,15 @@ export function getDataType(params = {}) {
         'nameAssessmentPeriod',
         'schoolYear'
       ]),
+    },
+  });
+}
+
+export function getDetailDataType(data = {}) {
+  return request(`/v1/assessment-periods/${data.id}`, {
+    method: 'GET',
+    params: {
+      include: Helper.convertIncludes(['classes', 'branch', 'schoolYear']),
     },
   });
 }
