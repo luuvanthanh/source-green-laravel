@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 import { size, isEmpty, includes, head } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
-import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt, notification, Avatar, Image } from 'antd';
+import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt, notification, Image } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
 import Pane from '@/components/CommonComponent/Pane';
