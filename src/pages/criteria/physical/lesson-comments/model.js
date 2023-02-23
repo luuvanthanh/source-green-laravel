@@ -126,6 +126,15 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+        yield saga.put({
+          type: 'SET_DATA_NO_FEEDBACK',
+          payload: {
+            parsePayload: [],
+            pagination: {
+              total: 0,
+            }
+          },
+        });
       }
     },
     *GET_YEARS({ payload }, saga) {

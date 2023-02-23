@@ -201,7 +201,8 @@ class Index extends PureComponent {
         key: 'id',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.code}</Text>,
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'Năm học',

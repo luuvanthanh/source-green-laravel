@@ -61,7 +61,7 @@ export default {
         yield saga.call(services.add, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data);
+        callback(null, error?.data?.error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
