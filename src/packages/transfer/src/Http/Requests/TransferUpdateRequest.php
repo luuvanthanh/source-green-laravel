@@ -37,6 +37,24 @@ class TransferUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'numberForm' => 'nullable|exists:DecisionNumberSamples,NumberForm',
+            'ordinalNumber' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $transfer = Transfer::where('NumberForm', $this->numberForm)->where('Id', '!=', $this->id)->first();
+
+                    if (is_null($transfer)) {
+                        return true;
+                    }
+
+                    if ($value == $transfer->OrdinalNumber) {
+                        return $fail('Số thứ tự phải khác số đã có.');
+                    }
+
+                    return true;
+                }
+            ]
         ];
     }
 }

@@ -35,6 +35,24 @@ class ResignationDecisionUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'numberForm' => 'nullable|exists:DecisionNumberSamples,NumberForm',
+            'ordinalNumber' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $resignationDecision = ResignationDecision::where('NumberForm', $this->numberForm)->where('Id', '!=', $this->id)->first();
+
+                    if (is_null($resignationDecision)) {
+                        return true;
+                    }
+
+                    if ($value == $resignationDecision->OrdinalNumber) {
+                        return $fail('Số thứ tự phải khác số đã có.');
+                    }
+
+                    return true;
+                }
+            ]
         ];
     }
 }

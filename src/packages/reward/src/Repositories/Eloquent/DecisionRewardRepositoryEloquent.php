@@ -4,6 +4,7 @@ namespace GGPHP\Reward\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\DecisionNumberSample\Repositories\Eloquent\DecisionNumberSampleRepositoryEloquent;
 use GGPHP\Reward\Models\DecisionReward;
 use GGPHP\Reward\Presenters\DecisionRewardPresenter;
 use GGPHP\Reward\Repositories\Contracts\DecisionRewardRepository;
@@ -66,6 +67,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $decisionReward = DecisionReward::create($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfCreated($decisionReward, $attributes);
             DecisionRewardDetailServices::add($decisionReward->Id, $attributes['data']);
 
             \DB::commit();
@@ -83,6 +85,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $decisionReward->update($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($decisionReward->refresh(), $attributes);
             $decisionReward->decisionRewardDetails()->delete();
             DecisionRewardDetailServices::add($decisionReward->Id, $attributes['data']);
 
