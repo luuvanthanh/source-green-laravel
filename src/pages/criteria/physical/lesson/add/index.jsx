@@ -12,7 +12,7 @@ import { useParams, useHistory } from 'umi';
 import Button from '@/components/CommonComponent/Button';
 import classnames from 'classnames';
 import styles from '@/assets/styles/Common/common.scss';
-import { get, head, isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import stylesModule from '../styles.module.scss';
 
 const Index = memo(() => {
@@ -233,7 +233,8 @@ const Index = memo(() => {
                   <Pane className="col-lg-12">
                     <FormItem
                       name="classIds"
-                      data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? dataClass?.filter(i => i?.classId === head(user?.objectInfo?.classTeachers)?.classId) : dataClass}
+                      // data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? dataClass?.filter(i => i?.classId === head(user?.objectInfo?.classTeachers)?.classId) : dataClass}
+                      data={dataClass}
                       placeholder="Chọn lớp có trong cơ sở"
                       type={variables.SELECT_MUTILPLE}
                       rules={[variables.RULES.EMPTY]}
