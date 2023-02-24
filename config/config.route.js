@@ -1630,6 +1630,24 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh',
+            component: './hrm/decision-denominator',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh/tao-moi',
+            component: './hrm/decision-denominator/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh/:id/chi-tiet',
+            component: './hrm/decision-denominator/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/mien-nhiem',
             component: './hrm/dismisseds',
             wrappers: ['@/wrappers/auth'],

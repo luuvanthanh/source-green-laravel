@@ -40,7 +40,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      dataFormContarct: {},
+    };
     setIsMounted(true);
   }
 
@@ -79,6 +81,9 @@ class Index extends PureComponent {
           moment(head(details.decisionRewardDetails)?.timeApply),
         type: details.type,
       });
+      this.setStateData({
+        dataFormContarct: details?.numberForm && [details],
+      });
     }
   }
 
@@ -109,11 +114,15 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
+    const { dataFormContarct } = this.state;
     dispatch({
       type: params.id ? 'decisionRewardsAdd/UPDATE' : 'decisionRewardsAdd/ADD',
       payload: {
         id: params.id,
-        decisionNumber: values.decisionNumber,
+        typeDecisionNumberSample: head(dataFormContarct)?.type,
+        ordinalNumber: values.ordinalNumber,
+        numberForm: head(dataFormContarct)?.numberForm,
+        decisionNumberSampleId: head(dataFormContarct)?.id,
         decisionDate: values.decisionDate,
         type: values.type,
         reason: values.reason,
@@ -146,6 +155,31 @@ class Index extends PureComponent {
     });
   };
 
+  converNumber = (input) => {
+    const pad = input;
+    if ((Number(input) + 1)?.toString().length < pad?.length) {
+      return pad?.substring(0, pad?.length - (Number(input) + 1).toString()?.length) + (Number(input) + 1);
+    }
+    return input ? `${Number(input) + 1}` : "";
+  };
+
+  onChangeNumber = (e) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'transfersAdd/GET_NUMBER_DECISION_DENOMINATOR',
+      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: 'DISCIPLINE_REWARD' },
+      callback: (response) => {
+        this.setStateData({
+          dataFormContarct: response?.parsePayload,
+        });
+        this.formRef.current.setFieldsValue({
+          ordinalNumber: this.converNumber(head(response?.parsePayload)?.ordinalNumber),
+        });
+      }
+    });
+  };
+
+
   render() {
     const {
       categories,
@@ -153,6 +187,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
+    const { dataFormContarct } = this.state;
     const loadingSubmit = effects['decisionRewardsAdd/ADD'] || effects['decisionRewardsAdd/UPDATE'];
     return (
       <>
@@ -181,14 +216,6 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-6">
-                  <FormItem
-                    label="Số quyết định"
-                    name="decisionNumber"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                  />
-                </div>
               </div>
               <div className="row">
                 <div className="col-lg-6">
@@ -199,9 +226,24 @@ class Index extends PureComponent {
                       Helper.disabledDate(current);
                       Helper.disabledDateFrom(current, this.formRef, 'timeApply');
                     }}
+                    onChange={this.onChangeNumber}
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                   />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    label="Số quyết định"
+                    name="ordinalNumber"
+                    type={variables.INPUT}
+                    disabled={isEmpty(dataFormContarct)}
+                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <p className="mb0 font-size-13 mt35 font-weight-bold">
+                    {!isEmpty(dataFormContarct) ? `/${head(dataFormContarct)?.numberForm}` : ''}
+                  </p>
                 </div>
                 <div className="col-lg-6">
                   <FormItem
