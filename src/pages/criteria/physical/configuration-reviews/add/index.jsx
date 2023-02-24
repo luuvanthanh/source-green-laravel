@@ -557,7 +557,7 @@ const Index = memo(() => {
                   <Pane className="col-lg-12">
                     <FormItem
                       name="classIds"
-                      data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? dataClass?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId) : dataClass}
+                      data={dataClass}
                       type={variables.SELECT_MUTILPLE}
                       rules={[variables.RULES.EMPTY]}
                       label="Lớp áp dụng"
