@@ -196,6 +196,7 @@ return [
         GGPHP\Crm\SsoAccount\Providers\SsoAccountServiceProvider::class,
         GGPHP\Crm\Fee\Providers\FeeServiceProvider::class,
         GGPHP\Crm\CallCenter\Providers\CallCenterServiceProvider::class,
+        GGPHP\Crm\KnowledgeToTeachChildren\Providers\KnowledgeToTeachChildrenServiceProvider::class,
         
     ],
 

@@ -9,6 +9,7 @@ use GGPHP\Crm\CallCenter\Models\Extension;
 use GGPHP\Crm\CallCenter\Models\ManagerCall;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\KnowledgeToTeachChildren\Models\PostKnowledgeToTeachChildren;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends UuidModel
@@ -49,5 +50,10 @@ class Employee extends UuidModel
     public function managerCall()
     {
         return $this->hasMany(ManagerCall::class);
+    }
+
+    public function postKnowledgeToTeachChildren()
+    {
+        return $this->hasMany(PostKnowledgeToTeachChildren::class, 'created_id');
     }
 }
