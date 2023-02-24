@@ -153,6 +153,17 @@ export default {
         callback(null, error);
       }
     },
+    *GET_NUMBER_DECISION_DENOMINATOR({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getNumberDecisionDenominator, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

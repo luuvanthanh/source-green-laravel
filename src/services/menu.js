@@ -1546,6 +1546,16 @@ export async function getLeftMenuHRM() {
               ],
               permission: [permissions.HRM],
             },
+            {
+              title: 'Khai báo mẫu số quyết định',
+              key: 'decision-denominator',
+              url: [
+                '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh',
+                '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh/tao-moi',
+                '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+            },
           ],
         },
         {
