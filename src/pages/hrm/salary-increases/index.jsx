@@ -240,9 +240,25 @@ class Index extends PureComponent {
       {
         title: 'Số QĐ',
         key: 'insurrance_number',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => get(record, 'decisionNumber'),
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => (
+          <>
+            {record?.contractNumber ? (
+              <>{record?.contractNumber}</>
+            ) : (
+              <>
+                {record?.ordinalNumber ? (
+                  <>
+                    {record?.ordinalNumber}/{record?.numberForm}
+                  </>
+                ) : (
+                  ''
+                )}
+              </>
+            )}
+          </>
+        ),
       },
       {
         title: 'Ngày QĐ',
